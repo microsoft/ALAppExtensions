@@ -110,9 +110,6 @@ codeunit 139780 "Integration Tests"
     begin
         this.Initialize(true);
 
-        // [Given] Set mock endpoint to return 200 OK
-        this.SetTransferResponseCode('200');
-
         // [Given] Team member 
         LibraryPermission.SetTeamMember();
 
@@ -136,7 +133,7 @@ codeunit 139780 "Integration Tests"
 
         EDocumentPage.Close();
         //[When] Get the document status
-        this.SetReturnedStatus('distributed');
+        this.SetReturnedStatus(DocumentStatus::Distributed);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -169,9 +166,6 @@ codeunit 139780 "Integration Tests"
     begin
         this.Initialize(true);
 
-        //[Given] Set mock endpoint to return 200 OK
-        this.SetTransferResponseCode('200');
-
         //[When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
         EDocument.FindLast();
@@ -192,7 +186,7 @@ codeunit 139780 "Integration Tests"
         EDocumentPage.Close();
 
         //[When] Get the failed document status
-        this.SetReturnedStatus('received');
+        this.SetReturnedStatus(DocumentStatus::Received);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -223,9 +217,6 @@ codeunit 139780 "Integration Tests"
     begin
         this.Initialize(true);
 
-        //[Given] Set mock endpoint to return 200 OK
-        this.SetTransferResponseCode('200');
-
         //[When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
         EDocument.FindLast();
@@ -246,7 +237,7 @@ codeunit 139780 "Integration Tests"
         EDocumentPage.Close();
 
         //[When] Get the failed document status
-        this.SetReturnedStatus('failed');
+        this.SetReturnedStatus(DocumentStatus::Failed);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -270,16 +261,13 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('HttpSubmitHandler')]
+    [HandlerFunctions('ServerDownHandler')]
     procedure SendDocumentToLogiqServerDown()
     var
         EDocument: Record "E-Document";
         EDocumentPage: TestPage "E-Document";
     begin
         this.Initialize(true);
-
-        //[Given] Set mock endpoint to return 500 server error
-        this.SetTransferResponseCode('500');
 
         //[When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -308,7 +296,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('HttpSubmitHandler')]
+    [HandlerFunctions('DownloadSingleDocumentHandler')]
     procedure DownloadOneDocument()
     var
         EDocument: Record "E-Document";
@@ -316,9 +304,6 @@ codeunit 139780 "Integration Tests"
         EDocServicePage: TestPage "E-Document Service";
     begin
         this.Initialize(true);
-
-        //[Given] Set mock endpoint
-        this.SetDownloadDocumentsMode('one');
 
         //[Then] Open E-Doc page and receive file
         EDocServicePage.OpenView();
@@ -339,7 +324,7 @@ codeunit 139780 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    [HandlerFunctions('HttpSubmitHandler')]
+    [HandlerFunctions('DownloadMultipleDocumentsHandler')]
     procedure DownloadMultipleDocuments()
     var
         EDocument: Record "E-Document";
@@ -347,9 +332,6 @@ codeunit 139780 "Integration Tests"
         EDocServicePage: TestPage "E-Document Service";
     begin
         this.Initialize(true);
-
-        //[Given] Set mock endpoint to download 2 documents
-        this.SetDownloadDocumentsMode('multiple');
 
         //[Then] Open E-Doc page and receive 2 files
         EDocServicePage.OpenView();
@@ -501,33 +483,9 @@ codeunit 139780 "Integration Tests"
         ConnectionUserSetupPage.Close();
     end;
 
-    local procedure SetReturnedStatus(Status: Text)
-    var
-        ConnectionUserSetup: Record "Logiq Connection User Setup";
+    local procedure SetReturnedStatus(NewDocumentStatus: Option Distributed,Received,Failed)
     begin
-        if ConnectionUserSetup.Get(UserId()) then begin
-            ConnectionUserSetup."Document Status Endpoint" += Status;
-            ConnectionUserSetup.Modify(true);
-        end;
-    end;
-
-    local procedure SetTransferResponseCode(Code: Text)
-    var
-        ConnectionUserSetup: Record "Logiq Connection User Setup";
-    begin
-        if ConnectionUserSetup.Get(UserId()) then begin
-            ConnectionUserSetup."Document Transfer Endpoint" += '/' + Code;
-            ConnectionUserSetup.Modify(true);
-        end;
-    end;
-
-    local procedure SetDownloadDocumentsMode(Endpoint: Text)
-    var
-        ConnectionSetup: Record "Logiq Connection Setup";
-    begin
-        ConnectionSetup.Get();
-        ConnectionSetup."File List Endpoint" += '/' + Endpoint;
-        ConnectionSetup.Modify(true);
+        this.DocumentStatus := NewDocumentStatus;
     end;
 
     [ModalPageHandler]
@@ -546,28 +504,60 @@ codeunit 139780 "Integration Tests"
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/auth'):
                 LoadResourceIntoHttpResponse('AccessToken.txt', Response);
 
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer/200'):
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer-status/externalId/\d+'):
+                this.GetTransferStatus(Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer'):
                 LoadResourceIntoHttpResponse('DocumentSent.txt', Response);
 
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer/500'):
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles/multiple'):
+                LoadResourceIntoHttpResponse('MultipleDocumentsResponse.txt', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
+                LoadResourceIntoHttpResponse('testfile1.xml', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile2.xml'):
+                LoadResourceIntoHttpResponse('testfile2.xml', Response);
+        end;
+    end;
+
+    [HttpClientHandler]
+    internal procedure ServerDownHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/auth'):
+                LoadResourceIntoHttpResponse('AccessToken.txt', Response);
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer'):
                 begin
                     LoadResourceIntoHttpResponse('ServerError.txt', Response);
                     Response.HttpStatusCode := 500;
                 end;
+        end;
+    end;
 
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer-status/externalId/distributed/\d+'):
-                LoadResourceIntoHttpResponse('DocumentStatusDistributed.txt', Response);
-
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer-status/externalId/received/\d+'):
-                LoadResourceIntoHttpResponse('DocumentStatusReceived.txt', Response);
-
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer-status/externalId/failed/\d+'):
-                LoadResourceIntoHttpResponse('DocumentStatusFailed.txt', Response);
-
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles/one'):
+    [HttpClientHandler]
+    internal procedure DownloadSingleDocumentHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles'):
                 LoadResourceIntoHttpResponse('OneDocumentResponse.txt', Response);
 
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles/multiple'):
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
+                LoadResourceIntoHttpResponse('testfile1.xml', Response);
+        end;
+    end;
+
+    [HttpClientHandler]
+    internal procedure DownloadMultipleDocumentsHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles'):
                 LoadResourceIntoHttpResponse('MultipleDocumentsResponse.txt', Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
@@ -583,6 +573,17 @@ codeunit 139780 "Integration Tests"
         Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
     end;
 
+    local procedure GetTransferStatus(var Response: TestHttpResponseMessage)
+    begin
+        case this.DocumentStatus of
+            DocumentStatus::Distributed:
+                LoadResourceIntoHttpResponse('DocumentStatusDistributed.txt', Response);
+            DocumentStatus::Received:
+                LoadResourceIntoHttpResponse('DocumentStatusReceived.txt', Response);
+            DocumentStatus::Failed:
+                LoadResourceIntoHttpResponse('DocumentStatusFailed.txt', Response);
+        end;
+    end;
 
     var
         CompanyInformation: Record "Company Information";
@@ -595,4 +596,5 @@ codeunit 139780 "Integration Tests"
         LibraryJobQueue: Codeunit "Library - Job Queue";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
+        DocumentStatus: Option Distributed,Received,Failed;
 }
