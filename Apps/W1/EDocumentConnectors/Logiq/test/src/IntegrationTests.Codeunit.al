@@ -501,6 +501,7 @@ codeunit 139780 "Integration Tests"
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/auth'):
                 LoadResourceIntoHttpResponse('AccessToken.txt', Response);
+
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer'):
                 begin
                     LoadResourceIntoHttpResponse('ServerError.txt', Response);
@@ -544,13 +545,16 @@ codeunit 139780 "Integration Tests"
     begin
         Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
     end;
+
     local procedure GetTransferStatus(var Response: TestHttpResponseMessage)
     begin
         case this.DocumentStatus of
             DocumentStatus::Distributed:
                 LoadResourceIntoHttpResponse('DocumentStatusDistributed.txt', Response);
+
             DocumentStatus::Received:
                 LoadResourceIntoHttpResponse('DocumentStatusReceived.txt', Response);
+
             DocumentStatus::Failed:
                 LoadResourceIntoHttpResponse('DocumentStatusFailed.txt', Response);
         end;
