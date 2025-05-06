@@ -13,7 +13,7 @@ codeunit 6127 "E-Document External Events"
         EDocumentsAPIHelper: Codeunit "E-Documents API Helper";
         EventCategory: Enum EventCategory;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Processing", 'OnAfterModifyEDocumentStatus', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Processing", OnAfterModifyEDocumentStatus, '', false, false)]
     local procedure OnAfterModifyEDocumentStatus(var EDocument: Record "E-Document"; var EDocumentServiceStatus: Record "E-Document Service Status")
     var
         Url: Text[250];
@@ -26,7 +26,7 @@ codeunit 6127 "E-Document External Events"
         this.EDocumentStatusChanged(EDocument.SystemId, EDocument.Status, Url, WebClientUrl);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Processing", 'OnAfterInsertServiceStatus', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Processing", OnAfterInsertServiceStatus, '', false, false)]
     local procedure OnAfterInsertServiceStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
     var
         Url: Text[250];
@@ -39,7 +39,7 @@ codeunit 6127 "E-Document External Events"
         this.EDocumentServiceStatusChanged(EDocument.SystemId, EDocumentService.SystemId, EDocumentServiceStatus.Status, Url, WebClientUrl);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Processing", 'OnAfterModifyServiceStatus', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Processing", OnAfterModifyServiceStatus, '', false, false)]
     local procedure OnAfterModifyServiceStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
     var
         Url: Text[250];

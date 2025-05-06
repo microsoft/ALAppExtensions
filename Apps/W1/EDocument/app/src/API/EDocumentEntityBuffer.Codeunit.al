@@ -12,7 +12,7 @@ codeunit 6122 "E-Document Entity Buffer"
     var
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
 
-    [EventSubscriber(ObjectType::Table, Database::"E-Document", 'OnAfterInsertEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"E-Document", OnAfterInsertEvent, '', false, false)]
     local procedure OnAfterInsertEDocument(var Rec: Record "E-Document"; RunTrigger: Boolean)
     begin
         if not this.GraphMgtGeneralTools.IsApiEnabled() then
@@ -21,7 +21,7 @@ codeunit 6122 "E-Document Entity Buffer"
         this.InsertOrModifyFromEDocument(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"E-Document", 'OnAfterModifyEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"E-Document", OnAfterModifyEvent, '', false, false)]
     local procedure OnAfterModifyEDocument(var Rec: Record "E-Document"; RunTrigger: Boolean)
     begin
         if not this.GraphMgtGeneralTools.IsApiEnabled() then
@@ -30,7 +30,7 @@ codeunit 6122 "E-Document Entity Buffer"
         this.InsertOrModifyFromEDocument(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"E-Document", 'OnAfterDeleteEvent', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"E-Document", OnAfterDeleteEvent, '', false, false)]
     local procedure OnAfterDeleteEDocument(var Rec: Record "E-Document"; RunTrigger: Boolean)
     var
         EDocumentEntityBuffer: Record "E-Document Entity Buffer";
