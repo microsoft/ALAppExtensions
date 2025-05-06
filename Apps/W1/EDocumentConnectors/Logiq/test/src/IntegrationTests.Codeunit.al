@@ -20,13 +20,9 @@ codeunit 139780 "Integration Tests"
     Subtype = Test;
     Permissions = tabledata "Logiq Connection Setup" = rimd,
                   tabledata "Logiq Connection User Setup" = rimd,
-                    tabledata "E-Document" = rd;
+                  tabledata "E-Document" = rd;
     TestHttpRequestPolicy = AllowOutboundFromHandler;
 
-
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure CreateLogiqUserSetup()
@@ -46,9 +42,6 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreNotEqual(0DT, ConnectionUserSetup."Refresh Token Expiration", 'Refresh token expiration date time is not updated');
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure ChangeLogiqCredentials()
@@ -72,9 +65,6 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreNotEqual(OldRefreshTokenExpires, ConnectionUserSetup."Refresh Token Expiration", 'Refresh token expiration date time is not updated');
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     procedure DeleteLogiqUserSetup()
     var
@@ -97,9 +87,6 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreEqual(false, IsolatedStorage.Contains(OldRefreshTokenGuid), 'Refresh token is not deleted');
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiq()
@@ -152,9 +139,6 @@ codeunit 139780 "Integration Tests"
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiqInProgress()
@@ -204,9 +188,6 @@ codeunit 139780 "Integration Tests"
         EDocumentServiceStatus.Delete();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiqFailed()
@@ -257,9 +238,6 @@ codeunit 139780 "Integration Tests"
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('ServerDownHandler')]
     procedure SendDocumentToLogiqServerDown()
@@ -292,9 +270,6 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreEqual('Sending document failed with HTTP Status code 500. Error message: Internal Server Error', EDocumentPage.ErrorMessagesPart.Description.Value(), 'Error message is not correct');
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('DownloadSingleDocumentHandler')]
     procedure DownloadOneDocument()
@@ -320,9 +295,6 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreEqual(this.Vendor."No.", PurchaseHeader."Buy-from Vendor No.", 'Wrong Vendor');
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('DownloadMultipleDocumentsHandler')]
     procedure DownloadMultipleDocuments()
