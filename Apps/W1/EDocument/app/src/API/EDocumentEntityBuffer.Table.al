@@ -178,26 +178,22 @@ table 6111 "E-Document Entity Buffer"
         field(31; "Receiving Company Id"; Text[250])
         {
             Caption = 'Receiving Company Id';
-            ToolTip = 'Specifies the receiving company id, such as PEPPOL id, or other identifiers used in the electronic document exchange.';
         }
         field(32; "Unstructured Data Entry No."; Integer)
         {
             Caption = 'Unstructured Content';
             TableRelation = "E-Doc. Data Storage";
-            ToolTip = 'Specifies the content that is not structured, such as PDF';
         }
         field(33; "Structured Data Entry No."; Integer)
         {
             Caption = 'Structured Content';
             TableRelation = "E-Doc. Data Storage";
-            ToolTip = 'Specifies the content that is structured, such as XML';
         }
         field(34; Service; Code[20])
         {
             Caption = 'Service';
             Editable = false;
             TableRelation = "E-Document Service";
-            ToolTip = 'Specifies the service that is used to process the E-Document.';
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -208,23 +204,19 @@ table 6111 "E-Document Entity Buffer"
         field(35; "File Name"; Text[256])
         {
             Caption = 'File Name';
-            ToolTip = 'Specifies the file name of the E-Document source.';
         }
         field(36; "File Type"; Enum "E-Doc. Data Storage Blob Type")
         {
             Caption = 'File Type';
-            ToolTip = 'Specifies the file type of the E-Document source.';
         }
         field(37; "Structured Data Process"; Enum "E-Doc. Structured Data Process")
         {
             Caption = 'Structured Data Process';
-            ToolTip = 'Specifies the structured data process to run on the E-Document data.';
         }
         field(38; "Service Integration"; Enum "Service Integration")
         {
             Caption = 'Service Integration';
             Editable = false;
-            ToolTip = 'Specifies the service integration to use for the E-Document.';
         }
         field(8000; Id; Guid)
         {
@@ -242,7 +234,7 @@ table 6111 "E-Document Entity Buffer"
             DataClassification = SystemMetadata;
         }
     }
-    
+
     keys
     {
         key(PK; "Entry No")
@@ -251,6 +243,9 @@ table 6111 "E-Document Entity Buffer"
         }
     }
 
+    /// <summary>
+    /// Updates the "Service Id" and "Document System Id" fields based on the current record's values.
+    /// </summary>
     internal procedure UpdateRelatedRecordsIds()
     begin
         this.UpdateServiceId();

@@ -53,6 +53,9 @@ page 6111 "E-Document Files API"
         }
     }
 
+    var
+        EDocumentsFileBuffer: Codeunit "E-Document File Entity Buffer";
+
     trigger OnFindRecord(Which: Text): Boolean
     var
         EDocumentsAPIHelper: Codeunit "E-Documents API Helper";
@@ -68,7 +71,4 @@ page 6111 "E-Document Files API"
     begin
         this.EDocumentsFileBuffer.CreateEDocumentFromReceivedFile(Rec);
     end;
-
-    var
-        EDocumentsFileBuffer: Codeunit "E-Document File Entity Buffer";
 }

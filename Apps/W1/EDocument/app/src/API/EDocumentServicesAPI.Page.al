@@ -35,27 +35,22 @@ page 6113 "E-Document Services API"
                 field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
-                    Editable = false;
                 }
                 field(code; Rec.Code)
                 {
                     Caption = 'Code';
-                    Editable = false;
                 }
                 field(description; Rec.Description)
                 {
                     Caption = 'Description';
-                    Editable = false;
                 }
                 field(serviceIntegrationV2; Rec."Service Integration V2")
                 {
                     Caption = 'Service Integration V2';
-                    Editable = false;
                 }
                 field(documentFormat; Rec."Document Format")
                 {
                     Caption = 'Document Format';
-                    Editable = false;
                 }
             }
         }

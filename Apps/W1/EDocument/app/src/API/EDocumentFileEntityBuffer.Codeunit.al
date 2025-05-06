@@ -9,6 +9,15 @@ using Microsoft.eServices.EDocument;
 
 codeunit 6123 "E-Document File Entity Buffer"
 {
+    var
+        EDocumentLog: Codeunit "E-Document Log";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+        FileTypeNotSupportedErr: Label 'File type not supported';
+
+    /// <summary>
+    /// Create an E-Document from a file received via API.
+    /// </summary>
+    /// <param name="EDocumentsFileBuffer"></param>
     procedure CreateEDocumentFromReceivedFile(var EDocumentsFileBuffer: Record "E-Document File Entity Buffer")
     var
         EDocument: Record "E-Document";
@@ -19,7 +28,7 @@ codeunit 6123 "E-Document File Entity Buffer"
         this.UploadDocument(EDocument, EDocumentsFileBuffer);
     end;
 
-    internal procedure UploadDocument(var EDocument: Record "E-Document"; var EDocumentsFileBuffer: Record "E-Document File Entity Buffer")
+    local procedure UploadDocument(var EDocument: Record "E-Document"; var EDocumentsFileBuffer: Record "E-Document File Entity Buffer")
     var
         EDocumentService: Record "E-Document Service";
         EDocLog: Record "E-Document Log";
@@ -86,9 +95,4 @@ codeunit 6123 "E-Document File Entity Buffer"
             exit(true);
         end;
     end;
-
-    var
-        EDocumentLog: Codeunit "E-Document Log";
-        EDocumentProcessing: Codeunit "E-Document Processing";
-        FileTypeNotSupportedErr: Label 'File type not supported';
 }
