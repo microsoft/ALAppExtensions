@@ -39,7 +39,6 @@ codeunit 6129 "E-Documents API Helper"
                 CopyStream(OutStr, InStr);
 
                 TempEDocumentsFileBuffer.UpdateRelatedEDocumentId();
-
                 TempEDocumentsFileBuffer.Insert(true);
             end;
         end;
