@@ -538,8 +538,10 @@ codeunit 148193 IntegrationTests
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
                 LoadResourceIntoHttpResponse('GetAccessToken.txt', Response);
+
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
                 GetStatusResponse(Response);
+
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions'):
                 LoadResourceIntoHttpResponse('GetSentDocumentStatus.txt', Response);
         end;
@@ -553,8 +555,10 @@ codeunit 148193 IntegrationTests
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
                 LoadResourceIntoHttpResponse('GetAccessToken.txt', Response);
+
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/inbox/transactions/[0-9a-zA-Z-]+'):
                 LoadResourceIntoHttpResponse('GetTargetDocumentRequest.txt', Response);
+
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/inbox/transactions'):
                 LoadResourceIntoHttpResponse('GetReceivedDocumentsRequest.txt', Response);
         end;
