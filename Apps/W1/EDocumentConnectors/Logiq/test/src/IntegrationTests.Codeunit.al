@@ -572,7 +572,6 @@ codeunit 139780 "Integration Tests"
     begin
         Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
     end;
-
     local procedure GetTransferStatus(var Response: TestHttpResponseMessage)
     begin
         case this.DocumentStatus of
