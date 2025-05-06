@@ -608,10 +608,13 @@ codeunit 148191 "Integration Tests"
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/connect/token'):
                 LoadResourceIntoHttpResponse('ConnectToken.txt', Response);
+
             Regex.IsMatch(Request.Path, 'https?://.+/einvoicing/documents/.+/status'):
                 GetStatusResponse(Response);
+
             Regex.IsMatch(Request.Path, 'https?://.+/einvoicing/documents/.+/\$download'):
                 LoadResourceIntoHttpResponse('DownloadDocument.txt', Response);
+
             Regex.IsMatch(Request.Path, 'https?://.+/einvoicing/documents'):
                 case Request.RequestType of
                     HttpRequestType::POST:
@@ -622,6 +625,7 @@ codeunit 148191 "Integration Tests"
                             Response.HttpStatusCode := 200;
                         end;
                 end;
+
             Regex.IsMatch(Request.Path, 'https?://.+/scs/companies'):
                 begin
                     LoadResourceIntoHttpResponse('Companies.txt', Response);
@@ -644,7 +648,7 @@ codeunit 148191 "Integration Tests"
 
     local procedure SetDocumentStatus(NewDocumentStatus: Option Completed,Pending,Error)
     begin
-        DocumentStatus := NewDocumentStatus;
+        this.DocumentStatus := NewDocumentStatus;
     end;
 
     local procedure GetStatusResponse(var Response: TestHttpResponseMessage)
@@ -652,8 +656,10 @@ codeunit 148191 "Integration Tests"
         case DocumentStatus of
             DocumentStatus::Completed:
                 LoadResourceIntoHttpResponse('GetResponseComplete.txt', Response);
+
             DocumentStatus::Pending:
                 LoadResourceIntoHttpResponse('GetResponsePending.txt', Response);
+
             DocumentStatus::Error:
                 LoadResourceIntoHttpResponse('GetResponseError.txt', Response);
         end;
