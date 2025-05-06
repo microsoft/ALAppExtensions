@@ -242,6 +242,7 @@ table 6111 "E-Document Entity Buffer"
             DataClassification = SystemMetadata;
         }
     }
+    
     keys
     {
         key(PK; "Entry No")
