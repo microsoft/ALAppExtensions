@@ -23,8 +23,8 @@ table 6111 "E-Document Entity Buffer"
     {
         field(1; "Entry No"; Integer)
         {
-            Caption = 'Document Entry No';
             AutoIncrement = true;
+            Caption = 'Document Entry No';
         }
         field(2; "Document Record ID"; RecordId)
         {
@@ -106,8 +106,8 @@ table 6111 "E-Document Entity Buffer"
         field(16; "Table ID"; Integer)
         {
             Caption = 'Table ID';
-            Editable = false;
             DataClassification = SystemMetadata;
+            Editable = false;
         }
         field(17; "Table Name"; Text[250])
         {
@@ -131,8 +131,8 @@ table 6111 "E-Document Entity Buffer"
         }
         field(21; "Data Exch. Def. Code"; Code[20])
         {
-            TableRelation = "Data Exch. Def";
             Caption = 'Data Exch. Def. Code';
+            TableRelation = "Data Exch. Def";
         }
         field(22; "Receiving Company VAT Reg. No."; Text[20])
         {
@@ -159,8 +159,8 @@ table 6111 "E-Document Entity Buffer"
         }
         field(27; "Workflow Code"; Code[20])
         {
-            TableRelation = Workflow where(Template = const(false), Category = const('EDOC'));
             Caption = 'Workflow Code';
+            TableRelation = Workflow where(Template = const(false), Category = const('EDOC'));
         }
         field(28; "Workflow Step Instance ID"; Guid)
         {
@@ -168,8 +168,8 @@ table 6111 "E-Document Entity Buffer"
         }
         field(29; "Job Queue Entry ID"; Guid)
         {
-            TableRelation = "Job Queue Entry";
             DataClassification = SystemMetadata;
+            TableRelation = "Job Queue Entry";
         }
         field(30; "Journal Line System ID"; Guid)
         {
@@ -183,21 +183,21 @@ table 6111 "E-Document Entity Buffer"
         field(32; "Unstructured Data Entry No."; Integer)
         {
             Caption = 'Unstructured Content';
-            ToolTip = 'Specifies the content that is not structured, such as PDF';
             TableRelation = "E-Doc. Data Storage";
+            ToolTip = 'Specifies the content that is not structured, such as PDF';
         }
         field(33; "Structured Data Entry No."; Integer)
         {
             Caption = 'Structured Content';
-            ToolTip = 'Specifies the content that is structured, such as XML';
             TableRelation = "E-Doc. Data Storage";
+            ToolTip = 'Specifies the content that is structured, such as XML';
         }
         field(34; Service; Code[20])
         {
             Caption = 'Service';
-            ToolTip = 'Specifies the service that is used to process the E-Document.';
             Editable = false;
             TableRelation = "E-Document Service";
+            ToolTip = 'Specifies the service that is used to process the E-Document.';
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -223,8 +223,8 @@ table 6111 "E-Document Entity Buffer"
         field(38; "Service Integration"; Enum "Service Integration")
         {
             Caption = 'Service Integration';
-            ToolTip = 'Specifies the service integration to use for the E-Document.';
             Editable = false;
+            ToolTip = 'Specifies the service integration to use for the E-Document.';
         }
         field(8000; Id; Guid)
         {
