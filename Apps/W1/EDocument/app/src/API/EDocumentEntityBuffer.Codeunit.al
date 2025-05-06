@@ -59,5 +59,4 @@ codeunit 6122 "E-Document Entity Buffer"
         else
             EDocumentEntityBuffer.Insert(true);
     end;
-
 }
