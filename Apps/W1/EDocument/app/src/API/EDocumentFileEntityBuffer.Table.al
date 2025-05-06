@@ -61,6 +61,7 @@ table 6112 "E-Document File Entity Buffer"
             DataClassification = SystemMetadata;
         }
     }
+    
     keys
     {
         key(PK; Id)
