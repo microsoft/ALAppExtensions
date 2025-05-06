@@ -20,12 +20,9 @@ codeunit 148191 "Integration Tests"
 
     Subtype = Test;
     Permissions = tabledata "Connection Setup" = rimd,
-                    tabledata "E-Document" = r;
+                  tabledata "E-Document" = r;
     TestHttpRequestPolicy = AllowOutboundFromHandler;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument()
@@ -105,9 +102,6 @@ codeunit 148191 "Integration Tests"
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument_Pending_Sent()
@@ -222,9 +216,6 @@ codeunit 148191 "Integration Tests"
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('EDocServicesPageHandler,HttpSubmitHandler')]
     procedure SubmitDocument_Error_Sent()
@@ -387,9 +378,6 @@ codeunit 148191 "Integration Tests"
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('ServiceDownHandler')]
     procedure SubmitDocumentAvalaraServiceDown()
@@ -435,9 +423,6 @@ codeunit 148191 "Integration Tests"
         Assert.AreEqual('Error Code: 500, Error Message: The HTTP request is not successful. An internal server error occurred.', EDocumentPage.ErrorMessagesPart.Description.Value(), IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitGetDocuments()
