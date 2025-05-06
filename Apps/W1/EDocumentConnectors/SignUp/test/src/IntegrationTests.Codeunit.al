@@ -22,7 +22,7 @@ codeunit 148193 IntegrationTests
     Subtype = Test;
 
     Permissions = tabledata "SignUp Connection Setup" = rimd,
-                    tabledata "E-Document" = r;
+                  tabledata "E-Document" = r;
 
     var
         Customer: Record Customer;
@@ -40,10 +40,6 @@ codeunit 148193 IntegrationTests
         DocumentStatus: Option Processing,Error;
 
     #region tests
-
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument()
@@ -129,9 +125,6 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument_Pending_Sent()
@@ -259,9 +252,6 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('EDocServicesPageHandler,HttpSubmitHandler')]
     procedure SubmitDocument_Error_Sent()
@@ -430,9 +420,6 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('ServiceDownHandler')]
     procedure SubmitDocumentServiceDown()
@@ -483,9 +470,6 @@ codeunit 148193 IntegrationTests
         this.Assert.AreEqual('There was an error sending the request. Response code: 500 and error message: Internal Server Error', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('ReceiveDocumentHandler')]
     procedure SubmitGetDocuments()
@@ -515,10 +499,6 @@ codeunit 148193 IntegrationTests
         this.Assert.AreEqual(TmpDocCount + 1, EDocument.Count(), 'The document was not imported!');
     end;
 
-    /// Enable test when migrated to HTTP client handler
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     [HandlerFunctions('GetMetadataProfileHandler')]
     procedure GetMetadataProfiles()
@@ -617,8 +597,6 @@ codeunit 148193 IntegrationTests
 
         SignUpConnectionSetup.DeleteAll();
         SignUpAuthentication.InitConnectionSetup();
-        // this.IntegrationHelpers.SetCommonConnectionSetup();
-        // this.IntegrationHelpers.SetAPIWith200Code();
 
         if this.IsInitialized then
             exit;
