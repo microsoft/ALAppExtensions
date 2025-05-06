@@ -61,6 +61,7 @@ table 6112 "E-Document File Entity Buffer"
             DataClassification = SystemMetadata;
         }
     }
+    
     keys
     {
         key(PK; Id)
@@ -81,5 +82,4 @@ table 6112 "E-Document File Entity Buffer"
         if EDocument.Get(Rec."Related E-Doc. Entry No.") then
             Rec."Related E-Document Id" := EDocument.SystemId;
     end;
-
 }

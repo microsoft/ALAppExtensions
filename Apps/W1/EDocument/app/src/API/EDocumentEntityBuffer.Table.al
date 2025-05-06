@@ -242,6 +242,7 @@ table 6111 "E-Document Entity Buffer"
             DataClassification = SystemMetadata;
         }
     }
+    
     keys
     {
         key(PK; "Entry No")
@@ -281,7 +282,8 @@ table 6111 "E-Document Entity Buffer"
         end;
 
         DocumentRecRef.Open(Rec."Document Record ID".TableNo());
-        if not DocumentRecRef.Get(Rec."Document Record ID") then exit;
+        if not DocumentRecRef.Get(Rec."Document Record ID") then
+            exit;
 
         Rec."Document System Id" := DocumentRecRef.Field(DocumentRecRef.SystemIdNo).Value;
     end;

@@ -91,5 +91,4 @@ codeunit 6123 "E-Document File Entity Buffer"
         EDocumentLog: Codeunit "E-Document Log";
         EDocumentProcessing: Codeunit "E-Document Processing";
         FileTypeNotSupportedErr: Label 'File type not supported';
-
 }
