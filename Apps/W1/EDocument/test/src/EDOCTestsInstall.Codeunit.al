@@ -32,7 +32,6 @@ codeunit 133506 "E-DOC Tests Install"
         AITALTestSuiteMgt.ImportTestInputs(FileName, ResInStream);
     end;
 
-
     local procedure SetupTestSuite(Filepath: Text)
     var
         AITALTestSuiteMgt: Codeunit "AIT AL Test Suite Mgt";
