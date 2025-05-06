@@ -26,6 +26,7 @@ codeunit 6129 "E-Documents API Helper"
             EDocument.SetFilter("Entry No", EDocumentNoFilter);
             if not EDocument.FindFirst() then
                 exit;
+                
             EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
             EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus::Exported);
 
