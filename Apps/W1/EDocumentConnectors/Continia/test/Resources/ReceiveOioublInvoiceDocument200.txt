@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xsi:schemaLocation="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2 UBL-Invoice-2.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:oasis:names:specification:ubl:schema:xsd:CoreComponentParameters-2" xmlns:sdt="urn:oasis:names:specification:ubl:schema:xsd:SpecializedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2">
+  <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
+  <cbc:CustomizationID>OIOUBL-2.02</cbc:CustomizationID>
+  <cbc:ProfileID schemeID="urn:oioubl:id:profileid-1.2" schemeAgencyID="320">Procurement-OrdSimR-BilSim-1.0</cbc:ProfileID>
+  <cbc:ID>683f9400-0cc3-4a0d-9da1-27a1edc60c42</cbc:ID>
+  <cbc:CopyIndicator>true</cbc:CopyIndicator>
+  <cbc:IssueDate>2024-04-08</cbc:IssueDate>
+  <cbc:InvoiceTypeCode listID="urn:oioubl:codelist:invoicetypecode-1.1" listAgencyID="320">380</cbc:InvoiceTypeCode>
+  <cbc:DocumentCurrencyCode>DKK</cbc:DocumentCurrencyCode>
+  <cbc:AccountingCostCode></cbc:AccountingCostCode>
+  <cac:OrderReference>
+    <cbc:ID>VWERAFS</cbc:ID>
+    <cbc:SalesOrderID>102231</cbc:SalesOrderID>
+    <cbc:IssueDate>2024-04-08</cbc:IssueDate>
+  </cac:OrderReference>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cbc:WebsiteURI></cbc:WebsiteURI>
+      <cbc:EndpointID schemeID="DK:CVR">DK85622541</cbc:EndpointID>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="DK:CVR">DK85622541</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyName>
+        <cbc:Name>eVendor</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:AddressFormatCode listID="urn:oioubl:codelist:addressformatcode-1.1" listAgencyID="320">StructuredLax</cbc:AddressFormatCode>
+        <cbc:StreetName>Ringen 5</cbc:StreetName>
+        <cbc:AdditionalStreetName>Westminster</cbc:AdditionalStreetName>
+        <cbc:CityName>Kugleby</cbc:CityName>
+        <cbc:PostalZone>9900</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID schemeID="DK:SE">DK85622541</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+          <cbc:Name>Moms</cbc:Name>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>eVendor</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="DK:CVR">DK85622541</cbc:CompanyID>
+      </cac:PartyLegalEntity>
+      <cac:Contact>
+        <cbc:ID>LB</cbc:ID>
+        <cbc:Name>Lasse Bertramsen</cbc:Name>
+        <cbc:Telephone></cbc:Telephone>
+        <cbc:Telefax></cbc:Telefax>
+        <cbc:ElectronicMail>LB@contoso.com</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cbc:EndpointID schemeAgencyID="9" schemeID="GLN">5798009811639</cbc:EndpointID>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="DK:CVR">DK45284522</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyName>
+        <cbc:Name>demo</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:AddressFormatCode listID="urn:oioubl:codelist:addressformatcode-1.1" listAgencyID="320">StructuredLax</cbc:AddressFormatCode>
+        <cbc:StreetName>Parkvej 44</cbc:StreetName>
+        <cbc:AdditionalStreetName></cbc:AdditionalStreetName>
+        <cbc:CityName>Atlanta</cbc:CityName>
+        <cbc:PostalZone>4300</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:Contact>
+        <cbc:ID>Helen Ray</cbc:ID>
+        <cbc:Name>Helen Ray</cbc:Name>
+        <cbc:Telephone></cbc:Telephone>
+        <cbc:Telefax></cbc:Telefax>
+        <cbc:ElectronicMail>helen.ray@contoso.com</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:Delivery>
+    <cbc:ActualDeliveryDate>2024-04-08</cbc:ActualDeliveryDate>
+    <cac:DeliveryLocation>
+      <cac:Address>
+        <cbc:AddressFormatCode listID="urn:oioubl:codelist:addressformatcode-1.1" listAgencyID="320">StructuredLax</cbc:AddressFormatCode>
+        <cbc:StreetName>Parkvej 44</cbc:StreetName>
+        <cbc:AdditionalStreetName></cbc:AdditionalStreetName>
+        <cbc:CityName>Atlanta</cbc:CityName>
+        <cbc:PostalZone>4300</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:Address>
+    </cac:DeliveryLocation>
+  </cac:Delivery>
+  <cac:PaymentMeans>
+    <cbc:ID>1</cbc:ID>
+    <cbc:PaymentMeansCode>42</cbc:PaymentMeansCode>
+    <cbc:PaymentDueDate>2024-04-22</cbc:PaymentDueDate>
+    <cbc:PaymentChannelCode listAgencyID="320" listID="urn:oioubl:codelist:paymentchannelcode-1.1">DK:BANK</cbc:PaymentChannelCode>
+    <cac:PayeeFinancialAccount>
+      <cbc:ID>9999888</cbc:ID>
+      <cac:FinancialInstitutionBranch>
+        <cbc:ID>9999</cbc:ID>
+        <cac:FinancialInstitution>
+          <cbc:ID>TEST</cbc:ID>
+          <cbc:Name>Konto Banken</cbc:Name>
+        </cac:FinancialInstitution>
+      </cac:FinancialInstitutionBranch>
+    </cac:PayeeFinancialAccount>
+  </cac:PaymentMeans>
+  <cac:PaymentTerms>
+    <cbc:ID>1</cbc:ID>
+    <cbc:PaymentMeansID>1</cbc:PaymentMeansID>
+    <cbc:Note>14 dage netto</cbc:Note>
+    <cbc:SettlementDiscountPercent>0.00</cbc:SettlementDiscountPercent>
+    <cbc:Amount currencyID="DKK">352091.25</cbc:Amount>
+    <cac:SettlementPeriod>
+      <cbc:EndDate>2024-04-08</cbc:EndDate>
+    </cac:SettlementPeriod>
+    <cac:PenaltyPeriod>
+      <cbc:StartDate>2024-04-22</cbc:StartDate>
+    </cac:PenaltyPeriod>
+  </cac:PaymentTerms>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="DKK">70418.25</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="DKK">281673.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="DKK">70418.25</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:ID schemeID="urn:oioubl:id:taxcategoryid-1.1" schemeAgencyID="320">StandardRated</cbc:ID>
+        <cbc:Percent>25.00</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+          <cbc:Name>Moms</cbc:Name>
+        </cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="DKK">281673.00</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="DKK">70418.25</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="DKK">352091.25</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="DKK">352091.25</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:InvoiceLine>
+    <cbc:ID>10000</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="EA">263.00</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="DKK">281673.00</cbc:LineExtensionAmount>
+    <cbc:AccountingCost></cbc:AccountingCost>
+    <cac:OrderLineReference>
+      <cbc:LineID>10000</cbc:LineID>
+      <cac:OrderReference>
+        <cbc:ID>VWERAFS</cbc:ID>
+      </cac:OrderReference>
+    </cac:OrderLineReference>
+    <cac:TaxTotal>
+      <cbc:TaxAmount currencyID="DKK">70418.25</cbc:TaxAmount>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="DKK">281673.00</cbc:TaxableAmount>
+        <cbc:TaxAmount currencyID="DKK">70418.25</cbc:TaxAmount>
+        <cac:TaxCategory>
+          <cbc:ID schemeID="urn:oioubl:id:taxcategoryid-1.1" schemeAgencyID="320">StandardRated</cbc:ID>
+          <cbc:Percent>25.00</cbc:Percent>
+          <cac:TaxScheme>
+            <cbc:ID schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+            <cbc:Name>Moms</cbc:Name>
+          </cac:TaxScheme>
+        </cac:TaxCategory>
+      </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:Item>
+      <cbc:Description>SEOUL Gestestol, rod</cbc:Description>
+      <cbc:Name>SEOUL Gestestol, rod</cbc:Name>
+      <cac:SellersItemIdentification>
+        <cbc:ID schemeID="n/a">1988-S</cbc:ID>
+      </cac:SellersItemIdentification>
+    </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="DKK">1071.00</cbc:PriceAmount>
+      <cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity>
+    </cac:Price>
+  </cac:InvoiceLine>
+</Invoice>
