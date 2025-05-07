@@ -31,7 +31,6 @@ codeunit 6123 "E-Document File Entity Buffer"
     local procedure UploadDocument(var EDocument: Record "E-Document"; var EDocumentsFileBuffer: Record "E-Document File Entity Buffer")
     var
         EDocumentService: Record "E-Document Service";
-        EDocLog: Record "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
         EDocImport: Codeunit "E-Doc. Import";
         OutStr: OutStream;
@@ -69,9 +68,7 @@ codeunit 6123 "E-Document File Entity Buffer"
             this.EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
         end;
 
-        EDocLog := this.EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
-        EDocument."Unstructured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No.";
-        EDocument.Modify();
+        this.LogUploadedEDocument(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
     end;
 
     local procedure GetEDocumentService(var EDocumentService: Record "E-Document Service"; var EDocumentsFileBuffer: Record "E-Document File Entity Buffer"): Boolean
@@ -84,15 +81,23 @@ codeunit 6123 "E-Document File Entity Buffer"
     local procedure GetFileContent(var EDocumentsFileBuffer: Record "E-Document File Entity Buffer"; var TempBlob: Codeunit "Temp Blob"; var FileName: Text): Boolean
     var
         InStr: InStream;
-        OutStr: OutStream;
     begin
-        if EDocumentsFileBuffer.Content.HasValue() then begin
-            EDocumentsFileBuffer.CalcFields(Content);
-            EDocumentsFileBuffer.Content.CreateInStream(InStr);
-            TempBlob.CreateOutStream(OutStr);
-            CopyStream(OutStr, InStr);
-            FileName := EDocumentsFileBuffer."File Name";
-            exit(true);
-        end;
+        if not EDocumentsFileBuffer.Content.HasValue() then
+            exit(false);
+
+        EDocumentsFileBuffer.CalcFields(Content);
+        EDocumentsFileBuffer.Content.CreateInStream(InStr);
+        CopyStream(TempBlob.CreateOutStream(), InStr);
+        FileName := EDocumentsFileBuffer."File Name";
+        exit(true);
+    end;
+
+    local procedure LogUploadedEDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; var EDocumentServiceStatus: Enum "E-Document Service Status")
+    var
+        EDocLog: Record "E-Document Log";
+    begin
+        EDocLog := this.EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
+        EDocument."Unstructured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No.";
+        EDocument.Modify(false);
     end;
 }

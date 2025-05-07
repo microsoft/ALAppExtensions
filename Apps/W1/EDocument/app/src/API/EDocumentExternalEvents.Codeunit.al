@@ -6,21 +6,51 @@ namespace Microsoft.eServices.EDocument.API;
 
 using Microsoft.eServices.EDocument;
 using System.Integration;
+using System.Environment;
 
 codeunit 6127 "E-Document External Events"
 {
     var
-        EDocumentsAPIHelper: Codeunit "E-Documents API Helper";
+        EDocumentApiUrlTok: Label 'v2.0/companies(%1)/eDocuments(%2)', Locked = true;
         EventCategory: Enum EventCategory;
+
+    //Copied from codeunit 38500 "External Events Helper"
+    //TODO decide if we should copy procedures/add dependency/move API code
+    internal procedure CreateLink(url: Text; Id: Guid): Text[250]
+    var
+        Link: Text[250];
+    begin
+        Link := GetBaseUrl() + StrSubstNo(url, GetCompanyId(), TrimGuid(Id));
+        exit(Link);
+    end;
+
+    local procedure GetBaseUrl(): Text
+    begin
+        exit(GetUrl(ClientType::Api));
+    end;
+
+    local procedure GetCompanyId(): Text
+    var
+        Company: Record Company;
+    begin
+        Company.Get(CompanyName);
+        exit(TrimGuid(Company.SystemId));
+    end;
+
+    local procedure TrimGuid(Id: Guid): Text
+    begin
+        exit(DelChr(Format(Id), '<>', '{}'));
+    end;
+
+    //Copied from codeunit 38500 "External Events Helper"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Processing", OnAfterModifyEDocumentStatus, '', false, false)]
     local procedure OnAfterModifyEDocumentStatus(var EDocument: Record "E-Document"; var EDocumentServiceStatus: Record "E-Document Service Status")
     var
         Url: Text[250];
         WebClientUrl: Text[250];
-        EDocumentApiUrlTok: Label 'v2.0/companies(%1)/eDocuments(%2)', Locked = true;
     begin
-        Url := EDocumentsAPIHelper.CreateLink(CopyStr(EDocumentApiUrlTok, 1, 250), EDocument.SystemId);
+        Url := this.CreateLink(EDocumentApiUrlTok, EDocument.SystemId);
         WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"E-Document", EDocument), 1, MaxStrLen(WebClientUrl));
 
         this.EDocumentStatusChanged(EDocument.SystemId, EDocument.Status, Url, WebClientUrl);
@@ -31,9 +61,8 @@ codeunit 6127 "E-Document External Events"
     var
         Url: Text[250];
         WebClientUrl: Text[250];
-        EDocumentApiUrlTok: Label 'v2.0/companies(%1)/eDocuments(%2)', Locked = true;
     begin
-        Url := EDocumentsAPIHelper.CreateLink(CopyStr(EDocumentApiUrlTok, 1, 250), EDocument.SystemId);
+        Url := this.CreateLink(EDocumentApiUrlTok, EDocument.SystemId);
         WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"E-Document", EDocument), 1, MaxStrLen(WebClientUrl));
 
         this.EDocumentServiceStatusChanged(EDocument.SystemId, EDocumentService.SystemId, EDocumentServiceStatus.Status, Url, WebClientUrl);
@@ -44,9 +73,8 @@ codeunit 6127 "E-Document External Events"
     var
         Url: Text[250];
         WebClientUrl: Text[250];
-        EDocumentApiUrlTok: Label 'v2.0/companies(%1)/eDocuments(%2)', Locked = true;
     begin
-        Url := EDocumentsAPIHelper.CreateLink(CopyStr(EDocumentApiUrlTok, 1, 250), EDocument.SystemId);
+        Url := this.CreateLink(EDocumentApiUrlTok, EDocument.SystemId);
         WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"E-Document", EDocument), 1, MaxStrLen(WebClientUrl));
 
         this.EDocumentServiceStatusChanged(EDocument.SystemId, EDocumentService.SystemId, EDocumentServiceStatus.Status, Url, WebClientUrl);

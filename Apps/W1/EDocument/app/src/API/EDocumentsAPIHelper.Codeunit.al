@@ -17,7 +17,6 @@ codeunit 6129 "E-Documents API Helper"
         EDocumentLog: Codeunit "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
         EDocumentServiceStatus: Enum "E-Document Service Status";
-        InStr: InStream;
         OutStr: OutStream;
     begin
         TempEDocumentsFileBuffer.DeleteAll(true);
@@ -26,7 +25,7 @@ codeunit 6129 "E-Documents API Helper"
             EDocument.SetFilter("Entry No", EDocumentNoFilter);
             if not EDocument.FindFirst() then
                 exit;
-                
+
             EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
             EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus::Exported);
 
@@ -35,41 +34,12 @@ codeunit 6129 "E-Documents API Helper"
                 TempEDocumentsFileBuffer."Related E-Doc. Entry No." := EDocument."Entry No";
                 TempEDocumentsFileBuffer."Byte Size" := TempBlob.Length();
 
-                TempBlob.CreateInStream(InStr);
                 TempEDocumentsFileBuffer.Content.CreateOutStream(OutStr);
-                CopyStream(OutStr, InStr);
+                CopyStream(OutStr, TempBlob.CreateInStream());
 
                 TempEDocumentsFileBuffer.UpdateRelatedEDocumentId();
                 TempEDocumentsFileBuffer.Insert(true);
             end;
         end;
-    end;
-
-    //Copied from codeunit 38500 "External Events Helper"
-    //TODO decide if we should copy procedures/add dependency/move API code
-    procedure CreateLink(url: Text; Id: Guid): Text[250]
-    var
-        Link: Text[250];
-    begin
-        Link := GetBaseUrl() + StrSubstNo(url, GetCompanyId(), TrimGuid(Id));
-        exit(Link);
-    end;
-
-    local procedure GetBaseUrl(): Text
-    begin
-        exit(GetUrl(ClientType::Api));
-    end;
-
-    local procedure GetCompanyId(): Text
-    var
-        Company: Record Company;
-    begin
-        Company.Get(CompanyName);
-        exit(TrimGuid(Company.SystemId));
-    end;
-
-    local procedure TrimGuid(Id: Guid): Text
-    begin
-        exit(DelChr(Format(Id), '<>', '{}'));
     end;
 }

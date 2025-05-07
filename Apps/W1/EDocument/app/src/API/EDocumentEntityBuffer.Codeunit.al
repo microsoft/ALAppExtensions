@@ -47,7 +47,7 @@ codeunit 6122 "E-Document Entity Buffer"
         EDocumentEntityBuffer: Record "E-Document Entity Buffer";
         RecordExists: Boolean;
     begin
-        EDocumentEntityBuffer.LockTable();
+        EDocumentEntityBuffer.ReadIsolation(IsolationLevel::ReadUncommitted);
         RecordExists := EDocumentEntityBuffer.Get(EDocument."Entry No");
 
         EDocumentEntityBuffer.TransferFields(EDocument, true);
