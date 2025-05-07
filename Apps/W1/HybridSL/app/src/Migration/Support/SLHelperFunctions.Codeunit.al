@@ -984,8 +984,8 @@ codeunit 47023 "SL Helper Functions"
         SLProjectMigrator: Codeunit "SL Project Migrator";
     begin
         SLProjectMigrator.MigrateProjectModule();
-        Session.LogMessage('0000PJD', 'Created Project Data', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.GetTelemetryCategory());
-        this.SetProjectDataCreated();
+        Session.LogMessage('0000PJD', 'Created Project Data', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
+        SetProjectDataCreated();
     end;
 
     internal procedure CheckAndLogErrors()
@@ -1054,10 +1054,10 @@ codeunit 47023 "SL Helper Functions"
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
     begin
         if SLCompanyAdditionalSettings.GetProjectModuleEnabled() then
-            if not this.ProjectDataCreated() then
-                this.CreateProjectData();
+            if not ProjectDataCreated() then
+                CreateProjectData();
 
-        exit(this.SLConfiguration.IsAllPostMigationDataCreated());
+        exit(SLConfiguration.IsAllPostMigationDataCreated());
     end;
 
     internal procedure CheckMigrationStatus()
@@ -1109,15 +1109,15 @@ codeunit 47023 "SL Helper Functions"
 
     internal procedure ProjectDataCreated(): Boolean
     begin
-        this.SLConfiguration.GetSingleInstance();
-        exit(this.SLConfiguration."Project Data Created");
+        SLConfiguration.GetSingleInstance();
+        exit(SLConfiguration."Project Data Created");
     end;
 
     internal procedure SetProjectDataCreated()
     begin
-        this.SLConfiguration.GetSingleInstance();
-        this.SLConfiguration."Project Data Created" := true;
-        this.SLConfiguration.Modify();
+        SLConfiguration.GetSingleInstance();
+        SLConfiguration."Project Data Created" := true;
+        SLConfiguration.Modify();
     end;
 
     [IntegrationEvent(false, false)]
