@@ -145,7 +145,7 @@ codeunit 30163 "Shpfy Order Mapping"
         if OrderHeader."Bill-to Customer No." = '' then begin
             OrderEvents.OnBeforeMapCompany(OrderHeader, IsHandled);
             if not IsHandled then begin
-                OrderHeader."Sell-to Customer No." := CompanyMapping.DoMapping(OrderHeader."Company Id", CustomerTemplateCode, AllowCreateCompany);
+                OrderHeader."Sell-to Customer No." := CompanyMapping.DoMapping(OrderHeader."Company Id", CustomerTemplateCode, AllowCreateCompany); //TODO: JZA possible mapping implementation to Set Sell-to Bill-to from Company Locations
                 OrderHeader."Bill-to Customer No." := OrderHeader."Sell-to Customer No.";
 
                 if (OrderHeader."Bill-to Customer No." = '') and (not Shop."Auto Create Unknown Customers") and (Shop."Default Company No." <> '') then
