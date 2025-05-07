@@ -1,5 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
+using Microsoft.Sales.Customer;
+
 /// <summary>
 /// Table Shpfy Company Location (ID 30151).
 /// </summary>
@@ -116,6 +118,20 @@ table 30151 "Shpfy Company Location"
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Payment Terms".Description where(Id = field("Shpfy Payment Terms Id")));
             ToolTip = 'Specifies the description of the Shopify Payment Term.';
+        }
+        field(18; "Customer No."; Code[20])
+        {
+            Caption = 'Customer No.';
+            DataClassification = CustomerContent;
+            TableRelation = Customer;
+            ToolTip = 'Specifies the customer number, which is used to set the Shopify Orders Sell-to value when importing orders from Shopify.';
+        }
+        field(19; "Bill-to Customer No."; Code[20])
+        {
+            Caption = 'Bill-to Customer No.';
+            DataClassification = CustomerContent;
+            TableRelation = Customer;
+            ToolTip = 'Specifies the customer number, which is used to set the Shopify Orders Bill-to value when importing orders from Shopify.';
         }
     }
     keys

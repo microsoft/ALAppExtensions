@@ -7,10 +7,8 @@ page 30165 "Shpfy Comp. Locations"
 {
     ApplicationArea = All;
     Caption = 'Shopify Company Locations';
-    Editable = false;
     InsertAllowed = false;
     DeleteAllowed = false;
-    ModifyAllowed = false;
     PageType = List;
     SourceTable = "Shpfy Company Location";
     UsageCategory = None;
@@ -21,29 +19,33 @@ page 30165 "Shpfy Comp. Locations"
         {
             repeater(General)
             {
-                field(Id; Rec.Id) { }
+                field(Id; Rec.Id) { Editable = false; }
                 field("Company SystemId"; Rec."Company SystemId")
                 {
+                    Editable = false;
                     Visible = false;
                 }
-                field(Name; Rec.Name) { }
-                field("Company Name"; Rec."Company Name") { }
-                field("Default"; Rec."Default") { }
-                field(Address; Rec.Address) { }
-                field("Address 2"; Rec."Address 2") { }
-                field(Zip; Rec.Zip) { }
-                field(City; Rec.City) { }
-                field("Country/Region Code"; Rec."Country/Region Code") { }
-                field("Phone No."; Rec."Phone No.") { }
-                field("Province Code"; Rec."Province Code") { }
-                field("Province Name"; Rec."Province Name") { }
-                field(Recipient; Rec.Recipient) { }
-                field("Tax Registration Id"; Rec."Tax Registration Id") { }
+                field(Name; Rec.Name) { Editable = false; }
+                field("Company Name"; Rec."Company Name") { Editable = false; }
+                field("Default"; Rec."Default") { Editable = false; }
+                field(Address; Rec.Address) { Editable = false; }
+                field("Address 2"; Rec."Address 2") { Editable = false; }
+                field(Zip; Rec.Zip) { Editable = false; }
+                field(City; Rec.City) { Editable = false; }
+                field("Country/Region Code"; Rec."Country/Region Code") { Editable = false; }
+                field("Phone No."; Rec."Phone No.") { Editable = false; }
+                field("Province Code"; Rec."Province Code") { Editable = false; }
+                field("Province Name"; Rec."Province Name") { Editable = false; }
+                field(Recipient; Rec.Recipient) { Editable = false; }
+                field("Tax Registration Id"; Rec."Tax Registration Id") { Editable = false; }
                 field("Shpfy Payment Terms Id"; Rec."Shpfy Payment Terms Id")
                 {
+                    Editable = false;
                     Visible = false;
                 }
-                field("Shpfy Payment Term"; Rec."Shpfy Payment Term") { }
+                field("Shpfy Payment Term"; Rec."Shpfy Payment Term") { Editable = false; }
+                field("Customer No."; Rec."Customer No.") { }
+                field("Bill-to Customer No."; Rec."Bill-to Customer No.") { }
             }
         }
     }
