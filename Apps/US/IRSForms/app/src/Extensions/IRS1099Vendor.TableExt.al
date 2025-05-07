@@ -19,7 +19,7 @@ tableextension 10042 "IRS 1099 Vendor" extends Vendor
             trigger OnValidate()
             begin
                 IRS1099VendorEmail.CheckEmailForIRS(Rec);
-                IRS1099VendorEmail.PropagateReceiving1099EFormConsentToOpenedFormDocuments(Rec);
+                IRS1099VendorEmail.PropagateReceiving1099EFormConsentToFormDocuments(Rec);
             end;
         }
         field(10031; "FATCA Requirement"; Boolean)
@@ -38,7 +38,7 @@ tableextension 10042 "IRS 1099 Vendor" extends Vendor
                 IRS1099VendorEmail.ClearConsentForEmptyEmail(Rec);
                 if "E-Mail For IRS" <> '' then
                     MailManagement.CheckValidEmailAddresses("E-Mail For IRS");
-                IRS1099VendorEmail.PropagateEmailToOpenedFormDocuments(Rec);
+                IRS1099VendorEmail.PropagateEmailToFormDocuments(Rec);
             end;
         }
 #pragma warning disable AA0232
@@ -66,7 +66,7 @@ tableextension 10042 "IRS 1099 Vendor" extends Vendor
             trigger OnAfterValidate()
             begin
                 IRS1099VendorEmail.ClearConsentForEmptyEmail(Rec);
-                IRS1099VendorEmail.PropagateEmailToOpenedFormDocuments(Rec);
+                IRS1099VendorEmail.PropagateEmailToFormDocuments(Rec);
             end;
         }
     }

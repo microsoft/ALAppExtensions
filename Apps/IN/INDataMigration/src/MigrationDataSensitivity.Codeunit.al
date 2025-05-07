@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 19012 "Migration Data Sensitivity"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]

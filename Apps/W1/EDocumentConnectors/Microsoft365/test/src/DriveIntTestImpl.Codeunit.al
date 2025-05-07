@@ -33,7 +33,7 @@ codeunit 148195 "Drive Int. Test Impl." implements IDocumentReceiver, IDocumentS
     var
         Assert: Codeunit Assert;
     begin
-        Assert.AreNotEqual(EDocument."Document Id", '', 'Document Id must have a value when MarkFetched is called');
+        Assert.AreNotEqual(EDocument."Drive Item Id", '', 'Drive Item Id must have a value when MarkFetched is called');
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]

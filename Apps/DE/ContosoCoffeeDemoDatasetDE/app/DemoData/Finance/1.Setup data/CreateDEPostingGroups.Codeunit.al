@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 11380 "Create DE Posting Groups"
 {
     InherentEntitlements = X;
@@ -33,6 +43,7 @@ codeunit 11380 "Create DE Posting Groups"
     procedure UpdateGenPostingSetup()
     var
         GeneralPostingSetup: Record "General Posting Setup";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
         ContosoGenPostingSetup: Codeunit "Contoso Posting Setup";
         CreateDEGLAccount: Codeunit "Create DE GL Acc.";
         CreatePostingGroup: Codeunit "Create Posting Groups";
@@ -40,6 +51,7 @@ codeunit 11380 "Create DE Posting Groups"
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', NoVATPostingGroup(), '', '', CreateDEGLAccount.CostofMaterials(), CreateDEGLAccount.GoodsforResale(), CreateDEGLAccount.GoodsforResale(), '', '', '', '', '', CreateDEGLAccount.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroup.RetailPostingGroup(), '', '', CreateDEGLAccount.CostofMaterials(), CreateDEGLAccount.GoodsforResale(), CreateDEGLAccount.GoodsforResale(), '', '', '', '', '', CreateDEGLAccount.CostofMaterials(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroup.ServicesPostingGroup(), '', '', CreateDEGLAccount.CostofMaterials(), CreateDEGLAccount.GoodsforResale(), CreateDEGLAccount.GoodsforResale(), '', '', '', '', '', CreateDEGLAccount.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.DomesticPostingGroup(), NoVATPostingGroup(), CreateDEGLAccount.ResaleofGoods(), CreateDEGLAccount.GoodsforResale(), CreateDEGLAccount.CostofMaterials(), CreateDEGLAccount.GoodsforResale(), CreateDEGLAccount.GoodsforResale(), '', CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.DomesticPostingGroup(), CreatePostingGroup.RetailPostingGroup(), CreateDEGLAccount.ResaleofGoods(), CreateDEGLAccount.GoodsforResale(), CreateDEGLAccount.CostofMaterials(), CreateDEGLAccount.GoodsforResale(), CreateDEGLAccount.GoodsforResale(), '', CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroup.DomesticPostingGroup(), CreatePostingGroup.ServicesPostingGroup(), CreateDEGLAccount.SalesofServiceWork(), CreateDEGLAccount.OtherExternalServices(), CreateDEGLAccount.CostofLabor(), CreateDEGLAccount.OtherExternalServices(), CreateDEGLAccount.OtherExternalServices(), '', CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.SalesDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.PurchaseDiscounts(), CreateDEGLAccount.CostofLabor(), '', '');
@@ -53,6 +65,9 @@ codeunit 11380 "Create DE Posting Groups"
 
         GeneralPostingSetup.SetRange("Gen. Prod. Posting Group", CreatePostingGroup.ZeroPostingGroup());
         GeneralPostingSetup.DeleteAll();
+
+        GenProductPostingGroup.Get(CreatePostingGroup.ZeroPostingGroup());
+        GenProductPostingGroup.Delete();
     end;
 
     procedure NoVATPostingGroup(): Code[20]

@@ -24,9 +24,9 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
             Editable = false;
             DataClassification = CustomerContent;
         }
-        field(8056; "Attached to Contract line"; Boolean)
+        field(8056; "Attached to Sub. Contract line"; Boolean)
         {
-            Caption = 'Attached to Contract line';
+            Caption = 'Attached to Subscription Contract line';
             Editable = false;
             FieldClass = FlowField;
             CalcFormula = exist("Billing Line" where("Document Type" = filter(Invoice), "Document No." = field("Document No."), "Document Line No." = field("Line No.")));
@@ -53,6 +53,32 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
         exit(not BillingLine.IsEmpty());
     end;
 
+    internal procedure CreateContractDeferrals(): Boolean
+    var
+        VendorSubscriptionContract: Record "Vendor Subscription Contract";
+        SubscriptionLine: Record "Subscription Line";
+        BillingLine: Record "Billing Line";
+    begin
+        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
+        if not BillingLine.FindFirst() then
+            exit;
+
+        if not SubscriptionLine.Get(BillingLine."Subscription Line Entry No.") then
+            exit;
+
+        case SubscriptionLine."Create Contract Deferrals" of
+            Enum::"Create Contract Deferrals"::"Contract-dependent":
+                begin
+                    VendorSubscriptionContract.Get(BillingLine."Subscription Contract No.");
+                    exit(VendorSubscriptionContract."Create Contract Deferrals");
+                end;
+            Enum::"Create Contract Deferrals"::Yes:
+                exit(true);
+            Enum::"Create Contract Deferrals"::No:
+                exit(false);
+        end;
+    end;
+
     internal procedure IsContractLineAssignable(): Boolean
     var
         Item: Record Item;
@@ -61,7 +87,7 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
             exit;
         if not Item.Get(Rec."No.") then
             exit;
-        exit((Item."Service Commitment Option" in [Enum::"Item Service Commitment Type"::"Service Commitment Item", Enum::"Item Service Commitment Type"::"Invoicing Item"])
+        exit((Item."Subscription Option" in [Enum::"Item Service Commitment Type"::"Service Commitment Item", Enum::"Item Service Commitment Type"::"Invoicing Item"])
                                        and (not Rec.IsLineAttachedToBillingLine()));
     end;
 

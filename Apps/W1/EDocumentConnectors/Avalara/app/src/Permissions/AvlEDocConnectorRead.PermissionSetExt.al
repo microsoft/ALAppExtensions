@@ -7,5 +7,5 @@ using Microsoft.EServices.EDocumentConnector;
 
 permissionsetextension 6372 "Avl. EDoc. Connector - Read" extends "EDocConnector - Read"
 {
-    IncludedPermissionSets = Read;
+    IncludedPermissionSets = "Avalara Read";
 }

@@ -9,7 +9,7 @@ page 8024 "Customer Contracts API"
     EntityName = 'customerContract';
     EntitySetName = 'customerContracts';
     PageType = API;
-    SourceTable = "Customer Contract";
+    SourceTable = "Customer Subscription Contract";
     ODataKeyFields = SystemId;
     Extensible = false;
     Editable = false;
@@ -156,7 +156,15 @@ page 8024 "Customer Contracts API"
                 field(descriptionPreview; Rec."Description Preview")
                 {
                 }
+#if not CLEAN27
                 field(withoutContractDeferrals; Rec."Without Contract Deferrals")
+                {
+                    ObsoleteReason = 'Removed in favor of Create Contract Deferrals.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
+                }
+#endif
+                field(createContractDeferrals; Rec."Create Contract Deferrals")
                 {
                 }
                 field(detailOverview; Rec."Detail Overview")
@@ -200,7 +208,7 @@ page 8024 "Customer Contracts API"
                     Caption = 'customerContractLines', Locked = true;
                     EntityName = 'customerContractLines';
                     EntitySetName = 'customerContractLines';
-                    SubPageLink = "Contract No." = field("No.");
+                    SubPageLink = "Subscription Contract No." = field("No.");
                 }
             }
         }

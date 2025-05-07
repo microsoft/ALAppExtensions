@@ -1,3 +1,21 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Inventory.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.Enums;
+using Microsoft.DemoData.Common;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.HumanResources;
+using Microsoft.DemoData.Jobs;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 17107 "Create AU GL Accounts"
 {
     InherentPermissions = X;
@@ -299,6 +317,7 @@ codeunit 17107 "Create AU GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalPersonnelRelatedItemsName(), '2379');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.ShortTermLiabilitiesTotalName(), '2399');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherLiabilitiesTotalName(), '2530');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherAccruedExpensesAndDeferredIncomeName(), '2950');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalLiabilitiesName(), '2999');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.NetIncomeForTheYearName(), '3045');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalStockholderName(), '3050');

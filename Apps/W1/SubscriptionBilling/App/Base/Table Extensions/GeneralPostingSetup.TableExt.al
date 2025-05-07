@@ -7,27 +7,27 @@ tableextension 8066 "General Posting Setup" extends "General Posting Setup"
 {
     fields
     {
-        field(8051; "Customer Contract Account"; Code[20])
+        field(8051; "Cust. Sub. Contract Account"; Code[20])
         {
-            Caption = 'Customer Contract Account';
+            Caption = 'Customer Subscription Contract Account';
             DataClassification = CustomerContent;
             TableRelation = "G/L Account";
         }
-        field(8052; "Cust. Contr. Deferral Account"; Code[20])
+        field(8052; "Cust. Sub. Contr. Def Account"; Code[20])
         {
-            Caption = 'Customer Contract Deferral Account';
+            Caption = 'Customer Subscription Contract Deferral Account';
             DataClassification = CustomerContent;
             TableRelation = "G/L Account";
         }
-        field(8053; "Vendor Contract Account"; Code[20])
+        field(8053; "Vend. Sub. Contract Account"; Code[20])
         {
-            Caption = 'Vendor Contract Account';
+            Caption = 'Vendor Subscription Contract Account';
             DataClassification = CustomerContent;
             TableRelation = "G/L Account";
         }
-        field(8054; "Vend. Contr. Deferral Account"; Code[20])
+        field(8054; "Vend. Sub. Contr. Def. Account"; Code[20])
         {
-            Caption = 'Vendor Contract Deferral Account';
+            Caption = 'Vendor Subscription Contract Deferral Account';
             DataClassification = CustomerContent;
             TableRelation = "G/L Account";
         }

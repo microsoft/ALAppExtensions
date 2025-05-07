@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2552 "Item Quantities"
 {
     QueryType = Normal;

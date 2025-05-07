@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 4811 "Intrastat Report List"
 {
     ApplicationArea = All;

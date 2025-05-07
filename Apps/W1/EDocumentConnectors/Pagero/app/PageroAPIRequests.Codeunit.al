@@ -102,7 +102,7 @@ codeunit 6363 "Pagero API Requests"
     end;
 
     // https://api.pageroonline.com/document/v1/documents/{id}
-    procedure GetADocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+    procedure GetDocumentByFileId(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
         ExternalConnectionSetup: Record "E-Doc. Ext. Connection Setup";
         PageroAuth: Codeunit "Pagero Auth.";
@@ -176,7 +176,7 @@ codeunit 6363 "Pagero API Requests"
     end;
 
     // https://api.pageroonline.com/document/v1/documents
-    procedure GetAppResponseDocumentsRequest(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+    procedure GetReceivedApplicationResponsesForDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
         ExternalConnectionSetup: Record "E-Doc. Ext. Connection Setup";
         PageroAuth: Codeunit "Pagero Auth.";
@@ -193,7 +193,11 @@ codeunit 6363 "Pagero API Requests"
         HttpRequestMessage.Method('GET');
         EndpointURL :=
             ExternalConnectionSetup."DocumentAPI Url" +
-            '?documentType=ApplicationResponse&direction=Received&showFetchedOnly=false&senderReference=' + EDocument."Document No.";
+            '?documentType=ApplicationResponse' +
+            '&direction=Received' +
+            '&showFetchedOnly=false' +
+            '&referenceDocumentIdentifier=' + EDocument."Document No." +
+            '&companyId=' + ExternalConnectionSetup."Company Id";
         HttpRequestMessage.SetRequestUri(EndpointURL);
 
         exit(HttpClient.Send(HttpRequestMessage, HttpResponseMessage));

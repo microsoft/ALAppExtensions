@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2511 "Purchasing Trx Crdt Memos"
 {
     QueryType = Normal;

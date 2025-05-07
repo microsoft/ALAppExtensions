@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 8049 "General Ledger Setup API"
 {
     APIGroup = 'subsBilling';

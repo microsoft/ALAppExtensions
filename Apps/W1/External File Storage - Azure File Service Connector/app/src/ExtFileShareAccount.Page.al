@@ -16,7 +16,7 @@ page 4570 "Ext. File Share Account"
     Extensible = false;
     InsertAllowed = false;
     PageType = Card;
-    Permissions = tabledata "Ext. File Share Account" = rimd;
+    Permissions = tabledata "Ext. File Share Account" = rmd;
     SourceTable = "Ext. File Share Account";
     UsageCategory = None;
 

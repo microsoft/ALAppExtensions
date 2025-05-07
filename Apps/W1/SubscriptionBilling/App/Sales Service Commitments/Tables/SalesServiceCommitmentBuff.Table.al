@@ -6,9 +6,8 @@ using Microsoft.Finance.SalesTax;
 table 8020 "Sales Service Commitment Buff."
 {
     DataClassification = CustomerContent;
-    Caption = 'Sales Service Commitment Buffer';
+    Caption = 'Sales Subscription Line Buffer';
     TableType = Temporary;
-    Access = Internal;
 
     fields
     {

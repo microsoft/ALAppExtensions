@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -25,17 +25,6 @@ pageextension 31146 "FA Depr. Books Subform CZF" extends "FA Depreciation Books 
                 ApplicationArea = FixedAssets;
                 ToolTip = 'Specifies group code for tax depreciation of assets.';
             }
-#if not CLEAN24
-            field("Default FA Deprec. Book CZF"; Rec."Default FA Depreciation Book")
-            {
-                ApplicationArea = FixedAssets;
-                ToolTip = 'Specifies the default fixed asset depreciation book.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'Replaced by standard page field "Default FA Depreciation Book".';
-            }
-#endif
         }
         addlast(Control1)
         {

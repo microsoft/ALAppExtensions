@@ -1,7 +1,5 @@
 namespace Microsoft.Integration.Shopify;
 
-using Microsoft.Sales.Customer;
-
 /// <summary>
 /// Codeunit Shpfy Company Mapping (ID 30303).
 /// </summary>
@@ -22,57 +20,14 @@ codeunit 30303 "Shpfy Company Mapping"
 
     internal procedure FindMapping(var ShopifyCompany: Record "Shpfy Company"; var TempShopifyCustomer: Record "Shpfy Customer" temporary): Boolean;
     var
-        Customer: Record Customer;
-        ShopifyCustomer: Record "Shpfy Customer";
-        CustomerMapping: Codeunit "Shpfy Customer Mapping";
-        PhoneFilter: Text;
+        CompByEmailPhone: Codeunit "Shpfy Comp. By Email/Phone";
+        IMapping: Interface "Shpfy ICompany Mapping";
     begin
-        if not IsNullGuid(ShopifyCompany."Customer SystemId") then
-            if Customer.GetBySystemId(ShopifyCompany."Customer SystemId") then
-                exit(true)
-            else begin
-                Clear(ShopifyCompany."Customer SystemId");
-                ShopifyCompany.Modify();
-            end;
-
-        if IsNullGuid(ShopifyCompany."Customer SystemId") then begin
-            if TempShopifyCustomer.Email <> '' then begin
-                Customer.SetFilter("E-Mail", '@' + TempShopifyCustomer.Email);
-                if Customer.FindFirst() then begin
-                    ShopifyCompany."Customer SystemId" := Customer.SystemId;
-
-                    if not ShopifyCustomer.Get(TempShopifyCustomer.Id) then begin
-                        ShopifyCustomer.Copy(TempShopifyCustomer);
-                        ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-                        ShopifyCustomer.Insert();
-                    end;
-
-                    ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
-                    ShopifyCompany.Modify();
-                    exit(true);
-                end;
-            end;
-            if TempShopifyCustomer."Phone No." <> '' then begin
-                PhoneFilter := CustomerMapping.CreatePhoneFilter(TempShopifyCustomer."Phone No.");
-                if PhoneFilter <> '' then begin
-                    Clear(Customer);
-                    Customer.SetFilter("Phone No.", PhoneFilter);
-                    if Customer.FindFirst() then begin
-                        ShopifyCompany."Customer SystemId" := Customer.SystemId;
-
-                        if not ShopifyCustomer.Get(TempShopifyCustomer.Id) then begin
-                            ShopifyCustomer.Copy(TempShopifyCustomer);
-                            ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-                            ShopifyCustomer.Insert();
-                        end;
-
-                        ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
-                        ShopifyCompany.Modify();
-                        exit(true);
-                    end;
-                end;
-            end;
-        end;
+        IMapping := Shop."Company Mapping Type";
+        if IMapping is "Shpfy IFind Company Mapping" then
+            exit((IMapping as "Shpfy IFind Company Mapping").FindMapping(ShopifyCompany, TempShopifyCustomer))
+        else
+            CompByEmailPhone.FindMapping(ShopifyCompany, TempShopifyCustomer);
     end;
 
     internal procedure SetShop(Code: Code[20])

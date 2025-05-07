@@ -4,14 +4,14 @@ report 8004 "Overview Of Contract Comp"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    Caption = 'Overview of contract components';
+    Caption = 'Overview of Subscription Contract components';
     DefaultRenderingLayout = "OverviewOfContractComponents.xlsx";
     ExcelLayoutMultipleDataSheets = true;
 
     dataset
     {
 
-        dataitem(CustomerContract; "Customer Contract")
+        dataitem(CustomerContract; "Customer Subscription Contract")
         {
             RequestFilterFields = "No.", "Sell-to Customer No.", "Contract Type", "Salesperson Code", "Assigned User ID";
             PrintOnlyIfDetail = true;
@@ -20,24 +20,24 @@ report 8004 "Overview Of Contract Comp"
             column(ContractNo; "No.") { }
             column(ContractDescription; "Description Preview") { }
             column(ContractType; ContractType.GetDescription("Contract Type")) { }
-            dataitem(ServiceCommitment; "Service Commitment")
+            dataitem(ServiceCommitment; "Subscription Line")
             {
-                RequestFilterFields = "Service Start Date", "Service End Date", "Cancellation Possible Until", "Term Until";
-                DataItemLink = "Contract No." = field("No.");
+                RequestFilterFields = "Subscription Line Start Date", "Subscription Line End Date", "Cancellation Possible Until", "Term Until";
+                DataItemLink = "Subscription Contract No." = field("No.");
                 DataItemTableView = where(Partner = filter("Service Partner"::Customer));
-                column(ServiceObjectNo; "Service Object No.") { IncludeCaption = true; }
-                column(ServiceObjectDescription; "Service Object Description") { IncludeCaption = true; }
+                column(ServiceObjectNo; "Subscription Header No.") { IncludeCaption = true; }
+                column(ServiceObjectDescription; "Subscription Description") { IncludeCaption = true; }
                 column(UniqueAttribute; ServiceObject.GetPrimaryAttributeValue()) { }
                 column(ServiceCommitmentDescription; Description) { }
-                column(ServiceStartDate; "Service Start Date") { IncludeCaption = true; }
-                column(ServiceEndDate; "Service End Date") { IncludeCaption = true; }
+                column(ServiceStartDate; "Subscription Line Start Date") { IncludeCaption = true; }
+                column(ServiceEndDate; "Subscription Line End Date") { IncludeCaption = true; }
                 column(NextBillingDate; "Next Billing Date") { IncludeCaption = true; }
                 column(CustomerReference; ServiceObject."Customer Reference") { IncludeCaption = true; }
                 column(SerialNo; ServiceObject."Serial No.") { IncludeCaption = true; }
-                column(Quantity; "Quantity Decimal") { IncludeCaption = true; }
+                column(Quantity; Quantity) { IncludeCaption = true; }
                 column(Price; Price) { IncludeCaption = true; }
                 column(DiscountPct; "Discount %") { IncludeCaption = true; }
-                column(ServiceAmount; "Service Amount") { IncludeCaption = true; }
+                column(ServiceAmount; Amount) { IncludeCaption = true; }
 
                 trigger OnPreDataItem()
                 begin
@@ -47,7 +47,7 @@ report 8004 "Overview Of Contract Comp"
 
                 trigger OnAfterGetRecord()
                 begin
-                    if not ServiceObject.Get("Service Object No.") then
+                    if not ServiceObject.Get("Subscription Header No.") then
                         Clear(ServiceObject);
                 end;
             }
@@ -101,7 +101,7 @@ report 8004 "Overview Of Contract Comp"
         CustomerNameLbl = 'Customer Name';
         ContractNoLbl = 'Contract No.';
         ContractTypeLbl = 'Contract Type';
-        ContractDescriptionLbl = 'Contract Description';
+        ContractDescriptionLbl = 'Subscription Contract Description';
         ServiceCommitmentDescriptionLbl = 'Service Commitment Description';
         OverviewOfContractComponents = 'Overview of Contract Components';
         ContractComponents = 'Contract Components';
@@ -112,8 +112,8 @@ report 8004 "Overview Of Contract Comp"
     }
 
     var
-        ContractType: Record "Contract Type";
-        ServiceObject: Record "Service Object";
+        ContractType: Record "Subscription Contract Type";
+        ServiceObject: Record "Subscription Header";
         ShowClosedContractLines: Boolean;
         IncludeInactiveCustomerContracts: Boolean;
 

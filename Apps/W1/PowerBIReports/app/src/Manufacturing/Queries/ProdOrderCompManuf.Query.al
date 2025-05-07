@@ -19,44 +19,21 @@ query 36988 "Prod. Order Comp. - Manuf."
     {
         dataitem(ProdOrderComponent; "Prod. Order Component")
         {
-            column(prodOrderStatus; Status)
-            {
-            }
-            column(prodOrderNo; "Prod. Order No.")
-            {
-            }
-            column(prodOrderLineNo; "Prod. Order Line No.")
-            {
-            }
-            column(itemNo; "Item No.")
-            {
-            }
-            column(locationCode; "Location Code")
-            {
-            }
-            column(expectedQtyBase; "Expected Qty. (Base)")
-            {
-                Method = Sum;
-            }
-            column(remainingQtyBase; "Remaining Qty. (Base)")
-            {
-                Method = Sum;
-            }
-            column(dueDate; "Due Date")
-            {
-            }
-            column(routingLinkCode; "Routing Link Code")
-            {
-            }
-            column(dimensionSetID; "Dimension Set ID")
-            {
-            }
+            column(prodOrderStatus; Status) { }
+            column(prodOrderNo; "Prod. Order No.") { }
+            column(prodOrderLineNo; "Prod. Order Line No.") { }
+            column(itemNo; "Item No.") { }
+            column(locationCode; "Location Code") { }
+            column(expectedQtyBase; "Expected Qty. (Base)") { }
+            column(remainingQtyBase; "Remaining Qty. (Base)") { }
+            column(dueDate; "Due Date") { }
+            column(routingLinkCode; "Routing Link Code") { }
+            column(dimensionSetID; "Dimension Set ID") { }
+            column(costAmount; "Cost Amount") { }
             dataitem(Location; Location)
             {
                 DataItemLink = Code = ProdOrderComponent."Location Code";
-                column(locationName; Name)
-                {
-                }
+                column(locationName; Name) { }
             }
         }
     }

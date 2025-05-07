@@ -6,12 +6,42 @@
     },
     {
         "codeunitId": 133502,
-        "CodeunitName": "EDocCopilotPOAccuacy",
+        "CodeunitName": "EDocCopilotPOAccuracy",
         "Method": "*"
     },
     {
         "codeunitId": 148191,
         "CodeunitName": "Integration Tests",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 133508,
+        "CodeunitName": "EDocLineMatchAccPromptInj",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 133509,
+        "CodeunitName": "EDoc. Line Match Acc. Accuracy",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 133519,
+        "CodeunitName": "EDoc. Line Match Acc. Ground",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 133527,
+        "CodeunitName": "EDocCopilotPOUPIAHarms",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 133528,
+        "CodeunitName": "EDocCopilotPOGeneralHarms",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139883,
+        "CodeunitName": "E-Doc Process Test",
         "Method": "*"
     }
 ]

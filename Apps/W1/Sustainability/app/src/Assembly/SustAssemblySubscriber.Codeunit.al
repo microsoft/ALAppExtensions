@@ -7,8 +7,6 @@ using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.Journal;
-using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Setup;
 
 codeunit 6255 "Sust. Assembly Subscriber"
@@ -104,35 +102,26 @@ codeunit 6255 "Sust. Assembly Subscriber"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnPostHeaderOnAfterPostItemOutput', '', false, false)]
     local procedure OnPostHeaderOnAfterPostItemOutput(var AssemblyHeader: Record "Assembly Header"; var HeaderQtyBase: Decimal)
-    var
-        PostedAssemblyHeader: Record "Posted Assembly Header";
     begin
-        if PostedAssemblyHeader.Get(AssemblyHeader."Posting No.") then
-            PostSustainabilityLineForOutput(AssemblyHeader, PostedAssemblyHeader."Posting Date", HeaderQtyBase, PostedAssemblyHeader."Source Code", AssemblyHeader."Posting No.");
+        UpdatePostedSustainabilityTotalCO2eOnAssemblyHeader(AssemblyHeader, HeaderQtyBase);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnBeforeAssemblyLineModify', '', false, false)]
     local procedure OnBeforeAssemblyLineModify(var AssemblyLine: Record "Assembly Line"; QtyToConsumeBase: Decimal)
-    var
-        AssemblyHeader: Record "Assembly Header";
-        PostedAssemblyHeader: Record "Posted Assembly Header";
     begin
-        if AssemblyHeader.Get(AssemblyLine."Document Type", AssemblyLine."Document No.") and PostedAssemblyHeader.Get(AssemblyHeader."Posting No.") then
-            PostSustainabilityLineForConsumption(AssemblyLine, PostedAssemblyHeader."Posting Date", QtyToConsumeBase, PostedAssemblyHeader."Source Code", AssemblyHeader."Posting No.");
+        UpdatePostedSustainabilityTotalCO2eOnAssemblyLine(AssemblyLine, QtyToConsumeBase);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnUndoPostHeaderOnAfterTransferFields', '', false, false)]
     local procedure OnUndoPostHeaderOnAfterTransferFields(PostedAssemblyHeader: Record "Posted Assembly Header"; var AssemblyHeader: Record "Assembly Header")
     begin
-        if AssemblyHeader."Quantity (Base)" <> 0 then
-            PostSustainabilityLineForOutput(AssemblyHeader, PostedAssemblyHeader."Posting Date", -AssemblyHeader."Quantity (Base)", PostedAssemblyHeader."Source Code", PostedAssemblyHeader."No.");
+        UpdatePostedSustainabilityTotalCO2eOnAssemblyHeader(AssemblyHeader, -AssemblyHeader."Quantity (Base)");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnUndoPostLinesOnAfterTransferFields', '', false, false)]
     local procedure OnUndoPostLinesOnAfterTransferFields(var AssemblyLine: Record "Assembly Line"; PostedAssemblyHeader: Record "Posted Assembly Header")
     begin
-        if AssemblyLine."Quantity (Base)" <> 0 then
-            PostSustainabilityLineForConsumption(AssemblyLine, PostedAssemblyHeader."Posting Date", -AssemblyLine."Quantity (Base)", PostedAssemblyHeader."Source Code", PostedAssemblyHeader."No.");
+        UpdatePostedSustainabilityTotalCO2eOnAssemblyLine(AssemblyLine, -AssemblyLine."Quantity (Base)");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnAfterPostedAssemblyHeaderModify', '', false, false)]
@@ -210,10 +199,8 @@ codeunit 6255 "Sust. Assembly Subscriber"
         PostedEmissionCO2e := (CO2ePerUnit * Abs(Quantity) * QtyPerUnitOfMeasure) * Sign;
     end;
 
-    local procedure PostSustainabilityLineForOutput(var AssemblyHeader: Record "Assembly Header"; PostingDate: Date; QtyToOutputBase: Decimal; SrcCode: Code[10]; GenJnlLineDocNo: Code[20])
+    local procedure UpdatePostedSustainabilityTotalCO2eOnAssemblyHeader(var AssemblyHeader: Record "Assembly Header"; QtyToOutputBase: Decimal)
     var
-        SustainabilityJnlLine: Record "Sustainability Jnl. Line";
-        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
         GHGCredit: Boolean;
         CO2eToPost: Decimal;
         Sign: Integer;
@@ -225,35 +212,12 @@ codeunit 6255 "Sust. Assembly Subscriber"
 
         Sign := GetPostingSign(QtyToOutputBase, 0, GHGCredit);
         CO2eToPost := AssemblyHeader."CO2e per Unit" * QtyToOutputBase * AssemblyHeader."Qty. per Unit of Measure" * Sign;
-        if not CanPostSustainabilityJnlLine(AssemblyHeader."Sust. Account No.", AssemblyHeader."Sust. Account Category", AssemblyHeader."Sust. Account Subcategory", CO2eToPost) then
-            exit;
-
-        SustainabilityJnlLine.Init();
-        SustainabilityJnlLine."Source Code" := SrcCode;
-        SustainabilityJnlLine.Validate("Posting Date", PostingDate);
-        if GHGCredit then
-            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"GHG Credit")
-        else
-            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::Invoice);
-
-        SustainabilityJnlLine.Validate("Document No.", GenJnlLineDocNo);
-        SustainabilityJnlLine.Validate("Account No.", AssemblyHeader."Sust. Account No.");
-        SustainabilityJnlLine.Validate("Account Category", AssemblyHeader."Sust. Account Category");
-        SustainabilityJnlLine.Validate("Account Subcategory", AssemblyHeader."Sust. Account Subcategory");
-        SustainabilityJnlLine.Validate("Unit of Measure", AssemblyHeader."Unit of Measure Code");
-        SustainabilityJnlLine."Dimension Set ID" := AssemblyHeader."Dimension Set ID";
-        SustainabilityJnlLine."Shortcut Dimension 1 Code" := AssemblyHeader."Shortcut Dimension 1 Code";
-        SustainabilityJnlLine."Shortcut Dimension 2 Code" := AssemblyHeader."Shortcut Dimension 2 Code";
-        SustainabilityJnlLine.Validate("CO2e Emission", CO2eToPost);
-        SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine, AssemblyHeader);
 
         AssemblyHeader."Posted Total CO2e" += CO2eToPost;
     end;
 
-    local procedure PostSustainabilityLineForConsumption(var AssemblyLine: Record "Assembly Line"; PostingDate: Date; QtyToConsumeBase: Decimal; SrcCode: Code[10]; GenJnlLineDocNo: Code[20])
+    local procedure UpdatePostedSustainabilityTotalCO2eOnAssemblyLine(var AssemblyLine: Record "Assembly Line"; QtyToConsumeBase: Decimal)
     var
-        SustainabilityJnlLine: Record "Sustainability Jnl. Line";
-        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
         GHGCredit: Boolean;
         CO2eToPost: Decimal;
         Sign: Integer;
@@ -266,30 +230,6 @@ codeunit 6255 "Sust. Assembly Subscriber"
 
         Sign := GetPostingSign(0, QtyToConsumeBase, GHGCredit);
         CO2eToPost := AssemblyLine."CO2e per Unit" * QtyToConsumeBase * AssemblyLine."Qty. per Unit of Measure" * Sign;
-        if not CanPostSustainabilityJnlLine(AssemblyLine."Sust. Account No.", AssemblyLine."Sust. Account Category", AssemblyLine."Sust. Account Subcategory", CO2eToPost) then
-            exit;
-
-        SustainabilityJnlLine.Init();
-        SustainabilityJnlLine."Journal Template Name" := '';
-        SustainabilityJnlLine."Journal Batch Name" := '';
-        SustainabilityJnlLine."Source Code" := SrcCode;
-        SustainabilityJnlLine.Validate("Posting Date", PostingDate);
-        if GHGCredit then
-            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"GHG Credit")
-        else
-            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::Invoice);
-
-        SustainabilityJnlLine.Validate("Document No.", GenJnlLineDocNo);
-        SustainabilityJnlLine.Validate("Account No.", AssemblyLine."Sust. Account No.");
-        SustainabilityJnlLine.Validate("Account Category", AssemblyLine."Sust. Account Category");
-        SustainabilityJnlLine.Validate("Account Subcategory", AssemblyLine."Sust. Account Subcategory");
-        SustainabilityJnlLine.Validate("Unit of Measure", AssemblyLine."Unit of Measure Code");
-        SustainabilityJnlLine."Dimension Set ID" := AssemblyLine."Dimension Set ID";
-        SustainabilityJnlLine."Shortcut Dimension 1 Code" := AssemblyLine."Shortcut Dimension 1 Code";
-        SustainabilityJnlLine."Shortcut Dimension 2 Code" := AssemblyLine."Shortcut Dimension 2 Code";
-        SustainabilityJnlLine.Validate("CO2e Emission", CO2eToPost);
-        SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine, AssemblyLine);
-
         AssemblyLine."Posted Total CO2e" += CO2eToPost;
     end;
 

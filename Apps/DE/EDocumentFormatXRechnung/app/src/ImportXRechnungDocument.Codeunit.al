@@ -128,18 +128,19 @@ codeunit 13915 "Import XRechnung Document"
         Vendor: Record Vendor;
         VendorName, VendorAddress : Text;
         VATRegistrationNo: Text[20];
+        GLN: Text[13];
         VendorNo: Code[20];
     begin
         VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(VATRegistrationNo));
 
         if VATRegistrationNo = '' then
-            if GetAttributeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID/@schemeID') in ['EM', '0198', '9930'] then
-                VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID'), 1, MaxStrLen(VATRegistrationNo));
+            VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID'), 1, MaxStrLen(VATRegistrationNo));
 
-        VendorNo := EDocumentImportHelper.FindVendor('', '', VATRegistrationNo);
+        GLN := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID'), 1, MaxStrLen(GLN));
+        VendorNo := EDocumentImportHelper.FindVendor('', GLN, VATRegistrationNo);
         if VendorNo = '' then begin
-            VendorName := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(VATRegistrationNo));
-            VendorAddress := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(VATRegistrationNo));
+            VendorName := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(VendorName));
+            VendorAddress := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(VendorAddress));
             VendorNo := EDocumentImportHelper.FindVendorByNameAndAddress(VendorName, VendorAddress);
             EDocument."Bill-to/Pay-to Name" := CopyStr(VendorName, 1, MaxStrLen(EDocument."Bill-to/Pay-to Name"));
         end;
@@ -171,7 +172,6 @@ codeunit 13915 "Import XRechnung Document"
     var
         LineNo: Integer;
     begin
-
         TempXMLBuffer.Reset();
         TempXMLBuffer.SetFilter(Path, '/' + DocumentType + '/cac:AllowanceCharge*');
 
@@ -194,12 +194,11 @@ codeunit 13915 "Import XRechnung Document"
                         end;
                     '/' + DocumentType + '/cac:AllowanceCharge/cbc:Amount':
                         if TempXMLBuffer.Value <> '' then begin
-                            Evaluate(PurchaseLine."Direct Unit Cost", TempXMLBuffer.Value);
-                            Evaluate(PurchaseLine.Amount, TempXMLBuffer.Value);
+                            Evaluate(PurchaseLine."Direct Unit Cost", TempXMLBuffer.Value, 9);
+                            Evaluate(PurchaseLine.Amount, TempXMLBuffer.Value, 9);
                         end;
                     '/' + DocumentType + '/cac:AllowanceCharge/cbc:AllowanceChargeReason':
                         PurchaseLine.Description := CopyStr(TempXMLBuffer.Value, 1, MaxStrLen(PurchaseLine.Description));
-
                 end;
             until TempXMLBuffer.Next() = 0;
 
@@ -238,7 +237,7 @@ codeunit 13915 "Import XRechnung Document"
         CurrencyCode: Text[10];
     begin
         EDocument."Document Type" := EDocument."Document Type"::"Purchase Invoice";
-        EDocument."Incoming E-Document No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cbc:ID'), 1, MaxStrLen(EDocument."Document No."));
+        EDocument."Incoming E-Document No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cbc:ID'), 1, MaxStrLen(EDocument."Incoming E-Document No."));
         ParseAccountingSupplierParty(EDocument, TempXMLBuffer, DocumentType);
         ParseAccountingCustomerParty(EDocument, TempXMLBuffer, DocumentType);
 
@@ -248,8 +247,8 @@ codeunit 13915 "Import XRechnung Document"
         IssueDate := GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cbc:IssueDate');
         if IssueDate <> '' then
             Evaluate(EDocument."Document Date", IssueDate, 9);
-        Evaluate(EDocument."Amount Excl. VAT", GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount'));
-        Evaluate(EDocument."Amount Incl. VAT", GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount'));
+        Evaluate(EDocument."Amount Excl. VAT", GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount'), 9);
+        Evaluate(EDocument."Amount Incl. VAT", GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount'), 9);
 
         CurrencyCode := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cbc:DocumentCurrencyCode'), 1, MaxStrLen(EDocument."Currency Code"));
         GeneralLedgerSetup.Get();
@@ -335,7 +334,7 @@ codeunit 13915 "Import XRechnung Document"
                 end;
             '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount':
                 if TempXMLBuffer.Value <> '' then
-                    Evaluate(PurchaseHeader."Invoice Discount Value", TempXMLBuffer.Value);
+                    Evaluate(PurchaseHeader."Invoice Discount Value", TempXMLBuffer.Value, 9);
             //Lines
             '/' + DocumentType + '/cac:InvoiceLine':
                 begin
@@ -350,15 +349,17 @@ codeunit 13915 "Import XRechnung Document"
                 end;
             '/' + DocumentType + '/cac:InvoiceLine/cbc:InvoicedQuantity':
                 if TempXMLBuffer.Value <> '' then
-                    Evaluate(PurchaseLine.Quantity, TempXMLBuffer.Value);
+                    Evaluate(PurchaseLine.Quantity, TempXMLBuffer.Value, 9);
             '/' + DocumentType + '/cac:InvoiceLine/cbc:InvoicedQuantity/@unitCode':
                 PurchaseLine."Unit of Measure Code" := CopyStr(TempXMLBuffer.Value, 1, MaxStrLen(PurchaseLine."Unit of Measure Code"));
             '/' + DocumentType + '/cac:InvoiceLine/cbc:LineExtensionAmount':
                 begin
                     if TempXMLBuffer.Value <> '' then
-                        Evaluate(PurchaseLine.Amount, TempXMLBuffer.Value);
+                        Evaluate(PurchaseLine.Amount, TempXMLBuffer.Value, 9);
                     PurchaseLine."VAT Base Amount" := PurchaseLine.Amount;
                 end;
+            '/' + DocumentType + '/cac:InvoiceLine/cac:AllowanceCharge/cbc:MultiplierFactorNumeric':
+                Evaluate(PurchaseLine."Line Discount %", TempXMLBuffer.Value, 9);
             '/' + DocumentType + '/cac:InvoiceLine/cac:Item/cbc:Description':
                 PurchaseLine."Description 2" := CopyStr(TempXMLBuffer.Value, 1, MaxStrLen(PurchaseLine."Description 2"));
             '/' + DocumentType + '/cac:InvoiceLine/cac:Item/cbc:Name':
@@ -369,10 +370,10 @@ codeunit 13915 "Import XRechnung Document"
                 PurchaseLine."No." := CopyStr(TempXMLBuffer.Value, 1, MaxStrLen(PurchaseLine."No."));
             '/' + DocumentType + '/cac:InvoiceLine/cac:Item/cac:ClassifiedTaxCategory/cbc:Percent':
                 if TempXMLBuffer.Value <> '' then
-                    Evaluate(PurchaseLine."VAT %", TempXMLBuffer.Value);
+                    Evaluate(PurchaseLine."VAT %", TempXMLBuffer.Value, 9);
             '/' + DocumentType + '/cac:InvoiceLine/cac:Price/cbc:PriceAmount':
                 if TempXMLBuffer.Value <> '' then
-                    Evaluate(PurchaseLine."Direct Unit Cost", TempXMLBuffer.Value);
+                    Evaluate(PurchaseLine."Direct Unit Cost", TempXMLBuffer.Value, 9);
             '/' + DocumentType + '/cac:AdditionalDocumentReference/cbc:ID':
                 begin
                     AddAttachment(DocumentAttachment, DocumentAttachmentData, EDocument);
@@ -399,7 +400,7 @@ codeunit 13915 "Import XRechnung Document"
         CurrencyCode: Text[10];
     begin
         EDocument."Document Type" := EDocument."Document Type"::"Purchase Credit Memo";
-        EDocument."Incoming E-Document No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cbc:ID'), 1, MaxStrLen(EDocument."Document No."));
+        EDocument."Incoming E-Document No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cbc:ID'), 1, MaxStrLen(EDocument."Incoming E-Document No."));
         ParseAccountingSupplierParty(EDocument, TempXMLBuffer, DocumentType);
         ParseAccountingCustomerParty(EDocument, TempXMLBuffer, DocumentType);
 
@@ -409,8 +410,8 @@ codeunit 13915 "Import XRechnung Document"
         IssueDate := GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cbc:IssueDate');
         if IssueDate <> '' then
             Evaluate(EDocument."Document Date", IssueDate, 9);
-        Evaluate(EDocument."Amount Excl. VAT", GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount'));
-        Evaluate(EDocument."Amount Incl. VAT", GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount'));
+        Evaluate(EDocument."Amount Excl. VAT", GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount'), 9);
+        Evaluate(EDocument."Amount Incl. VAT", GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount'), 9);
 
         CurrencyCode := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cbc:DocumentCurrencyCode'), 1, MaxStrLen(EDocument."Currency Code"));
         GeneralLedgerSetup.Get();
@@ -470,7 +471,7 @@ codeunit 13915 "Import XRechnung Document"
                 end;
             '/' + DocumentType + '/cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount':
                 if TempXMLBuffer.Value <> '' then
-                    Evaluate(PurchaseHeader."Invoice Discount Value", TempXMLBuffer.Value);
+                    Evaluate(PurchaseHeader."Invoice Discount Value", TempXMLBuffer.Value, 9);
             //Lines
             '/' + DocumentType + '/cac:CreditNoteLine':
                 begin
@@ -485,15 +486,17 @@ codeunit 13915 "Import XRechnung Document"
                 end;
             '/' + DocumentType + '/cac:CreditNoteLine/cbc:CreditedQuantity':
                 if TempXMLBuffer.Value <> '' then
-                    Evaluate(PurchaseLine.Quantity, TempXMLBuffer.Value);
+                    Evaluate(PurchaseLine.Quantity, TempXMLBuffer.Value, 9);
             '/' + DocumentType + '/cac:CreditNoteLine/cbc:CreditedQuantity/@unitCode':
                 PurchaseLine."Unit of Measure Code" := CopyStr(TempXMLBuffer.Value, 1, MaxStrLen(PurchaseLine."Unit of Measure Code"));
             '/' + DocumentType + '/cac:CreditNoteLine/cbc:LineExtensionAmount':
                 begin
                     if TempXMLBuffer.Value <> '' then
-                        Evaluate(PurchaseLine.Amount, TempXMLBuffer.Value);
+                        Evaluate(PurchaseLine.Amount, TempXMLBuffer.Value, 9);
                     PurchaseLine."VAT Base Amount" := PurchaseLine.Amount;
                 end;
+            '/' + DocumentType + '/cac:CreditNoteLine/cac:AllowanceCharge/cbc:MultiplierFactorNumeric':
+                Evaluate(PurchaseLine."Line Discount %", TempXMLBuffer.Value, 9);
             '/' + DocumentType + '/cac:CreditNoteLine/cac:Item/cbc:Description':
                 PurchaseLine."Description 2" := CopyStr(TempXMLBuffer.Value, 1, MaxStrLen(PurchaseLine."Description 2"));
             '/' + DocumentType + '/cac:CreditNoteLine/cac:Item/cbc:Name':
@@ -504,10 +507,10 @@ codeunit 13915 "Import XRechnung Document"
                 PurchaseLine."No." := CopyStr(TempXMLBuffer.Value, 1, MaxStrLen(PurchaseLine."No."));
             '/' + DocumentType + '/cac:CreditNoteLine/cac:Item/cac:ClassifiedTaxCategory/cbc:Percent':
                 if TempXMLBuffer.Value <> '' then
-                    Evaluate(PurchaseLine."VAT %", TempXMLBuffer.Value);
+                    Evaluate(PurchaseLine."VAT %", TempXMLBuffer.Value, 9);
             '/' + DocumentType + '/cac:CreditNoteLine/cac:Price/cbc:PriceAmount':
                 if TempXMLBuffer.Value <> '' then
-                    Evaluate(PurchaseLine."Direct Unit Cost", TempXMLBuffer.Value);
+                    Evaluate(PurchaseLine."Direct Unit Cost", TempXMLBuffer.Value, 9);
             '/' + DocumentType + '/cac:AdditionalDocumentReference/cbc:ID':
                 begin
                     AddAttachment(DocumentAttachment, DocumentAttachmentData, EDocument);

@@ -56,6 +56,7 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Registered Store New" = R,
         tabledata "Shpfy Refund Header" = R,
         tabledata "Shpfy Refund Line" = R,
+        tabledata "Shpfy Refund Shipping Line" = R,
         tabledata "Shpfy Return Header" = R,
         tabledata "Shpfy Return Line" = R,
         tabledata "Shpfy Sales Channel" = R,

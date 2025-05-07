@@ -15,7 +15,7 @@ codeunit 30199 "Shpfy Authentication Mgt."
 
     var
         // https://shopify.dev/api/usage/access-scopes
-        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_files,write_merchant_managed_fulfillment_orders,write_fulfillments,write_inventory,read_locations,write_products,write_shipping,read_shopify_payments_disputes,read_shopify_payments_payouts,write_returns,write_translations,write_third_party_fulfillment_orders,write_order_edits,write_companies,write_publications,write_payment_terms,write_draft_orders,read_locales', Locked = true;
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_files,write_merchant_managed_fulfillment_orders,write_fulfillments,write_inventory,read_locations,write_products,write_shipping,read_shopify_payments_disputes,read_shopify_payments_payouts,write_returns,write_translations,write_third_party_fulfillment_orders,write_order_edits,write_companies,write_publications,write_payment_terms,write_draft_orders,read_locales,read_shopify_payments_accounts', Locked = true;
         ShopifyAPIKeyAKVSecretNameLbl: Label 'ShopifyApiKey', Locked = true;
         ShopifyAPISecretAKVSecretNameLbl: Label 'ShopifyApiSecret', Locked = true;
         MissingAPIKeyTelemetryTxt: Label 'The api key has not been initialized.', Locked = true;
@@ -200,6 +200,15 @@ codeunit 30199 "Shpfy Authentication Mgt."
         PatternLbl: Label '^[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com$', Locked = true;
     begin
         exit(Regex.IsMatch(Hostname, PatternLbl))
+    end;
+
+    procedure CorrectShopUrl(var ShopUrl: Text[250])
+    begin
+        if not ShopUrl.ToLower().StartsWith('https://') then
+            ShopUrl := CopyStr('https://' + ShopUrl, 1, MaxStrLen(ShopUrl));
+
+        if ShopUrl.ToLower().StartsWith('https://admin.shopify.com/store/') then
+            ShopUrl := CopyStr('https://' + ShopUrl.Replace('https://admin.shopify.com/store/', '').Split('/').Get(1) + '.myshopify.com', 1, MaxStrLen(ShopUrl));
     end;
 
     internal procedure EnableHttpRequestForShopifyConnector(ErrorInfo: ErrorInfo)

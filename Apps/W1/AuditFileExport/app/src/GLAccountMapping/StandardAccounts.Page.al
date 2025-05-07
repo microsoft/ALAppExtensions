@@ -19,11 +19,15 @@ page 5263 "Standard Accounts"
         {
             repeater(Groupings)
             {
+                field(Type; Rec.Type)
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the type of standard general ledger accounts that is used for mapping.';
+                }
                 field("Category No."; Rec."Category No.")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the category of standard general ledger accounts that is used for mapping.';
-                    Visible = false;
                 }
                 field("No."; Rec."No.")
                 {

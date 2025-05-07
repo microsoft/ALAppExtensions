@@ -193,7 +193,9 @@ table 18633 "Fixed Asset Shift"
             ObsoleteReason = 'New field introduced as Fixed Asset Posting Group';
 #if CLEAN26
             ObsoleteState = Removed;
+#pragma warning disable AS0072
             ObsoleteTag = '26.0';
+#pragma warning restore AS0072
 #else
             ObsoleteState = Pending;
             ObsoleteTag = '23.0';

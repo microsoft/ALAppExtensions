@@ -2,7 +2,6 @@ namespace Microsoft.Sustainability.Manufacturing;
 
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
-using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Posting;
 using Microsoft.Manufacturing.Capacity;
 using Microsoft.Manufacturing.Document;
@@ -11,9 +10,6 @@ using Microsoft.Manufacturing.MachineCenter;
 using Microsoft.Manufacturing.ProductionBOM;
 using Microsoft.Manufacturing.Routing;
 using Microsoft.Manufacturing.WorkCenter;
-using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.Journal;
-using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Setup;
 
 codeunit 6254 "Sust. Manufacturing Subscriber"
@@ -193,13 +189,6 @@ codeunit 6254 "Sust. Manufacturing Subscriber"
         UpdateEmissionOnItemJournalLineFromProdOrderLine(ItemJournalLine, ProdOrderLine);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnInsertValueEntryOnAfterTempValueEntryRelationInsert', '', false, false)]
-    local procedure OnInsertValueEntryOnAfterTempValueEntryRelationInsert(ItemJnlLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry")
-    begin
-        if (ValueEntry."Entry Type" = ValueEntry."Entry Type"::"Direct Cost") then
-            PostSustainabilityLedgerEntry(ItemJnlLine, ItemJnlLine."Source Code", ItemJnlLine."Document No.");
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeInsertCapLedgEntry', '', false, false)]
     local procedure OnBeforeInsertCapLedgEntry(ItemJournalLine: Record "Item Journal Line"; var CapLedgEntry: Record "Capacity Ledger Entry")
     begin
@@ -333,69 +322,6 @@ codeunit 6254 "Sust. Manufacturing Subscriber"
         end;
     end;
 
-    local procedure PostSustainabilityLedgerEntry(var ItemJournalLine: Record "Item Journal Line"; SrcCode: Code[10]; GenJnlLineDocNo: Code[20])
-    var
-        SustainabilityJnlLine: Record "Sustainability Jnl. Line";
-        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
-        GHGCredit: Boolean;
-        TotalCO2eToPost: Decimal;
-    begin
-        if (ItemJournalLine."Order Type" <> ItemJournalLine."Order Type"::Production) then
-            exit;
-
-        if not (ItemJournalLine."Entry Type" in [ItemJournalLine."Entry Type"::Output, ItemJournalLine."Entry Type"::Consumption]) then
-            exit;
-
-        GHGCredit := ItemJournalLine.IsGHGCreditLine();
-        TotalCO2eToPost := ItemJournalLine.GetPostingSign(GHGCredit) * ItemJournalLine."Total CO2e";
-
-        if not CanPostSustainabilityJnlLine(ItemJournalLine."Sust. Account No.", ItemJournalLine."Sust. Account Category", ItemJournalLine."Sust. Account Subcategory", TotalCO2eToPost) then
-            exit;
-
-        SustainabilityJnlLine.Init();
-        SustainabilityJnlLine."Journal Template Name" := ItemJournalLine."Journal Template Name";
-        SustainabilityJnlLine."Journal Batch Name" := ItemJournalLine."Journal Batch Name";
-        SustainabilityJnlLine."Source Code" := SrcCode;
-        SustainabilityJnlLine.Validate("Posting Date", ItemJournalLine."Posting Date");
-        SustainabilityJnlLine.Validate("Document No.", GenJnlLineDocNo);
-        SustainabilityJnlLine.Validate("Account No.", ItemJournalLine."Sust. Account No.");
-        SustainabilityJnlLine.Validate("Reason Code", ItemJournalLine."Reason Code");
-        SustainabilityJnlLine.Validate("Account Category", ItemJournalLine."Sust. Account Category");
-        SustainabilityJnlLine.Validate("Account Subcategory", ItemJournalLine."Sust. Account Subcategory");
-        SustainabilityJnlLine.Validate("Unit of Measure", ItemJournalLine."Unit of Measure Code");
-        SustainabilityJnlLine."Dimension Set ID" := ItemJournalLine."Dimension Set ID";
-        SustainabilityJnlLine."Shortcut Dimension 1 Code" := ItemJournalLine."Shortcut Dimension 1 Code";
-        SustainabilityJnlLine."Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
-        SustainabilityJnlLine.Validate("CO2e Emission", TotalCO2eToPost);
-        SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine, ItemJournalLine);
-    end;
-
-    local procedure CanPostSustainabilityJnlLine(AccountNo: Code[20]; AccountCategory: Code[20]; AccountSubCategory: Code[20]; CO2eToPost: Decimal): Boolean
-    var
-        SustAccountCategory: Record "Sustain. Account Category";
-        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
-    begin
-        if AccountNo = '' then
-            exit(false);
-
-        if not SustainabilitySetup.IsValueChainTrackingEnabled() then
-            exit(false);
-
-        if SustAccountCategory.Get(AccountCategory) then
-            if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
-                Error(NotAllowedToPostSustLedEntryForWaterOrWasteErr, AccountNo);
-
-        if SustainAccountSubcategory.Get(AccountCategory, AccountSubCategory) then
-            if not SustainAccountSubcategory."Renewable Energy" then
-                if (CO2eToPost = 0) then
-                    Error(CO2eMustNotBeZeroErr);
-
-        if (CO2eToPost <> 0) then
-            exit(true);
-    end;
-
     var
         SustainabilitySetup: Record "Sustainability Setup";
-        CO2eMustNotBeZeroErr: Label 'The CO2e fields must have a value that is not 0.';
-        NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in Production document for Account No. %1', Comment = '%1 = Sustainability Account No.';
 }

@@ -13,71 +13,84 @@ codeunit 139686 "Billing Correction Test"
     Access = Internal;
 
     var
-        BillingTemplate: Record "Billing Template";
-        ServiceObject: Record "Service Object";
-        CustomerContract: Record "Customer Contract";
-        VendorContract: Record "Vendor Contract";
         BillingLine: Record "Billing Line";
         BillingLineArchive: Record "Billing Line Archive";
-        SalesHeader: Record "Sales Header";
+        BillingTemplate: Record "Billing Template";
+        CustomerContract: Record "Customer Subscription Contract";
+        PurchInvoiceHeader: Record "Purch. Inv. Header";
+        PurchInvoiceLine: Record "Purch. Inv. Line";
         PurchaseHeader: Record "Purchase Header";
         PurchaseHeader2: Record "Purchase Header";
+        SalesHeader: Record "Sales Header";
         SalesHeader2: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        PurchInvoiceHeader: Record "Purch. Inv. Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
-        PurchInvoiceLine: Record "Purch. Inv. Line";
+        ServiceObject: Record "Subscription Header";
+        VendorContract: Record "Vendor Subscription Contract";
+        Assert: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
-        AssertThat: Codeunit Assert;
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryPurchase: Codeunit "Library - Purchase";
-        LibraryUtility: Codeunit "Library - Utility";
-        LibraryTestInitialize: Codeunit "Library - Test Initialize";
-        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
-        CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
-        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
         CopyDocMgt: Codeunit "Copy Document Mgt.";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
+        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
+        LibraryPurchase: Codeunit "Library - Purchase";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibraryUtility: Codeunit "Library - Utility";
         BillingDateFormula: DateFormula;
         BillingToDateFormula: DateFormula;
+        IsInitialized: Boolean;
         PostedDocumentNo: Code[20];
         BillingLineCount: Integer;
-        IsInitialized: Boolean;
+
+    #region Tests
 
     [Test]
     [HandlerFunctions('CreateBillingDocsCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorWhenNewerInvoiceExist()
-    begin
-        Initialize();
-
-        PostSalesInvoiceForContract();
-        Evaluate(BillingDateFormula, '<9M-CM>');
-        Evaluate(BillingToDateFormula, '<12M+CM>');
-        BillingTemplate."Billing Date Formula" := BillingDateFormula;
-        BillingTemplate."Billing to Date Formula" := BillingToDateFormula;
-        BillingTemplate.Modify(false);
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
-        asserterror CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateBillingDocsCustomerPageHandler,SalesCreditMemosPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorWhenRelatedSalesLineExist()
+    procedure CheckBillingLinesCreatedForCreditMemo()
     begin
         Initialize();
 
         PostSalesInvoiceForContract();
         CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
-        Commit(); // retain data after asserterror
-        asserterror CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader2);
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
-        BillingLine.Reset();
-        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
-        AssertThat.RecordIsEmpty(BillingLine);
+        BillingLineArchive.SetRange("Subscription Contract No.", SalesInvoiceLine."Subscription Contract No.");
+        BillingLineArchive.SetRange("Subscription Contract Line No.", SalesInvoiceLine."Subscription Contract Line No.");
+        if BillingLineArchive.FindSet() then
+            repeat
+                BillingLine.SetRange("Correction Document Type", BillingLineArchive."Document Type");
+                BillingLine.SetRange("Correction Document No.", BillingLineArchive."Document No.");
+                BillingLine.SetRange("Subscription Contract No.", BillingLineArchive."Subscription Contract No.");
+                BillingLine.SetRange("Subscription Contract Line No.", BillingLineArchive."Subscription Contract Line No.");
+                BillingLine.SetRange("Billing from", BillingLineArchive."Billing from");
+                BillingLine.SetRange("Billing to", BillingLineArchive."Billing to");
+                BillingLine.FindFirst();
+                BillingLine.TestField("Correction Document Type", Enum::"Rec. Billing Document Type"::"Credit Memo");
+                BillingLine.TestField("Correction Document No.", SalesHeader."No.");
+            until BillingLineArchive.Next() = 0;
+    end;
 
-        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::"Credit Memo");
-        AssertThat.AreEqual(BillingLineCount, BillingLine.Count, 'Only the billing lines for Credit Memo should exist');
-        BillingLine.FindFirst();
-        BillingLine.TestField("Document No.", SalesHeader."No.");
+    [Test]
+    [HandlerFunctions('CreateBillingDocsVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckBillingLinesCreatedForPurchaseCreditMemo()
+    begin
+        Initialize();
+
+        PostPurchaseInvoiceForContract();
+        CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvoiceHeader, PurchaseHeader);
+        BillingLineArchive.SetRange("Subscription Contract No.", PurchInvoiceLine."Subscription Contract No.");
+        BillingLineArchive.SetRange("Subscription Contract Line No.", PurchInvoiceLine."Subscription Contract Line No.");
+        if BillingLineArchive.FindSet() then
+            repeat
+                BillingLine.SetRange("Correction Document Type", BillingLineArchive."Document Type");
+                BillingLine.SetRange("Correction Document No.", BillingLineArchive."Document No.");
+                BillingLine.SetRange("Subscription Contract No.", BillingLineArchive."Subscription Contract No.");
+                BillingLine.SetRange("Subscription Contract Line No.", BillingLineArchive."Subscription Contract Line No.");
+                BillingLine.SetRange("Billing from", BillingLineArchive."Billing from");
+                BillingLine.SetRange("Billing to", BillingLineArchive."Billing to");
+                BillingLine.FindFirst();
+                BillingLine.TestField("Correction Document Type", Enum::"Rec. Billing Document Type"::"Credit Memo");
+                BillingLine.TestField("Correction Document No.", SalesHeader."No.");
+            until BillingLineArchive.Next() = 0;
     end;
 
     [Test]
@@ -100,27 +113,38 @@ codeunit 139686 "Billing Correction Test"
     end;
 
     [Test]
+    [HandlerFunctions('CreateBillingDocsVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorWhenCopyingPostedVendorContractInvoice()
+    var
+        i: Integer;
+    begin
+        Initialize();
+
+        for i := 0 to 5 do begin
+            PostPurchaseInvoiceForContract();
+            PurchaseHeader2."Document Type" := Enum::"Purchase Document Type".FromInteger(i);
+            CopyDocMgt.SetProperties(true, false, false, true, true, true, false);
+            if PurchaseHeader2."Document Type" = PurchaseHeader2."Document Type"::"Credit Memo" then
+                CopyDocMgt.CopyPurchDoc(Enum::"Purchase Document Type From"::"Posted Invoice", PurchInvoiceHeader."No.", PurchaseHeader2)
+            else
+                asserterror CopyDocMgt.CopyPurchDoc(Enum::"Purchase Document Type From"::"Posted Invoice", PurchInvoiceHeader."No.", PurchaseHeader2);
+        end;
+    end;
+
+    [Test]
     [HandlerFunctions('CreateBillingDocsCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckBillingLinesCreatedForCreditMemo()
+    procedure ExpectErrorWhenNewerInvoiceExist()
     begin
         Initialize();
 
         PostSalesInvoiceForContract();
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
-        BillingLineArchive.SetRange("Contract No.", SalesInvoiceLine."Contract No.");
-        BillingLineArchive.SetRange("Contract Line No.", SalesInvoiceLine."Contract Line No.");
-        if BillingLineArchive.FindSet() then
-            repeat
-                BillingLine.SetRange("Correction Document Type", BillingLineArchive."Document Type");
-                BillingLine.SetRange("Correction Document No.", BillingLineArchive."Document No.");
-                BillingLine.SetRange("Contract No.", BillingLineArchive."Contract No.");
-                BillingLine.SetRange("Contract Line No.", BillingLineArchive."Contract Line No.");
-                BillingLine.SetRange("Billing from", BillingLineArchive."Billing from");
-                BillingLine.SetRange("Billing to", BillingLineArchive."Billing to");
-                BillingLine.FindFirst();
-                BillingLine.TestField("Correction Document Type", Enum::"Rec. Billing Document Type"::"Credit Memo");
-                BillingLine.TestField("Correction Document No.", SalesHeader."No.");
-            until BillingLineArchive.Next() = 0;
+        Evaluate(BillingDateFormula, '<9M-CM>');
+        Evaluate(BillingToDateFormula, '<12M+CM>');
+        BillingTemplate."Billing Date Formula" := BillingDateFormula;
+        BillingTemplate."Billing to Date Formula" := BillingToDateFormula;
+        BillingTemplate.Modify(false);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+        asserterror CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
     end;
 
     [Test]
@@ -150,86 +174,68 @@ codeunit 139686 "Billing Correction Test"
         Commit(); // retain data after asserterror
         asserterror CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvoiceHeader, PurchaseHeader2);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
-        AssertThat.AreEqual(BillingLineCount, BillingLine.Count, 'Only the billing lines for Credit Memo should exist');
+        Assert.AreEqual(BillingLineCount, BillingLine.Count, 'Only the billing lines for Credit Memo should exist');
         BillingLine.FindFirst();
         BillingLine.TestField("Document No.", PurchaseHeader."No.");
     end;
 
     [Test]
-    [HandlerFunctions('CreateBillingDocsVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorWhenCopyingPostedVendorContractInvoice()
-    var
-        i: Integer;
+    [HandlerFunctions('CreateBillingDocsCustomerPageHandler,SalesCreditMemosPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorWhenRelatedSalesLineExist()
     begin
         Initialize();
 
-        for i := 0 to 5 do begin
-            PostPurchaseInvoiceForContract();
-            PurchaseHeader2."Document Type" := Enum::"Purchase Document Type".FromInteger(i);
-            CopyDocMgt.SetProperties(true, false, false, true, true, true, false);
-            if PurchaseHeader2."Document Type" = PurchaseHeader2."Document Type"::"Credit Memo" then
-                CopyDocMgt.CopyPurchDoc(Enum::"Purchase Document Type From"::"Posted Invoice", PurchInvoiceHeader."No.", PurchaseHeader2)
-            else
-                asserterror CopyDocMgt.CopyPurchDoc(Enum::"Purchase Document Type From"::"Posted Invoice", PurchInvoiceHeader."No.", PurchaseHeader2);
-        end;
-    end;
+        PostSalesInvoiceForContract();
+        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
+        Commit(); // retain data after asserterror
+        asserterror CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader2);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+        BillingLine.Reset();
+        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
+        Assert.RecordIsEmpty(BillingLine);
 
-    [Test]
-    [HandlerFunctions('CreateBillingDocsVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckBillingLinesCreatedForPurchaseCreditMemo()
-    begin
-        Initialize();
-
-        PostPurchaseInvoiceForContract();
-        CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvoiceHeader, PurchaseHeader);
-        BillingLineArchive.SetRange("Contract No.", PurchInvoiceLine."Contract No.");
-        BillingLineArchive.SetRange("Contract Line No.", PurchInvoiceLine."Contract Line No.");
-        if BillingLineArchive.FindSet() then
-            repeat
-                BillingLine.SetRange("Correction Document Type", BillingLineArchive."Document Type");
-                BillingLine.SetRange("Correction Document No.", BillingLineArchive."Document No.");
-                BillingLine.SetRange("Contract No.", BillingLineArchive."Contract No.");
-                BillingLine.SetRange("Contract Line No.", BillingLineArchive."Contract Line No.");
-                BillingLine.SetRange("Billing from", BillingLineArchive."Billing from");
-                BillingLine.SetRange("Billing to", BillingLineArchive."Billing to");
-                BillingLine.FindFirst();
-                BillingLine.TestField("Correction Document Type", Enum::"Rec. Billing Document Type"::"Credit Memo");
-                BillingLine.TestField("Correction Document No.", SalesHeader."No.");
-            until BillingLineArchive.Next() = 0;
+        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::"Credit Memo");
+        Assert.AreEqual(BillingLineCount, BillingLine.Count, 'Only the billing lines for Credit Memo should exist');
+        BillingLine.FindFirst();
+        BillingLine.TestField("Document No.", SalesHeader."No.");
     end;
 
     [Test]
     [HandlerFunctions('CreateBillingDocsCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestChangeServiceStartDateAfterCorrectionCustomerContract()
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         LibraryRandom: Codeunit "Library - Random";
     begin
         Initialize();
 
         PostSalesInvoiceForContract();
-        ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);        //Retrieve updated Service Commitment
+        ServiceCommitment.Get(BillingLine."Subscription Line Entry No.");
+        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader); // Retrieve updated Subscription Line
         ServiceCommitment.Get(ServiceCommitment."Entry No.");
-        ServiceCommitment.Validate("Service Start Date", LibraryRandom.RandDateFrom(ServiceCommitment."Service Start Date", 100));
+        ServiceCommitment.Validate("Subscription Line Start Date", LibraryRandom.RandDateFrom(ServiceCommitment."Subscription Line Start Date", 100));
     end;
 
     [Test]
     [HandlerFunctions('CreateBillingDocsVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
     procedure TestChangeServiceStartDateAfterCorrectionVendorContract()
     var
-        ServiceCommitment: Record "Service Commitment";
+        ServiceCommitment: Record "Subscription Line";
         LibraryRandom: Codeunit "Library - Random";
     begin
         Initialize();
 
         PostPurchaseInvoiceForContract();
-        ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
+        ServiceCommitment.Get(BillingLine."Subscription Line Entry No.");
         CorrectPostedPurchInvoice.CreateCreditMemoCopyDocument(PurchInvoiceHeader, PurchaseHeader);
-        //Retrieve updated Service Commitment
+        // Retrieve updated Subscription Line
         ServiceCommitment.Get(ServiceCommitment."Entry No.");
-        ServiceCommitment.Validate("Service Start Date", LibraryRandom.RandDateFrom(ServiceCommitment."Service Start Date", 100));
+        ServiceCommitment.Validate("Subscription Line Start Date", LibraryRandom.RandDateFrom(ServiceCommitment."Subscription Line Start Date", 100));
     end;
+
+    #endregion Tests
+
+    #region Procedures
 
     local procedure Initialize()
     begin
@@ -250,12 +256,12 @@ codeunit 139686 "Billing Correction Test"
     begin
         ClearAll();
         BillingTemplate.DeleteAll(false);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, '', true);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingLine.Partner::Vendor);
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
-        //Post Purchase Document
+        // Post Purchase Document
         BillingLineCount := BillingLine.Count;
         BillingLine.FindFirst();
         PurchaseHeader.Get(PurchaseHeader."Document Type"::Invoice, BillingLine."Document No.");
@@ -268,12 +274,12 @@ codeunit 139686 "Billing Correction Test"
     local procedure PostSalesInvoiceForContract()
     begin
         ClearAll();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', true);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, '', true);
         ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
-        //Post Sales Document
+        // Post Sales Document
         BillingLineCount := BillingLine.Count;
         BillingLine.FindLast();
         SalesHeader.Get(SalesHeader."Document Type"::Invoice, BillingLine."Document No.");
@@ -281,10 +287,9 @@ codeunit 139686 "Billing Correction Test"
         SalesInvoiceHeader.Get(PostedDocumentNo);
     end;
 
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
-    end;
+    #endregion Procedures
+
+    #region Handlers
 
     [ModalPageHandler]
     procedure CreateBillingDocsCustomerPageHandler(var CreateBillingDocsCustomerPage: TestPage "Create Customer Billing Docs")
@@ -302,6 +307,11 @@ codeunit 139686 "Billing Correction Test"
     procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
     begin
         ExchangeRateSelectionPage.OK().Invoke();
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
+    begin
     end;
 
     [PageHandler]
@@ -327,4 +337,6 @@ codeunit 139686 "Billing Correction Test"
     begin
         SalesCreditMemoPage.OK().Invoke();
     end;
+
+    #endregion Handlers
 }

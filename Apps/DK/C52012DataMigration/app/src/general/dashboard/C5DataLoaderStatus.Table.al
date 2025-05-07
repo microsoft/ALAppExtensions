@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 1902 "C5 Data Loader Status"
 {
     DataClassification = SystemMetadata;

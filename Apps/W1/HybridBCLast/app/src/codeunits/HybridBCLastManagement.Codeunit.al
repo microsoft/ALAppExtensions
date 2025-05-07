@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4021 "Hybrid BC Last Management"
 {
     var

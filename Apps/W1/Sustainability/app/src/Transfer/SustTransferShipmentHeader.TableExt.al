@@ -19,7 +19,7 @@ tableextension 6255 "Sust. Transfer Shipment Header" extends "Transfer Shipment 
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
-            CalcFormula = sum("Sustainability Ledger Entry"."CO2e Emission" where("Document No." = field("No."), "Document Type" = filter(Invoice | "GHG Credit")));
+            CalcFormula = sum("Sustainability Value Entry"."CO2e Amount (Actual)" where("Document No." = field("No.")));
             Caption = 'Total CO2e';
             Editable = false;
             FieldClass = FlowField;

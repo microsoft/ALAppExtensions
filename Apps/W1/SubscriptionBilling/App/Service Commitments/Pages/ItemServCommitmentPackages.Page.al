@@ -4,9 +4,9 @@ using Microsoft.Inventory.Item;
 
 page 8061 "Item Serv. Commitment Packages"
 {
-    Caption = 'Item Service Commitment Packages';
+    Caption = 'Item Subscription Packages';
     PageType = List;
-    SourceTable = "Item Serv. Commitment Package";
+    SourceTable = "Item Subscription Package";
     UsageCategory = None;
     ApplicationArea = All;
 
@@ -19,23 +19,33 @@ page 8061 "Item Serv. Commitment Packages"
                 field("Code"; Rec.Code)
                 {
                     ShowMandatory = true;
-                    ToolTip = 'Specifies a code to identify this service commitment package.';
+                    ToolTip = 'Specifies a code to identify this Subscription Package.';
                     trigger OnValidate()
                     begin
+                        CurrPage.Update();
+                    end;
+
+                    trigger OnLookup(var Text: Text): Boolean
+                    var
+                        SubscriptionPackage: Record "Subscription Package";
+                    begin
+                        OnBeforeCodeLookup(SubscriptionPackage, CurrentItemNo);
+                        if Page.RunModal(Page::"Service Commitment Packages", SubscriptionPackage) = Action::LookupOK then
+                            Rec.Validate(Code, SubscriptionPackage.Code);
                         CurrPage.Update();
                     end;
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies a description of the service commitment package.';
+                    ToolTip = 'Specifies a description of the Subscription Package.';
                 }
                 field(Standard; Rec.Standard)
                 {
-                    ToolTip = 'Specifies whether the package service commitments should be automatically added to the sales process when the item is sold. If the checkbox is not set, the package service commitments can be added manually in the sales process.';
+                    ToolTip = 'Specifies whether the package Subscription Lines should be automatically added to the sales process when the item is sold. If the checkbox is not set, the package Subscription Lines can be added manually in the sales process.';
                 }
                 field("Price Group"; Rec."Price Group")
                 {
-                    ToolTip = 'Specifies the customer price group that will be used for the invoicing of services.';
+                    ToolTip = 'Specifies the customer price group that will be used for the invoicing of Subscription Lines.';
                 }
             }
             part(PackageLines; "Service Comm. Package Lines")
@@ -82,7 +92,8 @@ page 8061 "Item Serv. Commitment Packages"
         ShowAllPackageLinesText: Text;
     begin
         Rec.FilterGroup(2);
-        CurrPage.PackageLines.Page.SetItemNo(CopyStr(Rec.GetFilter("Item No."), 1, MaxStrLen(Rec."Item No.")));
+        CurrentItemNo := CopyStr(Rec.GetFilter("Item No."), 1, MaxStrLen(Rec."Item No."));
+        CurrPage.PackageLines.Page.SetItemNo(CurrentItemNo);
         Rec.FilterGroup(0);
         if PersonalizationDataMgmt.GetDataPagePersonalization(8, CurrPage.ObjectId(false), 'SHOWALLPACKAGELINES', ShowAllPackageLinesText) then
             if Evaluate(ShowAllPackageLines, ShowAllPackageLinesText) then
@@ -90,15 +101,17 @@ page 8061 "Item Serv. Commitment Packages"
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
+    var
+        Item: Record Item;
     begin
         if Item.Get(Rec."Item No.") then
-            if Item."Service Commitment Option" = Item."Service Commitment Option"::"Service Commitment Item" then
+            if Item."Subscription Option" = Item."Subscription Option"::"Service Commitment Item" then
                 Rec.Standard := true;
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     begin
-        Rec.Insert(false);
+        Rec.Insert(true);
         CurrPage.PackageLines.Page.SetPackageCode(Rec.Code);
         exit(false);
     end;
@@ -115,8 +128,13 @@ page 8061 "Item Serv. Commitment Packages"
         CurrPage.PackageLines.Page.SetPackageCode(Rec.Code);
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCodeLookup(var SubscriptionPackage: Record "Subscription Package"; CurrentItemNo: Code[20])
+    begin
+    end;
+
     var
-        Item: Record Item;
         PersonalizationDataMgmt: Codeunit "Personalization Data Mgmt.";
+        CurrentItemNo: Code[20];
         ShowAllPackageLines: Boolean;
 }

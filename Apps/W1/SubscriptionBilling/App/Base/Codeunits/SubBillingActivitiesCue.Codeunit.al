@@ -10,20 +10,16 @@ codeunit 8071 "Sub. Billing Activities Cue"
     Permissions = tabledata "Subscription Billing Cue" = r;
 
     var
-        Results: Dictionary of [Text, Text];
+        ResultsGlobal: Dictionary of [Text, Text];
 
     trigger OnRun()
-    var
-        Parameters: Dictionary of [Text, Text];
     begin
-        Parameters := Page.GetBackgroundParameters();
+        CalculateFieldValues(ResultsGlobal);
 
-        CalculateFieldValues(Parameters, Results);
-
-        Page.SetBackgroundTaskResult(Results);
+        Page.SetBackgroundTaskResult(ResultsGlobal);
     end;
 
-    procedure CalculateFieldValues(Parameters: Dictionary of [Text, Text]; var ReturnResults: Dictionary of [Text, Text])
+    local procedure CalculateFieldValues(var ReturnResults: Dictionary of [Text, Text])
     var
         SubscriptionBillingCue: Record "Subscription Billing Cue";
     begin
@@ -40,7 +36,7 @@ codeunit 8071 "Sub. Billing Activities Cue"
 
     local procedure CalculateCueFieldValues(var SubscriptionBillingCue: Record "Subscription Billing Cue")
     var
-        TemporaryOverdueServiceCommitments: Record "Overdue Service Commitments" temporary;
+        TemporaryOverdueServiceCommitments: Record "Overdue Subscription Line" temporary;
     begin
         SubscriptionBillingCue."Revenue current Month" := RevenueCurrentMonth();
         SubscriptionBillingCue."Cost current Month" := CostCurrentMonth();
@@ -50,7 +46,7 @@ codeunit 8071 "Sub. Billing Activities Cue"
         SubscriptionBillingCue."Last Updated On" := CurrentDateTime();
     end;
 
-    procedure EvaluateResults(var Results: Dictionary of [Text, Text]; var SubscriptionBillingCue: Record "Subscription Billing Cue")
+    internal procedure EvaluateResults(var Results: Dictionary of [Text, Text]; var SubscriptionBillingCue: Record "Subscription Billing Cue")
     var
         ResultValue: Text;
     begin
@@ -79,13 +75,13 @@ codeunit 8071 "Sub. Billing Activities Cue"
 
     internal procedure DrillDownOverdueServiceCommitments()
     var
-        TemporaryOverdueServiceCommitments: Record "Overdue Service Commitments" temporary;
+        TemporaryOverdueServiceCommitments: Record "Overdue Subscription Line" temporary;
     begin
         TemporaryOverdueServiceCommitments.FillOverdueServiceCommitments();
         Page.Run(Page::"Overdue Service Commitments", TemporaryOverdueServiceCommitments);
     end;
 
-    procedure GetMyJobsFilter() FilterText: Text
+    internal procedure GetMyJobsFilter() FilterText: Text
     var
         MyJobs: Record "My Job";
     begin
@@ -98,22 +94,22 @@ codeunit 8071 "Sub. Billing Activities Cue"
             until MyJobs.Next() = 0;
     end;
 
-    procedure RevenueCurrentMonth() Result: Decimal
+    local procedure RevenueCurrentMonth(): Decimal
     begin
         exit(GetRevenue(true));
     end;
 
-    procedure CostCurrentMonth() Result: Decimal
+    local procedure CostCurrentMonth(): Decimal
     begin
         exit(GetCost(true));
     end;
 
-    procedure RevenuePreviousMonth() Result: Decimal
+    local procedure RevenuePreviousMonth(): Decimal
     begin
         exit(GetRevenue(false));
     end;
 
-    procedure CostPreviousMonth() Result: Decimal
+    local procedure CostPreviousMonth(): Decimal
     begin
         exit(GetCost(false));
     end;
@@ -126,11 +122,11 @@ codeunit 8071 "Sub. Billing Activities Cue"
         DateFilterTo: Text;
     begin
         GetDateFilterFormulas(CurrentMonth, DateFilterFrom, DateFilterTo);
-        SalesInvLine.SetFilter("Contract No.", '<>%1', '');
+        SalesInvLine.SetFilter("Subscription Contract No.", '<>%1', '');
         SalesInvLine.SetRange("Posting Date", CalcDate(DateFilterFrom, WorkDate()), CalcDate(DateFilterTo, WorkDate()));
         SalesInvLine.CalcSums(Amount);
 
-        SalesCrMemoLine.SetFilter("Contract No.", '<>%1', '');
+        SalesCrMemoLine.SetFilter("Subscription Contract No.", '<>%1', '');
         SalesCrMemoLine.SetRange("Posting Date", CalcDate(DateFilterFrom, WorkDate()), CalcDate(DateFilterTo, WorkDate()));
         SalesCrMemoLine.CalcSums(Amount);
 
@@ -145,18 +141,18 @@ codeunit 8071 "Sub. Billing Activities Cue"
         DateFilterTo: Text;
     begin
         GetDateFilterFormulas(CurrentMonth, DateFilterFrom, DateFilterTo);
-        PurchInvLine.SetFilter("Contract No.", '<>%1', '');
+        PurchInvLine.SetFilter("Subscription Contract No.", '<>%1', '');
         PurchInvLine.SetRange("Posting Date", CalcDate(DateFilterFrom, WorkDate()), CalcDate(DateFilterTo, WorkDate()));
         PurchInvLine.CalcSums(Amount);
 
-        PurchCrMemoLine.SetFilter("Contract No.", '<>%1', '');
+        PurchCrMemoLine.SetFilter("Subscription Contract No.", '<>%1', '');
         PurchCrMemoLine.SetRange("Posting Date", CalcDate(DateFilterFrom, WorkDate()), CalcDate(DateFilterTo, WorkDate()));
         PurchCrMemoLine.CalcSums(Amount);
 
         exit(PurchInvLine.Amount - PurchCrMemoLine.Amount);
     end;
 
-    procedure GetDateFilterFormulas(CurrentMonth: Boolean; var DateFilterFrom: Text; var DateFilterTo: Text)
+    internal procedure GetDateFilterFormulas(CurrentMonth: Boolean; var DateFilterFrom: Text; var DateFilterTo: Text)
     begin
         if CurrentMonth then begin
             DateFilterFrom := '<-CM>';

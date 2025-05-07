@@ -13,7 +13,7 @@ enumextension 6381 "Integration" extends "Service Integration"
     {
         Implementation = IDocumentSender = "Drive Integration Impl.", IDocumentReceiver = "Drive Integration Impl.", IConsentManager = "Drive Integration Impl.";
     }
-    value(6382; "Sharepoint")
+    value(6382; "SharePoint")
     {
         Implementation = IDocumentSender = "Drive Integration Impl.", IDocumentReceiver = "Drive Integration Impl.", IConsentManager = "Drive Integration Impl.";
     }

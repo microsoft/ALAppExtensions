@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Sales;
+
+using Microsoft.DemoData.Finance;
+using Microsoft.Sales.Customer;
+using Microsoft.DemoData.Foundation;
+
 codeunit 11470 "Create Customer US"
 {
     SingleInstance = true;
@@ -53,6 +64,7 @@ codeunit 11470 "Create Customer US"
         Customer.Validate("Tax Liable", TaxLiable);
         Customer.Validate("Document Sending Profile", DocumentSendingProfile);
         Customer.Validate("Territory Code", TerritoryCode);
+        Customer."Format Region" := ''; // Format Region will be automatically set basing on the Language Code
         Customer.Validate("Language Code", LanguageCode);
         Customer.Validate("Reminder Terms Code", ReminderTermsCode);
         Customer.Validate("Country/Region Code", CountryOrRegionCode);

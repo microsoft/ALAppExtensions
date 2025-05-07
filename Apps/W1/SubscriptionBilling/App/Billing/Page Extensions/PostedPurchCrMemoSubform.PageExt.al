@@ -19,7 +19,7 @@ pageextension 8074 "Posted Purch Cr. Memo Subform" extends "Posted Purch. Cr. Me
 
                 trigger OnAction()
                 begin
-                    ContractsGeneralMgt.ShowArchivedBillingLines(Rec."Contract No.", Rec."Contract Line No.", Enum::"Service Partner"::Vendor, Enum::"Rec. Billing Document Type"::"Credit Memo", Rec."Document No.");
+                    ContractsGeneralMgt.ShowArchivedBillingLines(Rec."Subscription Contract No.", Rec."Subscription Contract Line No.", Enum::"Service Partner"::Vendor, Enum::"Rec. Billing Document Type"::"Credit Memo", Rec."Document No.");
                 end;
             }
             action("Usage Data")
@@ -35,7 +35,7 @@ pageextension 8074 "Posted Purch Cr. Memo Subform" extends "Posted Purch. Cr. Me
                 var
                     UsageDataBilling: Record "Usage Data Billing";
                 begin
-                    UsageDataBilling.ShowForDocuments("Usage Based Billing Doc. Type"::"Posted Credit Memo", Rec."Document No.", Rec."Line No.");
+                    UsageDataBilling.ShowForDocuments(Enum::"Service Partner"::Vendor, "Usage Based Billing Doc. Type"::"Posted Credit Memo", Rec."Document No.", Rec."Line No.");
                 end;
             }
         }
@@ -45,12 +45,12 @@ pageextension 8074 "Posted Purch Cr. Memo Subform" extends "Posted Purch. Cr. Me
     var
         UsageDataBilling: Record "Usage Data Billing";
     begin
-        IsConnectedToContractLine := ContractsGeneralMgt.HasConnectionToContractLine(Rec."Contract No.", Rec."Contract Line No.");
-        UsageDataEnabled := UsageDataBilling.ExistForDocuments("Usage Based Billing Doc. Type"::"Posted Credit Memo", Rec."Document No.", Rec."Line No.");
+        IsConnectedToContractLine := ContractsGeneralMgt.HasConnectionToContractLine(Rec."Subscription Contract No.", Rec."Subscription Contract Line No.");
+        UsageDataEnabled := UsageDataBilling.ExistForDocuments(Enum::"Service Partner"::Vendor, "Usage Based Billing Doc. Type"::"Posted Credit Memo", Rec."Document No.", Rec."Line No.");
     end;
 
     var
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         IsConnectedToContractLine: Boolean;
         UsageDataEnabled: Boolean;
 }

@@ -26,24 +26,24 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
-    [Obsolete('Use SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
-    procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration")
+    [Obsolete('Use SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
+    procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration")
     var
         ServiceCode: Code[20];
     begin
         // Create standard service and simple workflow
-        ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
+        ServiceCode := CreateService(EDocDocumentFormat, EDocIntegration);
         EDocService.Get(ServiceCode);
         SetupStandardSalesScenario(Customer, EDocService);
     end;
 #endif
 
-    procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration")
+    procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration")
     var
         ServiceCode: Code[20];
     begin
         // Create standard service and simple workflow
-        ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
+        ServiceCode := CreateService(EDocDocumentFormat, EDocIntegration);
         EDocService.Get(ServiceCode);
         SetupStandardSalesScenario(Customer, EDocService);
     end;
@@ -56,6 +56,7 @@ codeunit 139629 "Library - E-Document"
         WorkflowSetup: Codeunit "Workflow Setup";
         WorkflowCode: Code[20];
     begin
+        LibraryWorkflow.DeleteAllExistingWorkflows();
         WorkflowSetup.InitWorkflow();
         SetupCompanyInfo();
 
@@ -91,28 +92,35 @@ codeunit 139629 "Library - E-Document"
         SalesSetup.Modify();
     end;
 
+    procedure GetGenericItem(var Item: Record Item)
+    begin
+        if StandardItem."No." = '' then
+            CreateGenericItem(StandardItem);
+        Item.Get(StandardItem."No.");
+    end;
+
 #if not CLEAN26
-    [Obsolete('Use SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
-    procedure SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration")
+    [Obsolete('Use SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
+    procedure SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration")
     var
         ServiceCode: Code[20];
     begin
         // Create standard service and simple workflow
         if EDocService.Code = '' then begin
-            ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
+            ServiceCode := CreateService(EDocDocumentFormat, EDocIntegration);
             EDocService.Get(ServiceCode);
         end;
         SetupStandardPurchaseScenario(Vendor, EDocService);
     end;
 #endif
 
-    procedure SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration")
+    procedure SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration")
     var
         ServiceCode: Code[20];
     begin
         // Create standard service and simple workflow
         if EDocService.Code = '' then begin
-            ServiceCode := CreateService(EDocDoucmentFormat, EDocIntegration);
+            ServiceCode := CreateService(EDocDocumentFormat, EDocIntegration);
             EDocService.Get(ServiceCode);
         end;
         SetupStandardPurchaseScenario(Vendor, EDocService);
@@ -188,6 +196,70 @@ codeunit 139629 "Library - E-Document"
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
     end;
 
+    procedure CreateInboundEDocument(var EDocument: Record "E-Document"; EDocService: Record "E-Document Service")
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+    begin
+        EDocument.Insert();
+        EDocumentServiceStatus."E-Document Entry No" := EDocument."Entry No";
+        EDocumentServiceStatus."E-Document Service Code" := EDocService.Code;
+        EDocumentServiceStatus.Insert();
+    end;
+
+
+    procedure CreateInboundPEPPOLDocumentToState(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; FileName: Text; EDocImportParams: Record "E-Doc. Import Parameters"): Boolean
+    var
+        EDocImport: Codeunit "E-Doc. Import";
+        InStream: InStream;
+    begin
+        NavApp.GetResource(FileName, InStream, TextEncoding::UTF8);
+        EDocImport.CreateFromType(EDocument, EDocumentService, Enum::"E-Doc. Data Storage Blob Type"::XML, 'TestFile', InStream);
+        exit(EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParams));
+    end;
+
+    /// <summary>
+    /// Given a purchase header with purchase lines created from an e-document, it modifies the required fields to make it ready for posting.
+    /// </summary>
+    procedure EditPurchaseDocumentFromEDocumentForPosting(var PurchaseHeader: Record "Purchase Header"; var EDocument: Record "E-Document")
+    var
+        PurchaseLine: Record "Purchase Line";
+        GLAccount: Record "G/L Account";
+        GeneralPostingSetup: Record "General Posting Setup";
+        GenBusinessPostingGroup: Record "Gen. Business Posting Group";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
+        VATBusinessPostingGroup: Record "VAT Business Posting Group";
+        VATProductPostingGroup: Record "VAT Product Posting Group";
+        LocalVATPostingSetup: Record "VAT Posting Setup";
+    begin
+        Assert.AreEqual(EDocument.SystemId, PurchaseHeader."E-Document Link", 'The purchase header has no link to the e-document.');
+        LibraryERM.CreateGenBusPostingGroup(GenBusinessPostingGroup);
+        LibraryERM.CreateGenProdPostingGroup(GenProductPostingGroup);
+        LibraryERM.CreateGeneralPostingSetup(GeneralPostingSetup, GenBusinessPostingGroup.Code, GenProductPostingGroup.Code);
+        LibraryERM.CreateVATBusinessPostingGroup(VATBusinessPostingGroup);
+        LibraryERM.CreateVATProductPostingGroup(VATProductPostingGroup);
+        LibraryERM.CreateVATPostingSetup(LocalVATPostingSetup, VATBusinessPostingGroup.Code, VATProductPostingGroup.Code);
+        LibraryERM.CreateGLAccount(GLAccount);
+        LocalVATPostingSetup."Purchase VAT Account" := GLAccount."No.";
+        LocalVATPostingSetup.Modify();
+        LibraryERM.CreateGLAccount(GLAccount);
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.FindSet();
+        repeat
+            PurchaseLine.Type := PurchaseLine.Type::"G/L Account";
+            PurchaseLine."No." := GLAccount."No.";
+            PurchaseLine."Gen. Bus. Posting Group" := GenBusinessPostingGroup.Code;
+            PurchaseLine."Gen. Prod. Posting Group" := GenProductPostingGroup.Code;
+            PurchaseLine."VAT Bus. Posting Group" := VATBusinessPostingGroup.Code;
+            PurchaseLine."VAT Prod. Posting Group" := VATProductPostingGroup.Code;
+            PurchaseLine.UpdateAmounts();
+            PurchaseLine.Modify();
+        until PurchaseLine.Next() = 0;
+        PurchaseHeader.CalcFields("Amount Including VAT");
+        EDocument."Amount Incl. VAT" := PurchaseHeader."Amount Including VAT";
+        EDocument.Modify();
+    end;
+
     procedure CreateDocSendingProfile(var DocumentSendingProfile: Record "Document Sending Profile")
     begin
         DocumentSendingProfile.Init();
@@ -201,16 +273,23 @@ codeunit 139629 "Library - E-Document"
         Workflow: Record Workflow;
         WorkflowStepResponse: Record "Workflow Step";
         WorkflowStepArgument: Record "Workflow Step Argument";
+        WorkflowStep: Record "Workflow Step";
         EDocWorkflowSetup: Codeunit "E-Document Workflow Setup";
-        EventConditions: Text;
         EDocCreatedEventID, SendEDocResponseEventID : Integer;
     begin
         // Create a simple workflow
         // Send to Service 'ServiceCode' when using Document Sending Profile 'DocSendingProfile' 
+        WorkflowStep.SetRange("Function Name", EDocWorkflowSetup.EDocCreated());
+        WorkflowStep.SetRange("Entry Point", true);
+        if WorkflowStep.FindSet() then
+            repeat
+                Workflow.Get(WorkflowStep."Workflow Code");
+                if not Workflow.Template then
+                    exit;
+            until WorkflowStep.Next() = 0;
+
         LibraryWorkflow.CreateWorkflow(Workflow);
-        EventConditions := CreateWorkflowEventConditionDocSendingProfileFilter(DocSendingProfileCode);
         EDocCreatedEventID := LibraryWorkflow.InsertEntryPointEventStep(Workflow, EDocWorkflowSetup.EDocCreated());
-        LibraryWorkflow.InsertEventArgument(EDocCreatedEventID, EventConditions);
         SendEDocResponseEventID := LibraryWorkflow.InsertResponseStep(Workflow, EDocWorkflowSetup.EDocSendEDocResponseCode(), EDocCreatedEventID);
 
         WorkflowStepResponse.Get(Workflow.Code, SendEDocResponseEventID);
@@ -258,7 +337,7 @@ codeunit 139629 "Library - E-Document"
         SalesHeader.Modify(true);
     end;
 
-    local procedure CreateGenericItem(var Item: Record Item)
+    procedure CreateGenericItem(var Item: Record Item)
     var
         UOM: Record "Unit of Measure";
         ItemUOM: Record "Item Unit of Measure";
@@ -534,7 +613,7 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
-    [Obsolete('Use CreateService(EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
+    [Obsolete('Use CreateService(EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
     procedure CreateService(Integration: Enum "E-Document Integration"): Code[20]
     var
         EDocService: Record "E-Document Service";
@@ -567,14 +646,14 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
-    [Obsolete('Use CreateService(EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
-    procedure CreateService(EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration"): Code[20]
+    [Obsolete('Use CreateService(EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
+    procedure CreateService(EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration"): Code[20]
     var
         EDocService: Record "E-Document Service";
     begin
         EDocService.Init();
         EDocService.Code := LibraryUtility.GenerateRandomCode20(EDocService.FieldNo(Code), Database::"E-Document Service");
-        EDocService."Document Format" := EDocDoucmentFormat;
+        EDocService."Document Format" := EDocDocumentFormat;
         EDocService."Service Integration" := EDocIntegration;
         EDocService.Insert();
 
@@ -584,13 +663,13 @@ codeunit 139629 "Library - E-Document"
     end;
 #endif
 
-    procedure CreateService(EDocDoucmentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration"): Code[20]
+    procedure CreateService(EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration"): Code[20]
     var
         EDocService: Record "E-Document Service";
     begin
         EDocService.Init();
         EDocService.Code := LibraryUtility.GenerateRandomCode20(EDocService.FieldNo(Code), Database::"E-Document Service");
-        EDocService."Document Format" := EDocDoucmentFormat;
+        EDocService."Document Format" := EDocDocumentFormat;
         EDocService."Service Integration V2" := EDocIntegration;
         EDocService.Insert();
 
@@ -815,11 +894,10 @@ codeunit 139629 "Library - E-Document"
         EDocLog.SetAscending("Entry No.", true);
         if EDocLog.FindSet() then
             repeat
-                Assert.AreEqual(EDocLogList.Get(Count), EDoclog.Status, 'Wrong status');
+                Assert.AreEqual(EDocLogList.Get(Count), EDocLog.Status, 'Wrong status');
                 Count := Count + 1;
             until EDocLog.Next() = 0;
     end;
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Export", 'OnAfterCreateEDocument', '', false, false)]
     local procedure OnAfterCreateEDocument(var EDocument: Record "E-Document")

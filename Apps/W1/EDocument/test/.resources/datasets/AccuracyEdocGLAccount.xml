@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Root>
+    <AITSuite Code="EDOC-GLACC" Description="E-Document Line GL Account Accuracy Tests" Dataset="AccuracyEdocGLAccount"
+        TestRunnerId="130451">
+        <Line CodeunitID="133509" Description="EDoc. Line Match Acc. Accuracy" Dataset="AccuracyEdocGLAccount" />
+        <Line CodeunitID="133519" Description="EDoc. Line Match Acc. Ground" Dataset="AccuracyEdocGLAccount" />
+    </AITSuite>
+</Root>

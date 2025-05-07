@@ -19,7 +19,7 @@ using Microsoft.Warehouse.Worksheet;
 
 table 11797 "User Setup Line CZL"
 {
-    Caption = 'User Setup Line (Obsolete)';
+    Caption = 'User Setup Line';
     DataCaptionFields = "User ID", Type;
 
     fields

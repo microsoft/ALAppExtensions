@@ -1,7 +1,6 @@
 namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Finance.Dimension;
-using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 139693 "Contract Dimensions Test"
 {
@@ -9,12 +8,14 @@ codeunit 139693 "Contract Dimensions Test"
     Access = Internal;
 
     var
-        CustomerContract: Record "Customer Contract";
-        GeneralLedgerSetup: Record "General Ledger Setup";
+        CustomerContract: Record "Customer Subscription Contract";
+        ServiceContractSetup: Record "Subscription Contract Setup";
         ContractTestLibrary: Codeunit "Contract Test Library";
         DimensionManagement: Codeunit DimensionManagement;
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         IsInitialized: Boolean;
+
+    #region Tests
 
     [Test]
     procedure CheckCustomerContractDimensionValueCreatedAndAssigned()
@@ -24,26 +25,30 @@ codeunit 139693 "Contract Dimensions Test"
     begin
         Initialize();
 
-        // [WHEN] Auto Insert Customer Contract Dimension Value is enabled
-        ContractTestLibrary.SetAutomaticDimentions(true);
+        // [WHEN] Auto Insert Customer Subscription Contract Dimension Value is enabled
+        ContractTestLibrary.SetAutomaticDimensions(true);
 
-        // [WHEN] Customer Contract dimension value is created
+        // [WHEN] Customer Subscription Contract dimension value is created
         ContractTestLibrary.InsertCustomerContractDimensionCode();
 
         ContractTestLibrary.CreateCustomerContract(CustomerContract, '');
 
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup.TestField("Dimension Code Cust. Contr.");
+        ServiceContractSetup.Get();
+        ServiceContractSetup.TestField("Dimension Code Cust. Contr.");
 
         // check Dimension Value created
-        DimensionValue.Get(GeneralLedgerSetup."Dimension Code Cust. Contr.", CustomerContract."No.");
+        DimensionValue.Get(ServiceContractSetup."Dimension Code Cust. Contr.", CustomerContract."No.");
 
         // check Dimension Value assigned
         CustomerContract.TestField("Dimension Set ID");
         DimensionManagement.GetDimensionSet(TempDimensionSetEntry, CustomerContract."Dimension Set ID");
-        TempDimensionSetEntry.Get(CustomerContract."Dimension Set ID", GeneralLedgerSetup."Dimension Code Cust. Contr.");
+        TempDimensionSetEntry.Get(CustomerContract."Dimension Set ID", ServiceContractSetup."Dimension Code Cust. Contr.");
         TempDimensionSetEntry.TestField("Dimension Value Code", CustomerContract."No.");
     end;
+
+    #endregion Tests
+
+    #region Procedures
 
     local procedure Initialize()
     begin
@@ -58,4 +63,6 @@ codeunit 139693 "Contract Dimensions Test"
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Contract Dimensions Test");
     end;
+
+    #endregion Procedures
 }

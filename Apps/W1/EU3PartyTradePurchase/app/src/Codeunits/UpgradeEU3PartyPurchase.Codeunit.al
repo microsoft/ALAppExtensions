@@ -102,6 +102,7 @@ codeunit 4888 "Upgrade EU3 Party Purchase"
 #endif
 
 #if not CLEAN26
+    [Obsolete('The feature key EU3PartyTradePurchase is deleted in v26', '26.0')]
     local procedure UpdateVATSetup()
     var
         VATSetup: Record "VAT Setup";

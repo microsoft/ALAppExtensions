@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Warehousing;
+
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5145 "Create Whse Item Category"
 {
     InherentEntitlements = X;

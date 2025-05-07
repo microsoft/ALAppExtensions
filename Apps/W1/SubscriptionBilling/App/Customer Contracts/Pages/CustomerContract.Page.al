@@ -8,10 +8,10 @@ using Microsoft.Finance.Dimension;
 
 page 8052 "Customer Contract"
 {
-    Caption = 'Customer Contract';
+    Caption = 'Customer Subscription Contract';
     PageType = Document;
     RefreshOnActivate = true;
-    SourceTable = "Customer Contract";
+    SourceTable = "Customer Subscription Contract";
     UsageCategory = None;
     ApplicationArea = All;
 
@@ -38,7 +38,7 @@ page 8052 "Customer Contract"
                     Caption = 'Customer No.';
                     Importance = Additional;
                     NotBlank = true;
-                    ToolTip = 'Specifies the number of the customer who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the number of the customer who will receive the contract components and be billed by default.';
 
                     trigger OnValidate()
                     begin
@@ -50,7 +50,7 @@ page 8052 "Customer Contract"
                 {
                     Caption = 'Customer Name';
                     ShowMandatory = true;
-                    ToolTip = 'Specifies the name of the customer who will receive the contractual services and be billed by default.';
+                    ToolTip = 'Specifies the name of the customer who will receive the contract components and be billed by default.';
 
                     trigger OnValidate()
                     begin
@@ -86,7 +86,7 @@ page 8052 "Customer Contract"
                         Caption = 'City';
                         Importance = Additional;
                         QuickEntry = false;
-                        ToolTip = 'Specifies the city of the customer on the customer contract.';
+                        ToolTip = 'Specifies the city of the customer on the Customer Subscription Contract.';
                     }
                     group(Control123)
                     {
@@ -123,7 +123,7 @@ page 8052 "Customer Contract"
                     {
                         Caption = 'Contact No.';
                         Importance = Additional;
-                        ToolTip = 'Specifies the number of the contact that receives the contractual services.';
+                        ToolTip = 'Specifies the number of the contact that receives the contract components.';
 
                         trigger OnValidate()
                         begin
@@ -131,6 +131,20 @@ page 8052 "Customer Contract"
                                 if Rec."Sell-to Contact No." <> xRec."Sell-to Contact No." then
                                     Rec.SetRange("Sell-to Contact No.");
                         end;
+                    }
+                    field("Sell-to Phone No."; Rec."Sell-to Phone No.")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Phone No.';
+                        Importance = Additional;
+                        ToolTip = 'Specifies the telephone number of the contact person that the sales document will be sent to.';
+                    }
+                    field("Sell-to E-Mail"; Rec."Sell-to E-Mail")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Email';
+                        Importance = Additional;
+                        ToolTip = 'Specifies the email address of the contact person that the sales document will be sent to.';
                     }
                 }
                 field("Sell-to Contact"; Rec."Sell-to Contact")
@@ -164,7 +178,7 @@ page 8052 "Customer Contract"
                     {
                         MultiLine = true;
                         ShowCaption = false;
-                        ToolTip = 'Specifies the products or service being offered.';
+                        ToolTip = 'Specifies the description of the Subscription Contract.';
 
                         trigger OnValidate()
                         begin
@@ -184,12 +198,25 @@ page 8052 "Customer Contract"
                     Importance = Additional;
                     ToolTip = 'Specifies the ID of the user who is responsible for the document.';
                 }
+#if not CLEAN27
                 field("Without Contract Deferrals"; Rec."Without Contract Deferrals")
+                {
+                    ObsoleteReason = 'Removed in favor of Create Contract Deferrals.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
+                    ApplicationArea = Suite;
+                    Importance = Additional;
+                    QuickEntry = false;
+                    Visible = false;
+                    ToolTip = 'Specifies whether deferrals should be generated for the contract. If the field is activated, no deferrals are generated and the invoices are posted directly to profit or loss.';
+                }
+#endif
+                field("Create Contract Deferrals"; Rec."Create Contract Deferrals")
                 {
                     ApplicationArea = Suite;
                     Importance = Additional;
                     QuickEntry = false;
-                    ToolTip = 'Specifies whether deferrals should be generated for the contract. If the field is activated, no deferrals are generated and the invoices are posted directly to profit or loss.';
+                    ToolTip = 'Specifies whether to generate contract deferrals for the contract in general. The field affects only Subscription lines assigned to the contract for which the field "Create Contract Deferrals" is set to Contract-dependent.';
                 }
                 field("Exclude from Price Update"; Rec.DefaultExcludeFromPriceUpdate)
                 {
@@ -200,12 +227,12 @@ page 8052 "Customer Contract"
             part(Lines; "Customer Contract Line Subp.")
             {
                 Caption = 'Lines';
-                SubPageLink = "Contract No." = field("No."), "Closed" = filter(false);
+                SubPageLink = "Subscription Contract No." = field("No."), "Closed" = filter(false);
             }
             part("Closed Lines"; "Closed Cust. Cont. Line Subp.")
             {
                 Caption = 'Closed Lines';
-                SubPageLink = "Contract No." = field("No."), "Closed" = filter(true);
+                SubPageLink = "Subscription Contract No." = field("No."), "Closed" = filter(true);
                 UpdatePropagation = Both;
             }
             group("Invoice Details")
@@ -277,7 +304,7 @@ page 8052 "Customer Contract"
                         field(ShippingOptions; ShipToOptions)
                         {
                             Caption = 'Ship-to';
-                            ToolTip = 'Specifies the address that the service commitments on the contract are delivered to. Default (Sell-to Address): The same as the customer''s sell-to address. Alternate Ship-to Address: One of the customer''s alternate ship-to addresses. Custom Address: Any ship-to address that you specify in the fields below.';
+                            ToolTip = 'Specifies the address that the Subscription Lines on the contract are delivered to. Default (Sell-to Address): The same as the customer''s sell-to address. Alternate Ship-to Address: One of the customer''s alternate ship-to addresses. Custom Address: Any ship-to address that you specify in the fields below.';
 
                             trigger OnValidate()
                             var
@@ -348,14 +375,14 @@ page 8052 "Customer Contract"
                             {
                                 Caption = 'Name';
                                 Editable = ShipToOptions = ShipToOptions::"Custom Address";
-                                ToolTip = 'Specifies the name of the one who receives or uses the contract service commitments.';
+                                ToolTip = 'Specifies the name of the one who receives or uses the Subscription Contract Lines.';
                             }
                             field("Ship-to Address"; Rec."Ship-to Address")
                             {
                                 Caption = 'Address';
                                 Editable = ShipToOptions = ShipToOptions::"Custom Address";
                                 QuickEntry = false;
-                                ToolTip = 'Specifies the address of the one who receives or uses the contract service commitments.';
+                                ToolTip = 'Specifies the address of the one who receives or uses the Subscription Contract Lines.';
                             }
                             field("Ship-to Address 2"; Rec."Ship-to Address 2")
                             {
@@ -407,7 +434,7 @@ page 8052 "Customer Contract"
                         field("Ship-to Contact"; Rec."Ship-to Contact")
                         {
                             Caption = 'Contact';
-                            ToolTip = 'Specifies the name of the contact person at the address where contract service commitments are received or used.';
+                            ToolTip = 'Specifies the name of the contact person at the address where Subscription Contract Lines are received or used.';
                         }
                     }
                 }
@@ -539,21 +566,21 @@ page 8052 "Customer Contract"
                         Caption = 'Harmonized Billing';
                         field("Billing Base Date"; Rec."Billing Base Date")
                         {
-                            ToolTip = 'Specifies the billing base date for the contract. If a date is specified here, the billing of all services will be harmonized based on this date.';
+                            ToolTip = 'Specifies the billing base date for the contract. If a date is specified here, the billing of all Subscription Lines will be harmonized based on this date.';
                             Editable = ContractTypeSetAsHarmonizedBilling;
                         }
                         field("Default Billing Rhythm"; Rec."Default Billing Rhythm")
                         {
-                            ToolTip = 'Specifies the billing rhythm of the contract. If a date formula is specified here, the billing of all services will be harmonized based on this billing rhythm.';
+                            ToolTip = 'Specifies the billing rhythm of the contract. If a date formula is specified here, the billing of all Subscription Lines will be harmonized based on this billing rhythm.';
                             Editable = ContractTypeSetAsHarmonizedBilling;
                         }
                         field("Next Billing From"; Rec."Next Billing From")
                         {
-                            ToolTip = 'Specifies the start date of the next billing period. The next billing of all services will be harmonized to this date.';
+                            ToolTip = 'Specifies the start date of the next billing period. The next billing of all Subscription Lines will be harmonized to this date.';
                         }
                         field("Next Billing To"; Rec."Next Billing To")
                         {
-                            ToolTip = 'Specifies the end date of the next billing period. The next billing of all services will be harmonized to this date.';
+                            ToolTip = 'Specifies the end date of the next billing period. The next billing of all Subscription Line will be harmonized to this date.';
                         }
                     }
                 }
@@ -586,7 +613,7 @@ page 8052 "Customer Contract"
             part("Attached Documents"; "Doc. Attachment List Factbox")
             {
                 Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(Database::"Customer Contract"),
+                SubPageLink = "Table ID" = const(Database::"Customer Subscription Contract"),
                               "No." = field("No.");
             }
             systempart(Control1900383207; Links)
@@ -616,7 +643,7 @@ page 8052 "Customer Contract"
                     RunObject = page "Customer Card";
                     RunPageLink = "No." = field("Sell-to Customer No.");
                     ShortcutKey = 'Shift+F7';
-                    ToolTip = 'View or edit detailed information about the customer on the customer contract.';
+                    ToolTip = 'View or edit detailed information about the customer on the Customer Subscription Contract.';
                 }
                 action(Dimensions)
                 {
@@ -634,13 +661,13 @@ page 8052 "Customer Contract"
                 }
                 action("Customer Contract Deferrals")
                 {
-                    Caption = 'Customer Contract Deferrals';
-                    ToolTip = 'Customer Contract Deferrals.';
+                    Caption = 'Customer Subscription Contract Deferrals';
+                    ToolTip = 'Customer Subscription Contract Deferrals.';
                     Image = LedgerEntries;
                     ShortcutKey = 'Ctrl+F7';
                     RunObject = page "Customer Contract Deferrals";
-                    RunPageView = sorting("Contract No.");
-                    RunPageLink = "Contract No." = field("No.");
+                    RunPageView = sorting("Subscription Contract No.");
+                    RunPageLink = "Subscription Contract No." = field("No.");
                 }
                 action(UpdateDimensionsInDeferrals)
                 {
@@ -655,9 +682,9 @@ page 8052 "Customer Contract"
                 }
                 action(GetServiceCommitmentsAction)
                 {
-                    Caption = 'Get Service Commitments';
+                    Caption = 'Get Subscription Lines';
                     Image = SelectLineToApply;
-                    ToolTip = 'Get Service Commitments without Contract.';
+                    ToolTip = 'Get Subscription Lines without Contract.';
 
                     trigger OnAction()
                     var
@@ -669,9 +696,9 @@ page 8052 "Customer Contract"
                 }
                 action(UpdateServicesDatesAction)
                 {
-                    Caption = 'Update Service Dates';
+                    Caption = 'Update Subscription Line Dates';
                     Image = ChangeDates;
-                    ToolTip = 'The function updates the dates in the service commitments.';
+                    ToolTip = 'The function updates the dates in the Subscription Lines.';
 
                     trigger OnAction()
                     var
@@ -704,7 +731,7 @@ page 8052 "Customer Contract"
                 action(ExtendContract)
                 {
                     Caption = 'Extend Contract';
-                    ToolTip = 'Opens the action for creating a service object with services that directly extend the specified contracts.';
+                    ToolTip = 'Opens the action for creating a Subscription with Subscription Lines that directly extend the specified contracts.';
                     Image = AddAction;
 
                     trigger OnAction()
@@ -724,7 +751,7 @@ page 8052 "Customer Contract"
 
                     trigger OnAction()
                     var
-                        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+                        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
                     begin
                         Clear(ContractRenewalMgt);
                         ContractRenewalMgt.StartContractRenewalFromContract(Rec);
@@ -782,7 +809,7 @@ page 8052 "Customer Contract"
 
                     trigger OnAction()
                     var
-                        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+                        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
                     begin
                         ContractRenewalMgt.ShowRenewalSalesDocumentForContract("Sales Document Type"::Quote, Rec."No.");
                     end;
@@ -795,7 +822,7 @@ page 8052 "Customer Contract"
 
                     trigger OnAction()
                     var
-                        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+                        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
                     begin
                         ContractRenewalMgt.ShowRenewalSalesDocumentForContract("Sales Document Type"::Order, Rec."No.");
                     end;
@@ -807,13 +834,13 @@ page 8052 "Customer Contract"
                 action(OverviewOfContractComponents)
                 {
                     Caption = 'Overview of contract components';
-                    ToolTip = 'Show a detailed list of services for the selected contract.';
+                    ToolTip = 'Show a detailed list of Subscription Lines for the selected contract.';
                     Image = QualificationOverview;
                     ApplicationArea = All;
 
                     trigger OnAction()
                     var
-                        CustomerContract: Record "Customer Contract";
+                        CustomerContract: Record "Customer Subscription Contract";
                         OverviewOfContractComponent: Report "Overview Of Contract Comp";
                     begin
                         CustomerContract.SetRange("No.", Rec."No.");
@@ -877,7 +904,7 @@ page 8052 "Customer Contract"
             }
             group(Category_Category5)
             {
-                Caption = 'Contract';
+                Caption = 'Subscription Contract';
 
                 actionref(Dimensions_Promoted; Dimensions)
                 {
@@ -933,7 +960,7 @@ page 8052 "Customer Contract"
     var
         CustomerMgt: Codeunit "Customer Mgt.";
         FormatAddress: Codeunit "Format Address";
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         DocNoVisible: Boolean;
         EmptyShipToCodeErr: Label 'The Code field can only be empty if you select Custom Address in the Ship-to field.';
         IsCustomerOrContactNotEmpty: Boolean;
@@ -980,18 +1007,18 @@ page 8052 "Customer Contract"
         BillToFieldsEnabled := (BillToOptions = BillToOptions::"Custom Address") or (Rec."Bill-to Customer No." <> Rec."Sell-to Customer No.");
     end;
 
-    [InternalEvent(false, false)]
-    local procedure OnBeforeValidateShipToOptions(var CustomerContract: Record "Customer Contract"; ShipToOptions: Enum "Sales Ship-to Options"; var IsHandled: Boolean)
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateShipToOptions(var CustomerSubscriptionContract: Record "Customer Subscription Contract"; ShipToOptions: Enum "Sales Ship-to Options"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
-    local procedure OnAfterValidateShippingOptions(var CustomerContract: Record "Customer Contract"; ShipToOptions: Enum "Sales Ship-to Options")
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterValidateShippingOptions(var CustomerSubscriptionContract: Record "Customer Subscription Contract"; ShipToOptions: Enum "Sales Ship-to Options")
     begin
     end;
 
-    [InternalEvent(false, false)]
-    local procedure OnValidateShipToOptionsOnAfterShipToAddressListGetRecord(var ShipToAddress: Record "Ship-to Address"; var CustomerContract: Record "Customer Contract")
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateShipToOptionsOnAfterShipToAddressListGetRecord(var ShipToAddress: Record "Ship-to Address"; var CustomerContract: Record "Customer Subscription Contract")
     begin
     end;
 }

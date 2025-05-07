@@ -21,14 +21,14 @@ pageextension 8003 "Contract Contact Card" extends "Contact Card"
         {
             action(OverviewOfContractComponents)
             {
-                Caption = 'Overview of contract components';
-                ToolTip = 'Show a detailed list of services for the selected contact.';
+                Caption = 'Overview of Subscription Contract components';
+                ToolTip = 'Show a detailed list of Subscription Lines for the selected contact.';
                 Image = QualificationOverview;
                 ApplicationArea = All;
 
                 trigger OnAction()
                 var
-                    CustomerContract: Record "Customer Contract";
+                    CustomerContract: Record "Customer Subscription Contract";
                     OverviewOfContractComp: Report "Overview Of Contract Comp";
                 begin
                     CustomerContract.SetRange("Sell-to Contact No.", Rec."No.");

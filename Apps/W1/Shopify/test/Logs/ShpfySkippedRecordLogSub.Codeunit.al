@@ -33,7 +33,7 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
         GetProductMetafieldsGQLEndMsg: Label '\") { metafields(first: 50) {edges{node{legacyResourceId updatedAt}}}}}"}', Locked = true;
         GetVariantMetafieldsGQLStartMsg: Label '{"query":"{productVariant(id: \"gid://shopify/ProductVariant/', Locked = true;
         GetVariantMetafieldGQLEndMsg: Label '\") { metafields(first: 50) {edges{ node{legacyResourceId updatedAt}}}}}"}', Locked = true;
-        CreateFulfimentGQLStartMsg: Label '{"query": "mutation {fulfillmentCreateV2( fulfillment: {notifyCustomer: true, trackingInfo: {number: ', Locked = true;
+        CreateFulfimentGQLStartMsg: Label '{"query": "mutation {fulfillmentCreate( fulfillment: {notifyCustomer: true, trackingInfo: {number: ', Locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of

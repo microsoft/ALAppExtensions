@@ -1,1 +1,1 @@
-{ "data": { "productVariantCreate": { "legacyResourceId": %1 } } }
+{ "data": { "productVariantsBulkCreate": { "productVariants": [{"legacyResourceId": %1, "createdAt": "2025-01-24T09:54:44Z", "updatedAt": "2025-01-24T09:54:44Z" }] } }}

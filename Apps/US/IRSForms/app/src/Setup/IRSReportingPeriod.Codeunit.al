@@ -65,8 +65,6 @@ codeunit 10042 "IRS Reporting Period"
         NewIRS1099FormStatementLine: Record "IRS 1099 Form Statement Line";
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
         NewIRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
-        IRS1099VendorFormBoxAdj: Record "IRS 1099 Vendor Form Box Adj.";
-        NewIRS1099VendorFormBoxAdj: Record "IRS 1099 Vendor Form Box Adj.";
         SetupCompletedMessage: Text;
         SomethingHasBeenCopied: Boolean;
     begin
@@ -102,16 +100,6 @@ codeunit 10042 "IRS Reporting Period"
                 NewIRS1099VendorFormBoxSetup."Period No." := ToPeriodNo;
                 NewIRS1099VendorFormBoxSetup.Insert();
             until IRS1099VendorFormBoxSetup.Next() = 0;
-        end;
-        IRS1099VendorFormBoxAdj.SetRange("Period No.", FromPeriodNo);
-        if IRS1099VendorFormBoxAdj.FindSet() then begin
-            SomethingHasBeenCopied := true;
-            SetupCompletedMessage += StrSubstNo(TableWithRecordsCountMsg, IRS1099VendorFormBoxAdj.Count(), IRS1099VendorFormBoxAdj.TableCaption);
-            repeat
-                NewIRS1099VendorFormBoxAdj := IRS1099VendorFormBoxAdj;
-                NewIRS1099VendorFormBoxAdj."Period No." := ToPeriodNo;
-                NewIRS1099VendorFormBoxAdj.Insert();
-            until IRS1099VendorFormBoxAdj.Next() = 0;
         end;
         IRS1099FormStatementLine.SetRange("Period No.", FromPeriodNo);
         if IRS1099FormStatementLine.FindSet() then begin

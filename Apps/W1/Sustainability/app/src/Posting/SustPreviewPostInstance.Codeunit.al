@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 6233 "Sust. Preview Post Instance"
 {
     SingleInstance = true;

@@ -46,7 +46,7 @@ codeunit 6361 "Pagero Connection"
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         InputTxt: Text;
     begin
-        if not PageroAPIRequests.GetADocument(EDocument, HttpRequest, HttpResponse) then begin
+        if not PageroAPIRequests.GetDocumentByFileId(EDocument, HttpRequest, HttpResponse) then begin
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(UnsuccessfulResponseErr, HttpResponse.HttpStatusCode(), HttpResponse.ReasonPhrase()));
             exit(false);
         end;

@@ -12,81 +12,83 @@ codeunit 30107 "Shpfy Sync Countries"
     begin
         ShopifyShop := Rec;
         ShopifyCommunicationMgt.SetShop(Rec);
+        JCountries := GetCountries();
         SyncCountries();
         Commit();
     end;
 
     var
-        ShopifyShop: record "Shpfy Shop";
+        ShopifyShop: Record "Shpfy Shop";
         ShopifyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
+        JCountries: JsonArray;
 
-    /// <summary> 
-    /// Import Country.
-    /// </summary>
-    /// <param name="JCountry">Parameter of type JsonObject.</param>
-    local procedure ImportCountry(JCountry: JsonObject)
-    var
-        ShopCustomerTemplate: Record "Shpfy Customer Template";
-        JProvinces: JsonArray;
-        JProvince: JsonToken;
-        JValue: JsonValue;
-    begin
-        if JsonHelper.GetJsonValue(JCountry, JValue, 'code') then begin
-            ShopCustomerTemplate.Init();
-            ShopCustomerTemplate."Shop Code" := ShopifyShop.Code;
-            ShopCustomerTemplate."Country/Region Code" := CopyStr(JValue.AsCode(), 1, MaxStrLen(ShopCustomerTemplate."Country/Region Code"));
-            if (ShopCustomerTemplate."Country/Region Code" <> '') and (ShopCustomerTemplate."Country/Region Code" <> '*') then begin
-                if ShopCustomerTemplate.Insert() then;
-                if JsonHelper.GetJsonArray(JCountry, JProvinces, 'provinces') then
-                    foreach JProvince in JProvinces do
-                        ImportProvince(JProvince.AsObject(), ShopCustomerTemplate."Country/Region Code");
-            end;
-        end;
-    end;
-
-    /// <summary> 
-    /// Import Province.
-    /// </summary>
-    /// <param name="JProvince">Parameter of type JsonObject.</param>
-    /// <param name="CountrCode">Parameter of type Text.</param>
-    local procedure ImportProvince(JProvince: JsonObject; CountrCode: Text)
-    var
-        ShopifyTaxArea: Record "Shpfy Tax Area";
-        JValue: JsonValue;
-    begin
-        if JsonHelper.GetJsonValue(JProvince, JValue, 'name') then begin
-            ShopifyTaxArea.Init();
-            ShopifyTaxArea."Country/Region Code" := CopyStr(CountrCode, 1, MaxStrLen(ShopifyTaxArea."Country/Region Code"));
-            ShopifyTaxArea.County := CopyStr(JValue.AsText(), 1, MaxStrLen(ShopifyTaxArea.County));
-            if JsonHelper.GetJsonValue(JProvince, JValue, 'code') then
-                ShopifyTaxArea."County Code" := CopyStr(JValue.AsText(), 1, MaxStrLen(ShopifyTaxArea."County Code"));
-            if ShopifyTaxArea.Insert() then;
-        end;
-    end;
-
-    /// <summary> 
-    /// Sync Countries.
-    /// </summary>
     local procedure SyncCountries()
     var
         ShopCustomerTemplate: Record "Shpfy Customer Template";
-        JCountries: JsonArray;
-        JCountry: JsonToken;
-        JRequest: JsonToken;
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        JShipToCountries: JsonArray;
+        JShipToCountry: JsonToken;
         JResponse: JsonToken;
-        Url: Text;
     begin
         ShopCustomerTemplate.SetRange("Shop Code", ShopifyShop.Code);
         ShopCustomerTemplate.SetFilter("Country/Region Code", '%1|%2', '', '*');
         ShopCustomerTemplate.DeleteAll(true);
-        if ShopifyShop."Shopify URL".EndsWith('/') then
-            Url := ShopifyShop."Shopify URL" + 'admin/countries.json'
-        else
-            Url := ShopifyShop."Shopify URL" + '/admin/countries.json';
-        JResponse := ShopifyCommunicationMgt.ExecuteWebRequest(Url, 'GET', JRequest);
-        if JsonHelper.GetJsonArray(JResponse.AsObject(), JCountries, 'countries') then
-            foreach JCountry in JCountries do
-                ImportCountry(JCountry.AsObject());
+
+        GraphQLType := GraphQLType::GetShipToCountries;
+        JResponse := ShopifyCommunicationMgt.ExecuteGraphQL(GraphQLType);
+        if JsonHelper.GetJsonArray(JResponse, JShipToCountries, 'data.shop.shipsToCountries') then
+            foreach JShipToCountry in JShipToCountries do
+                ImportCountry(JShipToCountry.AsValue());
+    end;
+
+    local procedure ImportCountry(CountryCode: JsonValue);
+    var
+        ShopifyCustomerTemplate: Record "Shpfy Customer Template";
+    begin
+        ShopifyCustomerTemplate.Init();
+        ShopifyCustomerTemplate."Shop Code" := ShopifyShop.Code;
+        ShopifyCustomerTemplate."Country/Region Code" := CopyStr(CountryCode.AsCode(), 1, MaxStrLen(ShopifyCustomerTemplate."Country/Region Code"));
+        if (ShopifyCustomerTemplate."Country/Region Code" <> '') and (ShopifyCustomerTemplate."Country/Region Code" <> '*') then begin
+            if ShopifyCustomerTemplate.Insert() then;
+            ImportProvince(CountryCode);
+        end;
+    end;
+
+    local procedure ImportProvince(CountryCode: JsonValue)
+    var
+        ShopifyTaxArea: Record "Shpfy Tax Area";
+        JProvinces: JsonArray;
+        JCountry: JsonToken;
+        JProvince: JsonToken;
+    begin
+        foreach JCountry in JCountries do
+            if JsonHelper.GetValueAsCode(JCountry.AsObject(), 'code') = CountryCode.AsCode() then begin
+                if JsonHelper.GetJsonArray(JCountry.AsObject(), JProvinces, 'provinces') then
+                    foreach JProvince in JProvinces do begin
+                        ShopifyTaxArea.Init();
+                        ShopifyTaxArea."Country/Region Code" := CopyStr(CountryCode.AsCode(), 1, MaxStrLen(ShopifyTaxArea."Country/Region Code"));
+                        ShopifyTaxArea.County := CopyStr(JsonHelper.GetValueAsText(JProvince, 'name'), 1, MaxStrLen(ShopifyTaxArea.County));
+                        ShopifyTaxArea."County Code" := CopyStr(JsonHelper.GetValueAsText(JProvince, 'code'), 1, MaxStrLen(ShopifyTaxArea."County Code"));
+                        if ShopifyTaxArea.Insert() then;
+                    end;
+                exit;
+            end;
+    end;
+
+    local procedure GetCountries(): JsonArray
+    var
+        Line: Text;
+        CountryList: TextBuilder;
+        ResInStream: InStream;
+        JCountry: JsonObject;
+    begin
+        NavApp.GetResource('data/provinces.yml', ResInStream, TextEncoding::UTF8);
+        while not ResInStream.EOS do begin
+            ResInStream.ReadText(Line);
+            CountryList.AppendLine(Line);
+        end;
+        JCountry.ReadFromYaml(CountryList.ToText());
+        exit(JsonHelper.GetJsonArray(JCountry, 'countries'));
     end;
 }

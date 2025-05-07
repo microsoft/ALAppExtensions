@@ -21,6 +21,7 @@ codeunit 148186 "Sustainability Financial Test"
     [Test]
     procedure TestFinancialReportsForSustainabilityAccount()
     var
+        EmissionFee: array[3] of Record "Emission Fee";
         FinancialReport: Record "Financial Report";
         SustainabilityAccount: Record "Sustainability Account";
         FinancialReports: TestPage "Financial Reports";
@@ -32,12 +33,17 @@ codeunit 148186 "Sustainability Financial Test"
         EmissionCO2: Decimal;
         EmissionCH4: Decimal;
         EmissionN2O: Decimal;
+        ExpectedCO2eEmission: Decimal;
+        ExpectedCarbonFee: Decimal;
     begin
         // [SCENARIO 507032] Verify the Financial Report Data for Sustainability Account.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Change WorkDate.
         WorkDate(Today);
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
 
         // [GIVEN] Create a Sustainability Account.
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
@@ -47,6 +53,10 @@ codeunit 148186 "Sustainability Financial Test"
         EmissionCO2 := LibraryRandom.RandInt(5);
         EmissionCH4 := LibraryRandom.RandInt(5);
         EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Save Expected CO2e Emission and Carbon Fee.
+        ExpectedCO2eEmission := EmissionCH4 * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2 * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O * EmissionFee[3]."Carbon Equivalent Factor";
+        ExpectedCarbonFee := ExpectedCO2eEmission * (EmissionFee[1]."Carbon Fee" + EmissionFee[2]."Carbon Fee" + EmissionFee[3]."Carbon Fee");
 
         // [GIVEN] Create and Post Purchase Order with WorkDate().
         CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
@@ -72,7 +82,7 @@ codeunit 148186 "Sustainability Financial Test"
         FinancialReports.ViewFinancialReport.Invoke();
 
         // [VERIFY] Financial Report shows the correct data
-        VerifyDataFinancialReport(AccScheduleOverview, EmissionCO2, EmissionCH4 + EmissionN2O);
+        VerifyDataFinancialReport(AccScheduleOverview, ExpectedCO2eEmission, ExpectedCarbonFee);
     end;
 
     [Test]
@@ -216,7 +226,7 @@ codeunit 148186 "Sustainability Financial Test"
         EmissionCH4: Decimal;
         EmissionN2O: Decimal;
     begin
-        // [SCENARIO 507032] Verify amount Lookup should open Sustainablity Ledger Entries in Analysis View Entry.
+        // [SCENARIO 507032] Verify amount Lookup should open Sustainability Ledger Entries in Analysis View Entry.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Change WorkDate.
@@ -256,7 +266,7 @@ codeunit 148186 "Sustainability Financial Test"
         AnalysisViewEntries.Amount.Lookup();
         AnalysisViewEntries.Close();
 
-        // [VERIFY] Verify amount Lookup should open Sustainablity Ledger Entries in Analysis View Entry through handler.
+        // [VERIFY] Verify amount Lookup should open Sustainability Ledger Entries in Analysis View Entry through handler.
         LibraryVariableStorage.Clear();
     end;
 
@@ -276,7 +286,7 @@ codeunit 148186 "Sustainability Financial Test"
         EmissionCH4: Decimal;
         EmissionN2O: Decimal;
     begin
-        // [SCENARIO 507032] Verify amount Lookup should open Sustainablity Ledger Entries in Analysis View Entry with different dates.
+        // [SCENARIO 507032] Verify amount Lookup should open Sustainability Ledger Entries in Analysis View Entry with different dates.
         LibrarySustainability.CleanUpBeforeTesting();
 
         // [GIVEN] Change WorkDate.
@@ -323,7 +333,7 @@ codeunit 148186 "Sustainability Financial Test"
         AnalysisViewEntries.Amount.Lookup();
         AnalysisViewEntries.Close();
 
-        // [VERIFY] Verify amount Lookup should open Sustainablity Ledger Entries in Analysis View Entry through handler.
+        // [VERIFY] Verify amount Lookup should open Sustainability Ledger Entries in Analysis View Entry through handler.
         LibraryVariableStorage.Clear();
 
         // [GIVEN] Save Expected Amount.
@@ -339,8 +349,132 @@ codeunit 148186 "Sustainability Financial Test"
         AnalysisViewEntries.Amount.Lookup();
         AnalysisViewEntries.Close();
 
-        // [VERIFY] Verify amount Lookup should open Sustainablity Ledger Entries in Analysis View Entry through handler.
+        // [VERIFY] Verify amount Lookup should open Sustainability Ledger Entries in Analysis View Entry through handler.
         LibraryVariableStorage.Clear();
+    end;
+
+    [Test]
+    procedure VerifyAnalysisViewEntryForCO2eEmissionAndCarbonFee()
+    var
+        EmissionFee: array[3] of Record "Emission Fee";
+        AnalysisView: Record "Analysis View";
+        SustainabilityAccount: Record "Sustainability Account";
+        AnalysisViewEntry: Record "Analysis View Entry";
+        AnalysisViewCard: TestPage "Analysis View Card";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        ExpectedCO2eEmission: Decimal;
+        ExpectedCarbonFee: Decimal;
+    begin
+        // [SCENARIO 564701] Verify "CO2e Emission" and "Carbon Fee" in Analysis View Entry for Sustainability Account.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Change WorkDate.
+        WorkDate(Today);
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Delete Analysis View Entry.
+        AnalysisViewEntry.DeleteAll();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(5);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Save Expected CO2e Emission and Carbon Fee.
+        ExpectedCO2eEmission := EmissionCH4 * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2 * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O * EmissionFee[3]."Carbon Equivalent Factor";
+        ExpectedCarbonFee := ExpectedCO2eEmission * (EmissionFee[1]."Carbon Fee" + EmissionFee[2]."Carbon Fee" + EmissionFee[3]."Carbon Fee");
+
+        // [GIVEN] Create and Post Purchase Order with WorkDate().
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [GIVEN] Create and Post another Purchase Order with WorkDate().
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [WHEN] Analysis view record for Sustainability Account.
+        CreateAnalysisViewForSustainabilityAccount(AnalysisViewCard, AnalysisView, AccountCode);
+        AnalysisViewCard.Close();
+
+        // [VERIFY] Verify "CO2e Emission" and "Carbon Fee" in Analysis View Entry for Sustainability Account.
+        VerifyAnalysisViewEntryForCO2eEmissionAndCarbonFee(AnalysisView.Code, AccountCode, ExpectedCO2eEmission * 2, ExpectedCarbonFee * 2)
+    end;
+
+    [Test]
+    procedure TestFinancialReportsForAnalysisView()
+    var
+        EmissionFee: array[3] of Record "Emission Fee";
+        AnalysisView: Record "Analysis View";
+        FinancialReport: Record "Financial Report";
+        SustainabilityAccount: Record "Sustainability Account";
+        AnalysisViewEntry: Record "Analysis View Entry";
+        AnalysisViewCard: TestPage "Analysis View Card";
+        FinancialReports: TestPage "Financial Reports";
+        AccScheduleOverview: TestPage "Acc. Schedule Overview";
+        FinancialReportName: Code[10];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        ExpectedCO2eEmission: Decimal;
+        ExpectedCarbonFee: Decimal;
+    begin
+        // [SCENARIO 564701] Verify "CO2e Emission" and "Carbon Fee" in the Financial Report Data for Analysis View.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Delete Analysis View Entry.
+        AnalysisViewEntry.DeleteAll();
+
+        // [GIVEN] Change WorkDate.
+        WorkDate(Today);
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(5);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Save Expected CO2e Emission and Carbon Fee.
+        ExpectedCO2eEmission := EmissionCH4 * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2 * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O * EmissionFee[3]."Carbon Equivalent Factor";
+        ExpectedCarbonFee := ExpectedCO2eEmission * (EmissionFee[1]."Carbon Fee" + EmissionFee[2]."Carbon Fee" + EmissionFee[3]."Carbon Fee");
+
+        // [GIVEN] Create and Post Purchase Order with WorkDate().
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [GIVEN] Create Analysis view record for Sustainability Account.
+        CreateAnalysisViewForSustainabilityAccount(AnalysisViewCard, AnalysisView, AccountCode);
+        AnalysisViewCard.Close();
+
+        // [GIVEN] Create Financial Report.
+        FinancialReportName := Format(LibraryRandom.RandText(10));
+        CreateFinancialReportWithAnalysisView(FinancialReportName, AnalysisView.Code, AccountCode);
+
+        // [WHEN] View Financial Reports.
+        FinancialReport.Get(FinancialReportName);
+        FinancialReports.OpenEdit();
+        FinancialReports.GoToRecord(FinancialReport);
+        AccScheduleOverview.Trap();
+        FinancialReports.ViewFinancialReport.Invoke();
+
+        // [VERIFY] Verify "CO2e Emission" and "Carbon Fee" in the Financial Report Data for Analysis View.
+        VerifyDataFinancialReport(AccScheduleOverview, ExpectedCO2eEmission, ExpectedCarbonFee);
     end;
 
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
@@ -527,6 +661,104 @@ codeunit 148186 "Sustainability Financial Test"
             ExpectedN2OAmount,
             AnalysisViewEntry."Emission N2O",
             StrSubstNo(ValueMustBeEqualErr, AnalysisViewEntry.FieldCaption("Emission N2O"), ExpectedN2OAmount, AnalysisViewEntry.TableCaption()));
+    end;
+
+    local procedure CreateEmissionFeeWithEmissionScope(var EmissionFee: array[3] of Record "Emission Fee"; EmissionScope: Enum "Emission Scope"; CountryRegionCode: Code[10])
+    begin
+        LibrarySustainability.InsertEmissionFee(
+            EmissionFee[1],
+            "Emission Type"::CH4,
+            EmissionScope,
+            CalcDate('<-CM>', WorkDate()),
+            CalcDate('<CM>', WorkDate()),
+            CountryRegionCode,
+            LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
+
+        LibrarySustainability.InsertEmissionFee(
+            EmissionFee[2],
+            "Emission Type"::CO2,
+            EmissionScope,
+            CalcDate('<-CM>', WorkDate()),
+            CalcDate('<CM>', WorkDate()),
+            CountryRegionCode,
+            LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
+        EmissionFee[2].Validate("Carbon Fee", LibraryRandom.RandDecInDecimalRange(0.5, 2, 1));
+        EmissionFee[2].Modify();
+
+        LibrarySustainability.InsertEmissionFee(
+            EmissionFee[3],
+            "Emission Type"::N2O,
+            EmissionScope,
+            CalcDate('<-CM>', WorkDate()),
+            CalcDate('<CM>', WorkDate()),
+            CountryRegionCode,
+            LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
+    end;
+
+    local procedure CreateFinancialReportWithAnalysisView(FinancialReportName: Code[10]; AnalysisViewName: Code[10]; TotalingFilter: Text[250])
+    var
+        AccScheduleName: Record "Acc. Schedule Name";
+        AccScheduleLine: Record "Acc. Schedule Line";
+        FinancialReport: Record "Financial Report";
+        ColumnLayoutName: Record "Column Layout Name";
+    begin
+        if FinancialReport.Get(FinancialReportName) then
+            FinancialReport.Delete();
+
+        Clear(FinancialReport);
+        FinancialReport.Name := FinancialReportName;
+        FinancialReport.Description := FinancialReportName;
+        FinancialReport.Insert();
+
+        AccScheduleLine.SetRange("Schedule Name", FinancialReportName);
+        AccScheduleLine.DeleteAll();
+
+        if AccScheduleName.Get(FinancialReportName) then
+            AccScheduleName.Delete();
+
+        AccScheduleName.Name := FinancialReportName;
+        AccScheduleName.Description := FinancialReportName;
+        AccScheduleName."Analysis View Name" := AnalysisViewName;
+        AccScheduleName.Insert();
+
+        AccScheduleLine.Init();
+        AccScheduleLine."Schedule Name" := FinancialReportName;
+        AccScheduleLine."Line No." := 10000;
+        AccScheduleLine."Totaling Type" := AccScheduleLine."Totaling Type"::"Sust. Accounts";
+        AccScheduleLine.Totaling := TotalingFilter;
+        AccScheduleLine."Row No." := '20';
+        AccScheduleLine.Description := FinancialReportName;
+        AccScheduleLine."Row Type" := AccScheduleLine."Row Type"::"Net Change";
+        AccScheduleLine.Bold := true;
+        AccScheduleLine.Insert();
+
+        LibraryERM.CreateColumnLayoutName(ColumnLayoutName);
+        CreateColumnLayout(ColumnLayoutName.Name, '10', Format("Account Schedule Amount Type"::CO2e), 10000, "Account Schedule Amount Type"::CO2e);
+        CreateColumnLayout(ColumnLayoutName.Name, '20', Format("Account Schedule Amount Type"::"Carbon Fee"), 20000, "Account Schedule Amount Type"::"Carbon Fee");
+
+        FinancialReport.Find();
+        FinancialReport."Financial Report Row Group" := AccScheduleName.Name;
+        FinancialReport."Financial Report Column Group" := ColumnLayoutName.Name;
+        FinancialReport.Modify();
+    end;
+
+    local procedure VerifyAnalysisViewEntryForCO2eEmissionAndCarbonFee(AnalysisViewCode: Code[10]; AccountCode: Code[20]; ExpectedCO2eEmission: Decimal; ExpectedCarbonFee: Decimal)
+    var
+        AnalysisViewEntry: Record "Analysis View Entry";
+    begin
+        AnalysisViewEntry.SetRange("Analysis View Code", AnalysisViewCode);
+        AnalysisViewEntry.SetRange("Account No.", AccountCode);
+        AnalysisViewEntry.FindSet();
+        Assert.RecordCount(AnalysisViewEntry, 1);
+
+        Assert.AreEqual(
+            ExpectedCO2eEmission,
+            AnalysisViewEntry."CO2e Emission",
+            StrSubstNo(ValueMustBeEqualErr, AnalysisViewEntry.FieldCaption("CO2e Emission"), ExpectedCO2eEmission, AnalysisViewEntry.TableCaption()));
+        Assert.AreEqual(
+            ExpectedCarbonFee,
+            AnalysisViewEntry."Carbon Fee",
+            StrSubstNo(ValueMustBeEqualErr, AnalysisViewEntry.FieldCaption("Carbon Fee"), ExpectedCarbonFee, AnalysisViewEntry.TableCaption()));
     end;
 
     [ModalPageHandler]

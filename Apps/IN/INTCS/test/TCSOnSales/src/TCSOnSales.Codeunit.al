@@ -14,12 +14,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := CreateAndPostMultiLineSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -27,7 +27,7 @@ codeunit 18916 "TCS On Sales"
             WorkDate(), SalesLine.Type::Item,
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
     end;
@@ -44,12 +44,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         DocumentNo := CreateAndPostMultiLineSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -58,7 +58,7 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
     end;
@@ -74,17 +74,17 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", true);
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] Show expected error
+        // [THEN] Show expected error
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
     end;
 
@@ -99,20 +99,22 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", true);
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] Show expected error
+        // [THEN] Show expected error
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355108] Check if the program is calculating TCS using Sales Order with G/L Account Invoice in case of shipment only.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -125,12 +127,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -139,7 +141,7 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L verified
+        // [THEN] TCS and G/L verified
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.FindFirst();
@@ -151,6 +153,7 @@ codeunit 18916 "TCS On Sales"
         TCSLibrary.VerifyTCSEntryCount(DocumentNo, false, 0, 0);
     end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355109] Check if the program is calculating TCS using Sales Order with Item in case of shipment only.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -163,12 +166,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -177,7 +180,7 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             false);
 
-        // [THEN] TCS and G/L Entry Verified
+        // [THEN] TCS and G/L Entry Verified
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.FindFirst();
@@ -188,7 +191,85 @@ codeunit 18916 "TCS On Sales"
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 0);
         TCSLibrary.VerifyTCSEntryCount(DocumentNo, false, 0, 0);
     end;
+#endif
+    // [SCENARIO] [355108] Check if the program is calculating TCS using Sales Order with G/L Account Invoice in case of shipment only.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure PostFromSalesOrderTCSVerifyAndGLShipmentNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
+        // [WHEN] Create and Post Sales Order
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::"G/L Account",
+            false);
+
+        // [THEN] TCS and G/L verified
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+        TCSLibrary.VerifyGLEntryCount(DocumentNo, 0);
+        TCSLibrary.VerifyTCSEntryCount(DocumentNo, false, 0, 0);
+    end;
+
+    // [SCENARIO] [355109] Check if the program is calculating TCS using Sales Order with Item in case of shipment only.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure PostFromSalesOrderTCSVerifyAndItemShipmentNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Order
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::Item,
+            false);
+
+        // [THEN] TCS and G/L Entry Verified
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+        TCSLibrary.VerifyGLEntryCount(DocumentNo, 0);
+        TCSLibrary.VerifyTCSEntryCount(DocumentNo, false, 0, 0);
+    end;
+
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355208] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Credit Memo.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandler')]
@@ -200,12 +281,12 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Credit Memo
+        // [WHEN] Create and Post Sales Credit Memo
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
@@ -214,7 +295,7 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             false);
 
-        // [THEN] Verify Statistics   
+        // [THEN] Verify Statistics
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.FindFirst();
@@ -223,6 +304,7 @@ codeunit 18916 "TCS On Sales"
         VerifyStatisticsForTCS(SalesHeader);
     end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355209] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Return Order.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -234,12 +316,12 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Return Order
+        // [WHEN] Create and Post Sales Return Order
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Return Order",
@@ -248,14 +330,82 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             false);
 
-        // [THEN] Verify Statistics   
+        // [THEN] Verify Statistics
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.FindFirst();
         LibraryVarStorage.Clear();
         LibraryVarStorage.Enqueue(SalesLine);
         VerifyStatisticsForTCS(SalesHeader);
-    End;
+    end;
+#endif
+    // [SCENARIO] [355208] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Credit Memo.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandlerNM')]
+    procedure SalesCreditMemoWithItemAndStatsVerifyNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Credit Memo
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::"Credit Memo",
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::Item,
+            false);
+
+        // [THEN] Verify Statistics
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+    end;
+
+    // [SCENARIO] [355209] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Return Order.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure SalesReturmOrderWithItemStatsVerifyNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Return Order
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::"Return Order",
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::Item,
+            false);
+
+        // [THEN] Verify Statistics
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+    end;
 
     // [SCENARIO] [355210] Check if the program is calculating TCS using Credit Memo in case of Line Discount
     [Test]
@@ -269,12 +419,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Credit Memo
+        // [WHEN] Create and Post Sales Credit Memo
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
@@ -283,10 +433,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355211] Check if the program is calculating TCS using Return Order in case of Line Discount
     [Test]
@@ -300,12 +450,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Return Order
+        // [WHEN] Create and Post Sales Return Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Return Order",
@@ -314,10 +464,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified   
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355214] Check if the program is calculating TCS using Credit Memo in case of G/L Account
     [Test]
@@ -331,12 +481,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Credit Memo
+        // [WHEN] Create and Post Sales Credit Memo
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
@@ -345,10 +495,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355215] Check if the program is calculating TCS using Sales Return Order in case of G/L Account
     [Test]
@@ -362,12 +512,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales return orderg
+        // [WHEN] Create and Post Sales return orderg
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Return Order",
@@ -376,10 +526,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355222] Check if the system is calculating TCS rounded off on each component (TCS amount, surcharge amount, eCess amount) while preparing Credit Memo
     [Test]
@@ -394,12 +544,12 @@ codeunit 18916 "TCS On Sales"
         DocumentNo: Code[20];
         BaseAmount: Decimal;
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Credit Memo
+        // [WHEN] Create and Post Sales Credit Memo
         TCSSalesLibrary.CreateSalesDocument(SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
             Customer."No.",
@@ -412,11 +562,11 @@ codeunit 18916 "TCS On Sales"
         BaseAmount := SalesLine."Line Amount";
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
         VerifyTCSEntry(DocumentNo, TCSLibrary.RoundTCSAmount(BaseAmount), SalesHeader."Currency Factor", true, false, false);
-    End;
+    end;
 
     // [SCENARIO] [355223] Check if the system is calculating TCS rounded off on each component (TCS amount, surcharge amount, eCess amount) while preparing Return Order
     [Test]
@@ -431,12 +581,12 @@ codeunit 18916 "TCS On Sales"
         DocumentNo: Code[20];
         BaseAmount: Decimal;
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales return Order
+        // [WHEN] Create and Post Sales return Order
         TCSSalesLibrary.CreateSalesDocument(SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
             Customer."No.",
@@ -449,11 +599,11 @@ codeunit 18916 "TCS On Sales"
         BaseAmount := SalesLine."Line Amount";
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
         VerifyTCSEntry(DocumentNo, TCSLibrary.RoundTCSAmount(BaseAmount), SalesHeader."Currency Factor", true, false, false);
-    End;
+    end;
 
     // [SCENARIO] [355228] Check if the program is allowing the posting using the Credit Memo with TCS information where  TCAN No. has not been defined.
     [Test]
@@ -466,13 +616,13 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
         TCSLibrary.RemoveTCANOnCompInfo();
 
-        // [WHEN] Create and Post Sales Credit Memo
+        // [WHEN] Create and Post Sales Credit Memo
         asserterror TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
@@ -481,9 +631,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] Show expected error    
+        // [THEN] Show expected error
         Assert.ExpectedError(TCANNoErr);
-    End;
+    end;
 
 
     // [SCENARIO] [355229] Check if the program is allowing the posting using the Return Order with TCS information where TCAN No. has not been defined.
@@ -497,13 +647,13 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
         TCSLibrary.RemoveTCANOnCompInfo();
 
-        // [WHEN] Create and Post Sales return Order
+        // [WHEN] Create and Post Sales return Order
         asserterror TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Return Order",
@@ -512,9 +662,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] Show expected error
+        // [THEN] Show expected error
         Assert.ExpectedError(TCANNoErr);
-    End;
+    end;
 
     // [SCENARIO] [355230] Check if the program is calculating TCS raised to the Customer using Credit Memo and Threshold Overlook is selected with G/L Account
     [Test]
@@ -528,12 +678,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, true, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales credit memo
+        // [WHEN] Create and Post Sales credit memo
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
@@ -542,10 +692,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355232] Check if the program is calculating TCS raised to the Customer using Return Order and Threshold Overlook is selected with G/L Account
     [Test]
@@ -559,12 +709,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, true, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Return Order
+        // [WHEN] Create and Post Sales Return Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Return Order",
@@ -573,10 +723,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355223] Check if the program is calculating TCS  raised to the Customer using Credit Memo and Threshold Overlook is not selected with G/L Account.
     [Test]
@@ -590,12 +740,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Credit memo
+        // [WHEN] Create and Post Sales Credit memo
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
@@ -604,12 +754,12 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
-    // [SCENARIO] [934] Check if the program is calculating TCS on higher rate in case an invoice Charge Items  is raised to the Customer which is not having PAN No. using Sales Order
+    // [SCENARIO] [934] Check if the program is calculating TCS on higher rate in case an invoice Charge Items is raised to the Customer which is not having PAN No. using Sales Order
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
     procedure PostFromSalesOrderTCSWithoutCustPANNo()
@@ -623,12 +773,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithoutPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -644,12 +794,12 @@ codeunit 18916 "TCS On Sales"
             SalesHeader."No.", SalesLine."Line No.", SalesLine."No.");
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
-    // [SCENARIO] [935] Check if the program is calculating TCS on higher rate in case an invoice Charge Items  is raised to the Customer which is not having PAN No. using Sales Invoice
+    // [SCENARIO] [935] Check if the program is calculating TCS on higher rate in case an invoice Charge Items is raised to the Customer which is not having PAN No. using Sales Invoice
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
     procedure PostFromSalesInvoiceTCSWithoutCustPANNo()
@@ -663,12 +813,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithoutPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales invoice
+        // [WHEN] Create and Post Sales invoice
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -684,12 +834,12 @@ codeunit 18916 "TCS On Sales"
             SalesHeader."No.", SalesLine."Line No.", SalesLine."No.");
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
-    // [SCENARIO] [354892] Check if the program is calculating TCS using Sales Order  with G/L Account in case of Foreign Currency
+    // [SCENARIO] [354892] Check if the program is calculating TCS using Sales Order with G/L Account in case of Foreign Currency
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
     procedure PostFromSalesOrderWithGLForFCY()
@@ -701,12 +851,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -715,10 +865,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355893] Check if the program is calculating TCS using Sales Invoice with G/L Account in case of Foreign Currency
     [Test]
@@ -732,12 +882,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -746,10 +896,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [354894] Check if the program is calculating TCS using Sales Invoice with Item in case of Foreign Currency
     [Test]
@@ -763,12 +913,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales invoice
+        // [WHEN] Create and Post Sales invoice
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -777,10 +927,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [354895] Check if the program is calculating TCS using Sales Order with Item in case of Foreign Currency
     [Test]
@@ -794,12 +944,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -808,10 +958,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [354900] Check if the program is calculating TCS using Sales Order with Charge Item in case of Foreign Currency
     [Test]
@@ -824,21 +974,21 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
         SalesHeader.Validate("Currency Code", TCSSalesLibrary.CreateCurrencyCode());
         SalesHeader.Modify(true);
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
-    End;
+    end;
 
     // [SCENARIO] [354901] Check if the program is calculating TCS using Sales Invoice with Charge Item in case of Foreign Currency
     [Test]
@@ -851,22 +1001,24 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
         SalesHeader.Validate("Currency Code", TCSSalesLibrary.CreateCurrencyCode());
         SalesHeader.Modify(true);
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
-    End;
+    end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355120] Check if the program is calculating TCS using Sales Order Charge Items where TCS is applicable only on selected lines.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -879,12 +1031,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         ItemNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -904,11 +1056,55 @@ codeunit 18916 "TCS On Sales"
             LibraryVarStorage.Enqueue(SalesLine);
             VerifyStatisticsForTCS(SalesHeader);
         end;
-        // [THEN] Show expected error
+        // [THEN] Show expected error
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, ItemNo));
-    End;
+    end;
+#endif
+    // [SCENARIO] [355120] Check if the program is calculating TCS using Sales Order Charge Items where TCS is applicable only on selected lines.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure PostFromSalesOrderWithMultiLineItemChargeAndSingleNocNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        ItemNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
+        // [WHEN] Create and Post Sales Order
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::"Charge (Item)",
+            false);
+        TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
+        SalesLine.Validate("TCS Nature of Collection", '');
+        SalesLine.Modify(true);
+
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        if SalesLine.FindFirst() then begin
+            ItemNo := SalesLine."No.";
+            LibraryVarStorage.Clear();
+            LibraryVarStorage.Enqueue(SalesLine);
+            VerifyStatisticsForTCSNM(SalesHeader);
+        end;
+        // [THEN] Show expected error
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, ItemNo));
+    end;
+
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355121] Check if the program is calculating TCS using Sales Invoice Charge Items where TCS is applicable only on selected lines.
     // [SCENARIO] [355122] Check if the program is calculating TCS using Sales Invoice Charge Items in case of shipment only.
     [Test]
@@ -922,12 +1118,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         ItemNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -947,12 +1143,12 @@ codeunit 18916 "TCS On Sales"
             LibraryVarStorage.Enqueue(SalesLine);
             VerifyStatisticsForTCS(SalesHeader);
         end;
-        // [THEN] Show expected error
+        // [THEN] Show expected error
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, ItemNo));
-    End;
+    end;
 
-
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355131] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Order/Invoice Charge Items.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -964,12 +1160,12 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
         LibraryVarStorage.Clear();
@@ -977,9 +1173,80 @@ codeunit 18916 "TCS On Sales"
         VerifyStatisticsForTCS(SalesHeader);
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] Show expected error
+        // [THEN] Show expected error
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
-    End;
+    end;
+#endif
+    // [SCENARIO] [355121] Check if the program is calculating TCS using Sales Invoice Charge Items where TCS is applicable only on selected lines.
+    // [SCENARIO] [355122] Check if the program is calculating TCS using Sales Invoice Charge Items in case of shipment only.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandlerNM')]
+    procedure PostFromSalesInvoiceWithMultiLineItemChargeAndSingleNocNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        ItemNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Invoice
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Invoice,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::"Charge (Item)",
+            false);
+        TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
+        SalesLine.Validate("TCS Nature of Collection", '');
+        SalesLine.Modify(true);
+
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        if SalesLine.FindFirst() then begin
+            ItemNo := SalesLine."No.";
+            LibraryVarStorage.Clear();
+            LibraryVarStorage.Enqueue(SalesLine);
+            VerifyStatisticsForTCSNM(SalesHeader);
+        end;
+        // [THEN] Show expected error
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, ItemNo));
+    end;
+
+    // [SCENARIO] [355131] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Order/Invoice Charge Items.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure PostFromSalesOrderWithItemChargeStatsVerifyNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Order
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
+        TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [THEN] Show expected error
+        Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
+    end;
 
     // [SCENARIO] [355133] Check if the program is calculating TCS using Sales Order in case of Line Discount with G/L Account
     [Test]
@@ -993,12 +1260,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -1007,7 +1274,7 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
     end;
@@ -1024,12 +1291,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -1038,7 +1305,7 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
     end;
@@ -1055,12 +1322,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -1069,7 +1336,7 @@ codeunit 18916 "TCS On Sales"
            SalesLine.Type::"G/L Account",
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
     end;
@@ -1086,12 +1353,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -1100,11 +1367,13 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Item,
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355141] Check if the program is calculating TCS using Sales Order in case of Line Discount with Charge Items
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -1116,12 +1385,12 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
         LibraryVarStorage.Clear();
@@ -1129,10 +1398,40 @@ codeunit 18916 "TCS On Sales"
         VerifyStatisticsForTCS(SalesHeader);
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] Show expected error
+        // [THEN] Show expected error
+        Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
+    end;
+#endif
+    // [SCENARIO] [355141] Check if the program is calculating TCS using Sales Order in case of Line Discount with Charge Items
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure PostFromSalesOrderTCSWithChargeItemAndLineDiscNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Order
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
+        TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [THEN] Show expected error
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355142] Check if the program is calculating TCS using Sales Invoice in case of Line Discount with Charge Item
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandler')]
@@ -1144,19 +1443,47 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
         LibraryVarStorage.Clear();
         LibraryVarStorage.Enqueue(SalesLine);
         VerifyStatisticsForTCS(SalesHeader);
 
-        // [THEN] Show expected error
+        // [THEN] Show expected error
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
+    end;
+#endif
+    // [SCENARIO] [355142] Check if the program is calculating TCS using Sales Invoice in case of Line Discount with Charge Item
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandlerNM')]
+    procedure PostFromSalesInvoiceTCSWithChargeItemAndLineDiscNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Invoice
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
+        TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+
+        // [THEN] Show expected error
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
     end;
@@ -1173,12 +1500,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Credit Memo
+        // [WHEN] Create and Post Sales Credit Memo
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
@@ -1187,10 +1514,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355249] Check if the program is calculating TCS using Return Order in case of Foreign Currency.
     [Test]
@@ -1204,12 +1531,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Return Order
+        // [WHEN] Create and Post Sales Return Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::"Return Order",
@@ -1218,10 +1545,10 @@ codeunit 18916 "TCS On Sales"
              SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355270] Check if the program is calculating TCS using Credit Memo where TCS is applicable only on selected lines
     [Test]
@@ -1235,12 +1562,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Credit Memo
+        // [WHEN] Create and Post Sales Credit Memo
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
@@ -1259,10 +1586,10 @@ codeunit 18916 "TCS On Sales"
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::Item, false);
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355271] Check if the program is calculating TCS using Return Order where TCS is applicable only on selected lines
     [Test]
@@ -1276,12 +1603,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Return Order
+        // [WHEN] Create and Post Sales Return Order
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Return Order",
@@ -1299,10 +1626,10 @@ codeunit 18916 "TCS On Sales"
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::Item, false);
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [354896] Check if the program is calculating TCS using Sales Order with Fixed Assets in case of Foreign Currency.
     [Test]
@@ -1316,12 +1643,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -1330,9 +1657,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354897] Check if the program is calculating TCS using Sales Invoice with Fixed Assets in case of Foreign Currency.
     [Test]
@@ -1346,12 +1673,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -1360,9 +1687,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355137] Check if the program is calculating TCS using Sales Order in case of Line Discount with Fixed Assets
     [Test]
@@ -1376,12 +1703,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -1390,9 +1717,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355138] Check if the program is calculating TCS using Sales Invoice in case of Line Discount with Fixed Assets
     [Test]
@@ -1406,12 +1733,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -1420,9 +1747,9 @@ codeunit 18916 "TCS On Sales"
            SalesLine.Type::"Fixed Asset",
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354833] Check if the program is calculating TCS in Sales Order with no threshold and surcharge overlook for NOD lines of a particular Customer with Fixed Assets.
     [Test]
@@ -1436,12 +1763,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -1450,9 +1777,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354834] Check if the program is calculating TCS in Sales Invoice with no threshold and surcharge overlook for NOD lines of a particular Customer with Fixed Assets.
     [Test]
@@ -1466,12 +1793,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -1480,9 +1807,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354836] Check if the program is calculating TCS in case an invoice is raised to the foreign Customer using Sales Order and Surcharge Overlook is selected with Fixed Assets
     [Test]
@@ -1496,12 +1823,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -1510,9 +1837,9 @@ codeunit 18916 "TCS On Sales"
            SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354837] Check if the program is calculating TCS in case an invoice is raised to the foreign Customer using Sales Invoice and Surcharge Overlook is selected with Fixed Assets
     [Test]
@@ -1526,12 +1853,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocumentWithFCY(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -1540,9 +1867,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354838] Check if the program is calculating TCS using Sales Order with concessional codes with Fixed Assets.
     [Test]
@@ -1556,12 +1883,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -1570,9 +1897,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354839] Check if the program is calculating TCS using Sales Invoice with concessional codes with Fixed Assets.
     [Test]
@@ -1586,12 +1913,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Invoice
+        // [WHEN] Create and Post Sales Invoice
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -1600,9 +1927,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354919] Check if the program is calculating TCS on higher rate in case an invoice with Fixed Assets is raised to the Customer which is not having PAN No. using Sales Order.
     [Test]
@@ -1616,12 +1943,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithoutPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -1630,9 +1957,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355224] Check if the program is allowing the posting of Invoice with G/L Account using the Credit Memo with TCS information where Accounting Period has not been specified.
     [Test]
@@ -1645,12 +1972,12 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Credit Memo
+        // [WHEN] Create and Post Sales Credit Memo
         asserterror TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Credit Memo",
@@ -1659,9 +1986,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] Show expected error
+        // [THEN] Show expected error
         Assert.ExpectedError(IncomeTaxAccountingErr);
-    End;
+    end;
 
     // [SCENARIO] [355225] Check if the program is allowing the posting of Invoice with G/L Account using the return Order with TCS information where Accounting Period has not been specified.
     [Test]
@@ -1674,12 +2001,12 @@ codeunit 18916 "TCS On Sales"
         TCSPostingSetup: Record "TCS Posting Setup";
         ConcessionalCode: Record "Concessional Code";
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Return Order
+        // [WHEN] Create and Post Sales Return Order
         asserterror TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::"Return Order",
@@ -1688,9 +2015,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"G/L Account",
             false);
 
-        // [THEN] Show expected error
+        // [THEN] Show expected error
         Assert.ExpectedError(IncomeTaxAccountingErr);
-    End;
+    end;
 
 
     // [SCENARIO] [354920] Check if the program is calculating TCS on higher rate in case an invoice with Fixed Assets is raised to the Customer which is not having PAN No. using Sales Invoice.
@@ -1705,12 +2032,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithoutPANWithoutConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
 
-        // [WHEN] Create and Post Sales Invoce
+        // [WHEN] Create and Post Sales Invoce
         DocumentNo := TCSSalesLibrary.CreateAndPostSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -1719,9 +2046,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355143] Check if the program is calculating TCS using Sales Order in case of Invoice Discount with Item
     [Test]
@@ -1736,13 +2063,13 @@ codeunit 18916 "TCS On Sales"
         DocumentNo: Code[20];
         BaseAmount: Decimal;
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
         CreateCustomerInvoiceDiscount(Customer."No.");
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Order,
@@ -1763,11 +2090,11 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
         VerifyTCSEntry(DocumentNo, BaseAmount, SalesHeader."Currency Factor", true, false, false);
-    End;
+    end;
 
     // [SCENARIO] [355144] Check if the program is calculating TCS using Sales Invoice in case of Invoice Discount with Item
     [Test]
@@ -1781,13 +2108,13 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
         CreateCustomerInvoiceDiscount(Customer."No.");
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
             SalesHeader."Document Type"::Invoice,
@@ -1805,10 +2132,10 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355149] Check if the program is calculating TCS using Sales Order in case of Invoice Discount with G/L Account
     [Test]
@@ -1822,12 +2149,12 @@ codeunit 18916 "TCS On Sales"
         ConcessionalCode: Record "Concessional Code";
         DocumentNo: Code[20];
     begin
-        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
         TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
         TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
         CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
-        // [WHEN] Create and Post Sales Order
+        // [WHEN] Create and Post Sales Order
         CreateCustomerInvoiceDiscount(Customer."No.");
         TCSSalesLibrary.CreateSalesDocument(
             SalesHeader,
@@ -1846,10 +2173,10 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355150] Check if the program is calculating TCS using Sales Invoice in case of Invoice Discount with G/L Account
     [Test]
@@ -1887,10 +2214,10 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355212] Check if the program is calculating TCS using Credit Memo  in case of Invoice Discount
     [Test]
@@ -1928,10 +2255,10 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
+    end;
 
     // [SCENARIO] [355213] Check if the program is calculating TCS using Return Order  in case of Invoice Discount
     [Test]
@@ -1969,11 +2296,12 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 4);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
-    End;
-
+    end;
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355146] Check if the program is calculating TCS using Sales Order in case of Invoice Discount with Charge Items
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler,CustomerInvoiceDiscountPageHandler')]
@@ -2005,8 +2333,43 @@ codeunit 18916 "TCS On Sales"
 
         // [THEN] Check TCS Amount Show expected error
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
-    End;
+    end;
+#endif
+    // [SCENARIO] [355146] Check if the program is calculating TCS using Sales Order in case of Invoice Discount with Charge Items
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM,CustomerInvoiceDiscountPageHandler')]
+    procedure PostFromSalesOrderWithChargeItemAndInvoiceDiscountNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, true, true);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+        CreateCustomerInvoiceDiscount(Customer."No.");
 
+        // [WHEN] Create and Post Sales Order
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
+        TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
+        SalesLine.Validate("Allow Invoice Disc.", true);
+        SalesLine.Modify(true);
+        SalesCalcDiscount.Run(SalesLine);
+        SalesLine.Validate("Unit Price");
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [THEN] Check TCS Amount Show expected error
+        Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
+    end;
+
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355145] Check if the program is calculating TCS using Sales Invoice in case of Invoice Discount with Charge Items
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandler,CustomerInvoiceDiscountPageHandler')]
@@ -2036,9 +2399,42 @@ codeunit 18916 "TCS On Sales"
         VerifyStatisticsForTCS(SalesHeader);
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] Show expected error   
+        // [THEN] Show expected error
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
-    End;
+    end;
+#endif
+    // [SCENARIO] [355145] Check if the program is calculating TCS using Sales Invoice in case of Invoice Discount with Charge Items
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandlerNM,CustomerInvoiceDiscountPageHandler')]
+    procedure PostFromSalesInvoiceWithChargeItemAndInvoiceDiscountNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, true, true);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+        CreateCustomerInvoiceDiscount(Customer."No.");
+
+        // [WHEN] Create and Post Sales Order
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
+        TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
+        SalesLine.Validate("Allow Invoice Disc.", true);
+        SalesLine.Modify(true);
+        SalesCalcDiscount.Run(SalesLine);
+        SalesLine.Validate("Unit Price");
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [THEN] Show expected error
+        Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
+    end;
 
     // [SCENARIO] [355220] Check if the program is calculating TCS using Credit Memo in case of Charge Items
     [Test]
@@ -2164,11 +2560,11 @@ codeunit 18916 "TCS On Sales"
         BaseAmount := SalesLine."Line Amount";
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
         VerifyTCSEntry(DocumentNo, TCSLibrary.RoundTCSAmount(BaseAmount), SalesHeader."Currency Factor", true, true, true);
-    End;
+    end;
 
     // [SCENARIO] [354793] Check if the program is calculating TCS using Sales Invoice in case of different rates for same NOC with different effective dates with G/L Account.
     [Test]
@@ -2203,11 +2599,11 @@ codeunit 18916 "TCS On Sales"
         BaseAmount := SalesLine."Line Amount";
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
         VerifyTCSEntry(DocumentNo, TCSLibrary.RoundTCSAmount(BaseAmount), SalesHeader."Currency Factor", true, true, true);
-    End;
+    end;
 
     // [SCENARIO] [354822] Check if the program is calculating TCS using Sales Order in case of different rates for same NOC with different effective dates with Item.
     [Test]
@@ -2242,11 +2638,11 @@ codeunit 18916 "TCS On Sales"
         BaseAmount := SalesLine."Line Amount";
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
         VerifyTCSEntry(DocumentNo, TCSLibrary.RoundTCSAmount(BaseAmount), SalesHeader."Currency Factor", true, true, true);
-    End;
+    end;
 
     // [SCENARIO] [354823] Check if the program is calculating TCS using Sales Invoice in case of different rates for same NOC with different effective dates with Item.
     [Test]
@@ -2281,11 +2677,11 @@ codeunit 18916 "TCS On Sales"
         BaseAmount := SalesLine."Line Amount";
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
         VerifyTCSEntry(DocumentNo, TCSLibrary.RoundTCSAmount(BaseAmount), SalesHeader."Currency Factor", true, true, true);
-    End;
+    end;
 
     // [SCENARIO] [354840] Check if the program is calculating TCS using Sales Order in case of different rates for same NOC with different effective dates with Fixed Assets.
     [Test]
@@ -2317,7 +2713,7 @@ codeunit 18916 "TCS On Sales"
 
         // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354841] Check if the program is calculating TCS using Sales Invoice in case of different rates for same NOC with different effective dates with Fixed Assets.
     [Test]
@@ -2349,7 +2745,7 @@ codeunit 18916 "TCS On Sales"
 
         // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355244] Check if the program is calculating TCS using Credit Memo in case of different rates for same NOC with different effective dates with G/L Account.
     [Test]
@@ -2384,11 +2780,11 @@ codeunit 18916 "TCS On Sales"
         BaseAmount := SalesLine."Line Amount";
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
         VerifyTCSEntry(DocumentNo, TCSLibrary.RoundTCSAmount(BaseAmount), SalesHeader."Currency Factor", true, true, true);
-    End;
+    end;
 
     // [SCENARIO] [355245] Check if the program is calculating TCS using Return Order in case of different rates for same NOC with different effective dates with G/L Account.
     [Test]
@@ -2423,11 +2819,11 @@ codeunit 18916 "TCS On Sales"
         BaseAmount := SalesLine."Line Amount";
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
         VerifyTCSEntry(DocumentNo, TCSLibrary.RoundTCSAmount(BaseAmount), SalesHeader."Currency Factor", true, true, true);
-    End;
+    end;
 
     // [SCENARIO] [354828] Check if the program is calculating TCS with threshold and surcharge overlook for NOC lines of a particular customer with Fixed Assets.
     [Test]
@@ -2454,9 +2850,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354929] Check if the program is calculating TCS on Lower rate/zero rate in case an invoice with Fixed Assets is raised to the Customer is having a certificate using Sales Order
     [Test]
@@ -2484,9 +2880,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354930] Check if the program is calculating TCS on Lower rate/zero rate in case an invoice with Fixed Assets is raised to the Customer is having a certificate using Sales Invoice
     [Test]
@@ -2514,9 +2910,9 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::"Fixed Asset",
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354931] Check if the program is calculating TCS on Lower rate/zero rate in case an invoice with Resources is raised to the Customer is having a certificate using Sales Order
 
@@ -2545,10 +2941,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354921] Check if the program is calculating TCS on higher rate in case an invoice with Resources is raised to the Customer which is not having PAN No. using Sales Invoice.
     [Test]
@@ -2576,10 +2972,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [932] Check if the program is calculating TCS on higher rate in case an invoice with Resources is raised to the Customer which is not having PAN No. using Sales Invoice.
     [Test]
@@ -2607,10 +3003,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354922] Check if the program is calculating TCS on higher rate in case an invoice with Resources is raised to the Customer which is not having PAN No. using Sales Order.
     [Test]
@@ -2638,10 +3034,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354898] Check if the program is calculating TCS using Sales Invoice with Resources in case of Foreign Currency.
     [Test]
@@ -2669,10 +3065,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354899] Check if the program is calculating TCS using Sales Order with Resources in case of Foreign Currency.
     [Test]
@@ -2700,10 +3096,10 @@ codeunit 18916 "TCS On Sales"
            SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355116] Check if the program is calculating TCS using Sales Order with Fixed Assets where TCS is applicable only on selected lines.
     [Test]
@@ -2741,7 +3137,7 @@ codeunit 18916 "TCS On Sales"
 
         // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355117] Check if the program is calculating TCS using Sales Invoice with Fixed Assets where TCS is applicable only on selected lines.
     [Test]
@@ -2779,7 +3175,7 @@ codeunit 18916 "TCS On Sales"
 
         // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355118] Check if the program is calculating TCS using Sales Invoice with Resources where TCS is applicable only on selected lines.
     [Test]
@@ -2818,7 +3214,7 @@ codeunit 18916 "TCS On Sales"
         // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355119] Check if the program is calculating TCS using Sales Order with Resources where TCS is applicable only on selected lines.
     [Test]
@@ -2857,7 +3253,7 @@ codeunit 18916 "TCS On Sales"
         // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354855/354869] Check if the program is calculating TCS in Sales Order with no threshold and surcharge overlook for NOD lines of a particular Customer with Resources.
     [Test]
@@ -2885,10 +3281,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354856] Check if the program is calculating TCS in Sales Invoice with no threshold and surcharge overlook for NOD lines of a particular Customer with Resources.
     [Test]
@@ -2916,10 +3312,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354859] Check if the program is calculating TCS in case an invoice is raised to the Customer using Sales Order and Threshold Overlook is selected with Resources.
     [Test]
@@ -2947,10 +3343,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354860] Check if the program is calculating TCS in case an invoice is raised to the Customer using Sales Invoice and Threshold Overlook is selected with Resources.
     [Test]
@@ -2978,10 +3374,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354878] Check if the program is calculating TCS with threshold and surcharge overlook for NOC lines of a particular customer with Resources.
     [Test]
@@ -3007,10 +3403,10 @@ codeunit 18916 "TCS On Sales"
             WorkDate(), SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354879] Check if the program is calculating TCS with threshold and surcharge overlook for NOC lines of a particular customer with Charge Items.
     [Test]
@@ -3033,9 +3429,9 @@ codeunit 18916 "TCS On Sales"
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
         asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] Show expected error    
+        // [THEN] Show expected error
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
-    End;
+    end;
 
     // [SCENARIO] [355202] Check if the program is calculating TCS while creating Invoice with Fixed Assets using the Sales Order with multiple NOC.
     [Test]
@@ -3076,9 +3472,9 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355203] Check if the program is calculating TCS while creating Invoice with Fixed Assets using the Sales Invoice  with multiple NOC.
     [Test]
@@ -3119,10 +3515,12 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355110] Check if the program is calculating TCS using Sales Order/Invoice with Fixed Assets in case of shipment only.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -3160,7 +3558,44 @@ codeunit 18916 "TCS On Sales"
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 0);
         TCSLibrary.VerifyTCSEntryCount(DocumentNo, false, 0, 0);
     end;
+#endif
+    // [SCENARIO] [355110] Check if the program is calculating TCS using Sales Order/Invoice with Fixed Assets in case of shipment only.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure PostFromSalesOrderTCSVerifyAndFAShipmentNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
 
+        // [WHEN] Create and Post Sales Order
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::"Fixed Asset",
+            false);
+
+        // [THEN] TCS and G/L verified
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+        TCSLibrary.VerifyGLEntryCount(DocumentNo, 0);
+        TCSLibrary.VerifyTCSEntryCount(DocumentNo, false, 0, 0);
+    end;
 
     // [SCENARIO] [354848] Check if the program is calculating TCS using Sales Order in case of different rates for same NOC with different effective dates with Resources.
     [Test]
@@ -3189,10 +3624,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [354849] Check if the program is calculating TCS using Sales Invoice in case of different rates for same NOC with different effective dates with Resources.
     [Test]
@@ -3221,10 +3656,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             false);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355139] Check if the program is calculating TCS using Sales Order in case of Line Discount with Resources.
     [Test]
@@ -3251,10 +3686,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355140] Check if the program is calculating TCS using Sales Invoice in case of Line Discount with Resources.
     [Test]
@@ -3281,10 +3716,10 @@ codeunit 18916 "TCS On Sales"
             SalesLine.Type::Resource,
             true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355147/355154] Check if the program is calculating TCS using Sales Order in case of Invoice Discount with Resources.
     [Test]
@@ -3322,10 +3757,10 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355148/355153] Check if the program is calculating TCS using Sales Invoice in case of Invoice Discount with Resources.
     [Test]
@@ -3363,10 +3798,10 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355151] Check if the program is calculating TCS using Sales Order in case of Invoice Discount with Fixed Assets
     [Test]
@@ -3404,9 +3839,9 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355152] Check if the program is calculating TCS using Sales Invoice in case of Invoice Discount with Fixed Assets
     [Test]
@@ -3444,9 +3879,9 @@ codeunit 18916 "TCS On Sales"
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355204] Check if the program is calculating TCS while creating Invoice with Resources using the Sales Order with multiple NOC
     [Test]
@@ -3484,7 +3919,7 @@ codeunit 18916 "TCS On Sales"
         SalesLine.Modify(true);
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
     end;
@@ -3525,7 +3960,7 @@ codeunit 18916 "TCS On Sales"
         SalesLine.Modify(true);
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
 
-        // [THEN] TCS and G/L Entry Created and Verified    
+        // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
     end;
@@ -3962,6 +4397,8 @@ codeunit 18916 "TCS On Sales"
         TCSLibrary.VerifyTCSEntryForAssesseeCode(DocumentNo2, AssesseeCode2.Code);
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [354882] Check if the program is calculating TCS using Sales Order in case of different rates for same NOC with different assessee codes with Charge Items.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -4014,6 +4451,7 @@ codeunit 18916 "TCS On Sales"
         Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
     end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355111] Check if the program is calculating TCS using Sales Order with Resources in case of shipment only.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -4051,6 +4489,96 @@ codeunit 18916 "TCS On Sales"
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 0);
         TCSLibrary.VerifyTCSEntryCount(DocumentNo, false, 0, 0);
     end;
+#endif
+    // [SCENARIO] [354882] Check if the program is calculating TCS using Sales Order in case of different rates for same NOC with different assessee codes with Charge Items.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure PostFromSalesOrderWithChargeItemAndDifferentAssesseeCodeNM()
+    var
+        Customer: Record Customer;
+        Customer2: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        AssesseeCode2: Record "Assessee Code";
+        ConcessionalCode: Record "Concessional Code";
+        TCSNatureOfCollection: Record "TCS Nature Of Collection";
+        AssesseeCode: Record "Assessee Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateAccPeriodAndFillCompInfo();
+        TCSLibrary.CreateTCSPostingSetupWithNOC(TCSPostingSetup, TCSNatureOfCollection);
+
+        //Create Tax rate with first Assessee Code
+        TCSLibrary.CreateNOCWithCustomer(TCSPostingSetup."TCS Nature of Collection", Customer);
+        TCSLibrary.UpdateCustomerAssesseeAndConcessionalCode(Customer, AssesseeCode, ConcessionalCode, TCSPostingSetup."TCS Nature of Collection");
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Invoice for first Assessee Code
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
+        TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [THEN] Show expected error
+        Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
+
+        //Create Tax rate with second Assessee Code
+        TCSLibrary.CreateNOCWithCustomer(TCSPostingSetup."TCS Nature of Collection", Customer2);
+        TCSLibrary.UpdateCustomerAssesseeAndConcessionalCode(Customer2, AssesseeCode2, ConcessionalCode, TCSPostingSetup."TCS Nature of Collection");
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer2."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Invoice for second Assessee Code
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer2."No.");
+        TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        asserterror LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [THEN] Show expected error
+        Assert.ExpectedError(StrSubstNo(ItemChargePostingErr, SalesLine."No."));
+    end;
+
+    // [SCENARIO] [355111] Check if the program is calculating TCS using Sales Order with Resources in case of shipment only.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure PostFromSalesOrderTCSVerifyAndResourceShipmentNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        DocumentNo: Code[20];
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Order
+        TCSSalesLibrary.CreateSalesDocument(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::Resource,
+            false);
+
+        // [THEN] TCS and G/L verified
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+        TCSLibrary.VerifyGLEntryCount(DocumentNo, 0);
+        TCSLibrary.VerifyTCSEntryCount(DocumentNo, false, 0, 0);
+    end;
 
     // [SCENARIO] [1126] Check if the program is calculating TCS while creating Invoice with Item using the Sales Order with multiple NOC.
     [Test]
@@ -4084,6 +4612,8 @@ codeunit 18916 "TCS On Sales"
         TCSLibrary.VerifyGLEntryAdditionalCurrencyAmt('', DocumentNo);
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355128] Check if the program is calculating TCS using Credit Memo in case of Fixed Assets
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandler')]
@@ -4116,8 +4646,9 @@ codeunit 18916 "TCS On Sales"
         LibraryVarStorage.Clear();
         LibraryVarStorage.Enqueue(SalesLine);
         VerifyStatisticsForTCS(SalesHeader);
-    End;
+    end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355129] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Order with Fixed Assets.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -4150,8 +4681,9 @@ codeunit 18916 "TCS On Sales"
         LibraryVarStorage.Clear();
         LibraryVarStorage.Enqueue(SalesLine);
         VerifyStatisticsForTCS(SalesHeader);
-    End;
+    end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355130] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Order/Invoice with Resources.
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -4184,8 +4716,9 @@ codeunit 18916 "TCS On Sales"
         LibraryVarStorage.Clear();
         LibraryVarStorage.Enqueue(SalesLine);
         VerifyStatisticsForTCS(SalesHeader);
-    End;
+    end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355216] Check if the program is calculating TCS using Credit Memo in case of Fixed Assets
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandler')]
@@ -4218,8 +4751,9 @@ codeunit 18916 "TCS On Sales"
         LibraryVarStorage.Clear();
         LibraryVarStorage.Enqueue(SalesLine);
         VerifyStatisticsForTCS(SalesHeader);
-    End;
+    end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     // [SCENARIO] [355217] Check if the program is calculating TCS using Return Order in case of Fixed Assets
     [Test]
     [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandler')]
@@ -4252,7 +4786,177 @@ codeunit 18916 "TCS On Sales"
         LibraryVarStorage.Clear();
         LibraryVarStorage.Enqueue(SalesLine);
         VerifyStatisticsForTCS(SalesHeader);
-    End;
+    end;
+#endif
+    // [SCENARIO] [355128] Check if the program is calculating TCS using Credit Memo in case of Fixed Assets
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandlerNM')]
+    procedure SalesInvoiceTCSWithFAAndStatsVerifyNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Return Order
+        TCSSalesLibrary.CreateSalesDocumentWithFCY(
+            SalesHeader,
+            SalesHeader."Document Type"::Invoice,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::"Fixed Asset",
+            false);
+
+        // [THEN] TCS and G/L Entry Created and Verified
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+    end;
+
+    // [SCENARIO] [355129] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Order with Fixed Assets.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure SalesOrderTCSWithFAAndStatsVerifyNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Order for Fixed Asset
+        TCSSalesLibrary.CreateSalesDocumentWithFCY(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::"Fixed Asset",
+            false);
+
+        // [THEN] TCS and G/L Entry Created and Verified
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+    end;
+
+    // [SCENARIO] [355130] Check if the program is showing TCS amount should be shown in Statistics while creating Sales Order/Invoice with Resources.
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure SalesOrderTCSWithResourceAndStatsVerifyNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Order for Fixed Asset
+        TCSSalesLibrary.CreateSalesDocumentWithFCY(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::Resource,
+            false);
+
+        // [THEN] TCS and G/L Entry Created and Verified
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+    end;
+
+    // [SCENARIO] [355216] Check if the program is calculating TCS using Credit Memo in case of Fixed Assets
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesStatisticsPageHandlerNM')]
+    procedure SalesCreditMemoTCSWithFAAndStatsVerifyNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Return Order
+        TCSSalesLibrary.CreateSalesDocumentWithFCY(
+            SalesHeader,
+            SalesHeader."Document Type"::"Credit Memo",
+            Customer."No.",
+            WorkDate(),
+           SalesLine.Type::"Fixed Asset",
+            false);
+
+        // [THEN] TCS and G/L Entry Created and Verified
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+    end;
+
+    // [SCENARIO] [355217] Check if the program is calculating TCS using Return Order in case of Fixed Assets
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,SalesOrderStatisticsPageHandlerNM')]
+    procedure SalesReturnOrderTCSWithFAAndSatsVerifyNM()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+    begin
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithPANWithConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", ConcessionalCode.Code, WorkDate());
+
+        // [WHEN] Create and Post Sales Return Order
+        TCSSalesLibrary.CreateSalesDocumentWithFCY(
+            SalesHeader,
+            SalesHeader."Document Type"::"Return Order",
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::"Fixed Asset",
+            false);
+
+        // [THEN] TCS and G/L Entry Created and Verified
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryVarStorage.Clear();
+        LibraryVarStorage.Enqueue(SalesLine);
+        VerifyStatisticsForTCSNM(SalesHeader);
+    end;
 
     // [SCENARIO] [355218] Check if the program is calculating TCS using Credit Memo in case of Resources.
     [Test]
@@ -4283,7 +4987,7 @@ codeunit 18916 "TCS On Sales"
         // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355218] Check if the program is calculating TCS using return Order in case of Resources.
     [Test]
@@ -4314,7 +5018,7 @@ codeunit 18916 "TCS On Sales"
         // [THEN] TCS and G/L Entry Created and Verified
         TCSLibrary.VerifyGLEntryCount(DocumentNo, 2);
         TCSSalesLibrary.VerifyTCSEntryForFAandResource(DocumentNo);
-    End;
+    end;
 
     // [SCENARIO] [355246] Check if the program is calculating TCS using Credit Memo in case of different rates for same NOC with different assessee codes with G/L Account.
     [Test]
@@ -4651,6 +5355,8 @@ codeunit 18916 "TCS On Sales"
         TCSNatureOfCollections.Filter.SetFilter(Code, Storage.Get(TCSNOCTypeLbl));
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     local procedure VerifyStatisticsForTCS(var Salesheader: Record "Sales Header")
     var
         PageSalesOrder: TestPage "Sales Order list";
@@ -4684,8 +5390,9 @@ codeunit 18916 "TCS On Sales"
                     PageSalesReturnOrder.Statistics.Invoke();
                 end;
         end;
-    End;
+    end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [ModalPageHandler]
     procedure SalesStatisticsPageHandler(var SalesStatistics: TestPage "Sales Statistics")
     var
@@ -4709,8 +5416,90 @@ codeunit 18916 "TCS On Sales"
         end;
     end;
 
+    [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [ModalPageHandler]
     procedure SalesOrderStatisticsPageHandler(var SalesOrderStatistics: TestPage "Sales Order Statistics")
+    var
+        SalesLine: Record "Sales Line";
+        TCSAmount: Decimal;
+        Record: Variant;
+    begin
+        LibraryVarStorage.Dequeue(Record);
+        SalesLine := Record;
+        case SalesLine.Type of
+            SalesLine.Type::"Fixed Asset", SalesLine.Type::Resource:
+                begin
+                    TCSAmount := SalesOrderStatistics."TCS Amount".AsDecimal();
+                    Assert.Equal(TCSAmount, 0);
+                end;
+            SalesLine.Type::Item, SalesLine.Type::"G/L Account", SalesLine.Type::"Charge (Item)":
+                begin
+                    TCSAmount := SalesOrderStatistics."TCS Amount".AsDecimal();
+                    Assert.AreNotEqual(TCSAmount, 0, 'TCS Calculated');
+                end;
+        end;
+    end;
+#endif
+    local procedure VerifyStatisticsForTCSNM(var Salesheader: Record "Sales Header")
+    var
+        PageSalesOrder: TestPage "Sales Order list";
+        PageSalesInvoiceList: TestPage "Sales Invoice List";
+        PageSalesCreditMemo: TestPage "Sales Credit Memos";
+        PageSalesReturnOrder: TestPage "Sales Return Order List";
+    begin
+        case Salesheader."Document Type" of
+            Salesheader."Document Type"::Order:
+                begin
+                    PageSalesOrder.OpenView();
+                    PageSalesOrder.Filter.SetFilter("No.", Salesheader."No.");
+                    PageSalesOrder.SalesOrderStatistics.Invoke();
+                end;
+            Salesheader."Document Type"::Invoice:
+                begin
+                    PageSalesInvoiceList.OpenView();
+                    PageSalesInvoiceList.Filter.SetFilter("No.", Salesheader."No.");
+                    PageSalesInvoiceList.SalesStatistics.Invoke();
+                end;
+            Salesheader."Document Type"::"Credit Memo":
+                begin
+                    PageSalesCreditMemo.OpenView();
+                    PageSalesCreditMemo.Filter.SetFilter("No.", Salesheader."No.");
+                    PageSalesCreditMemo.SalesStatistics.Invoke();
+                end;
+            Salesheader."Document Type"::"Return Order":
+                begin
+                    PageSalesReturnOrder.OpenView();
+                    PageSalesReturnOrder.Filter.SetFilter("No.", Salesheader."No.");
+                    PageSalesReturnOrder.SalesOrderStatistics.Invoke();
+                end;
+        end;
+    end;
+
+    [PageHandler]
+    procedure SalesStatisticsPageHandlerNM(var SalesStatistics: TestPage "Sales Statistics")
+    var
+        SalesLine: Record "Sales Line";
+        TCSAmount: Decimal;
+        Record: Variant;
+    begin
+        LibraryVarStorage.Dequeue(Record);
+        SalesLine := Record;
+        case SalesLine.Type of
+            SalesLine.Type::"Fixed Asset", SalesLine.Type::Resource:
+                begin
+                    TCSAmount := SalesStatistics."TCS Amount".AsDecimal();
+                    Assert.Equal(TCSAmount, 0);
+                end;
+            SalesLine.Type::Item, SalesLine.Type::"G/L Account", SalesLine.Type::"Charge (Item)":
+                begin
+                    TCSAmount := SalesStatistics."TCS Amount".AsDecimal();
+                    Assert.AreNotEqual(TCSAmount, 0, 'TCS Calculated');
+                end;
+        end;
+    end;
+
+    [PageHandler]
+    procedure SalesOrderStatisticsPageHandlerNM(var SalesOrderStatistics: TestPage "Sales Order Statistics")
     var
         SalesLine: Record "Sales Line";
         TCSAmount: Decimal;

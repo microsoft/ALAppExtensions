@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.Enums;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 11379 "Create DE VAT Posting Groups"
 {
     SingleInstance = true;
@@ -9,6 +22,7 @@ codeunit 11379 "Create DE VAT Posting Groups"
     begin
         InsertVATProductPostingGroup();
         CreateVATPostingSetup();
+        RemoveW1VATProductPostingGroup();
     end;
 
     local procedure CreateVATPostingSetup()
@@ -74,6 +88,7 @@ codeunit 11379 "Create DE VAT Posting Groups"
         CreateDEPostingGroups: Codeunit "Create DE Posting Groups";
         CreatePostingGroups: Codeunit "Create Posting Groups";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateDEGLAcc: Codeunit "Create DE GL Acc.";
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
@@ -91,6 +106,11 @@ codeunit 11379 "Create DE VAT Posting Groups"
         CreateDEPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroups.RetailPostingGroup(), VAT19());
         CreateDEPostingGroups.UpdateVATProdPostingGroup(CreateDEPostingGroups.NoVATPostingGroup(), NOVAT());
 
+        ContosoPostingGroup.SetOverwriteData(true);
+        ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.Standard(), StandardVATDescriptionLbl);
+        ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.Reduced(), ReducedVATDescriptionLbl);
+        ContosoPostingGroup.SetOverwriteData(false);
+
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.MiscVATPayables(), VAT19());
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.Incomefromsecurities(), VAT19());
         UpdateVATProductPostingGroupOnGLAccount(CreateGLAccount.InterestIncome(), VAT19());
@@ -101,7 +121,27 @@ codeunit 11379 "Create DE VAT Posting Groups"
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.SaleofSubcontracting(), VAT7());
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.SalesofServiceContracts(), VAT7());
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.PayableInvoiceRounding(), VAT19());
+    end;
 
+    local procedure RemoveW1VATProductPostingGroup()
+    var
+        VATProductPostingGroup: Record "VAT Product Posting Group";
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
+    begin
+        VATProductPostingGroup.Get(CreateVATPostingGroups.FullNormal());
+        VATProductPostingGroup.Delete(true);
+
+        VATProductPostingGroup.Get(CreateVATPostingGroups.FullRed());
+        VATProductPostingGroup.Delete(true);
+
+        VATProductPostingGroup.Get(CreateVATPostingGroups.ServNormal());
+        VATProductPostingGroup.Delete(true);
+
+        VATProductPostingGroup.Get(CreateVATPostingGroups.ServRed());
+        VATProductPostingGroup.Delete(true);
+
+        VATProductPostingGroup.Get(CreateVATPostingGroups.Zero());
+        VATProductPostingGroup.Delete(true);
     end;
 
     local procedure UpdateVATProductPostingGroupOnGLAccount(GLAccountNo: Code[20]; VATProductPostingGroup: Code[20])
@@ -150,40 +190,50 @@ codeunit 11379 "Create DE VAT Posting Groups"
         exit(Min7Tok);
     end;
 
+#if not CLEAN27
+    [Obsolete('Use the procedure in W1 instead', '27.0')]
     procedure Reduced(): Code[20]
     begin
         exit(ReducedTok);
     end;
 
+    [Obsolete('Use the procedure in W1 instead', '27.0')]
     procedure ServRed(): Code[20]
     begin
         exit(ServRedTok);
     end;
 
+    [Obsolete('Use the procedure in W1 instead', '27.0')]
     procedure ServNormal(): Code[20]
     begin
         exit(ServNormTok);
     end;
 
+    [Obsolete('Use the procedure in W1 instead', '27.0')]
     procedure FullNormal(): Code[20]
     begin
         exit(FullNormalTok);
     end;
+#endif
 
     var
-        NoVATTok: Label 'NO VAT', MaxLength = 20, Locked = true;
-        VAT19Tok: Label 'VAT19', MaxLength = 20, Locked = true;
-        VAT7Tok: Label 'VAT7', MaxLength = 20, Locked = true;
+        NoVATTok: Label 'NO VAT', MaxLength = 20;
+        VAT19Tok: Label 'VAT19', MaxLength = 20;
+        VAT7Tok: Label 'VAT7', MaxLength = 20;
         ZeroTok: Label 'ZERO', MaxLength = 20, Locked = true;
         EUSTTok: Label 'EUST', MaxLength = 20, Locked = true;
         Min19Tok: Label 'MIN19', MaxLength = 20, Locked = true;
         Min7Tok: Label 'MIN7', MaxLength = 20, Locked = true;
+#if not CLEAN27
         ReducedTok: Label 'REDUCED', MaxLength = 20, Locked = true;
         ServRedTok: Label 'SERV RED', MaxLength = 20, Locked = true;
         ServNormTok: Label 'SERV NORM', MaxLength = 20, Locked = true;
         FullNormalTok: Label 'FULL NORMAL', MaxLength = 20, Locked = true;
-        MiscellaneousVATLbl: Label 'Miscellaneous %1 VAT', Comment = '%1=a number specifying the VAT percentage';
-        EUPostingGroupSTLbl: Label 'Einfuhrumsatzsteuer', MaxLength = 100;
+#endif
+        MiscellaneousVATLbl: Label 'Miscellaneous %1 VAT', Comment = '%1=a number specifying the VAT percentage', MaxLength = 100;
+        EUPostingGroupSTLbl: Label 'Einfuhrumsatzsteuer', Locked = true;
         MiscellaneousNoVATLbl: Label 'Miscellaneous without VAT', MaxLength = 100;
-        MinderungDescriptionLbl: Label 'Minderung %1', Comment = '%1= a number specifying the VAT Percentage';
+        MinderungDescriptionLbl: Label 'Minderung %1', Locked = true;
+        StandardVATDescriptionLbl: Label 'Standard VAT', MaxLength = 100;
+        ReducedVATDescriptionLbl: Label 'Reduced VAT', MaxLength = 100;
 }

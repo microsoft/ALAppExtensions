@@ -30,6 +30,7 @@ page 8088 "Exchange Rate Selection"
                 {
                     Caption = 'Exchange Rate';
                     ToolTip = 'Specifies the exchange rate that will be used for the conversion.';
+                    DecimalPlaces = 0 : 7;
                     Editable = not IsCalledFromServiceObject;
                 }
             }
@@ -45,7 +46,17 @@ page 8088 "Exchange Rate Selection"
 
     trigger OnOpenPage()
     begin
-        Message(MessageTxt);
+        if MessageTxt <> '' then
+            Message(MessageTxt);
+    end;
+
+    trigger OnQueryClosePage(CloseAction: Action): Boolean
+    var
+        CurrencyCodeChangePriceMustBeUpdatedErr: Label 'The Currency Code has been changed. The price and Amount need to be converted using a currency factor.';
+    begin
+        if CloseAction in [Action::LookupCancel, Action::Cancel] then
+            if not IsCalledFromServiceObject then
+                Error(CurrencyCodeChangePriceMustBeUpdatedErr);
     end;
 
     internal procedure SetIsCalledFromServiceObject(CalledFromServiceObject: Boolean)

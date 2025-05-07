@@ -22,6 +22,7 @@ pageextension 6259 "Sust. Transfer Order Subform" extends "Transfer Order Subfor
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
+                Editable = not Rec."Completely Shipped";
                 ToolTip = 'Specifies the value of the Total CO2e field.';
             }
         }

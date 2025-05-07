@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1914 "MigrationQB Wizard Integration"
 {
     var

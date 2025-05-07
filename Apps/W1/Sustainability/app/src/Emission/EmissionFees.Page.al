@@ -54,7 +54,7 @@ page 6245 "Emission Fees"
                 {
                     Editable = not (Rec."Emission Type" = Rec."Emission Type"::CO2);
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the coefficient that converts the impact of various greenhouse gases into the equivalent amount of carbon dioxide based on their global warming potential. for CO2 it will be 1 by default and you cannot change this value. For other gases you need to add coefficients. If you use for example that 1 kilogram of CH4 is equivalent to 28 kilograms of CO2, to calculate this coefficient you need to use value 1/28.';
+                    ToolTip = 'Specifies the coefficient used to convert the impact of different greenhouse gases into their carbon dioxide equivalent (CO₂e) based on their global warming potential (GWP). The default value for CO₂ is 1 and cannot be changed. For other gases, you must enter the appropriate coefficients. For example, if 1 kg of CH₄ corresponds to 25 kg of CO₂e, you should enter 25.';
                 }
             }
         }

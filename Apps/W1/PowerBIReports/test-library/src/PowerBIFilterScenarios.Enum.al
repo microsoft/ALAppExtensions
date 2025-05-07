@@ -26,4 +26,8 @@ enum 139792 "PowerBI Filter Scenarios"
     {
         Caption = 'Finance Date';
     }
+    value(7; "Sustainability Date")
+    {
+        Caption = 'Sustainability Date';
+    }
 }

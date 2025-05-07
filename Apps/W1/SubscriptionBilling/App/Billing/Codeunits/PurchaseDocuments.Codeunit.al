@@ -9,7 +9,6 @@ using Microsoft.Finance.GeneralLedger.Journal;
 
 codeunit 8066 "Purchase Documents"
 {
-    Access = Internal;
     SingleInstance = true;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeDeleteEvent, '', false, false)]
@@ -186,12 +185,12 @@ codeunit 8066 "Purchase Documents"
         Session.LogMessage('0000NN4', MessageTok, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SubscriptionBillingTok);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInsertBillingLineArchiveOnMoveBillingLineToBillingLineArchive(var BillingLineArchive: Record "Billing Line Archive"; BillingLine: Record "Billing Line")
     begin
     end;
 
-    internal procedure GetRecurringBillingField(DocumentType: Enum "Gen. Journal Document Type"; DocumentNo: Code[20]): Boolean
+    local procedure GetRecurringBillingField(DocumentType: Enum "Gen. Journal Document Type"; DocumentNo: Code[20]): Boolean
     var
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
@@ -226,8 +225,8 @@ codeunit 8066 "Purchase Documents"
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchLine."Document Type"), PurchLine."Document No.", PurchLine."Line No.");
         if not BillingLine.FindFirst() then
             exit;
-        PurchInvLine."Contract No." := BillingLine."Contract No.";
-        PurchInvLine."Contract Line No." := BillingLine."Contract Line No.";
+        PurchInvLine."Subscription Contract No." := BillingLine."Subscription Contract No.";
+        PurchInvLine."Subscription Contract Line No." := BillingLine."Subscription Contract Line No.";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purch. Cr. Memo Line", OnAfterInitFromPurchLine, '', false, false)]
@@ -238,7 +237,7 @@ codeunit 8066 "Purchase Documents"
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchLine."Document Type"), PurchLine."Document No.", PurchLine."Line No.");
         if not BillingLine.FindFirst() then
             exit;
-        PurchCrMemoLine."Contract No." := BillingLine."Contract No.";
-        PurchCrMemoLine."Contract Line No." := BillingLine."Contract Line No.";
+        PurchCrMemoLine."Subscription Contract No." := BillingLine."Subscription Contract No.";
+        PurchCrMemoLine."Subscription Contract Line No." := BillingLine."Subscription Contract Line No.";
     end;
 }

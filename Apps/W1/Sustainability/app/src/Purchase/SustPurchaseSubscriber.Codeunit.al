@@ -230,7 +230,10 @@ codeunit 6225 "Sust. Purchase Subscriber"
         SustainabilityJnlLine.Validate("Emission CH4", CH4ToPost);
         SustainabilityJnlLine.Validate("Emission N2O", N2OToPost);
         SustainabilityJnlLine.Validate("Country/Region Code", PurchaseHeader."Buy-from Country/Region Code");
+        OnPostSustainabilityLineOnBeforeInsertLedgerEntry(SustainabilityJnlLine, PurchaseHeader, PurchaseLine);
         SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine);
+
+        UpdateDefaultEmissionOnMaster(PurchaseLine);
     end;
 
     local procedure GetPostingSign(PurchaseHeader: Record "Purchase Header"; GHGCredit: Boolean): Integer
@@ -287,6 +290,52 @@ codeunit 6225 "Sust. Purchase Subscriber"
             exit(true);
     end;
 
+    local procedure UpdateDefaultEmissionOnMaster(PurchaseLine: Record "Purchase Line")
+    var
+        Item: Record Item;
+        Resource: Record Resource;
+        ItemCharge: Record "Item Charge";
+    begin
+        case PurchaseLine.Type of
+            PurchaseLine.Type::Item:
+                begin
+                    Item.Get(PurchaseLine."No.");
+                    if (Item."Default Sust. Account" = '') or (Item."Replenishment System" <> Item."Replenishment System"::Purchase) then
+                        exit;
+
+                    Item.Validate("Default CO2 Emission", PurchaseLine."Emission CO2 Per Unit");
+                    if not Item."GHG Credit" then begin
+                        Item.Validate("Default CH4 Emission", PurchaseLine."Emission CH4 Per Unit");
+                        Item.Validate("Default N2O Emission", PurchaseLine."Emission N2O Per Unit");
+                    end;
+
+                    Item.Modify();
+                end;
+            PurchaseLine.Type::Resource:
+                begin
+                    Resource.Get(PurchaseLine."No.");
+                    if (Resource."Default Sust. Account" = '') then
+                        exit;
+
+                    Resource.Validate("Default CO2 Emission", PurchaseLine."Emission CO2 Per Unit");
+                    Resource.Validate("Default CH4 Emission", PurchaseLine."Emission CH4 Per Unit");
+                    Resource.Validate("Default N2O Emission", PurchaseLine."Emission N2O Per Unit");
+                    Resource.Modify();
+                end;
+            PurchaseLine.Type::"Charge (Item)":
+                begin
+                    ItemCharge.Get(PurchaseLine."No.");
+                    if (ItemCharge."Default Sust. Account" = '') then
+                        exit;
+
+                    ItemCharge.Validate("Default CO2 Emission", PurchaseLine."Emission CO2 Per Unit");
+                    ItemCharge.Validate("Default CH4 Emission", PurchaseLine."Emission CH4 Per Unit");
+                    ItemCharge.Validate("Default N2O Emission", PurchaseLine."Emission N2O Per Unit");
+                    ItemCharge.Modify();
+                end;
+        end
+    end;
+
     local procedure TryBindPostingPreviewHandler(): Boolean
     var
         SustPreviewPostingHandler: Codeunit "Sust. Preview Posting Handler";
@@ -307,4 +356,9 @@ codeunit 6225 "Sust. Purchase Subscriber"
         SustainabilitySetup: Record "Sustainability Setup";
         EmissionMustNotBeZeroErr: Label 'The Emission fields must have a value that is not 0.';
         NotAllowedToPostSustLedEntryForWaterOrWasteErr: Label 'It is not allowed to post Sustainability Ledger Entry for water or waste in purchase document for Account No. %1', Comment = '%1 = Sustainability Account No.';
+
+    [IntegrationEvent(false, false)]
+    local procedure OnPostSustainabilityLineOnBeforeInsertLedgerEntry(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line")
+    begin
+    end;
 }

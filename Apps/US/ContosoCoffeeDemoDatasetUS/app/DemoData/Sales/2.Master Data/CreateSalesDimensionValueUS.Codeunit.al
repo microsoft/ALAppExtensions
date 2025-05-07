@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Sales;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.Finance;
+using Microsoft.Finance.Dimension;
+using Microsoft.Sales.Customer;
+
 codeunit 10531 "Create Sales Dimension ValueUS"
 {
     SingleInstance = true;

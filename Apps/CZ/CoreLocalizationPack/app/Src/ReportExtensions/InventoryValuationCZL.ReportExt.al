@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 reportextension 11704 "Inventory Valuation CZL" extends "Inventory Valuation"
 {
     rendering

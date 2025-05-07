@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2454 "Unposted Sales Trx Quotes"
 {
     QueryType = Normal;

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1913 "MigrationQB Vendor Migrator"
 {
     TableNo = "MigrationQB Vendor";

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1920 "MigrationQB Item Migrator"
 {
     TableNo = "MigrationQB Item";

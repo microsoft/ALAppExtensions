@@ -24,7 +24,7 @@
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>5.10701in</Height>
+                  <Height>5.27369in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -1207,7 +1207,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                 </TablixMembers>
                               </TablixRowHierarchy>
                               <DataSetName>DataSet_Result</DataSetName>
-                              <Left>0.00005cm</Left>
+                              <Left>0.00008cm</Left>
                               <Height>5.25011cm</Height>
                               <Width>17.99996cm</Width>
                               <Style>
@@ -1447,7 +1447,51 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                     </TablixCells>
                                   </TablixRow>
                                   <TablixRow>
-                                    <Height>0.17717in</Height>
+                                    <Height>0.23622in</Height>
+                                    <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Description_PostedCashDocumentLine2">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!Description_PostedCashDocumentLine.Value</Value>
+                                                    <Style>
+                                                      <FontSize>9pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Left</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Description_PostedCashDocumentLine</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>LightGrey</Color>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                          <ColSpan>5</ColSpan>
+                                        </CellContents>
+                                      </TablixCell>
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
+                                      <TablixCell />
+                                    </TablixCells>
+                                  </TablixRow>
+                                  <TablixRow>
+                                    <Height>0.20495in</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -1762,6 +1806,18 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                   </TablixMember>
                                   <TablixMember>
                                     <Group Name="Details2" />
+                                    <TablixMembers>
+                                      <TablixMember>
+                                        <Visibility>
+                                          <Hidden>=IIF(Fields!AccountType_PostedCashDocumentLine.Value = 0, false, true)</Hidden>
+                                        </Visibility>
+                                      </TablixMember>
+                                      <TablixMember>
+                                        <Visibility>
+                                          <Hidden>=IIF(Fields!AccountType_PostedCashDocumentLine.Value = 0, true, false)</Hidden>
+                                        </Visibility>
+                                      </TablixMember>
+                                    </TablixMembers>
                                   </TablixMember>
                                   <TablixMember>
                                     <KeepWithGroup>Before</KeepWithGroup>
@@ -1779,8 +1835,8 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                 </Filter>
                               </Filters>
                               <Top>160pt</Top>
-                              <Left>0.00004cm</Left>
-                              <Height>0.53151in</Height>
+                              <Left>0.00007cm</Left>
+                              <Height>0.79551in</Height>
                               <Width>7.08661in</Width>
                               <ZIndex>1</ZIndex>
                               <Style>
@@ -1862,8 +1918,8 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>7.30316cm</Top>
-                              <Left>15.50006cm</Left>
+                              <Top>7.76177cm</Top>
+                              <Left>15.50002cm</Left>
                               <Height>0.45001cm</Height>
                               <Width>2.49997cm</Width>
                               <ZIndex>2</ZIndex>
@@ -2224,7 +2280,8 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>9.4cm</Top>
+                              <Top>9.85861cm</Top>
+                              <Left>0.00003in</Left>
                               <Height>0.90002cm</Height>
                               <Width>14.99999cm</Width>
                               <ZIndex>3</ZIndex>
@@ -2807,7 +2864,8 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>10.6cm</Top>
+                              <Top>11.14516cm</Top>
+                              <Left>0in</Left>
                               <Height>2.25cm</Height>
                               <Width>15.00001cm</Width>
                               <ZIndex>4</ZIndex>
@@ -3604,7 +3662,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>207.01866pt</Top>
+                              <Top>220.01866pt</Top>
                               <Height>0.70868in</Height>
                               <Width>5.70865in</Width>
                               <ZIndex>5</ZIndex>
@@ -3662,7 +3720,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
               </Filter>
             </Filters>
             <Left>0.00001cm</Left>
-            <Height>5.10701in</Height>
+            <Height>5.27369in</Height>
             <Width>17.99999cm</Width>
             <Style>
               <Border>
@@ -3671,7 +3729,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>12.97181cm</Height>
+        <Height>13.39516cm</Height>
         <Style />
       </Body>
       <Width>18cm</Width>
@@ -3828,7 +3886,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>0.50003cm</Height>
+          <Height>1.09975cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -3847,7 +3905,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                   <Style />
                 </Paragraph>
               </Paragraphs>
-              <Top>0.00001cm</Top>
+              <Top>0.59975cm</Top>
               <Height>0.5cm</Height>
               <Width>12cm</Width>
               <Style>
@@ -3876,6 +3934,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                   </Style>
                 </Paragraph>
               </Paragraphs>
+              <Top>0.23612in</Top>
               <Left>12cm</Left>
               <Height>0.5cm</Height>
               <Width>6cm</Width>
@@ -4637,6 +4696,9 @@ End Function</Code>
         </Field>
         <Field Name="VATBaseAmount_PostedCashDocumentLineFormat">
           <DataField>VATBaseAmount_PostedCashDocumentLineFormat</DataField>
+        </Field>
+        <Field Name="AccountType_PostedCashDocumentLine">
+          <DataField>AccountType_PostedCashDocumentLine</DataField>
         </Field>
         <Field Name="VATAmtLineVATIdentifier">
           <DataField>VATAmtLineVATIdentifier</DataField>

@@ -8,6 +8,7 @@ using Microsoft.Foundation.Reporting;
 using System.Environment.Configuration;
 using System.Automation;
 using System.Utilities;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
 
 codeunit 6148 "E-Document Helper"
 {
@@ -100,6 +101,29 @@ codeunit 6148 "E-Document Helper"
             if EDocServiceStatus.FindLast() then
                 EdocumentService.Get(EDocServiceStatus."E-Document Service Code");
         end;
+    end;
+
+    internal procedure EnsureInboundEDocumentHasService(var EDocument: Record "E-Document"): Boolean
+    var
+        EDocumentService: Record "E-Document Service";
+    begin
+        EDocument.TestField(Direction, "E-Document Direction"::Incoming);
+        if EDocument.Service <> '' then
+            exit(true);
+
+        if Page.RunModal(Page::"E-Document Services", EDocumentService) <> Action::LookupOK then
+            exit(false);
+
+        EDocument.Service := EDocumentService.Code;
+        exit(true);
+    end;
+
+    procedure OpenDraftPage(var EDocument: Record "E-Document")
+    var
+        IProcessStructuredData: Interface IProcessStructuredData;
+    begin
+        IProcessStructuredData := EDocument."Structured Data Process";
+        IProcessStructuredData.OpenDraftPage(EDocument);
     end;
 
 

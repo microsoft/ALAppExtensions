@@ -3,11 +3,11 @@ namespace Microsoft.SubscriptionBilling;
 page 8081 "Vendor Contract Deferrals"
 {
     ApplicationArea = All;
-    Caption = 'Vendor Contract Deferrals';
+    Caption = 'Vendor Subscription Contract Deferrals';
     DataCaptionExpression = GetCaption();
     PageType = List;
     Editable = false;
-    SourceTable = "Vendor Contract Deferral";
+    SourceTable = "Vend. Sub. Contract Deferral";
     UsageCategory = History;
 
     layout
@@ -20,7 +20,7 @@ page 8081 "Vendor Contract Deferrals"
                 {
                     ToolTip = 'Specifies the posting date of the deferral.';
                 }
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
                     ToolTip = 'Specifies the number of the related contract.';
                 }
@@ -32,13 +32,13 @@ page 8081 "Vendor Contract Deferrals"
                 {
                     ToolTip = 'Specifies the document number used to create the deferral.';
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription Description")
                 {
-                    ToolTip = 'Specifies the description of the service object that was invoiced via the purchase line.';
+                    ToolTip = 'Specifies the description of the Subscription that was invoiced via the purchase line.';
                 }
-                field("Service Commitment Description"; Rec."Service Commitment Description")
+                field("Service Commitment Description"; Rec."Subscription Line Description")
                 {
-                    ToolTip = 'Specifies the description of the service commitment that was invoiced via the purchase line.';
+                    ToolTip = 'Specifies the description of the Subscription Line that was invoiced via the purchase line.';
                 }
                 field("Pay-to Vendor No."; Rec."Pay-to Vendor No.")
                 {
@@ -68,9 +68,9 @@ page 8081 "Vendor Contract Deferrals"
                 {
                     ToolTip = 'Specifies whether the deferral has been released.';
                 }
-                field("Contract Type"; Rec."Contract Type")
+                field("Contract Type"; Rec."Subscription Contract Type")
                 {
-                    ToolTip = 'Specifies the contract type of the contract for which the deferral was created.';
+                    ToolTip = 'Specifies the Subscription Contract Type of the contract for which the deferral was created.';
                 }
                 field("User ID"; Rec."User ID")
                 {
@@ -90,7 +90,7 @@ page 8081 "Vendor Contract Deferrals"
                 }
                 field(Discount; Rec.Discount)
                 {
-                    ToolTip = 'Specifies whether the Service Commitment is used as a basis for periodic invoicing or discounts.';
+                    ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
                 }
                 field("G/L Entry No."; Rec."G/L Entry No.")
                 {
@@ -109,7 +109,7 @@ page 8081 "Vendor Contract Deferrals"
         {
             action(Dimensions)
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Caption = 'Dimensions';
                 Image = Dimensions;
                 ShortcutKey = 'Shift+Ctrl+D';
@@ -126,8 +126,8 @@ page 8081 "Vendor Contract Deferrals"
     local procedure GetCaption(): Text
     begin
         case true of
-            Rec.GetFilter("Contract No.") <> '':
-                exit(Rec.FieldCaption("Contract No.") + ' ' + Rec."Contract No.");
+            Rec.GetFilter("Subscription Contract No.") <> '':
+                exit(Rec.FieldCaption("Subscription Contract No.") + ' ' + Rec."Subscription Contract No.");
             else
                 exit('');
         end;

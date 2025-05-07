@@ -1,3 +1,19 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Inventory.Availability;
+using Microsoft.Inventory.Requisition;
+using Microsoft.Inventory.BOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Inventory.Tracking;
+using Microsoft.DemoTool;
+
 codeunit 5699 "Contoso Inventory"
 {
     InherentEntitlements = X;
@@ -15,7 +31,8 @@ codeunit 5699 "Contoso Inventory"
                     tabledata Purchasing = rim,
                     tabledata "Transfer Header" = ri,
                     tabledata "Transfer Line" = ri,
-                    tabledata "Transfer Route" = rim;
+                    tabledata "Transfer Route" = rim,
+                    tabledata "Responsibility Center" = rim;
 
     var
         OverwriteData: Boolean;
@@ -318,5 +335,26 @@ codeunit 5699 "Contoso Inventory"
             Manufacturer.Modify(true)
         else
             Manufacturer.Insert(true);
+    end;
+
+    procedure InsertResponsibilityCenter(Code: Code[10]; Name: Text[100])
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+        Exists: Boolean;
+    begin
+        if ResponsibilityCenter.Get(Code) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        ResponsibilityCenter.Validate(Code, Code);
+        ResponsibilityCenter.Validate(Name, Name);
+
+        if Exists then
+            ResponsibilityCenter.Modify(true)
+        else
+            ResponsibilityCenter.Insert(true);
     end;
 }

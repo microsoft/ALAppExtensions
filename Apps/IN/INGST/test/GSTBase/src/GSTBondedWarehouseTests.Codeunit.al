@@ -132,6 +132,33 @@ codeunit 18428 "GST Bonded Warehouse Tests"
         VerifyValueEntryForRevaluationEntryType(PostedDocumentNo);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure VerifywithMultiLineBondedInterStateITCWithAutomaticCostPosting()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        InventorySetup: Record "Inventory Setup";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check Revaluation Entry in Value Entrey for GST Group Type Goods while transferring from Bonded Warehouse location.
+        // [GIVEN] Created GST Setup ,Transfer Locations with ITC for GSTGroupType Goods
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTVendorType::Import, GSTGroupType::Goods, false, true);
+        InventorySetup."Automatic Cost Posting" := true;
+
+        // [WHEN] Create and Post Multiple Transfer Line Interstate Transfer Order with ITC for Bonded Warehouse
+        PostedDocumentNo := CreateAndPostTransferOrderAndMultiLineGetTransferReceiptNo(
+            TransferHeader,
+            TransferLine);
+
+        // [THEN] Value Entry Verified 
+        VerifyMultipleValueEntryForRevaluationEntryType(PostedDocumentNo);
+    end;
+
     local procedure CreateItemWithInventory(): Code[20]
     var
         Item: Record Item;
@@ -250,6 +277,44 @@ codeunit 18428 "GST Bonded Warehouse Tests"
             Transferline.Validate("GST Credit", Transferline."GST Credit"::Availment)
         else
             TransferLine.Validate("GST Credit", TransferLine."GST Credit"::"Non-Availment");
+    end;
+
+    local procedure CreateAndPostTransferOrderAndMultiLineGetTransferReceiptNo(var TransferHeader: Record "Transfer Header";
+        var TransferLine: Record "Transfer Line"): Code[20]
+    var
+        DocumentNo: Code[20];
+        PostedDocumentNo: Code[20];
+    begin
+        LibraryWarehouse.CreateTransferHeader(
+            TransferHeader,
+            (LibraryStorage.Get(FromLocationLbl)),
+            (LibraryStorage.Get(ToLocationLbl)),
+            (LibraryStorage.Get(InTransitLocationLbl)));
+
+        TransferHeader.Validate("Vendor No.", LibraryStorage.Get(VendorNoLbl));
+        TransferHeader."Bill of Entry No." := LibraryUtility.GenerateRandomCode(TransferHeader.FieldNo("Bill of Entry No."), Database::"Transfer Header");
+        TransferHeader."Bill of Entry Date" := WorkDate();
+        TransferHeader.Modify(true);
+
+        CreateTransferLineWithGST(TransferHeader, TransferLine, StorageBoolean.Get(AvailmentLbl));
+        TransferLine.Validate(TransferLine."GST Assessable Value", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Validate(TransferLine."Custom Duty Amount", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Modify(true);
+
+        CreateTransferLineWithGST(TransferHeader, TransferLine, StorageBoolean.Get(AvailmentLbl));
+        TransferLine.Validate(TransferLine."GST Assessable Value", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Validate(TransferLine."Custom Duty Amount", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Modify(true);
+
+        CreateTransferLineWithGST(TransferHeader, TransferLine, StorageBoolean.Get(AvailmentLbl));
+        TransferLine.Validate(TransferLine."GST Assessable Value", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Validate(TransferLine."Custom Duty Amount", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Modify(true);
+
+        DocumentNo := TransferHeader."No.";
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
+        PostedDocumentNo := GetPostedTransferReceiptNo(DocumentNo);
+        exit(PostedDocumentNo);
     end;
 
     local procedure GetPostedTransferShipmentNo(DocumentNo: Code[20]): Code[20]
@@ -502,6 +567,29 @@ codeunit 18428 "GST Bonded Warehouse Tests"
 
         Assert.AreEqual(TransferReceiptLine."Custom Duty Amount", ValueEntry."Cost Amount (Actual)",
             StrSubstNo(ValueEntryVerifyErr, ValueEntry.FieldCaption("Cost Amount (Actual)"), ValueEntry.TableCaption));
+    end;
+
+    local procedure VerifyMultipleValueEntryForRevaluationEntryType(DocumentNo: Code[20])
+    var
+        TransferReceiptHeader: Record "Transfer Receipt Header";
+        TransferReceiptLine: Record "Transfer Receipt Line";
+        ValueEntry: Record "Value Entry";
+    begin
+        TransferReceiptHeader.Get(DocumentNo);
+
+        TransferReceiptLine.SetRange("Document No.", DocumentNo);
+        if TransferReceiptLine.FindSet() then
+            repeat
+                ValueEntry.SetRange("Document No.", DocumentNo);
+                ValueEntry.SetRange("Posting Date", TransferReceiptHeader."Posting Date");
+                ValueEntry.SetRange("Item Ledger Entry Type", ValueEntry."Item Ledger Entry Type"::Transfer);
+                ValueEntry.SetRange("Entry Type", ValueEntry."Entry Type"::Revaluation);
+                ValueEntry.SetRange("Document Type", ValueEntry."Document Type"::" ");
+                ValueEntry.SetRange("Order Line No.", TransferReceiptLine."Line No.");
+                ValueEntry.FindFirst();
+                Assert.AreEqual(TransferReceiptLine."Custom Duty Amount", ValueEntry."Cost Amount (Actual)",
+                    StrSubstNo(ValueEntryVerifyErr, ValueEntry.FieldCaption("Cost Amount (Actual)"), ValueEntry.TableCaption));
+            until TransferReceiptLine.Next() = 0;
     end;
 
     local procedure GetPostedTransferReceiptNo(DocumentNo: Code[20]): Code[20]

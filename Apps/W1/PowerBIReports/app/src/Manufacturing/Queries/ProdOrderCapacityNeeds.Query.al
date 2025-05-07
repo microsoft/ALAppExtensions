@@ -18,25 +18,21 @@ query 36987 "Prod. Order Capacity Needs"
     {
         dataitem(ProdOrderCapacityNeed; "Prod. Order Capacity Need")
         {
-            column(status; Status)
-            {
-            }
-            column(prodOrderNo; "Prod. Order No.")
-            {
-            }
-            column(routingNo; "Routing No.")
-            {
-            }
-            column(routingReferenceNo; "Routing Reference No.")
-            {
-            }
-            column(operationNo; "Operation No.")
-            {
-            }
-            column(allocatedTime; "Allocated Time")
-            {
-                Method = Sum;
-            }
+            column(status; Status) { }
+            column(prodOrderNo; "Prod. Order No.") { }
+            column(routingNo; "Routing No.") { }
+            column(routingReferenceNo; "Routing Reference No.") { }
+            column(operationNo; "Operation No.") { }
+            column(allocatedTime; "Allocated Time") { }
+            column(requestedOnly; "Requested Only") { }
+            column(workCenterNo; "Work Center No.") { }
+            column(workCenterGroupCode; "Work Center Group Code") { }
+            column(date; Date) { }
+            column(no; "No.") { }
+            column(type; Type) { }
+            column(neededTimeMs; "Needed Time (ms)") { }
+            column(neededTime; "Needed Time") { }
+            column(lineNo; "Line No.") { }
         }
     }
 

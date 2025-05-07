@@ -4,6 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 using System.Telemetry;
+using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Processing.Import;
 
 table 6381 "OneDrive Setup"
 {
@@ -27,6 +30,7 @@ table 6381 "OneDrive Setup"
 
             trigger OnValidate()
             var
+                EDocumentService: Record "E-Document Service";
                 FeatureTelemetry: Codeunit "Feature Telemetry";
                 DriveProcessing: Codeunit "Drive Processing";
                 DriveIntegrationImpl: Codeunit "Drive Integration Impl.";
@@ -39,6 +43,8 @@ table 6381 "OneDrive Setup"
                     Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription(Rec.FieldName(Enabled), Rec.TableName()), AuditCategory::CustomerFacing);
                 end else
                     Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription('Disabled', Rec.TableName()), AuditCategory::CustomerFacing);
+                EDocumentService.SetRange("Service Integration V2", "Service Integration"::OneDrive);
+                EDocumentService.ModifyAll("Import Process", "E-Document Import Process"::"Version 2.0");
             end;
         }
         field(3; "Documents Folder"; Text[2048])
@@ -49,10 +55,13 @@ table 6381 "OneDrive Setup"
             var
                 DriveProcessing: Codeunit "Drive Processing";
             begin
-                if Rec."Documents Folder" <> '' then
-                    Rec.SiteId := CopyStr(DriveProcessing.GetSiteId(Rec."Documents Folder"), 1, MaxStrLen(Rec.SiteId))
-                else
+                if Rec."Documents Folder" <> '' then begin
+                    Rec.SiteId := CopyStr(DriveProcessing.GetSiteId(Rec."Documents Folder"), 1, MaxStrLen(Rec.SiteId));
+                    Rec."Documents Folder Name" := CopyStr(DriveProcessing.GetName(Rec."Documents Folder"), 1, MaxStrLen(Rec."Documents Folder Name"))
+                end else begin
                     Rec.SiteId := '';
+                    Rec."Documents Folder Name" := ''
+                end;
             end;
         }
         field(4; "Imp. Documents Folder"; Text[2048])
@@ -78,6 +87,11 @@ table 6381 "OneDrive Setup"
         field(6; "Imp. Documents Folder Id"; Text[2048])
         {
             Caption = 'Imported Documents Folder Id';
+            DataClassification = CustomerContent;
+        }
+        field(7; "Documents Folder Name"; Text[2048])
+        {
+            Caption = 'Documents Folder Name';
             DataClassification = CustomerContent;
         }
     }

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionset 27226 "QBMigration - Objects"
 {
     Assignable = false;

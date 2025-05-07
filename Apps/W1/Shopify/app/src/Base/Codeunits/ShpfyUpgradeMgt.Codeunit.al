@@ -6,6 +6,7 @@ using Microsoft.Sales.Customer;
 using Microsoft.Finance.Dimension;
 using Microsoft.Inventory.Item;
 using System.Upgrade;
+using System.Integration;
 
 /// <summary>
 /// Codeunit Shpfy Upgrade Mgt. (ID 30106).
@@ -14,10 +15,12 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 {
     Access = Internal;
     Subtype = Upgrade;
-    Permissions = tabledata "Shpfy Shop" = RM;
+    Permissions = tabledata "Shpfy Shop" = RM,
+                  tabledata "Webhook Subscription" = rimd;
 
     trigger OnUpgradePerDatabase()
     begin
+        WebhookSubscriptionUpgrade();
     end;
 
     trigger OnUpgradePerCompany()
@@ -28,9 +31,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         LocationUpgrade();
         SyncPricesWithProductsUpgrade();
         SendShippingConfirmationUpgrade();
-#if CLEAN24
         OrderAttributeValueUpgrade();
-#endif
         CreditMemoCanBeCreatedUpgrade();
     end;
 
@@ -325,7 +326,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         UpgradeTag.SetUpgradeTag(GetSendShippingConfirmationUpgradeTag());
     end;
 
-#if CLEAN24
     local procedure OrderAttributeValueUpgrade()
     var
         OrderAttribute: Record "Shpfy Order Attribute";
@@ -344,7 +344,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
         UpgradeTag.SetUpgradeTag(GetOrderAttributeValueUpgradeTag());
     end;
-#endif
 
     local procedure CreditMemoCanBeCreatedUpgrade()
     var
@@ -388,6 +387,26 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         RefundLineDataTransfer.CopyFields();
     end;
 
+    local procedure WebhookSubscriptionUpgrade()
+    var
+        WebhookSubscription: Record "Webhook Subscription";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        WebhookTopic: Enum "Shpfy Webhook Topic";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetWebhookSubscriptionUpgradeTag()) then
+            exit;
+
+        WebhookTopic := WebhookTopic::BULK_OPERATIONS_FINISH;
+        WebhookSubscription.SetRange(Endpoint, WebhookTopic.Names.Get(WebhookTopic.Ordinals.IndexOf(WebhookTopic.AsInteger())));
+        WebhookSubscription.ModifyAll(Endpoint, Format(WebhookTopic));
+
+        WebhookTopic := WebhookTopic::ORDERS_CREATE;
+        WebhookSubscription.SetRange(Endpoint, WebhookTopic.Names.Get(WebhookTopic.Ordinals.IndexOf(WebhookTopic.AsInteger())));
+        WebhookSubscription.ModifyAll(Endpoint, Format(WebhookTopic));
+
+        UpgradeTag.SetUpgradeTag(GetWebhookSubscriptionUpgradeTag());
+    end;
+
     internal procedure GetAllowOutgoingRequestseUpgradeTag(): Code[250]
     begin
         exit('MS-445989-AllowOutgoingRequestseUpgradeTag-20220816');
@@ -428,16 +447,19 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         exit('MS-495193-SendShippingConfirmationUpgradeTag-20231221');
     end;
 
-#if CLEAN24
     local procedure GetOrderAttributeValueUpgradeTag(): Code[250]
     begin
         exit('MS-497909-OrderAttributeValueUpgradeTag-20240125');
     end;
-#endif
 
     local procedure GetCreditMemoCanBeCreatedUpgradeTag(): Code[250]
     begin
         exit('MS-471880-CreditMemoCanBeCreatedUpgradeTag-20240201');
+    end;
+
+    local procedure GetWebhookSubscriptionUpgradeTag(): Code[250]
+    begin
+        exit('MS-574620-WebHookSubscriptionUpgradeTag-20250419');
     end;
 
     local procedure GetDateBeforeFeature(): DateTime

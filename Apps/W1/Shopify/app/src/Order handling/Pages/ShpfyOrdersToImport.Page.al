@@ -14,6 +14,7 @@ page 30121 "Shpfy Orders to Import"
     InsertAllowed = false;
     ModifyAllowed = true;
     DeleteAllowed = true;
+    SourceTableView = sorting(Id) order(descending);
 
     layout
     {

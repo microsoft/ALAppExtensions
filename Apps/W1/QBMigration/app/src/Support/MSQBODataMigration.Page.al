@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 1830 "MS - QBO Data Migration"
 {
     Caption = 'QuickBooks Online Migration Setup';

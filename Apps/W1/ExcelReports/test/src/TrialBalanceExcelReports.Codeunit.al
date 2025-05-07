@@ -454,7 +454,7 @@ codeunit 139544 "Trial Balance Excel Reports"
     [RequestPageHandler]
     procedure EXRConsolidatedTrialBalanceHandler(var EXRConsolidatedTrialBalance: TestRequestPage "EXR Consolidated Trial Balance")
     begin
-        EXRConsolidatedTrialBalance.EndingDateField.Value := Format(20261231D);
+        EXRConsolidatedTrialBalance.EndingDateField.Value := Format(DMY2Date(31, 12, WorkDate().Year));
         EXRConsolidatedTrialBalance.OK().Invoke();
     end;
 

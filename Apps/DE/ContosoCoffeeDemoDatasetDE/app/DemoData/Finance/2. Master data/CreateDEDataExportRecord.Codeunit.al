@@ -1,3 +1,29 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Purchases.Payables;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.Foundation.Address;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.Dimension;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Sales.History;
+
 codeunit 11125 "Create DE Data Export Record"
 {
     InherentEntitlements = X;

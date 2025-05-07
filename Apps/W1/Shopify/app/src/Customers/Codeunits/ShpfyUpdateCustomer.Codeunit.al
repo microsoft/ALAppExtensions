@@ -165,6 +165,9 @@ codeunit 30124 "Shpfy Update Customer"
                 Customer.Validate("VAT Bus. Posting Group", ShopifyTaxArea."VAT Bus. Posting Group");
         end;
 
+        if CompanyLocation."Shpfy Payment Terms Id" <> 0 then
+            Customer.Validate("Payment Terms Code", GetPaymentTermsCodeFromShopifyPaymentTermsId(CompanyLocation."Shpfy Payment Terms Id"));
+
         Customer.Modify();
     end;
 
@@ -185,5 +188,15 @@ codeunit 30124 "Shpfy Update Customer"
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
         Shop := ShopifyShop;
+    end;
+
+    internal procedure GetPaymentTermsCodeFromShopifyPaymentTermsId(ShpfyPaymentTermsId: BigInteger): Code[10]
+    var
+        ShpfyPaymentTerms: Record "Shpfy Payment Terms";
+    begin
+        ShpfyPaymentTerms.SetRange("Shop Code", Shop.Code);
+        ShpfyPaymentTerms.SetRange(Id, ShpfyPaymentTermsId);
+        if ShpfyPaymentTerms.FindFirst() then
+            exit(ShpfyPaymentTerms."Payment Terms Code");
     end;
 }

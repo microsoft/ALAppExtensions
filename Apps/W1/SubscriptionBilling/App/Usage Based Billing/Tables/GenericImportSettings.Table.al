@@ -8,7 +8,6 @@ table 8017 "Generic Import Settings"
     DataClassification = CustomerContent;
     LookupPageId = "Generic Import Settings Card";
     DrillDownPageId = "Generic Import Settings Card";
-    Access = Internal;
 
     fields
     {
@@ -28,9 +27,9 @@ table 8017 "Generic Import Settings"
             Caption = 'Create Customers';
             InitValue = true;
         }
-        field(4; "Create Subscriptions"; Boolean)
+        field(4; "Create Supplier Subscriptions"; Boolean)
         {
-            Caption = 'Create Subscriptions';
+            Caption = 'Create Supplier Subscriptions';
             InitValue = true;
         }
         field(5; "Additional Processing"; Enum "Additional Processing Type")

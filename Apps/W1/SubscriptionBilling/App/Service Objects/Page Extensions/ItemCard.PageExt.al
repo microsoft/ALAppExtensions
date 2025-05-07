@@ -9,10 +9,10 @@ pageextension 8054 "Item Card" extends "Item Card"
     {
         addbefore("Sales Blocked")
         {
-            field("Service Commitment Option"; Rec."Service Commitment Option")
+            field("Service Commitment Option"; Rec."Subscription Option")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies whether or not service commitments can be linked to this item, or if the item is being used for recurring billing. This is only relevant if you are using Subscription Billing functionalities.';
+                ToolTip = 'Specifies whether or not Subscription Lines can be linked to this item, or if the item is being used for recurring billing. This is only relevant if you are using Subscription Billing functionalities.';
 
                 trigger OnValidate()
                 begin
@@ -25,13 +25,9 @@ pageextension 8054 "Item Card" extends "Item Card"
             part(ItemServCommitmentsFactbox; "Item Serv. Commitments Factbox")
             {
                 ApplicationArea = All;
-                Caption = 'Service Commitments';
+                Caption = 'Subscription Packages';
                 SubPageLink = "Item No." = field("No.");
             }
-        }
-        modify("Last Direct Cost")
-        {
-            Importance = Standard;
         }
         modify("Allow Invoice Disc.")
         {
@@ -63,10 +59,10 @@ pageextension 8054 "Item Card" extends "Item Card"
         {
             action(ServiceCommitments)
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Image = ServiceLedger;
-                Caption = 'Service Commitments';
-                ToolTip = 'View or add service commitments for the item.';
+                Caption = 'Subscription Packages';
+                ToolTip = 'View or add Subscription Packages for the item.';
 
                 trigger OnAction()
                 begin

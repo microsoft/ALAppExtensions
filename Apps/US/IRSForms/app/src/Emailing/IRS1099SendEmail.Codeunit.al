@@ -7,6 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 using Microsoft.Purchases.Vendor;
 using System.EMail;
 using System.Telemetry;
+using System.Utilities;
 
 codeunit 10051 "IRS 1099 Send Email"
 {
@@ -16,10 +17,12 @@ codeunit 10051 "IRS 1099 Send Email"
     var
         AttachmentFileNameTxt: Label '1099Form%1Subst_%2.pdf', Comment = '%1 - form no like NEC, MISC etc, %2 - report type, B or 2', Locked = true;
         EmailNotSentErr: Label 'The email has not been sent. Error: %1', Comment = '%1 - error message from the email management codeunit';
-        VendorNotFoundErr: Label 'The vendor %1 was not found for the selected 1099 form document.', Comment = '%1 - Vendor No';
-        NoConsentErr: Label 'The vendor has not consented to receive 1099 forms electronically';
+        VendorNotFoundErr: Label '%1 was not found for the selected 1099 form document.', Comment = '%1 - Vendor No';
+        NoConsentErr: Label 'must be enabled on the vendor card.';
+        NoConsentAddInfoTxt: Label 'The vendor has not consented to receive 1099 forms electronically.';
         EnableConsentMessageTxt: Label 'You must enable the Receiving 1099 E-Form Consent field on the vendor card to send 1099 forms electronically.';
-        EmptyEmailErr: Label 'The recipient email is not specified';
+        EmptyEmailErr: Label 'must be set in the document or vendor card.';
+        EmptyEmailAddInfoTxt: Label 'The recipient email is not specified.';
         SetEmailMessageTxt: Label 'Set the email in the document or in the vendor card.';
         EmailSetupMissingErr: Label 'You must set up email in Business Central before you can send 1099 forms.';
         EmailSubjectMissingErr: Label 'You must set up the email subject in the IRS Setup before you send 1099 forms.';
@@ -77,11 +80,10 @@ codeunit 10051 "IRS 1099 Send Email"
         end;
     end;
 
-    procedure CheckCanSendEmail(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
+    procedure CheckEmailSetup()
     var
         IRSFormsSetup: Record "IRS Forms Setup";
         EmailAccount: Record "Email Account";
-        Vendor: Record Vendor;
         MailManagement: Codeunit "Mail Management";
         DummyRecId: RecordId;
     begin
@@ -102,24 +104,64 @@ codeunit 10051 "IRS 1099 Send Email"
                 ThrowShowItError('', EmailBodyMissingErr, ShowIRSFormsSetupTxt, IRSFormsSetup.RecordId, IRSFormsSetup.FieldNo("Email Body"), Page::"IRS Forms Setup")
             else
                 Error(EmailBodyMissingErr);
+    end;
 
+    procedure CheckCanSendEmail(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
+    var
+        Vendor: Record Vendor;
+    begin
         if not Vendor.Get(IRS1099FormDocHeader."Vendor No.") then
             Error(VendorNotFoundErr, IRS1099FormDocHeader."Vendor No.");
 
         if not IRS1099FormDocHeader."Receiving 1099 E-Form Consent" then
             if Vendor.WritePermission() then
                 ThrowShowItError(
-                    NoConsentErr, EnableConsentMessageTxt, StrSubstNo(ShowVendorCardTxt, Vendor."No."), Vendor.RecordId, 0, Page::"Vendor Card")
+                    NoConsentAddInfoTxt, EnableConsentMessageTxt, StrSubstNo(ShowVendorCardTxt, Vendor."No."), Vendor.RecordId, 0, Page::"Vendor Card")
             else
-                Error(NoConsentErr);
+                Error(NoConsentAddInfoTxt);
 
         if IRS1099FormDocHeader."Vendor E-Mail" = '' then
             if Vendor.WritePermission() then
                 ThrowShowItError(
-                    EmptyEmailErr, SetEmailMessageTxt, StrSubstNo(ShowVendorCardTxt, Vendor."No."), Vendor.RecordId,
+                    EmptyEmailAddInfoTxt, SetEmailMessageTxt, StrSubstNo(ShowVendorCardTxt, Vendor."No."), Vendor.RecordId,
                     Vendor.FieldNo("E-Mail For IRS"), Page::"Vendor Card")
             else
-                Error(EmptyEmailErr);
+                Error(EmptyEmailAddInfoTxt);
+    end;
+
+    procedure CheckCanSendMultipleEmails(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
+    var
+        Vendor: Record Vendor;
+        ErrorMessageMgt: Codeunit "Error Message Management";
+        ErrorMessageHandler: Codeunit "Error Message Handler";
+        ErrorContextElement: Codeunit "Error Context Element";
+    begin
+        if not IRS1099FormDocHeader.FindSet() then
+            exit;
+
+        ErrorMessageMgt.Activate(ErrorMessageHandler);
+
+        repeat
+            if not Vendor.Get(IRS1099FormDocHeader."Vendor No.") then begin
+                ErrorMessageMgt.LogFieldError(IRS1099FormDocHeader, IRS1099FormDocHeader.FieldNo("Vendor No."), VendorNotFoundErr);
+                continue;
+            end;
+
+            if not IRS1099FormDocHeader."Receiving 1099 E-Form Consent" then begin
+                ErrorMessageMgt.PushContext(ErrorContextElement, Vendor, Vendor.FieldNo("Receiving 1099 E-Form Consent"), NoConsentAddInfoTxt);
+                ErrorMessageMgt.LogFieldError(IRS1099FormDocHeader, IRS1099FormDocHeader.FieldNo("Receiving 1099 E-Form Consent"), NoConsentErr);
+            end;
+
+            if IRS1099FormDocHeader."Vendor E-Mail" = '' then begin
+                ErrorMessageMgt.PushContext(ErrorContextElement, Vendor, Vendor.FieldNo("E-Mail"), EmptyEmailAddInfoTxt);
+                ErrorMessageMgt.LogFieldError(IRS1099FormDocHeader, IRS1099FormDocHeader.FieldNo("Vendor E-Mail"), EmptyEmailErr);
+            end;
+        until IRS1099FormDocHeader.Next() = 0;
+
+        if ErrorMessageHandler.HasErrors() then begin
+            ErrorMessageHandler.ShowErrors();
+            Error('');
+        end;
     end;
 
     local procedure InitTempEmailItem(var TempEmailItem: Record "Email Item" temporary; EmailAddress: Text[250])

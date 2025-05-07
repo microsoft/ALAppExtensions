@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2507 "Purchase Orders"
 {
     QueryType = Normal;

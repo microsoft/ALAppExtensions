@@ -61,6 +61,9 @@ codeunit 139628 "E-Doc. Receive Test"
         Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
 
+        PurchaseHeader."Due Date" := WorkDate() + 30;
+        PurchaseHeader.Modify();
+
         for i := 1 to 3 do begin
             LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(100));
             PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(1, 100, 2));
@@ -185,7 +188,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Last();
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -283,7 +286,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Last();
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -386,12 +389,12 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
         EDocServicePage.Receive.Invoke();
 
-        // [THEN] Purchase invoice is created with corresponfing values
+        // [THEN] Purchase invoice is created with corresponding values
         EDocument.FindLast();
         EDocumentPage.OpenView();
         EDocumentPage.Filter.SetFilter("Document No.", EDocument."Document No.");
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -1247,7 +1250,6 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler')]
     procedure GetBasicInfoFromReceivedDocumentError()
     var
         EDocService: Record "E-Document Service";
@@ -1295,7 +1297,6 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandler')]
     procedure GetCompleteInfoFromReceivedDocumentError()
     var
         EDocService: Record "E-Document Service";
@@ -1340,6 +1341,42 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader.SetHideValidationDialog(true);
         PurchaseHeader."E-Document Link" := NullGuid;
         PurchaseHeader.Delete(true);
+    end;
+
+    [Test]
+    procedure ReceiveEDocumentDuplicate()
+    var
+        EDocService: Record "E-Document Service";
+        EDocument: Record "E-Document";
+        EDocument2: Record "E-Document";
+        Item: Record Item;
+        VATPostingSetup: Record "VAT Posting Setup";
+        DocumentVendor: Record Vendor;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Receive e-document twice so the duplicate will be skipped in creation
+        Initialize();
+        BindSubscription(EDocImplState);
+
+        // [GIVEN] e-Document service to receive one single purchase order
+        CreateEDocServiceToReceivePurchaseOrder(EDocService);
+        // [GIVEN] Vendor with VAT Posting Setup
+        CreateVendorWithVatPostingSetup(DocumentVendor, VATPostingSetup);
+        // [GIVEN] Item with item reference
+        CreateItemWithReference(Item, VATPostingSetup);
+        // [GIVEN] Incoming PEPPOL duplicated document
+        CreateIncomingDuplicatedPEPPOL(DocumentVendor);
+
+        // [WHEN] Running Receive
+        InvokeReceive(EDocService);
+
+        // [THEN] Only one E-Document is created
+        EDocument.FindLast();
+        EDocument2.SetRange("Bill-to/Pay-to No.", EDocument."Bill-to/Pay-to No.");
+        EDocument2.SetRange("Incoming E-Document No.", EDocument."Incoming E-Document No.");
+        EDocument2.SetRange("Document Date", EDocument."Document Date");
+        EDocument2.SetFilter("Entry No", '<>%1', EDocument."Entry No");
+        Assert.IsTrue(EDocument2.IsEmpty(), 'Duplicate E-Document created.');
     end;
 
     [ModalPageHandler]
@@ -1443,7 +1480,90 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseField.SetRange("No.", 10705);
     end;
 
-#pragma warning disable AS0018
+    local procedure CreateEDocServiceToReceivePurchaseOrder(var EDocService: Record "E-Document Service")
+    begin
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::Mock);
+        SetDefaultEDocServiceValues(EDocService);
+    end;
+
+    local procedure CreateVendorWithVatPostingSetup(var DocumentVendor: Record Vendor; var VATPostingSetup: Record "VAT Posting Setup")
+    begin
+        LibraryPurchase.CreateVendorWithVATRegNo(DocumentVendor);
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
+        DocumentVendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        DocumentVendor."VAT Registration No." := 'GB123456789';
+        DocumentVendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Order";
+        DocumentVendor.Modify(false);
+    end;
+
+    local procedure CreateItemWithReference(var Item: Record Item; var VATPostingSetup: Record "VAT Posting Setup")
+    var
+        ItemReference: Record "Item Reference";
+    begin
+        Item.FindFirst();
+        Item."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+        Item.Modify(false);
+        ItemReference.DeleteAll(false);
+        ItemReference."Item No." := Item."No.";
+        ItemReference."Reference No." := '1000';
+        ItemReference.Insert(false);
+    end;
+
+    local procedure CreateIncomingDuplicatedPEPPOL(var DocumentVendor: Record Vendor)
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        Document: Text;
+        XMLInstream: InStream;
+    begin
+        TempXMLBuffer.LoadFromText(EDocReceiveFiles.GetDocument1());
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, '/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID');
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.Value := DocumentVendor."VAT Registration No.";
+        TempXMLBuffer.Modify();
+
+        TempXMLBuffer.SetRange(Path, '/Invoice/cbc:ID');
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.Value := LibraryRandom.RandText(20);
+
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.Save(TempBlob);
+
+        TempBlob.CreateInStream(XMLInstream, TextEncoding::UTF8);
+        XMLInstream.Read(Document);
+
+        LibraryVariableStorage.Clear();
+        LibraryVariableStorage.Enqueue(Document);
+        LibraryVariableStorage.Enqueue(2);
+        EDocImplState.SetVariableStorage(LibraryVariableStorage);
+    end;
+
+    local procedure InvokeReceive(var EDocService: Record "E-Document Service")
+    var
+        EDocServicePage: TestPage "E-Document Service";
+    begin
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+    end;
+
+    local procedure SetDefaultEDocServiceValues(var EDocService: Record "E-Document Service")
+    begin
+        EDocService."Document Format" := "E-Document Format"::"PEPPOL BIS 3.0";
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService."Validate Receiving Company" := false;
+        EDocService.Modify(false);
+    end;
+
 #if not CLEAN26
 
     // Tests inside CLEAN26 are testing the interfaces that is to be removed when CLEAN26 tags are removed.
@@ -1605,7 +1725,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Last();
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -1703,7 +1823,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Last();
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Imported Document Created"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -1811,7 +1931,7 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocumentPage.OpenView();
         EDocumentPage.Filter.SetFilter("Document No.", EDocument."Document No.");
 
-        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.InboundEDocFactbox.Status.Value(), 'Wrong service status for processed document');
 
         // [THEN] E-Document Errors and Warnings has correct status
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
@@ -2764,6 +2884,5 @@ codeunit 139628 "E-Doc. Receive Test"
 
 
 #endif
-#pragma warning restore AS0018
 
 }

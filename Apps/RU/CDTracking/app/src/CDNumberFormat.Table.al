@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 14101 "CD Number Format"
 {
     Caption = 'CD Number Format';

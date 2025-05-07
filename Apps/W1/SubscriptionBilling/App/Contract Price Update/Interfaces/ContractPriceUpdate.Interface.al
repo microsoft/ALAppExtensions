@@ -13,7 +13,7 @@ interface "Contract Price Update"
     procedure SetPriceUpdateParameters(PriceUpdateTemplate: Record "Price Update Template"; IncludeContractLinesUpToDate: Date; PerformUpdateOnDate: Date)
 
     /// <summary>
-    /// The method applies filters on Service commitments which should be processed for price update.
+    /// The method applies filters on Subscription Lines which should be processed for price update.
     /// </summary>
     procedure ApplyFilterOnServiceCommitments()
 
@@ -27,5 +27,5 @@ interface "Contract Price Update"
     /// </summary>
     /// <param name="UpdatePercentValue">Decimal percentage value for calculation of the New Price</param>
     /// <param name="NewContractPriceUpdateLine">The Record on which New Price is calculated</param>
-    procedure CalculateNewPrice(UpdatePercentValue: Decimal; var NewContractPriceUpdateLine: Record "Contract Price Update Line")
+    procedure CalculateNewPrice(UpdatePercentValue: Decimal; var NewContractPriceUpdateLine: Record "Sub. Contr. Price Update Line")
 }

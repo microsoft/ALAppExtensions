@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionsetextension 16491 "D365 TEAM MEMBERQuickBooks Data Migration" extends "D365 TEAM MEMBER"
 {
     Permissions = tabledata "MigrationQB Account" = RIMD,

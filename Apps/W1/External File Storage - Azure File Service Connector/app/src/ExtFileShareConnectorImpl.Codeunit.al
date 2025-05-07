@@ -5,6 +5,7 @@
 
 namespace System.ExternalFileStorage;
 
+using System.Utilities;
 using System.Text;
 using System.Azure.Storage;
 using System.Azure.Storage.Files;
@@ -63,10 +64,8 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         InitFileClient(AccountId, AFSFileClient);
         AFSOperationResponse := AFSFileClient.GetFileAsStream(Path, Stream);
 
-        if AFSOperationResponse.IsSuccessful() then
-            exit;
-
-        Error(AFSOperationResponse.GetError());
+        if not AFSOperationResponse.IsSuccessful() then
+            Error(AFSOperationResponse.GetError());
     end;
 
     /// <summary>
@@ -101,14 +100,14 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
     var
         AFSFileClient: Codeunit "AFS File Client";
         AFSOperationResponse: Codeunit "AFS Operation Response";
+        SourcePathUri: Text;
     begin
         InitFileClient(AccountId, AFSFileClient);
-        AFSOperationResponse := AFSFileClient.CopyFile(TargetPath, SourcePath);
+        SourcePathUri := CreateUri(AccountId, SourcePath);
+        AFSOperationResponse := AFSFileClient.CopyFile(SourcePathUri, TargetPath);
 
-        if AFSOperationResponse.IsSuccessful() then
-            exit;
-
-        Error(AFSOperationResponse.GetError());
+        if not AFSOperationResponse.IsSuccessful() then
+            Error(AFSOperationResponse.GetError());
     end;
 
     /// <summary>
@@ -170,10 +169,8 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         InitFileClient(AccountId, AFSFileClient);
         AFSOperationResponse := AFSFileClient.DeleteFile(Path);
 
-        if AFSOperationResponse.IsSuccessful() then
-            exit;
-
-        Error(AFSOperationResponse.GetError());
+        if not AFSOperationResponse.IsSuccessful() then
+            Error(AFSOperationResponse.GetError());
     end;
 
     /// <summary>
@@ -182,7 +179,7 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
     /// <param name="AccountId">The file account ID which is used to get the file.</param>
     /// <param name="Path">The file path to list.</param>
     /// <param name="FilePaginationData">Defines the pagination data.</param>
-    /// <param name="TempFileAccountContent">A list with all directories stored in the path.</param>
+    /// <param name="Files">A list with all directories stored in the path.</param>
     procedure ListDirectories(AccountId: Guid; Path: Text; FilePaginationData: Codeunit "File Pagination Data"; var TempFileAccountContent: Record "File Account Content" temporary)
     var
         AFSDirectoryContent: Record "AFS Directory Content";
@@ -265,10 +262,8 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         InitFileClient(AccountId, AFSFileClient);
         AFSOperationResponse := AFSFileClient.DeleteDirectory(Path);
 
-        if AFSOperationResponse.IsSuccessful() then
-            exit;
-
-        Error(AFSOperationResponse.GetError());
+        if not AFSOperationResponse.IsSuccessful() then
+            Error(AFSOperationResponse.GetError());
     end;
 
     /// <summary>
@@ -456,6 +451,18 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
     local procedure PathSeparator(): Text
     begin
         exit('/');
+    end;
+
+    local procedure CreateUri(AccountId: Guid; SourcePath: Text): Text
+    var
+        FileShareAccount: Record "Ext. File Share Account";
+        Uri: Codeunit Uri;
+        FileShareUriLbl: Label 'https://%1.file.core.windows.net/%2/%3', Locked = true;
+    begin
+        FileShareAccount.Get(AccountId);
+        FileShareAccount.TestField("Storage Account Name");
+        FileShareAccount.TestField("File Share Name");
+        exit(StrSubstNo(FileShareUriLbl, FileShareAccount."Storage Account Name", FileShareAccount."File Share Name", Uri.EscapeDataString(SourcePath)));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", OnClearCompanyConfig, '', false, false)]

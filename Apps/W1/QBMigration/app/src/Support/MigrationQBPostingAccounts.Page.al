@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 1918 "MigrationQB Posting Accounts"
 {
     PageType = Card;

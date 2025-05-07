@@ -1,4 +1,5 @@
-﻿permissionsetextension 11740 "Vendor - Edit CZL" extends "Vendor - Edit"
+#pragma warning disable AA0247
+permissionsetextension 11740 "Vendor - Edit CZL" extends "Vendor - Edit"
 {
     Permissions = tabledata "Reg. No. Service Config CZL" = R,
                   tabledata "Registration Log CZL" = RIM,

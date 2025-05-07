@@ -18,7 +18,7 @@ page 30145 "Shpfy Refund"
                 field("Shopify Order No."; Rec."Shopify Order No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The unique identifier for the order that appears on the order page in the Shopify admin and the order status page. For example, "#1001", "EN1001", or "1001-A".';
+                    ToolTip = 'Specifies the unique identifier for the order that appears on the order page in the Shopify admin and the order status page. For example, "#1001", "EN1001", or "1001-A".';
                 }
                 field("Refund Id"; Rec."Refund Id")
                 {
@@ -28,12 +28,12 @@ page 30145 "Shpfy Refund"
                 field("Created At"; Rec."Created At")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The date and time when the refund was created in Shopify.';
+                    ToolTip = 'Specifies the date and time when the refund was created in Shopify.';
                 }
                 field("Updated At"; Rec."Updated At")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The date and time when the refund was update in Shopify';
+                    ToolTip = 'Specifies the date and time when the refund was update in Shopify.';
                     Visible = false;
                 }
                 field("Sell-to Customer No."; Rec."Sell-to Customer No.")
@@ -59,17 +59,17 @@ page 30145 "Shpfy Refund"
                 field("Total Refunded Amount"; Rec."Total Refunded Amount")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The total amount across all transactions for the refund.';
+                    ToolTip = 'Specifies the total amount across all transactions for the refund.';
                 }
                 field("Return No."; Rec."Return No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The shopify return associated with the refund.';
+                    ToolTip = 'Specifies the Shopify return associated with the refund.';
                 }
                 field("Is Processed"; Rec."Is Processed")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'If this refunds already is processed into a BC document';
+                    ToolTip = 'Specifies if this refunds already is processed into a Business Central document.';
                 }
             }
             part(Lines; "Shpfy Refund Lines")
@@ -157,8 +157,21 @@ page 30145 "Shpfy Refund"
                 end;
             }
         }
+        area(Navigation)
+        {
+            action(ShippingLines)
+            {
+                ApplicationArea = All;
+                Caption = 'Shipping Lines';
+                Image = OrderList;
+                ToolTip = 'View the shipping lines for this refund.';
+                RunObject = Page "Shpfy Refund Shipping Lines";
+                RunPageLink = "Refund Id" = field("Refund Id");
+            }
+        }
         area(Promoted)
         {
+            actionref(PromotedShippingLines; ShippingLines) { }
             actionref(PromotedCreateCreditNoted; CreateCreditMemo) { }
             actionref(PromotedRetrievedShopifyData; RetrievedShopifyData) { }
         }

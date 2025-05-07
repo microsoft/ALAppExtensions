@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#pragma warning disable AA0247
 
 report 11016 "Create XML-File VAT Adv.Notif."
 {
@@ -329,6 +330,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
         end;
         if not AddElement(XmlRootElem, XmlElemNew, 'Steuerfall', '', XmlNameSpace) then
             exit;
+        OnAddUseDataOnAfterAddSteuerfallElement(XMLRootElem, XMLElemNew, XMLNameSpace);
         XmlRootElem := XmlElemNew;
         if not AddElement(XmlRootElem, XmlElemNew, 'Umsatzsteuervoranmeldung', '', XmlNameSpace) then
             exit;
@@ -532,6 +534,11 @@ report 11016 "Create XML-File VAT Adv.Notif."
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterGetRecordOnAfterVATStmtNameSetFilters(var SalesVATAdvanceNotif: Record "Sales VAT Advance Notif."; var VATStatementName: Record "VAT Statement Name")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAddUseDataOnAfterAddSteuerfallElement(var XMLRootElem: XMLElement; XMLElemNew: XmlElement; XMLNameSpace: Text)
     begin
     end;
 }

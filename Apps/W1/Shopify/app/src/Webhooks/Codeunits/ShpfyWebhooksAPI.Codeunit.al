@@ -9,66 +9,67 @@ codeunit 30251 "Shpfy Webhooks API"
     var
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
-        WebhooksUrlTxt: Label 'webhooks.json', Locked = true;
-        WebhookUrlTxt: Label 'webhooks/%1.json', Comment = '%1 - webhook id', Locked = true;
-        WebhookCreateRequestTxt: Label '{"webhook": {"topic": "%1", "address": "%2", "format": "json" }}', Comment = '%1 - webhook topic, %2 - notification address', Locked = true;
-
 
     internal procedure RegisterWebhookSubscription(var Shop: Record "Shpfy Shop"; WebhookTopic: Text): Text
     var
+        GraphQLType: Enum "Shpfy GraphQL Type";
         JResponse: JsonToken;
         SubscriptionId: Text;
-        Response: Text;
-        Request: Text;
-        Url: Text;
+        Parameters: Dictionary of [Text, Text];
     begin
         CommunicationMgt.SetShop(Shop);
-        Url := CommunicationMgt.CreateWebRequestURL(WebhooksUrlTxt);
-        Request := StrSubstNo(WebhookCreateRequestTxt, WebhookTopic, GetNotificationUrl());
-        Response := CommunicationMgt.ExecuteWebRequest(Url, 'POST', Request);
-        JResponse.ReadFrom(Response);
+        GraphQLType := GraphQLType::CreateWebhookSubscription;
+        Parameters.Add('WebhookTopic', WebhookTopic);
+        Parameters.Add('NotificationUrl', GetNotificationUrl());
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
         ExtractWebhookSubscriptionId(JResponse.AsObject(), SubscriptionId);
         exit(SubscriptionId);
     end;
 
     internal procedure GetWebhookSubscription(var Shop: Record "Shpfy Shop"; WebhookTopic: Text; var SubscriptionId: Text): Boolean
     var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Id: BigInteger;
         JResponse: JsonToken;
         JWebhooks: JsonArray;
         JWebhook: JsonToken;
-        Response: Text;
-        Url: Text;
+        Parameters: Dictionary of [Text, Text];
     begin
         CommunicationMgt.SetShop(Shop);
-        Url := CommunicationMgt.CreateWebRequestURL(WebhooksUrlTxt + '?topic=' + WebhookTopic + '&address=' + GetNotificationUrl());
-        Response := CommunicationMgt.ExecuteWebRequest(Url, 'GET', '');
-        if JResponse.ReadFrom(Response) then
-            if JsonHelper.GetJsonArray(JResponse, JWebhooks, 'webhooks') then
-                foreach JWebhook in JWebhooks do begin
-                    SubscriptionId := JsonHelper.GetValueAsText(JWebhook.AsObject(), 'id');
-                    if SubscriptionId <> '' then
-                        exit(true);
+        GraphQLType := GraphQLType::GetWebhookSubscriptions;
+        Parameters.Add('WebhookTopic', WebhookTopic);
+        Parameters.Add('NotificationUrl', GetNotificationUrl());
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+        if JsonHelper.GetJsonArray(JResponse, JWebhooks, 'data.webhookSubscriptions.edges') then
+            foreach JWebhook in JWebhooks do begin
+                Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JWebhook, 'node.id'));
+                if Id <> 0 then begin
+                    SubscriptionId := Format(Id);
+                    exit(true);
                 end;
+            end;
 
         exit(false);
     end;
 
     internal procedure DeleteWebhookSubscription(var Shop: Record "Shpfy Shop"; SubscriptionId: Text)
     var
-        Response: Text;
-        Url: Text;
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
     begin
         CommunicationMgt.SetShop(Shop);
-        Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(WebhookUrlTxt, SubscriptionId));
-        Response := CommunicationMgt.ExecuteWebRequest(Url, 'DELETE', '');
+        GraphQLType := GraphQLType::DeleteWebhookSubscription;
+        Parameters.Add('SubscriptionId', SubscriptionId);
+        CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
     end;
 
     local procedure ExtractWebhookSubscriptionId(JResponse: JsonObject; var SubscriptionId: Text)
     var
-        JWebhookSubscription: JsonObject;
+        Id: BigInteger;
     begin
-        if JsonHelper.GetJsonObject(JResponse, JWebhookSubscription, 'webhook') then
-            SubscriptionId := JsonHelper.GetValueAsText(JWebhookSubscription, 'id');
+        Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JResponse, 'data.webhookSubscriptionCreate.webhookSubscription.id'));
+        if Id <> 0 then
+            SubscriptionId := Format(Id);
     end;
 
     local procedure GetNotificationUrl(): Text

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 1913 "MigrationQB CustomerTrans"
 {
     PageType = List;

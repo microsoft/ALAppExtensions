@@ -10,42 +10,8 @@ using System.Security.Authentication;
 using System.Azure.Identity;
 using System.Utilities;
 
-#if not CLEAN24
-#pragma warning disable AL0432
-codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client", "Email - OAuth Client v2"
-#pragma warning restore AL0432
-#else
 codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
-#endif
 {
-#if not CLEAN24
-    /// <summary>
-    /// Retrieves the Access token for the current user to connect to Outlook API
-    /// </summary>
-    /// <param name="AccessToken">Out parameter with the Access token of the account</param>
-    [NonDebuggable]
-    [Obsolete('Replaced by GetAccessToken with SecretText data type for AccessToken parameter.', '24.0')]
-    procedure GetAccessToken(var AccessToken: Text)
-    var
-        CallerModuleInfo: ModuleInfo;
-    begin
-        NavApp.GetCallerModuleInfo(CallerModuleInfo);
-#pragma warning disable AL0432
-        TryGetAccessTokenInternal(AccessToken, CallerModuleInfo);
-#pragma warning restore AL0432
-    end;
-
-    [NonDebuggable]
-    [Obsolete('Replaced by GetAccessToken with SecretText data type for AccessToken parameter.', '24.0')]
-
-    procedure TryGetAccessToken(var AccessToken: Text): Boolean
-    var
-        CallerModuleInfo: ModuleInfo;
-    begin
-        NavApp.GetCallerModuleInfo(CallerModuleInfo);
-        exit(TryGetAccessTokenInternal(AccessToken, CallerModuleInfo));
-    end;
-#endif
 
     /// <summary>
     /// Retrieves the Access token for the current user to connect to Outlook API
@@ -83,20 +49,6 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
             Error(ThirdPartyExtensionsNotAllowedErr);
     end;
 
-#if not CLEAN24
-    // Interfaces do not support properties for the procedures, so using an internal function
-    [TryFunction]
-    [NonDebuggable]
-    local procedure TryGetAccessTokenInternal(var AccessToken: Text; CallerModuleInfo: ModuleInfo)
-    var
-        Token: SecretText;
-    begin
-        CheckIfThirdParty(CallerModuleInfo);
-        TryGetAccessTokenInternal(Token, CallerModuleInfo);
-        if not Token.IsEmpty() then
-            AccessToken := Token.Unwrap();
-    end;
-#endif
 
     // Interfaces do not support properties for the procedures, so using an internal function
     [TryFunction]

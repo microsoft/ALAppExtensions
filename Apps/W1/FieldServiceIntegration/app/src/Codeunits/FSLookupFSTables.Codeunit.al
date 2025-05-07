@@ -26,6 +26,12 @@ codeunit 6612 "FS Lookup FS Tables"
             Database::"FS Customer Asset":
                 if LookupFSCustomerAsset(SavedCRMId, CRMId, IntTableFilter) then
                     Handled := true;
+            Database::"FS Work Order":
+                if LookupFSWorkOrder(SavedCRMId, CRMId, IntTableFilter) then
+                    Handled := true;
+            Database::"FS Work Order Type":
+                if LookupFSWorkOrderType(SavedCRMId, CRMId, IntTableFilter) then
+                    Handled := true;
         end;
     end;
 
@@ -74,6 +80,56 @@ codeunit 6612 "FS Lookup FS Tables"
         if FSBookableResourceList.RunModal() = Action::LookupOK then begin
             FSBookableResourceList.GetRecord(FSBookableResource);
             CRMId := FSBookableResource.BookableResourceId;
+            exit(true);
+        end;
+        exit(false);
+    end;
+
+    local procedure LookupFSWorkOrderType(SavedCRMId: Guid; var CRMId: Guid; IntTableFilter: Text): Boolean
+    var
+        FSWorkOrderType: Record "FS Work Order Type";
+        OriginalFSWorkOrderType: Record "FS Work Order Type";
+        FSWorkOrderTypes: Page "FS Work Order Types";
+    begin
+        if not IsNullGuid(CRMId) then begin
+            if FSWorkOrderType.Get(CRMId) then
+                FSWorkOrderTypes.SetRecord(FSWorkOrderType);
+            if not IsNullGuid(SavedCRMId) then
+                if OriginalFSWorkOrderType.Get(SavedCRMId) then
+                    FSWorkOrderTypes.SetCurrentlyCoupledFSWorkOrderType(OriginalFSWorkOrderType);
+        end;
+        FSWorkOrderType.SetView(IntTableFilter);
+        FSWorkOrderTypes.SetTableView(FSWorkOrderType);
+        FSWorkOrderTypes.LookupMode(true);
+        Commit();
+        if FSWorkOrderTypes.RunModal() = Action::LookupOK then begin
+            FSWorkOrderTypes.GetRecord(FSWorkOrderType);
+            CRMId := FSWorkOrderType.WorkOrderTypeId;
+            exit(true);
+        end;
+        exit(false);
+    end;
+
+    local procedure LookupFSWorkOrder(SavedCRMId: Guid; var CRMId: Guid; IntTableFilter: Text): Boolean
+    var
+        FSWorkOrderType: Record "FS Work Order";
+        OriginalFSWorkOrder: Record "FS Work Order";
+        FSWorkOrders: Page "FS Work Orders";
+    begin
+        if not IsNullGuid(CRMId) then begin
+            if FSWorkOrderType.Get(CRMId) then
+                FSWorkOrders.SetRecord(FSWorkOrderType);
+            if not IsNullGuid(SavedCRMId) then
+                if OriginalFSWorkOrder.Get(SavedCRMId) then
+                    FSWorkOrders.SetCurrentlyCoupledFSWorkOrder(OriginalFSWorkOrder);
+        end;
+        FSWorkOrderType.SetView(IntTableFilter);
+        FSWorkOrders.SetTableView(FSWorkOrderType);
+        FSWorkOrders.LookupMode(true);
+        Commit();
+        if FSWorkOrders.RunModal() = Action::LookupOK then begin
+            FSWorkOrders.GetRecord(FSWorkOrderType);
+            CRMId := FSWorkOrderType.WorkOrderId;
             exit(true);
         end;
         exit(false);

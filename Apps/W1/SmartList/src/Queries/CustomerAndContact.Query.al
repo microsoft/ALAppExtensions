@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2465 "Customer And Contact"
 {
     QueryType = Normal;

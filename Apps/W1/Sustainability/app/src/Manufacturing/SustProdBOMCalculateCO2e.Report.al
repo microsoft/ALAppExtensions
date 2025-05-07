@@ -7,7 +7,9 @@ report 6216 "Sust. Prod. BOM Calculate CO2e"
 {
     Caption = 'Calculate CO2e';
     ProcessingOnly = true;
-    Permissions = tabledata Item = rm;
+    Permissions = tabledata Item = r,
+                  tabledata "Production BOM Header" = r,
+                  tabledata "Production BOM Line" = rm;
 
     dataset
     {

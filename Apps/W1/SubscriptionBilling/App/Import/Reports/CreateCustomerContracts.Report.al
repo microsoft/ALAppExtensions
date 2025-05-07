@@ -5,11 +5,11 @@ report 8003 "Create Customer Contracts"
     ApplicationArea = All;
     UsageCategory = None;
     ProcessingOnly = true;
-    Caption = 'Create Customer Contracts';
+    Caption = 'Create Customer Subscription Contracts';
 
     dataset
     {
-        dataitem(ImportedCustomerContractDataItem; "Imported Customer Contract")
+        dataitem(ImportedCustomerContractDataItem; "Imported Cust. Sub. Contract")
         {
             DataItemTableView = where("Contract created" = const(false));
 
@@ -28,7 +28,7 @@ report 8003 "Create Customer Contracts"
 
                 ClearLastError();
                 ImportedCustomerContract := ImportedCustomerContractDataItem;
-                if not Codeunit.Run(Codeunit::"Create Customer Contract", ImportedCustomerContract) then begin
+                if not Codeunit.Run(Codeunit::"Create Cust. Sub. Contract", ImportedCustomerContract) then begin
                     ImportedCustomerContract."Error Text" := CopyStr(GetLastErrorText, 1, MaxStrLen(ImportedCustomerContract."Error Text"));
                     ImportedCustomerContract.Modify(false);
                 end;
@@ -62,7 +62,7 @@ report 8003 "Create Customer Contracts"
     end;
 
     var
-        ImportedCustomerContract: Record "Imported Customer Contract";
+        ImportedCustomerContract: Record "Imported Cust. Sub. Contract";
         Window: Dialog;
         NoOfRecords: Integer;
         Counter: Integer;

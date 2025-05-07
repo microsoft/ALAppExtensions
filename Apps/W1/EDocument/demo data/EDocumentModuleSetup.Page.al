@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 5377 "E-Document Module Setup"
 {
     PageType = Card;

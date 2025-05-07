@@ -6,11 +6,12 @@ page 37005 "Sales by Customer"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Sales by Customer';
     AboutTitle = 'About Sales by Customer';
     AboutText = 'The Sales by Customer report breaks down sales performance highlighting key metrics such as Sales Amount, Cost Amount, Gross Profit and Gross Profit Margin by customer. This report provides detailed insights into which customer and items driving revenue and profitability.';
-    Extensible = false;
 
     layout
     {
@@ -24,30 +25,16 @@ page 37005 "Sales by Customer"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
+                
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

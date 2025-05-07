@@ -127,6 +127,38 @@ page 6244 "Sust. Accs. (Analysis View)"
                     ApplicationArea = Suite;
                     ToolTip = 'Specifies the balance of N2O on the account.';
                 }
+                field("Net Change (CO2e Emission)"; Rec."Net Change (CO2e Emission)")
+                {
+                    ApplicationArea = Suite;
+                    ToolTip = 'Specifies the net change of CO2e Emission in the account balance during the time period in the Date Filter field.';
+                }
+                field("Balance at Date (CO2e Emission)"; Rec."Bal. at Date (CO2e Emission)")
+                {
+                    ApplicationArea = Suite;
+                    ToolTip = 'Specifies the balance at date of CO2e Emission on the account for the upper date in the Date Filter field.';
+                    Visible = false;
+                }
+                field("Balance (CO2e Emission)"; Rec."Balance (CO2e Emission)")
+                {
+                    ApplicationArea = Suite;
+                    ToolTip = 'Specifies the balance of CO2e Emission on the account.';
+                }
+                field("Net Change (Carbon Fee)"; Rec."Net Change (Carbon Fee)")
+                {
+                    ApplicationArea = Suite;
+                    ToolTip = 'Specifies the net change of Carbon Fee in the account balance during the time period in the Date Filter field.';
+                }
+                field("Balance at Date (Carbon Fee)"; Rec."Balance at Date (Carbon Fee)")
+                {
+                    ApplicationArea = Suite;
+                    ToolTip = 'Specifies the balance at date of Carbon Fee on the account for the upper date in the Date Filter field.';
+                    Visible = false;
+                }
+                field("Balance (Carbon Fee)"; Rec."Balance (Carbon Fee)")
+                {
+                    ApplicationArea = Suite;
+                    ToolTip = 'Specifies the balance of Carbon Fee on the account.';
+                }
                 field("Consol. Debit Acc."; Rec."Consol. Debit Acc.")
                 {
                     ApplicationArea = Basic, Suite;

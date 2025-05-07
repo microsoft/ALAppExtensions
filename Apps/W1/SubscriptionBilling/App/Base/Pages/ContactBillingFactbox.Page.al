@@ -17,17 +17,15 @@ page 8000 "Contact Billing Factbox"
             cuegroup(CueGroupControl)
             {
                 ShowCaption = false;
-                field("Customer Contracts"; Rec."Customer Contracts")
+                field("Customer Contracts"; Rec."Cust. Subscription Contracts")
                 {
-                    Caption = 'Customer Contracts';
                     DrillDownPageId = "Customer Contracts";
-                    ToolTip = 'Specifies the number of customer contracts that have been registered for the customer.';
+                    ToolTip = 'Specifies the number of Customer Subscription Contracts that have been registered for the customer.';
                 }
-                field("Service Objects"; Rec."Service Objects")
+                field("Service Objects"; Rec."Subscription Headers")
                 {
-                    Caption = 'Service Objects';
                     DrillDownPageId = "Service Objects";
-                    ToolTip = 'Specifies the number of service objects that have been registered for the customer.';
+                    ToolTip = 'Specifies the number of Subscriptions that have been registered for the customer.';
                 }
             }
         }

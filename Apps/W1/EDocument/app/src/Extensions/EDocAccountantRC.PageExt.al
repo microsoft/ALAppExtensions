@@ -1,4 +1,5 @@
-﻿pageextension 6125 EDocAccountantRC extends "Accountant Role Center"
+#pragma warning disable AA0247
+pageextension 6125 EDocAccountantRC extends "Accountant Role Center"
 {
     layout
     {

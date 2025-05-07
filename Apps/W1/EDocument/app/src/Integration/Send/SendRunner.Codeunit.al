@@ -75,10 +75,12 @@ codeunit 6146 "Send Runner"
 #if not CLEAN26
     procedure GetSendContext(var SendContext: Codeunit SendContext);
     begin
-        // Need to set this
-        this.SendContext.Http().SetHttpRequestMessage(this.HttpRequestMessage);
-        this.SendContext.Http().SetHttpResponseMessage(this.HttpResponseMessage);
-        SendContext := this.SendContext;
+        // For Service integration V1 the HTTP request and resposne should be specifically set after calling the send method 
+        if EDocumentService."Service Integration V2" = Enum::"Service Integration"::"No Integration" then begin
+            this.SendContext.Http().SetHttpRequestMessage(this.HttpRequestMessage);
+            this.SendContext.Http().SetHttpResponseMessage(this.HttpResponseMessage);
+            SendContext := this.SendContext;
+        end;
     end;
 #endif
 

@@ -1,3 +1,5 @@
+#pragma warning disable AS0035
+#pragma warning disable AS0026
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,7 +11,7 @@ page 6373 "Company List"
     PageType = List;
     ApplicationArea = Basic, Suite;
     UsageCategory = None;
-    SourceTable = Company;
+    SourceTable = "Avalara Company";
     InsertAllowed = false;
     DeleteAllowed = false;
     Editable = false;
@@ -30,7 +32,7 @@ page 6373 "Company List"
         }
     }
 
-    procedure SetRecords(var AvalaraCompany: Record Company temporary)
+    procedure SetRecords(var AvalaraCompany: Record "Avalara Company" temporary)
     begin
         if AvalaraCompany.FindSet() then
             repeat
@@ -39,3 +41,5 @@ page 6373 "Company List"
             until AvalaraCompany.Next() = 0;
     end;
 }
+#pragma warning restore AS0026
+#pragma warning restore AS0035

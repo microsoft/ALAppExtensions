@@ -304,6 +304,14 @@ table 11738 "Posted Cash Document Line CZP"
             Caption = 'Use Tax';
             DataClassification = CustomerContent;
         }
+        field(80; "Attached to Line No."; Integer)
+        {
+            Caption = 'Attached to Line No.';
+            DataClassification = CustomerContent;
+            Editable = false;
+            TableRelation = "Posted Cash Document Line CZP"."Line No." where("Cash Desk No." = field("Cash Desk No."),
+                                                                    "Cash Document No." = field("Cash Document No."));
+        }
         field(90; "FA Posting Type"; Enum "Cash Document FA Post.Type CZP")
         {
             Caption = 'FA Posting Type';

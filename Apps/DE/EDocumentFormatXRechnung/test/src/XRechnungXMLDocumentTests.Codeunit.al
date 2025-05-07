@@ -455,7 +455,7 @@ codeunit 13918 "XRechnung XML Document Tests"
     var
         SalesHeader: Record "Sales Header";
     begin
-        SalesHeader.Get(DocumentType, CreateSalesDocumentWitTwohLine(DocumentType, LineType));
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWitTwoLine(DocumentType, LineType));
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
@@ -468,7 +468,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(SalesHeader."No.");
     end;
 
-    local procedure CreateSalesDocumentWitTwohLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20];
+    local procedure CreateSalesDocumentWitTwoLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20];
     var
         SalesHeader: Record "Sales Header";
     begin
@@ -523,6 +523,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesLine, SalesHeader, LineType, LibraryInventory.CreateItemNo(), LibraryRandom.RandDecInRange(10, 20, 2));
         SalesLine.Validate("Unit Price", LibraryRandom.RandDecInRange(100, 200, 2));
         SalesLine.Validate("Unit of Measure", UnitOfMeasure.Code);
+        SalesLine.Validate("Tax Category", 'S');
         SalesLine.Modify(true);
     end;
 
@@ -747,6 +748,8 @@ codeunit 13918 "XRechnung XML Document Tests"
                 Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
             else
                 Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
+            Assert.AreEqual(SalesInvoiceLine."Tax Category", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
             SecondLine := true;
         until SalesInvoiceLine.Next() = 0;
     end;
@@ -791,6 +794,8 @@ codeunit 13918 "XRechnung XML Document Tests"
                 Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
             else
                 Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
+            Assert.AreEqual(SalesCrMemoLine."Tax Category", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
             SecondLine := true;
         until SalesCrMemoLine.Next() = 0;
     end;
@@ -940,7 +945,7 @@ codeunit 13918 "XRechnung XML Document Tests"
 
     local procedure FormatDecimal(VarDecimal: Decimal): Text[30];
     begin
-        exit(Format(VarDecimal, 0, '<Precision,2:3><Sign><Integer><Decimals><Comma,.>'));
+        exit(Format(Round(VarDecimal, 0.01), 0, 9));
     end;
 
     local procedure Initialize();

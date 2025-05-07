@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Foundation;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Reporting;
+
 codeunit 5226 "Create Doc Sending Profile"
 {
     InherentEntitlements = X;

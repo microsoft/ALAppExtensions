@@ -1,4 +1,3 @@
-#pragma warning disable AS0018
 #if not CLEAN26
 codeunit 139619 "E-Doc. Integration Mock" implements "E-Document Integration"
 {
@@ -82,4 +81,3 @@ codeunit 139619 "E-Doc. Integration Mock" implements "E-Document Integration"
 
 }
 #endif
-#pragma warning restore AS0018

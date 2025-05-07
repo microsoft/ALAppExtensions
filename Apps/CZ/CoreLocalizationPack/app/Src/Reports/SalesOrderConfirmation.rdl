@@ -4563,6 +4563,9 @@ End Function</Code>
         <Field Name="Amount_SalesHeaderFormat">
           <DataField>Amount_SalesHeaderFormat</DataField>
         </Field>
+        <Field Name="Formatted_Amount_SalesHeader">
+          <DataField>Formatted_Amount_SalesHeader</DataField>
+        </Field>
         <Field Name="AmountIncludingVAT_SalesHeaderCaption">
           <DataField>AmountIncludingVAT_SalesHeaderCaption</DataField>
         </Field>
@@ -4571,6 +4574,9 @@ End Function</Code>
         </Field>
         <Field Name="AmountIncludingVAT_SalesHeaderFormat">
           <DataField>AmountIncludingVAT_SalesHeaderFormat</DataField>
+        </Field>
+        <Field Name="Formatted_AmountIncludingVAT_SalesHeader">
+          <DataField>Formatted_AmountIncludingVAT_SalesHeader</DataField>
         </Field>
         <Field Name="DueDate_SalesHeaderCaption">
           <DataField>DueDate_SalesHeaderCaption</DataField>
@@ -4668,6 +4674,9 @@ End Function</Code>
         <Field Name="UnitPrice_SalesLineFormat">
           <DataField>UnitPrice_SalesLineFormat</DataField>
         </Field>
+        <Field Name="Formatted_UnitPrice_SalesLine">
+          <DataField>Formatted_UnitPrice_SalesLine</DataField>
+        </Field>
         <Field Name="LineDiscount_SalesLineCaption">
           <DataField>LineDiscount_SalesLineCaption</DataField>
         </Field>
@@ -4695,6 +4704,9 @@ End Function</Code>
         <Field Name="LineAmount_SalesLineFormat">
           <DataField>LineAmount_SalesLineFormat</DataField>
         </Field>
+        <Field Name="Formatted_LineAmount_SalesLine">
+          <DataField>Formatted_LineAmount_SalesLine</DataField>
+        </Field>
         <Field Name="InvDiscountAmount_SalesLineCaption">
           <DataField>InvDiscountAmount_SalesLineCaption</DataField>
         </Field>
@@ -4703,6 +4715,9 @@ End Function</Code>
         </Field>
         <Field Name="InvDiscountAmount_SalesLineFormat">
           <DataField>InvDiscountAmount_SalesLineFormat</DataField>
+        </Field>
+        <Field Name="Formatted_InvDiscountAmount_SalesLine">
+          <DataField>Formatted_InvDiscountAmount_SalesLine</DataField>
         </Field>
         <Field Name="FullName_Employee">
           <DataField>FullName_Employee</DataField>

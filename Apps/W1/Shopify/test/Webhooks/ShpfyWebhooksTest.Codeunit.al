@@ -13,12 +13,9 @@ codeunit 139612 "Shpfy Webhooks Test"
         LibraryAssert: Codeunit "Library Assert";
         LibraryRandom: Codeunit "Library - Random";
         Any: Codeunit Any;
-
         WebhooksSubcriber: Codeunit "Shpfy Webhooks Subscriber";
         BulkOpSubscriber: Codeunit "Shpfy Bulk Op. Subscriber";
         SubscriptionId: Text;
-        BulkOperationTopicLbl: Label 'bulk_operations/finish', Locked = true;
-        OrdersCreateTopicLbl: Label 'orders/create', Locked = true;
         IsInitialized: Boolean;
 
     local procedure Initialize()
@@ -28,7 +25,7 @@ codeunit 139612 "Shpfy Webhooks Test"
             exit;
         IsInitialized := true;
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        SubscriptionId := Any.AlphanumericText(10);
+        SubscriptionId := Format(Any.IntegerInRange(100000));
         UnbindSubscription(WebhooksSubcriber);
     end;
 
@@ -54,7 +51,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(OrdersCreateTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
 
@@ -63,7 +60,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [THEN] Subscription is created and id field is filled
         LibraryAssert.AreEqual(Shop."Order Created Webhook Id", SubscriptionId, 'Subscription id should be filled.');
-        WebhookSubscription.SetRange(Endpoint, OrdersCreateTopicLbl);
+        WebhookSubscription.SetRange(Endpoint, Format("Shpfy Webhook Topic"::ORDERS_CREATE));
         LibraryAssert.RecordCount(WebhookSubscription, 1);
         Clear();
     end;
@@ -79,7 +76,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record with order created webhooks enabled
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(OrdersCreateTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         if not Shop."Order Created Webhooks" then begin
@@ -92,7 +89,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [THEN] Subscription is deleted and id field is cleared
         LibraryAssert.AreEqual(Shop."Order Created Webhook Id", '', 'Subscription id should be cleared.');
-        WebhookSubscription.SetRange(Endpoint, OrdersCreateTopicLbl);
+        WebhookSubscription.SetRange(Endpoint, Format("Shpfy Webhook Topic"::ORDERS_CREATE));
         LibraryAssert.RecordIsEmpty(WebhookSubscription);
         Clear();
     end;
@@ -108,7 +105,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record with order created webhooks enabled
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(OrdersCreateTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         if not Shop."Order Created Webhooks" then begin
@@ -117,7 +114,7 @@ codeunit 139612 "Shpfy Webhooks Test"
         end;
 
         // [WHEN] A notification is inserted
-        InsertNotification(Shop."Shopify URL", OrdersCreateTopicLbl, '');
+        InsertNotification(Shop."Shopify URL", Format("Shpfy Webhook Topic"::ORDERS_CREATE), '');
 
         // [THEN] Job queue entry is created
         JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Report);
@@ -139,7 +136,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record with order created webhooks enabled and a ready job queue entry
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(OrdersCreateTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         if not Shop."Order Created Webhooks" then begin
@@ -149,7 +146,7 @@ codeunit 139612 "Shpfy Webhooks Test"
         JobQueueEntryId := CreateJobQueueEntry(Shop, Report::"Shpfy Sync Orders from Shopify");
 
         // [WHEN] A notification is inserted
-        InsertNotification(Shop."Shopify URL", OrdersCreateTopicLbl, '');
+        InsertNotification(Shop."Shopify URL", Format("Shpfy Webhook Topic"::ORDERS_CREATE), '');
 
         // [THEN] Job queue entry is not created
         JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Report);
@@ -170,7 +167,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(BulkOperationTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         BindSubscription(BulkOpSubscriber);
@@ -181,7 +178,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [THEN] Subscription is created and id field is filled
         LibraryAssert.AreEqual(Shop."Bulk Operation Webhook Id", SubscriptionId, 'Subscription id should be filled.');
-        WebhookSubscription.SetRange(Endpoint, BulkOperationTopicLbl);
+        WebhookSubscription.SetRange(Endpoint, Format("Shpfy Webhook Topic"::BULK_OPERATIONS_FINISH));
         LibraryAssert.RecordCount(WebhookSubscription, 1);
         Clear();
     end;
@@ -205,7 +202,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [THEN] Subscription is deleted and id field is cleared
         LibraryAssert.AreEqual(Shop."Bulk Operation Webhook Id", '', 'Subscription id should be cleared.');
-        WebhookSubscription.SetRange(Endpoint, BulkOperationTopicLbl);
+        WebhookSubscription.SetRange(Endpoint, Format("Shpfy Webhook Topic"::BULK_OPERATIONS_FINISH));
         LibraryAssert.RecordIsEmpty(WebhookSubscription);
         Clear();
     end;
@@ -224,7 +221,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [GINVEN] A Shop record and a bulk operation
         Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(BulkOperationTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
+        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
         Shop := CommunicationMgt.GetShopRecord();
         BindSubscription(WebhooksSubcriber);
         BindSubscription(BulkOpSubscriber);
@@ -233,7 +230,7 @@ codeunit 139612 "Shpfy Webhooks Test"
 
         // [WHEN] A notification is inserted
         BulkOperationMgt.EnableBulkOperations(Shop);
-        InsertNotification(Shop."Shopify URL", BulkOperationTopicLbl, CreateBulkOperationNotificationJson(BulkOperationId));
+        InsertNotification(Shop."Shopify URL", Format("Shpfy Webhook Topic"::BULK_OPERATIONS_FINISH), CreateBulkOperationNotificationJson(BulkOperationId));
 
         // [THEN] Bulk operation status and completed at is updated
         BulkOperation.GetBySystemId(BulkOperationSystemId);
@@ -274,16 +271,17 @@ codeunit 139612 "Shpfy Webhooks Test"
         exit(JobQueueEntry.ID);
     end;
 
-    local procedure CreateShopifyWebhookCreateJson(Topic: Text): JsonObject
+    local procedure CreateShopifyWebhookCreateJson(): JsonObject
     var
         JData: JsonObject;
         JWebhook: JsonObject;
+        JWebhookSubscription: JsonObject;
+        JWebhookSubscriptionCreate: JsonObject;
     begin
-        JWebhook.Add('id', SubscriptionId);
-        JWebhook.Add('address', 'https://example.app/api/webhooks');
-        JWebhook.Add('topic', Topic);
-        JWebhook.Add('format', 'JSON');
-        JData.Add('webhook', JWebhook);
+        JWebhook.Add('id', 'gid://shopify/WebhookSubscription/' + SubscriptionId);
+        JWebhookSubscription.Add('webhookSubscription', JWebhook);
+        JWebhookSubscriptionCreate.Add('webhookSubscriptionCreate', JWebhookSubscription);
+        JData.Add('data', JWebhookSubscriptionCreate);
         exit(JData);
     end;
 
@@ -323,11 +321,15 @@ codeunit 139612 "Shpfy Webhooks Test"
 
     local procedure CreateShopifyEmptyWebhookJson(): JsonObject
     var
+        JResult: JsonObject;
         JData: JsonObject;
+        JWebhookSubscriptions: JsonObject;
         JWebhooks: JsonArray;
     begin
-        JData.Add('webhooks', JWebhooks);
-        exit(JData);
+        JWebhookSubscriptions.Add('edges', JWebhooks);
+        JData.Add('webhookSubscriptions', JWebhookSubscriptions);
+        JResult.Add('data', JData);
+        exit(JResult);
     end;
 
     local procedure GetShopDomain(ShopUrl: Text[250]): Text

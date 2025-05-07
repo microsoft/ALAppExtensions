@@ -6,11 +6,12 @@ page 37035 "Project Profitability"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-    PageType = Card;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Project Profitability';
     AboutTitle = 'About Project Profitability';
     AboutText = 'The Project Profitability report displays key metrics such as Actuals and Budgeted KPIs, compares actual profit to the initial profit target, and includes a table view of project ledger entries by type.';
-    Extensible = false;
 
     layout
     {
@@ -24,30 +25,16 @@ page 37035 "Project Profitability"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
+                
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

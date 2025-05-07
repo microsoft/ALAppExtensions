@@ -16,9 +16,6 @@ codeunit 31303 "Intrastat Transformation CZ"
     var
         IntrastatArrivalDispatchDescTxt: Label 'Transforming intrastat "Receipt" type to letter ''A'' and "Shipment" type to letter ''D''.';
         IntrastatArrivalDispatchTxt: Label 'INT_ARRIVALDISPATCH', Locked = true;
-#if not CLEAN24
-        IntrastatDeliveryGroupTxt: Label 'INT_DELIV_GROUP', Locked = true;
-#endif
         IntrastatRoundToIntDescTxt: Label 'Round to integer and take into account the rounding direction setting in intrastat report setup.';
         IntrastatRoundToIntTxt: Label 'INT_ROUNDTOINT', Locked = true;
         IntrastatRoundToIntGreaterThanOneDescTxt: Label 'Round to integer when the decimal is greater than 1.';
@@ -113,13 +110,6 @@ codeunit 31303 "Intrastat Transformation CZ"
     begin
         exit(IntrastatArrivalDispatchTxt);
     end;
-#if not CLEAN24
-    [Obsolete('The rule is no longer used.', '24.0')]
-    procedure GetIntrastatDeliveryGroupCode(): Code[20]
-    begin
-        exit(IntrastatDeliveryGroupTxt);
-    end;
-#endif
 
     procedure GetIntrastatRoundToIntCode(): Code[20]
     begin
@@ -151,4 +141,3 @@ codeunit 31303 "Intrastat Transformation CZ"
         exit(IntrastatStatisticsYearTxt);
     end;
 }
-

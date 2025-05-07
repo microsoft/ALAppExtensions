@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 Codeunit 1917 "MigrationQB Helper Functions"
 {
     var

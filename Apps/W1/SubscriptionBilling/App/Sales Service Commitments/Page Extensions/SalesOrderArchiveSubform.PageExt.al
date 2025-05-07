@@ -8,10 +8,10 @@ pageextension 8079 "Sales Order Archive Subform" extends "Sales Order Archive Su
     {
         addafter("Line Amount")
         {
-            field("Service Commitments"; Rec."Service Commitments")
+            field("Service Commitments"; Rec."Subscription Lines")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of service commitments (Subscription Billing) for the archived sales line.';
+                ToolTip = 'Shows the number of Subscription Lines for the archived sales line.';
             }
         }
     }
@@ -22,11 +22,11 @@ pageextension 8079 "Sales Order Archive Subform" extends "Sales Order Archive Su
             action(ShowSalesServiceCommitmentArchive)
             {
                 ApplicationArea = All;
-                Caption = 'Service Commitments';
+                Caption = 'Subscription Lines';
                 Image = AllLines;
                 RunObject = page "Sales Serv. Comm. Archive List";
                 RunPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Document Line No." = field("Line No.");
-                ToolTip = 'Shows the archived service commitments for the line.';
+                ToolTip = 'Shows the archived Subscription Lines for the line.';
             }
         }
     }

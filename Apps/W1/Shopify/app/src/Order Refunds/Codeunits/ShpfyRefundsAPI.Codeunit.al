@@ -29,30 +29,12 @@ codeunit 30228 "Shpfy Refunds API"
     local procedure GetRefund(RefundId: BigInteger; UpdatedAt: DateTime)
     var
         RefundHeader: Record "Shpfy Refund Header";
-        GraphQLType: Enum "Shpfy GraphQL Type";
-        Parameters: Dictionary of [text, Text];
         ReturnLocations: Dictionary of [BigInteger, BigInteger];
-        JResponse: JsonToken;
-        JLines: JsonArray;
-        JLine: JsonToken;
     begin
         GetRefundHeader(RefundId, UpdatedAt, RefundHeader);
         ReturnLocations := CollectReturnLocations(RefundHeader."Return Id");
-
-        Parameters.Add('RefundId', Format(RefundId));
-        GraphQLType := "Shpfy GraphQL Type"::GetRefundLines;
-        repeat
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
-            GraphQLType := "Shpfy GraphQL Type"::GetNextRefundLines;
-            JLines := JsonHelper.GetJsonArray(JResponse, 'data.refund.refundLineItems.nodes');
-            if Parameters.ContainsKey('After') then
-                Parameters.Set('After', JsonHelper.GetValueAsText(JResponse, 'data.refund.refundLineItems.pageInfo.endCursor'))
-            else
-                Parameters.Add('After', JsonHelper.GetValueAsText(JResponse, 'data.refund.refundLineItems.pageInfo.endCursor'));
-
-            foreach JLine in JLines do
-                FillInRefundLine(RefundId, JLine.AsObject(), IsNonZeroOrReturnRefund(RefundHeader), ReturnLocations);
-        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.refund.refundLineItems.pageInfo.hasNextPage');
+        GetRefundLines(RefundId, RefundHeader, ReturnLocations);
+        GetRefundShippingLines(RefundId);
     end;
 
     local procedure GetRefundHeader(RefundId: BigInteger; UpdatedAt: DateTime; var RefundHeader: Record "Shpfy Refund Header")
@@ -92,6 +74,53 @@ codeunit 30228 "Shpfy Refunds API"
         DataCapture.Add(Database::"Shpfy Refund Header", RefundHeader.SystemId, JResponse);
     end;
 
+    local procedure GetRefundLines(RefundId: BigInteger; RefundHeader: Record "Shpfy Refund Header"; ReturnLocations: Dictionary of [BigInteger, BigInteger])
+    var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
+        JResponse: JsonToken;
+        JLines: JsonArray;
+        JLine: JsonToken;
+    begin
+        Parameters.Add('RefundId', Format(RefundId));
+        GraphQLType := "Shpfy GraphQL Type"::GetRefundLines;
+        repeat
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            GraphQLType := "Shpfy GraphQL Type"::GetNextRefundLines;
+            JLines := JsonHelper.GetJsonArray(JResponse, 'data.refund.refundLineItems.nodes');
+            if Parameters.ContainsKey('After') then
+                Parameters.Set('After', JsonHelper.GetValueAsText(JResponse, 'data.refund.refundLineItems.pageInfo.endCursor'))
+            else
+                Parameters.Add('After', JsonHelper.GetValueAsText(JResponse, 'data.refund.refundLineItems.pageInfo.endCursor'));
+
+            foreach JLine in JLines do
+                FillInRefundLine(RefundId, JLine.AsObject(), IsNonZeroOrReturnRefund(RefundHeader), ReturnLocations);
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.refund.refundLineItems.pageInfo.hasNextPage');
+    end;
+
+    local procedure GetRefundShippingLines(RefundId: BigInteger)
+    var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
+        JResponse: JsonToken;
+        JLines: JsonArray;
+        JLine: JsonToken;
+    begin
+        Parameters.Add('RefundId', Format(RefundId));
+        GraphQLType := "Shpfy GraphQL Type"::GetRefundShippingLines;
+        repeat
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            GraphQLType := "Shpfy GraphQL Type"::GetNextRefundShippingLines;
+            JLines := JsonHelper.GetJsonArray(JResponse, 'data.refund.refundShippingLines.nodes');
+            if Parameters.ContainsKey('After') then
+                Parameters.Set('After', JsonHelper.GetValueAsText(JResponse, 'data.refund.refundShippingLines.pageInfo.endCursor'))
+            else
+                Parameters.Add('After', JsonHelper.GetValueAsText(JResponse, 'data.refund.refundShippingLines.pageInfo.endCursor'));
+
+            foreach JLine in JLines do
+                FillInRefundShippingLine(RefundId, JLine.AsObject());
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.refund.refundShippingLines.pageInfo.hasNextPage');
+    end;
 
     local procedure CollectReturnLocations(ReturnId: BigInteger): Dictionary of [BigInteger, BigInteger]
     var
@@ -143,6 +172,35 @@ codeunit 30228 "Shpfy Refunds API"
 
         RefundLineRecordRef.Close();
         DataCapture.Add(Database::"Shpfy Refund Line", RefundLine.SystemId, JLine);
+    end;
+
+    internal procedure FillInRefundShippingLine(RefundId: BigInteger; JLine: JsonObject)
+    var
+        DataCapture: Record "Shpfy Data Capture";
+        RefundShippingLine: Record "Shpfy Refund Shipping Line";
+        RefundShippingLineRecordRef: RecordRef;
+        Id: BigInteger;
+    begin
+        Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JLine, 'id'));
+
+        if not RefundShippingLine.Get(RefundId, Id) then begin
+            RefundShippingLine."Refund Shipping Line Id" := Id;
+            RefundShippingLine."Refund Id" := RefundId;
+            RefundShippingLine.Insert();
+        end;
+
+        RefundShippingLineRecordRef.GetTable(RefundShippingLine);
+        JsonHelper.GetValueIntoField(JLine, 'shippingLine.title', RefundShippingLineRecordRef, RefundShippingLine.FieldNo(Title));
+        JsonHelper.GetValueIntoField(JLine, 'subtotalAmountSet.shopMoney.amount', RefundShippingLineRecordRef, RefundShippingLine.FieldNo("Subtotal Amount"));
+        JsonHelper.GetValueIntoField(JLine, 'subtotalAmountSet.presentmentMoney.amount', RefundShippingLineRecordRef, RefundShippingLine.FieldNo("Presentment Subtotal Amount"));
+        JsonHelper.GetValueIntoField(JLine, 'taxAmountSet.shopMoney.amount', RefundShippingLineRecordRef, RefundShippingLine.FieldNo("Tax Amount"));
+        JsonHelper.GetValueIntoField(JLine, 'taxAmountSet.presentmentMoney.amount', RefundShippingLineRecordRef, RefundShippingLine.FieldNo("Presentment Tax Amount"));
+        RefundShippingLineRecordRef.SetTable(RefundShippingLine);
+
+        RefundShippingLine.Modify();
+
+        RefundShippingLineRecordRef.Close();
+        DataCapture.Add(Database::"Shpfy Refund Shipping Line", RefundShippingLine.SystemId, JLine);
     end;
 
     internal procedure IsNonZeroOrReturnRefund(RefundHeader: Record "Shpfy Refund Header"): Boolean

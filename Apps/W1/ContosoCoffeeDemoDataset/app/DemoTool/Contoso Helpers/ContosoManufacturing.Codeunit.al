@@ -1,3 +1,17 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Manufacturing.Setup;
+using Microsoft.Manufacturing.ProductionBOM;
+using Microsoft.Manufacturing.Routing;
+using Microsoft.Manufacturing.WorkCenter;
+using Microsoft.Manufacturing.MachineCenter;
+using Microsoft.Manufacturing.Capacity;
+using Microsoft.Foundation.Enums;
+
 codeunit 4763 "Contoso Manufacturing"
 {
     InherentEntitlements = X;
@@ -90,7 +104,35 @@ codeunit 4763 "Contoso Manufacturing"
             ProductionBOMHeader.Insert(true);
     end;
 
+    procedure InsertProductionBOMVersion(BOMCode: Code[20]; VersionCode: Code[20]; Description: Text[30]; UnitOfMeasureCode: Text[10])
+    var
+        ProductionBOMVersion: Record "Production BOM Version";
+        Exists: Boolean;
+    begin
+        if ProductionBOMVersion.Get(BOMCode, VersionCode) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        ProductionBOMVersion.Validate("Production BOM No.", BOMCode);
+        ProductionBOMVersion.Validate("Version Code", VersionCode);
+        ProductionBOMVersion.Validate(Description, Description);
+        ProductionBOMVersion.Validate("Unit of Measure Code", UnitOfMeasureCode);
+
+        if Exists then
+            ProductionBOMVersion.Modify(true)
+        else
+            ProductionBOMVersion.Insert(true);
+    end;
+
     procedure InsertProductionBOMLine(BOMCode: Code[20]; VersionCode: Code[20]; Type: Option " ",Item,"Production BOM"; No: Code[20]; CalcFormula: Enum "Quantity Calculation Formula"; QuantityPer: Decimal; RoutingLinkCode: Code[10])
+    begin
+        InsertProductionBOMLineWithUOM(BOMCode, VersionCode, Type, No, CalcFormula, QuantityPer, RoutingLinkCode, '');
+    end;
+
+    procedure InsertProductionBOMLineWithUOM(BOMCode: Code[20]; VersionCode: Code[20]; Type: Option " ",Item,"Production BOM"; No: Code[20]; CalcFormula: Enum "Quantity Calculation Formula"; QuantityPer: Decimal; RoutingLinkCode: Code[10]; UOMCode: Code[10])
     var
         ProductionBOMLine: Record "Production BOM Line";
     begin
@@ -102,6 +144,8 @@ codeunit 4763 "Contoso Manufacturing"
         ProductionBOMLine.Validate("Quantity per", QuantityPer);
         ProductionBOMLine.Validate("Calculation Formula", CalcFormula);
         ProductionBOMLine.Validate("Routing Link Code", RoutingLinkCode);
+        if UOMCode <> '' then
+            ProductionBOMLine.Validate("Unit of Measure Code", UOMCode);
         ProductionBOMLine.Insert(true);
     end;
 

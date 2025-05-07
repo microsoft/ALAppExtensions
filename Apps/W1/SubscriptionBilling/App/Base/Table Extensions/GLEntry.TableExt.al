@@ -6,11 +6,11 @@ tableextension 8067 "G/L Entry" extends "G/L Entry"
 {
     fields
     {
-        field(8000; "Sub. Contract No."; Code[20])
+        field(8000; "Subscription Contract No."; Code[20])
         {
-            Caption = 'Contract No.';
-            TableRelation = if ("Source Type" = const(Customer)) "Customer Contract" else
-            if ("Source Type" = const(Vendor)) "Vendor Contract";
+            Caption = 'Subscription Contract No.';
+            TableRelation = if ("Source Type" = const(Customer)) "Customer Subscription Contract" else
+            if ("Source Type" = const(Vendor)) "Vendor Subscription Contract";
             DataClassification = CustomerContent;
             Editable = false;
         }

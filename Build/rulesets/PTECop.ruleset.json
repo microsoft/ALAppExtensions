@@ -39,7 +39,8 @@
     },
     {
       "id": "PTE0010",
-      "action": "Error"
+      "action": "None",
+      "justification": "Microsoft apps are not stored in EMRS, which imposes the 50 characters limit."
     },
     {
       "id": "PTE0011",

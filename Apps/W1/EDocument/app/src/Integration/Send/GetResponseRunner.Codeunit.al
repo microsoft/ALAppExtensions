@@ -27,6 +27,7 @@ codeunit 6149 "Get Response Runner"
 #if not CLEAN26
         IEDocIntegration := this.EDocumentService."Service Integration";
         Result := IEDocIntegration.GetResponse(this.EDocument, this.HttpRequestMessage, this.HttpResponseMessage);
+        LegacyHttpMessagesFilled := true;
 #endif
     end;
 
@@ -50,6 +51,8 @@ codeunit 6149 "Get Response Runner"
     // Handles that http is set in case of failures
     procedure GetContext(var SendContext: Codeunit SendContext);
     begin
+        if not LegacyHttpMessagesFilled then
+            exit;
         // Need to set this
         this.SendContext.Http().SetHttpRequestMessage(this.HttpRequestMessage);
         this.SendContext.Http().SetHttpResponseMessage(this.HttpResponseMessage);
@@ -68,4 +71,7 @@ codeunit 6149 "Get Response Runner"
 #endif
         IDocumentSender: Interface IDocumentSender;
         Result: Boolean;
+#if not CLEAN26
+        LegacyHttpMessagesFilled: Boolean;
+#endif
 }

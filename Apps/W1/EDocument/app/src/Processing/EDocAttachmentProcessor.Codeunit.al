@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 using Microsoft.Foundation.Attachment;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Document;
 
 
@@ -74,8 +75,9 @@ codeunit 6169 "E-Doc. Attachment Processor"
     local procedure MoveToPurchaseDocument(EDocument: Record "E-Document"; RecordRef: RecordRef)
     var
         DocumentAttachment, DocumentAttachment2 : Record "Document Attachment";
-        PurchaseHeader: Record "Purchase Header";
         DocumentType: Enum "Attachment Document Type";
+        DocumentNo: Code[20];
+        UnrecognizedTableForPurchaseDocumentErr: Label 'Unrecognized table for e-document''s purchase document attachment';
     begin
         DocumentAttachment.SetRange("Table ID", Database::"E-Document");
         DocumentAttachment.SetRange("No.", Format(EDocument."Entry No"));
@@ -97,11 +99,15 @@ codeunit 6169 "E-Doc. Attachment Processor"
             else
                 Error(MissingEDocumentTypeErr, EDocument."Document Type");
         end;
-        RecordRef.SetTable(PurchaseHeader);
+        if not (RecordRef.Number() in [Database::"Purchase Header", Database::"Purch. Inv. Header"]) then
+            Error(UnrecognizedTableForPurchaseDocumentErr);
+
+        DocumentNo := RecordRef.Field(3).Value(); // "No." for both Purchase Header and Purchase Invoice Header
+
         DocumentAttachment.FindSet();
         repeat
             DocumentAttachment2 := DocumentAttachment;
-            DocumentAttachment2.Rename(Database::"Purchase Header", PurchaseHeader."No.", DocumentType, 0, DocumentAttachment2.ID);
+            DocumentAttachment2.Rename(RecordRef.Number(), DocumentNo, DocumentType, 0, DocumentAttachment2.ID);
         until DocumentAttachment.Next() = 0;
     end;
 
@@ -124,6 +130,36 @@ codeunit 6169 "E-Doc. Attachment Processor"
             Database::"E-Document":
                 DocumentAttachment.SetRange("E-Document Attachment", true);
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnAfterGetRefTable, '', false, false)]
+    local procedure OnAfterGetRefTableForEDocs(var RecRef: RecordRef; DocumentAttachment: Record "Document Attachment")
+    var
+        EDocument: Record "E-Document";
+    begin
+        case DocumentAttachment."Table ID" of
+            Database::"E-Document":
+                begin
+                    RecRef.Open(Database::"E-Document");
+                    if EDocument.Get(DocumentAttachment."No.") then
+                        RecRef.GetTable(EDocument);
+                end;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Doc. Attachment List FactBox", OnBeforeDocumentAttachmentDetailsRunModal, '', false, false)]
+    local procedure FilterEDocumentAttachmentsOnBeforeDocumentAttachmentDetailsRunModal(var DocumentAttachment: Record "Document Attachment"; var DocumentAttachmentDetails: Page "Document Attachment Details")
+    var
+        EDocumentEntryNo: Integer;
+        EDocumentEntryNoText: Text;
+    begin
+        DocumentAttachment.FilterGroup(4);
+        EDocumentEntryNoText := DocumentAttachment.GetFilter("E-Document Entry No.");
+        if EDocumentEntryNoText <> '' then begin
+            Evaluate(EDocumentEntryNo, EDocumentEntryNoText);
+            DocumentAttachmentDetails.FilterForEDocuments(EDocumentEntryNo);
+        end;
+        DocumentAttachment.FilterGroup(0);
     end;
 
     var

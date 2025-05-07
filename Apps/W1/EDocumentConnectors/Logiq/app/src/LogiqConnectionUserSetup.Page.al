@@ -15,6 +15,7 @@ page 6431 "Logiq Connection User Setup"
     SourceTable = "Logiq Connection User Setup";
     UsageCategory = None;
     ApplicationArea = Basic, Suite;
+    Extensible = false;
 
     layout
     {

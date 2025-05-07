@@ -121,6 +121,7 @@ pageextension 18444 "GST Service Credit Memo" extends "Service Credit Memo"
                     var
                         GSTServiceValidations: Codeunit "GST Service Validations";
                     begin
+                        CurrPage.SaveRecord();
                         GSTServiceValidations.CallTaxEngineOnServiceHeader(Rec);
                     end;
                 }

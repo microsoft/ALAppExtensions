@@ -19,7 +19,7 @@ pageextension 8064 "Posted Sales Invoice Subform" extends "Posted Sales Invoice 
 
                 trigger OnAction()
                 begin
-                    ContractsGeneralMgt.ShowArchivedBillingLines(Rec."Contract No.", Rec."Contract Line No.", Enum::"Service Partner"::Customer, Enum::"Rec. Billing Document Type"::Invoice, Rec."Document No.");
+                    ContractsGeneralMgt.ShowArchivedBillingLines(Rec."Subscription Contract No.", Rec."Subscription Contract Line No.", Enum::"Service Partner"::Customer, Enum::"Rec. Billing Document Type"::Invoice, Rec."Document No.");
                 end;
             }
             action("Usage Data")
@@ -35,7 +35,7 @@ pageextension 8064 "Posted Sales Invoice Subform" extends "Posted Sales Invoice 
                 var
                     UsageDataBilling: Record "Usage Data Billing";
                 begin
-                    UsageDataBilling.ShowForDocuments("Usage Based Billing Doc. Type"::"Posted Invoice", Rec."Document No.", Rec."Line No.");
+                    UsageDataBilling.ShowForDocuments(Enum::"Service Partner"::Customer, "Usage Based Billing Doc. Type"::"Posted Invoice", Rec."Document No.", Rec."Line No.");
                 end;
             }
         }
@@ -45,12 +45,12 @@ pageextension 8064 "Posted Sales Invoice Subform" extends "Posted Sales Invoice 
     var
         UsageDataBilling: Record "Usage Data Billing";
     begin
-        IsConnectedToContractLine := ContractsGeneralMgt.HasConnectionToContractLine(Rec."Contract No.", Rec."Contract Line No.");
-        UsageDataEnabled := UsageDataBilling.ExistForDocuments("Usage Based Billing Doc. Type"::"Posted Invoice", Rec."Document No.", Rec."Line No.");
+        IsConnectedToContractLine := ContractsGeneralMgt.HasConnectionToContractLine(Rec."Subscription Contract No.", Rec."Subscription Contract Line No.");
+        UsageDataEnabled := UsageDataBilling.ExistForDocuments(Enum::"Service Partner"::Customer, "Usage Based Billing Doc. Type"::"Posted Invoice", Rec."Document No.", Rec."Line No.");
     end;
 
     var
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         IsConnectedToContractLine: Boolean;
         UsageDataEnabled: Boolean;
 }

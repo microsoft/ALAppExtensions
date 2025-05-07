@@ -3,7 +3,7 @@ namespace Microsoft.SubscriptionBilling;
 page 8037 "Usage Data Customers"
 {
     ApplicationArea = All;
-    SourceTable = "Usage Data Customer";
+    SourceTable = "Usage Data Supp. Customer";
     Caption = 'Usage Data Customers';
     UsageCategory = Lists;
     PageType = List;

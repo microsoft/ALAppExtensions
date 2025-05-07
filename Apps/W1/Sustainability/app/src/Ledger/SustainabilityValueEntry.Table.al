@@ -9,6 +9,8 @@ using Microsoft.Manufacturing.Capacity;
 using Microsoft.Manufacturing.MachineCenter;
 using Microsoft.Manufacturing.WorkCenter;
 using Microsoft.Projects.Resources.Resource;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Setup;
 using Microsoft.Utilities;
 using System.Security.AccessControl;
@@ -50,7 +52,7 @@ table 6227 "Sustainability Value Entry"
         }
         field(7; "Valued Quantity"; Decimal)
         {
-            Caption = 'Valued Quantity';
+            Caption = 'Sust. Valued Quantity';
             DecimalPlaces = 0 : 5;
         }
         field(8; "Item Ledger Entry Quantity"; Decimal)
@@ -133,6 +135,25 @@ table 6227 "Sustainability Value Entry"
         {
             Caption = 'Document Line No.';
         }
+        field(30; "Account No."; Code[20])
+        {
+            Caption = 'Account No.';
+            TableRelation = "Sustainability Account" where("Account Type" = const(Posting));
+        }
+        field(31; "Account Name"; Text[100])
+        {
+            Caption = 'Account Name';
+        }
+        field(32; "Account Category"; Code[20])
+        {
+            Caption = 'Account Category';
+            TableRelation = "Sustain. Account Category";
+        }
+        field(33; "Account Subcategory"; Code[20])
+        {
+            Caption = 'Account Subcategory';
+            TableRelation = "Sustain. Account Subcategory".Code where("Category Code" = field("Account Category"));
+        }
         field(105; "Entry Type"; Enum "Cost Entry Type")
         {
             Caption = 'Entry Type';
@@ -154,7 +175,7 @@ table 6227 "Sustainability Value Entry"
             Caption = 'Capacity Ledger Entry No.';
             TableRelation = "Capacity Ledger Entry";
         }
-        field(5832; Type; Enum "Capacity Type Journal")
+        field(5832; Type; Enum "Sust. Value Type")
         {
             Caption = 'Type';
         }
@@ -165,7 +186,9 @@ table 6227 "Sustainability Value Entry"
             else
             if (Type = const("Work Center")) "Work Center"
             else
-            if (Type = const(Resource)) Resource;
+            if (Type = const(Resource)) Resource
+            else
+            if (Type = const(Item)) Item;
         }
         field(5818; Adjustment; Boolean)
         {
@@ -258,9 +281,33 @@ table 6227 "Sustainability Value Entry"
         "Entry Type" := ValueEntry."Entry Type";
         "Dimension Set ID" := ValueEntry."Dimension Set ID";
         "Capacity Ledger Entry No." := ValueEntry."Capacity Ledger Entry No.";
-        Type := ValueEntry.Type;
-        "No." := ValueEntry."No.";
         Adjustment := ValueEntry.Adjustment;
+
+        case ValueEntry.Type of
+            ValueEntry.Type::" ":
+                Type := Type::" ";
+            ValueEntry.Type::"Machine Center":
+                Type := Type::"Machine Center";
+            ValueEntry.Type::"Work Center":
+                Type := Type::"Work Center";
+            ValueEntry.Type::Resource:
+                Type := Type::Resource;
+        end;
+
+        if ValueEntry."No." <> '' then
+            "No." := ValueEntry."No."
+        else begin
+            Type := Type::Item;
+            "No." := ValueEntry."Item No.";
+        end;
+    end;
+
+    procedure CopyFromSustainabilityJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    begin
+        "Account No." := SustainabilityJnlLine."Account No.";
+        "Account Name" := SustainabilityJnlLine."Account Name";
+        "Account Category" := SustainabilityJnlLine."Account Category";
+        "Account Subcategory" := SustainabilityJnlLine."Account Subcategory"
     end;
 
     procedure GetLastEntryNo(): Integer;

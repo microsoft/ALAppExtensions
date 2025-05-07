@@ -11,7 +11,7 @@ pageextension 8055 "Item List" extends "Item List"
             part(ItemServCommitmentsFactbox; "Item Serv. Commitments Factbox")
             {
                 ApplicationArea = All;
-                Caption = 'Service Commitments';
+                Caption = 'Subscription Packages';
                 SubPageLink = "Item No." = field("No.");
             }
         }
@@ -22,10 +22,10 @@ pageextension 8055 "Item List" extends "Item List"
         {
             action(ServiceCommitments)
             {
-                ApplicationArea = Jobs;
+                ApplicationArea = All;
                 Image = ServiceLedger;
-                Caption = 'Service Commitments';
-                ToolTip = 'View or add service commitments for the item.';
+                Caption = 'Subscription Packages';
+                ToolTip = 'View or add Subscription Packages for the item.';
 
                 trigger OnAction()
                 begin

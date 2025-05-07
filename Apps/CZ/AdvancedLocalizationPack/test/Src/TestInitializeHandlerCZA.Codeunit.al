@@ -25,7 +25,7 @@ codeunit 148115 "Test Initialize Handler CZA"
             137390, // "SCM Kitting -  Reports"
             137915, // "SCM Assembly Posting"
             137927, // "SCM Assembly Copy"
-			137163: // "SCM Orders VI"
+            137163: // "SCM Orders VI"
                 UpdateAssemblySetup();
         end;
     end;
@@ -35,7 +35,7 @@ codeunit 148115 "Test Initialize Handler CZA"
         AssemblySetup: Record "Assembly Setup";
     begin
         AssemblySetup.Get();
-        AssemblySetup."Default Gen.Bus.Post. Grp. CZA" := '';
+        AssemblySetup."Default Gen. Bus. Post. Group" := '';
         AssemblySetup.Modify();
     end;
 }

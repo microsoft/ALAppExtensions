@@ -6,18 +6,18 @@ tableextension 8001 "Contracts Customer" extends Customer
 {
     fields
     {
-        field(8010; "Customer Contracts"; Integer)
+        field(8010; "Cust. Subscription Contracts"; Integer)
         {
             FieldClass = FlowField;
-            Caption = 'Customer Contracts';
-            CalcFormula = count("Customer Contract" where("Sell-to Customer No." = field("No."), Active = filter(true)));
+            Caption = 'Customer Subscription Contracts';
+            CalcFormula = count("Customer Subscription Contract" where("Sell-to Customer No." = field("No."), Active = filter(true)));
             Editable = false;
         }
-        field(8011; "Service Objects"; Integer)
+        field(8011; "Subscription Headers"; Integer)
         {
             FieldClass = FlowField;
-            Caption = 'Service Objects';
-            CalcFormula = count("Service Object" where("End-User Customer No." = field("No.")));
+            Caption = 'Subscriptions';
+            CalcFormula = count("Subscription Header" where("End-User Customer No." = field("No.")));
             Editable = false;
         }
     }

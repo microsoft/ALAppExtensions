@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -23,6 +23,7 @@ using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
+using System.Text;
 using System.Utilities;
 
 report 31187 "Sales Order Confirmation CZL"
@@ -218,26 +219,18 @@ report 31187 "Sales Order Confirmation CZL"
             column(Amount_SalesHeader; Amount)
             {
             }
+            column(Formatted_Amount_SalesHeader; format(Amount, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
+            {
+            }
             column(AmountIncludingVAT_SalesHeaderCaption; FieldCaption("Amount Including VAT"))
             {
             }
             column(AmountIncludingVAT_SalesHeader; "Amount Including VAT")
             {
             }
-#if not CLEAN24
-            column(DueDate_SalesHeaderCaption; FieldCaption("Due Date"))
+            column(Formatted_AmountIncludingVAT_SalesHeader; format("Amount Including VAT", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
             {
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'The field is not use anymore.';
             }
-            column(DueDateFormat_SalesHeader; Format("Due Date"))
-            {
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-                ObsoleteReason = 'The field is not use anymore.';
-            }
-#endif
             column(DocFooterText; DocFooterText)
             {
             }
@@ -345,6 +338,9 @@ report 31187 "Sales Order Confirmation CZL"
                     column(UnitPrice_SalesLine; "Sales Line"."Unit Price")
                     {
                     }
+                    column(Formatted_UnitPrice_SalesLine; format("Sales Line"."Unit Price", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
+                    {
+                    }
                     column(LineDiscount_SalesLineCaption; "Sales Line".FieldCaption("Line Discount %"))
                     {
                     }
@@ -363,10 +359,16 @@ report 31187 "Sales Order Confirmation CZL"
                     column(LineAmount_SalesLine; "Sales Line"."Line Amount")
                     {
                     }
+                    column(Formatted_LineAmount_SalesLine; format("Sales Line"."Line Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
+                    {
+                    }
                     column(InvDiscountAmount_SalesLineCaption; "Sales Line".FieldCaption("Inv. Discount Amount"))
                     {
                     }
                     column(InvDiscountAmount_SalesLine; "Sales Line"."Inv. Discount Amount")
+                    {
+                    }
+                    column(Formatted_InvDiscountAmount_SalesLine; format("Sales Line"."Inv. Discount Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Header"."Currency Code")))
                     {
                     }
                     trigger OnAfterGetRecord()
@@ -558,6 +560,7 @@ report 31187 "Sales Order Confirmation CZL"
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ArchiveManagement: Codeunit ArchiveManagement;
+        AutoFormat: Codeunit "Auto Format";
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Order Confirmation';
         PageLbl: Label 'Page';

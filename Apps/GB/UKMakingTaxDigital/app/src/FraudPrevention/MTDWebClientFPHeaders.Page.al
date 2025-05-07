@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 10538 "MTD Web Client FP Headers"
 {
     PageType = NavigatePage;

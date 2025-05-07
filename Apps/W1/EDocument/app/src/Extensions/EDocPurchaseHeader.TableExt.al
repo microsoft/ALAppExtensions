@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 tableextension 6169 "E-Doc. Purchase Header" extends "Purchase Header"
 {
 
@@ -15,6 +16,12 @@ tableextension 6169 "E-Doc. Purchase Header" extends "Purchase Header"
             Caption = 'Amount Incl. VAT To Inv.';
             Editable = false;
             FieldClass = FlowField;
+        }
+    }
+    keys
+    {
+        key(EDocKey1; "E-Document Link")
+        {
         }
     }
 

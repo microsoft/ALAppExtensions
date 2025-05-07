@@ -5,7 +5,7 @@ using Microsoft.Purchases.Vendor;
 
 report 8053 "Vend Contr. Def. Analysis"
 {
-    Caption = 'Vendor Contract Deferrals Analysis';
+    Caption = 'Vendor Subscription Contract Deferrals Analysis';
     DefaultRenderingLayout = "VendContrDefAnalysis.xlsx";
     ExcelLayoutMultipleDataSheets = true;
     UsageCategory = ReportsAndAnalysis;
@@ -13,7 +13,7 @@ report 8053 "Vend Contr. Def. Analysis"
 
     dataset
     {
-        dataitem(VendorContract; "Vendor Contract")
+        dataitem(VendorContract; "Vendor Subscription Contract")
         {
             DataItemTableView = sorting("No.");
 
@@ -76,7 +76,7 @@ report 8053 "Vend Contr. Def. Analysis"
 
                         trigger OnLookup(var Text: Text): Boolean
                         var
-                            CustomerContract: Record "Customer Contract";
+                            CustomerContract: Record "Customer Subscription Contract";
                         begin
                             if Page.RunModal(0, CustomerContract) = Action::LookupOK then begin
                                 Text += CustomerContract."No.";
@@ -134,13 +134,13 @@ report 8053 "Vend Contr. Def. Analysis"
         {
             Type = Excel;
             LayoutFile = './Deferrals/Reports/VendContrDefAnalysis.xlsx';
-            Caption = 'Vendor Contract Deferrals Analysis (Excel)';
-            Summary = 'The Vendor Contract Deferrals Analysis (Excel) provides an excel layout that is relatively easy for an end-user to modify. Report uses Query connections';
+            Caption = 'Vendor Subscription Contract Deferrals Analysis (Excel)';
+            Summary = 'The Vendor Subscription Contract Deferrals Analysis (Excel) provides an excel layout that is relatively easy for an end-user to modify. Report uses Query connections';
         }
     }
     labels
     {
-        ContractDeferralsLbl = 'Vendor Contract Deferrals';
+        ContractDeferralsLbl = 'Vendor Subscription Contract Deferrals';
         DeferralsLbl = 'Deferrals';
         EvaluationPeriodLbl = 'Evaluation Period';
         BalanceBroughtForwardLbl = 'Balance Brought Forward';
@@ -173,7 +173,7 @@ report 8053 "Vend Contr. Def. Analysis"
 
     local procedure VendorContrDeferralsExist(SourceContractNo: Code[20]): Boolean
     var
-        VendorContractDeferral: Record "Vendor Contract Deferral";
+        VendorContractDeferral: Record "Vend. Sub. Contract Deferral";
     begin
         SetContractDeferralFilter(VendorContractDeferral, SourceContractNo);
         if DocPostDateFilter <> '' then begin
@@ -188,7 +188,7 @@ report 8053 "Vend Contr. Def. Analysis"
 
     local procedure CalculatePeriodValues(SourceContractNo: Code[20])
     var
-        VendorContractDeferral: Record "Vendor Contract Deferral";
+        VendorContractDeferral: Record "Vend. Sub. Contract Deferral";
     begin
         BalanceBroughtForward := 0;
         InvoicedInPeriod := 0;
@@ -212,9 +212,9 @@ report 8053 "Vend Contr. Def. Analysis"
         GetDateOfLastRelease(VendorContractDeferral);
     end;
 
-    local procedure SetContractDeferralFilter(var VendorContractDeferral: Record "Vendor Contract Deferral"; SourceContractNo: Code[20])
+    local procedure SetContractDeferralFilter(var VendorContractDeferral: Record "Vend. Sub. Contract Deferral"; SourceContractNo: Code[20])
     begin
-        VendorContractDeferral.SetRange("Contract No.", SourceContractNo);
+        VendorContractDeferral.SetRange("Subscription Contract No.", SourceContractNo);
         VendorContractDeferral.SetFilter("Document Type", Format(DocumentTypeFilter));
         VendorContractDeferral.SetFilter("Document No.", DocumentNoFilter);
     end;
@@ -232,7 +232,7 @@ report 8053 "Vend Contr. Def. Analysis"
 
     local procedure TestDocumentPostingDateFilter()
     var
-        VendorContractDeferral: Record "Vendor Contract Deferral";
+        VendorContractDeferral: Record "Vend. Sub. Contract Deferral";
     begin
         VendorContractDeferral.Reset();
         VendorContractDeferral.SetFilter("Posting Date", DocPostDateFilter);
@@ -245,14 +245,14 @@ report 8053 "Vend Contr. Def. Analysis"
         VendorContractDeferral.SetRange("Posting Date");
     end;
 
-    local procedure ResetPostingDateFilters(var VendorContractDeferral: Record "Vendor Contract Deferral")
+    local procedure ResetPostingDateFilters(var VendorContractDeferral: Record "Vend. Sub. Contract Deferral")
     begin
         VendorContractDeferral.SetRange("Release Posting Date");
         VendorContractDeferral.SetRange("Document Posting Date");
         VendorContractDeferral.SetRange("Posting Date");
     end;
 
-    local procedure CalculateBalanceBroughtForward(var VendorContractDeferral: Record "Vendor Contract Deferral")
+    local procedure CalculateBalanceBroughtForward(var VendorContractDeferral: Record "Vend. Sub. Contract Deferral")
     begin
         VendorContractDeferral.SetFilter("Document Posting Date", '<%1', StartDate);
         VendorContractDeferral.SetFilter("Release Posting Date", ''''' | >=%1', StartDate);
@@ -260,7 +260,7 @@ report 8053 "Vend Contr. Def. Analysis"
         BalanceBroughtForward := VendorContractDeferral."Amount";
     end;
 
-    local procedure CalculateInvoicedInPeriod(var VendorContractDeferral: Record "Vendor Contract Deferral")
+    local procedure CalculateInvoicedInPeriod(var VendorContractDeferral: Record "Vend. Sub. Contract Deferral")
     begin
         ResetPostingDateFilters(VendorContractDeferral);
         VendorContractDeferral.SetFilter("Document Posting Date", DocPostDateFilter);
@@ -268,7 +268,7 @@ report 8053 "Vend Contr. Def. Analysis"
         InvoicedInPeriod := VendorContractDeferral."Amount";
     end;
 
-    local procedure CalculateReleasedInPeriod(var VendorContractDeferral: Record "Vendor Contract Deferral")
+    local procedure CalculateReleasedInPeriod(var VendorContractDeferral: Record "Vend. Sub. Contract Deferral")
     begin
         ResetPostingDateFilters(VendorContractDeferral);
         VendorContractDeferral.SetFilter("Release Posting Date", DocPostDateFilter);
@@ -276,13 +276,13 @@ report 8053 "Vend Contr. Def. Analysis"
         ReleasedInPeriod := VendorContractDeferral."Amount";
     end;
 
-    local procedure GetReleasedUntil(var VendorContractDeferral: Record "Vendor Contract Deferral")
+    local procedure GetReleasedUntil(var VendorContractDeferral: Record "Vend. Sub. Contract Deferral")
     begin
         if VendorContractDeferral.FindLast() then
             ReleasedUntil := VendorContractDeferral."Release Posting Date";
     end;
 
-    local procedure CalculateToReleasedInPeriod(var VendorContractDeferral: Record "Vendor Contract Deferral")
+    local procedure CalculateToReleasedInPeriod(var VendorContractDeferral: Record "Vend. Sub. Contract Deferral")
     begin
         ResetPostingDateFilters(VendorContractDeferral);
         VendorContractDeferral.SetFilter("Posting Date", '<=%1', EndDate);
@@ -291,7 +291,7 @@ report 8053 "Vend Contr. Def. Analysis"
         ToReleaseInPeriod := VendorContractDeferral.Amount;
     end;
 
-    local procedure CalculateToReleaseAfterPeriod(var VendorContractDeferral: Record "Vendor Contract Deferral")
+    local procedure CalculateToReleaseAfterPeriod(var VendorContractDeferral: Record "Vend. Sub. Contract Deferral")
     begin
         ResetPostingDateFilters(VendorContractDeferral);
         VendorContractDeferral.SetFilter("Posting Date", '>%1', EndDate);
@@ -304,7 +304,7 @@ report 8053 "Vend Contr. Def. Analysis"
         ToReleaseAfterPeriod := ToReleaseAfterPeriod + VendorContractDeferral.Amount;
     end;
 
-    local procedure GetDateOfLastRelease(var VendorContractDeferral: Record "Vendor Contract Deferral")
+    local procedure GetDateOfLastRelease(var VendorContractDeferral: Record "Vend. Sub. Contract Deferral")
     begin
         ResetPostingDateFilters(VendorContractDeferral);
         if VendorContractDeferral.FindLast() then

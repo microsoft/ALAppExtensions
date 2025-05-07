@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionsetextension 1632 "D365 BASIC ISVQuickBooks Data Migration" extends "D365 BASIC ISV"
 {
     Permissions = tabledata "MigrationQB Account" = RIMD,

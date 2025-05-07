@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Bank;
+
+using Microsoft.Bank.BankAccount;
+
 codeunit 11585 "Create CH Bank Account"
 {
     SingleInstance = true;

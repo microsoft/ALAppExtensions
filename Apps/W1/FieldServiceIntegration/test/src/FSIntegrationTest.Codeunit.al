@@ -20,8 +20,13 @@ using Microsoft.CRM.Contact;
 using Microsoft.Sales.Customer;
 using Microsoft.CRM.Team;
 using Microsoft.Purchases.Vendor;
+using Microsoft.Service.Setup;
+using Microsoft.Foundation.NoSeries;
 using System.Security.AccessControl;
 using Microsoft.TestLibraries.DynamicsFieldService;
+using Microsoft.Service.Document;
+using Microsoft.Service.Test;
+using Microsoft.Service.Archive;
 
 codeunit 139204 "FS Integration Test"
 {
@@ -40,6 +45,10 @@ codeunit 139204 "FS Integration Test"
         FSIntegrationTestLibrary: Codeunit "FS Integration Test Library";
         Assert: Codeunit Assert;
         LibraryCRMIntegration: Codeunit "Library - CRM Integration";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryService: Codeunit "Library - Service";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryResource: Codeunit "Library - Resource";
         ConnectionErr: Label 'The connection setup cannot be validated. Verify the settings and try again.';
         ConnectionSuccessMsg: Label 'The connection test was successful';
         JobQueueEntryStatusReadyErr: Label 'Job Queue Entry status should be Ready.';
@@ -121,6 +130,27 @@ codeunit 139204 "FS Integration Test"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure JournalTemplateNameNotRequiredToEnable()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+    begin
+        // [FEATURE] [UT] Service Order Integration
+        // [SCENARIO] Journal Template is not required to enable the Service integration type.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = No.
+        Initialize();
+        InitSetup(false, '');
+
+        // [GIVEN] Setup without Job Journal Template and Integration Type = Service.
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify();
+
+        // [THEN] Validate that the connection is enabled without error message (regarding job journal).
+        asserterror FSConnectionSetup.Validate("Is Enabled", true);
+        Assert.ExpectedError('You must enable the connection in page Dynamics 365 Sales Integration Setup');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure JournalBatchRequiredToEnable()
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -141,6 +171,34 @@ codeunit 139204 "FS Integration Test"
 
         asserterror FSConnectionSetup.Validate("Is Enabled", true);
         Assert.ExpectedError(FSConnectionSetup.FieldCaption("Job Journal Batch"));
+        if JobJournalTemplate.Find() then
+            JobJournalTemplate.Delete();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure JournalBatchNotRequiredToEnable()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        JobJournalTemplate: Record "Job Journal Template";
+        LibraryJob: Codeunit "Library - Job";
+    begin
+        // [FEATURE] [UT] Service Order Integration
+        // [SCENARIO] Journal Batch is not required to enable the Service integration type.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = No.
+        Initialize();
+        InitSetup(false, '');
+
+        // [GIVEN] Setup without Job Journal Batch and Integration Type = Service.
+        LibraryJob.CreateJobJournalTemplate(JobJournalTemplate);
+        JobJournalTemplate.Insert();
+        FSConnectionSetup."Job Journal Template" := JobJournalTemplate.Name;
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify();
+
+        // [THEN] Validate that the connection is enabled without error message (regarding job journal).
+        asserterror FSConnectionSetup.Validate("Is Enabled", true);
+        Assert.ExpectedError('You must enable the connection in page Dynamics 365 Sales Integration Setup');
         if JobJournalTemplate.Find() then
             JobJournalTemplate.Delete();
     end;
@@ -179,6 +237,130 @@ codeunit 139204 "FS Integration Test"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ManualNoSeriesRequiredToSelectService()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+    begin
+        // [FEATURE] [UI] Service Order Integration.
+        // [SCENARIO] User selects "Service" in "Integration Type" field, but "Manual No. Series" is not selected.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] No Series of Service Order is not set to manual.
+        InitServiceManagementSetup(false, false, false);
+
+        // [WHEN] Set Integration Type to "Service".
+        // [THEN] Error message "Manual No. Series is required for Service integration." appears.
+        FSConnectionSetup.Get();
+        asserterror FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::"Service and projects");
+        Assert.ExpectedError('Please make sure that the No. Series setup is correct.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ManualNoSeriesNotRequiredToSelectProject()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+    begin
+        // [FEATURE] [UI] Service Order Integration.
+        // [SCENARIO] User selects "Project" in "Integration Type" field, but "Manual No. Series" is not selected.
+        Initialize();
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        InitSetup(true, '');
+        // [GIVEN] No Series of Service Order is not set to manual.
+        InitServiceManagementSetup(false, false, false);
+
+        // [WHEN] Set Integration Type to "Project".
+        // [THEN] No error message appears.
+        FSConnectionSetup.Get();
+        FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::Projects);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ArchiveOfServiceOrdersIsAutomaticallyEnabled()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        // [FEATURE] [UI] Service Order Integration.
+        // [SCENARIO] Archive Orders should be enabled for Service integration type.
+        // [GIVEN] Disabled FS Connection Setup.
+        Initialize();
+
+        // [GIVEN] Service Managment Archive Flag is set to false.
+        InitServiceManagementSetup(false, false, false);
+        ServiceMgtSetup.Get();
+        Assert.IsFalse(ServiceMgtSetup."Archive Orders", 'Archive Orders should be disabled.');
+
+        // [WHEN] Field Service Integration is enabled.
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify(false);
+        FSIntegrationTestLibrary.ResetConfiguration(FSConnectionSetup);
+
+        // [THEN] Service Managment Archive Flag is set to true.
+        ServiceMgtSetup.Get();
+        Assert.IsTrue(ServiceMgtSetup."Archive Orders", 'Archive Orders should be enabled.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ArchiveOfServiceOrdersIsNotAutomaticallyEnabled()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] Archive Orders should not be enabled for default integration type.
+        // [GIVEN] Disabled FS Connection Setup.
+        Initialize();
+
+        // [GIVEN] Service Managment Archive Flag is set to false.
+        InitServiceManagementSetup(false, false, false);
+        ServiceMgtSetup.Get();
+        Assert.IsFalse(ServiceMgtSetup."Archive Orders", 'Archive Orders should be disabled.');
+
+        // [WHEN] Field Service Integration is enabled.
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSIntegrationTestLibrary.ResetConfiguration(FSConnectionSetup);
+
+        // [THEN] Service Managment Archive Flag is set to false for default integration type.
+        ServiceMgtSetup.Get();
+        Assert.IsFalse(ServiceMgtSetup."Archive Orders", 'Archive Orders should be enabled.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure OneServiceItemLinePerOrderIsDisabled()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] One Service Item Line Per Order becomes enabled and this is not allowed.
+        // [GIVEN] Disabled FS Connection Setup.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Service Managment Flag is set to false.
+        InitServiceManagementSetup(false, false, false);
+
+        // [WHEN] One Service Item Line Per Order becomes enabled.
+        // [THEN] Error message "One Service Item Line Per Order is not allowed for Field Service Integration." appears.
+        ServiceMgtSetup.Get();
+        asserterror ServiceMgtSetup.Validate("One Service Item Line/Order", true);
+        Assert.ExpectedError(FSConnectionSetup.FieldCaption("Is Enabled"));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure WorkingConnectionRequiredToEnable()
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -186,7 +368,6 @@ codeunit 139204 "FS Integration Test"
         JobJournalBatch: Record "Job Journal Batch";
         UnitOfMeasure: Record "Unit of Measure";
         LibraryJob: Codeunit "Library - Job";
-        LibraryInventory: Codeunit "Library - Inventory";
         DummyPassword: Text;
     begin
         // [FEATURE] [UT]
@@ -220,7 +401,6 @@ codeunit 139204 "FS Integration Test"
         JobJournalBatch: Record "Job Journal Batch";
         UnitOfMeasure: Record "Unit of Measure";
         LibraryJob: Codeunit "Library - Job";
-        LibraryInventory: Codeunit "Library - Inventory";
     begin
         // [FEATURE] [Table Mapping] [UI]
         Initialize();
@@ -455,7 +635,6 @@ codeunit 139204 "FS Integration Test"
         JobJournalBatch: Record "Job Journal Batch";
         UnitOfMeasure: Record "Unit of Measure";
         LibraryJob: Codeunit "Library - Job";
-        LibraryInventory: Codeunit "Library - Inventory";
     begin
         // [SCENARIO] Enabling CRM Connection move all CRM Job Queue Entries in "Ready" status
         Initialize();
@@ -533,6 +712,823 @@ codeunit 139204 "FS Integration Test"
         Assert.ExpectedMessage(FSConnectionSetupPage."Server Address".Value, LibraryVariableStorage.DequeueText());
         if CRMConnectionSetup.Get() then
             CRMConnectionSetup.Delete();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderProductDefaultEstimated()
+    var
+        WorkOrderProduct: Record "FS Work Order Product";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Estimated;
+        WorkOrderProduct.EstimateQuantity := 3;
+        WorkOrderProduct.Quantity := 2;
+        WorkOrderProduct.QtyToBill := 1;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly.
+        Assert.AreEqual(WorkOrderProduct.EstimateQuantity, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.EstimateQuantity));
+        Assert.AreEqual(0, ServiceLine."Qty. to Ship", 'Qty. to Ship should be 0');
+        Assert.AreEqual(0, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be 0');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderProductDefaultUsed()
+    var
+        WorkOrderProduct: Record "FS Work Order Product";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Used;
+        WorkOrderProduct.EstimateQuantity := 3;
+        WorkOrderProduct.Quantity := 2;
+        WorkOrderProduct.QtyToBill := 1;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly.
+        Assert.AreEqual(WorkOrderProduct.Quantity, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.Quantity));
+        Assert.AreEqual(WorkOrderProduct.Quantity, ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderProduct.Quantity));
+        Assert.AreEqual(WorkOrderProduct.QtyToBill, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderProduct.QtyToBill));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderProductToShipHigherThanExpected()
+    var
+        WorkOrderProduct: Record "FS Work Order Product";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Used;
+        WorkOrderProduct.EstimateQuantity := 3;
+        WorkOrderProduct.Quantity := 10;
+        WorkOrderProduct.QtyToBill := 1;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly. Qty to Ship increases Quantity.
+        Assert.AreEqual(WorkOrderProduct.Quantity, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.Quantity));
+        Assert.AreEqual(WorkOrderProduct.Quantity, ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderProduct.Quantity));
+        Assert.AreEqual(WorkOrderProduct.QtyToBill, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderProduct.QtyToBill));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderProductToInvoiceHigherThanExpected()
+    var
+        WorkOrderProduct: Record "FS Work Order Product";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Used;
+        WorkOrderProduct.EstimateQuantity := 3;
+        WorkOrderProduct.Quantity := 2;
+        WorkOrderProduct.QtyToBill := 10;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly. Qty to Invoice increases all other quantities.
+        Assert.AreEqual(WorkOrderProduct.QtyToBill, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.QtyToBill));
+        Assert.AreEqual(WorkOrderProduct.QtyToBill, ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderProduct.QtyToBill));
+        Assert.AreEqual(WorkOrderProduct.QtyToBill, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderProduct.QtyToBill));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderProductAlreadyPosted()
+    var
+        WorkOrderProduct: Record "FS Work Order Product";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Used;
+        WorkOrderProduct.EstimateQuantity := 5;
+        WorkOrderProduct.Quantity := 3;
+        WorkOrderProduct.QtyToBill := 2;
+        ServiceLine."Quantity Shipped" := 2;
+        ServiceLine."Quantity Invoiced" := 1;
+
+        // [WHEN] Update quantities on work order lines that are partly posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly. Posted quantities are considered.
+        Assert.AreEqual(WorkOrderProduct.Quantity, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.Quantity));
+        Assert.AreEqual(WorkOrderProduct.Quantity - ServiceLine."Quantity Shipped", ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderProduct.Quantity - ServiceLine."Quantity Shipped"));
+        Assert.AreEqual(WorkOrderProduct.QtyToBill - ServiceLine."Quantity Invoiced", ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderProduct.QtyToBill - ServiceLine."Quantity Invoiced"));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderServiceDefaultEstimated()
+    var
+        WorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Estimated;
+        WorkOrderService.EstimateDuration := 180;
+        WorkOrderService.Duration := 120;
+        WorkOrderService.DurationToBill := 60;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly.
+        Assert.AreEqual(WorkOrderService.EstimateDuration / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.EstimateDuration / 60));
+        Assert.AreEqual(0, ServiceLine."Qty. to Ship", 'Qty. to Ship should be 0');
+        Assert.AreEqual(0, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be 0');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderServiceDefault()
+    var
+        WorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Used;
+        WorkOrderService.EstimateDuration := 180;
+        WorkOrderService.Duration := 120;
+        WorkOrderService.DurationToBill := 60;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly.
+        Assert.AreEqual(WorkOrderService.Duration / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.Duration / 60));
+        Assert.AreEqual(WorkOrderService.Duration / 60, ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderService.Duration / 60));
+        Assert.AreEqual(WorkOrderService.DurationToBill / 60, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderService.DurationToBill / 60));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderServiceToShipHigherThanExpected()
+    var
+        WorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Used;
+        WorkOrderService.EstimateDuration := 180;
+        WorkOrderService.Duration := 240;
+        WorkOrderService.DurationToBill := 60;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly. Qty to Ship increases Quantity.
+        Assert.AreEqual(WorkOrderService.Duration / 60, ServiceLine.Quantity, 'Duration should be ' + Format(WorkOrderService.Duration / 60));
+        Assert.AreEqual(WorkOrderService.Duration / 60, ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderService.Duration / 60));
+        Assert.AreEqual(WorkOrderService.DurationToBill / 60, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderService.DurationToBill / 60));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderServiceToInvoiceHigherThanExpected()
+    var
+        WorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Used;
+        WorkOrderService.EstimateDuration := 180;
+        WorkOrderService.Duration := 120;
+        WorkOrderService.DurationToBill := 240;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly. Qty to Invoice increases all other quantities.
+        Assert.AreEqual(WorkOrderService.DurationToBill / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.DurationToBill / 60));
+        Assert.AreEqual(WorkOrderService.DurationToBill / 60, ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderService.DurationToBill / 60));
+        Assert.AreEqual(WorkOrderService.DurationToBill / 60, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderService.DurationToBill / 60));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderServiceAlreadyPosted()
+    var
+        WorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Used;
+        WorkOrderService.EstimateDuration := 300;
+        WorkOrderService.Duration := 180;
+        WorkOrderService.DurationToBill := 120;
+        ServiceLine."Quantity Shipped" := 2;
+        ServiceLine."Quantity Invoiced" := 1;
+
+        // [WHEN] Update quantities on work order lines that are partly posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly. Posted Quantities are considered.
+        Assert.AreEqual(WorkOrderService.Duration / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.Duration / 60));
+        Assert.AreEqual(WorkOrderService.Duration / 60 - ServiceLine."Quantity Shipped", ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderService.Duration / 60 - ServiceLine."Quantity Shipped"));
+        Assert.AreEqual(WorkOrderService.DurationToBill / 60 - ServiceLine."Quantity Invoiced", ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderService.DurationToBill / 60 - ServiceLine."Quantity Invoiced", ServiceLine."Qty. to Invoice"));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateFSBookableResourceBookingDefault()
+    var
+        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on booking lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on booking lines.
+        FSBookableResourceBooking.Duration := 120;
+
+        // [WHEN] Update quantities on booking lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(FSBookableResourceBooking, ServiceLine);
+
+        // [THEN] Quantities should be updated accordingly. 
+        Assert.AreEqual(FSBookableResourceBooking.Duration / 60 - ServiceLine."Quantity Consumed", ServiceLine."Qty. to Consume", 'Qty. to Consume should be ' + Format(FSBookableResourceBooking.Duration / 60));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateFSBookableResourceBookingAlreadyExistingQuantities()
+    var
+        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on booking lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Resource, LibraryResource.CreateResourceNo());
+
+        // [GIVEN] Quantities on booking lines.
+        FSBookableResourceBooking.Duration := 180;
+        ServiceLine.Validate(Quantity, 5);
+        ServiceLine.Validate("Qty. to Consume", 3);
+
+        // [WHEN] Update quantities on booking lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(FSBookableResourceBooking, ServiceLine);
+
+        // [THEN] Quantities should be updated accordingly. Existing Quantities are reset.
+        Assert.AreEqual(FSBookableResourceBooking.Duration / 60 - ServiceLine."Quantity Consumed", ServiceLine."Qty. to Consume", 'Qty. to Consume should be ' + Format(FSBookableResourceBooking.Duration / 60 - ServiceLine."Quantity Consumed"));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure IgnorePostedJobJournalLinesInFilterForProductEstimatedQuantity()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        RecordRef: RecordRef;
+        IgnoreRecord: Boolean;
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User adds quantity with LineStatus=Estimated in FS.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Existing Work Order Line
+        FSWorkOrderProduct.LineStatus := FSWorkOrderProduct.LineStatus::Estimated;
+        FSWorkOrderProduct.EstimateQuantity := 5;
+        FSWorkOrderProduct.Quantity := 5;
+
+        // [GIVEN] Existing Work Order Line as reference
+        RecordRef.GetTable(FSWorkOrderProduct);
+
+        // [WHEN] Filter is build -> ignore estimated lines
+        FSIntegrationTestLibrary.IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(RecordRef, IgnoreRecord);
+
+        // [THEN] Record should be ignored.
+        Assert.IsTrue(IgnoreRecord, 'Record should be ignored.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure IgnorePostedJobJournalLinesInFilterForServiceEstimatedQuantity()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderService: Record "FS Work Order Service";
+        RecordRef: RecordRef;
+        IgnoreRecord: Boolean;
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User adds quantity with LineStatus=Estimated in FS.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Existing Work Order Line
+        FSWorkOrderService.LineStatus := FSWorkOrderService.LineStatus::Estimated;
+        FSWorkOrderService.EstimateDuration := 300;
+        FSWorkOrderService.Duration := 300;
+
+        // [GIVEN] Existing Work Order Line as reference
+        RecordRef.GetTable(FSWorkOrderService);
+
+        // [WHEN] Filter is build -> ignore estimated lines
+        FSIntegrationTestLibrary.IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(RecordRef, IgnoreRecord);
+
+        // [THEN] Record should be ignored.
+        Assert.IsTrue(IgnoreRecord, 'Record should be ignored.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure IgnorePostedJobJournalLinesInFilterForProductUsedQuantity()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        RecordRef: RecordRef;
+        IgnoreRecord: Boolean;
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User adds quantity with LineStatus=Used in FS.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Existing Work Order Line
+        FSWorkOrderProduct.LineStatus := FSWorkOrderProduct.LineStatus::Used;
+        FSWorkOrderProduct.EstimateQuantity := 5;
+        FSWorkOrderProduct.Quantity := 5;
+
+        // [GIVEN] Existing Work Order Line as reference
+        RecordRef.GetTable(FSWorkOrderProduct);
+
+        // [WHEN] Filter is build 
+        FSIntegrationTestLibrary.IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(RecordRef, IgnoreRecord);
+
+        // [THEN] Record should not be ignored.
+        Assert.IsFalse(IgnoreRecord, 'Record should not be ignored.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure IgnorePostedJobJournalLinesInFilterForServiceUsedQuantity()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderService: Record "FS Work Order Service";
+        RecordRef: RecordRef;
+        IgnoreRecord: Boolean;
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User adds quantity with LineStatus=Used in FS.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Existing Work Order Line
+        FSWorkOrderService.LineStatus := FSWorkOrderService.LineStatus::Used;
+        FSWorkOrderService.EstimateDuration := 300;
+        FSWorkOrderService.Duration := 300;
+
+        // [GIVEN] Existing Work Order Line as reference
+        RecordRef.GetTable(FSWorkOrderService);
+
+        // [WHEN] Filter is build -> consider used lines
+        FSIntegrationTestLibrary.IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(RecordRef, IgnoreRecord);
+
+        // [THEN] Record should not be ignored.
+        Assert.IsFalse(IgnoreRecord, 'Record should not be ignored.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure IgnoreArchivedServiceOrdersInFilterNotArchivedYet()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrder: Record "FS Work Order";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        RecordRef: RecordRef;
+        IgnoreRecord: Boolean;
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] Ignore Archived Service Orders in Filter.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Existing Service Header
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Existing Work Order Line as reference
+        FSWorkOrder.WorkOrderId := CreateGuid();
+        CRMIntegrationRecord.CoupleCRMIDToRecordID(FSWorkOrder.WorkOrderId, ServiceHeader.RecordId());
+
+        // [GIVEN] Existing Work Order Line as reference
+        RecordRef.GetTable(ServiceHeader);
+
+        // [WHEN] Filter is build -> consider used lines
+        FSIntegrationTestLibrary.IgnoreArchievedServiceOrdersOnQueryPostFilterIgnoreRecord(RecordRef, IgnoreRecord);
+
+        // [THEN] Servie Order should be ignored
+        Assert.IsFalse(IgnoreRecord, 'Record should not be ignored.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure MarkArchivedServiceOrder()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] Service Header becomes linked to archive.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Archive Service Orders is enabled
+        InitServiceManagementSetup(true, true, false);
+
+        // [GIVEN] Existing Service Header
+        LibraryService.CreateServiceDocumentForCustomerNo(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [GIVEN] Existing Work Order as reference.
+        CRMIntegrationRecord."Table ID" := Database::"Service Header";
+        CRMIntegrationRecord."Integration ID" := ServiceHeader.SystemId;
+        CRMIntegrationRecord.Insert(false);
+
+        // [WHEN] Marked as archived.
+        FSIntegrationTestLibrary.MarkArchivedServiceOrder(ServiceHeader);
+
+        // [THEN] Integration Record should be marked as archived.
+        Clear(CRMIntegrationRecord);
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceHeader.SystemId);
+        CRMIntegrationRecord.FindFirst();
+
+        Assert.IsTrue(CRMIntegrationRecord."Archived Service Order", 'Record should be marked as archived.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure MarkArchivedServiceOrderLine()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ServiceLineArchive: Record "Service Line Archive";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] Service Line becomes linked to archive.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Archive Service Orders is enabled
+        InitServiceManagementSetup(true, true, false);
+
+        // [GIVEN] Existing Service Header
+        LibraryService.CreateServiceDocumentForCustomerNo(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        ServiceLine.SetRange("Document Type", ServiceHeader."Document Type");
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.FindFirst();
+
+        // [GIVEN] Existing Work Order as reference.
+        CRMIntegrationRecord."Table ID" := Database::"Service Line";
+        CRMIntegrationRecord."Integration ID" := ServiceLine.SystemId;
+        CRMIntegrationRecord.Insert(false);
+
+        // [WHEN] Marked as archived.
+        ServiceLineArchive."Document Type" := ServiceLine."Document Type";
+        ServiceLineArchive."Document No." := ServiceLine."Document No.";
+        ServiceLineArchive."Line No." := ServiceLine."Line No.";
+        ServiceLineArchive.Insert(false);
+        FSIntegrationTestLibrary.MarkArchivedServiceOrderLine(ServiceLine, ServiceLineArchive);
+
+        // [THEN] Service Line and Service Line Archive should be linked.
+        Clear(CRMIntegrationRecord);
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Line");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
+        CRMIntegrationRecord.FindFirst();
+
+        Assert.AreEqual(CRMIntegrationRecord."Archived Service Line Id", ServiceLineArchive.SystemId, 'Archived Service Line Id should be ' + Format(ServiceLineArchive.SystemId));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ArchiveServiceOrder()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
+        ArchivedServiceOrders: List of [Code[20]];
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] Service Header becomes archived.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Archive Service Orders is enabled
+        InitServiceManagementSetup(true, true, false);
+
+        // [GIVEN] Existing Service Header
+        LibraryService.CreateServiceDocumentForCustomerNo(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [WHEN] Archive Service Order.
+        FSIntegrationTestLibrary.ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
+
+        // [THEN] Version should increase
+        ServiceHeader.Get(ServiceHeader."Document Type"::Order, ServiceHeader."No.");
+        ServiceHeader.CalcFields("No. of Archived Versions");
+        Assert.AreEqual(1, ServiceHeader."No. of Archived Versions", 'Record should be marked as archived.');
+    end;
+
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ArchiveServiceOrderWithDisabledSetupFlag()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
+        ArchivedServiceOrders: List of [Code[20]];
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] Service Header becomes archived but setup flag is disabled. 
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Archive Service Orders is disabled
+        InitServiceManagementSetup(true, false, false);
+
+        // [GIVEN] Existing Service Header
+        LibraryService.CreateServiceDocumentForCustomerNo(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [WHEN] Archive Service Order.
+        FSIntegrationTestLibrary.ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
+
+        // [THEN] Version should not increase
+        ServiceHeader.Get(ServiceHeader."Document Type"::Order, ServiceHeader."No.");
+        ServiceHeader.CalcFields("No. of Archived Versions");
+        Assert.AreEqual(0, ServiceHeader."No. of Archived Versions", 'Record should not be marked as archived.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ArchiveServiceOrderMultiple()
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
+        ArchivedServiceOrders: List of [Code[20]];
+        I: Integer;
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] Service Header becomes archived multiple times.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+        FSConnectionSetup.Get();
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
+        FSConnectionSetup.Modify(false);
+
+        // [GIVEN] Archive Service Orders is enabled
+        InitServiceManagementSetup(true, true, false);
+
+        // [GIVEN] Existing Service Header
+        LibraryService.CreateServiceDocumentForCustomerNo(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+
+        // [WHEN] Archive Service Order.
+        for I := 1 to 5 do
+            FSIntegrationTestLibrary.ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
+
+        // [THEN] Version should increase
+        ServiceHeader.Get(ServiceHeader."Document Type"::Order, ServiceHeader."No.");
+        ServiceHeader.CalcFields("No. of Archived Versions");
+        Assert.AreEqual(1, ServiceHeader."No. of Archived Versions", 'Record should be marked as archived.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderProduct()
+    var
+        ServiceLineArchive: Record "Service Line Archive";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] Archive Service Orders transfer to FS.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line Archive.
+        ServiceLineArchive."Qty. to Ship" := 1;
+        ServiceLineArchive."Quantity Shipped" := 2;
+        ServiceLineArchive."Qty. to Invoice" := 3;
+        ServiceLineArchive."Quantity Invoiced" := 4;
+        ServiceLineArchive."Qty. to Consume" := 5;
+        ServiceLineArchive."Quantity Consumed" := 6;
+
+        // [GIVEN] ExistingWork Order Product.
+        FSWorkOrderProduct.Insert();
+
+        // [WHEN] Update quantities on booking lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateWorkOrderProduct(ServiceLineArchive, FSWorkORderProduct);
+
+        // [THEN] Quantities should be updated accordingly.
+        Assert.AreEqual(ServiceLineArchive."Qty. to Ship" + ServiceLineArchive."Quantity Shipped", FSWorkOrderProduct.QuantityShipped, 'Quantity should be ' + Format(ServiceLineArchive."Qty. to Ship" + ServiceLineArchive."Quantity Shipped"));
+        Assert.AreEqual(ServiceLineArchive."Qty. to Invoice" + ServiceLineArchive."Quantity Invoiced", FSWorkOrderProduct.QuantityInvoiced, 'Qty. to Invoice should be ' + Format(ServiceLineArchive."Qty. to Invoice" + ServiceLineArchive."Quantity Invoiced"));
+        Assert.AreEqual(ServiceLineArchive."Qty. to Consume" + ServiceLineArchive."Quantity Consumed", FSWorkOrderProduct.QuantityConsumed, 'Qty. to Consume should be ' + Format(ServiceLineArchive."Qty. to Consume" + ServiceLineArchive."Quantity Consumed"));
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderService()
+    var
+        ServiceLineArchive: Record "Service Line Archive";
+        FSWorkOrderService: Record "FS Work Order Service";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] Archive Service Orders transfer to FS.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line Archive.
+        ServiceLineArchive."Qty. to Ship" := 1;
+        ServiceLineArchive."Quantity Shipped" := 2;
+        ServiceLineArchive."Qty. to Invoice" := 3;
+        ServiceLineArchive."Quantity Invoiced" := 4;
+        ServiceLineArchive."Qty. to Consume" := 5;
+        ServiceLineArchive."Quantity Consumed" := 6;
+
+        // [GIVEN] ExistingWork Order Service.
+        FSWorkOrderService.Insert();
+
+        // [WHEN] Update quantities on booking lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateWorkOrderService(ServiceLineArchive, FSWorkOrderService);
+
+        // [THEN] Quantities should be updated accordingly.
+        Assert.AreEqual((ServiceLineArchive."Qty. to Ship" + ServiceLineArchive."Quantity Shipped") * 60, FSWorkOrderService.DurationShipped, 'Duration should be ' + Format(ServiceLineArchive."Qty. to Ship" + ServiceLineArchive."Quantity Shipped"));
+        Assert.AreEqual((ServiceLineArchive."Qty. to Invoice" + ServiceLineArchive."Quantity Invoiced") * 60, FSWorkOrderService.DurationInvoiced, 'Duration Invoiced should be ' + Format(ServiceLineArchive."Qty. to Invoice" + ServiceLineArchive."Quantity Invoiced"));
+        Assert.AreEqual((ServiceLineArchive."Qty. to Consume" + ServiceLineArchive."Quantity Consumed") * 60, FSWorkOrderService.DurationConsumed, 'Duration Consumed should be ' + Format(ServiceLineArchive."Qty. to Consume" + ServiceLineArchive."Quantity Consumed"));
     end;
 
     local procedure Initialize()
@@ -649,7 +1645,6 @@ codeunit 139204 "FS Integration Test"
         JobJournalBatch: Record "Job Journal Batch";
         UnitOfMeasure: Record "Unit of Measure";
         LibraryJob: Codeunit "Library - Job";
-        LibraryInventory: Codeunit "Library - Inventory";
         DummyPassword: Text;
     begin
         FSConnectionSetup.Init();
@@ -672,6 +1667,37 @@ codeunit 139204 "FS Integration Test"
 
         if FSConnectionSetup."Is Enabled" then
             FSIntegrationTestLibrary.RegisterConnection(FSConnectionSetup);
+    end;
+
+    procedure InitServiceManagementSetup(ManualNoSeries: Boolean; ArchiveOrdersEnabled: Boolean; OneServiceItemLinePerOrder: Boolean)
+    var
+        NoSeries: Record "No. Series";
+        NoSeriesLine: Record "No. Series Line";
+
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+        NewNoSeries: Code[20];
+    begin
+        NewNoSeries := 'ServiceOrder';
+
+        // create new No. Series
+        NoSeries.Code := NewNoSeries;
+        NoSeries."Manual Nos." := ManualNoSeries;
+        NoSeries."Default Nos." := true;
+        NoSeries.Insert(true);
+
+        // create new No. Series Line
+        NoSeriesLine."Series Code" := NoSeries.Code;
+        NoSeriesLine."Starting Date" := 20100101D;
+        NoSeriesLine."Starting No." := '00001';
+        NoSeriesLine."Increment-by No." := 1;
+        NoSeriesLine.Insert(true);
+
+        // update ServiceMgtSetup record
+        ServiceMgtSetup.Get();
+        ServiceMgtSetup."Service Order Nos." := NewNoSeries;
+        ServiceMgtSetup."Archive Orders" := ArchiveOrdersEnabled;
+        ServiceMgtSetup."One Service Item Line/Order" := OneServiceItemLinePerOrder;
+        ServiceMgtSetup.Modify(true);
     end;
 
     local procedure InsertJobQueueEntries()

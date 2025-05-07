@@ -18,21 +18,15 @@ query 36991 "Work Centers"
     {
         dataitem(WorkCenter; "Work Center")
         {
-            column(no; "No.")
-            {
-            }
-            column(name; Name)
-            {
-            }
-            column(workCenterGroupCode; "Work Center Group Code")
-            {
-            }
+            column(no; "No.") { }
+            column(name; Name) { }
+            column(workCenterGroupCode; "Work Center Group Code") { }
+            column(subcontractorNo; "Subcontractor No.") { }
+            column(unitOfMeasureCode; "Unit of Measure Code") { }
             dataitem(WorkCenterGroup; "Work Center Group")
             {
                 DataItemLink = Code = WorkCenter."Work Center Group Code";
-                column(workCenterGroupName; Name)
-                {
-                }
+                column(workCenterGroupName; Name) { }
             }
         }
     }

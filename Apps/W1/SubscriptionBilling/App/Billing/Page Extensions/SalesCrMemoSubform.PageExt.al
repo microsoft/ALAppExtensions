@@ -46,12 +46,13 @@ pageextension 8063 "Sales Cr. Memo Subform" extends "Sales Cr. Memo Subform"
     var
         UsageDataBilling: Record "Usage Data Billing";
     begin
+        Rec.InitCachedVar();
         IsConnectedToBillingLine := Rec.IsLineAttachedToBillingLine();
         UsageDataEnabled := UsageDataBilling.ExistForSalesDocuments(Rec."Document Type", Rec."Document No.", Rec."Line No.");
     end;
 
     var
-        ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+        ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
         IsConnectedToBillingLine: Boolean;
         UsageDataEnabled: Boolean;
 }

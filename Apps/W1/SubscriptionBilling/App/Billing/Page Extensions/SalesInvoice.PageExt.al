@@ -8,7 +8,7 @@ pageextension 8066 "Sales Invoice" extends "Sales Invoice"
     {
         addlast("Invoice Details")
         {
-            field("Contract Detail Overview"; Rec."Contract Detail Overview")
+            field("Contract Detail Overview"; Rec."Sub. Contract Detail Overview")
             {
                 ApplicationArea = Basic, Suite;
                 Enabled = Rec."Recurring Billing";

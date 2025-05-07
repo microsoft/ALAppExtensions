@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 41006 "GP Migration Warnings"
 {
     Caption = 'GP Migration Warnings';

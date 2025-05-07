@@ -31,13 +31,13 @@ codeunit 6381 "Drive Processing"
     begin
         FeatureTelemetry.LogUptake('0000OAY', FeatureName(), Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000OB1', FeatureName(), Format(EDocumentService."Service Integration V2"));
-        if EDocument."Document Id" = '' then
+        if EDocument."Drive Item Id" = '' then
             Error(DocumentIdEmptyErr, EDocument."Entry No");
 
         SiteId := GetSiteId(EDocumentService."Service Integration V2");
         NewFolderId := GetImportedDocumentsFolderId(EDocumentService."Service Integration V2");
 
-        GraphClient.MoveDriveItem(SiteId, EDocument."Document Id", NewFolderId);
+        GraphClient.MoveDriveItem(SiteId, EDocument."Drive Item Id", NewFolderId);
     end;
 
     procedure GetSiteId(FolderSharedLink: Text[2048]): Text
@@ -79,6 +79,27 @@ codeunit 6381 "Drive Processing"
         end;
 
         if FilesJson.Get('id', IdToken) then
+            exit(IdToken.AsValue().AsText())
+    end;
+
+    procedure GetName(FolderSharedLink: Text[2048]): Text
+    var
+        GraphClient: Codeunit "Graph Client";
+        Base64Convert: Codeunit "Base64 Convert";
+        MyFolderIdLink, Base64SharedLink, ErrorMessageTxt : Text;
+        FilesJson: JsonObject;
+        IdToken: JsonToken;
+    begin
+        Base64SharedLink := Base64Convert.ToBase64(FolderSharedLink);
+        Base64SharedLink := 'u!' + Base64SharedLink.TrimEnd('=').Replace('/', '_').Replace('+', '-');
+        MyFolderIdLink := GetGraphSharesURL() + Base64SharedLink + '/driveItem?$select=id,name';
+        if not GraphClient.GetDriveFolderInfo(MyFolderIdLink, FilesJson) then begin
+            ErrorMessageTxt := GetLastErrorText() + GetLastErrorCallStack();
+            ClearLastError();
+            Error(ErrorMessageTxt);
+        end;
+
+        if FilesJson.Get('name', IdToken) then
             exit(IdToken.AsValue().AsText())
     end;
 
@@ -201,19 +222,20 @@ codeunit 6381 "Drive Processing"
         TempDocumentSharing.Data.CreateInStream(DocumentInStream, TextEncoding::UTF8);
         CopyStream(DocumentOutStream, DocumentInStream);
 
-        UpdateEDocumentAfterDocumentDownload(Edocument, DocumentId, FileId);
-        UpdateReceiveContextAfterDocumentDownload(ReceiveContext);
+        UpdateEDocumentAfterDocumentDownload(Edocument, DocumentId);
+        UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId, EDocumentService);
     end;
 
-    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext)
+    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext; FileId: Text; var EDocumentService: Record "E-Document Service")
     begin
-        ReceiveContext.Status().SetStatus(Enum::"E-Document Service Status"::"Ready For Processing");
+        ReceiveContext.SetName(CopyStr(FileId, 1, 250));
+        ReceiveContext.SetType(Enum::"E-Doc. Data Storage Blob Type"::PDF);
+        ReceiveContext.SetSourceDetails(GetSourceDetails(EDocumentService."Service Integration V2"));
     end;
 
-    internal procedure UpdateEDocumentAfterDocumentDownload(var EDocument: Record "E-Document"; DocumentId: Text; FileId: Text)
+    internal procedure UpdateEDocumentAfterDocumentDownload(var EDocument: Record "E-Document"; DocumentId: Text)
     begin
-        EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
-        EDocument."File Id" := CopyStr(FileId, 1, MaxStrLen(EDocument."File Id"));
+        EDocument."Drive Item Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Drive Item Id"));
         EDocument.Modify();
     end;
 
@@ -246,7 +268,7 @@ codeunit 6381 "Drive Processing"
         Base64Value: Text;
     begin
         case ServiceIntegration of
-            ServiceIntegration::Sharepoint:
+            ServiceIntegration::SharePoint:
                 begin
                     if SharepointSetup.Get() then
                         if SharepointSetup.Enabled then
@@ -278,7 +300,7 @@ codeunit 6381 "Drive Processing"
         SiteId: Text;
     begin
         case ServiceIntegration of
-            ServiceIntegration::Sharepoint:
+            ServiceIntegration::SharePoint:
                 begin
                     CheckSetupEnabled(SharepointSetup);
                     CheckFolderSharedLinkNotEmpty(SharepointSetup."Documents Folder", SharepointSetup.TableCaption());
@@ -296,6 +318,29 @@ codeunit 6381 "Drive Processing"
         exit(SiteId);
     end;
 
+    local procedure GetSourceDetails(var ServiceIntegration: Enum "Service Integration"): Text
+    var
+        SharepointSetup: Record "Sharepoint Setup";
+        OneDriveSetup: Record "OneDrive Setup";
+        DocumentsFolderName: Text;
+    begin
+        case ServiceIntegration of
+            ServiceIntegration::SharePoint:
+                begin
+                    CheckSetupEnabled(SharepointSetup);
+                    CheckFolderSharedLinkNotEmpty(SharepointSetup."Documents Folder", SharepointSetup.TableCaption());
+                    DocumentsFolderName := SharepointSetup."Documents Folder Name";
+                end;
+            ServiceIntegration::OneDrive:
+                begin
+                    CheckSetupEnabled(OneDriveSetup);
+                    CheckFolderSharedLinkNotEmpty(OneDriveSetup."Documents Folder", OneDriveSetup.TableCaption());
+                    DocumentsFolderName := OneDriveSetup."Documents Folder Name";
+                end;
+        end;
+        exit(DocumentsFolderName);
+    end;
+
     local procedure GetImportedDocumentsFolderId(var ServiceIntegration: Enum "Service Integration"): Text
     var
         SharepointSetup: Record "Sharepoint Setup";
@@ -303,7 +348,7 @@ codeunit 6381 "Drive Processing"
         ImportedDocumentsFolderId: Text;
     begin
         case ServiceIntegration of
-            ServiceIntegration::Sharepoint:
+            ServiceIntegration::SharePoint:
                 begin
                     CheckSetupEnabled(SharepointSetup);
                     CheckFolderSharedLinkNotEmpty(SharepointSetup."Imp. Documents Folder", SharepointSetup.TableCaption());
@@ -348,5 +393,5 @@ codeunit 6381 "Drive Processing"
         NoContentErr: Label 'Empty content retrieved from the service for document id: %1.', Comment = '%1 - Document ID';
         IntegrationNotEnabledErr: Label '%1 must be enabled.', Comment = '%1 - a table caption, Sharepoint Document Import Setup';
         UnsupportedIntegrationTypeErr: Label 'You must choose a upported integration type.';
-        DocumentIdEmptyErr: Label 'Document Id is empty on e-document %1.', Comment = '%1 - an integer';
+        DocumentIdEmptyErr: Label 'Drive Item Id is empty on e-document %1.', Comment = '%1 - an integer';
 }

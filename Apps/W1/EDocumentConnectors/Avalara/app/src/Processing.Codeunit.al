@@ -22,7 +22,7 @@ codeunit 6379 Processing
     /// Call Avalara Shared API for list of companies
     /// </summary>
     /// <param name="AvalaraCompany">Records to contain returned compaines.</param>
-    procedure GetCompanyList(var AvalaraCompany: Record Company temporary)
+    procedure GetCompanyList(var AvalaraCompany: Record "Avalara Company" temporary)
     var
         Request: Codeunit Requests;
         HttpExecutor: Codeunit "Http Executor";
@@ -360,7 +360,7 @@ codeunit 6379 Processing
     /// <summary>
     /// Parse companies from json into table
     /// </summary>
-    local procedure ParseCompanyList(var AvalaraCompany: Record Company temporary; ResponseContent: Text)
+    local procedure ParseCompanyList(var AvalaraCompany: Record "Avalara Company" temporary; ResponseContent: Text)
     var
         ResponseJson: JsonObject;
         ValueJson, CompanyJson, ParsintToken : JsonToken;
@@ -489,7 +489,7 @@ codeunit 6379 Processing
 
     var
         TempMandates: Record Mandate temporary;
-        TempAvalaraCompanies: Record "Company" temporary;
+        TempAvalaraCompanies: Record "Avalara Company" temporary;
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         IncorrectDocumentIdInResponseErr: Label 'Document ID returned by API does not match E-Document.';
         DocumentIdNotFoundErr: Label 'Document ID not found in response.';

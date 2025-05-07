@@ -8,21 +8,21 @@ pageextension 8075 "Sales Quote Subform" extends "Sales Quote Subform"
     {
         addafter("Line Amount")
         {
-            field("Service Commitments"; Rec."Service Commitments")
+            field("Service Commitments"; Rec."Subscription Lines")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of service commitments (Subscription Billing) for the sales line.';
+                ToolTip = 'Shows the number of Subscription Lines for the sales line.';
             }
             field("Customer Contract No."; CustomerContractNo)
             {
                 ApplicationArea = All;
-                Caption = 'Customer Contract No.';
+                Caption = 'Customer Subscription Contract No.';
                 Editable = false;
-                ToolTip = 'Specifies the associated Customer Contract the Service Commitment will be assigned to. If the sales line was created by a Contract Renewal, the Contract No. cannot be edited.';
+                ToolTip = 'Specifies the associated Customer Subscription Contract the Subscription Line will be assigned to. If the sales line was created by a Contract Renewal, the Contract No. cannot be edited.';
 
                 trigger OnAssistEdit()
                 var
-                    ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+                    ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
                     Partner: Enum "Service Partner";
                 begin
                     ContractsGeneralMgt.OpenContractCard(Partner::Customer, CustomerContractNo);
@@ -31,13 +31,13 @@ pageextension 8075 "Sales Quote Subform" extends "Sales Quote Subform"
             field("Vendor Contract No."; VendorContractNo)
             {
                 ApplicationArea = All;
-                Caption = 'Vendor Contract No.';
+                Caption = 'Vendor Subscription Contract No.';
                 Editable = false;
-                ToolTip = 'Specifies the associated Vendor Contract the Service Commitment will be assigned to. If the sales line was created by a Contract Renewal, the Contract No. cannot be edited.';
+                ToolTip = 'Specifies the associated Vendor Subscription Contract the Subscription Line will be assigned to. If the sales line was created by a Contract Renewal, the Contract No. cannot be edited.';
 
                 trigger OnAssistEdit()
                 var
-                    ContractsGeneralMgt: Codeunit "Contracts General Mgt.";
+                    ContractsGeneralMgt: Codeunit "Sub. Contracts General Mgt.";
                     Partner: Enum "Service Partner";
                 begin
                     ContractsGeneralMgt.OpenContractCard(Partner::Vendor, VendorContractNo);
@@ -53,11 +53,11 @@ pageextension 8075 "Sales Quote Subform" extends "Sales Quote Subform"
             action(ShowSalesServiceCommitments)
             {
                 ApplicationArea = All;
-                Caption = 'Service Commitments';
+                Caption = 'Subscription Lines';
                 Image = AllLines;
                 RunObject = page "Sales Service Commitments";
                 RunPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Document Line No." = field("Line No.");
-                ToolTip = 'Shows the service commitments for the sales line.';
+                ToolTip = 'Shows the Subscription Lines for the sales line.';
             }
         }
         addlast("F&unctions")
@@ -65,13 +65,13 @@ pageextension 8075 "Sales Quote Subform" extends "Sales Quote Subform"
             action(AddSalesServiceCommitment)
             {
                 ApplicationArea = All;
-                Caption = 'Add Service Commitments';
+                Caption = 'Add Subscription Lines';
                 Image = ExpandDepositLine;
-                ToolTip = 'Shows all service commitments for the item. Service commitments can be added, changed or removed.';
+                ToolTip = 'Shows all Subscription Lines for the item. Subscription Lines can be added, changed or removed.';
 
                 trigger OnAction()
                 var
-                    SalesServiceCommitmentMgmt: Codeunit "Sales Service Commitment Mgmt.";
+                    SalesServiceCommitmentMgmt: Codeunit "Sales Subscription Line Mgmt.";
                 begin
                     SalesServiceCommitmentMgmt.AddAdditionalSalesServiceCommitmentsForSalesLine(Rec);
                 end;

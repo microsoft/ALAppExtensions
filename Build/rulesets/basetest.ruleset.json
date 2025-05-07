@@ -19,6 +19,11 @@
       "action": "Warning"
     },
     {
+      "id": "AA0247",
+      "action": "None",
+      "justification": "Tests should not be namespaced."
+    },
+    {
       "id": "AA0462",
       "action": "Warning",
       "justification": "The CalcDate should only be used with DataFormula variables. Alternatively the string should be enclosed using the <> symbols."

@@ -241,11 +241,11 @@ codeunit 18440 "GST Service Validations"
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyBillToCustomerFields', '', false, false)]
     local procedure UpdateBilltoCustomerNoInfo(Customer: Record Customer; var ServiceHeader: Record "Service Header")
     begin
-        if not (Customer."GST Customer Type" in [Customer."GST Customer Type"::Export]) then
+        if not (Customer."GST Customer Type" in [Customer."GST Customer Type"::Export]) then begin
             ServiceHeader."GST Bill-to State Code" := Customer."State Code";
-
-        if not (Customer."GST Customer Type" in [Customer."GST Customer Type"::Export]) then
             ServiceHeader."Customer GST Reg. No." := Customer."GST Registration No.";
+            ServiceHeader.State := Customer."State Code";
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'Ship-To Code', false, false)]
@@ -699,7 +699,7 @@ codeunit 18440 "GST Service Validations"
     var
         GSTServiceShiptoAddress: Codeunit "GST Service Ship To Address";
     begin
-        Case ServiceLine."GST Place of Supply" of
+        case ServiceLine."GST Place of Supply" of
             ServiceLine."GST Place Of Supply"::"Bill-to Address":
                 GSTServiceShiptoAddress.UpdateBillToAddressState(ServiceHeader);
             ServiceLine."GST Place Of Supply"::"Ship-to Address":

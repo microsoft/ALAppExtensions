@@ -33,6 +33,11 @@ page 30157 "Shpfy Company Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the company''s name.';
                 }
+                field("External Id"; Rec."External Id")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the external ID of the company.';
+                }
                 field(Note; Rec.GetNote())
                 {
                     ApplicationArea = All;
@@ -103,7 +108,11 @@ page 30157 "Shpfy Company Card"
                     ToolTip = 'Specifies the customer''s address.';
                 }
             }
-
+            part(CompanyLocations; "Shpfy Comp. Locations Subform")
+            {
+                ApplicationArea = All;
+                SubPageLink = "Company SystemId" = field(SystemId);
+            }
         }
         area(FactBoxes)
         {
@@ -180,6 +189,18 @@ page 30157 "Shpfy Company Card"
                 begin
                     Metafields.RunForResource(Database::"Shpfy Company", Rec.Id, Rec."Shop Code");
                 end;
+            }
+            action(ShopifyLocations)
+            {
+                ApplicationArea = All;
+                Caption = 'Shopify Locations';
+                Image = Warehouse;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Category4;
+                RunObject = Page "Shpfy Comp. Locations";
+                RunPageLink = "Company SystemId" = field(SystemId);
+                ToolTip = 'View a list of Shopify company locations.';
             }
         }
 

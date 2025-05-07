@@ -5,12 +5,13 @@ using System.Integration.PowerBI;
 page 37043 "Allocated Hours"
 {
     UsageCategory = ReportsAndAnalysis;
-    ApplicationArea = All;
-    PageType = Card;
+    ApplicationArea = Manufacturing;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Allocated Hours';
     AboutTitle = 'About Allocated Hours';
     AboutText = 'View the number of hours remaining for production allocated to each Work Centre in a specified period. Allows you to determine if a Work Centre is under or overloaded and requires rescheduling.';
-    Extensible = false;
 
     layout
     {
@@ -24,30 +25,16 @@ page 37043 "Allocated Hours"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
+                
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

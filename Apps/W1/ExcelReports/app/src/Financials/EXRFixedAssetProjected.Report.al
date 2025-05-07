@@ -11,7 +11,7 @@ report 4413 "EXR Fixed Asset Projected"
 {
     ApplicationArea = All;
     AdditionalSearchTerms = 'FA Projected Value, FA Projected Value Excel';
-    Caption = 'Fixed Asset Projected Value Excel (Preview)';
+    Caption = 'Fixed Asset Projected Value (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = FixedAssetProjectedValueExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -62,6 +62,11 @@ report 4413 "EXR Fixed Asset Projected"
             trigger OnAfterGetRecord()
             begin
                 Clear(GlobalFADepreciationBook);
+                Clear(CalculateDepreciation);
+                Clear(DepreciationCalculation);
+                Clear(FADateCalculation);
+                Clear(CalculateDisposal);
+                Clear(TableDeprCalculation);
                 GlobalFADepreciationBook.SetAutoCalcFields("Book Value", "Custom 1");
                 if not GlobalFADepreciationBook.Get(FixedAssetData."No.", GlobalDepreciationBook.Code) then;
 
@@ -76,8 +81,8 @@ report 4413 "EXR Fixed Asset Projected"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Fixed Asset Projected Value Excel';
-        AboutText = 'This report shows how Fixed Asset Ledger entries would look if depreciated in the given dates.';
+        AboutTitle = 'About Fixed Asset Projected Value (Excel)';
+        AboutText = 'Explore projected depreciation amounts and book value for a future period for your fixed assets. You can choose to include projected disposals and use the accounting periods specified in the Accounting Period table in the report.';
         layout
         {
             area(Content)
@@ -182,8 +187,20 @@ report 4413 "EXR Fixed Asset Projected"
         DataRetrieved = 'Data retrieved:';
         FixedAssetProjectedValue = 'Fixed Asset Projected Value';
         ProjectedValue = 'Projected Value';
+        ProjectedValuePrint = 'Projected Value (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        ProjectedValueAnalysis = 'Projected Value (Analysis)', MaxLength = 31, Comment = 'Excel worksheet name.';
         BookValueCaption = 'Book Value';
         ProjectedEntryCaption = 'Projected entry';
+        Period = 'Period:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
     trigger OnPreReport()
     begin

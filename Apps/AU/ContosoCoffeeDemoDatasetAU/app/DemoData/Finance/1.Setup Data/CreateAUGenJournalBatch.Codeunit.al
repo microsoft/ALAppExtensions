@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.DemoData.Foundation;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 17161 "Create AU Gen. Journal Batch"
 {
     InherentEntitlements = X;

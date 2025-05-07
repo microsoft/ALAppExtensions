@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5220 "Create Sustain. No Series"
 {
     InherentEntitlements = X;

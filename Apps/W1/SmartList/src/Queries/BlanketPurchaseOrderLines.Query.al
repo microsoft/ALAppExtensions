@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2513 "Blanket Purchase Order Lines"
 {
     QueryType = Normal;

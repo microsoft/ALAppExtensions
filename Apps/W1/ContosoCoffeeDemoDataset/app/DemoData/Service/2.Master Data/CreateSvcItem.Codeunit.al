@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Service;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.Common;
+using Microsoft.Inventory.Item;
+using Microsoft.Service.Resources;
+using Microsoft.Service.Document;
+
 codeunit 5104 "Create Svc Item"
 {
     InherentEntitlements = X;

@@ -136,11 +136,16 @@ table 30142 "Shpfy Refund Header"
     trigger OnDelete()
     var
         RefundLine: Record "Shpfy Refund Line";
+        RefundShippingLine: Record "Shpfy Refund Shipping Line";
         DataCapture: Record "Shpfy Data Capture";
     begin
         RefundLine.SetRange("Refund Id");
         if not RefundLine.IsEmpty() then
             RefundLine.DeleteAll(true);
+
+        RefundShippingLine.SetRange("Refund Id");
+        if not RefundShippingLine.IsEmpty() then
+            RefundShippingLine.DeleteAll(true);
 
         DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
         DataCapture.SetRange("Linked To Table", Database::"Shpfy Refund Header");

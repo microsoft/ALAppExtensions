@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Manufacturing;
+
+using Microsoft.Inventory.Availability;
+using Microsoft.Inventory.Requisition;
+
 codeunit 4767 "Create Mfg Order Promising"
 {
     InherentEntitlements = X;

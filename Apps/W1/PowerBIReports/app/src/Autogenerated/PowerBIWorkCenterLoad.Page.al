@@ -2,19 +2,16 @@ namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
 
-#pragma warning disable AS0125
-#pragma warning disable AS0030
 page 37042 "PowerBI Work Center Load"
-#pragma warning restore AS0030
-#pragma warning restore AS0125
 {
     UsageCategory = ReportsAndAnalysis;
-    ApplicationArea = All;
-    PageType = Card;
+    ApplicationArea = Manufacturing;
+#pragma warning disable AS0035 // Changed from Card to UserControlHost
+    PageType = UserControlHost;
+#pragma warning restore AS0035
     Caption = 'Work Center Load';
     AboutTitle = 'About Work Center Load';
     AboutText = 'View the percentage of production order time assigned vs Available Capacity for each Work Centre Group and/or Work Centre in a specified period. Allows you to determine if a Work Centre is overloaded and requires rescheduling.';
-    Extensible = false;
 
     layout
     {
@@ -28,30 +25,16 @@ page 37042 "PowerBI Work Center Load"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
+                
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
 
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
-                end;
-            }
-        }
-    }
-
-    actions
-    {
-        area(processing)
-        {
-            action(FullScreen)
-            {
-                ApplicationArea = All;
-                Caption = 'Fullscreen';
-                ToolTip = 'Shows the Power BI element as full screen.';
-                Image = View;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    CurrPage.PowerBIAddin.FullScreen();
                 end;
             }
         }

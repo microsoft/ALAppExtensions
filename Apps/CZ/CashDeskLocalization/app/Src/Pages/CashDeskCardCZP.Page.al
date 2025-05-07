@@ -99,6 +99,12 @@ page 31151 "Cash Desk Card CZP"
                     Importance = Promoted;
                     ToolTip = 'Specifies the e-mail address associated with the cash desk card.';
                 }
+                field("Language Code"; Rec."Language Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                    ToolTip = 'Specifies the language you want to use for this cash desk in cash documents.';
+                }
             }
             group(Responsibility)
             {

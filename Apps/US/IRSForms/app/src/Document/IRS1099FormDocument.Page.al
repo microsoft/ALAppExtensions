@@ -196,6 +196,7 @@ page 10037 "IRS 1099 Form Document"
                         IRS1099SendEmailReport: Report "IRS 1099 Send Email";
                         IRS1099SendEmail: Codeunit "IRS 1099 Send Email";
                     begin
+                        IRS1099SendEmail.CheckEmailSetup();
                         IRS1099SendEmail.CheckCanSendEmail(Rec);
 
                         Rec.SetRecFilter();

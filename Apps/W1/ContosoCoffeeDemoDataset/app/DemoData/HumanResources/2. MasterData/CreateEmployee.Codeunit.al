@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.HumanResources;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.HumanResources.Employee;
+
 codeunit 5164 "Create Employee"
 {
     InherentEntitlements = X;

@@ -188,6 +188,7 @@ codeunit 11700 "Acc. Schedule Management CZL"
     local procedure TotalingOnAfterValidateEvent(var Rec: Record "Acc. Schedule Line"; var xRec: Record "Acc. Schedule Line")
     var
         Value: Decimal;
+        IsHandled: Boolean;
         EvaluateErr: Label 'It''s not possible assign value:%1 of field: %2 to data type decimal!', Comment = '%1 = Totaling, %2 = FieldCaption';
     begin
         case Rec."Totaling Type" of
@@ -197,8 +198,11 @@ codeunit 11700 "Acc. Schedule Management CZL"
                         Error(EvaluateErr, Rec.Totaling, Rec.FieldCaption(Totaling));
         end;
 
-        if Rec."Totaling Type" <> Rec."Totaling Type"::"Custom CZL" then
-            AccSchedExtensionMgtCZL.ValidateFormula(Rec);
+        IsHandled := false;
+        OnTotalingOnAfterValidateEventOnBeforeValidateFormula(Rec, AccSchedExtensionMgtCZL, IsHandled);
+        if not IsHandled then
+            if Rec."Totaling Type" <> Rec."Totaling Type"::"Custom CZL" then
+                AccSchedExtensionMgtCZL.ValidateFormula(Rec);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Categ. Generate Acc. Schedules", 'OnCreateIncomeStatementOnAfterCreateCOGSGroup', '', false, false)]
@@ -354,6 +358,11 @@ codeunit 11700 "Acc. Schedule Management CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeAccScheduleOverviewOnBeforePrint(var AccScheduleLine: Record "Acc. Schedule Line"; ColumnLayoutName: Code[10]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnTotalingOnAfterValidateEventOnBeforeValidateFormula(var AccScheduleLine: Record "Acc. Schedule Line"; var AccSchedExtensionMgtCZL: Codeunit "Acc. Sched. Extension Mgt. CZL"; var IsHandled: Boolean)
     begin
     end;
 }

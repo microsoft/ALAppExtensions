@@ -33,27 +33,27 @@ page 8035 "Usage Data Billings"
                 }
                 field(Partner; Rec.Partner)
                 {
-                    ToolTip = 'Specifies whether the service partner is a customer or a vendor.';
+                    ToolTip = 'Specifies whether the Subscription Line partner is a customer or a vendor.';
                 }
-                field("Contract No."; Rec."Contract No.")
+                field("Contract No."; Rec."Subscription Contract No.")
                 {
                     ToolTip = 'Specifies the contract on which the usage data is billed.';
                 }
-                field("Contract Line No."; Rec."Contract Line No.")
+                field("Contract Line No."; Rec."Subscription Contract Line No.")
                 {
                     ToolTip = 'Specifies the contract line through which the usage data is billed.';
                 }
-                field("Service Object No."; Rec."Service Object No.")
+                field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the related service object.';
+                    ToolTip = 'Specifies the number of the related Subscription.';
                 }
-                field("Service Object Description"; Rec."Service Object Description")
+                field("Service Object Description"; Rec."Subscription Description")
                 {
-                    ToolTip = 'Specifies the description of the related service object.';
+                    ToolTip = 'Specifies the description of the related Subscription.';
                 }
-                field("Service Commitment Description"; Rec."Service Commitment Description")
+                field("Service Commitment Description"; Rec."Subscription Line Description")
                 {
-                    ToolTip = 'Specifies the service commitment for which the usage data is billed.';
+                    ToolTip = 'Specifies the Subscription Line for which the usage data is billed.';
                 }
                 field("Processing Date"; Rec."Processing Date")
                 {
@@ -83,11 +83,16 @@ page 8035 "Usage Data Billings"
                 {
                     ToolTip = 'Specifies the calculated period (in days).';
                 }
+#if not CLEAN26
                 field("Charged Period (Hours)"; Rec."Charged Period (Hours)")
                 {
                     ToolTip = 'Specifies the calculated period (in hours).';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'No longer needed as the time component is not relevant for processing of usage data.';
+                    ObsoleteTag = '26.0';
                 }
+#endif
                 field(Quantity; Rec.Quantity)
                 {
                     ToolTip = 'Specifies the quantity.';
@@ -135,6 +140,37 @@ page 8035 "Usage Data Billings"
                 field("Document Line No."; Rec."Document Line No.")
                 {
                     ToolTip = 'Specifies the document line for which the usage data will be billed.';
+                }
+            }
+        }
+    }
+    actions
+    {
+        area(Navigation)
+        {
+            action(UsageDataBillingMetadata)
+            {
+                ApplicationArea = All;
+                Caption = 'Usage Data Metadata';
+                Image = DataEntry;
+                Scope = Repeater;
+                ToolTip = 'Shows the metadata related to the Subscription Line.';
+
+                trigger OnAction()
+                var
+                    ServiceCommitment: Record "Subscription Line";
+                begin
+                    if ServiceCommitment.Get(Rec."Subscription Line Entry No.") then
+                        ServiceCommitment.ShowUsageDataBillingMetadata();
+                end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Report)
+            {
+                actionref(UsageDataBillingMetadata_Promoted; UsageDataBillingMetadata)
+                {
                 }
             }
         }

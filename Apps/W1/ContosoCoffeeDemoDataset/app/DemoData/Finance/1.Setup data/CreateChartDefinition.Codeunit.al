@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using System.Visualization;
+using Microsoft.Finance.FinancialReports;
+
 codeunit 5427 "Create Chart Definition"
 {
     InherentEntitlements = X;

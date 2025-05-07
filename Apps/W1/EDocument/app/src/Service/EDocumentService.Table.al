@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -7,7 +7,8 @@ namespace Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration;
-using Microsoft.eServices.EDocument.Integration.Action;
+using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.Format;
 
 table 6103 "E-Document Service"
 {
@@ -68,11 +69,6 @@ table 6103 "E-Document Service"
         field(6; "Update Order"; Boolean)
         {
             Caption = 'Update Order';
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
-            ObsoleteTag = '24.0';
-#endif
         }
         field(7; "Create Journal Lines"; Boolean)
         {
@@ -185,16 +181,26 @@ table 6103 "E-Document Service"
         }
         field(19; "Import Start Time"; Time)
         {
-            Caption = 'Batch Start Time';
+            Caption = 'Import Start Time';
             DataClassification = SystemMetadata;
             NotBlank = true;
             InitValue = 0T;
+
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
+            end;
         }
         field(20; "Import Minutes between runs"; Integer)
         {
             Caption = 'Minutes between runs';
             DataClassification = SystemMetadata;
             InitValue = 1440;
+
+            trigger OnValidate()
+            begin
+                EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
+            end;
         }
         field(21; "Batch Mode"; Enum "E-Document Batch Mode")
         {
@@ -247,28 +253,28 @@ table 6103 "E-Document Service"
                 end;
             end;
         }
-        field(28; "Sent Actions Integration"; Enum "Sent Document Actions")
+        field(29; "E-Document Structured Format"; Enum "E-Document Structured Format")
         {
-            Caption = 'Sent Actions For Service';
-            ToolTip = 'Specifies the implementation of actions that can be performed after the document is sent to the service.';
+            Caption = 'Structured Data Format';
+            ToolTip = 'Specifies the format of the structured data.';
             DataClassification = SystemMetadata;
         }
-        field(29; "Buyer Reference"; Enum "E-Document Buyer Reference")
-        {
-            Caption = 'Buyer Reference';
-            DataClassification = SystemMetadata;
-            ToolTip = 'Specifies the buyer reference for the document export.';
-        }
-        field(30; "Buyer Reference Mandatory"; Boolean)
-        {
-            Caption = 'Buyer Reference Mandatory';
-            DataClassification = SystemMetadata;
-            ToolTip = 'Specifies whether the buyer reference is mandatory for the document.';
-        }
-        field(31; "Import Process"; Enum "Import Process")
+        field(31; "Import Process"; Enum "E-Document Import Process")
         {
             Caption = 'Import Process';
+            DataClassification = SystemMetadata;
             ToolTip = 'Specifies the import process for the document.';
+        }
+        field(32; "Automatic Import Processing"; Enum "E-Doc. Automatic Processing")
+        {
+            Caption = 'Automatic processing';
+            ToolTip = 'Specifies if the processing of a document should start automatically after it is imported.';
+            DataClassification = SystemMetadata;
+        }
+        field(40; "Embed PDF in export"; Boolean)
+        {
+            Caption = 'Embed document PDF to export';
+            ToolTip = 'Specifies whether you want to automatically create a PDF based on Report Selection, as a background process, and embed it into the E-Document export file when posting the document.';
             DataClassification = SystemMetadata;
         }
     }
@@ -296,6 +302,51 @@ table 6103 "E-Document Service"
         EDocBackgroundJobs.RemoveJob(Rec."Import Recurrent Job Id");
     end;
 
+    internal procedure GetPDFReaderService()
+    begin
+        if Rec.Get(AzureDocumentIntelligenceTok) then
+            exit;
+
+        Rec.Init();
+        Rec.Code := AzureDocumentIntelligenceTok;
+        Rec."Import Process" := "Import Process"::"Version 2.0";
+        Rec.Description := AzureDocumentIntelligenceServiceTxt;
+        Rec."Automatic Import Processing" := "E-Doc. Automatic Processing"::No;
+        Rec."E-Document Structured Format" := "E-Document Structured Format"::"Azure Document Intelligence";
+        Rec.Insert(true);
+    end;
+
+    internal procedure IsAutomaticProcessingEnabled(): Boolean
+    begin
+        exit(Rec."Automatic Import Processing" = Enum::"E-Doc. Automatic Processing"::Yes);
+    end;
+
+    internal procedure GetImportProcessVersion(): Enum "E-Document Import Process"
+    var
+        EDocumentsSetup: Record "E-Documents Setup";
+    begin
+        if not EDocumentsSetup.IsNewEDocumentExperienceActive() then
+            exit("E-Document Import Process"::"Version 1.0");
+        exit(Rec."Import Process");
+    end;
+
+    internal procedure LastEDocumentLog(EDocumentServiceStatus: Enum "E-Document Service Status") EDocumentLog: Record "E-Document Log";
+    begin
+        EDocumentLog.SetRange("Service Code", Rec.Code);
+        EDocumentLog.SetRange(Status, EDocumentServiceStatus);
+        EDocumentLog.SetCurrentKey("Entry No.");
+        if EDocumentLog.FindLast() then;
+    end;
+
+    internal procedure GetDefaultImportParameters() EDocImportParameters: Record "E-Doc. Import Parameters"
+    begin
+        if Rec."Import Process" = "Import Process"::"Version 1.0" then begin
+            EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+            EDocImportParameters."Create Document V1 Behavior" := IsAutomaticProcessingEnabled();
+        end else
+            EDocImportParameters."Step to Run" := IsAutomaticProcessingEnabled() ? "Import E-Document Steps"::"Finish draft" : "Import E-Document Steps"::"Prepare draft";
+    end;
+
     internal procedure ToString(): Text
     begin
 #if not CLEAN26
@@ -307,6 +358,8 @@ table 6103 "E-Document Service"
 
     var
         EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
+        AzureDocumentIntelligenceTok: Label 'MSEOCADI', Locked = true;
+        AzureDocumentIntelligenceServiceTxt: Label 'E-Document PDF Service - Process pdfs with Azure Document Intelligence';
         EDocStringLbl: Label '%1,%2,%3,%4,%5', Locked = true;
         TemplateTypeErr: Label 'Only General Journal Templates of type %1, %2, %3, %4, or %5 are allowed.', Comment = '%1 - General, %2 - Purchases, %3 - Payments, %4 - Sales, %5 - Cash, %6 - Receipts';
         ServiceInActiveFlowErr: Label 'The service is used in an active workflow. You cannot delete it.';

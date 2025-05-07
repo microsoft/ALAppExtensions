@@ -230,7 +230,9 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         "Amount (LCY)" := AdvancePostingBufferCZZ."Amount (ACY)";
         "VAT Amount (LCY)" := AdvancePostingBufferCZZ."VAT Amount (ACY)";
         "VAT Base Amount (LCY)" := AdvancePostingBufferCZZ."VAT Base Amount (ACY)";
-        "Currency Factor" := Amount / "Amount (LCY)";
+        "Currency Factor" := 1;
+        if "Amount (LCY)" <> 0 then
+            "Currency Factor" := Amount / "Amount (LCY)";
         OnAfterCopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ, Rec);
     end;
 

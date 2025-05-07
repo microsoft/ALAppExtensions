@@ -8,7 +8,6 @@ using Microsoft.Utilities;
 
 codeunit 8074 "Document Change Management"
 {
-    Access = Internal;
     SingleInstance = true;
 
     var
@@ -331,7 +330,7 @@ codeunit 8074 "Document Change Management"
     var
         xSalesHeader: Record "Sales Header";
         SessionStore: Codeunit "Session Store";
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
     begin
         if Rec.IsTemporary() then
             exit;
@@ -440,7 +439,7 @@ codeunit 8074 "Document Change Management"
     [EventSubscriber(ObjectType::Page, Page::"Sales Quote Subform", OnAfterValidateEvent, "Invoice Disc. Pct.", false, false)]
     local procedure PreventChangeSalesQuoteInvoiceDiscPct(var Rec: Record "Sales Line")
     var
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
     begin
         if not ContractRenewalMgt.IsContractRenewal(Rec) then
             exit;
@@ -450,7 +449,7 @@ codeunit 8074 "Document Change Management"
     [EventSubscriber(ObjectType::Page, Page::"Sales Quote Subform", OnAfterValidateEvent, "Invoice Discount Amount", false, false)]
     local procedure PreventChangeSalesQuoteInvoiceDiscAmount(var Rec: Record "Sales Line")
     var
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
     begin
         if not ContractRenewalMgt.IsContractRenewal(Rec) then
             exit;
@@ -520,7 +519,7 @@ codeunit 8074 "Document Change Management"
         if ((Rec."Shortcut Dimension 1 Code" <> xSalesLine."Shortcut Dimension 1 Code") or
             (Rec."Shortcut Dimension 2 Code" <> xSalesLine."Shortcut Dimension 2 Code") or
             (Rec."Dimension Set ID" <> xSalesLine."Dimension Set ID")) then
-            Error(LineDimCannotBeChangedErr, BillingLine."Contract No.", Rec."Document Type", Rec."Document No.", Rec."Line No.");
+            Error(LineDimCannotBeChangedErr, BillingLine."Subscription Contract No.", Rec."Document Type", Rec."Document No.", Rec."Line No.");
 
         if ((Rec.Type <> xSalesLine.Type) or
             (Rec."No." <> xSalesLine."No.") or
@@ -534,7 +533,7 @@ codeunit 8074 "Document Change Management"
             (Rec."Recurring Billing to" <> xSalesLine."Recurring Billing to") or
             (Rec."Recurring Billing from" <> xSalesLine."Recurring Billing from"))
         then
-            Error(LineCannotBeChangedErr, BillingLine."Contract No.");
+            Error(LineCannotBeChangedErr, BillingLine."Subscription Contract No.");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnBeforeValidateEvent, "Shortcut Dimension 1 Code", false, false)]
@@ -642,7 +641,7 @@ codeunit 8074 "Document Change Management"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Buy-from Vendor No.", false, false)]
-    local procedure PreventChangePurchHdrSelltoVendorNo(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
+    local procedure PreventChangePurchHdrBuyFromVendorNo(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
     begin
         if Rec.IsTemporary() then
             exit;
@@ -1090,7 +1089,7 @@ codeunit 8074 "Document Change Management"
         if ((Rec."Shortcut Dimension 1 Code" <> xPurchaseLine."Shortcut Dimension 1 Code") or
             (Rec."Shortcut Dimension 2 Code" <> xPurchaseLine."Shortcut Dimension 2 Code") or
             (Rec."Dimension Set ID" <> xPurchaseLine."Dimension Set ID")) then
-            Error(LineDimCannotBeChangedErr, BillingLine."Contract No.", Rec."Document Type", Rec."Document No.", Rec."Line No.");
+            Error(LineDimCannotBeChangedErr, BillingLine."Subscription Contract No.", Rec."Document Type", Rec."Document No.", Rec."Line No.");
 
         if ((Rec.Type <> xPurchaseLine.Type) or
             (Rec."No." <> xPurchaseLine."No.") or
@@ -1102,13 +1101,13 @@ codeunit 8074 "Document Change Management"
             (Rec."Line Discount Amount" <> xPurchaseLine."Line Discount Amount") or
             (Rec."Recurring Billing to" <> xPurchaseLine."Recurring Billing to") or
             (Rec."Recurring Billing from" <> xPurchaseLine."Recurring Billing from")) then
-            Error(LineCannotBeChangedErr, BillingLine."Contract No.");
+            Error(LineCannotBeChangedErr, BillingLine."Subscription Contract No.");
     end;
 
-    procedure PreventChangeOnDocumentHeaderOrLine(RecVariant: Variant; CurrFieldNo: Integer)
+    internal procedure PreventChangeOnDocumentHeaderOrLine(RecVariant: Variant; CurrFieldNo: Integer)
     var
         BillingLine: Record "Billing Line";
-        ContractRenewalMgt: Codeunit "Contract Renewal Mgt.";
+        ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
         RRef: RecordRef;
         FRef: FieldRef;
         FRef2: FieldRef;
@@ -1119,7 +1118,13 @@ codeunit 8074 "Document Change Management"
         DocumentTypeInteger: Integer;
         DocumentNo: Code[20];
         LineNo: Integer;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforePreventChangeOnDocumentHeaderOrLine(RecVariant, CurrFieldNo, IsHandled);
+        if IsHandled then
+            exit;
+
         if CurrFieldNo = 0 then
             exit;
         RRef.GetTable(RecVariant);
@@ -1160,7 +1165,7 @@ codeunit 8074 "Document Change Management"
                     BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType("Sales Document Type".FromInteger(DocumentTypeInteger)), DocumentNo, LineNo);
                     if not BillingLine.FindFirst() then
                         exit;
-                    ContractNo := BillingLine."Contract No.";
+                    ContractNo := BillingLine."Subscription Contract No.";
 
                     if CurrFieldNo in [29, 30, 480] then
                         Error(LineDimCannotBeChangedErr, ContractNo, DocumentTypeText, DocumentNo, LineNo);
@@ -1197,5 +1202,10 @@ codeunit 8074 "Document Change Management"
                         RecurringBilling := SalesHeader."Recurring Billing";
                 end;
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePreventChangeOnDocumentHeaderOrLine(RecVariant: Variant; CurrFieldNo: Integer; var IsHandled: Boolean)
+    begin
     end;
 }

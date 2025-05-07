@@ -7,6 +7,7 @@ namespace Microsoft.eServices.EDocument.Integration.Receive;
 using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Action;
 using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument;
 
 codeunit 6186 ReceiveContext
 {
@@ -31,6 +32,38 @@ codeunit 6186 ReceiveContext
     end;
 
     /// <summary>
+    /// Sets the name of the E-Document content.
+    /// </summary>
+    procedure SetName(Name: Text[256])
+    begin
+        this.Name := Name;
+    end;
+
+    /// <summary>
+    /// Retrieves the name of the E-Document content.
+    /// </summary>
+    internal procedure GetName(): Text[256]
+    begin
+        exit(this.Name);
+    end;
+
+    /// <summary>
+    /// Sets the type of the E-Document content.
+    /// </summary>
+    procedure SetType(Type: Enum "E-Doc. Data Storage Blob Type")
+    begin
+        this.Type := Type;
+    end;
+
+    /// <summary>
+    /// Get the type of the E-Document content.
+    /// </summary>
+    internal procedure GetType(): Enum "E-Doc. Data Storage Blob Type"
+    begin
+        exit(this.Type);
+    end;
+
+    /// <summary>
     /// Get the Http Message State codeunit.
     /// </summary>
     procedure Http(): Codeunit "Http Message State"
@@ -46,11 +79,44 @@ codeunit 6186 ReceiveContext
         exit(this.IntegrationActionStatus);
     end;
 
+    /// <summary>
+    /// Sets the source details.
+    /// </summary>
+    procedure SetSourceDetails(Dtls: Text)
+    begin
+        this.Details := Dtls;
+    end;
+
+    /// <summary>
+    /// Retrieves the source details.
+    /// </summary>
+    procedure GetSourceDetails(): Text
+    begin
+        exit(this.Details);
+    end;
+
+    /// <summary>
+    /// Sets additional source details
+    /// </summary>
+    procedure SetAdditionalSourceDetails(AddDetail: Text)
+    begin
+        this.AdditionalSourceDetails := AddDetail;
+    end;
+
+    /// <summary>
+    /// Retrieves additional source details.
+    /// </summary>
+    procedure GetAdditionalSourceDetails(): Text
+    begin
+        exit(this.AdditionalSourceDetails);
+    end;
 
     var
         TempBlob: Codeunit "Temp Blob";
         HttpMessageState: Codeunit "Http Message State";
         IntegrationActionStatus: Codeunit "Integration Action Status";
-
+        Name: Text[256];
+        Type: Enum "E-Doc. Data Storage Blob Type";
+        Details, AdditionalSourceDetails : Text;
 
 }

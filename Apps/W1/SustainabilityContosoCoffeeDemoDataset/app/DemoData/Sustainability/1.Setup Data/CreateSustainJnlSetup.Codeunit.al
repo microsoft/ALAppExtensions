@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5217 "Create Sustain. Jnl. Setup"
 {
     InherentEntitlements = X;
@@ -33,6 +34,8 @@ codeunit 5217 "Create Sustain. Jnl. Setup"
         ContosoSustainability.InsertSustainabilityJournalBatch(RecurringTemplate(), Scope1RecurringBatch(), Scope1RecurringBatchDescriptionLbl, SustainabilityNoSeries.RecurringJournalNoSeries(), Enum::"Emission Scope"::"Scope 1", SustainabilitySetup.SustainabilitySourceCode());
         ContosoSustainability.InsertSustainabilityJournalBatch(RecurringTemplate(), Scope2RecurringBatch(), Scope2RecurringBatchDescriptionLbl, SustainabilityNoSeries.RecurringJournalNoSeries(), Enum::"Emission Scope"::"Scope 2", SustainabilitySetup.SustainabilitySourceCode());
         ContosoSustainability.InsertSustainabilityJournalBatch(RecurringTemplate(), Scope3RecurringBatch(), Scope3RecurringBatchDescriptionLbl, SustainabilityNoSeries.RecurringJournalNoSeries(), Enum::"Emission Scope"::"Scope 3", SustainabilitySetup.SustainabilitySourceCode());
+
+        ContosoSustainability.InsertSustainabilityJournalBatch(GeneralTemplate(), WaterWasteBatch(), WaterWasteBatchDescriptionLbl, SustainabilityNoSeries.JournalNoSeries(), Enum::"Emission Scope"::"Water/Waste", SustainabilitySetup.SustainabilitySourceCode());
     end;
 
     procedure GeneralTemplate(): Code[10]
@@ -85,6 +88,11 @@ codeunit 5217 "Create Sustain. Jnl. Setup"
         exit(Scope3RecurringBatchTok);
     end;
 
+    procedure WaterWasteBatch(): Code[10]
+    begin
+        exit(WaterWasteBatchTok);
+    end;
+
     var
         GeneralTemplateTok: Label 'GENERAL', MaxLength = 10;
         GeneralTemplateDescriptionLbl: Label 'General Emission', MaxLength = 80;
@@ -106,4 +114,6 @@ codeunit 5217 "Create Sustain. Jnl. Setup"
         Scope2RecurringBatchDescriptionLbl: Label 'Scope 2 Recurring Sustainability Journal Batch', MaxLength = 100;
         Scope3RecurringBatchTok: Label 'SCOPE3-RC', MaxLength = 10;
         Scope3RecurringBatchDescriptionLbl: Label 'Scope 3 Recurring Sustainability Journal Batch', MaxLength = 100;
+        WaterWasteBatchTok: Label 'WAT/WAS', MaxLength = 10;
+        WaterWasteBatchDescriptionLbl: Label 'Water and Waste Journal Batch', MaxLength = 100;
 }

@@ -1,4 +1,5 @@
-﻿permissionset 11751 "CZ Advance Payments - Edit CZZ"
+#pragma warning disable AA0247
+permissionset 11751 "CZ Advance Payments - Edit CZZ"
 {
     Access = Internal;
     Assignable = false;

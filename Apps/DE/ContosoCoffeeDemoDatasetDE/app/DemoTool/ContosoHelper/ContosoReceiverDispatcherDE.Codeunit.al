@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Inventory.Intrastat;
+
 codeunit 11117 "Contoso Receiver/Dispatcher DE"
 {
     InherentEntitlements = X;

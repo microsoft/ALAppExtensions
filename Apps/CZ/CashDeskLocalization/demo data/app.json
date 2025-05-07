@@ -1,0 +1,43 @@
+{
+  "id": "2893f107-f1e7-428c-8c51-ac8befc6f07b",
+  "name": "Cash Desk Localization for Czech Demo Data",
+  "publisher": "Microsoft",
+  "brief": "Provides functionality for cash desk operations in Business Central for the Czech Republic.",
+  "description": "The Cash Desk solution helps companies meet regulatory requirements for cash desk operations in the Czech Republic. The Cash Desks and Cash Documents features allow you to define cash accounts and cash desks for physical receipt and withdrawal of cash. You can set up number series for receipt cash documents and withdrawal cash documents. Cash Desk events are pre-defined cases that simplify document entry. One or more users can be responsible for managing Cash Desk operations, and they can take turns handling the responsibility.",
+  "version": "27.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206603",
+  "dependencies": [
+    {
+      "id": "bc0899d1-2cc9-4091-93f8-032538dbb70f",
+      "name": "Cash Desk Localization for Czech",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
+      "name": "Contoso Coffee Demo Dataset",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "acbbfbc7-75c1-436f-8b22-926d741b2616",
+      "name": "Contoso Coffee Demo Dataset (CZ)",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "27.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "27.0.0.0",
+  "target": "Cloud"
+}

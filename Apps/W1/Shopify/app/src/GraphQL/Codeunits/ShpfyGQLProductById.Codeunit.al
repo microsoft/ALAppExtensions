@@ -13,7 +13,7 @@ codeunit 30146 "Shpfy GQL ProductById" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{product(id: \"gid://shopify/Product/{{ProductId}}\") {createdAt updatedAt hasOnlyDefaultVariant description(truncateAt: {{MaxLengthDescription}}) descriptionHtml onlineStorePreviewUrl onlineStoreUrl productType status tags title vendor seo{description, title} images(first: 1) {edges{node{id}}} metafields(first: 50) {edges {node {id namespace type legacyResourceId key value}}}}}"}');
+        exit('{"query":"{product(id: \"gid://shopify/Product/{{ProductId}}\") {createdAt updatedAt hasOnlyDefaultVariant description(truncateAt: {{MaxLengthDescription}}) descriptionHtml onlineStorePreviewUrl onlineStoreUrl productType status tags title vendor seo{description, title} metafields(first: 50) {edges {node {id namespace type legacyResourceId key value}}}}}"}');
     end;
 
     /// <summary>
@@ -22,7 +22,7 @@ codeunit 30146 "Shpfy GQL ProductById" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Integer.</returns>
     internal procedure GetExpectedCost(): Integer
     begin
-        exit(25);
+        exit(22);
     end;
 
 }

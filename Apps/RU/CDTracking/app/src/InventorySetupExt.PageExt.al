@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 14115 InventorySetupExt extends "Inventory Setup"
 {
     layout

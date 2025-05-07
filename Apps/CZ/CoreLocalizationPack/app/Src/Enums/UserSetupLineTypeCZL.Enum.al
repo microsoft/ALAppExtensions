@@ -28,10 +28,15 @@ enum 11725 "User Setup Line Type CZL"
     {
         Caption = 'Item Journal';
     }
+#if not CLEAN26
     value(5; "BOM Journal")
     {
-        Caption = 'BOM Journal';
+        Caption = 'BOM Journal (Obsolete)';
+        ObsoleteState = Pending;
+        ObsoleteReason = 'The BOM Journal is not used anymore.';
+        ObsoleteTag = '26.0';
     }
+#endif
     value(6; "Resource Journal")
     {
         Caption = 'Resource Journal';
@@ -40,10 +45,15 @@ enum 11725 "User Setup Line Type CZL"
     {
         Caption = 'Job Journal';
     }
+#if not CLEAN26
     value(8; "Intrastat Journal")
     {
-        Caption = 'Intrastat Journal';
+        Caption = 'Intrastat Journal (Obsolete)';
+        ObsoleteState = Pending;
+        ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+        ObsoleteTag = '26.0';
     }
+#endif
     value(9; "FA Journal")
     {
         Caption = 'FA Journal';

@@ -8,7 +8,7 @@ pageextension 8067 "Sales Credit Memo" extends "Sales Credit Memo"
     {
         addlast("Credit Memo Details")
         {
-            field("Contract Detail Overview"; Rec."Contract Detail Overview")
+            field("Contract Detail Overview"; Rec."Sub. Contract Detail Overview")
             {
                 ApplicationArea = Basic, Suite;
                 Enabled = Rec."Recurring Billing";

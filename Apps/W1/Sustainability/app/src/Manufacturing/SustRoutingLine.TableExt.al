@@ -14,6 +14,12 @@ tableextension 6245 "Sust. Routing Line" extends "Routing Line"
             Caption = 'CO2e per Unit';
             DataClassification = CustomerContent;
         }
+        field(6211; "CO2e Last Date Modified"; Date)
+        {
+            Caption = 'CO2e Last Date Modified';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
     }
 
     var

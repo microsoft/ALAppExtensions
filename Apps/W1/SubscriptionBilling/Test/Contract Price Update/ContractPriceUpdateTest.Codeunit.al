@@ -11,21 +11,23 @@ codeunit 139691 "Contract Price Update Test"
     Access = Internal;
 
     var
-        PriceUpdateTemplate: Record "Price Update Template";
         Customer: Record Customer;
-        CustomerContract: Record "Customer Contract";
-        ServiceObject: Record "Service Object";
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        VendorContract: Record "Vendor Contract";
-        ServiceCommitment: Record "Service Commitment";
-        Vendor: Record Vendor;
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        CustomerContract: Record "Customer Subscription Contract";
         Item: Record Item;
-        ItemServCommitmentPackage: Record "Item Serv. Commitment Package";
+        ItemServCommitmentPackage: Record "Item Subscription Package";
+        PriceUpdateTemplate: Record "Price Update Template";
+        ServiceCommPackageLine: Record "Subscription Package Line";
+        ServiceCommitment: Record "Subscription Line";
+        ServiceCommitmentPackage: Record "Subscription Package";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        ServiceObject: Record "Subscription Header";
+        Vendor: Record Vendor;
+        VendorContract: Record "Vendor Subscription Contract";
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
         Confirm: Boolean;
+
+    #region Tests
 
     [Test]
     procedure ExpectErrorIfUpdateValueNotZeroInCaseOfRecentItemPrices()
@@ -39,11 +41,11 @@ codeunit 139691 "Contract Price Update Test"
     procedure TestExcludeFromPriceUpdateInCustomerServiceCommitments()
     begin
         ClearAll();
-        ContractTestLibrary.ResetContractRecords();
+        ContractTestLibrary.DeleteAllContractRecords();
         SetupServiceObjectWithServiceCommitment(false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No."); //ExchangeRateSelectionModalPageHandler, MessageHandler
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, Customer."No."); // ExchangeRateSelectionModalPageHandler, MessageHandler
         Confirm := true;
-        CustomerContract.Validate(DefaultExcludeFromPriceUpdate, true); //ConfirmHandler
+        CustomerContract.Validate(DefaultExcludeFromPriceUpdate, true); // ConfirmHandler
         CustomerContract.Modify(false);
 
         ServiceCommitment.Reset();
@@ -54,7 +56,7 @@ codeunit 139691 "Contract Price Update Test"
         until ServiceCommitment.Next() = 0;
 
         Confirm := false;
-        CustomerContract.Validate(DefaultExcludeFromPriceUpdate, false); //ConfirmHandler
+        CustomerContract.Validate(DefaultExcludeFromPriceUpdate, false); // ConfirmHandler
         CustomerContract.Modify(false);
 
         ServiceCommitment.Reset();
@@ -70,11 +72,11 @@ codeunit 139691 "Contract Price Update Test"
     procedure TestExcludeFromPriceUpdateInVendorServiceCommitments()
     begin
         ClearAll();
-        ContractTestLibrary.ResetContractRecords();
+        ContractTestLibrary.DeleteAllContractRecords();
         SetupServiceObjectWithServiceCommitment(false);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, Vendor."No.", true);        //ExchangeRateSelectionModalPageHandler, MessageHandler
+        ContractTestLibrary.CreateVendorContractAndCreateContractLinesForItems(VendorContract, ServiceObject, Vendor."No.", true);        // ExchangeRateSelectionModalPageHandler, MessageHandler
         Confirm := true;
-        VendorContract.Validate(DefaultExcludeFromPriceUpdate, true); //ConfirmHandler
+        VendorContract.Validate(DefaultExcludeFromPriceUpdate, true); // ConfirmHandler
         VendorContract.Modify(false);
 
         ServiceCommitment.Reset();
@@ -85,7 +87,7 @@ codeunit 139691 "Contract Price Update Test"
         until ServiceCommitment.Next() = 0;
 
         Confirm := false;
-        VendorContract.Validate(DefaultExcludeFromPriceUpdate, false); //ConfirmHandler
+        VendorContract.Validate(DefaultExcludeFromPriceUpdate, false); // ConfirmHandler
         VendorContract.Modify(false);
 
         ServiceCommitment.Reset();
@@ -96,17 +98,15 @@ codeunit 139691 "Contract Price Update Test"
         until ServiceCommitment.Next() = 0;
     end;
 
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
-    begin
-        Reply := Confirm;
-    end;
+    #endregion Tests
+
+    #region Procedures
 
     local procedure SetupServiceObjectWithServiceCommitment(SNSpecificTracking: Boolean)
     begin
         ClearAll();
         ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateServiceObjectWithItem(ServiceObject, Item, SNSpecificTracking);
+        ContractTestLibrary.CreateServiceObjectForItem(ServiceObject, Item, SNSpecificTracking);
         ServiceObject.Validate("End-User Customer Name", Customer.Name);
         ServiceObject.Modify(false);
 
@@ -133,8 +133,23 @@ codeunit 139691 "Contract Price Update Test"
         ServiceCommPackageLine.Modify(false);
 
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code);
-        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Item No."));
+        ServiceCommitmentPackage.SetFilter(Code, ItemServCommitmentPackage.GetPackageFilterForItem(ServiceObject."Source No."));
         ServiceObject.InsertServiceCommitmentsFromServCommPackage(WorkDate(), ServiceCommitmentPackage);
+    end;
+
+    #endregion Procedures
+
+    #region Handlers
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := Confirm;
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
+    begin
     end;
 
     [ModalPageHandler]
@@ -143,8 +158,5 @@ codeunit 139691 "Contract Price Update Test"
         ExchangeRateSelectionPage.OK().Invoke();
     end;
 
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
-    end;
+    #endregion Handlers
 }

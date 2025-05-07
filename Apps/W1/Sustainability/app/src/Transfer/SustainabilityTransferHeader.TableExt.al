@@ -32,15 +32,6 @@ tableextension 6249 "Sustainability Transfer Header" extends "Transfer Header"
             Editable = false;
             FieldClass = FlowField;
         }
-        field(6213; "Posted Received Total CO2e"; Decimal)
-        {
-            AutoFormatType = 11;
-            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
-            CalcFormula = sum("Transfer Line"."Posted Received Total CO2e" where("Document No." = field("No."), "Derived From Line No." = const(0)));
-            Caption = 'Posted Received Total CO2e';
-            Editable = false;
-            FieldClass = FlowField;
-        }
     }
 
     var

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Root>
+    <AITSuite Code="BAR-AC1" Description="Bank Acc. Rec Copilot Accuracy" Dataset="EmptyDataSet2" TestRunnerId="130451">
+        <Line CodeunitID="133573" Description="Bank Acc. Rec Account Matching" Dataset="AccuracyGLAccount" />
+        <Line CodeunitID="133574" Description="Bank Acc. Rec Entry Matching" Dataset="AccuracyEntryMatching" />
+    </AITSuite>
+</Root>

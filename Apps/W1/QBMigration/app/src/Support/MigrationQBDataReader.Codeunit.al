@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1919 "MigrationQB Data Reader"
 {
     TableNo = "MigrationQB Config";

@@ -17,12 +17,12 @@ page 8001 "Create Billing Document"
                 field(BillingDate; BillingDate)
                 {
                     Caption = 'Billing Date';
-                    ToolTip = 'Specifies the date up to which the billable services will be taken into account.';
+                    ToolTip = 'Specifies the date up to which the billable Subscription Lines will be taken into account.';
                 }
                 field(BillingTo; BillingTo)
                 {
                     Caption = 'Billing To';
-                    ToolTip = 'Specifies the date to which the service is billed.';
+                    ToolTip = 'Specifies the date to which the Subscription Line is billed.';
 
                 }
             }
@@ -98,13 +98,6 @@ page 8001 "Create Billing Document"
         DocumentDate: Date;
         PostingDate: Date;
         BillingDate: Date;
-
-    internal procedure GetData(var NewDocumentDate: Date; var NewPostingDate: Date; var NewPostDocument: Boolean)
-    begin
-        NewDocumentDate := DocumentDate;
-        NewPostingDate := PostingDate;
-        NewPostDocument := PostDocument;
-    end;
 
     local procedure CreateBillingDocumentForContract()
     begin

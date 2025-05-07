@@ -74,6 +74,8 @@ codeunit 13631 "OIOUBL-Check Reminder"
     var
         ReminderLine: Record "Reminder Line";
         EmptyLineFound: Boolean;
+        IsHandled: Boolean;
+        ConfirmEmptyLine: Boolean;
     begin
         EmptyLineFound := FALSE;
         WITH ReminderLine do begin
@@ -90,9 +92,20 @@ codeunit 13631 "OIOUBL-Check Reminder"
                         EmptyLineFound := true;
                 until (NEXT() = 0);
 
+            ConfirmEmptyLine := true;
+            IsHandled := false;
+            OnCheckReminderLinesOnBeforeConfirmEmptyLines(ReminderHeader, ConfirmEmptyLine, IsHandled);
+            if IsHandled then
+                exit;
+
             if EmptyLineFound then
-                if NOT CONFIRM(EmptyFieldsQst, TRUE, "Reminder No.") then
+                if NOT CONFIRM(EmptyFieldsQst, ConfirmEmptyLine, "Reminder No.") then
                     ERROR(WarningsExistErr);
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCheckReminderLinesOnBeforeConfirmEmptyLines(ReminderHeader: Record "Reminder Header"; var ConfirmEmptyLine: Boolean; var IsHandled: Boolean)
+    begin
     end;
 }

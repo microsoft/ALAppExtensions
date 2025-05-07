@@ -8,9 +8,6 @@ using Microsoft.Sales.Customer;
 
 reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - Invoice"
 {
-    RDLCLayout = './Billing/Report Extensions/StandardSalesInvoice.rdl';
-    WordLayout = './Billing/Report Extensions/StandardSalesInvoice.docx';
-
     dataset
     {
         add(Header)
@@ -29,10 +26,10 @@ reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - In
         }
         add(Line)
         {
-            column(ContractLineNo; "Contract Line No.")
+            column(ContractLineNo; "Subscription Contract Line No.")
             {
             }
-            column(ContractNo; "Contract No.")
+            column(ContractNo; "Subscription Contract No.")
             {
             }
             column(RecurringBillingfrom; "Recurring Billing from")
@@ -50,6 +47,7 @@ reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - In
                 DataItemTableView = sorting(Number);
 
                 column(ContractBillingDetailsContractNoLbl; ContractNoLbl) { }
+                column(ContractBillingDetailsPositionNoLbl; PositionLbl) { }
                 column(ContractBillingDetailsPositionDescriptionLbl; SalesInvoiceLine.FieldCaption(Description)) { }
                 column(ContractBillingDetailsCustomerLbl; CustomerLbl) { }
 
@@ -58,7 +56,6 @@ reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - In
                     DataItemTableView = sorting(Number);
                     column(ContractBillingDetailsContractNo; TempContractBillingDetailsBuffer."External Document No.") { }
                     column(ContractBillingDetailsPositionDescription; SalesInvoiceLine.Description) { }
-                    column(ContractBillingDetailsPositionNoLbl; PositionLbl) { }
                     column(ContractBillingDetailsPositionNo; SalesInvoiceLine."Line No.") { }
                     column(ContractBillingDetailsCustomerName; Customer2.Name) { }
                     column(ContractBillingDetailsStartDateLbl; StartDateLbl) { }
@@ -78,7 +75,7 @@ reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - In
 
                         column(ContractBillingDetailsStartDate; Format(TempContractBillingDetailsBuffer."Document Date")) { }
                         column(ContractBillingDetailsEndDate; Format(TempContractBillingDetailsBuffer."Posting Date")) { }
-                        column(Days; Days) { }
+                        column(ContractBillingDetailsDays; Days) { }
                         column(ContractBillingDetailsQuantity; Format(TempContractBillingDetailsBuffer.Quantity)) { }
                         column(ContractBillingDetailsSalesPrice; FormattedUnitPrice)
                         {
@@ -178,12 +175,30 @@ reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - In
             }
         }
     }
+    rendering
+    {
+        layout("SalesInvoiceForSubscriptionBilling.rdlc")
+        {
+            Type = RDLC;
+            LayoutFile = './Billing/Report Extensions/Layouts/SalesInvoiceForSubscriptionBilling.rdlc';
+            Caption = 'Sales Invoice for Subscription Billing (RDLC)';
+            Summary = 'The Sales Invoice for Subscription Billing (RDLC) is the most detailed layout and provides most flexible layout options.';
+        }
+        layout("SalesInvoiceForSubscriptionBilling.docx")
+        {
+            Type = Word;
+            LayoutFile = './Billing/Report Extensions/Layouts/SalesInvoiceForSubscriptionBilling.docx';
+            Caption = 'Sales Invoice for Subscription Billing (Word)';
+            Summary = 'The Sales Invoice for Subscription Billing (Word) provides a simple layout that is also relatively easy for an end-user to modify.';
+        }
+    }
+
     var
         TempContractBillingDetailsBuffer: Record "Job Ledger Entry" temporary;
         TempContractBillingDetailsGroupingBuffer: Record "Job Ledger Entry" temporary;
         SalesInvoiceLine: Record "Sales Invoice Line";
         Customer2: Record Customer;
-        ContractBillingPrintout: Codeunit "Contract Billing Printout";
+        ContractBillingPrintout: Codeunit "Sub. Contract Billing Printout";
         ReportFormatting: Codeunit "Report Formatting";
         CustomerLbl: Label 'Customer';
         ContractNoLbl: Label 'Contract No.';
@@ -192,7 +207,7 @@ reportextension 8008 "Contract Standard Sales Inv." extends "Standard Sales - In
         EndDateLbl: Label 'End Date';
         DaysLbl: Label 'Days';
         Days: Integer;
-        ServiceDescriptionLbl: Label 'Service Object';
+        ServiceDescriptionLbl: Label 'Subscription';
         CurrencyLbl: Label 'Currency';
         SalesPriceLblTxt: Text;
         CurrencyLblText: Text;

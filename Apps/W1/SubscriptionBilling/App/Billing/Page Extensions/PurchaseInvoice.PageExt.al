@@ -11,9 +11,9 @@ pageextension 8012 "Purchase Invoice" extends "Purchase Invoice"
             action("Get Vendor Contract Lines")
             {
                 ApplicationArea = All;
-                Caption = 'Get Vendor Contract Lines';
+                Caption = 'Get Vendor Subscription Contract Lines';
                 Image = GetOrder;
-                ToolTip = 'Select Vendor Contract lines and create corresponding invoice lines.';
+                ToolTip = 'Select Vendor Subscription Contract lines and create corresponding invoice lines.';
 
                 trigger OnAction()
                 begin

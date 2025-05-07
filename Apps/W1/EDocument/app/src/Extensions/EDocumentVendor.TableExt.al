@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 tableextension 6165 "E-Document Vendor" extends Vendor
 {
     fields

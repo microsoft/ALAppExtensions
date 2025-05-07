@@ -1,7 +1,21 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
+using Microsoft.Utilities;
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.Environment;
+using Microsoft.Foundation.Company;
+
 codeunit 5382 "Company Creation Contoso"
 {
-    TableNo = "Contoso Demo Data Module";
     Access = Internal;
+    TableNo = "Contoso Demo Data Module";
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnRun()
     var
