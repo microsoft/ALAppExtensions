@@ -7,6 +7,7 @@ namespace Microsoft.EServices.EDocument;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
 using Microsoft.Foundation.Reporting;
+using System.Automation;
 
 tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header"
 {
@@ -30,11 +31,17 @@ tableextension 6103 "E-Doc. Sales Cr. Memo Header" extends "Sales Cr.Memo Header
     /// </summary>
     internal procedure CreateEDocument()
     var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        Customer: Record Customer;
+        Workflow: Record Workflow;
         EDocExport: Codeunit "E-Doc. Export";
         SalesCrMemoRecordRef: RecordRef;
     begin
         SalesCrMemoRecordRef.GetTable(Rec);
-        EDocExport.CheckAndCreateEDocument(SalesCrMemoRecordRef);
+        Customer.Get(Rec."Bill-to Customer No.");
+        DocumentSendingProfile.Get(Customer."Document Sending Profile");
+        Workflow.Get(DocumentSendingProfile."Electronic Service Flow");
+        EDocExport.CheckAndCreateEDocument(SalesCrMemoRecordRef, Workflow, "E-Document Type"::"Sales Credit Memo");
     end;
 
     /// <summary>
