@@ -1613,6 +1613,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
+    [HandlerFunctions('DeleteConfirmationHandler')]
     procedure DeleteLinkedPurchaseHeaderNoAllowedSuccess()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -1628,9 +1629,8 @@ codeunit 139624 "E-Doc E2E Test"
         PurchaseHeader.Modify();
         Commit();
 
-        // [THEN] Fails to delete
+        // [THEN] Show confirmation message and throw error if cancelled
         asserterror PurchaseHeader.Delete(true);
-        Assert.ExpectedError(DeleteNotAllowedErr);
 
         // [GIVEN] Reset link 
         PurchaseHeader."E-Document Link" := NullGuid;
@@ -2578,6 +2578,7 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
+    [HandlerFunctions('DeleteConfirmationHandler')]
     internal procedure DeleteLinkedPurchaseHeaderNoAllowedSuccess26()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -2593,9 +2594,8 @@ codeunit 139624 "E-Doc E2E Test"
         PurchaseHeader.Modify();
         Commit();
 
-        // [THEN] Fails to delete
+        // [THEN] Show confirmation message and throw error if cancelled
         asserterror PurchaseHeader.Delete(true);
-        Assert.ExpectedError(DeleteNotAllowedErr);
 
         // [GIVEN] Reset link 
         PurchaseHeader."E-Document Link" := NullGuid;
@@ -2606,4 +2606,12 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
 #endif
+    [ConfirmHandler]
+    procedure DeleteConfirmationHandler(Message: Text[1024]; var Reply: Boolean)
+    var
+        ExpectedConfirmLbl: Label 'This purchase document is created from E-Document. Do you want to proceed with deletion?';
+    begin
+        Assert.ExpectedConfirm(ExpectedConfirmLbl, Message);
+        Reply := false;
+    end;
 }
