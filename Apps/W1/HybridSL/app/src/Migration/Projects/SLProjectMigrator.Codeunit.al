@@ -68,7 +68,7 @@ codeunit 47006 "SL Project Migrator"
         if IncludeHoldStatusResources then
             SLPJEmploy.SetFilter(emp_status, StatusActiveHoldTxt)
         else
-            SLPJEmploy.SetFilter(emp_status, StatusActiveTxt);
+            SLPJEmploy.SetRange(emp_status, StatusActiveTxt);
 
         SLPJEmploy.SetRange(CpnyId, CompanyName);
         if not SLPJEmploy.FindSet() then
@@ -79,7 +79,7 @@ codeunit 47006 "SL Project Migrator"
         until SLPJEmploy.Next() = 0;
 
         // Active SL PJEquip records only
-        SLPJEquip.SetFilter(status, StatusActiveTxt);
+        SLPJEquip.SetRange(status, StatusActiveTxt);
         SLPJEquip.SetRange(CpnyId, CompanyName);
         if not SLPJEquip.FindSet() then
             exit;
@@ -139,8 +139,8 @@ codeunit 47006 "SL Project Migrator"
         SLPJEmpPjt: Record "SL PJEmpPjt";
     begin
         Clear(SLPJEmpPjt);
-        SLPJEmpPjt.SetFilter(employee, Employee);
-        SLPJEmpPjt.SetFilter(project, NAProjectTxt);
+        SLPJEmpPjt.SetFilter(employee, StrSubstNo('%1', Employee));
+        SLPJEmpPjt.SetFilter(project, StrSubstNo('%1', NAProjectTxt));
         SLPJEmpPjt.SetAscending(effect_date, false);
         if not SLPJEmpPjt.FindFirst() then
             exit;
@@ -169,8 +169,8 @@ codeunit 47006 "SL Project Migrator"
         SLPJEQRate: Record "SL PJEQRate";
     begin
         Clear(SLPJEQRate);
-        SLPJEQRate.SetFilter(equip_id, EquipmentID);
-        SLPJEQRate.SetFilter(project, NAProjectTxt);
+        SLPJEQRate.SetFilter(equip_id, StrSubstNo('%1', EquipmentID));
+        SLPJEQRate.SetFilter(project, StrSubstNo('%1', NAProjectTxt));
         SLPJEQRate.SetAscending(effect_date, false);
         if not SLPJEQRate.FindFirst() then
             exit;
@@ -296,8 +296,8 @@ codeunit 47006 "SL Project Migrator"
     begin
         Clear(SLPJPent);
         Project := CopyStr(JobNo, 1, MaxStrLen(Project));
-        SLPJPent.SetFilter(project, Project);
-        SLPJPent.SetFilter(status_pa, StatusActiveTxt);
+        SLPJPent.SetFilter(project, StrSubstNo('%1', Project));
+        SLPJPent.SetRange(status_pa, StatusActiveTxt);
         if not SLPJPent.FindSet() then
             exit;
         repeat
