@@ -12,7 +12,6 @@ codeunit 6127 "E-Document External Events"
 {
     var
         EDocumentApiUrlTok: Label 'v2.0/companies(%1)/eDocuments(%2)', Locked = true;
-        EventCategory: Enum EventCategory;
 
     //Copied from codeunit 38500 "External Events Helper"
     //TODO decide if we should copy procedures/add dependency/move API code
@@ -80,12 +79,12 @@ codeunit 6127 "E-Document External Events"
         this.EDocumentServiceStatusChanged(EDocument.SystemId, EDocumentService.SystemId, EDocumentServiceStatus.Status, Url, WebClientUrl);
     end;
 
-    [ExternalBusinessEvent('EDocumentStatusChanged', 'E-Document status changed', 'This business event is triggered when status on E-Document has been updated.', EventCategory::"E-Document", '1.0')]
+    [ExternalBusinessEvent('EDocumentStatusChanged', 'E-Document status changed', 'This business event is triggered when status on E-Document has been updated.', Enum::EventCategory::"E-Document", '1.0')]
     local procedure EDocumentStatusChanged(EDocumentId: Guid; EDocumentStatus: enum "E-Document Status"; Url: Text[250]; WebClientUrl: Text[250])
     begin
     end;
 
-    [ExternalBusinessEvent('EDocumentErviceStatusChanged', 'E-Document service status changed', 'This business event is triggered when status for a specific service on E-Document has been updated.', EventCategory::"E-Document", '1.0')]
+    [ExternalBusinessEvent('EDocumentErviceStatusChanged', 'E-Document service status changed', 'This business event is triggered when status for a specific service on E-Document has been updated.', Enum::EventCategory::"E-Document", '1.0')]
     local procedure EDocumentServiceStatusChanged(EDocumentId: Guid; EDocumentServiceId: Guid; EDocumentServiceStatus: enum "E-Document Service Status"; Url: Text[250]; WebClientUrl: Text[250])
     begin
     end;

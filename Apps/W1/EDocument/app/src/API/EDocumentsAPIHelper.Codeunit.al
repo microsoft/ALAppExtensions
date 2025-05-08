@@ -6,7 +6,6 @@ namespace Microsoft.eServices.EDocument.API;
 
 using Microsoft.eServices.EDocument;
 using System.Utilities;
-using System.Environment;
 
 codeunit 6129 "E-Documents API Helper"
 {
