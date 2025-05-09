@@ -37,7 +37,7 @@ function renderPDF(base64String, pageid) {
     var { pdfjsLib } = globalThis;
 
     // The workerSrc property shall be specified.
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn-bc.dynamics-tie.com/common/js/pdfjs-4.10.38/pdf.worker.min.mjs';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn-bc.dynamics.com/common/js/pdfjs-4.10.38/pdf.worker.min.mjs';
     pageNum = pageid;
 
     var binaryString = atob(base64String);
@@ -64,11 +64,20 @@ function renderPage(num) {
     pageRendering = true;
 
     pdfDoc.getPage(num).then(function (page) {
-        var viewport = page.getViewport({ scale: getOptimalScale() });
+        var scale = 1.5;
+        var viewport = page.getViewport({ scale: scale, });
+        // Support HiDPI-screens.
+        var outputScale = window.devicePixelRatio || 1;
 
-        // Set canvas dimensions
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+        canvas = document.getElementById("edoc-pdf-canvas");
+        ctx = canvas.getContext("2d");
+
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+
+        var transform = outputScale !== 1
+            ? [outputScale, 0, 0, outputScale, 0, 0]
+            : null;
 
         // Ensure vertical scrolling works
         var pdfContainer = document.getElementById("edoc-pdf-container");
@@ -77,6 +86,7 @@ function renderPage(num) {
 
         var renderContext = {
             canvasContext: ctx,
+            transform: transform,
             viewport: viewport
         };
 

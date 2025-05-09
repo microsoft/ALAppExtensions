@@ -1,5 +1,8 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 8120 "Create Sub. Bill. UD Subscr."
 {
     InherentEntitlements = X;

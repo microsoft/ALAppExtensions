@@ -20,6 +20,11 @@ codeunit 5216 "Contoso Sustainability"
     end;
 
     procedure InsertAccountCategory(Code: Code[20]; Description: Text[100]; Scope: Enum "Emission Scope"; CalcFoundation: Enum "Calculation Foundation"; CO2: Boolean; CH4: Boolean; N2O: Boolean; CustomValue: Text[100]; CalcFromGL: Boolean)
+    begin
+        InsertAccountCategory(Code, Description, Scope, CalcFoundation, CO2, CH4, N2O, false, false, false, CustomValue, CalcFromGL);
+    end;
+
+    procedure InsertAccountCategory(Code: Code[20]; Description: Text[100]; Scope: Enum "Emission Scope"; CalcFoundation: Enum "Calculation Foundation"; CO2: Boolean; CH4: Boolean; N2O: Boolean; WaterIntensity: Boolean; WasteIntensity: Boolean; DischargedIntoWater: Boolean; CustomValue: Text[100]; CalcFromGL: Boolean)
     var
         SustainAccountCategory: Record "Sustain. Account Category";
         Exists: Boolean;
@@ -38,6 +43,9 @@ codeunit 5216 "Contoso Sustainability"
         SustainAccountCategory.Validate(CO2, CO2);
         SustainAccountCategory.Validate(CH4, CH4);
         SustainAccountCategory.Validate(N2O, N2O);
+        SustainAccountCategory.Validate("Water Intensity", WaterIntensity);
+        SustainAccountCategory.Validate("Waste Intensity", WasteIntensity);
+        SustainAccountCategory.Validate("Discharged Into Water", DischargedIntoWater);
         SustainAccountCategory.Validate("Custom Value", CustomValue);
         SustainAccountCategory.Validate("Calculate from General Ledger", CalcFromGL);
 
@@ -48,6 +56,11 @@ codeunit 5216 "Contoso Sustainability"
     end;
 
     procedure InsertAccountSubcategory(CategoryCode: Code[20]; SubcategoryCode: Code[20]; Description: Text[100]; EFCO2: Decimal; EFCH4: Decimal; EFN2O: Decimal; RenewableEnergy: Boolean)
+    begin
+        InsertAccountSubcategory(CategoryCode, SubcategoryCode, Description, EFCO2, EFCH4, EFN2O, 0, 0, 0, RenewableEnergy);
+    end;
+
+    procedure InsertAccountSubcategory(CategoryCode: Code[20]; SubcategoryCode: Code[20]; Description: Text[100]; EFCO2: Decimal; EFCH4: Decimal; EFN2O: Decimal; WaterIntensityFactor: Decimal; WasteIntensityFactor: Decimal; DischargedIntoWaterFactor: Decimal; RenewableEnergy: Boolean)
     var
         SustainAccountSubcategory: Record "Sustain. Account Subcategory";
         Exists: Boolean;
@@ -65,6 +78,9 @@ codeunit 5216 "Contoso Sustainability"
         SustainAccountSubcategory.Validate("Emission Factor CO2", EFCO2);
         SustainAccountSubcategory.Validate("Emission Factor CH4", EFCH4);
         SustainAccountSubcategory.Validate("Emission Factor N2O", EFN2O);
+        SustainAccountSubcategory.Validate("Water Intensity Factor", WaterIntensityFactor);
+        SustainAccountSubcategory.Validate("Waste Intensity Factor", WasteIntensityFactor);
+        SustainAccountSubcategory.Validate("Discharged Into Water Factor", DischargedIntoWaterFactor);
         SustainAccountSubcategory.Validate("Renewable Energy", RenewableEnergy);
 
         if Exists then
@@ -146,7 +162,7 @@ codeunit 5216 "Contoso Sustainability"
             SustainabilityJnlBatch.Insert(true);
     end;
 
-    procedure InsertSustainabilityJournalLine(TemplateName: Code[10]; BatchName: Code[10]; PostingDate: Date; DocumentNo: Code[20]; AccountNo: Code[20]; ManualInput: Boolean; UoM: Code[10]; FuelElectricity: Decimal; Distance: Decimal; CustomAmount: Decimal; Installation: Decimal; TimeFactor: Decimal; EmissionCO2: Decimal; EmissionCH4: Decimal; EmissionN2O: Decimal; CountryOrRegion: Code[10]; ResponsibilityCenter: Code[10])
+    procedure InsertSustainabilityJournalLine(TemplateName: Code[10]; BatchName: Code[10]; PostingDate: Date; DocumentNo: Code[20]; AccountNo: Code[20]; ManualInput: Boolean; UoM: Code[10]; FuelElectricity: Decimal; Distance: Decimal; CustomAmount: Decimal; Installation: Decimal; TimeFactor: Decimal; EmissionCO2: Decimal; EmissionCH4: Decimal; EmissionN2O: Decimal; WaterIntensity: Decimal; WasteIntensity: Decimal; DischargedIntoWater: Decimal; WaterWasteIntensityType: Enum "Water/Waste Intensity Type"; WaterType: Enum "Water Type"; CountryOrRegion: Code[10]; ResponsibilityCenter: Code[10])
     var
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
     begin
@@ -160,11 +176,16 @@ codeunit 5216 "Contoso Sustainability"
         SustainabilityJnlLine.Validate("Country/Region Code", CountryOrRegion);
         SustainabilityJnlLine.Validate("Responsibility Center", ResponsibilityCenter);
         SustainabilityJnlLine.Validate("Unit of Measure", UoM);
+        SustainabilityJnlLine.Validate("Water/Waste Intensity Type", WaterWasteIntensityType);
+        SustainabilityJnlLine.Validate("Water Type", WaterType);
 
         if ManualInput then begin
             SustainabilityJnlLine.Validate("Emission CO2", EmissionCO2);
             SustainabilityJnlLine.Validate("Emission CH4", EmissionCH4);
             SustainabilityJnlLine.Validate("Emission N2O", EmissionN2O);
+            SustainabilityJnlLine.Validate("Water Intensity", WaterIntensity);
+            SustainabilityJnlLine.Validate("Waste Intensity", WasteIntensity);
+            SustainabilityJnlLine.Validate("Discharged Into Water", DischargedIntoWater);
         end else begin
             SustainabilityJnlLine.Validate("Fuel/Electricity", FuelElectricity);
             SustainabilityJnlLine.Validate(Distance, Distance);
@@ -174,6 +195,11 @@ codeunit 5216 "Contoso Sustainability"
         end;
 
         SustainabilityJnlLine.Insert(true);
+    end;
+
+    procedure InsertSustainabilityJournalLine(TemplateName: Code[10]; BatchName: Code[10]; PostingDate: Date; DocumentNo: Code[20]; AccountNo: Code[20]; ManualInput: Boolean; UoM: Code[10]; FuelElectricity: Decimal; Distance: Decimal; CustomAmount: Decimal; Installation: Decimal; TimeFactor: Decimal; EmissionCO2: Decimal; EmissionCH4: Decimal; EmissionN2O: Decimal; CountryOrRegion: Code[10]; ResponsibilityCenter: Code[10])
+    begin
+        InsertSustainabilityJournalLine(TemplateName, BatchName, PostingDate, DocumentNo, AccountNo, ManualInput, UoM, FuelElectricity, Distance, CustomAmount, Installation, TimeFactor, EmissionCO2, EmissionCH4, EmissionN2O, 0, 0, 0, "Water/Waste Intensity Type"::" ", "Water Type"::" ", CountryOrRegion, ResponsibilityCenter);
     end;
 
     procedure InsertSustainabilityJournalLine(TemplateName: Code[10]; BatchName: Code[10]; PostingDate: Date; DocumentNo: Code[20]; AccountNo: Code[20]; UoM: Code[10]; FuelElectricity: Decimal; Distance: Decimal; CustomAmount: Decimal; Installation: Decimal; TimeFactor: Decimal; CountryOrRegion: Code[10]; ResponsibilityCenter: Code[10])
@@ -274,6 +300,11 @@ codeunit 5216 "Contoso Sustainability"
     end;
 
     procedure InsertGoal(ScorecardNo: Code[20]; GoalNo: Code[20]; GoalName: Text[100]; BaseLinePeriodStartDate: Date; BaseLinePeriodEndDate: Date; CurrentPeriodStartDate: Date; CurrentPeriodEndDate: Date; UOM: Code[10]; CountryRegion: Code[10]; RespobislityCenter: Code[10]; TargetValueCO2: Decimal; TargetValueCH4: Decimal; TargetValueN2O: Decimal; MailGoal: Boolean)
+    begin
+        InsertGoal(ScorecardNo, GoalNo, GoalName, BaseLinePeriodStartDate, BaseLinePeriodEndDate, CurrentPeriodStartDate, CurrentPeriodEndDate, UOM, CountryRegion, RespobislityCenter, TargetValueCO2, TargetValueCH4, TargetValueN2O, 0, 0, MailGoal);
+    end;
+
+    procedure InsertGoal(ScorecardNo: Code[20]; GoalNo: Code[20]; GoalName: Text[100]; BaseLinePeriodStartDate: Date; BaseLinePeriodEndDate: Date; CurrentPeriodStartDate: Date; CurrentPeriodEndDate: Date; UOM: Code[10]; CountryRegion: Code[10]; RespobislityCenter: Code[10]; TargetValueCO2: Decimal; TargetValueCH4: Decimal; TargetValueN2O: Decimal; TargetValueWater: Decimal; TargetValueWaste: Decimal; MailGoal: Boolean)
     var
         SustainabilityGoal: Record "Sustainability Goal";
     begin
@@ -291,8 +322,20 @@ codeunit 5216 "Contoso Sustainability"
         SustainabilityGoal.Validate("Target Value for CO2", TargetValueCO2);
         SustainabilityGoal.Validate("Target Value for CH4", TargetValueCH4);
         SustainabilityGoal.Validate("Target Value for N2O", TargetValueN2O);
+        SustainabilityGoal.Validate("Target Value for Water Int.", TargetValueWater);
+        SustainabilityGoal.Validate("Target Value for Waste Int.", TargetValueWaste);
         SustainabilityGoal.Validate("Main Goal", MailGoal);
         SustainabilityGoal.Insert(true);
+    end;
+
+    procedure UpdateSustainabilityResponsibilityCenter(ResponsibilityCenterCode: Code[20]; WaterCapacityQuantity: Decimal; WaterCapacityUnit: Code[10])
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+    begin
+        ResponsibilityCenter.Get(ResponsibilityCenterCode);
+        ResponsibilityCenter.Validate("Water Capacity Quantity(Month)", WaterCapacityQuantity);
+        ResponsibilityCenter.Validate("Water Capacity Unit", WaterCapacityUnit);
+        ResponsibilityCenter.Modify(true);
     end;
 
     local procedure GetNextSustainabilityJournalLineNo(TemplateName: Code[10]; BatchName: Code[10]): Integer

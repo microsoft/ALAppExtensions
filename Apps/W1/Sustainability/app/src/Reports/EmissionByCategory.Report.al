@@ -158,6 +158,7 @@ report 6210 "Emission By Category"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
     trigger OnPreReport()
     var

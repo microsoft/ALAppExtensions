@@ -36,13 +36,8 @@ table 4024 "GP Configuration"
         {
             DataClassification = SystemMetadata;
             InitValue = false;
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#endif
             ObsoleteReason = 'Cleaning up tables before running the migration is no longer wanted.';
         }
 #endif

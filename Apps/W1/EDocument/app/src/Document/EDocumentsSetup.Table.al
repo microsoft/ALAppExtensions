@@ -13,6 +13,7 @@ table 6107 "E-Documents Setup"
     InherentEntitlements = RIX;
     InherentPermissions = RX;
 #pragma warning restore AS0034
+    ReplicateData = false;
 
     fields
     {

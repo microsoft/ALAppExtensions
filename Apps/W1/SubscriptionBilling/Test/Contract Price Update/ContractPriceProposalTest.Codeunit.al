@@ -74,7 +74,8 @@ codeunit 139690 "Contract Price Proposal Test"
             ContractPriceUpdateLine.TestField("Additional Amount", ContractPriceUpdateLine."New Amount" - ContractPriceUpdateLine."Old Amount");
 
             // The rounding was applied in the test for stability, as the calculations were performed at different locations
-            NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity / 100, Currency."Amount Rounding Precision");
+            NewServiceAmount := Round(ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity, Currency."Amount Rounding Precision");
+            NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * NewServiceAmount / 100, Currency."Amount Rounding Precision");
             CalcDiscountAmount := Round(ContractPriceUpdateLine."Discount Amount", Currency."Amount Rounding Precision");
             Assert.AreEqual(CalcDiscountAmount, NewDiscountAmount, 'Discount Amount was not calculated properly');
 
@@ -145,7 +146,8 @@ codeunit 139690 "Contract Price Proposal Test"
             ContractPriceUpdateLine.TestField("Additional Amount", ContractPriceUpdateLine."New Amount" - ContractPriceUpdateLine."Old Amount");
 
             // The rounding was applied in the test for stability, as the calculations were performed at different locations
-            NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity / 100, Currency."Amount Rounding Precision");
+            NewServiceAmount := Round(ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity, Currency."Amount Rounding Precision");
+            NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * NewServiceAmount / 100, Currency."Amount Rounding Precision");
             CalcDiscountAmount := Round(ContractPriceUpdateLine."Discount Amount", Currency."Amount Rounding Precision");
             Assert.AreEqual(CalcDiscountAmount, NewDiscountAmount, 'Discount Amount was not calculated properly');
 
@@ -442,6 +444,7 @@ codeunit 139690 "Contract Price Proposal Test"
         ContractTestLibrary.CreateMultipleServiceObjectsWithItemSetup(Customer, ServiceObject, Item, 2);
         ContractTestLibrary.CreateServiceCommitmentTemplateSetup(ServiceCommitmentTemplate, '<12M>', Enum::"Invoicing Via"::Contract);
         ContractTestLibrary.CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine, Item, '<12M>');
+        ContractTestLibrary.UpdateServiceCommitmentPackageLineWithInvoicingItem(ServiceCommPackageLine, '');
         ContractTestLibrary.InsertServiceCommitmentFromServiceCommPackageSetup(ServiceCommitmentPackage, ServiceObject);
 
         // Force Next Price Update Date to empty

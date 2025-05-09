@@ -11,7 +11,7 @@ codeunit 5249 "Create Sust. Goal"
         ContosoSustainability: Codeunit "Contoso Sustainability";
         CreateUnitOfMeasure: Codeunit "Create Unit of Measure";
     begin
-        ContosoSustainability.InsertGoal(ContosoScorecard.Main(), Quarter(), QuarterLbl, ContosoUtility.AdjustDate(19030101D), ContosoUtility.AdjustDate(19030331D), ContosoUtility.AdjustDate(19030401D), ContosoUtility.AdjustDate(19030630D), CreateUnitOfMeasure.KG(), '', '', 550, 22, 2, true);
+        ContosoSustainability.InsertGoal(ContosoScorecard.Main(), Quarter(), QuarterLbl, ContosoUtility.AdjustDate(19030101D), ContosoUtility.AdjustDate(19030331D), ContosoUtility.AdjustDate(19030401D), ContosoUtility.AdjustDate(19030630D), CreateUnitOfMeasure.KG(), '', '', 10000, 500, 55, 12500, 10000, true);
         ContosoSustainability.InsertGoal(ContosoScorecard.Main(), Year(), YearLbl, ContosoUtility.AdjustDate(19030101D), ContosoUtility.AdjustDate(19031231D), ContosoUtility.AdjustDate(19040101D), ContosoUtility.AdjustDate(19041231D), CreateUnitOfMeasure.KG(), '', '', 2100, 84, 7.5, false);
     end;
 

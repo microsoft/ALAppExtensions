@@ -67,7 +67,7 @@ page 8078 "Vendor Contract Line Subpage"
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
@@ -120,6 +120,7 @@ page 8078 "Vendor Contract Line Subpage"
                 }
                 field("Service Object Quantity"; ServiceCommitment.Quantity)
                 {
+                    Caption = 'Quantity';
                     ToolTip = 'Specifies the number of units of Subscription.';
 
                     trigger OnValidate()
@@ -312,6 +313,16 @@ page 8078 "Vendor Contract Line Subpage"
                         UpdateServiceCommitmentOnPage(ServiceCommitment.FieldNo("Term Until"));
                     end;
                 }
+                field("Notice Period"; ServiceCommitment."Notice Period")
+                {
+                    Caption = 'Notice Period';
+                    ToolTip = 'Specifies a date formula for the lead time that a notice must have before the subscription line ends. The rhythm of the update of "Notice possible to" and "Term until" is determined using the extension term. For example, with an extension period of 1M, the notice period is repeatedly postponed by one month.';
+                    Visible = false;
+                    trigger OnValidate()
+                    begin
+                        UpdateServiceCommitmentOnPage(ServiceCommitment.FieldNo("Notice Period"));
+                    end;
+                }
                 field("Initial Term"; ServiceCommitment."Initial Term")
                 {
                     Caption = 'Initial Term';
@@ -352,6 +363,14 @@ page 8078 "Vendor Contract Line Subpage"
                 {
                     Editable = false;
                     ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
+                }
+                field("Create Contract Deferrals"; ServiceCommitment."Create Contract Deferrals")
+                {
+                    ToolTip = 'Specifies whether this Subscription Line should generate contract deferrals. If it is set to No, no deferrals are generated and the invoices are posted directly to profit or loss.';
+                    trigger OnValidate()
+                    begin
+                        UpdateServiceCommitmentOnPage(ServiceCommitment.FieldNo("Create Contract Deferrals"));
+                    end;
                 }
                 field("Price Binding Period"; ServiceCommitment."Price Binding Period")
                 {

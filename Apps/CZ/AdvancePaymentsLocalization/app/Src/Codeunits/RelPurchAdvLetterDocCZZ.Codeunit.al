@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Bank;
+using Microsoft.Finance.VAT.Setup;
 
 codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
 {
@@ -22,6 +23,7 @@ codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
         ApprovalProcessReleaseErr: Label 'This document can only be released when the approval process is complete.';
         ApprovalProcessReopenErr: Label 'The approval process must be cancelled or completed to reopen this document.';
         NegativeAmountErr: Label 'must not be negative';
+        VATProdPostingGroupWithCoeffErr: Label 'cannot be used because it is allowed to be used for non-deductible VAT. Enable non-deductible VAT for advances in the VAT setup or choose another VAT Prod. Posting Group.';
 
     local procedure Code()
     var
@@ -45,6 +47,7 @@ codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
         PurchAdvLetterHeaderCZZ.TestField("Amount Including VAT");
         if PurchAdvLetterHeaderCZZ."Amount Including VAT" < 0 then
             PurchAdvLetterHeaderCZZ.FieldError("Amount Including VAT", NegativeAmountErr);
+        CheckPurchAdvLetterLines(PurchAdvLetterHeaderCZZ);
         if PurchAdvLetterHeaderCZZ."Variable Symbol" = '' then begin
             VariableSymbol := BankOperationsFunctionsCZL.CreateVariableSymbol(PurchAdvLetterHeaderCZZ."Vendor Adv. Letter No.");
             OnUpdateVariableSymbol(PurchAdvLetterHeaderCZZ, VariableSymbol);
@@ -98,6 +101,23 @@ codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
         Reopen(PurchAdvLetterHeaderCZZ);
     end;
 
+    local procedure CheckPurchAdvLetterLines(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    var
+        PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
+        VATPostingSetup: Record "VAT Posting Setup";
+        VATSetup: Record "VAT Setup";
+    begin
+        VATSetup.Get();
+        if VATSetup."Use For Advances CZZ" then
+            exit;
+
+        PurchAdvLetterLineCZZ.SetRange("Document No.", PurchAdvLetterHeaderCZZ."No.");
+        if PurchAdvLetterLineCZZ.FindSet() then
+            repeat
+                if VATPostingSetup.IsNonDeductibleVATAllowed(PurchAdvLetterLineCZZ."VAT Bus. Posting Group", PurchAdvLetterLineCZZ."VAT Prod. Posting Group") then
+                    PurchAdvLetterLineCZZ.FieldError("VAT Prod. Posting Group", VATProdPostingGroupWithCoeffErr);
+            until PurchAdvLetterLineCZZ.Next() = 0;
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeReleaseDoc(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)

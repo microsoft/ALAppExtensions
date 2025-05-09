@@ -1,4 +1,17 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Pricing;
+using System.Utilities;
+using Microsoft.DemoTool;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.CRM.Contact;
+
 codeunit 4795 "Contoso Customer/Vendor"
 {
     InherentEntitlements = X;

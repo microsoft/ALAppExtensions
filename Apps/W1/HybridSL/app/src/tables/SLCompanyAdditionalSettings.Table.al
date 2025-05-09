@@ -371,6 +371,39 @@ table 47061 "SL Company Additional Settings"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(33; "Include Project Module"; Boolean)
+        {
+            InitValue = false;
+
+            trigger OnValidate()
+            begin
+                if not Rec."Include Project Module" then begin
+                    Rec.Validate("Project Master Only", false);
+                    Rec.Validate("Task Master Only", false);
+                    Rec.Validate("Resource Master Only", false);
+                end;
+            end;
+        }
+        field(34; "Project Master Only"; Boolean)
+        {
+            InitValue = false;
+        }
+        field(35; "Task Master Only"; Boolean)
+        {
+            InitValue = false;
+        }
+        field(36; "Resource Master Only"; Boolean)
+        {
+            InitValue = false;
+        }
+        field(37; "Include Plan Status Projects"; Boolean)
+        {
+            InitValue = false;
+        }
+        field(38; "Include Hold Status Resources"; Boolean)
+        {
+            InitValue = false;
+        }
     }
 
     keys
@@ -419,6 +452,12 @@ table 47061 "SL Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Inventory Module");
+    end;
+
+    internal procedure GetProjectModuleEnabled(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Include Project Module");
     end;
 
     // Inactives
@@ -488,6 +527,36 @@ table 47061 "SL Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Only Inventory Master");
+    end;
+
+    internal procedure GetProjectMasterOnly(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Project Master Only");
+    end;
+
+    internal procedure GetPlanStatusProjects(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Include Plan Status Projects");
+    end;
+
+    internal procedure GetTaskMasterOnly(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Task Master Only");
+    end;
+
+    internal procedure GetResourceMasterOnly(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Resource Master Only");
+    end;
+
+    internal procedure GetIncludeHoldStatusResources(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Include Hold Status Resources");
     end;
 
     // Posting
@@ -601,7 +670,8 @@ table 47061 "SL Company Additional Settings"
         exit(not Rec."Migrate GL Module"
             and not Rec."Migrate Inventory Module"
             and not Rec."Migrate Payables Module"
-            and not Rec."Migrate Receivables Module");
+            and not Rec."Migrate Receivables Module"
+            and not Rec."Include Project Module");
     end;
 
     var

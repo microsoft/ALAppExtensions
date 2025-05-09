@@ -7,6 +7,8 @@ using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Manufacturing.Setup;
 using Microsoft.Inventory.Tracking;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.Common;
 
 codeunit 8105 "Contoso Subscription Billing"
 {

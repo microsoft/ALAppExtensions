@@ -11,10 +11,17 @@ table 5281 "Source Code SAF-T"
 
     fields
     {
-        field(1; Code; Code[9]) { }
-        field(2; Description; Text[100]) { }
+        field(1; Code; Code[9])
+        {
+            Caption = 'Code';
+        }
+        field(2; Description; Text[100])
+        {
+            Caption = 'Description';
+        }
         field(3; "Includes No Source Code"; Boolean)
         {
+            Caption = 'Includes No Source Code';
             trigger OnValidate()
             var
                 SourceCodeSAFT: Record "Source Code SAF-T";

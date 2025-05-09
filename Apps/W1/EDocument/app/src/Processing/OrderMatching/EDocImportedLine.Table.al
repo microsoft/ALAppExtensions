@@ -6,6 +6,7 @@ table 6165 "E-Doc. Imported Line"
 {
     DataClassification = CustomerContent;
     Access = Internal;
+    ReplicateData = false;
 
     fields
     {

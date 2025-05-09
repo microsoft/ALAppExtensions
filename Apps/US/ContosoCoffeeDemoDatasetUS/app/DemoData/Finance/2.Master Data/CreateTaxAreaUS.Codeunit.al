@@ -1,4 +1,14 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.SalesTax;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Company;
+
 codeunit 10518 "Create Tax Area US"
 {
     InherentEntitlements = X;

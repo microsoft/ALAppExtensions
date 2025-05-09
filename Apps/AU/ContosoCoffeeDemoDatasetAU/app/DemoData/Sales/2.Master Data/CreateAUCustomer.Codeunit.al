@@ -1,4 +1,16 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Sales;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Foundation.Address;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Finance;
+
 codeunit 17132 "Create AU Customer"
 {
     SingleInstance = true;

@@ -1,4 +1,17 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Service.Setup;
+using Microsoft.Service.Maintenance;
+using Microsoft.Service.Item;
+using Microsoft.Foundation.Calendar;
+using Microsoft.Service.Contract;
+using Microsoft.Service.Loaner;
+using Microsoft.Service.Document;
+
 codeunit 5125 "Contoso Service"
 {
     InherentEntitlements = X;

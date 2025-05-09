@@ -1,4 +1,13 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
+using Microsoft.Foundation.Address;
+using System.Globalization;
+
 table 4768 "Contoso Coffee Demo Data Setup"
 {
     Caption = 'Contoso Coffee Demo Data Setup';

@@ -1,4 +1,13 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Payment;
+
 codeunit 5569 "Contoso Payments"
 {
     InherentEntitlements = X;

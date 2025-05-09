@@ -31,6 +31,7 @@ query 36983 "Calendar Entries"
             {
                 Method = Sum;
             }
+            column(workCenterNo; "Work Center No.") { }
         }
     }
 

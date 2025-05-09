@@ -24,6 +24,16 @@ page 8061 "Item Serv. Commitment Packages"
                     begin
                         CurrPage.Update();
                     end;
+
+                    trigger OnLookup(var Text: Text): Boolean
+                    var
+                        SubscriptionPackage: Record "Subscription Package";
+                    begin
+                        OnBeforeCodeLookup(SubscriptionPackage, CurrentItemNo);
+                        if Page.RunModal(Page::"Service Commitment Packages", SubscriptionPackage) = Action::LookupOK then
+                            Rec.Validate(Code, SubscriptionPackage.Code);
+                        CurrPage.Update();
+                    end;
                 }
                 field(Description; Rec.Description)
                 {
@@ -82,7 +92,8 @@ page 8061 "Item Serv. Commitment Packages"
         ShowAllPackageLinesText: Text;
     begin
         Rec.FilterGroup(2);
-        CurrPage.PackageLines.Page.SetItemNo(CopyStr(Rec.GetFilter("Item No."), 1, MaxStrLen(Rec."Item No.")));
+        CurrentItemNo := CopyStr(Rec.GetFilter("Item No."), 1, MaxStrLen(Rec."Item No."));
+        CurrPage.PackageLines.Page.SetItemNo(CurrentItemNo);
         Rec.FilterGroup(0);
         if PersonalizationDataMgmt.GetDataPagePersonalization(8, CurrPage.ObjectId(false), 'SHOWALLPACKAGELINES', ShowAllPackageLinesText) then
             if Evaluate(ShowAllPackageLines, ShowAllPackageLinesText) then
@@ -90,6 +101,8 @@ page 8061 "Item Serv. Commitment Packages"
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
+    var
+        Item: Record Item;
     begin
         if Item.Get(Rec."Item No.") then
             if Item."Subscription Option" = Item."Subscription Option"::"Service Commitment Item" then
@@ -98,7 +111,7 @@ page 8061 "Item Serv. Commitment Packages"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     begin
-        Rec.Insert(false);
+        Rec.Insert(true);
         CurrPage.PackageLines.Page.SetPackageCode(Rec.Code);
         exit(false);
     end;
@@ -115,8 +128,13 @@ page 8061 "Item Serv. Commitment Packages"
         CurrPage.PackageLines.Page.SetPackageCode(Rec.Code);
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCodeLookup(var SubscriptionPackage: Record "Subscription Package"; CurrentItemNo: Code[20])
+    begin
+    end;
+
     var
-        Item: Record Item;
         PersonalizationDataMgmt: Codeunit "Personalization Data Mgmt.";
+        CurrentItemNo: Code[20];
         ShowAllPackageLines: Boolean;
 }

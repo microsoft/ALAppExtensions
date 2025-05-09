@@ -599,9 +599,9 @@ codeunit 30189 "Shpfy Variant API"
             if IsBulkOperationEnabled then begin
                 IBulkOperation := BulkOperationType::UpdateProductPrice;
                 if Price = '' then
-                    Price := '0';
+                    Price := Format(ShopifyVariant.Price, 0, 9);
                 if CompareAtPrice = '' then
-                    CompareAtPrice := '0';
+                    CompareAtPrice := Format(ShopifyVariant."Compare at Price", 0, 9);
 
                 GraphQueryList.Add(ShopifyVariant.Id, GraphQuery);
                 JRequest.Add('id', ShopifyVariant.Id);

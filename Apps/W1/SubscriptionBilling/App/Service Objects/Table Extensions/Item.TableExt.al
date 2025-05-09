@@ -23,59 +23,13 @@ tableextension 8052 Item extends Item
 
             trigger OnValidate()
             var
-                ItemServCommitmentPackage: Record "Item Subscription Package";
-#if not CLEAN25
-                SalesPrice: Record "Sales Price";
-#endif
-                PriceListLine: Record "Price List Line";
                 ItemReference: Record "Item Reference";
-#if not CLEAN25
-                PriceCalculationMgt: Codeunit "Price Calculation Mgt.";
-#endif
             begin
-                if "Subscription Option" in [Enum::"Item Service Commitment Type"::"Service Commitment Item", Enum::"Item Service Commitment Type"::"Invoicing Item"] then
-                    if Type <> Type::"Non-Inventory" then
-                        Error(ItemTypeErr, "Subscription Option", Format(Type::"Non-Inventory"), FieldCaption(Type));
+                ErrorIfItemIsNonInventory();
+                AskToRemoveAssignedItemServiceCommPackages();
+                ErrorIfPackageLineInvoicedViaContractWithoutInvoicingItemExist();
+                UpdateItemPriceList();
 
-                if not ("Subscription Option" in [Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item"]) then begin
-                    ItemServCommitmentPackage.SetRange("Item No.", "No.");
-                    if not ItemServCommitmentPackage.IsEmpty() then
-                        if ConfirmManagement.GetResponse(StrSubstNo(ItemServiceCommitmentPackageQst, "Item Service Commitment Type"::"Sales with Service Commitment", "Item Service Commitment Type"::"Service Commitment Item", "Subscription Option"), true) then
-                            ItemServCommitmentPackage.DeleteAll(false)
-                        else
-                            Error('');
-                end;
-                if IsServiceCommitmentItem() then begin
-                    Rec.Validate("Allow Invoice Disc.", false);
-#if not CLEAN25
-                    if PriceCalculationMgt.IsExtendedPriceCalculationEnabled() then begin
-#endif
-                        PriceListLine.SetRange("Price Type", PriceListLine."Price Type"::Sale);
-                        PriceListLine.SetRange("Asset Type", PriceListLine."Asset Type"::Item);
-                        PriceListLine.SetRange("Asset No.", Rec."No.");
-                        PriceListLine.ModifyAll("Allow Invoice Disc.", false, false);
-#if not CLEAN25
-                    end else begin
-                        SalesPrice.SetRange("Item No.", Rec."No.");
-                        SalesPrice.ModifyAll("Allow Invoice Disc.", false, false);
-                    end;
-#endif
-                end else begin
-                    Rec.Validate("Allow Invoice Disc.", true);
-#if not CLEAN25
-                    if PriceCalculationMgt.IsExtendedPriceCalculationEnabled() then begin
-#endif
-                        PriceListLine.SetRange("Price Type", PriceListLine."Price Type"::Sale);
-                        PriceListLine.SetRange("Asset Type", PriceListLine."Asset Type"::Item);
-                        PriceListLine.SetRange("Asset No.", Rec."No.");
-                        PriceListLine.ModifyAll("Allow Invoice Disc.", true, false);
-#if not CLEAN25
-                    end else begin
-                        SalesPrice.SetRange("Item No.", Rec."No.");
-                        SalesPrice.ModifyAll("Allow Invoice Disc.", true, false);
-                    end;
-#endif
-                end;
                 if xRec."Subscription Option" = Enum::"Item Service Commitment Type"::"Service Commitment Item" then begin
                     ItemReference.SetRange("Item No.", Rec."No.");
                     ItemReference.SetFilter("Supplier Ref. Entry No.", '<>%1', 0);
@@ -112,8 +66,7 @@ tableextension 8052 Item extends Item
     var
         ItemServCommitmentPackage: Record "Item Subscription Package";
     begin
-        if not ("Subscription Option" in [Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item"]) then
-            Error(ServiceCommitmentErr, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item", "Subscription Option");
+        ErrorIfServiceCommitmentOptionIsNotValidForServiceCommitmentPackage();
         ItemServCommitmentPackage.FilterGroup(2);
         ItemServCommitmentPackage.SetRange("Item No.", "No.");
         Page.Run(Page::"Item Serv. Commitment Packages", ItemServCommitmentPackage);
@@ -130,12 +83,89 @@ tableextension 8052 Item extends Item
             Error(DoNotAllowInvoiceDiscountForServiceCommitmentItemErr);
     end;
 
+    local procedure ErrorIfServiceCommitmentOptionIsNotValidForServiceCommitmentPackage()
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeErrorIfServiceCommitmentOptionIsNotValidForServiceCommitmentPackage(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not ("Subscription Option" in [Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item"]) then
+            Error(ServiceCommitmentErr, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item", "Subscription Option");
+    end;
+
+    local procedure ErrorIfItemIsNonInventory()
+    begin
+        if "Subscription Option" in [Enum::"Item Service Commitment Type"::"Service Commitment Item", Enum::"Item Service Commitment Type"::"Invoicing Item"] then
+            if Type <> Type::"Non-Inventory" then
+                Error(ItemTypeErr, "Subscription Option", Format(Type::"Non-Inventory"), FieldCaption(Type));
+    end;
+
+    local procedure AskToRemoveAssignedItemServiceCommPackages()
+    var
+        ItemServCommitmentPackage: Record "Item Subscription Package";
+    begin
+        if not ("Subscription Option" in [Enum::"Item Service Commitment Type"::"Sales with Service Commitment", Enum::"Item Service Commitment Type"::"Service Commitment Item"]) then begin
+            ItemServCommitmentPackage.SetRange("Item No.", "No.");
+            if not ItemServCommitmentPackage.IsEmpty() then
+                if ConfirmManagement.GetResponse(StrSubstNo(ItemServiceCommitmentPackageQst, "Item Service Commitment Type"::"Sales with Service Commitment", "Item Service Commitment Type"::"Service Commitment Item", "Subscription Option"), true) then
+                    ItemServCommitmentPackage.DeleteAll(false)
+                else
+                    Error('');
+        end;
+    end;
+
+    local procedure UpdateItemPriceList()
+    var
+#if not CLEAN25
+        SalesPrice: Record "Sales Price";
+#endif
+        PriceListLine: Record "Price List Line";
+#if not CLEAN25
+        PriceCalculationMgt: Codeunit "Price Calculation Mgt.";
+#endif
+    begin
+        if IsServiceCommitmentItem() then begin
+            Rec.Validate("Allow Invoice Disc.", false);
+#if not CLEAN25
+            if PriceCalculationMgt.IsExtendedPriceCalculationEnabled() then begin
+#endif
+                PriceListLine.SetRange("Price Type", PriceListLine."Price Type"::Sale);
+                PriceListLine.SetRange("Asset Type", PriceListLine."Asset Type"::Item);
+                PriceListLine.SetRange("Asset No.", Rec."No.");
+                PriceListLine.ModifyAll("Allow Invoice Disc.", false, false);
+#if not CLEAN25
+            end else begin
+                SalesPrice.SetRange("Item No.", Rec."No.");
+                SalesPrice.ModifyAll("Allow Invoice Disc.", false, false);
+            end;
+#endif
+        end else begin
+            Rec.Validate("Allow Invoice Disc.", true);
+#if not CLEAN25
+            if PriceCalculationMgt.IsExtendedPriceCalculationEnabled() then begin
+#endif
+                PriceListLine.SetRange("Price Type", PriceListLine."Price Type"::Sale);
+                PriceListLine.SetRange("Asset Type", PriceListLine."Asset Type"::Item);
+                PriceListLine.SetRange("Asset No.", Rec."No.");
+                PriceListLine.ModifyAll("Allow Invoice Disc.", true, false);
+#if not CLEAN25
+            end else begin
+                SalesPrice.SetRange("Item No.", Rec."No.");
+                SalesPrice.ModifyAll("Allow Invoice Disc.", true, false);
+            end;
+#endif
+        end;
+    end;
+
     internal procedure GetDoNotAllowInvoiceDiscountForServiceCommitmentItemErrorText(): Text
     begin
         exit(DoNotAllowInvoiceDiscountForServiceCommitmentItemErr);
     end;
 
-    internal procedure HasSNSpecificItemTracking(): Boolean
+    procedure HasSNSpecificItemTracking(): Boolean
     var
         ItemTrackingCode: Record "Item Tracking Code";
     begin
@@ -144,5 +174,31 @@ tableextension 8052 Item extends Item
             exit(ItemTrackingCode."SN Specific Tracking");
         end;
         exit(false);
+    end;
+
+    local procedure ErrorIfPackageLineInvoicedViaContractWithoutInvoicingItemExist()
+    var
+        ItemSubscriptionPackage: Record "Item Subscription Package";
+    begin
+        // Only when changed from "Service Commitment Item" to "Sales with Service Commitment"
+        if xRec."Subscription Option" <> Enum::"Item Service Commitment Type"::"Service Commitment Item" then
+            exit;
+
+        if Rec."Subscription Option" <> Enum::"Item Service Commitment Type"::"Sales with Service Commitment" then
+            exit;
+
+        if Rec.IsTemporary then
+            exit;
+
+        ItemSubscriptionPackage.SetRange("Item No.", "No.");
+        if ItemSubscriptionPackage.FindSet(false) then
+            repeat
+                ItemSubscriptionPackage.ErrorIfPackageLineInvoicedViaContractWithoutInvoicingItemExist();
+            until ItemSubscriptionPackage.Next() = 0;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeErrorIfServiceCommitmentOptionIsNotValidForServiceCommitmentPackage(Rec: Record Item; var IsHandled: Boolean)
+    begin
     end;
 }

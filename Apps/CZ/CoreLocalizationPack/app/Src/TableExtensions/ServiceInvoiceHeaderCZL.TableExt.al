@@ -195,6 +195,8 @@ tableextension 11735 "Service Invoice Header CZL" extends "Service Invoice Heade
             if "SWIFT Code CZL" <> '' then
                 SWIFT := "SWIFT Code CZL";
         end;
+        if IBAN <> '' then
+            IBAN := DelChr(IBAN, '=', ' ');
 
         CalcFields("Amount Including VAT");
 

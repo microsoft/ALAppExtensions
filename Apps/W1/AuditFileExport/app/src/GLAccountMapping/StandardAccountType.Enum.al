@@ -8,5 +8,5 @@ enum 5260 "Standard Account Type"
 {
     Extensible = true;
 
-    value(0; None) { }
+    value(0; None) { Caption = 'None'; }
 }

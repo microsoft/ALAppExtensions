@@ -30,34 +30,6 @@ codeunit 4620 "SMTP Authentication"
         Server := CopyStr(Url, 1, MaxStrLen(Server));
     end;
 
-#if not CLEAN24
-    /// <summary>
-    /// Set the username and password for authentication
-    /// </summary>
-    /// <param name="User">Username</param>
-    /// <param name="Pass">Password</param>
-    [NonDebuggable]
-    [Obsolete('Replaced by SetBasicAuthInfo with SecretText data type for Pass parameter.', '24.0')]
-    procedure SetBasicAuthInfo(User: Text; Pass: Text)
-    begin
-        Username := CopyStr(User, 1, MaxStrLen(Username));
-        Password := Pass;
-    end;
-
-    /// <summary>
-    /// Set the OAuth information for authentication
-    /// </summary>
-    /// <param name="User">User</param>
-    /// <param name="Token">Token</param>
-    [NonDebuggable]
-    [Obsolete('Replaced by SetOAuth2AuthInfo with SecretText data type for Token parameter.', '24.0')]
-    procedure SetOAuth2AuthInfo(User: Text[250]; Token: Text)
-    begin
-        // Telemetry
-        Username := CopyStr(User, 1, MaxStrLen(Username));
-        AccessToken := Token;
-    end;
-#endif
 
     /// <summary>
     /// Set the username and password for authentication

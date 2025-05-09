@@ -71,6 +71,7 @@ codeunit 4850 "AA Codes Posting Helper"
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
         NoOfAutoAccounts: Decimal;
         TotalAmount: Decimal;
+        TotalAltAmount: Decimal;
         SourceCurrBaseAmount: Decimal;
         AccLine: Integer;
     begin
@@ -115,9 +116,11 @@ codeunit 4850 "AA Codes Posting Helper"
                 CopyDimensionFromAutoAccLine(GenJnlLine2, AutomaticAccountLine);
                 AccLine := AccLine + 1;
                 TotalAmount := TotalAmount + GenJnlLine2.Amount;
+                TotalAltAmount := TotalAltAmount + GenJnlLine2."Source Currency Amount";
                 if (AccLine = NoOfAutoAccounts) and (TotalAmount <> 0) then
                     GenJnlLine2.Validate(Amount, GenJnlLine2.Amount - TotalAmount);
-
+                if (AccLine = NoOfAutoAccounts) and (TotalAltAmount <> 0) then
+                    GenJnlLine2.Validate("Source Currency Amount", GenJnlLine2."Source Currency Amount" - TotalAltAmount);
                 GenJnlCheckLine.RunCheck(GenJnlLine2);
 
                 sender.InitGLEntry(GenJnlLine2, GLEntry,

@@ -25,6 +25,8 @@ codeunit 18797 "TDS Adjustment Jnl Automation"
         ReverseMsg: Label 'The entries were successfully reversed.';
         AmountErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = TDS Amount and TDS field Caption';
         NotPostedErr: Label 'The journal lines were not posted.', Locked = true;
+        AccountNoLbl: Label 'VendorNo', Locked = true;
+        DocumentNoLbl: Label 'DocumentNo', Locked = true;
 
     // [SCENARIO] [354001] Check If system is allowing to reverse the TDS entry and G/L Entry if entries posted using journals.
     [Test]
@@ -279,6 +281,45 @@ codeunit 18797 "TDS Adjustment Jnl Automation"
         // [THEN] Verify GL Entry, create and post TDS Adjsutment journal with TDS and Surcharge % is Zero
         VerifyGLEntryCount(DocumentNo, 3);
         CreateAndPostTDSAdjustment(DocumentNo, true, true, false, false, true);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,PaySelectedTDS')]
+    procedure PaySelectedTDSEntriesUsingBankPaymentVoucher()
+    var
+        ConcessionalCode: Record "Concessional Code";
+        TDSPostingSetup: Record "TDS Posting Setup";
+        Vendor: Record Vendor;
+        GenJournalLine: array[10] of Record "Gen. Journal Line";
+        NoOfEntries: Integer;
+        I: Integer;
+        DocumentNo: Code[20];
+        VoucherType: Enum "Gen. Journal Template Type";
+    begin
+        // [SCENARIO] [574373] [Check if the system is allowing to pay selected TDS amount to government authorities through Cash Payment Voucher]
+
+        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode with Threshold and Surcharge Overlook
+        LibraryTDS.CreateTDSSetup(Vendor, TDSPostingSetup, ConcessionalCode);
+        LibraryTDS.UpdateVendorWithPANWithoutConcessional(Vendor, true, true);
+        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", '', WorkDate());
+
+        // [WHEN] Create and Post TDS Invoice 
+        NoOfEntries := 5;
+        CreateMultipleGeneralJournalforTDSInvoice(GenJournalLine, Vendor, WorkDate(), NoOfEntries);
+        for I := 1 to NoOfEntries do begin
+            if I mod 3 = 0 then
+                DocumentNo := GenJournalLine[I]."Document No.";
+            LibraryERM.PostGeneralJnlLine(GenJournalLine[I]);
+        end;
+
+        Storage.Set(AccountNoLbl, TDSPostingSetup."TDS Account");
+        Storage.Set(DocumentNoLbl, DocumentNo);
+
+        // [WHEN] Create and Post TDS Payment
+        CreateAndPostTDSPayment(TDSPostingSetup."TDS Account", VoucherType::"Bank Payment Voucher");
+
+        // [THEN] Created Bank Payment Voucher For Pay TDS for selected entries
+        VerifyTDSEntryCount(Vendor."No.", 1);
     end;
 
     local procedure CreateAndPostTDSAdjustment(DocuemntNo: Code[20]; TDSZero: Boolean; SurchargeZero: Boolean; eCessZero: Boolean; SheCessZero: Boolean; BaseApplied: Boolean)
@@ -607,6 +648,48 @@ codeunit 18797 "TDS Adjustment Jnl Automation"
         PageTaxtype.TaxRates.Invoke();
     end;
 
+    local procedure CreateMultipleGeneralJournalforTDSInvoice(
+    var GenJournalLine: array[10] of Record "Gen. Journal Line";
+    var Vendor: Record Vendor;
+    PostingDate: Date;
+    NoOfEntries: Integer)
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        Amount: Decimal;
+        I: Integer;
+        TDSSectionCode: Code[10];
+    begin
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        Amount := LibraryRandom.RandDecInRange(1000, 10000, 0);
+        for I := 1 to NoOfEntries do begin
+            LibraryJournals.CreateGenJournalLine(GenJournalLine[I],
+                GenJournalBatch."Journal Template Name",
+                GenJournalBatch.Name,
+                GenJournalLine[I]."Document Type"::Invoice,
+                GenJournalLine[I]."Account Type"::Vendor,
+                Vendor."No.",
+                GenJournalLine[I]."Bal. Account Type"::"G/L Account",
+                LibraryERM.CreateGLAccountNoWithDirectPosting(),
+                -Amount);
+            GenJournalLine[I].Validate("Posting Date", PostingDate);
+            TDSSectionCode := CopyStr(Storage.Get(SectionCodeLbl), 1, 10);
+            GenJournalLine[I].Validate("TDS Section Code", TDSSectionCode);
+            GenJournalLine[I].Validate(Amount, -Amount);
+            GenJournalLine[I].Modify(true);
+        end;
+    end;
+
+    local procedure VerifyTDSEntryCount(VendorNo: Code[20]; ExpectedCount: Integer)
+    var
+        DummyTDSEntry: Record "TDS Entry";
+    begin
+        DummyTDSEntry.SetRange("Vendor No.", VendorNo);
+        DummyTDSEntry.SetRange("TDS Paid", true);
+        Assert.RecordCount(DummyTDSEntry, ExpectedCount);
+    end;
+
     [MessageHandler]
     procedure MsgHandler(MsgText: Text)
     begin
@@ -678,5 +761,18 @@ codeunit 18797 "TDS Adjustment Jnl Automation"
         TaxRate.AttributeValue14.SetValue(SurchargeThresholdAmount);
         TaxRate.AttributeValue15.SetValue(0.00);
         TaxRate.OK().Invoke();
+    end;
+
+    [PageHandler]
+    procedure PaySelectedTDS(var PayTDSPage: TestPage "Pay TDS")
+    var
+        DocumentNo: Text;
+        AccountNo: Code[20];
+    begin
+        DocumentNo := Storage.Get(DocumentNoLbl);
+        AccountNo := Storage.Get(AccountNoLbl);
+        PayTDSPage.Filter.SetFilter("Document No.", DocumentNo);
+        PayTDSPage.Filter.SetFilter("Account No.", AccountNo);
+        PayTDSPage."&Pay".Invoke();
     end;
 }

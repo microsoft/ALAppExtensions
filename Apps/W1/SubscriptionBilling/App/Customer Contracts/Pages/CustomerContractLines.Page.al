@@ -32,7 +32,7 @@ page 8075 "Customer Contract Lines"
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
 
                     trigger OnAssistEdit()
                     begin
@@ -75,7 +75,7 @@ page 8075 "Customer Contract Lines"
                 }
                 field("Service Object Quantity"; Rec."Service Object Quantity")
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
 
                     trigger OnDrillDown()
                     begin
@@ -204,6 +204,12 @@ page 8075 "Customer Contract Lines"
     local procedure SetNextBillingDateStyle()
     begin
         if (ServiceCommitment."Next Billing Date" > ServiceCommitment."Subscription Line End Date") and (ServiceCommitment."Subscription Line End Date" <> 0D) then
-            NextBillingDateStyleExpr := 'AttentionAccent'
+            NextBillingDateStyleExpr := 'AttentionAccent';
+        OnAfterSetNextBillingDateStyle(Rec, ServiceCommitment, NextBillingDateStyleExpr);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSetNextBillingDateStyle(CustSubContractLine: Record "Cust. Sub. Contract Line"; SubscriptionLine: Record "Subscription Line"; var NextBillingDateStyleExpr: Text)
+    begin
     end;
 }

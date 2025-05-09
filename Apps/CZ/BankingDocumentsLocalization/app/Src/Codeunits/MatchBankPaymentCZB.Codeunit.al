@@ -109,6 +109,8 @@ codeunit 31362 "Match Bank Payment CZB"
                             GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Employee);
                     end;
                     GenJournalLine.Validate("Account No.", SearchRuleLineCZB."Account No.");
+                    GenJournalLine.InitDocumentTypeCZB();
+                    GenJournalLine.Validate("Document Type");
                     GenJournalLine."Search Rule Line No. CZB" := SearchRuleLineCZB."Line No.";
                     GenJournalLine.Description := OriginalGenJournalLine.Description;
                     GenJournalLine.Modify();
@@ -201,15 +203,6 @@ codeunit 31362 "Match Bank Payment CZB"
                         GenJournalLine.Validate("Account No.", TempMatchBankPaymentBufferCZB."Account No.");
                         if not SearchRuleLineCZB."Match Related Party Only" then begin
                             GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
-                            if GenJournalLine."Account Type" in [GenJournalLine."Account Type"::Customer, GenJournalLine."Account Type"::Vendor] then begin
-                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::Invoice then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
-                                if GenJournalLine."Applies-to Doc. Type" = GenJournalLine."Applies-to Doc. Type"::"Credit Memo" then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
-                            end;
-                            if GenJournalLine."Account Type" = GenJournalLine."Account Type"::Employee then
-                                if GenJournalLine.Amount > 0 then
-                                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
                             GenJournalLine.SetSuppressCommit(true);
                             GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
                         end;
@@ -223,6 +216,8 @@ codeunit 31362 "Match Bank Payment CZB"
                             GenJournalLine.Validate(Amount, OriginalGenJournalLine.Amount);
                         if GenJournalLine.Description <> OriginalGenJournalLine.Description then
                             GenJournalLine.Description := OriginalGenJournalLine.Description;
+                        GenJournalLine.InitDocumentTypeCZB();
+                        GenJournalLine.Validate("Document Type");
 
                         OnAfterValidateGenJournalLine(TempMatchBankPaymentBufferCZB, GenJournalLine, SearchRuleLineCZB);
                         GenJournalLine."Search Rule Line No. CZB" := SearchRuleLineCZB."Line No.";
