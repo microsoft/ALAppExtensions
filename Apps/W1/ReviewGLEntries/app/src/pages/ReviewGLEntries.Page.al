@@ -114,7 +114,7 @@ page 22207 "Review G/L Entries"
                     Editable = false;
                     ToolTip = 'Specifies the general ledger entry no.';
                 }
-                field(RemainingAmount; RemainingAmount)
+                field(RemainingAmount; RemainingAmount) //TODO: Adding logic when you hit review that he will check on remaining amount.
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
