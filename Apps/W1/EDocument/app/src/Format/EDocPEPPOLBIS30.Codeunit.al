@@ -62,7 +62,7 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
             EDocument."Document Type"::"Sales Credit Memo", EDocument."Document Type"::"Service Credit Memo":
                 GenerateCrMemoXMLFile(SourceDocumentHeader, DocOutStream, EDocumentService."Embed PDF in export");
             EDocument."Document Type"::"Sales Shipment":
-                GenerateShipmentXMLFile(SourceDocumentHeader, DocOutStream);
+                GenerateShipmentXMLFile(SourceDocumentHeader, DocOutStream, EDocumentService."Embed PDF in export");
             else
                 EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(DocumentTypeNotSupportedErr, EDocument.FieldCaption("Document Type"), EDocument."Document Type"));
         end;
@@ -112,13 +112,14 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         SalesCrMemoPEPPOLBIS30.Export();
     end;
 
-    local procedure GenerateShipmentXMLFile(ShipmentRecRef: RecordRef; var OutStr: OutStream)
+    local procedure GenerateShipmentXMLFile(ShipmentRecRef: RecordRef; var OutStr: OutStream; GeneratePDF: Boolean)
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
         SalesShipmentExport: Codeunit "E-Doc. Shipment Export To XML";
         TempBlob: Codeunit "Temp Blob";
     begin
         ShipmentRecRef.SetTable(SalesShipmentHeader);
+        SalesShipmentExport.SetGeneratePDF(GeneratePDF);
         SalesShipmentExport.Run(SalesShipmentHeader);
         SalesShipmentExport.GetShipmentXml(TempBlob);
         CopyStream(OutStr, TempBlob.CreateInStream());
