@@ -499,6 +499,8 @@ codeunit 8059 "Sub. Contracts General Mgt."
         CustomerContractExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Contract for this customer.', Comment = '%1 = Table Caption, %2 = Customer No.';
         ServiceObjectExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Subscription for this customer.', Comment = '%1 = Table Caption, %2 = Customer No.';
     begin
+        if Rec.IsTemporary() then
+            exit;
         CustomerContract.SetRange("Sell-to Customer No.", Rec."No.");
         if not CustomerContract.IsEmpty() then
             Error(CustomerContractExistErr, Rec.TableCaption, Rec."No.");
@@ -514,6 +516,8 @@ codeunit 8059 "Sub. Contracts General Mgt."
         VendorContract: Record "Vendor Subscription Contract";
         VendorContractExistErr: Label 'You cannot delete %1 %2 because there is at least one outstanding Contract for this vendor.', Comment = '%1 = Table Caption, %2 = Vendor No.';
     begin
+        if Rec.IsTemporary() then
+            exit;
         VendorContract.SetRange("Buy-from Vendor No.", Rec."No.");
         if not VendorContract.IsEmpty() then
             Error(VendorContractExistErr, Rec.TableCaption, Rec."No.");
