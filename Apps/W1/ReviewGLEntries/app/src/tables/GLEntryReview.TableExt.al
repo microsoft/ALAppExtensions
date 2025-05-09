@@ -31,7 +31,6 @@ tableextension 22211 "G/L Entry Review" extends "G/L Entry"
             FieldClass = FlowField;
             CalcFormula = lookup("G/L Entry Review Entry"."Reviewed Identifier" where("G/L Entry No." = field("Entry No.")));
         }
-
     }
 
 

@@ -16,6 +16,10 @@ table 22216 "G/L Entry Review Entry"
         {
             DataClassification = EndUserIdentifiableInformation;
         }
+        field(4; "Remaining Amount"; Decimal) //TODO: Conversion from the amount in older entries
+        {
+            DataClassification = EndUserIdentifiableInformation;
+        }
     }
 
     keys

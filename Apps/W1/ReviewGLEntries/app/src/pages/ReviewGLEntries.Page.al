@@ -114,6 +114,12 @@ page 22207 "Review G/L Entries"
                     Editable = false;
                     ToolTip = 'Specifies the general ledger entry no.';
                 }
+                field(RemainingAmount; RemainingAmount)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the remaining amount that will be applied.';
+                }
             }
             group(CalculatedFields)
             {
@@ -282,6 +288,7 @@ page 22207 "Review G/L Entries"
         Debit: Decimal;
         Credit: Decimal;
         Balance: Decimal;
+        RemainingAmount: Decimal;
         ReviewPolicy: Enum "Review Policy Type";
         InitialRecordsLoaded: Text;
         CaptionLbl: Label '%1 %2', Comment = '%1 is the G/L Account No. and %2 is the G/L Account Name';
