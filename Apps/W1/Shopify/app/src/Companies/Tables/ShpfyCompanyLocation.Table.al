@@ -119,12 +119,18 @@ table 30151 "Shpfy Company Location"
             CalcFormula = lookup("Shpfy Payment Terms".Description where(Id = field("Shpfy Payment Terms Id")));
             ToolTip = 'Specifies the description of the Shopify Payment Term.';
         }
-        field(18; "Customer No."; Code[20])
+        field(18; "Sell-to Customer No."; Code[20])
         {
-            Caption = 'Customer No.';
+            Caption = 'Sell-to Customer No.';
             DataClassification = CustomerContent;
             TableRelation = Customer;
             ToolTip = 'Specifies the customer number, which is used to set the Shopify Orders Sell-to value when importing orders from Shopify.';
+
+            trigger OnValidate()
+            begin
+                if "Sell-to Customer No." = '' then
+                    Clear("Bill-to Customer No.");
+            end;
         }
         field(19; "Bill-to Customer No."; Code[20])
         {
@@ -132,6 +138,11 @@ table 30151 "Shpfy Company Location"
             DataClassification = CustomerContent;
             TableRelation = Customer;
             ToolTip = 'Specifies the customer number, which is used to set the Shopify Orders Bill-to value when importing orders from Shopify.';
+
+            trigger OnValidate()
+            begin
+                TestField("Sell-to Customer No.");
+            end;
         }
     }
     keys

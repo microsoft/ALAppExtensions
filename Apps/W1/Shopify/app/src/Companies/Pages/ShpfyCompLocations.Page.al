@@ -44,7 +44,7 @@ page 30165 "Shpfy Comp. Locations"
                     Visible = false;
                 }
                 field("Shpfy Payment Term"; Rec."Shpfy Payment Term") { Editable = false; }
-                field("Customer No."; Rec."Customer No.") { }
+                field("Sell-to Customer No."; Rec."Sell-to Customer No.") { }
                 field("Bill-to Customer No."; Rec."Bill-to Customer No.") { }
             }
         }
