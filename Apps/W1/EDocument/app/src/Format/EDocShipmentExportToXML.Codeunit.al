@@ -193,7 +193,6 @@ codeunit 6122 "E-Doc. Shipment Export To XML"
              SalesShipmentHeader,
              SalesShipmentHeader."Bill-to Customer No.");
 
-
         exit(TempBlob.HasValue());
     end;
 
@@ -214,5 +213,4 @@ codeunit 6122 "E-Doc. Shipment Export To XML"
     begin
         this.GeneratePDF := GeneratePDFValue;
     end;
-
 }
