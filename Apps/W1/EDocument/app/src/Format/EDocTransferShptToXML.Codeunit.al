@@ -8,6 +8,9 @@ using System.Utilities;
 using Microsoft.Inventory.Transfer;
 using System.Xml;
 using Microsoft.Foundation.Company;
+using System.Text;
+using Microsoft.eServices.EDocument;
+using Microsoft.Foundation.Reporting;
 
 codeunit 6123 "E-Doc. Transfer Shpt. To XML"
 {
@@ -17,17 +20,18 @@ codeunit 6123 "E-Doc. Transfer Shpt. To XML"
         XMLDOMManagement: Codeunit "XML DOM Management";
         TransferShipmentXML: XmlDocument;
         RootNode: XmlNode;
+        GeneratePDF: Boolean;
 
     trigger OnRun()
     var
         TransferShipmentLine: Record "Transfer Shipment Line";
     begin
-        AddHeaderDataToXML(Rec);
+        this.AddHeaderDataToXML(Rec);
 
         TransferShipmentLine.SetRange("Document No.", Rec."No.");
         if TransferShipmentLine.FindSet() then
             repeat
-                AddLineInfoToXML(TransferShipmentLine);
+                this.AddLineInfoToXML(TransferShipmentLine);
             until TransferShipmentLine.Next() = 0;
     end;
 
@@ -41,10 +45,14 @@ codeunit 6123 "E-Doc. Transfer Shpt. To XML"
         this.XMLDOMManagement.AddElement(this.RootNode, 'ID', TransferShipmentHeader."No.", '', ChildNode);
         this.XMLDOMManagement.AddElement(this.RootNode, 'IssueDate', Format(TransferShipmentHeader."Posting Date", 0, 9), '', ChildNode);
         this.XMLDOMManagement.AddElement(this.RootNode, 'SupplierInformation', '', '', ChildNode);
-        AddCompanyInfoToXML(ChildNode);
+
+        if this.GeneratePDF then
+            this.AddPdf(ChildNode, TransferShipmentHeader);
+
+        this.AddCompanyInfoToXML(ChildNode);
 
         this.XMLDOMManagement.AddElement(this.RootNode, 'DeliveryInformation', '', '', ChildNode);
-        AddDeliveryInfoToXML(ChildNode, TransferShipmentHeader);
+        this.AddDeliveryInfoToXML(ChildNode, TransferShipmentHeader);
     end;
 
     local procedure AddCompanyInfoToXML(SupplierNode: XmlNode)
@@ -104,6 +112,69 @@ codeunit 6123 "E-Doc. Transfer Shpt. To XML"
             this.XMLDOMManagement.AddElement(Node, NodeName, NodeValue, Namespace, ChildNode);
     end;
 
+    local procedure AddPdf(AttachmentNode: XmlNode; TransferShipmentHeader: Record "Transfer Shipment Header")
+    var
+        ChildNode: XmlNode;
+        AdditionalDocumentReferenceID: Text;
+        Filename: Text;
+        MimeCode: Text;
+        EmbeddedDocumentBinaryObject: Text;
+    begin
+        if not this.GeneratePDFAttachmentAsAdditionalDocRef(
+            TransferShipmentHeader,
+            AdditionalDocumentReferenceID,
+            Filename,
+            MimeCode,
+            EmbeddedDocumentBinaryObject)
+        then
+            exit;
+
+        this.XMLDOMManagement.AddElement(this.RootNode, 'Attachment', '', '', AttachmentNode);
+        this.XMLDOMManagement.AddElement(AttachmentNode, 'EmbeddedDocumentBinaryObject', EmbeddedDocumentBinaryObject, '', ChildNode);
+        this.XMLDOMManagement.AddAttribute(ChildNode, 'filename', Filename);
+        this.XMLDOMManagement.AddAttribute(ChildNode, 'mimeCode', MimeCode);
+    end;
+
+    local procedure GeneratePDFAttachmentAsAdditionalDocRef(
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+        var AdditionalDocumentReferenceID: Text;
+        var Filename: Text;
+        var MimeCode: Text;
+        var EmbeddedDocumentBinaryObject: Text): Boolean
+    var
+        Base64Convert: Codeunit "Base64 Convert";
+        TempBlob: Codeunit "Temp Blob";
+        FileNameTok: Label '%1_%2.pdf', Comment = '1: Document Type, 2: Document No', Locked = true;
+    begin
+        AdditionalDocumentReferenceID := '';
+        MimeCode := '';
+        EmbeddedDocumentBinaryObject := '';
+        Filename := '';
+
+        if not this.GeneratePDFAsTempBlob(TransferShipmentHeader, TempBlob) then
+            exit(false);
+
+        Filename := StrSubstNo(FileNameTok, Enum::"E-Document Type"::"Transfer Shipment", TransferShipmentHeader."No.");
+        AdditionalDocumentReferenceID := TransferShipmentHeader."No.";
+        EmbeddedDocumentBinaryObject := Base64Convert.ToBase64(TempBlob.CreateInStream());
+        MimeCode := 'application/pdf';
+        exit(true);
+    end;
+
+    local procedure GeneratePDFAsTempBlob(TransferShipmentHeader: Record "Transfer Shipment Header"; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        ReportSelections: Record "Report Selections";
+    begin
+        TransferShipmentHeader.SetRecFilter();
+        ReportSelections.GetPdfReportForCust(
+            TempBlob,
+            "Report Selection Usage"::Inv2, // Transfer Shipment
+             TransferShipmentHeader,
+             '');
+
+        exit(TempBlob.HasValue());
+    end;
+
     /// <summary>
     /// Gets the XML document as a temporary blob.
     /// </summary>
@@ -111,5 +182,14 @@ codeunit 6123 "E-Doc. Transfer Shpt. To XML"
     internal procedure GetTransferShipmentXML(var TempBlob: Codeunit "Temp Blob")
     begin
         this.TransferShipmentXML.WriteTo(TempBlob.CreateOutStream());
+    end;
+
+    /// <summary>
+    /// Controls whether a PDF document should be generated and included as an additional document reference.
+    /// </summary>
+    /// <param name="GeneratePDFValue">If true, generates a PDF based on Report Selection settings.</param>
+    internal procedure SetGeneratePDF(GeneratePDFValue: Boolean)
+    begin
+        this.GeneratePDF := GeneratePDFValue;
     end;
 }
