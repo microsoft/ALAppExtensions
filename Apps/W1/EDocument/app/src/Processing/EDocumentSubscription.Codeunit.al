@@ -271,6 +271,9 @@ codeunit 6103 "E-Document Subscription"
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Service Status");
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"Service Participant");
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Purchase Line History");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Line - Field");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"EDoc. Purch. Line Field Setup");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Vendor Assign. History");
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Record Link");
     end;
 

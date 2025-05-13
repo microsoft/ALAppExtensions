@@ -31,7 +31,8 @@ codeunit 5699 "Contoso Inventory"
                     tabledata Purchasing = rim,
                     tabledata "Transfer Header" = ri,
                     tabledata "Transfer Line" = ri,
-                    tabledata "Transfer Route" = rim;
+                    tabledata "Transfer Route" = rim,
+                    tabledata "Responsibility Center" = rim;
 
     var
         OverwriteData: Boolean;
@@ -334,5 +335,26 @@ codeunit 5699 "Contoso Inventory"
             Manufacturer.Modify(true)
         else
             Manufacturer.Insert(true);
+    end;
+
+    procedure InsertResponsibilityCenter(Code: Code[10]; Name: Text[100])
+    var
+        ResponsibilityCenter: Record "Responsibility Center";
+        Exists: Boolean;
+    begin
+        if ResponsibilityCenter.Get(Code) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        ResponsibilityCenter.Validate(Code, Code);
+        ResponsibilityCenter.Validate(Name, Name);
+
+        if Exists then
+            ResponsibilityCenter.Modify(true)
+        else
+            ResponsibilityCenter.Insert(true);
     end;
 }

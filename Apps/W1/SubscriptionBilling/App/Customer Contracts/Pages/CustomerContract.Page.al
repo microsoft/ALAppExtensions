@@ -198,12 +198,25 @@ page 8052 "Customer Contract"
                     Importance = Additional;
                     ToolTip = 'Specifies the ID of the user who is responsible for the document.';
                 }
+#if not CLEAN27
                 field("Without Contract Deferrals"; Rec."Without Contract Deferrals")
+                {
+                    ObsoleteReason = 'Removed in favor of Create Contract Deferrals.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
+                    ApplicationArea = Suite;
+                    Importance = Additional;
+                    QuickEntry = false;
+                    Visible = false;
+                    ToolTip = 'Specifies whether deferrals should be generated for the contract. If the field is activated, no deferrals are generated and the invoices are posted directly to profit or loss.';
+                }
+#endif
+                field("Create Contract Deferrals"; Rec."Create Contract Deferrals")
                 {
                     ApplicationArea = Suite;
                     Importance = Additional;
                     QuickEntry = false;
-                    ToolTip = 'Specifies whether deferrals should be generated for the contract. If the field is activated, no deferrals are generated and the invoices are posted directly to profit or loss.';
+                    ToolTip = 'Specifies whether to generate contract deferrals for the contract in general. The field affects only Subscription lines assigned to the contract for which the field "Create Contract Deferrals" is set to Contract-dependent.';
                 }
                 field("Exclude from Price Update"; Rec.DefaultExcludeFromPriceUpdate)
                 {
@@ -994,17 +1007,17 @@ page 8052 "Customer Contract"
         BillToFieldsEnabled := (BillToOptions = BillToOptions::"Custom Address") or (Rec."Bill-to Customer No." <> Rec."Sell-to Customer No.");
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateShipToOptions(var CustomerSubscriptionContract: Record "Customer Subscription Contract"; ShipToOptions: Enum "Sales Ship-to Options"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterValidateShippingOptions(var CustomerSubscriptionContract: Record "Customer Subscription Contract"; ShipToOptions: Enum "Sales Ship-to Options")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnValidateShipToOptionsOnAfterShipToAddressListGetRecord(var ShipToAddress: Record "Ship-to Address"; var CustomerContract: Record "Customer Subscription Contract")
     begin
     end;

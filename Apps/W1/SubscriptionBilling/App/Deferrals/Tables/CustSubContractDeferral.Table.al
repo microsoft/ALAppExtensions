@@ -13,7 +13,6 @@ table 8066 "Cust. Sub. Contract Deferral"
     DataClassification = CustomerContent;
     DrillDownPageId = "Customer Contract Deferrals";
     LookupPageId = "Customer Contract Deferrals";
-    Access = Internal;
     Permissions =
         tabledata "Sales Invoice Line" = r,
         tabledata "Sales Cr.Memo Line" = r;

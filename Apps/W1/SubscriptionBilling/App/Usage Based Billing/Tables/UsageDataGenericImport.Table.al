@@ -9,7 +9,6 @@ table 8018 "Usage Data Generic Import"
     DataClassification = CustomerContent;
     LookupPageId = "Usage Data Generic Import";
     DrillDownPageId = "Usage Data Generic Import";
-    Access = Internal;
 
     fields
     {

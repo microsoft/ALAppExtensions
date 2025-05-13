@@ -4,8 +4,6 @@ using System.IO;
 
 codeunit 8033 "Generic Connector Processing" implements "Usage Data Processing"
 {
-    Access = Internal;
-
     var
         UsageDataGenericImportGlobal: Record "Usage Data Generic Import";
         ImportAndProcessUsageData: Codeunit "Import And Process Usage Data";
@@ -145,7 +143,7 @@ codeunit 8033 "Generic Connector Processing" implements "Usage Data Processing"
         UsageDataGenericImport."Service Object Availability" := UsageDataGenericImport."Service Object Availability"::Available;
     end;
 
-    internal procedure CheckAndAssignServiceObject(var UsageDataGenericImport: Record "Usage Data Generic Import"; ServiceCommitment: Record "Subscription Line")
+    local procedure CheckAndAssignServiceObject(var UsageDataGenericImport: Record "Usage Data Generic Import"; ServiceCommitment: Record "Subscription Line")
     var
         ServiceObject: Record "Subscription Header";
     begin
@@ -162,7 +160,7 @@ codeunit 8033 "Generic Connector Processing" implements "Usage Data Processing"
         end;
     end;
 
-    internal procedure ErrorIfUsageDataGenericImportQuantityIsZero(var UsageDataGenericImport: Record "Usage Data Generic Import")
+    local procedure ErrorIfUsageDataGenericImportQuantityIsZero(var UsageDataGenericImport: Record "Usage Data Generic Import")
     begin
         if UsageDataGenericImport.Quantity <> 0 then
             exit;
@@ -170,7 +168,7 @@ codeunit 8033 "Generic Connector Processing" implements "Usage Data Processing"
         UsageDataGenericImport.SetReason(UsageDataWithZeroQuantityCannotBeProcessedErr);
     end;
 
-    internal procedure CheckServiceCommitment(var UsageDataGenericImport: Record "Usage Data Generic Import"; var UsageDataImport: Record "Usage Data Import"; var ServiceCommitment: Record "Subscription Line")
+    local procedure CheckServiceCommitment(var UsageDataGenericImport: Record "Usage Data Generic Import"; var UsageDataImport: Record "Usage Data Import"; var ServiceCommitment: Record "Subscription Line")
     begin
         if ImportAndProcessUsageData.GetServiceCommitmentForSubscription(UsageDataImport."Supplier No.", UsageDataGenericImport."Supp. Subscription ID", ServiceCommitment) then
             CheckIfServiceCommitmentStartDateIsValid(UsageDataGenericImport, ServiceCommitment)
@@ -247,7 +245,7 @@ codeunit 8033 "Generic Connector Processing" implements "Usage Data Processing"
         UsageDataImport.Modify(false);
     end;
 
-    internal procedure CheckServiceCommitments(var TempServiceCommitment: Record "Subscription Line" temporary): Boolean
+    local procedure CheckServiceCommitments(var TempServiceCommitment: Record "Subscription Line" temporary): Boolean
     var
         ServiceObject: Record "Subscription Header";
     begin
@@ -269,7 +267,7 @@ codeunit 8033 "Generic Connector Processing" implements "Usage Data Processing"
         exit(true);
     end;
 
-    internal procedure SetUsageDataGenericImportError(Reason: Text)
+    local procedure SetUsageDataGenericImportError(Reason: Text)
     begin
         if Reason = '' then
             UsageDataGenericImportGlobal."Processing Status" := UsageDataGenericImportGlobal."Processing Status"::Ok
@@ -290,7 +288,7 @@ codeunit 8033 "Generic Connector Processing" implements "Usage Data Processing"
         ProcessDataExch.SetFieldValue(RecordRef, LastKeyFieldId, UsageDataGenericImport.GetNextEntryNo());
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterImportUsageDataBlobToUsageDataGenericImport(UsageDataBlob: Record "Usage Data Blob"; var UsageDataImport: Record "Usage Data Import")
     begin
     end;

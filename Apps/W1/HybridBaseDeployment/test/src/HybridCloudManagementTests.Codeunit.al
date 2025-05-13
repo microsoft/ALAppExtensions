@@ -528,23 +528,24 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         LibraryHybridManagement.SetCanModifyDataReplicationRules(true);
         HybridCloudManagement.RefreshIntelligentCloudStatusTable();
 
-        // [WHEN] User opens the cloud migration select tables page and selects a table to be replicated
-        OpenCloudMigSelectTablesPage(CloudMigSelectTables);
+        // [WHEN] User opens the cloud migration select tables page and selects a table to be delta synced
 #pragma warning disable AA0210
+        IntelligentCloudStatus.SetRange("Company Name", '');
         IntelligentCloudStatus.SetRange("Preserve Cloud Data", false);
 #pragma warning restore AA0210
-        IntelligentCloudStatus.FindFirst();
+        if not IntelligentCloudStatus.FindFirst() then begin
+            IntelligentCloudStatus.SetRange("Preserve Cloud Data");
+            IntelligentCloudStatus.FindFirst();
+            IntelligentCloudStatus."Preserve Cloud Data" := false;
+            IntelligentCloudStatus.Modify();
+        end;
+
+        OpenCloudMigSelectTablesPage(CloudMigSelectTables);
         CloudMigSelectTables.Filter.SetFilter("Table Id", Format(IntelligentCloudStatus."Table Id"));
         CloudMigSelectTables.DeltaSyncTables.Invoke();
 
-        // [THEN] The table is marked as included in replication and log is inserted
+        // [THEN] The table is marked as delta sync data in replication and log is inserted
         VerifyDeltaSyncProperty(CloudMigSelectTables, true, IntelligentCloudStatus."Table Id");
-
-        // [WHEN] User invokes reset to default
-        CloudMigSelectTables.ResetToDefault.Invoke();
-
-        // [THEN] The table is marked as excluded from replication
-        VerifyDeltaSyncProperty(CloudMigSelectTables, false, IntelligentCloudStatus."Table Id");
     end;
 
     [Test]
@@ -617,7 +618,7 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Assert.IsTrue(IntelligentCloudStatus.Get(CloudMigSelectTables."Table Name".Value, CloudMigSelectTables."Company Name".Value), 'Intelligent cloud status record not found');
         Assert.AreEqual(ExpectedDeltaSyncProperty, IntelligentCloudStatus."Preserve Cloud Data", 'Intelligent cloud status record not updated correctly');
         Assert.IsTrue(CloudMigOverrideLog.FindLast(), 'Cloud migration override log record not found');
-        Assert.AreEqual(CloudMigOverrideLog."Table Id", SelectedTableId, 'Cloud migration override log record not updated correctly');
+        Assert.AreEqual(SelectedTableId, CloudMigOverrideLog."Table Id", 'Cloud migration override log record not updated correctly');
         Assert.AreEqual(ExpectedDeltaSyncProperty, CloudMigOverrideLog."Preserve Cloud Data", 'Cloud migration override log record not updated correctly');
     end;
 

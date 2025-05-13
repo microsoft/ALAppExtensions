@@ -6,7 +6,6 @@ table 8060 "Billing Template"
     Caption = 'Billing Template';
     LookupPageId = "Billing Templates";
     DrillDownPageId = "Billing Templates";
-    Access = Internal;
 
     fields
     {

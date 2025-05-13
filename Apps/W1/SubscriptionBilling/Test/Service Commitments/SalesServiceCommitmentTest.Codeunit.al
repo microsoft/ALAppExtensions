@@ -851,6 +851,29 @@ codeunit 139915 "Sales Service Commitment Test"
     end;
 
     [Test]
+    procedure NegativeValuesAreExpectedWhenSalesServiceCommitmentWithDiscountIsChanged()
+    begin
+        // [SCENARIO] When Calculation Base % on Sales Service Commitment with Discount is changed, negative values in Calculation Base amount, Price and Service Amount are expected
+
+        // [GIVEN] Create Sales Service Commitment for Service Commitment Item with Discount
+        ClearAll();
+        ContractTestLibrary.CreateServiceCommitmentTemplateWithDiscount(ServiceCommitmentTemplate);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
+        SetupSalesLineWithSalesServiceCommitments(LibraryRandom.RandDec(10, 0));
+        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
+        SalesServiceCommitment.FindFirst();
+
+        // [WHEN] Change Calculation Base % on Sales Service Commitment
+        SalesServiceCommitment.Validate("Calculation Base %", LibraryRandom.RandDec(100, 0));
+
+        // [THEN] Calculation Base Amount, Price and Service Amount are recalculated and have negative values
+        Assert.IsTrue(SalesServiceCommitment."Calculation Base Amount" < 0, 'Calculation Base Amount in Sales Service Commitment should be negative');
+        Assert.IsTrue(SalesServiceCommitment.Price < 0, 'Price in Sales Service Commitment should be negative');
+        Assert.IsTrue(SalesServiceCommitment.Amount < 0, 'Service Amount in Sales Service Commitment should be negative');
+    end;
+
+    [Test]
     [HandlerFunctions('AssignServiceCommitmentsModalPageHandler')]
     procedure CheckSalesServiceCommitmentPackageFilterForSalesLine()
     begin
@@ -1304,7 +1327,7 @@ codeunit 139915 "Sales Service Commitment Test"
         // [WHEN] Run Undo Shipment action
         SalesShipmentLine.SetRange("Order No.", SalesHeader."No.");
         SalesShipmentLine.FindFirst();
-        Codeunit.Run(Codeunit::"Undo Sales Shipment Line", SalesShipmentLine);
+        Codeunit.Run(Codeunit::"Undo Sales Shipment Line", SalesShipmentLine); // ConfirmHandlerYes
 
         // [THEN] Correction line is added in the sales shipment
         SalesShipmentLine.SetRange("Order No.");
@@ -1458,6 +1481,49 @@ codeunit 139915 "Sales Service Commitment Test"
     end;
 
     [Test]
+    procedure UnitPriceOnSalesLineForServiceCommitmentItemShouldRemainAfterPosting()
+    var
+        SalesWithSubscription: Record Item;
+        SubscriptionItem: Record Item;
+    begin
+        // [SCENARIO] Create Sales Order with two Sales Lines, one with Sales with Service Commitment Item and one Service Commitment Item.
+        // [SCENARIO] Sales line with Sales with Service Commitment Item should be set for Qty. to Ship = 1 and Sales line with Service Commitment Item should be set for Qty. to Ship = 0.
+        // [SCENARIO] Post (ship) the Sales Order and check that the Unit Price on the Service Commitment Item is not changed.
+
+        // [GIVEN] Create Service Commitment Item and assign to Service Commitment Package
+        Initialize();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(SubscriptionItem, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommPackageLine.Validate("Invoicing via", Enum::"Invoicing Via"::Sales);
+        ServiceCommPackageLine.Modify(false);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(SubscriptionItem, ServiceCommitmentPackage.Code, true);
+
+        // [GIVEN] Create Sales with Service Commitment Item and assign to Service Commitment Package
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(SalesWithSubscription, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLineWithInvoicingItem(ServiceCommPackageLine, '');
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(SalesWithSubscription, ServiceCommitmentPackage.Code, true);
+
+        // [GIVEN] Create Sales Order and add two Sales Lines with created items and check unit prices
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, SalesWithSubscription."No.", LibraryRandom.RandDecInRange(1, 8, 0));
+        SalesLine.Validate("Unit Price", 100);
+        SalesLine.Validate("Qty. to Ship", 1);
+        SalesLine.Modify(false);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, SubscriptionItem."No.", LibraryRandom.RandDecInRange(1, 8, 0));
+        SalesLine.Validate("Unit Price", 100);
+        SalesLine.Validate("Qty. to Ship", 0);
+        SalesLine.Modify(false);
+
+        // [WHEN] Post Sales Order
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [THEN] Sales Line with Service Commitment Item should have the same Unit Price as before posting
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        Assert.AreEqual(100, SalesLine."Unit Price", 'Unit Price on Service Commitment Item was changed after posting');
+    end;
+
+    [Test]
     [HandlerFunctions('MessageHandler')]
     procedure UsePostingDateFromInventoryPickWhenPostingSalesOrder()
     var
@@ -1501,6 +1567,35 @@ codeunit 139915 "Sales Service Commitment Test"
         Clear(LibrarySetupStorage);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure SalesLineWithServiceCommitmentItemCanBeDeletedAfterUndoPostedSalesShipmentLine()
+    var
+        SalesShipmentLine: Record "Sales Shipment Line";
+        ReleaseSalesDoc: Codeunit "Release Sales Document";
+    begin
+        // [SCENARIO] After Undo Sales Shipment Line, "Qty. Shipped Not Invoiced" on Sales Line will be reverted automatically and Sales Line will be deletable
+
+        // [GIVEN] Create Service Commitment Item, Create Sales Order and post (ship)
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandDecInRange(1, 8, 0));
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] Run Undo Shipment action
+        SalesShipmentLine.SetRange("Order No.", SalesHeader."No.");
+        SalesShipmentLine.FindFirst();
+        Codeunit.Run(Codeunit::"Undo Sales Shipment Line", SalesShipmentLine); // ConfirmHandlerYes
+
+        // [THEN] In Sales Order "Qty. Shipped Not Invoiced" is reverted and Sales Line is deletable
+        SalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.");
+        Assert.AreEqual(0, SalesLine."Qty. Shipped Not Invoiced", 'Qty. Shipped Not Invoiced was not reverted correctly');
+        Assert.AreEqual(0, SalesLine."Qty. Shipped Not Invd. (Base)", 'Qty. Shipped Not Invd. (Base) was not reverted correctly');
+        ReleaseSalesDoc.PerformManualReopen(SalesHeader);
+        SalesLine.Delete(true);
+    end;
+
     #endregion Tests
 
     #region Procedures
@@ -1540,6 +1635,7 @@ codeunit 139915 "Sales Service Commitment Test"
             SalesServiceCommitmentToTest.TestField("Sub. Line Start Formula", ServiceCommPackageLine."Sub. Line Start Formula");
             SalesServiceCommitmentToTest.TestField("Billing Rhythm", ServiceCommPackageLine."Billing Rhythm");
             SalesServiceCommitmentToTest.TestField("Customer Price Group", SourceSalesLine."Customer Price Group");
+            SalesServiceCommitmentToTest.TestField("Create Contract Deferrals", ServiceCommPackageLine."Create Contract Deferrals");
         until ServiceCommPackageLine.Next() = 0;
     end;
 
@@ -1988,6 +2084,7 @@ codeunit 139915 "Sales Service Commitment Test"
                     CurrExchRate.ExchangeAmtFCYToLCY(WorkDate(), Customer."Currency Code", SalesServiceCommitmentToTestWith."Unit Cost", ServiceCommitmentToTest."Currency Factor"));
         ServiceCommitmentToTest.TestField("Price Binding Period", SalesServiceCommitmentToTestWith."Price Binding Period");
         ServiceCommitmentToTest.TestField("Next Price Update", CalcDate(SalesServiceCommitmentToTestWith."Price Binding Period", ServiceCommitmentToTest."Subscription Line Start Date"));
+        ServiceCommitmentToTest.TestField("Create Contract Deferrals", SalesServiceCommitmentToTestWith."Create Contract Deferrals");
     end;
 
     local procedure TestServiceObjectWithSerialNoExists()

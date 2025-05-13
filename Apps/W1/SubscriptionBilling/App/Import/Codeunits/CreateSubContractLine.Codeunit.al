@@ -2,7 +2,6 @@ namespace Microsoft.SubscriptionBilling;
 
 codeunit 8007 "Create Sub. Contract Line"
 {
-    Access = Internal;
     TableNo = "Imported Subscription Line";
 
     trigger OnRun()
@@ -161,22 +160,22 @@ codeunit 8007 "Create Sub. Contract Line"
             VendorContractLine."Line No." := ImportedServiceCommitment."Subscription Contract Line No.";
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateCustomerContractLine(var SubscriptionLine: Record "Subscription Line"; var ImportedSubscriptionLine: Record "Imported Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateCustomerContractLine(var CustSubContractLine: Record "Cust. Sub. Contract Line"; var SubscriptionLine: Record "Subscription Line"; var ImportedSubscriptionLine: Record "Imported Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateVendorContractLine(var SubscriptionLine: Record "Subscription Line"; var ImportedSubscriptionLine: Record "Imported Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateVendorContractLine(var VendSubContractLine: Record "Vend. Sub. Contract Line"; var SubscriptionLine: Record "Subscription Line"; var ImportedSubscriptionLine: Record "Imported Subscription Line")
     begin
     end;

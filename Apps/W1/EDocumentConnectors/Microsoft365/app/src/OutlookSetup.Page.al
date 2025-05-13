@@ -19,7 +19,7 @@ page 6384 "Outlook Setup"
     LinksAllowed = false;
     ShowFilter = false;
     SourceTable = "Outlook Setup";
-    UsageCategory = Administration;
+    UsageCategory = None;
     InherentPermissions = X;
     InherentEntitlements = X;
 
@@ -99,6 +99,10 @@ page 6384 "Outlook Setup"
     begin
         Rec.Reset();
         if not Rec.Get() then begin
+            if not Rec.WritePermission() then begin
+                UpdateBasedOnEnable();
+                exit;
+            end;
             Rec.Init();
             Rec.Insert(true);
             FeatureTelemetry.LogUptake('0000OGX', DriveProcessing.FeatureName(), Enum::"Feature Uptake Status"::Discovered);

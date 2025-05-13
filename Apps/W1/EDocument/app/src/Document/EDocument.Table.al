@@ -228,10 +228,20 @@ table 6121 "E-Document"
             ToolTip = 'Specifies the service integration to use for the E-Document.';
             Editable = false;
         }
+        field(39; "Source Details"; Text[2048])
+        {
+            Caption = 'Source Details';
+            ToolTip = 'Specifies details about the the E-Document source.';
+        }
+        field(40; "Additional Source Details"; Text[2048])
+        {
+            Caption = 'Additional Source Details';
+            ToolTip = 'Specifies additional details about the E-Document source.';
+        }
         /// <summary>
         /// This field is used to determine if the E-document creation was triggered by action requiring the E-document to be sent via email.
         /// </summary>
-        field(39; "Send E-Document via Email"; Boolean)
+        field(40; "Send E-Document via Email"; Boolean)
         {
             Caption = 'Send E-Document via Email';
             DataClassification = SystemMetadata;
@@ -452,14 +462,14 @@ table 6121 "E-Document"
         if EDocumentServiceStatus.FindFirst() then;
     end;
 
-    internal procedure GetEDocumentService() EDocumentService: Record "E-Document Service"
+    procedure GetEDocumentService() EDocumentService: Record "E-Document Service"
     begin
         if EDocumentService.Get(Rec.Service) then
             exit;
         if EDocumentService.Get(GetEDocumentServiceStatus()."E-Document Service Code") then;
     end;
 
-    internal procedure GetEDocumentImportProcessingStatus(): Enum "Import E-Doc. Proc. Status"
+    procedure GetEDocumentImportProcessingStatus(): Enum "Import E-Doc. Proc. Status"
     begin
         exit(GetEDocumentServiceStatus()."Import Processing Status");
     end;

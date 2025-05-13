@@ -6,7 +6,7 @@ codeunit 8016 "Vendor Management"
 {
     Access = Internal;
 
-    procedure OpenVendorCard(VendorNo: Code[20])
+    internal procedure OpenVendorCard(VendorNo: Code[20])
     var
         Vendor: Record Vendor;
     begin

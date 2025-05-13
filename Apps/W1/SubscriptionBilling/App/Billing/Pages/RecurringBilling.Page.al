@@ -551,7 +551,7 @@ page 8067 "Recurring Billing"
         CurrPage.Update();
     end;
 
-    [InternalEvent(true, false)]
+    [IntegrationEvent(true, false)]
     local procedure OnAfterApplyBillingTemplateFilter(var SelectedBillingTemplate: Record "Billing Template")
     begin
     end;

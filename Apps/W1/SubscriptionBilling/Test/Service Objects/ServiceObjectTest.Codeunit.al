@@ -885,6 +885,7 @@ codeunit 148157 "Service Object Test"
         ServiceCommitment.TestField(Discount, false);
         ServiceCommitment.TestField("Price Binding Period", ServiceCommPackageLine."Price Binding Period");
         ServiceCommitment.TestField("Next Price Update", CalcDate(ServiceCommPackageLine."Price Binding Period", ServiceCommitment."Subscription Line Start Date"));
+        ServiceCommitment.TestField("Create Contract Deferrals", ServiceCommPackageLine."Create Contract Deferrals");
     end;
 
     [Test]
