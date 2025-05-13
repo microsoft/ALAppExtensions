@@ -377,7 +377,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppName := 'Open Banking';
         AppPublisher := 'EOS Solutions';
         AppDescription := 'Connect to bank accounts through open banking standard, get bank statements and balances, reconcile bank transactions through a permanent connection between ERP and bank databases.';
-        AppProviderSupportURL := 'https://www.eos-solutions.it/en/contact-support.html';
+        AppProviderSupportURL := 'https://docs.eos-solutions.it/en/docs/apps-func/ex016-open-banking.html';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.eos_solutions%7CAID.ex016_openbanking%7CPAPPID.f1d1f2b1-cdd0-42c7-834e-19fb56af6cec?tab=Overview';
         AppApprovedFor := 'IT';
         AppWorksOn := 'IT';
