@@ -37,6 +37,7 @@ codeunit 148193 IntegrationTests
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value', Locked = true;
+        GetAccessTokenFileTok: Label 'GetAccessToken.txt', Locked = true;
         DocumentStatus: Option Processing,Error;
 
     #region tests
@@ -534,16 +535,17 @@ codeunit 148193 IntegrationTests
     internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
     var
         Regex: Codeunit Regex;
+        GetSentDocumentStatusFileTok: Label 'GetSentDocumentStatus.txt', Locked = true;
     begin
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
-                LoadResourceIntoHttpResponse('GetAccessToken.txt', Response);
+                LoadResourceIntoHttpResponse(GetAccessTokenFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
                 GetStatusResponse(Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions'):
-                LoadResourceIntoHttpResponse('GetSentDocumentStatus.txt', Response);
+                LoadResourceIntoHttpResponse(GetSentDocumentStatusFileTok, Response);
         end;
     end;
 
@@ -551,16 +553,18 @@ codeunit 148193 IntegrationTests
     internal procedure ReceiveDocumentHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
     var
         Regex: Codeunit Regex;
+        GetTargetDocumentRequestFileTok: Label 'GetTargetDocumentRequest.txt', Locked = true;
+        GetRecievedDocumentsRequestFileTok: Label 'GetReceivedDocumentsRequest.txt', Locked = true;
     begin
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
-                LoadResourceIntoHttpResponse('GetAccessToken.txt', Response);
+                LoadResourceIntoHttpResponse(GetAccessTokenFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/inbox/transactions/[0-9a-zA-Z-]+'):
-                LoadResourceIntoHttpResponse('GetTargetDocumentRequest.txt', Response);
+                LoadResourceIntoHttpResponse(GetTargetDocumentRequestFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/inbox/transactions'):
-                LoadResourceIntoHttpResponse('GetReceivedDocumentsRequest.txt', Response);
+                LoadResourceIntoHttpResponse(GetRecievedDocumentsRequestFileTok, Response);
         end;
     end;
 
@@ -570,7 +574,7 @@ codeunit 148193 IntegrationTests
         Regex: Codeunit Regex;
     begin
         if Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token') then
-            LoadResourceIntoHttpResponse('GetAccessToken.txt', Response)
+            LoadResourceIntoHttpResponse(GetAccessTokenFileTok, Response)
         else
             Response.HttpStatusCode := 500;
     end;
@@ -579,11 +583,12 @@ codeunit 148193 IntegrationTests
     internal procedure GetMetadataProfileHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
     var
         Regex: Codeunit Regex;
+        GetMetadataProfileFileTok: Label 'GetMetadataProfile.txt', Locked = true;
     begin
         if Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token') then
-            LoadResourceIntoHttpResponse('GetAccessToken.txt', Response)
+            LoadResourceIntoHttpResponse(GetAccessTokenFileTok, Response)
         else
-            LoadResourceIntoHttpResponse('GetMetadataProfile.txt', Response);
+            LoadResourceIntoHttpResponse(GetMetadataProfileFileTok, Response);
     end;
     #endregion
 
@@ -734,12 +739,15 @@ codeunit 148193 IntegrationTests
     end;
 
     local procedure GetStatusResponse(var Response: TestHttpResponseMessage)
+    var
+        GetSentDocumentStatusInProgressFileTok: Label 'GetSentDocumentStatusInProgress.txt', Locked = true;
+        GetSentDocumentStatusErrorFileTok: Label 'GetSentDocumentStatusError.txt', Locked = true;
     begin
         case this.DocumentStatus of
             this.DocumentStatus::Processing:
-                LoadResourceIntoHttpResponse('GetSentDocumentStatusInProgress.txt', Response);
+                LoadResourceIntoHttpResponse(GetSentDocumentStatusInProgressFileTok, Response);
             this.DocumentStatus::Error:
-                LoadResourceIntoHttpResponse('GetSentDocumentStatusError.txt', Response);
+                LoadResourceIntoHttpResponse(GetSentDocumentStatusErrorFileTok, Response);
         end;
     end;
     #endregion
