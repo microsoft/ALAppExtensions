@@ -604,31 +604,36 @@ codeunit 148191 "Integration Tests"
     internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
     var
         Regex: Codeunit Regex;
+        ConnectTokenFileTok: Label 'ConnectToken.txt', Locked = true;
+        DownloadDocumentFileTok: Label 'DownloadDocument.txt', Locked = true;
+        SubmitDocumentFileTok: Label 'SubmitDocument.txt', Locked = true;
+        GetDocumentsFileTok: Label 'GetDocuments.txt', Locked = true;
+        CompaniesFileTok: Label 'Companies.txt', Locked = true;
     begin
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/connect/token'):
-                LoadResourceIntoHttpResponse('ConnectToken.txt', Response);
+                LoadResourceIntoHttpResponse(ConnectTokenFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/einvoicing/documents/.+/status'):
                 GetStatusResponse(Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/einvoicing/documents/.+/\$download'):
-                LoadResourceIntoHttpResponse('DownloadDocument.txt', Response);
+                LoadResourceIntoHttpResponse(DownloadDocumentFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/einvoicing/documents'):
                 case Request.RequestType of
                     HttpRequestType::POST:
-                        LoadResourceIntoHttpResponse('SubmitDocument.txt', Response);
+                        LoadResourceIntoHttpResponse(SubmitDocumentFileTok, Response);
                     HttpRequestType::GET:
                         begin
-                            LoadResourceIntoHttpResponse('GetDocuments.txt', Response);
+                            LoadResourceIntoHttpResponse(GetDocumentsFileTok, Response);
                             Response.HttpStatusCode := 200;
                         end;
                 end;
 
             Regex.IsMatch(Request.Path, 'https?://.+/scs/companies'):
                 begin
-                    LoadResourceIntoHttpResponse('Companies.txt', Response);
+                    LoadResourceIntoHttpResponse(CompaniesFileTok, Response);
                     Response.HttpStatusCode := 200;
                 end;
         end;
@@ -636,8 +641,10 @@ codeunit 148191 "Integration Tests"
 
     [HttpClientHandler]
     internal procedure ServiceDownHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Http500FileTok: Label 'Http500.txt', Locked = true;
     begin
-        LoadResourceIntoHttpResponse('Http500.txt', Response);
+        LoadResourceIntoHttpResponse(Http500FileTok, Response);
         Response.HttpStatusCode := 500;
     end;
 
@@ -652,16 +659,20 @@ codeunit 148191 "Integration Tests"
     end;
 
     local procedure GetStatusResponse(var Response: TestHttpResponseMessage)
+    var
+        GetResponseCompleteFileTok: Label 'GetResponseComplete.txt', Locked = true;
+        GetResponsePendingFileTok: Label 'GetResponsePending.txt', Locked = true;
+        GetResponseErrorFileTok: Label 'GetResponseError.txt', Locked = true;
     begin
         case DocumentStatus of
             DocumentStatus::Completed:
-                LoadResourceIntoHttpResponse('GetResponseComplete.txt', Response);
+                LoadResourceIntoHttpResponse(GetResponseCompleteFileTok, Response);
 
             DocumentStatus::Pending:
-                LoadResourceIntoHttpResponse('GetResponsePending.txt', Response);
+                LoadResourceIntoHttpResponse(GetResponsePendingFileTok, Response);
 
             DocumentStatus::Error:
-                LoadResourceIntoHttpResponse('GetResponseError.txt', Response);
+                LoadResourceIntoHttpResponse(GetResponseErrorFileTok, Response);
         end;
     end;
 
