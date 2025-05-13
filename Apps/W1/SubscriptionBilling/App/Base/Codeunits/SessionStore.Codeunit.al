@@ -8,7 +8,7 @@ codeunit 8014 "Session Store"
     var
         BooleanDictionary: Dictionary of [Text, Boolean];
 
-    procedure SetBooleanKey(KeyName: Text; BooleanValue: Boolean)
+    internal procedure SetBooleanKey(KeyName: Text; BooleanValue: Boolean)
     begin
         if BooleanDictionary.ContainsKey(KeyName) then
             BooleanDictionary.Set(KeyName, BooleanValue)
@@ -16,13 +16,13 @@ codeunit 8014 "Session Store"
             BooleanDictionary.Add(KeyName, BooleanValue);
     end;
 
-    procedure GetBooleanKey(KeyName: Text): Boolean
+    internal procedure GetBooleanKey(KeyName: Text): Boolean
     begin
         if BooleanDictionary.ContainsKey(KeyName) then
             exit(BooleanDictionary.Get(KeyName));
     end;
 
-    procedure RemoveBooleanKey(KeyName: Text)
+    internal procedure RemoveBooleanKey(KeyName: Text)
     begin
         if BooleanDictionary.ContainsKey(KeyName) then
             BooleanDictionary.Remove(KeyName);

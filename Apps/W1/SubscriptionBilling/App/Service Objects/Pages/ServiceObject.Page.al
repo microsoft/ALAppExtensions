@@ -626,17 +626,17 @@ page 8060 "Service Object"
         }
     }
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterValidateShippingOptions(var SubscriptionHeader: Record "Subscription Header"; ShipToOptions: Option "Default (End-User Address)","Alternate Shipping Address","Custom Address")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateShipToOptions(var SubscriptionHeader: Record "Subscription Header"; ShipToOptions: Option "Default (End-User Address)","Alternate Shipping Address","Custom Address")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnValidateShipToOptionsOnAfterShipToAddressListGetRecord(var ShipToAddress: Record "Ship-to Address"; var SubscriptionHeader: Record "Subscription Header")
     begin
     end;

@@ -166,6 +166,11 @@ page 18691 "TDS Entries"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the applied concessional code on the TDS entry.';
                 }
+                field("Original Invoice Amount"; Rec."Original Invoice Amount")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the Actual Invoice Amount that the TDS entry is linked to.';
+                }
                 field("Deductee PAN No."; Rec."Deductee PAN No.")
                 {
                     ApplicationArea = Basic, Suite;

@@ -24,7 +24,6 @@ table 8063 "Vendor Subscription Contract"
     DataCaptionFields = "No.", "Buy-from Vendor Name";
     LookupPageId = "Vendor Contracts";
     DrillDownPageId = "Vendor Contracts";
-    Access = Internal;
 
     fields
     {
@@ -690,6 +689,30 @@ table 8063 "Vendor Subscription Contract"
                 UpdatePayToVend("Pay-to Contact No.");
             end;
         }
+        field(8050; "Create Contract Deferrals"; Boolean)
+        {
+            Caption = 'Create Contract Deferrals';
+            InitValue = true;
+        }
+#if not CLEANSCHEMA30
+        field(8051; "Without Contract Deferrals"; Boolean)
+        {
+            Caption = 'Without Contract Deferrals';
+            ObsoleteReason = 'Removed in favor of Create Contract Deferrals.';
+#if not CLEAN27
+            ObsoleteState = Pending;
+            ObsoleteTag = '27.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '30.0';
+#endif
+        }
+#endif
+        field(8053; "Billing Rhythm Filter"; DateFormula)
+        {
+            Caption = 'Billing Rhythm Filter';
+            FieldClass = FlowFilter;
+        }
         field(9000; "Assigned User ID"; Code[50])
         {
             Caption = 'Assigned User ID';
@@ -708,17 +731,8 @@ table 8063 "Vendor Subscription Contract"
 
             trigger OnValidate()
             begin
-                SetDefaultWithoutContractDeferralsFromContractType();
+                SetCreateContractDeferralsFromContractType();
             end;
-        }
-        field(8051; "Without Contract Deferrals"; Boolean)
-        {
-            Caption = 'Without Contract Deferrals';
-        }
-        field(8053; "Billing Rhythm Filter"; DateFormula)
-        {
-            Caption = 'Billing Rhythm Filter';
-            FieldClass = FlowFilter;
         }
     }
 
@@ -746,6 +760,8 @@ table 8063 "Vendor Subscription Contract"
         if "Purchaser Code" = '' then
             SetDefaultPurchaser();
 
+        GetServiceContractSetup();
+        Rec."Create Contract Deferrals" := ServiceContractSetup."Create Contract Deferrals" in [Enum::"Create Contract Deferrals"::"Contract-dependent", Enum::"Create Contract Deferrals"::Yes];
     end;
 
     trigger OnRename()
@@ -796,7 +812,6 @@ table 8063 "Vendor Subscription Contract"
         ModifyVendorAddressNotificationMsg: Label 'The address you entered for %1 is different from the Vendor''s existing address.', Comment = '%1=Vendor name';
         UpdateDimensionsOnLinesQst: Label 'You may have changed a dimension.\\Do you want to update the lines?';
         AssignServicePricesMustBeRecalculatedMsg: Label 'You add Subscription Lines to a contract in which a different currency is stored than in the Subscription Lines. The prices for the Subscription Lines must therefore be recalculated.';
-        CurrCodeChangePricesMustBeRecalculatedMsg: Label 'If you change the currency code, the prices for existing Subscription Lines must be recalculated.';
         UpdatedDeferralsMsg: Label 'The dimensions in %1 deferrals have been updated.';
 
     protected var
@@ -1575,7 +1590,7 @@ table 8063 "Vendor Subscription Contract"
             until VendorContractLine.Next() = 0;
     end;
 
-    procedure CreateVendorContractLineFromServiceCommitment(ServiceCommitment: Record "Subscription Line")
+    internal procedure CreateVendorContractLineFromServiceCommitment(ServiceCommitment: Record "Subscription Line")
     var
         VendorContractLine: Record "Vend. Sub. Contract Line";
     begin
@@ -1620,8 +1635,7 @@ table 8063 "Vendor Subscription Contract"
     begin
         if not VendorContractLinesExist() then
             exit;
-        if not ServiceCommitment.OpenExchangeSelectionPage(CurrencyFactorDate, CurrencyFactor, Rec."Currency Code", CurrCodeChangePricesMustBeRecalculatedMsg, false) then
-            Error('');
+        ServiceCommitment.OpenExchangeSelectionPage(CurrencyFactorDate, CurrencyFactor, Rec."Currency Code", '', false);
         ServiceCommitment.UpdateAndRecalculateServCommCurrencyFromContract(Enum::"Service Partner"::Vendor, Rec."No.", CurrencyFactor, CurrencyFactorDate, Rec."Currency Code");
     end;
 
@@ -1659,13 +1673,13 @@ table 8063 "Vendor Subscription Contract"
         Message(UpdatedDeferralsMsg, DeferralCount);
     end;
 
-    local procedure SetDefaultWithoutContractDeferralsFromContractType()
+    local procedure SetCreateContractDeferralsFromContractType()
     var
         ContractType: Record "Subscription Contract Type";
     begin
         if not ContractType.Get(Rec."Contract Type") then
             exit;
-        Rec."Without Contract Deferrals" := ContractType."Def. Without Contr. Deferrals";
+        Rec."Create Contract Deferrals" := ContractType."Create Contract Deferrals";
     end;
 
     internal procedure CreateBillingProposal()
@@ -1692,102 +1706,102 @@ table 8063 "Vendor Subscription Contract"
         CurrencyFactor := CurrExchRage.ExchangeRate(ProvisionStartDate, CurrencyCode)
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnValidateBuyFromVendorNoAfterInit(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; var xVendorSubscriptionContract: Record "Vendor Subscription Contract")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterGetSubscriptionContractSetup(VendorSubscriptionContract: Record "Vendor Subscription Contract"; var SubscriptionContractSetup: Record "Subscription Contract Setup"; CalledByFieldNo: Integer)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnInitFromContactOnBeforeInitRecord(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; var xVendorSubscriptionContract: Record "Vendor Subscription Contract")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeHasBuyFromAddress(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCopyBuyFromVendorFieldsFromVendor(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; Vendor: Record Vendor; xVendorSubscriptionContract: Record "Vendor Subscription Contract")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCopyPayToVendorAddressFieldsFromVendor(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; PayToVendor: Record Vendor)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBuyFromCont(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; Vendor: Record Vendor; Contact: Record Contact)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCopyBuyFromVendorAddressFieldsFromVendor(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; BuyFromVendor: Record Vendor)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeHasPayToAddress(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterUpdatePayToCont(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; Vendor: Record Vendor; Contact: Record Contact)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterUpdatePayToVend(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; Contact: Record Contact)
     begin
     end;
 
-    [InternalEvent(true, false)]
+    [IntegrationEvent(true, false)]
     local procedure OnBeforeContactIsNotRelatedToVendorError(Contact: Record Contact; ContactNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBuyFromVend(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; Contact: Record Contact)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInitInsert(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; var xVendorSubscriptionContract: Record "Vendor Subscription Contract"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeAssistEdit(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; OldVendorSubscriptionContract: Record "Vendor Subscription Contract"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterValidateShortcutDimCode(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; xVendorSubscriptionContract: Record "Vendor Subscription Contract"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateDim(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnCreateDimOnBeforeModify(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; xVendorSubscriptionContract: Record "Vendor Subscription Contract"; CurrentFieldNo: Integer)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateShortcutDimCode(var VendorSubscriptionContract: Record "Vendor Subscription Contract"; xVendorSubscriptionContract: Record "Vendor Subscription Contract"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateDimDimSource(VendorSubscriptionContract: Record "Vendor Subscription Contract"; CurrFieldNo: Integer; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
     begin
     end;

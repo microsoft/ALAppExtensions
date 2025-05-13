@@ -192,6 +192,8 @@ page 40010 "Add Migration Table Mappings"
     end;
 
     local procedure UpdateObjectsFilter(var PublishedApplication: Record "Published Application")
+    var
+        ExtensionManagement: Codeunit "Extension Management";
     begin
         PublishedApplication.SetRange(Installed, true);
         if not PublishedApplication.FindSet() then begin
@@ -200,8 +202,10 @@ page 40010 "Add Migration Table Mappings"
         end;
 
         repeat
-            AppFilter += '|' + Format(PublishedApplication."Package ID");
-            ExtensionsFilter += ', ' + PublishedApplication.Name;
+            if ExtensionManagement.IsInstalledByPackageId(PublishedApplication."Package ID") then begin
+                AppFilter += '|' + Format(PublishedApplication."Package ID");
+                ExtensionsFilter += ', ' + PublishedApplication.Name;
+            end;
         until PublishedApplication.Next() = 0;
 
         AppFilter := AppFilter.TrimStart('|');

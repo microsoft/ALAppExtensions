@@ -14,7 +14,6 @@ table 8072 "Vend. Sub. Contract Deferral"
     DataClassification = CustomerContent;
     DrillDownPageId = "Vendor Contract Deferrals";
     LookupPageId = "Vendor Contract Deferrals";
-    Access = Internal;
     Permissions =
         tabledata "Purch. Inv. Line" = r,
         tabledata "Purch. Cr. Memo Line" = r;

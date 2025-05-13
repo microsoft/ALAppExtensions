@@ -209,6 +209,7 @@ page 8069 "Serv. Comm. WO Cust. Contract"
             CustomerContract2.Get(CustomerContractNo);
             ServiceCommitment.SetRange("Sub. Header Customer No.", CustomerContract2."Sell-to Customer No.");
         end;
+        OnRefreshServiceCommitmentsOnAfterServiceCommitmentSetFilters(ServiceCommitment, CustomerContract2);
         if ServiceCommitment.FindSet() then
             repeat
                 if not Rec.Get(ServiceCommitment."Entry No.") then begin
@@ -242,5 +243,10 @@ page 8069 "Serv. Comm. WO Cust. Contract"
         if CustomerContract."No." <> Rec."Subscription Contract No." then
             CustomerContract.Get(Rec."Subscription Contract No.");
         exit(true);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnRefreshServiceCommitmentsOnAfterServiceCommitmentSetFilters(var SubscriptionLine: Record "Subscription Line"; CustomerSubscriptionContract: Record "Customer Subscription Contract")
+    begin
     end;
 }

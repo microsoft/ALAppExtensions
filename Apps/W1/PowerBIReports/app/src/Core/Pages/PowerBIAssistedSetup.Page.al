@@ -51,7 +51,6 @@ page 36950 "PowerBI Assisted Setup"
                     Caption = 'Welcome to the Assisted Setup for Power BI ';
                     InstructionalText = 'This will guide you through how to connect to Power BI and configure how your data will be displayed.';
                 }
-
                 group(LetsGo)
                 {
                     Caption = 'Let''s Go';
@@ -774,11 +773,16 @@ page 36950 "PowerBI Assisted Setup"
         ManufacturingTabVisible: Boolean;
         ShowMoreTxt: Label 'Show More';
         ShowLessTxt: Label 'Show Less';
+        AdminPermissionRequiredErr: Label 'Setting up Power BI requires the ''%1'' permission set (or equivalent) that your account doesn''t have. Ask your administrator to assign the permission set to you.', Comment = '%1 = permission set name';
+        PermisionSetNameTok: Label 'Power BI Core Admin', Locked = true;
 
     trigger OnOpenPage()
     var
         UserSetup: Record "User Setup";
+        PowerBIReportsSetup: Record "PowerBI Reports Setup";
     begin
+        if not PowerBIReportsSetup.WritePermission() then
+            Error(AdminPermissionRequiredErr, PermisionSetNameTok);
         if not Rec.Get() then begin
             Rec.Init();
             Rec.Insert();

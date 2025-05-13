@@ -5,8 +5,6 @@ using Microsoft.Inventory.Item;
 
 codeunit 8029 "Usage Based Billing Mgmt."
 {
-    Access = Internal;
-
     var
         ExtendContractMgt: Codeunit "Extend Sub. Contract Mgt.";
         ConfirmManagement: Codeunit "Confirm Management";
@@ -21,7 +19,7 @@ codeunit 8029 "Usage Based Billing Mgmt."
         DisconnectFromSubscriptionQst: Label 'Do you want to disconnect from the subscription?';
         SubscriptionCannotBeConnectedErr: Label 'The Subscription cannot be linked via "Existing Subscription Lines" because the Subscription Lines are not charged based on usage. Instead, select Link via=New Subscription Lines.';
 
-    internal procedure ConnectSubscriptionsToServiceObjects(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
+    procedure ConnectSubscriptionsToServiceObjects(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     var
         UsageDataSubscription2: Record "Usage Data Supp. Subscription";
         i: Integer;
@@ -61,7 +59,7 @@ codeunit 8029 "Usage Based Billing Mgmt."
         end;
     end;
 
-    internal procedure DisconnectServiceCommitmentFromSubscription(var ServiceCommitment: Record "Subscription Line")
+    procedure DisconnectServiceCommitmentFromSubscription(var ServiceCommitment: Record "Subscription Line")
     var
         UsageDataSubscription: Record "Usage Data Supp. Subscription";
     begin
@@ -83,7 +81,7 @@ codeunit 8029 "Usage Based Billing Mgmt."
         ServiceCommitments.ModifyAll("Supplier Reference Entry No.", 0, false);
     end;
 
-    procedure ConnectSubscriptionToServiceObjectWithExistingServiceCommitments(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
+    internal procedure ConnectSubscriptionToServiceObjectWithExistingServiceCommitments(var UsageDataSubscription: Record "Usage Data Supp. Subscription")
     var
         ServiceCommitment: Record "Subscription Line";
     begin

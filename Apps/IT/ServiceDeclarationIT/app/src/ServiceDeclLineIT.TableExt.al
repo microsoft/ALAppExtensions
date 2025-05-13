@@ -369,7 +369,7 @@ tableextension 12216 "Service Decl. Line IT" extends "Service Declaration Line"
                         TotalAppliedAmount :=
                             GetTotalBaseAmount(CustLedgEntry."Transaction No.", CustLedgEntry."Document No.", VATEntry.Type::Sale, ServiceDeclarationHeader."Starting Date", ServiceDeclarationHeader."Ending Date", IsCorrective);
                         ClosedEntry := CustLedgEntry."Closed by Entry No." <> 0;
-                        exit(CalcApplnDtldCustLedgEntry(CustLedgEntry, ServiceDeclarationHeader."Starting Date", ServiceDeclarationHeader."Ending Date", ClosedEntry, IsCorrective, TotalAppliedAmount));
+                        exit(-CalcApplnDtldCustLedgEntry(CustLedgEntry, ServiceDeclarationHeader."Starting Date", ServiceDeclarationHeader."Ending Date", ClosedEntry, IsCorrective, TotalAppliedAmount));
                     end;
                 end;
         end;

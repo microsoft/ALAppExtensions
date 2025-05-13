@@ -4,9 +4,20 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.Dimension;
 
+using Microsoft.Bank.BankAccount;
+using Microsoft.CashFlow.Setup;
+using Microsoft.CRM.Campaign;
+using Microsoft.CRM.Team;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Insurance;
+using Microsoft.Manufacturing.WorkCenter;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Resources.Resource;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using System.Reflection;
@@ -24,6 +35,24 @@ codeunit 31394 "Dimension Auto.Create Mgt. CZA"
         Item: Record Item;
         Customer: Record Customer;
         Vendor: Record Vendor;
+        GLAccount: Record "G/L Account";
+        ResourceGroup: Record "Resource Group";
+        Resource: Record Resource;
+        Job: Record Job;
+        BankAccount: Record "Bank Account";
+        FixedAsset: Record "Fixed Asset";
+        Insurance: Record Insurance;
+        ResponsibilityCenter: Record "Responsibility Center";
+        SalespersonPurchaser: Record "Salesperson/Purchaser";
+        Campaign: Record Campaign;
+        CashFlowManualExpense: Record "Cash Flow Manual Expense";
+        CashFlowManualRevenue: Record "Cash Flow Manual Revenue";
+        VendorTempl: Record "Vendor Templ.";
+        CustomerTempl: Record "Customer Templ.";
+        ItemTempl: Record "Item Templ.";
+        EmployeeTempl: Record "Employee Templ.";
+        WorkCenter: Record "Work Center";
+        ItemCharge: Record "Item Charge";
         DimensionAutoUpdateMgtCZA: Codeunit "Dimension Auto.Update Mgt. CZA";
         IsHandled: Boolean;
     begin
@@ -75,6 +104,60 @@ codeunit 31394 "Dimension Auto.Create Mgt. CZA"
                     Database::Employee:
                         if not Employee.Get(No) then
                             DimensionAutoUpdateMgtCZA.SetRequestRunEmployeeOnAfterInsertEvent(true);
+                    Database::"G/L Account":
+                        if not GLAccount.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunGLAccountOnAfterInsertEvent(true);
+                    Database::"Resource Group":
+                        if not ResourceGroup.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunResourceGroupOnAfterInsertEvent(true);
+                    Database::Resource:
+                        if not Resource.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunResourceOnAfterInsertEvent(true);
+                    Database::Job:
+                        if not Job.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunJobOnAfterInsertEvent(true);
+                    Database::"Bank Account":
+                        if not BankAccount.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunBankAccountOnAfterInsertEvent(true);
+                    Database::"Fixed Asset":
+                        if not FixedAsset.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunFixedAssetOnAfterInsertEvent(true);
+                    Database::Insurance:
+                        if not Insurance.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunInsuranceOnAfterInsertEvent(true);
+                    Database::"Responsibility Center":
+                        if not ResponsibilityCenter.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunResponsibilityCenterOnAfterInsertEvent(true);
+                    Database::"Salesperson/Purchaser":
+                        if not SalespersonPurchaser.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunSalespersonPurchaserOnAfterInsertEvent(true);
+                    Database::Campaign:
+                        if not Campaign.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunCampaignOnAfterInsertEvent(true);
+                    Database::"Cash Flow Manual Expense":
+                        if not CashFlowManualExpense.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunCashFlowManualExpenseOnAfterInsertEvent(true);
+                    Database::"Cash Flow Manual Revenue":
+                        if not CashFlowManualRevenue.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunCashFlowManualRevenueOnAfterInsertEvent(true);
+                    Database::"Vendor Templ.":
+                        if not VendorTempl.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunVendorTemplOnAfterInsertEvent(true);
+                    Database::"Customer Templ.":
+                        if not CustomerTempl.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunCustomerTemplOnAfterInsertEvent(true);
+                    Database::"Item Templ.":
+                        if not ItemTempl.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunItemTemplOnAfterInsertEvent(true);
+                    Database::"Employee Templ.":
+                        if not EmployeeTempl.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunEmployeeTemplOnAfterInsertEvent(true);
+                    Database::"Work Center":
+                        if not WorkCenter.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunWorkCenterOnAfterInsertEvent(true);
+                    Database::"Item Charge":
+                        if not ItemCharge.Get(No) then
+                            DimensionAutoUpdateMgtCZA.SetRequestRunItemChargeOnAfterInsertEvent(true);
                 end;
             until AutoDefaultDimension.Next() = 0;
     end;

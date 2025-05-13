@@ -19,11 +19,15 @@ table 47061 "SL Company Additional Settings"
     {
         field(1; Name; Text[30])
         {
+            Caption = 'Company';
+            ToolTip = 'Specify the name of the Company.';
             DataClassification = OrganizationIdentifiableInformation;
             TableRelation = "Hybrid Company".Name;
         }
         field(2; "Migrate Inactive Customers"; Boolean)
         {
+            Caption = 'Inactive Customers';
+            ToolTip = 'Specify whether to migrate inactive customers.';
             InitValue = false;
 
             trigger OnValidate()
@@ -44,6 +48,8 @@ table 47061 "SL Company Additional Settings"
         }
         field(3; "Migrate Inactive Vendors"; Boolean)
         {
+            Caption = 'Inactive Vendors';
+            ToolTip = 'Specify whether to migrate inactive vendors.';
             InitValue = false;
 
             trigger OnValidate()
@@ -64,6 +70,8 @@ table 47061 "SL Company Additional Settings"
         }
         field(4; "Migrate Vendor Classes"; Boolean)
         {
+            Caption = 'Vendor Classes';
+            ToolTip = 'Specify whether to migrate vendor classes.';
             InitValue = false;
 
             trigger OnValidate()
@@ -78,6 +86,8 @@ table 47061 "SL Company Additional Settings"
         }
         field(5; "Migrate Customer Classes"; Boolean)
         {
+            Caption = 'Customer Classes';
+            ToolTip = 'Specify whether to migrate customer classes. This is a future feature.';
             InitValue = false;
 
             trigger OnValidate()
@@ -92,6 +102,8 @@ table 47061 "SL Company Additional Settings"
         }
         field(6; "Migrate Item Classes"; Boolean)
         {
+            Caption = 'Product Classes';
+            ToolTip = 'Specify whether to migrate item classes. This is a future feature.';
             InitValue = false;
 
             trigger OnValidate()
@@ -106,6 +118,9 @@ table 47061 "SL Company Additional Settings"
         }
         field(7; "Oldest GL Year to Migrate"; Integer)
         {
+            Caption = 'Oldest GL Year';
+            ToolTip = 'Specify the oldest General Ledger year to be migrated. The year selected and all future years will be migrated to Business Central.';
+
             trigger OnValidate()
             begin
                 Rec.Validate("Oldest Hist. Year to Migrate", Rec."Oldest GL Year to Migrate");
@@ -113,6 +128,8 @@ table 47061 "SL Company Additional Settings"
         }
         field(8; "Migrate Payables Module"; Boolean)
         {
+            Caption = 'AP Module';
+            ToolTip = 'Specify whether to migrate the Accounts Payables module.';
             InitValue = true;
 
             trigger OnValidate()
@@ -128,6 +145,8 @@ table 47061 "SL Company Additional Settings"
         }
         field(9; "Migrate Receivables Module"; Boolean)
         {
+            Caption = 'AR Module';
+            ToolTip = 'Specify whether to migrate the Accounts Receivables module.';
             InitValue = true;
 
             trigger OnValidate()
@@ -142,7 +161,9 @@ table 47061 "SL Company Additional Settings"
         }
         field(10; "Migrate Inventory Module"; Boolean)
         {
+            Caption = 'Inventory Module';
             InitValue = true;
+            ToolTip = 'Specify whether to migrate the Inventory module.';
 
             trigger OnValidate()
             begin
@@ -158,8 +179,10 @@ table 47061 "SL Company Additional Settings"
         }
         field(11; "Global Dimension 1"; Text[30])
         {
+            Caption = 'Dimension 1';
             Description = 'Global Dimension 1 for the company';
             TableRelation = "SL Segment Name"."Segment Name" where("Company Name" = field(Name));
+            ToolTip = 'Specify the segment from Dynamics SL you would like as the first global dimension in Business Central.';
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -177,8 +200,10 @@ table 47061 "SL Company Additional Settings"
         }
         field(12; "Global Dimension 2"; Text[30])
         {
+            Caption = 'Dimension 2';
             Description = 'Global Dimension 2 for the company';
             TableRelation = "SL Segment Name"."Segment Name" where("Company Name" = field(Name));
+            ToolTip = 'Specify the segment from Dynamics SL you would like as the second global dimension in Business Central.';
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -196,7 +221,9 @@ table 47061 "SL Company Additional Settings"
         }
         field(13; "Migrate Open POs"; Boolean)
         {
+            Caption = 'Open POs';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate open Purchase Orders.';
 
             trigger OnValidate()
             begin
@@ -211,7 +238,9 @@ table 47061 "SL Company Additional Settings"
         }
         field(14; "Migrate Only GL Master"; Boolean)
         {
+            Caption = 'GL Master Only';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate GL master data only.';
 
             trigger OnValidate()
             begin
@@ -222,7 +251,9 @@ table 47061 "SL Company Additional Settings"
         }
         field(15; "Migrate Only Payables Master"; Boolean)
         {
+            Caption = 'AP Master Only';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate Accounts Payables master data only.';
 
             trigger OnValidate()
             begin
@@ -237,7 +268,9 @@ table 47061 "SL Company Additional Settings"
         }
         field(16; "Migrate Only Rec. Master"; Boolean)
         {
+            Caption = 'Rec. Master Only';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate Accounts Receivables master data only.';
 
             trigger OnValidate()
             begin
@@ -252,7 +285,9 @@ table 47061 "SL Company Additional Settings"
         }
         field(17; "Migrate Only Inventory Master"; Boolean)
         {
+            Caption = 'Inventory Master Only';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate Inventory master data only.';
 
             trigger OnValidate()
             begin
@@ -267,7 +302,9 @@ table 47061 "SL Company Additional Settings"
         }
         field(18; "Migrate Inactive Items"; Boolean)
         {
+            Caption = 'Inactive Items';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate inactive items.';
 
             trigger OnValidate()
             begin
@@ -277,7 +314,9 @@ table 47061 "SL Company Additional Settings"
         }
         field(19; "Migrate Discontinued Items"; Boolean)
         {
+            Caption = 'Delete Status Items';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate discontinued items.';
 
             trigger OnValidate()
             begin
@@ -287,26 +326,38 @@ table 47061 "SL Company Additional Settings"
         }
         field(20; "Oldest Hist. Year to Migrate"; Integer)
         {
+            Caption = 'Oldest Snapshot year';
+            ToolTip = 'Specify the oldest historical year to be migrated for snapshot records.';
         }
         field(21; "Migrate Hist. GL Trx."; Boolean)
         {
+            Caption = 'Snapshot GLTran';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate historical GLTran records.';
         }
         field(22; "Migrate Hist. AR Trx."; Boolean)
         {
+            Caption = 'Snapshot ARTran';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate historical ARTran records.';
         }
         field(23; "Migrate Hist. AP Trx."; Boolean)
         {
+            Caption = 'Snapshot APTran';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate historical APTran records.';
         }
         field(24; "Migrate Hist. Inv. Trx."; Boolean)
         {
+            Caption = 'Snapshot INTran';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate historical INTran records.';
         }
         field(25; "Migrate Hist. Purch. Trx."; Boolean)
         {
+            Caption = 'Snapshot POTran';
             InitValue = false;
+            ToolTip = 'Specify whether to migrate historical POTran records.';
         }
         field(26; "Migration Completed"; Boolean)
         {
@@ -316,19 +367,27 @@ table 47061 "SL Company Additional Settings"
         }
         field(27; "Skip Posting Account Batches"; Boolean)
         {
+            Caption = 'Skip Posting G/L Account Batches';
             InitValue = false;
+            ToolTip = 'Specify whether to diable auto posting of G/L account batches.';
         }
         field(28; "Skip Posting Customer Batches"; Boolean)
         {
+            Caption = 'Skip Posting Customer Batches';
             InitValue = false;
+            ToolTip = 'Specify whether to diable auto posting of customer batches.';
         }
         field(29; "Skip Posting Vendor Batches"; Boolean)
         {
+            Caption = 'Skip Posting Vendor Batches';
             InitValue = false;
+            ToolTip = 'Specify whether to diable auto posting of vendor batches.';
         }
         field(30; "Migrate GL Module"; Boolean)
         {
+            Caption = 'GL Module';
             InitValue = true;
+            ToolTip = 'Specify whether to migrate the GL module.';
 
             trigger OnValidate()
             var
@@ -363,13 +422,60 @@ table 47061 "SL Company Additional Settings"
         }
         field(31; "Skip Posting Item Batches"; Boolean)
         {
+            Caption = 'Skip Posting Item Batches';
             InitValue = false;
+            ToolTip = 'Specify whether to diable auto posting of item batches.';
         }
         field(32; "Has Hybrid Company"; Boolean)
         {
             CalcFormula = exist("Hybrid Company" where(Name = field(Name)));
             Editable = false;
             FieldClass = FlowField;
+        }
+        field(33; "Include Project Module"; Boolean)
+        {
+            Caption = 'Project Controller Module';
+            InitValue = false;
+            ToolTip = 'Specify whether to migrate the Project Controller module.';
+
+            trigger OnValidate()
+            begin
+                if not Rec."Include Project Module" then begin
+                    Rec.Validate("Project Master Only", false);
+                    Rec.Validate("Task Master Only", false);
+                    Rec.Validate("Resource Master Only", false);
+                end;
+            end;
+        }
+        field(34; "Project Master Only"; Boolean)
+        {
+            Caption = 'Projects Only';
+            InitValue = false;
+            ToolTip = 'Specify whether to migrate Project master data only.';
+        }
+        field(35; "Task Master Only"; Boolean)
+        {
+            Caption = 'Tasks Only';
+            InitValue = false;
+            ToolTip = 'Specify whether to migrate Task master data only.';
+        }
+        field(36; "Resource Master Only"; Boolean)
+        {
+            Caption = 'Resources Only';
+            InitValue = false;
+            ToolTip = 'Specify whether to migrate Resource master data only.';
+        }
+        field(37; "Include Plan Status Projects"; Boolean)
+        {
+            Caption = 'Include Plan Status Projects';
+            InitValue = false;
+            ToolTip = 'Specify whether to include Projects with a Status of Plan.';
+        }
+        field(38; "Include Hold Status Resources"; Boolean)
+        {
+            Caption = 'Include Hold Status Resources';
+            InitValue = false;
+            ToolTip = 'Specify whether to include Resources with a Status of Hold.';
         }
     }
 
@@ -419,6 +525,12 @@ table 47061 "SL Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Inventory Module");
+    end;
+
+    internal procedure GetProjectModuleEnabled(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Include Project Module");
     end;
 
     // Inactives
@@ -488,6 +600,36 @@ table 47061 "SL Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Only Inventory Master");
+    end;
+
+    internal procedure GetProjectMasterOnly(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Project Master Only");
+    end;
+
+    internal procedure GetPlanStatusProjects(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Include Plan Status Projects");
+    end;
+
+    internal procedure GetTaskMasterOnly(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Task Master Only");
+    end;
+
+    internal procedure GetResourceMasterOnly(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Resource Master Only");
+    end;
+
+    internal procedure GetIncludeHoldStatusResources(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Include Hold Status Resources");
     end;
 
     // Posting
@@ -601,7 +743,8 @@ table 47061 "SL Company Additional Settings"
         exit(not Rec."Migrate GL Module"
             and not Rec."Migrate Inventory Module"
             and not Rec."Migrate Payables Module"
-            and not Rec."Migrate Receivables Module");
+            and not Rec."Migrate Receivables Module"
+            and not Rec."Include Project Module");
     end;
 
     var

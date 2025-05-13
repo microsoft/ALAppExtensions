@@ -17,8 +17,6 @@ codeunit 30269 "Shpfy Webhooks Mgt."
         CategoryTok: Label 'Shopify Integration', Locked = true;
         JobQueueCategoryLbl: Label 'SHPFY', Locked = true;
         WebhookRegistrationFailedErr: Label 'Failed to register webhook with Shopify';
-        BulkOperationTopicLbl: Label 'BULK_OPERATIONS_FINISH', Locked = true;
-        OrdersCreateTopicLbl: Label 'ORDERS_CREATE', Locked = true;
         BulkOperationNotificationReceivedLbl: Label 'Bulk operation notification received for shop %1', Comment = '%1 = Shop code', Locked = true;
 
     [EventSubscriber(ObjectType::Table, Database::"Webhook Notification", 'OnAfterInsertEvent', '', false, false)]
@@ -59,24 +57,24 @@ codeunit 30269 "Shpfy Webhooks Mgt."
             TaskScheduler.CreateTask(Codeunit::"Shpfy Webhook Notification", 0, true, Company.Name, CurrentDateTime(), WebhookNotification.RecordId);
     end;
 
-    internal procedure EnableWebhook(var Shop: Record "Shpfy Shop"; Topic: Text[250]; UserId: Guid): Text
+    internal procedure EnableWebhook(var Shop: Record "Shpfy Shop"; WebhookTopic: Enum "Shpfy Webhook Topic"; UserId: Guid): Text
     var
         WebhookSubscription: Record "Webhook Subscription";
         WebhooksAPI: Codeunit "Shpfy Webhooks API";
         SubscriptionId: Text;
         PrevUserId: Guid;
     begin
-        if WebhookSubscription.Get(GetShopDomain(Shop."Shopify URL"), Topic) then begin
+        if WebhookSubscription.Get(GetShopDomain(Shop."Shopify URL"), Format(WebhookTopic)) then begin
             PrevUserId := WebhookSubscription."Run Notification As";
             WebhookSubscription.Delete();
         end;
-        if WebhooksAPI.GetWebhookSubscription(Shop, Topic, SubscriptionId) then
+        if WebhooksAPI.GetWebhookSubscription(Shop, WebhookTopic.Names.Get(WebhookTopic.Ordinals.IndexOf(WebhookTopic.AsInteger())), SubscriptionId) then
             WebhooksAPI.DeleteWebhookSubscription(Shop, SubscriptionId);
-        SubscriptionId := WebhooksAPI.RegisterWebhookSubscription(Shop, Topic);
+        SubscriptionId := WebhooksAPI.RegisterWebhookSubscription(Shop, WebhookTopic.Names.Get(WebhookTopic.Ordinals.IndexOf(WebhookTopic.AsInteger())));
         if SubscriptionId <> '' then begin
-            CreateWebhookSubscription(Shop, Topic, UserId);
+            CreateWebhookSubscription(Shop, Format(WebhookTopic), UserId);
             if PrevUserId <> UserId then
-                ChangePrevWebhookUserId(Topic, PrevUserId, UserId, Shop."Shopify URL", Shop.Code);
+                ChangePrevWebhookUserId(WebhookTopic, PrevUserId, UserId, Shop."Shopify URL", Shop.Code);
             exit(SubscriptionId);
         end else
             Error(WebhookRegistrationFailedErr);
@@ -84,7 +82,7 @@ codeunit 30269 "Shpfy Webhooks Mgt."
 
     internal procedure EnableBulkOperationWebhook(var Shop: Record "Shpfy Shop")
     begin
-        Shop."Bulk Operation Webhook Id" := CopyStr(EnableWebhook(Shop, BulkOperationTopicLbl, Shop."Bulk Operation Webhook User Id"), 1, MaxStrLen(Shop."Bulk Operation Webhook Id"));
+        Shop."Bulk Operation Webhook Id" := CopyStr(EnableWebhook(Shop, "Shpfy Webhook Topic"::BULK_OPERATIONS_FINISH, Shop."Bulk Operation Webhook User Id"), 1, MaxStrLen(Shop."Bulk Operation Webhook Id"));
         Shop.Modify();
     end;
 
@@ -96,7 +94,7 @@ codeunit 30269 "Shpfy Webhooks Mgt."
         WebhooksAPI: Codeunit "Shpfy Webhooks API";
         FoundCompany: Text[30];
     begin
-        if WebhookSubscription.Get(GetShopDomain(Shop."Shopify URL"), BulkOperationTopicLbl) then
+        if WebhookSubscription.Get(GetShopDomain(Shop."Shopify URL"), Format("Shpfy Webhook Topic"::BULK_OPERATIONS_FINISH)) then
             if WebhookSubscription."Company Name" = CompanyName() then begin // checks if this webhook is also enabled for another company
                 Company.FindSet();
                 repeat
@@ -138,7 +136,7 @@ codeunit 30269 "Shpfy Webhooks Mgt."
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        Shop."Order Created Webhook Id" := CopyStr(EnableWebhook(Shop, OrdersCreateTopicLbl, GetOrderCreatedWebhookUser(Shop)), 1, MaxStrLen(Shop."Order Created Webhook Id"));
+        Shop."Order Created Webhook Id" := CopyStr(EnableWebhook(Shop, "Shpfy Webhook Topic"::ORDERS_CREATE, GetOrderCreatedWebhookUser(Shop)), 1, MaxStrLen(Shop."Order Created Webhook Id"));
         Shop.Modify();
         FeatureTelemetry.LogUptake('0000K8E', 'Shopify Webhooks', Enum::"Feature Uptake Status"::"Set up");
     end;
@@ -151,7 +149,7 @@ codeunit 30269 "Shpfy Webhooks Mgt."
         WebhooksAPI: Codeunit "Shpfy Webhooks API";
         FoundCompany: Text[30];
     begin
-        if WebhookSubscription.Get(GetShopDomain(Shop."Shopify URL"), OrdersCreateTopicLbl) then
+        if WebhookSubscription.Get(GetShopDomain(Shop."Shopify URL"), Format("Shpfy Webhook Topic"::ORDERS_CREATE)) then
             if WebhookSubscription."Company Name" = CompanyName() then begin // checks if this webhook is also enabled for another company
                 Company.FindSet();
                 repeat
@@ -281,12 +279,12 @@ codeunit 30269 "Shpfy Webhooks Mgt."
         BulkOperationMgt.ProcessBulkOperationNotification(Shop, JNotification);
     end;
 
-    local procedure ChangePrevWebhookUserId(Topic: Text[250]; PrevUserId: Guid; UserId: Guid; ShopUrl: Text[250]; ShopCode: Code[20])
+    local procedure ChangePrevWebhookUserId(WebhookTopic: Enum "Shpfy Webhook Topic"; PrevUserId: Guid; UserId: Guid; ShopUrl: Text[250]; ShopCode: Code[20])
     var
         Shop: Record "Shpfy Shop";
     begin
-        case Topic of
-            OrdersCreateTopicLbl:
+        case WebhookTopic of
+            WebhookTopic::ORDERS_CREATE:
                 begin
                     Shop.SetFilter(Code, '<>%1', ShopCode);
                     Shop.SetRange("Shopify URL", ShopUrl);
@@ -299,7 +297,7 @@ codeunit 30269 "Shpfy Webhooks Mgt."
                             Shop.Modify();
                         until Shop.Next() = 0;
                 end;
-            BulkOperationTopicLbl:
+            WebhookTopic::BULK_OPERATIONS_FINISH:
                 begin
                     Shop.SetFilter(Code, '<>%1', ShopCode);
                     Shop.SetRange("Shopify URL", ShopUrl);

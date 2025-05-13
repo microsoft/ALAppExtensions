@@ -29,20 +29,17 @@ page 6183 "E-Doc. Purchase Draft Subform"
                 field("Line Type"; Rec."Purchase Line Type")
                 {
                     ApplicationArea = All;
-                    StyleExpr = StyleTxt;
                     Editable = true;
                 }
                 field("No."; Rec."Purchase Type No.")
                 {
                     ApplicationArea = All;
-                    StyleExpr = StyleTxt;
                     Editable = true;
                     Lookup = true;
                 }
                 field(Description; EDocumentPurchaseLine.Description)
                 {
                     ApplicationArea = All;
-                    StyleExpr = StyleTxt;
                     Editable = false;
                 }
                 field("Unit Of Measure"; Rec."Unit of Measure")
@@ -76,23 +73,60 @@ page 6183 "E-Doc. Purchase Draft Subform"
                     ApplicationArea = Dimensions;
                     Visible = DimVisible2;
                 }
+                field(AdditionalColumns; AdditionalColumns)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Additional columns';
+                    ToolTip = 'Specifies the additional columns considered.';
+                    Editable = false;
+                    Visible = HasAdditionalColumns;
+                    trigger OnDrillDown()
+                    begin
+                        Page.Run(Page::"E-Doc Line Values.", Rec);
+                    end;
+                }
+            }
+        }
+    }
+    actions
+    {
+        area(Processing)
+        {
+            action(History)
+            {
+                ApplicationArea = All;
+                Caption = 'Values from history';
+                Image = History;
+                ToolTip = 'The values for this line were retrieved from previously posted invoices. Open the invoice to see the values.';
+                Visible = Rec."E-Doc. Purch. Line History Id" <> 0;
+                trigger OnAction()
+                begin
+                    if not EDocPurchaseHistMapping.OpenPageWithHistoricMatch(Rec) then
+                        Error(HistoryCantBeRetrievedErr);
+                end;
             }
         }
     }
 
     var
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
-        StyleTxt: Text;
-        DimVisible1, DimVisible2 : Boolean;
+        EDocPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
+        AdditionalColumns: Text;
+        DimVisible1, DimVisible2, HasAdditionalColumns : Boolean;
+        HistoryCantBeRetrievedErr: Label 'The purchase invoice that matched historically with this line can''t be opened.';
 
     trigger OnOpenPage()
+    var
+        EDocPurchLineFieldSetup: Record "EDoc. Purch. Line Field Setup";
     begin
         SetDimensionsVisibility();
+        HasAdditionalColumns := not EDocPurchLineFieldSetup.IsEmpty();
     end;
 
     trigger OnAfterGetRecord()
     begin
         if EDocumentPurchaseLine.Get(Rec."E-Document Entry No.", Rec."Line No.") then;
+        AdditionalColumns := Rec.AdditionalColumnsDisplayText();
     end;
 
     local procedure SetDimensionsVisibility()

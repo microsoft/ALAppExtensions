@@ -7,7 +7,7 @@ table 8004 "Sub. Contr. Price Update Line"
 {
     Caption = 'Subscription Contract Price Update Line';
     DataClassification = CustomerContent;
-    Access = Internal;
+
     fields
     {
         field(1; "Entry No."; Integer)

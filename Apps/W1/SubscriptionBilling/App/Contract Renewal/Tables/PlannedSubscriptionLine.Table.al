@@ -12,7 +12,6 @@ table 8002 "Planned Subscription Line"
     Caption = 'Planned Subscription Line';
     LookupPageId = "Planned Service Commitments";
     DrillDownPageId = "Planned Service Commitments";
-    Access = Internal;
 
     fields
     {

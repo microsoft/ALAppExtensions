@@ -13,6 +13,11 @@ table 5579 "Digital Voucher Entry Setup"
         field(1; "Entry Type"; Enum "Digital Voucher Entry Type")
         {
             NotBlank = true;
+
+            trigger OnValidate()
+            begin
+                "Consider Blank Doc. Type" := false;
+            end;
         }
         field(2; "Check Type"; Enum "Digital Voucher Check Type")
         {
@@ -23,6 +28,15 @@ table 5579 "Digital Voucher Entry Setup"
         field(4; "Skip If Manually Added"; Boolean)
         {
             InitValue = true;
+        }
+        field(5; "Consider Blank Doc. Type"; Boolean)
+        {
+            trigger OnValidate()
+            begin
+                if "Consider Blank Doc. Type" then
+                    if not ("Entry Type" in ["Entry Type"::"General Journal", "Entry Type"::"Sales Journal", "Entry Type"::"Purchase Journal"]) then
+                        FieldError("Entry Type");
+            end;
         }
     }
 

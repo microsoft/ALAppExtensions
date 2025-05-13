@@ -40,6 +40,7 @@ codeunit 5218 "Sustainability Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Sust. Vendor");
         Codeunit.Run(Codeunit::"Create Sust Item Category");
         Codeunit.Run(Codeunit::"Create Sust. Item");
+        Codeunit.Run(Codeunit::"Create Sust. Responsibility");
     end;
 
     procedure CreateTransactionalData()

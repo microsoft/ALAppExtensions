@@ -46,21 +46,27 @@ codeunit 30190 "Shpfy Export Shipments"
         JFulfillment: JsonToken;
         JResponse: JsonToken;
         FulfillmentOrderRequest: Text;
+        FulfillmentId: BigInteger;
+        FulfillmentOrderRequests: List of [Text];
     begin
         if ShopifyOrderHeader.Get(SalesShipmentHeader."Shpfy Order Id") then begin
             ShopifyCommunicationMgt.SetShop(ShopifyOrderHeader."Shop Code");
             Shop.Get(ShopifyOrderHeader."Shop Code");
-            FulfillmentOrderRequest := CreateFulfillmentOrderRequest(SalesShipmentHeader, Shop, LocationId, DeliveryMethodType);
-            if FulfillmentOrderRequest <> '' then begin
-                JResponse := ShopifyCommunicationMgt.ExecuteGraphQL(FulfillmentOrderRequest);
-                JFulfillment := JsonHelper.GetJsonToken(JResponse, 'data.fulfillmentCreate.fulfillment');
-                if (JFulfillment.IsObject) then
-                    SalesShipmentHeader."Shpfy Fulfillment Id" := OrderFulfillments.ImportFulfillment(SalesShipmentHeader."Shpfy Order Id", JFulfillment)
-                else begin
-                    SkippedRecord.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoFulfillmentCreatedInShopifyLbl, Shop);
-                    SalesShipmentHeader."Shpfy Fulfillment Id" := -1;
-                end;
-            end else begin
+            FulfillmentOrderRequests := CreateFulfillmentOrderRequest(SalesShipmentHeader, Shop, LocationId, DeliveryMethodType);
+            if FulfillmentOrderRequests.Count <> 0 then
+                foreach FulfillmentOrderRequest in FulfillmentOrderRequests do begin
+                    JResponse := ShopifyCommunicationMgt.ExecuteGraphQL(FulfillmentOrderRequest);
+                    JFulfillment := JsonHelper.GetJsonToken(JResponse, 'data.fulfillmentCreate.fulfillment');
+                    if (JFulfillment.IsObject) then begin
+                        FulfillmentId := OrderFulfillments.ImportFulfillment(SalesShipmentHeader."Shpfy Order Id", JFulfillment);
+                        if SalesShipmentHeader."Shpfy Fulfillment Id" <> -1 then // partial fulfillment errors
+                            SalesShipmentHeader."Shpfy Fulfillment Id" := FulfillmentId;
+                    end else begin
+                        SkippedRecord.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoFulfillmentCreatedInShopifyLbl, Shop);
+                        SalesShipmentHeader."Shpfy Fulfillment Id" := -1;
+                    end;
+                end
+            else begin
                 SkippedRecord.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoCorrespondingFulfillmentLinesLbl, Shop);
                 SalesShipmentHeader."Shpfy Fulfillment Id" := -1;
             end;
@@ -68,7 +74,7 @@ codeunit 30190 "Shpfy Export Shipments"
         end;
     end;
 
-    internal procedure CreateFulfillmentOrderRequest(SalesShipmentHeader: Record "Sales Shipment Header"; Shop: Record "Shpfy Shop"; LocationId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type") Request: Text;
+    internal procedure CreateFulfillmentOrderRequest(SalesShipmentHeader: Record "Sales Shipment Header"; Shop: Record "Shpfy Shop"; LocationId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type") Requests: List of [Text];
     var
         SalesShipmentLine: Record "Sales Shipment Line";
         ShippingAgent: Record "Shipping Agent";
@@ -79,7 +85,10 @@ codeunit 30190 "Shpfy Export Shipments"
         PrevFulfillmentOrderId: BigInteger;
         IsHandled: Boolean;
         TrackingUrl: Text;
+        GraphQueryStart: Text;
         GraphQuery: TextBuilder;
+        LineCount: Integer;
+        GraphQueries: List of [Text];
     begin
         Clear(PrevFulfillmentOrderId);
 
@@ -147,6 +156,7 @@ codeunit 30190 "Shpfy Export Shipments"
                     GraphQuery.Append('}');
                 end;
                 GraphQuery.Append('lineItemsByFulfillmentOrder: [');
+                GraphQueryStart := GraphQuery.ToText();
                 repeat
                     if PrevFulfillmentOrderId <> TempFulfillmentOrderLine."Shopify Fulfillment Order Id" then begin
                         if PrevFulfillmentOrderId <> 0 then
@@ -167,11 +177,22 @@ codeunit 30190 "Shpfy Export Shipments"
                     GraphQuery.Append('quantity: ');
                     GraphQuery.Append(Format(TempFulfillmentOrderLine."Quantity to Fulfill", 0, 9));
                     GraphQuery.Append('}');
+                    LineCount += 1;
+                    if LineCount = 250 then begin
+                        LineCount := 0;
+                        GraphQuery.Append(']}]})');
+                        GraphQuery.Append('{fulfillment { legacyResourceId name createdAt updatedAt deliveredAt displayStatus estimatedDeliveryAt status totalQuantity location { legacyResourceId } trackingInfo { number url company } service { serviceName type } fulfillmentLineItems(first: 10) { pageInfo { endCursor hasNextPage } nodes { id quantity originalTotalSet { presentmentMoney { amount } shopMoney { amount }} lineItem { id isGiftCard }}}}, userErrors {field,message}}}"}');
+                        GraphQueries.Add(GraphQuery.ToText());
+                        GraphQuery.Clear();
+                        GraphQuery.Append(GraphQueryStart);
+                        Clear(PrevFulfillmentOrderId);
+                    end;
                 until TempFulfillmentOrderLine.Next() = 0;
                 GraphQuery.Append(']}]})');
                 GraphQuery.Append('{fulfillment { legacyResourceId name createdAt updatedAt deliveredAt displayStatus estimatedDeliveryAt status totalQuantity location { legacyResourceId } trackingInfo { number url company } service { serviceName type } fulfillmentLineItems(first: 10) { pageInfo { endCursor hasNextPage } nodes { id quantity originalTotalSet { presentmentMoney { amount } shopMoney { amount }} lineItem { id isGiftCard }}}}, userErrors {field,message}}}"}');
+                GraphQueries.Add(GraphQuery.ToText());
             end;
-            exit(GraphQuery.ToText());
+            exit(GraphQueries);
         end;
     end;
 

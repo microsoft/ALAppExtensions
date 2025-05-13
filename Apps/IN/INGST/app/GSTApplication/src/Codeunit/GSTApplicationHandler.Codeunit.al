@@ -95,6 +95,7 @@ codeunit 18430 "GST Application Handler"
         InvoiceGSTAmount: Decimal;
         InvoiceBase: Decimal;
         TotalTDSInclSHECessAmount: Decimal;
+        RemainingAmount: Decimal;
         IsHandled: Boolean;
     begin
         OnBeforePostGSTPurchaseApplication(GenJournalLine, CVLedgerEntryBuffer, OldCVLedgerEntryBuffer, AmountToApply, IsHandled);
@@ -114,6 +115,11 @@ codeunit 18430 "GST Application Handler"
             if not ApplyingVendorLedgerEntry.Get(OldCVLedgerEntryBuffer."Entry No.") then
                 exit;
 
+            if CVLedgerEntryBuffer."Remaining Amt. (LCY)" = 0 then
+                RemainingAmount := CVLedgerEntryBuffer."Amount (LCY)"
+            else
+                RemainingAmount := CVLedgerEntryBuffer."Remaining Amt. (LCY)";
+
             if VendorLedgerEntry."GST on Advance Payment" and VendorLedgerEntry."GST Reverse Charge" then begin
                 GSTPurchaseApplicationMgt.GetPurchaseInvoiceAmountOffline(
                     VendorLedgerEntry,
@@ -126,7 +132,7 @@ codeunit 18430 "GST Application Handler"
                         ApplyingVendorLedgerEntry,
                         VendorLedgerEntry,
                         AmountToApply,
-                        CVLedgerEntryBuffer."Remaining Amt. (LCY)",
+                        RemainingAmount,
                         InvoiceGSTAmount,
                         InvoiceBase)
                 else
@@ -134,7 +140,7 @@ codeunit 18430 "GST Application Handler"
                         ApplyingVendorLedgerEntry,
                         VendorLedgerEntry,
                         AmountToApply,
-                        CVLedgerEntryBuffer."Remaining Amt. (LCY)",
+                        RemainingAmount,
                         InvoiceBase);
 
                 GSTApplicationLibrary.CheckGroupAmount(

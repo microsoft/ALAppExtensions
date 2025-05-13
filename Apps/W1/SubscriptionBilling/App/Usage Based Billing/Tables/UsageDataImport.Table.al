@@ -8,7 +8,7 @@ table 8013 "Usage Data Import"
     DataClassification = CustomerContent;
     LookupPageId = "Usage Data Imports";
     DrillDownPageId = "Usage Data Imports";
-    Access = Internal;
+
     fields
     {
         field(1; "Entry No."; Integer)
@@ -345,17 +345,17 @@ table 8013 "Usage Data Import"
         UsageBasedBilling.ShowRelatedDocuments(UsageBasedBilling, DocumentType, ServicePartner);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnDeleteUsageDataBillingLines()
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeProcessUsageDataImport(var UsageDataImport: Record "Usage Data Import"; ProcessingStep: Enum "Processing Step")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterProcessUsageDataImport(var UsageDataImport: Record "Usage Data Import"; ProcessingStep: Enum "Processing Step")
     begin
     end;

@@ -1318,27 +1318,40 @@ codeunit 148153 "Usage Based Billing Test"
     [Test]
     [HandlerFunctions('MessageHandler,CreateCustomerBillingDocumentPageHandler')]
     procedure TestYearlyServiceCommitmentWithDailyUsageData()
+    var
+        UsageDataBilling2: Record "Usage Data Billing";
     begin
         ClearAll();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        Item."Unit Price" := 2;
+        //In order to avoid rounding issues, set the Unit price to number of days in the period; This way Daily price will always be 1
+        Item."Unit Price" := CalcDate('<1Y>', WorkDate()) - WorkDate();
         Item."Unit Cost" := 1;
         Item.Modify(false);
 
         SetupServiceDataForProcessing(Enum::"Usage Based Pricing"::"Usage Quantity", "Calculation Base Type"::"Item Price", Enum::"Invoicing Via"::Contract,
                                        '1Y', '1Y', '1Y', "Service Partner"::Customer, 100, Item."No.");
 
-        ProcessUsageDataWithSimpleGenericImport(WorkDate(), WorkDate(), WorkDate(), CalcDate('<CM>', WorkDate()), 1);
+        ProcessUsageDataWithSimpleGenericImport(WorkDate(), WorkDate(), WorkDate(), WorkDate(), 1);
+        UsageDataBilling2.Reset();
+        UsageDataBilling2.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
+        UsageDataBilling2.SetRange(Partner, "Service Partner"::Customer);
+        if UsageDataBilling2.FindSet() then
+            repeat
+                UsageDataBilling2.TestField("Unit Price", UsageDataBilling2."Charged Period (Days)");
+            until UsageDataBilling2.Next() = 0;
         CreateContractInvoicesAndTestProcessedUsageData();
     end;
 
     [Test]
     [HandlerFunctions('MessageHandler,CreateCustomerBillingDocumentPageHandler')]
     procedure TestYearlyServiceCommitmentWithMonthlyUsageData()
+    var
+        UsageDataBilling2: Record "Usage Data Billing";
     begin
         ClearAll();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        Item."Unit Price" := 2;
+        //In order to avoid rounding issues, set the Unit price to number of days in the period; This way Daily price will always be 1
+        Item."Unit Price" := CalcDate('<1Y>', WorkDate()) - WorkDate();
         Item."Unit Cost" := 1;
         Item.Modify(false);
 
@@ -1346,6 +1359,13 @@ codeunit 148153 "Usage Based Billing Test"
                                        '1Y', '1Y', '1Y', "Service Partner"::Customer, 100, Item."No.");
 
         ProcessUsageDataWithSimpleGenericImport(WorkDate(), CalcDate('<CM>', WorkDate()), WorkDate(), CalcDate('<CM>', WorkDate()), 1);
+        UsageDataBilling2.Reset();
+        UsageDataBilling2.SetRange("Usage Data Import Entry No.", UsageDataImport."Entry No.");
+        UsageDataBilling2.SetRange(Partner, "Service Partner"::Customer);
+        if UsageDataBilling2.FindSet() then
+            repeat
+                UsageDataBilling2.TestField("Unit Price", UsageDataBilling2."Charged Period (Days)");
+            until UsageDataBilling2.Next() = 0;
         CreateContractInvoicesAndTestProcessedUsageData();
     end;
 

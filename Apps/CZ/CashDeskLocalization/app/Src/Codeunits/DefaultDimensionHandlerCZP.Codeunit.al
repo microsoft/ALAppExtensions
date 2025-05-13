@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.CashDesk;
 
 using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 31084 "Default Dimension Handler CZP"
 {
@@ -17,6 +18,26 @@ codeunit 31084 "Default Dimension Handler CZP"
             Database::"Cash Desk Event CZP":
                 UpdateCashDeskEventCZPGlobalDimCode(GlobalDimCodeNo, AccNo, NewDimValue);
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Cash Desk CZP", 'OnAfterInsertEvent', '', false, false)]
+    local procedure CashDeskCZPOnAfterInsertEvent(var Rec: Record "Cash Desk CZP")
+    begin
+        if Rec.IsTemporary then
+            exit;
+
+        if UpdateDefaultDimension(Database::"Cash Desk CZP", Rec."No.") then
+            Rec.Get(Rec."No.");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Cash Desk Event CZP", 'OnAfterInsertEvent', '', false, false)]
+    local procedure CashDeskEventCZPOnAfterInsertEvent(var Rec: Record "Cash Desk Event CZP")
+    begin
+        if Rec.IsTemporary then
+            exit;
+
+        if UpdateDefaultDimension(Database::"Cash Desk CZP", Rec.Code) then
+            Rec.Get(Rec.Code);
     end;
 
     local procedure UpdateCashDeskCZPGlobalDimCode(GlobalDimCodeNo: Integer; CashDeskNo: Code[20]; NewDimValue: Code[20])
@@ -47,5 +68,29 @@ codeunit 31084 "Default Dimension Handler CZP"
             end;
             CashDeskEventCZP.Modify(true);
         end;
+    end;
+
+    local procedure UpdateDefaultDimension(TableID: Integer; No: Code[20]): Boolean
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        DefaultDimension: Record "Default Dimension";
+        UpdateGlobalDimCode: Boolean;
+    begin
+        UpdateGlobalDimCode := false;
+        GeneralLedgerSetup.Get();
+        DefaultDimension.SetRange("Table ID", TableID);
+        DefaultDimension.SetRange("No.", No);
+        if DefaultDimension.FindSet(true) then
+            repeat
+                if DefaultDimension."Dimension Code" = GeneralLedgerSetup."Global Dimension 1 Code" then begin
+                    DefaultDimension.UpdateGlobalDimCode(1, TableID, No, DefaultDimension."Dimension Value Code");
+                    UpdateGlobalDimCode := true;
+                end;
+                if DefaultDimension."Dimension Code" = GeneralLedgerSetup."Global Dimension 2 Code" then begin
+                    DefaultDimension.UpdateGlobalDimCode(2, TableID, No, DefaultDimension."Dimension Value Code");
+                    UpdateGlobalDimCode := true;
+                end;
+            until DefaultDimension.Next() = 0;
+        exit(UpdateGlobalDimCode);
     end;
 }

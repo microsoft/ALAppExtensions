@@ -6,7 +6,6 @@ table 8015 "Usage Data Supplier Reference"
     DataClassification = CustomerContent;
     LookupPageId = "Usage Data Supp. References";
     DrillDownPageId = "Usage Data Supp. References";
-    Access = Internal;
 
     fields
     {
@@ -58,7 +57,8 @@ table 8015 "Usage Data Supplier Reference"
         {
         }
     }
-    procedure CreateSupplierReference(SupplierNo: Code[20]; SupplierReference: Text[80]; ReferenceType: Enum "Usage Data Reference Type")
+
+    internal procedure CreateSupplierReference(SupplierNo: Code[20]; SupplierReference: Text[80]; ReferenceType: Enum "Usage Data Reference Type")
     begin
         if Rec.FindSupplierReference(SupplierNo, SupplierReference, ReferenceType) then begin
             Rec.Reset();
@@ -77,13 +77,6 @@ table 8015 "Usage Data Supplier Reference"
     begin
         Rec.FilterUsageDataSupplierReference(SupplierNo, SupplierReference, ReferenceType);
         exit(Rec.FindFirst());
-    end;
-
-    internal procedure DeleteSupplierReference(SupplierNo: Code[20]; SupplierReference: Text[80]; ReferenceType: Enum "Usage Data Reference Type")
-    begin
-        Rec.FilterUsageDataSupplierReference(SupplierNo, SupplierReference, ReferenceType);
-        Rec.DeleteAll(true);
-        Rec.Reset();
     end;
 
     internal procedure FilterUsageDataSupplierReference(SupplierNo: Code[20]; SupplierReference: Text[80]; ReferenceType: Enum "Usage Data Reference Type")

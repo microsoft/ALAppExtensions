@@ -58,10 +58,13 @@ table 6382 "Sharepoint Setup"
             var
                 DriveProcessing: Codeunit "Drive Processing";
             begin
-                if Rec."Documents Folder" <> '' then
-                    Rec.SiteId := CopyStr(DriveProcessing.GetSiteId(Rec."Documents Folder"), 1, MaxStrLen(Rec.SiteId))
-                else
+                if Rec."Documents Folder" <> '' then begin
+                    Rec.SiteId := CopyStr(DriveProcessing.GetSiteId(Rec."Documents Folder"), 1, MaxStrLen(Rec.SiteId));
+                    Rec."Documents Folder Name" := CopyStr(DriveProcessing.GetName(Rec."Documents Folder"), 1, MaxStrLen(Rec."Documents Folder Name"))
+                end else begin
                     Rec.SiteId := '';
+                    Rec."Documents Folder Name" := ''
+                end;
             end;
         }
         field(4; "Imp. Documents Folder"; Text[2048])
@@ -87,6 +90,11 @@ table 6382 "Sharepoint Setup"
         field(6; "Imp. Documents Folder Id"; Text[2048])
         {
             Caption = 'Imported Documents Folder Id';
+            DataClassification = CustomerContent;
+        }
+        field(7; "Documents Folder Name"; Text[2048])
+        {
+            Caption = 'Documents Folder Name';
             DataClassification = CustomerContent;
         }
     }
