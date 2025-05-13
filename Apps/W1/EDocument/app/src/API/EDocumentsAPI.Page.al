@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.API;
+using Microsoft.eServices.EDocument;
 
 page 6112 "E-Documents API"
 {
@@ -17,8 +18,8 @@ page 6112 "E-Documents API"
     EntityName = 'eDocument';
     EntitySetName = 'eDocuments';
 
-    ODataKeyFields = Id;
-    SourceTable = "E-Document Entity Buffer";
+    ODataKeyFields = SystemId;
+    SourceTable = "E-Document";
 
     Extensible = false;
     Editable = false;
