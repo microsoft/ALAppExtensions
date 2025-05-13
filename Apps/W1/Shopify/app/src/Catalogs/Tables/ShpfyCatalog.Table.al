@@ -137,4 +137,17 @@ table 30152 "Shpfy Catalog"
             Clustered = true;
         }
     }
+
+    trigger OnDelete()
+    begin
+        ClearCatalogMarketRelations();
+    end;
+
+    local procedure ClearCatalogMarketRelations()
+    var
+        MarketCatalogRelation: Record "Shpfy Market Catalog Relation";
+    begin
+        MarketCatalogRelation.SetRange("Catalog System Id", SystemId);
+        MarketCatalogRelation.DeleteAll(true);
+    end;
 }
