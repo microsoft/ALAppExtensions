@@ -118,18 +118,12 @@ table 30152 "Shpfy Catalog"
             DataClassification = CustomerContent;
             TableRelation = "Customer";
         }
-        field(18; "Market Id"; BigInteger)
-        {
-            Caption = 'Market Id';
-            DataClassification = SystemMetadata;
-            Editable = false;
-        }
-        field(19; "Catalog Type"; Enum "Shpfy Catalog Type")
+        field(18; "Catalog Type"; Enum "Shpfy Catalog Type")
         {
             Caption = 'Catalog Type';
             DataClassification = CustomerContent;
         }
-        field(20; "Currency Code"; Code[10])
+        field(19; "Currency Code"; Code[10])
         {
             Caption = 'Currency Code';
             DataClassification = CustomerContent;

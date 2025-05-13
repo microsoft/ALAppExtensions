@@ -18,6 +18,7 @@ codeunit 30290 "Shpfy Catalog API"
         CatalogType: Enum "Shpfy Catalog Type";
         ShopifyCatalogURLLbl: Label 'https://admin.shopify.com/store/%1/catalogs/%2/editor', Comment = '%1 - Shop Name, %2 - Catalog Id', Locked = true;
         ShopifyMarketCatalogURLLbl: Label 'https://admin.shopify.com/store/%1/settings/markets/%2/pricing', Comment = '%1 - Shop Name, %2 - Market Catalog Id', Locked = true;
+        ShopifyUnifiedMarketCatalogURLLbl: Label 'https://admin.shopify.com/store/%1/catalogs/%2/editor', Comment = '%1 - Shop Name, %2 - Catalog Id', Locked = true;
         CatalogNotFoundLbl: Label 'Catalog is not found.';
 
     internal procedure CreateCatalog(ShopifyCompany: Record "Shpfy Company"; Customer: Record Customer)
@@ -276,9 +277,63 @@ codeunit 30290 "Shpfy Catalog API"
                     Catalog."Shop Code" := Shop.Code;
                     Catalog.Name := CopyStr(JsonHelper.GetValueAsText(JNode, 'title'), 1, MaxStrLen(Catalog.Name));
                     Catalog."Currency Code" := CopyStr(CurrencyCode, 1, MaxStrLen(Catalog."Currency Code"));
-                    // TODO: JZA Assign the market id to the catalog
-                    // MarketId :=
                     Catalog.Modify(true);
+
+                    GetMarketsLinkedToCatalog(Catalog);
+                end;
+            end;
+            exit(true);
+        end;
+    end;
+
+    internal procedure GetMarketsLinkedToCatalog(Catalog: Record "Shpfy Catalog")
+    var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Cursor: Text;
+        JResponse: JsonToken;
+        Parameters: Dictionary of [Text, Text];
+    begin
+        GraphQLType := "Shpfy GraphQL Type"::GetCatalogMarkets;
+        Parameters.Add('CatalogId', Format(Catalog.Id));
+        repeat
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            if JResponse.IsObject() then
+                if ExtractMarketsLinkedToCatalog(JResponse.AsObject(), Catalog, Cursor) then begin
+                    if Parameters.ContainsKey('After') then
+                        Parameters.Set('After', Cursor)
+                    else
+                        Parameters.Add('After', Cursor);
+                    GraphQLType := "Shpfy GraphQL Type"::GetNextCatalogMarkets;
+                end else
+                    break;
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalog.markets.pageInfo.hasNextPage');
+    end;
+
+    local procedure ExtractMarketsLinkedToCatalog(JResponse: JsonObject; Catalog: Record "Shpfy Catalog"; var Cursor: Text): Boolean
+    var
+        MarketCatalogRelation: Record "Shpfy Market Catalog Relation";
+        MarketId: BigInteger;
+        JMarkets: JsonArray;
+        JEdge: JsonToken;
+        JNode: JsonObject;
+    begin
+        if JsonHelper.GetJsonArray(JResponse, JMarkets, 'data.catalog.markets.edges') then begin
+            foreach JEdge in JMarkets do begin
+                Cursor := JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
+                if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
+                    MarketId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+
+                    MarketCatalogRelation.SetRange("Market Id", MarketId);
+                    MarketCatalogRelation.SetRange("Catalog Id", Catalog.Id);
+                    if not MarketCatalogRelation.FindFirst() then begin
+                        MarketCatalogRelation."Market Id" := MarketId;
+                        MarketCatalogRelation."Catalog Id" := Catalog.Id;
+                        MarketCatalogRelation.Insert(true);
+                    end;
+                    MarketCatalogRelation."Shop Code" := Shop.Code;
+                    MarketCatalogRelation."Market Name" := CopyStr(JsonHelper.GetValueAsText(JNode, 'name'), 1, MaxStrLen(MarketCatalogRelation."Market Name"));
+                    MarketCatalogRelation."Catalog Title" := Catalog.Name;
+                    MarketCatalogRelation.Modify(true);
                 end;
             end;
             exit(true);
@@ -339,8 +394,30 @@ codeunit 30290 "Shpfy Catalog API"
             "Shpfy Catalog Type"::Company:
                 exit(StrSubstNo(ShopifyCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)));
             "Shpfy Catalog Type"::Market:
-                exit(StrSubstNo(ShopifyMarketCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)));
+                if IsUnifiedMarketsEnabled(Shop) then
+                    exit(StrSubstNo(ShopifyUnifiedMarketCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)))
+                else
+                    exit(StrSubstNo(ShopifyMarketCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(GetMartetIdForNotUnifiedMarket(CatalogId))));
         end;
+    end;
+
+    internal procedure IsUnifiedMarketsEnabled(ShopifyShop: Record "Shpfy Shop"): Boolean
+    var
+        JResponse: JsonToken;
+    begin
+        CommunicationMgt.SetShop(ShopifyShop);
+        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { features { unifiedMarkets } } }"}');
+        exit(JsonHelper.GetValueAsBoolean(JResponse, 'data.shop.features.unifiedMarkets'));
+    end;
+
+    local procedure GetMartetIdForNotUnifiedMarket(CatalogId: BigInteger): BigInteger
+    var
+        MarketCatalogRelation: Record "Shpfy Market Catalog Relation";
+    begin
+        MarketCatalogRelation.SetRange("Catalog Id", CatalogId);
+        MarketCatalogRelation.SetRange("Shop Code", Shop.Code);
+        if MarketCatalogRelation.FindFirst() then
+            exit(MarketCatalogRelation."Market Id");
     end;
 
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")

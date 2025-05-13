@@ -25,12 +25,6 @@ page 30171 "Shpfy Market Catalogs"
                     ToolTip = 'Specifies the unique identifier for the market catalog in Shopify.';
                     Editable = false;
                 }
-                field("Market Id"; Rec."Market Id")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the unique identifier for the market in Shopify.';
-                    Editable = false;
-                }
                 field(Name; Rec.Name)
                 {
                     ApplicationArea = All;
@@ -129,8 +123,28 @@ page 30171 "Shpfy Market Catalogs"
                     if Shop.Get(Rec."Shop Code") then begin
                         CatalogAPI.SetShop(Shop);
                         CatalogAPI.SetCatalogType(Rec."Catalog Type");
-                        Hyperlink(CatalogAPI.GetCatalogProductsURL(Rec."Market Id"));
+                        Hyperlink(CatalogAPI.GetCatalogProductsURL(Rec.Id));
                     end;
+                end;
+            }
+
+            action(MarketCatalogRelations)
+            {
+                ApplicationArea = All;
+                Caption = 'Markets';
+                Image = Relationship;
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Category4;
+                ToolTip = 'View markets linked to this market catalog.';
+
+                trigger OnAction()
+                var
+                    MarketCatalogRelation: Record "Shpfy Market Catalog Relation";
+                begin
+                    MarketCatalogRelation.SetRange("Catalog Id", Rec.Id);
+                    MarketCatalogRelation.SetRange("Shop Code", Rec."Shop Code");
+                    Page.Run(Page::"Shpfy Market Catalog Relations", MarketCatalogRelation);
                 end;
             }
         }
@@ -157,7 +171,7 @@ page 30171 "Shpfy Market Catalogs"
                         SyncCatalogs.SetTableView(Shop);
                         SyncCatalogs.UseRequestPage(false);
                     end;
-                    SyncCatalogs.SetCatalogType(Rec."Catalog Type");
+                    SyncCatalogs.SetCatalogType("Shpfy Catalog Type"::Market);
                     SyncCatalogs.Run();
                 end;
             }

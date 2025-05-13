@@ -153,7 +153,7 @@ page 30159 "Shpfy Catalogs"
                         SyncCatalogs.SetCompany(ShopifyCompany);
                         SyncCatalogs.UseRequestPage(false);
                     end;
-                    SyncCatalogs.SetCatalogType(Rec."Catalog Type");
+                    SyncCatalogs.SetCatalogType("Shpfy Catalog Type"::Company);
                     SyncCatalogs.Run();
                 end;
             }
