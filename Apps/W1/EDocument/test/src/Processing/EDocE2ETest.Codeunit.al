@@ -14,6 +14,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryPurchase: Codeunit "Library - Purchase";
         EDocImplState: Codeunit "E-Doc. Impl. State";
         LibraryLowerPermission: Codeunit "Library - Lower Permissions";
+        LibraryInventory: Codeunit "Library - Inventory";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Incorrect value found';
         DocumentSendingProfileWithWorkflowErr: Label 'Workflow %1 defined for %2 in Document Sending Profile %3 is not found.', Comment = '%1 - The workflow code, %2 - Enum value set in Electronic Document, %3 - Document Sending Profile Code';
@@ -1750,6 +1751,52 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.ExpectedError(this.DeleteProcessedNotAllowedErr);
     end;
 
+    [Test]
+    procedure CreateEDocumentTransferShipmentSuccess()
+    var
+        TransferHeader: Record "Transfer Header";
+        Item: Record Item;
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        DocumentSendingProfile: Record "Document Sending Profile";
+        InventoryPostingGroup: Record "Inventory Posting Group";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when posting transfer shipment
+        this.Initialize(Enum::"Service Integration"::"Mock");
+
+        // [GIVEN] E-Document service with format peppol
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+        // [GIVEN] Document Sending Profile
+        CreateDocSendingProfileForLocation(DocumentSendingProfile);
+        // [GIVEN] Transfer locations with posting setup
+        CreateLocationsWithPostingSetups(FromLocation, ToLocation, InTransitLocation, InventoryPostingGroup);
+        // [GIVEN] Item with inventory stock in from location
+        CreateItemWIthInventoryStock(Item, FromLocation, InventoryPostingGroup);
+        // [GIVEN] Transfer-to location with Document Sending Profile set
+        ToLocation."Tranfer Doc. Sending Profile" := DocumentSendingProfile.Code;
+        ToLocation.Modify(false);
+
+        // [WHEN] Create transfer shipment
+        LibraryInventory.CreateAndPostTransferOrder(
+            TransferHeader,
+            Item,
+            FromLocation,
+            ToLocation,
+            InTransitLocation,
+            '',
+            1,
+            Workdate(),
+            Workdate(),
+            true,
+            false);
+
+        // [THEN] Check that E-Document is created
+        VerifyIfEDocumentIsCreatedForTransferOrder(TransferHeader);
+    end;
+
     local procedure CreateIncomingEDocument(VendorNo: Code[20]; Status: Enum "E-Document Status")
     var
         EDocument: Record "E-Document";
@@ -1879,6 +1926,76 @@ codeunit 139624 "E-Doc E2E Test"
     begin
         EDocument.SetRange("Entry No", EDocNo);
         this.Assert.RecordIsEmpty(EDocument);
+    end;
+
+    local procedure CreateLocationsWithPostingSetups(
+        var FromLocation: Record Location;
+        var ToLocation: Record Location;
+        var InTransitLocation: Record Location;
+        var InventoryPostingGroup: Record "Inventory Posting Group")
+    var
+        InventoryPostingSetupFromLocation: Record "Inventory Posting Setup";
+        InventoryPostingSetupToLocation: Record "Inventory Posting Setup";
+        InventoryPostingSetupInTransitLocation: Record "Inventory Posting Setup";
+        LibraryWarehouse: Codeunit "Library - Warehouse";
+    begin
+        LibraryWarehouse.CreateLocation(FromLocation);
+        LibraryWarehouse.CreateLocation(ToLocation);
+        LibraryWarehouse.CreateInTransitLocation(InTransitLocation);
+
+        LibraryInventory.CreateInventoryPostingGroup(InventoryPostingGroup);
+        LibraryInventory.CreateInventoryPostingSetup(InventoryPostingSetupFromLocation, FromLocation.Code, InventoryPostingGroup.Code);
+        LibraryInventory.UpdateInventoryPostingSetup(FromLocation, InventoryPostingGroup.Code);
+
+        InventoryPostingSetupFromLocation.Get(FromLocation.Code, InventoryPostingGroup.Code);
+        InventoryPostingSetupToLocation := InventoryPostingSetupFromLocation;
+        InventoryPostingSetupToLocation."Location Code" := ToLocation.Code;
+        InventoryPostingSetupToLocation.Insert(false);
+
+        InventoryPostingSetupInTransitLocation := InventoryPostingSetupFromLocation;
+        InventoryPostingSetupInTransitLocation."Location Code" := InTransitLocation.Code;
+        InventoryPostingSetupInTransitLocation.Insert(false);
+    end;
+
+    local procedure CreateItemWithInventoryPostingGroup(var Item: Record Item; InventoryPostingGroupCode: Code[20])
+    begin
+        LibraryInventory.CreateItem(Item);
+        Item."Inventory Posting Group" := InventoryPostingGroupCode;
+        Item.Modify(false);
+    end;
+
+    local procedure CreateItemWIthInventoryStock(var Item: Record Item; var FromLocation: Record Location; var InventoryPostingGroup: Record "Inventory Posting Group")
+    var
+        ItemJournalLine: Record "Item Journal Line";
+        LibraryRandom: Codeunit "Library - Random";
+    begin
+        CreateItemWithInventoryPostingGroup(Item, InventoryPostingGroup.Code);
+        LibraryInventory.CreateItemJournalLineInItemTemplate(
+          ItemJournalLine, Item."No.", FromLocation.Code, '', LibraryRandom.RandIntInRange(10, 20));
+        LibraryInventory.PostItemJournalLine(
+          ItemJournalLine."Journal Template Name", ItemJournalLine."Journal Batch Name");
+    end;
+
+    local procedure VerifyIfEDocumentIsCreatedForTransferOrder(var TransferHeader: Record "Transfer Header")
+    var
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+        EDocument: Record "E-Document";
+    begin
+        TransferShipmentHeader.SetRange("Transfer Order No.", TransferHeader."No.");
+        TransferShipmentHeader.FindFirst();
+        EDocument.SetRange("Document Record ID", TransferShipmentHeader.RecordId);
+        Assert.IsFalse(EDocument.IsEmpty(), 'E-Document not created for Transfer Shipment Header');
+    end;
+
+    local procedure CreateDocSendingProfileForLocation(var DocumentSendingProfile: Record "Document Sending Profile")
+    var
+        Workflow: Record "Workflow";
+    begin
+        LibraryEDoc.CreateDocSendingProfile(DocumentSendingProfile);
+        Workflow := LibraryEDoc.GetWorkflowFromService(EDocumentService);
+        DocumentSendingProfile."Electronic Document" := DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow";
+        DocumentSendingProfile."Electronic Service Flow" := Workflow.Code;
+        DocumentSendingProfile.Modify(false);
     end;
 
 #if not CLEAN26
