@@ -7,13 +7,10 @@ page 30450 "Shpfy Market Catalog Relations"
 {
     ApplicationArea = All;
     Caption = 'Shopify Market Catalog Relations';
-    PageType = List;
+    PageType = ListPart;
     SourceTable = "Shpfy Market Catalog Relation";
-    UsageCategory = Lists;
+    UsageCategory = None;
     Editable = false;
-    InsertAllowed = false;
-    ModifyAllowed = false;
-    DeleteAllowed = false;
 
     layout
     {
@@ -21,8 +18,6 @@ page 30450 "Shpfy Market Catalog Relations"
         {
             repeater(General)
             {
-                field("Shop Code"; Rec."Shop Code") { }
-                field("Catalog Title"; Rec."Catalog Title") { }
                 field("Market Name"; Rec."Market Name") { }
             }
         }

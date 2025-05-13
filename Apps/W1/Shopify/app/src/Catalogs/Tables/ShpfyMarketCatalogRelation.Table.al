@@ -44,13 +44,22 @@ table 30450 "Shpfy Market Catalog Relation"
         {
             Caption = 'Market Name';
             DataClassification = CustomerContent;
+            Editable = false;
             ToolTip = 'Specifies the name of the market.';
         }
         field(5; "Catalog Title"; Text[500])
         {
             Caption = 'Catalog Title';
+            Editable = false;
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the title of the market catalog.';
+        }
+        field(6; "Catalog System Id"; Guid)
+        {
+            Caption = 'Catalog System Id';
+            DataClassification = SystemMetadata;
+            Editable = false;
+            ToolTip = 'Specifies the unique identifier for the market in Shopify.';
         }
     }
     keys

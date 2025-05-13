@@ -99,6 +99,15 @@ page 30171 "Shpfy Market Catalogs"
                 }
             }
         }
+        area(factboxes)
+        {
+            part(Markets; "Shpfy Market Catalog Relations")
+            {
+                ApplicationArea = All;
+                Caption = 'Markets';
+                SubPageLink = "Catalog System Id" = field(SystemId);
+            }
+        }
     }
 
     actions
@@ -125,26 +134,6 @@ page 30171 "Shpfy Market Catalogs"
                         CatalogAPI.SetCatalogType(Rec."Catalog Type");
                         Hyperlink(CatalogAPI.GetCatalogProductsURL(Rec.Id));
                     end;
-                end;
-            }
-
-            action(MarketCatalogRelations)
-            {
-                ApplicationArea = All;
-                Caption = 'Markets';
-                Image = Relationship;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Category4;
-                ToolTip = 'View markets linked to this market catalog.';
-
-                trigger OnAction()
-                var
-                    MarketCatalogRelation: Record "Shpfy Market Catalog Relation";
-                begin
-                    MarketCatalogRelation.SetRange("Catalog Id", Rec.Id);
-                    MarketCatalogRelation.SetRange("Shop Code", Rec."Shop Code");
-                    Page.Run(Page::"Shpfy Market Catalog Relations", MarketCatalogRelation);
                 end;
             }
         }
