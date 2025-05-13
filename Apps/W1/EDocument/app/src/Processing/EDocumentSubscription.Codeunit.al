@@ -91,10 +91,11 @@ codeunit 6103 "E-Document Subscription"
     var
         SalesInvHeader: Record "Sales Invoice Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesShipmentHeader: Record "Sales Shipment Header";
         DocumentSendingProfile: Record "Document Sending Profile";
         EDocumentProcessing: Codeunit "E-Document Processing";
     begin
-        if (SalesInvHdrNo = '') and (SalesCrMemoHdrNo = '') then
+        if (SalesInvHdrNo = '') and (SalesCrMemoHdrNo = '') and (SalesShptHdrNo = '') then
             exit;
 
         if not EDocumentProcessing.GetDocSendingProfileForCust(SalesHeader."Bill-to Customer No.", DocumentSendingProfile) then
@@ -106,6 +107,10 @@ codeunit 6103 "E-Document Subscription"
         end else
             if SalesCrMemoHeader.Get(SalesCrMemoHdrNo) then
                 CreateEDocumentFromPostedDocument(SalesCrMemoHeader, DocumentSendingProfile, Enum::"E-Document Type"::"Sales Credit Memo");
+
+        if SalesShptHdrNo <> '' then
+            if SalesShipmentHeader.Get(SalesShptHdrNo) then
+                CreateEDocumentFromPostedDocument(SalesShipmentHeader, DocumentSendingProfile, Enum::"E-Document Type"::"Sales Shipment");
     end;
 
 
