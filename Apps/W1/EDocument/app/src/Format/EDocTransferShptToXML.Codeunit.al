@@ -144,7 +144,7 @@ codeunit 6123 "E-Doc. Transfer Shpt. To XML"
     var
         Base64Convert: Codeunit "Base64 Convert";
         TempBlob: Codeunit "Temp Blob";
-        FileNameTok: Label '%1_%2.pdf', Comment = '1: Document Type, 2: Document No', Locked = true;
+        FileNameTok: Label '%1_%2.pdf', Comment = '%1 - Document Type, %2 - Document No', Locked = true;
     begin
         AdditionalDocumentReferenceID := '';
         MimeCode := '';
