@@ -1,0 +1,5 @@
+<technical_response xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <document_status>ErrorEnum</document_status>
+  <error_code>ReceiverNotRegistered</error_code>
+  <error_message>The recipient of the document is not registered to receive this type of document.</error_message>
+</technical_response>

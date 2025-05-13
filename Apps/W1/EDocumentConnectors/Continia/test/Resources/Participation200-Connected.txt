@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<participation>
+	<network_id_type_id>568c29e7-c2c8-49bb-b135-9199d5b791d1</network_id_type_id>
+	<network_id_value>111222333</network_id_value>
+	<company_name>London Postmaster</company_name>
+	<vat_registration_no>111222333</vat_registration_no>
+	<address>10 North Lake Avenue</address>
+	<post_code>N12 5XY</post_code>
+	<country_code_iso3166>string</country_code_iso3166>
+	<registrant_name>string</registrant_name>
+	<contact_name>Carol Philips</contact_name>
+	<contact_phone>004412345678</contact_phone>
+	<contact_email>cp@londonpostmaster.com</contact_email>
+	<publish_in_registry>true</publish_in_registry>
+	<status>ConnectedEnum</status>
+	<participation_id>0de4aedc-f84a-41bc-b511-387aaf96263e</participation_id>
+	<created_utc>2024-10-23T15:12:21.355Z</created_utc>
+	<updated_utc>2024-10-23T15:12:21.355Z</updated_utc>
+	<timestamp>0</timestamp>
+	<is_email_send>true</is_email_send>
+	<participation_type>Continia</participation_type>
+	<business_central_company_code>28266ea9-84eb-49a4-948b-6c8b7790605a</business_central_company_code>
+</participation>
