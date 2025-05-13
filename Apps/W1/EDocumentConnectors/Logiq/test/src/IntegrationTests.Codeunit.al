@@ -471,25 +471,20 @@ codeunit 139780 "Integration Tests"
     internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
     var
         Regex: Codeunit Regex;
+        DocumentSentFileTok: Label 'DocumentSent.txt', Locked = true;
     begin
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/auth'):
-                LoadResourceIntoHttpResponse('AccessToken.txt', Response);
+                LoadResourceIntoHttpResponse(AccessTokenFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer-status/externalId/\d+'):
                 this.GetTransferStatus(Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer'):
-                LoadResourceIntoHttpResponse('DocumentSent.txt', Response);
+                LoadResourceIntoHttpResponse(DocumentSentFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles/multiple'):
-                LoadResourceIntoHttpResponse('MultipleDocumentsResponse.txt', Response);
-
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
-                LoadResourceIntoHttpResponse('testfile1.xml', Response);
-
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile2.xml'):
-                LoadResourceIntoHttpResponse('testfile2.xml', Response);
+                LoadResourceIntoHttpResponse(MultipleDocumentsResponseFileTok, Response);
         end;
     end;
 
@@ -500,7 +495,7 @@ codeunit 139780 "Integration Tests"
     begin
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/auth'):
-                LoadResourceIntoHttpResponse('AccessToken.txt', Response);
+                LoadResourceIntoHttpResponse(AccessTokenFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer'):
                 begin
@@ -520,7 +515,7 @@ codeunit 139780 "Integration Tests"
                 LoadResourceIntoHttpResponse('OneDocumentResponse.txt', Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
-                LoadResourceIntoHttpResponse('testfile1.xml', Response);
+                LoadResourceIntoHttpResponse(TestFile1Tok, Response);
         end;
     end;
 
@@ -531,13 +526,13 @@ codeunit 139780 "Integration Tests"
     begin
         case true of
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles'):
-                LoadResourceIntoHttpResponse('MultipleDocumentsResponse.txt', Response);
+                LoadResourceIntoHttpResponse(MultipleDocumentsResponseFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
-                LoadResourceIntoHttpResponse('testfile1.xml', Response);
+                LoadResourceIntoHttpResponse(TestFile1Tok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile2.xml'):
-                LoadResourceIntoHttpResponse('testfile2.xml', Response);
+                LoadResourceIntoHttpResponse(TestFile2Tok, Response);
         end;
     end;
 
@@ -571,5 +566,9 @@ codeunit 139780 "Integration Tests"
         LibraryJobQueue: Codeunit "Library - Job Queue";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
+        AccessTokenFileTok: Label 'AccessToken.txt', Locked = true;
+        MultipleDocumentsResponseFileTok: Label 'MultipleDocumentsResponse.txt', Locked = true;
+        TestFile1Tok: Label 'testfile1.xml', Locked = true;
+        TestFile2Tok: Label 'testfile2.xml', Locked = true;
         DocumentStatus: Option Distributed,Received,Failed;
 }
