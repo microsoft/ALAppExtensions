@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-
 using System.Utilities;
 using System.Threading;
 using System.Environment.Configuration;
