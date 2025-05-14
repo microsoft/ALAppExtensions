@@ -96,5 +96,8 @@
     "features": [
         "TranslationFile"
     ],
-    "target": "OnPrem"
+    "target": "OnPrem",
+    "resourceFolders": [
+        "HttpResponseFiles"
+    ]
 }
