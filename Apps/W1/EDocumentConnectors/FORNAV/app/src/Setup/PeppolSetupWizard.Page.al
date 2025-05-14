@@ -3,7 +3,6 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
 using System.Utilities;
-using Microsoft.Foundation.Company;
 using System.Environment;
 page 6246263 "ForNAV Peppol Setup Wizard"
 {
