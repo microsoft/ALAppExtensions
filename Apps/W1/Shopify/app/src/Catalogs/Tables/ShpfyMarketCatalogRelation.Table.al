@@ -54,13 +54,6 @@ table 30450 "Shpfy Market Catalog Relation"
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the title of the market catalog.';
         }
-        field(6; "Catalog System Id"; Guid)
-        {
-            Caption = 'Catalog System Id';
-            DataClassification = SystemMetadata;
-            Editable = false;
-            ToolTip = 'Specifies the unique identifier for the market in Shopify.';
-        }
     }
     keys
     {

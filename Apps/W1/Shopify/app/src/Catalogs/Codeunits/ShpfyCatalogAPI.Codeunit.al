@@ -315,7 +315,7 @@ codeunit 30290 "Shpfy Catalog API"
         MarketCatalogRelation: Record "Shpfy Market Catalog Relation";
     begin
         MarketCatalogRelation.SetRange("Shop Code", Shop.Code);
-        MarketCatalogRelation.SetRange("Catalog System Id", Catalog.SystemId);
+        MarketCatalogRelation.SetRange("Catalog Id", Catalog.Id);
         MarketCatalogRelation.DeleteAll(true);
     end;
 
@@ -338,7 +338,6 @@ codeunit 30290 "Shpfy Catalog API"
                     if not MarketCatalogRelation.FindFirst() then begin
                         MarketCatalogRelation."Market Id" := MarketId;
                         MarketCatalogRelation."Catalog Id" := Catalog.Id;
-                        MarketCatalogRelation."Catalog System Id" := Catalog.SystemId;
                         MarketCatalogRelation.Insert(true);
                     end;
                     MarketCatalogRelation."Shop Code" := Shop.Code;

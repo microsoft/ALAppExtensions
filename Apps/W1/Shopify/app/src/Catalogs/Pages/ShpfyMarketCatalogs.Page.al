@@ -105,7 +105,7 @@ page 30171 "Shpfy Market Catalogs"
             {
                 ApplicationArea = All;
                 Caption = 'Markets';
-                SubPageLink = "Catalog System Id" = field(SystemId);
+                SubPageLink = "Shop Code" = field("Shop Code"), "Catalog Id" = field(Id);
             }
         }
     }

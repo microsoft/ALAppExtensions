@@ -147,7 +147,7 @@ table 30152 "Shpfy Catalog"
     var
         MarketCatalogRelation: Record "Shpfy Market Catalog Relation";
     begin
-        MarketCatalogRelation.SetRange("Catalog System Id", SystemId);
+        MarketCatalogRelation.SetRange("Catalog Id", Id);
         MarketCatalogRelation.DeleteAll(true);
     end;
 }
