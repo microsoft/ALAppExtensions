@@ -10,7 +10,7 @@ codeunit 30402 "Shpfy GQL Catalog Markets" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "{ catalog (id: \"gid://shopify/Catalog/{{CatalogId}}\") { id title ... on MarketCatalog { markets(first: 1) { pageInfo { hasNextPage } edges { cursor node { id name }}}}}}"}');
+        exit('{"query": "{ catalog (id: \"gid://shopify/Catalog/{{CatalogId}}\") { id title ... on MarketCatalog { markets(first: 5) { pageInfo { hasNextPage } edges { cursor node { id name }}}}}}"}');
     end;
 
     /// <summary>
