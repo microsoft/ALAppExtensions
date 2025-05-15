@@ -1,0 +1,27 @@
+{
+    "messageId": "f77f441a-ed9e-4066-8974-f82ec5761992",
+    "timestamp": "2024-11-06T11:41:36",
+    "state": "failed",
+    "channel": null,
+    "documentType": null,
+    "documentNumber": null,
+    "email": null,
+    "ourId": {
+        "source": "e1",
+        "value": "15731753"
+    },
+    "supplier": {
+        "organisationNumber": null,
+        "name": null
+    },
+    "receiver": {
+        "organisationNumber": null,
+        "name": null
+    },
+    "error": {
+        "errorCode": "E404_UNKNOWN",
+        "errorMessage": "[SystemError - Wed Nov 06 11:41:36 CET 2024]\n[Fileinfo]\n Infile id : 15731753\n    - name : api_ms-business-central_test.xml\n    - path : /download\n[Stacktrace]\n-SysErr- nbs.imljava.util.exception.UnrecognizedFileTypeException: Ukjent XML-format\n\tat nbs.imljava.parser.XMLFileParser.parseFile(XMLFileParser.java:2167)\n\tat nbs.imljava.main.worker.ParserService.invokeParser(ParserService.java:1270)\n\tat nbs.imljava.main.ImlinkWorkerThread.startParsingFile(ImlinkWorkerThread.java:1912)\n\tat nbs.imljava.main.ImlinkWorkerThread.parseClob(ImlinkWorkerThread.java:578)\n\tat nbs.imljava.main.ImlinkWorkerThread.run(ImlinkWorkerThread.java:245)\n\tat nbs.imljava.main.ImlinkEngine.pollDatabase(ImlinkEngine.java:191)\n\tat nbs.imljava.main.ImlinkEngine.main(ImlinkEngine.java:74)\n\tat nbs.imljava.main.concurrent.startup.BootstrapEngineY.main(BootstrapEngineY.java:14)\n"
+    },
+    "otherIds": null,
+    "externalId": null
+}
