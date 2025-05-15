@@ -6,6 +6,7 @@ namespace Microsoft.eServices.EDocument.API;
 
 using Microsoft.eServices.EDocument;
 using System.Utilities;
+using Microsoft.Integration.Graph;
 
 codeunit 6129 "E-Documents API Helper"
 {
@@ -15,6 +16,7 @@ codeunit 6129 "E-Documents API Helper"
         EDocumentService: Record "E-Document Service";
         EDocumentLog: Codeunit "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
+        GraphMgtAttachmentBuffer: Codeunit "Graph Mgt - Attachment Buffer";
         EDocumentServiceStatus: Enum "E-Document Service Status";
         OutStr: OutStream;
     begin
@@ -26,12 +28,20 @@ codeunit 6129 "E-Documents API Helper"
                 exit;
 
             EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
-            EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus::Exported);
+
+            case EDocument.Direction of
+                Enum::"E-Document Direction"::Incoming:
+                    EDocumentServiceStatus := EDocumentServiceStatus::Imported;
+                Enum::"E-Document Direction"::Outgoing:
+                    EDocumentServiceStatus := EDocumentServiceStatus::Exported;
+
+            end;
+            EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
 
             if TempBlob.HasValue() then begin
                 TempEDocumentsFileBuffer.Init();
                 TempEDocumentsFileBuffer."Related E-Doc. Entry No." := EDocument."Entry No";
-                TempEDocumentsFileBuffer."Byte Size" := TempBlob.Length();
+                TempEDocumentsFileBuffer."Byte Size" := GraphMgtAttachmentBuffer.GetContentLength(TempBlob);
 
                 TempEDocumentsFileBuffer.Content.CreateOutStream(OutStr);
                 CopyStream(OutStr, TempBlob.CreateInStream());

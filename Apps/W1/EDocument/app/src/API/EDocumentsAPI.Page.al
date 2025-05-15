@@ -18,11 +18,12 @@ page 6112 "E-Documents API"
     EntityName = 'eDocument';
     EntitySetName = 'eDocuments';
 
-    ODataKeyFields = SystemId;
+    ODataKeyFields = "Entry No";
     SourceTable = "E-Document";
 
     Extensible = false;
     Editable = false;
+    ApplicationArea = All;
 
     layout
     {
@@ -30,49 +31,73 @@ page 6112 "E-Documents API"
         {
             repeater(Group)
             {
-                field(id; Rec.Id)
+                field(entryNumber; Rec."Entry No")
                 {
-                    Caption = 'Id';
                 }
-                field(documentId; Rec."Document System Id")
+                field(documentRecordId; Rec."Document Record ID")
                 {
-                    Caption = 'Document Id';
                 }
-                field(documentType; Rec."Document Type")
+                field(billPayNumber; Rec."Bill-to/Pay-to No.")
                 {
-                    Caption = 'Document Type';
                 }
                 field(documentNo; Rec."Document No.")
                 {
-                    Caption = 'Document No.';
+                }
+                field(documentType; Rec."Document Type")
+                {
                 }
                 field(documentDate; Rec."Document Date")
                 {
-                    Caption = 'Document Date';
                 }
-                field(status; Rec.Status)
+                field(duDate; Rec."Due Date")
                 {
-                    Caption = 'Status';
+                }
+                field(amountInclVat; Rec."Amount Incl. VAT")
+                {
+                }
+                field(amountExclVat; Rec."Amount Excl. VAT")
+                {
+                }
+                field(orderNo; Rec."Order No.")
+                {
+                }
+                field(postingDate; Rec."Posting Date")
+                {
                 }
                 field(direction; Rec.Direction)
                 {
-                    Caption = 'Direction';
                 }
-                field(createdAt; Rec.SystemCreatedAt)
+                field(incommingEDocumentNumber; Rec."Incoming E-Document No.")
                 {
-                    Caption = 'Created At';
                 }
-                field(createdBy; Rec.SystemCreatedBy)
+                field(status; Rec.Status)
                 {
-                    Caption = 'Created By';
                 }
-                field(serviceId; Rec."Service Id")
+                field(sourceType; Rec."Source Type")
                 {
-                    Caption = 'Service Id';
                 }
-                part(file; "E-Document Files API")
+                field(recCompanyVat; Rec."Receiving Company VAT Reg. No.")
                 {
-                    Caption = 'File';
+                }
+                field(recCompanyGLN; Rec."Receiving Company GLN")
+                {
+                }
+                field(recCompanyName; Rec."Receiving Company Name")
+                {
+                }
+                field(recCompanyAddress; Rec."Receiving Company Address")
+                {
+                }
+                field(currencyCode; Rec."Currency Code")
+                {
+                }
+                field(workflowCode; Rec."Workflow Code")
+                {
+                }
+                part(documentFiles; "E-Document Files API")
+                {
+                    EntityName = 'documentFile';
+                    EntitySetName = 'documentFiles';
                     SubPageLink = "Related E-Doc. Entry No." = field("Entry No");
                 }
             }

@@ -15,8 +15,8 @@ page 6111 "E-Document Files API"
 
     EntityCaption = 'E-Document File';
     EntitySetCaption = 'E-Document Files';
-    EntityName = 'eDocumentFile';
-    EntitySetName = 'eDocumentFiles';
+    EntityName = 'documentFile';
+    EntitySetName = 'documentFiles';
 
     SourceTable = "E-Document File Entity Buffer";
 
