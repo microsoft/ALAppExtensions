@@ -1,0 +1,8 @@
+<html>
+  <head>
+    <title>Request Failed<\title>
+  </head>
+  <body>
+    <p>Your request cannot be completed due to a server error.</p>
+  </body>
+</html>
