@@ -238,6 +238,17 @@ table 6121 "E-Document"
             Caption = 'Additional Source Details';
             ToolTip = 'Specifies additional details about the E-Document source.';
         }
+        /// <summary>
+        /// This field is used to determine if the E-document creation was triggered by action requiring the E-document to be sent via email.
+        /// </summary>
+        field(40; "Send E-Document via Email"; Boolean)
+        {
+            Caption = 'Send E-Document via Email';
+            DataClassification = SystemMetadata;
+            Editable = false;
+            AllowInCustomizations = Never;
+            Access = Internal;
+        }
     }
     keys
     {
