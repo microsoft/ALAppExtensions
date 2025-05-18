@@ -345,6 +345,9 @@ codeunit 6102 "E-Doc. Export"
                     EDocument."Amount Excl. VAT" := SourceDocumentHeader.Field(PurchHeader.FieldNo(Amount)).Value;
                     EDocument."Amount Incl. VAT" := SourceDocumentHeader.Field(PurchHeader.FieldNo("Amount Including VAT")).Value;
                 end;
+
+            Database::"Sales Shipment Header":
+                this.PopulateShipmentEDocument(EDocument, SourceDocumentHeader);
         end;
     end;
 
@@ -501,6 +504,22 @@ codeunit 6102 "E-Doc. Export"
         EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
     begin
         exit(EDocServiceSupportedType.Get(EDocService.Code, DocumentType));
+    end;
+
+    local procedure PopulateShipmentEDocument(var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef)
+    var
+        SalesShipmentHeader: Record "Sales Shipment Header";
+    begin
+        EDocument."Document Type" := EDocument."Document Type"::"Sales Shipment";
+        EDocument."Document No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("No.")).Value;
+        EDocument."Order No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Order No.")).Value;
+        EDocument."Bill-to/Pay-to No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Bill-to Customer No.")).Value;
+        EDocument."Bill-to/Pay-to Name" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Bill-to Name")).Value;
+        EDocument."Posting Date" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Posting Date")).Value;
+        EDocument."Document Date" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Document Date")).Value;
+        EDocument."Due Date" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Due Date")).Value;
+        EDocument."Source Type" := EDocument."Source Type"::Customer;
+        EDocument."Currency Code" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Currency Code")).Value;
     end;
 
     var
