@@ -250,6 +250,7 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL ARDoc", 'ARDoc');
         UpdateOrInsertRecord(Database::"SL ARSetup", 'ARSetup');
         UpdateOrInsertRecord(Database::"SL ARTran", 'ARTran');
+        UpdateOrInsertRecord(Database::"SL CustClass", 'CustClass');
         UpdateOrInsertRecord(Database::"SL Customer", 'Customer');
         UpdateOrInsertRecord(Database::"SL SOAddress", 'SOAddress');
         UpdateOrInsertRecord(Database::"SL SOHeader", 'SOHeader');
