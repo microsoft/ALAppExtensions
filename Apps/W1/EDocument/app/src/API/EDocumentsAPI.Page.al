@@ -23,6 +23,7 @@ page 6112 "E-Documents API"
 
     Extensible = false;
     Editable = false;
+    DelayedInsert = true;
     ApplicationArea = All;
 
     layout
@@ -49,7 +50,7 @@ page 6112 "E-Documents API"
                 field(documentDate; Rec."Document Date")
                 {
                 }
-                field(duDate; Rec."Due Date")
+                field(dueDate; Rec."Due Date")
                 {
                 }
                 field(amountInclVat; Rec."Amount Incl. VAT")
@@ -89,6 +90,9 @@ page 6112 "E-Documents API"
                 {
                 }
                 field(currencyCode; Rec."Currency Code")
+                {
+                }
+                field(service; Rec.Service)
                 {
                 }
                 field(workflowCode; Rec."Workflow Code")

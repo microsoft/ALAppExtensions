@@ -33,8 +33,6 @@ codeunit 6123 "E-Document File Entity Buffer"
         EDocumentService: Record "E-Document Service";
         TempBlob: Codeunit "Temp Blob";
         EDocImport: Codeunit "E-Doc. Import";
-        OutStr: OutStream;
-        InStr: InStream;
         FileName: Text;
         EDocumentServiceStatus: Enum "E-Document Service Status";
         BlobType: Enum "E-Doc. Data Storage Blob Type";
@@ -54,8 +52,6 @@ codeunit 6123 "E-Document File Entity Buffer"
         EDocument.Service := EDocumentService.Code;
         EDocumentServiceStatus := "E-Document Service Status"::Imported;
 
-        OutStr := TempBlob.CreateOutStream();
-        CopyStream(OutStr, InStr);
 
         EDocument."File Name" := CopyStr(FileName, 1, 256);
         EDocument."File Type" := BlobType;
@@ -85,7 +81,8 @@ codeunit 6123 "E-Document File Entity Buffer"
         if not EDocumentsFileBuffer.Content.HasValue() then
             exit(false);
 
-        EDocumentsFileBuffer.CalcFields(Content);
+        if EDocumentsFileBuffer.Content.Length = 0 then
+            EDocumentsFileBuffer.CalcFields(Content);
         EDocumentsFileBuffer.Content.CreateInStream(InStr);
         CopyStream(TempBlob.CreateOutStream(), InStr);
         FileName := EDocumentsFileBuffer."File Name";
