@@ -26,7 +26,6 @@ page 6111 "E-Document Files API"
 
     Extensible = false;
     DelayedInsert = true;
-    ApplicationArea = All;
 
     layout
     {
@@ -87,6 +86,7 @@ page 6111 "E-Document Files API"
         Base64Convert: Codeunit "Base64 Convert";
         OutStr: OutStream;
     begin
+        Error('OnInsertRecord');
         if Base64Content <> '' then begin
             Rec.Content.CreateOutStream(OutStr);
             Base64Convert.FromBase64(Base64Content, OutStr);

@@ -9,7 +9,7 @@ using Microsoft.eServices.EDocument;
 table 6112 "E-Document File Entity Buffer"
 {
     Caption = 'E-Document File Entity Buffer';
-    // TableType = Temporary;
+    TableType = Temporary;
     DataClassification = CustomerContent;
 
     fields
