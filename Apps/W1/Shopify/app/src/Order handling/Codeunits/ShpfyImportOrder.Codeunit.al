@@ -1,5 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
+using Microsoft.Integration.Shopify;
 using Microsoft.Sales.Document;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
@@ -348,6 +349,7 @@ codeunit 30161 "Shpfy Import Order"
         FirstName: Text;
         LastName: Text;
         Phone: Text;
+        StaffMemberId: BigInteger;
         JObject: JsonObject;
     begin
         OrderId := JsonHelper.GetValueAsBigInteger(JOrder, 'legacyResourceId');
@@ -464,6 +466,10 @@ codeunit 30161 "Shpfy Import Order"
                 JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.mainContact.customer.phone', OrderHeaderRecordRef, OrderHeader.FieldNo("Company Main Contact Phone No."));
                 if Format(OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Sell-to Customer Name")).Value) = '' then
                     JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.name', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to Customer Name"));
+                if Shop."B2B Enabled" then begin
+                    StaffMemberId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrder, 'staffMember.id'));
+                    this.SetSalespersonOnOrderHeader(OrderHeader."Shop Code", StaffMemberId, OrderHeaderRecordRef);
+                end;
             end;
             if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity.location') then begin
                 LocationId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrder, 'purchasingEntity.location.id'));
@@ -727,6 +733,22 @@ codeunit 30161 "Shpfy Import Order"
         end;
         OrderHeader.Validate(Closed, true);
         OrderHeader.Modify();
+    end;
+
+    /// <summary>
+    /// Sets the Salesperson/Purchaser code on the order header based on the specified staff member.
+    /// </summary>
+    /// <param name="ShopCode">The code of the Shopify shop.</param>
+    /// <param name="StaffMemberId">The ID of the staff member.</param>
+    /// <param name="OrderHeaderRecordRef">A reference to the order header record to update.</param>
+    local procedure SetSalespersonOnOrderHeader(ShopCode: Code[20]; StaffMemberId: BigInteger; OrderHeaderRecordRef: RecordRef)
+    var
+        StaffMember: Record "Shpfy Staff Member";
+        ShpfyOrderHeader: Record "Shpfy Order Header";
+    begin
+        if not StaffMember.Get(ShopCode, StaffMemberId) then
+            exit;
+        OrderHeaderRecordRef.Field(ShpfyOrderHeader.FieldNo("Salesperson Code")).Value := StaffMember."Salesperson Code";
     end;
 
     /// <summary> 

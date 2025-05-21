@@ -1,6 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 using System.IO;
+using Microsoft.CRM.Team;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Bank.BankAccount;
@@ -801,6 +802,12 @@ table 30118 "Shpfy Order Header"
         {
             DataClassification = CustomerContent;
             Caption = 'Payment Terms Name';
+        }
+        field(1050; "Salesperson Code"; Code[20])
+        {
+            Caption = 'Salesperson Code';
+            DataClassification = CustomerContent;
+            TableRelation = "Salesperson/Purchaser" where(Blocked = const(false));
         }
     }
     keys
