@@ -12,7 +12,7 @@ codeunit 30400 "Shpfy GQL GetStaffMembers" implements "Shpfy IGraphQL"
     /// <returns>The GraphQL query as a text string.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{ staffMembers (first: 1) { edges { node { accountType active email exists firstName id initials isShopOwner lastName locale name phone } } pageInfo { hasPreviousPage hasNextPage startCursor endCursor } } }"}');
+        exit('{"query":"{ staffMembers (first: 20) { edges { node { accountType active email exists firstName id initials isShopOwner lastName locale name phone } } pageInfo { hasPreviousPage hasNextPage startCursor endCursor } } }"}');
     end;
 
     /// <summary>

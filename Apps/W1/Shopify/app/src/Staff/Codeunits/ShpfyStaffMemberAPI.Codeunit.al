@@ -80,7 +80,7 @@ codeunit 30105 "Shpfy Staff Member API"
                 TempShpfyStaffMember.Name := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'name'), 1, MaxStrLen(TempShpfyStaffMember.Name));
                 TempShpfyStaffMember."Locale" := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'locale'), 1, MaxStrLen(TempShpfyStaffMember."Locale"));
                 TempShpfyStaffMember.Phone := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'phone'), 1, MaxStrLen(TempShpfyStaffMember.Phone));
-                TempShpfyStaffMember.Insert();
+                TempShpfyStaffMember.Insert(false);
             end;
         exit(true);
     end;
@@ -104,7 +104,7 @@ codeunit 30105 "Shpfy Staff Member API"
                 if not StaffMember.Get(ShopCode, TempShpfyStaffMember.Id) then begin
                     StaffMember.Init();
                     StaffMember.TransferFields(TempShpfyStaffMember);
-                    StaffMember.Insert();
+                    StaffMember.Insert(false);
                 end else begin
                     Modified := false;
                     if StaffMember."Account Type" <> TempShpfyStaffMember."Account Type" then begin
@@ -152,7 +152,7 @@ codeunit 30105 "Shpfy Staff Member API"
                         Modified := true;
                     end;
                     if Modified then
-                        StaffMember.Modify();
+                        StaffMember.Modify(false);
                 end;
             until TempShpfyStaffMember.Next() = 0;
         StaffMember.Reset();
@@ -160,7 +160,7 @@ codeunit 30105 "Shpfy Staff Member API"
         if StaffMember.FindSet() then
             repeat
                 if not ProcessedStaffMembers.Contains(StaffMember.Id) then
-                    StaffMember.Delete();
+                    StaffMember.Delete(false);
             until StaffMember.Next() = 0;
     end;
 }

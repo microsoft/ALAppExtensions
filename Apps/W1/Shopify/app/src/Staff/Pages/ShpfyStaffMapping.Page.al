@@ -11,7 +11,7 @@ page 30171 "Shpfy Staff Mapping"
     InsertAllowed = false;
     PageType = List;
     SourceTable = "Shpfy Staff Member";
-    UsageCategory = Lists;
+    UsageCategory = None;
 
     layout
     {
@@ -19,54 +19,18 @@ page 30171 "Shpfy Staff Mapping"
         {
             repeater(General)
             {
-                field("First Name"; Rec."First Name")
-                {
-                    ToolTip = 'Specifies the staff member''s first name.';
-                }
-                field("Last Name"; Rec."Last Name")
-                {
-                    ToolTip = 'Specifies the staff member''s last name.';
-                }
-                field(Initials; Rec.Initials)
-                {
-                    ToolTip = 'Specifies the staff member''s initials.';
-                }
-                field(Name; Rec.Name)
-                {
-                    ToolTip = 'Specifies the staff member''s name.';
-                }
-                field("Shop Owner"; Rec."Shop Owner")
-                {
-                    ToolTip = 'Indicates if the staff member is the shop owner.';
-                }
-                field(Exists; Rec.Exists)
-                {
-                    ToolTip = 'Indicates if the staff member exists.';
-                }
-                field(Email; Rec.Email)
-                {
-                    ToolTip = 'Specifies the staff member''s email address.';
-                }
-                field("Account Type"; Rec."Account Type")
-                {
-                    ToolTip = 'Specifies the staff account type.';
-                }
-                field(Active; Rec.Active)
-                {
-                    ToolTip = 'Indicates if the staff member is active.';
-                }
-                field(Locale; Rec.Locale)
-                {
-                    ToolTip = 'Specifies the staff member''s locale.';
-                }
-                field(Phone; Rec.Phone)
-                {
-                    ToolTip = 'Specifies the staff member''s phone number.';
-                }
-                field("Salesperson/Purchaser Code"; Rec."Salesperson Code")
-                {
-                    ToolTip = 'Specifies the sales person or purchaser code.';
-                }
+                field("First Name"; Rec."First Name") { }
+                field("Last Name"; Rec."Last Name") { }
+                field(Initials; Rec.Initials) { }
+                field(Name; Rec.Name) { }
+                field("Shop Owner"; Rec."Shop Owner") { }
+                field(Exists; Rec.Exists) { }
+                field(Email; Rec.Email) { }
+                field("Account Type"; Rec."Account Type") { }
+                field(Active; Rec.Active) { }
+                field(Locale; Rec.Locale) { }
+                field(Phone; Rec.Phone) { }
+                field("Salesperson/Purchaser Code"; Rec."Salesperson Code") { }
             }
         }
     }
