@@ -393,8 +393,6 @@ codeunit 139780 "Integration Tests"
 
         ConnectionSetup.Init();
         ConnectionSetup.Insert(true);
-        // ConnectionSetup."Base URL" := this.GetMockBaseUrl();
-        // ConnectionSetup."Authentication URL" := this.GetMockAuthUrl();
         ConnectionSetup."Client ID" := 'ClientID';
         IsolatedStorageKey := Auth.GetConnectionSetupClientSecretKey();
         Auth.SetIsolatedStorageValue(IsolatedStorageKey, this.GetRandomSecret(30), DataScope::Company);
