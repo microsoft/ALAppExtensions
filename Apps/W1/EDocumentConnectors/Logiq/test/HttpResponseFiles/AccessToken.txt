@@ -1,0 +1,1 @@
+{"access_token":"eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ","expires_in":3600,"refresh_expires_in":7200,"refresh_token":"eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ","token_type":"Bearer","not-before-policy":1576748055,"session_state":"a61463ec-2253-44ab-9bcd-2fcb7a191322","scope":"profile email"}
