@@ -368,16 +368,6 @@ codeunit 139780 "Integration Tests"
         this.IsInitialized := true;
     end;
 
-    local procedure GetMockBaseUrl(): Text[100]
-    begin
-        exit('https://localhost:8080/logiq/');
-    end;
-
-    local procedure GetMockAuthUrl(): Text[100]
-    begin
-        exit('https://localhost:8080/logiq/auth');
-    end;
-
     local procedure GetMockDocumentId(): Text
     begin
         exit('12345678');
@@ -403,8 +393,8 @@ codeunit 139780 "Integration Tests"
 
         ConnectionSetup.Init();
         ConnectionSetup.Insert(true);
-        ConnectionSetup."Base URL" := this.GetMockBaseUrl();
-        ConnectionSetup."Authentication URL" := this.GetMockAuthUrl();
+        // ConnectionSetup."Base URL" := this.GetMockBaseUrl();
+        // ConnectionSetup."Authentication URL" := this.GetMockAuthUrl();
         ConnectionSetup."Client ID" := 'ClientID';
         IsolatedStorageKey := Auth.GetConnectionSetupClientSecretKey();
         Auth.SetIsolatedStorageValue(IsolatedStorageKey, this.GetRandomSecret(30), DataScope::Company);
@@ -474,17 +464,14 @@ codeunit 139780 "Integration Tests"
         DocumentSentFileTok: Label 'DocumentSent.txt', Locked = true;
     begin
         case true of
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/auth'):
+            Regex.IsMatch(Request.Path, 'https?://.+/auth/realms/connect-api/protocol/openid-connect/token'):
                 LoadResourceIntoHttpResponse(AccessTokenFileTok, Response);
 
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer-status/externalId/\d+'):
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/2.0/transfer-status/externalId/\d+'):
                 this.GetTransferStatus(Response);
 
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer'):
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/2.0/transfer'):
                 LoadResourceIntoHttpResponse(DocumentSentFileTok, Response);
-
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles/multiple'):
-                LoadResourceIntoHttpResponse(MultipleDocumentsResponseFileTok, Response);
         end;
     end;
 
@@ -494,10 +481,10 @@ codeunit 139780 "Integration Tests"
         Regex: Codeunit Regex;
     begin
         case true of
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/auth'):
+            Regex.IsMatch(Request.Path, 'https?://.+/auth/realms/connect-api/protocol/openid-connect/token'):
                 LoadResourceIntoHttpResponse(AccessTokenFileTok, Response);
 
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/2.0/transfer'):
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/2.0/transfer'):
                 begin
                     LoadResourceIntoHttpResponse('ServerError.txt', Response);
                     Response.HttpStatusCode := 500;
@@ -511,7 +498,7 @@ codeunit 139780 "Integration Tests"
         Regex: Codeunit Regex;
     begin
         case true of
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles'):
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/1.0/listfiles'):
                 LoadResourceIntoHttpResponse('OneDocumentResponse.txt', Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
@@ -525,7 +512,7 @@ codeunit 139780 "Integration Tests"
         Regex: Codeunit Regex;
     begin
         case true of
-            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/listfiles'):
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/1.0/listfiles'):
                 LoadResourceIntoHttpResponse(MultipleDocumentsResponseFileTok, Response);
 
             Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
