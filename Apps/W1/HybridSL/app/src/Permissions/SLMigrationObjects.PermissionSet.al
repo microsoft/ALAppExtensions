@@ -30,6 +30,7 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL Codes" = X,
                   table "SL Company Additional Settings" = X,
                   table "SL Company Migration Settings" = X,
+                  table "SL CustClass" = X,
                   table "SL Customer" = X,
                   table "SL Fiscal Periods" = X,
                   table "SL FlexDef" = X,

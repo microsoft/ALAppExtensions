@@ -458,7 +458,6 @@ page 47018 "SL Migration Configuration"
                 field("Migrate Customer Classes"; Rec."Migrate Customer Classes")
                 {
                     Caption = 'Customer Classes';
-                    Enabled = false;
                     ToolTip = 'Specifies whether to migrate customer classes.';
 
                     trigger OnValidate()
@@ -475,6 +474,7 @@ page 47018 "SL Migration Configuration"
                     Caption = 'Vendor Classes';
                     Enabled = false;
                     ToolTip = 'Specifies whether to migrate vendor classes.';
+                    Visible = false;
 
                     trigger OnValidate()
                     begin
@@ -490,6 +490,7 @@ page 47018 "SL Migration Configuration"
                     Caption = 'Product Classes';
                     Enabled = false;
                     ToolTip = 'Specifies whether to migrate Product classes.';
+                    Visible = false;
 
                     trigger OnValidate()
                     begin

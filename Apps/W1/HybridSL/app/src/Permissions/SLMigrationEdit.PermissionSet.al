@@ -30,6 +30,7 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Codes" = IMD,
                   tabledata "SL Company Additional Settings" = IMD,
                   tabledata "SL Company Migration Settings" = IMD,
+                  tabledata "SL CustClass" = IMD,
                   tabledata "SL Customer" = IMD,
                   tabledata "SL Fiscal Periods" = IMD,
                   tabledata "SL FlexDef" = IMD,
