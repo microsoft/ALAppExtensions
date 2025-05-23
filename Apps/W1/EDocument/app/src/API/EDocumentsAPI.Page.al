@@ -103,6 +103,9 @@ page 6112 "E-Documents API"
                 field(fileName; Rec."File Name")
                 {
                 }
+                field(fileType; Rec."File Type")
+                {
+                }
                 field(fileByteSize; this.fileSize)
                 {
                 }

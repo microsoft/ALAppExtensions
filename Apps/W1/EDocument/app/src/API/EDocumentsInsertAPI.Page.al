@@ -47,6 +47,9 @@ page 6115 "E-Documents Insert API"
                 field(fileName; Rec."File Name")
                 {
                 }
+                field(fileType; Rec."File Type")
+                {
+                }
             }
         }
     }
@@ -69,6 +72,6 @@ page 6115 "E-Documents Insert API"
 
     trigger OnFindRecord(Which: Text): Boolean
     begin
-        Error('This API does not support the Find operation.');
+        Error('This API does not support the receiving data.');
     end;
 }
