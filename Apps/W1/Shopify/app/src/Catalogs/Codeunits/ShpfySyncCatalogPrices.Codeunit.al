@@ -18,8 +18,10 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
         SetShop(Rec);
         Catalog.SetRange("Shop Code", Shop.Code);
         Catalog.SetRange("Sync Prices", true);
+        if CatalogType <> CatalogType::" " then
+            Catalog.SetRange("Catalog Type", CatalogType);
         if CompanyId <> '' then
-            Catalog.SetRange("Company SystemId", CompanyId);
+            Catalog.SetRange("Company SystemId", this.CompanyId);
         if Catalog.FindSet() then
             repeat
                 if not CatalogIds.Contains(Catalog.Id) then begin

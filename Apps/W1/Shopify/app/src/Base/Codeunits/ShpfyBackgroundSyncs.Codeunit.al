@@ -453,6 +453,11 @@ codeunit 30101 "Shpfy Background Syncs"
         ProductsSync(Shop, true);
     end;
 
+    internal procedure CatalogPricesSync(ShopCode: Code[20]; ShopifyCatalogType: Enum "Shpfy Catalog Type")
+    begin
+        this.CatalogPricesSync(ShopCode, '', ShopifyCatalogType);
+    end;
+
     internal procedure CatalogPricesSync(ShopCode: Code[20]; CompanyId: Text; ShopifyCatalogType: Enum "Shpfy Catalog Type")
     var
         Shop: Record "Shpfy Shop";
@@ -478,16 +483,14 @@ codeunit 30101 "Shpfy Background Syncs"
 
     local procedure GetSyncCatalogPricesParameters(var Shop: Record "Shpfy Shop"; CompanyId: Text; ShopifyCatalogType: Enum "Shpfy Catalog Type"): Text
     var
-        CompanyCatalogPricesParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Catalog Prices" id="30116"><Options><Field name="CompanyId">%1</Field></Options><DataItems><DataItem name="Shop">%2</DataItem></DataItems></ReportParameters>', Comment = '%1 = Company Id, %2 = Shop Record View', Locked = true;
-        MarketCatalogPricesParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Catalog Prices" id="30116"><DataItems><DataItem name="Shop">%1</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View', Locked = true;
+        CompanyCatalogPricesParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Catalog Prices" id="30116"><Options><Field name="CompanyId">%1</Field><Field name="CatalogType">%2</Field></Options><DataItems><DataItem name="Shop">%3</DataItem></DataItems></ReportParameters>', Comment = '%1 = Company Id, %2 = Catalog Type, %3 = Shop Record View', Locked = true;
+        MarketCatalogPricesParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Catalog Prices" id="30116"><<Options><Field name="CatalogType">%1</Field></Options><DataItems><DataItem name="Shop">%2</DataItem></DataItems></ReportParameters>', Comment = '%1 = Catalog Type, %2 = Shop Record View', Locked = true;
     begin
         case ShopifyCatalogType of
             ShopifyCatalogType::Company:
-                exit(StrSubstNo(CompanyCatalogPricesParametersTxt, CompanyId, Shop.GetView()));
+                exit(StrSubstNo(CompanyCatalogPricesParametersTxt, CompanyId, ShopifyCatalogType::Company.AsInteger(), Shop.GetView()));
             ShopifyCatalogType::Market:
-                exit(StrSubstNo(MarketCatalogPricesParametersTxt, Shop.GetView()));
-            ShopifyCatalogType::" ":
-                exit(StrSubstNo(MarketCatalogPricesParametersTxt, Shop.GetView()));
+                exit(StrSubstNo(MarketCatalogPricesParametersTxt, ShopifyCatalogType::Market.AsInteger(), Shop.GetView()));
         end;
     end;
 

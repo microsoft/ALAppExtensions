@@ -124,7 +124,7 @@ page 30159 "Shpfy Catalogs"
                 begin
                     if Shop.Get(Rec."Shop Code") then begin
                         CatalogAPI.SetShop(Shop);
-                        CatalogAPI.SetCatalogType(Rec."Catalog Type");
+                        CatalogAPI.SetCatalogType("Shpfy Catalog Type"::Company);
                         Hyperlink(CatalogAPI.GetCatalogProductsURL(Rec.Id));
                     end;
                 end;
@@ -174,11 +174,11 @@ page 30159 "Shpfy Catalogs"
                     BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                 begin
                     if Rec.GetFilter("Company SystemId") <> '' then
-                        BackgroundSyncs.CatalogPricesSync(Rec."Shop Code", Rec.GetFilter("Company SystemId"), Rec."Catalog Type")
+                        BackgroundSyncs.CatalogPricesSync(Rec."Shop Code", Rec.GetFilter("Company SystemId"), "Shpfy Catalog Type"::Company)
                     else begin
                         Shop.SetRange(Code, Rec."Shop Code");
                         SyncCatalogsPrices.SetTableView(Shop);
-                        SyncCatalogsPrices.SetCatalogType(Rec."Catalog Type");
+                        SyncCatalogsPrices.SetCatalogType("Shpfy Catalog Type"::Company);
                         SyncCatalogsPrices.Run();
                     end;
                 end;
