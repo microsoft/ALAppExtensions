@@ -57,13 +57,13 @@ codeunit 6129 "E-Documents API Helper"
         EDocImport: Codeunit "E-Doc. Import";
         EDocumentServiceStatus: Enum "E-Document Service Status";
         BlobType: Enum "E-Doc. Data Storage Blob Type";
+        Success: Boolean;
     begin
         if not EDocumentService.Get(EDocumentServiceCode) then
             exit;
 
         if not GetFileContent(FileBase64Text, TempBlob) then
             exit;
-
 
         BlobType := EDocImport.GetFileType(FileName);
         if BlobType = Enum::"E-Doc. Data Storage Blob Type"::Unspecified then
@@ -87,6 +87,11 @@ codeunit 6129 "E-Documents API Helper"
         end;
 
         this.LogUploadedEDocument(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
+
+        Success := EDocImport.ProcessAutomaticallyIncomingEDocument(EDocument);
+
+        if not Success then
+            Error('Error processing the incoming E-Document. Please check the log for more details.');
     end;
 
 
