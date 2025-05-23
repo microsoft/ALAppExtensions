@@ -13,8 +13,6 @@ codeunit 6127 "E-Document External Events"
     var
         EDocumentApiUrlTok: Label 'v2.0/companies(%1)/eDocuments(%2)', Locked = true;
 
-    //Copied from codeunit 38500 "External Events Helper"
-    //TODO decide if we should copy procedures/add dependency/move API code
     internal procedure CreateLink(url: Text; Id: Guid): Text[250]
     var
         Link: Text[250];
@@ -40,8 +38,6 @@ codeunit 6127 "E-Document External Events"
     begin
         exit(DelChr(Format(Id), '<>', '{}'));
     end;
-
-    //Copied from codeunit 38500 "External Events Helper"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Processing", OnAfterModifyEDocumentStatus, '', false, false)]
     local procedure OnAfterModifyEDocumentStatus(var EDocument: Record "E-Document"; var EDocumentServiceStatus: Record "E-Document Service Status")

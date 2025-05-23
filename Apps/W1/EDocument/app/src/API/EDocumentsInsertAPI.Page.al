@@ -26,6 +26,7 @@ page 6115 "E-Documents Insert API"
     SourceTableTemporary = true;
 
     Extensible = false;
+    Editable = true;
     DelayedInsert = true;
 
     layout
@@ -57,11 +58,17 @@ page 6115 "E-Documents Insert API"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
-        EDocumentFileEntityBuffer: Codeunit "E-Document File Entity Buffer";
+        EDocumentsAPIHelper: Codeunit "E-Documents API Helper";
     begin
         if (this.fileContent <> '') and (this.eDocService <> '') then
-            EDocumentFileEntityBuffer.CreateEDocumentFromReceivedFile(this.fileContent, this.eDocService, Rec."File Name")
+            EDocumentsAPIHelper.CreateEDocumentFromReceivedFile(this.fileContent, this.eDocService, Rec."File Name")
         else
             Error('File content or E-Document Service Code is empty.');
+    end;
+
+
+    trigger OnFindRecord(Which: Text): Boolean
+    begin
+        Error('This API does not support the Find operation.');
     end;
 }

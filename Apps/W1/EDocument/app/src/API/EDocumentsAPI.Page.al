@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.API;
+using Microsoft.eServices.EDocument.API;
+using System.Text;
 using Microsoft.eServices.EDocument;
 
 page 6112 "E-Documents API"
@@ -98,13 +100,28 @@ page 6112 "E-Documents API"
                 field(workflowCode; Rec."Workflow Code")
                 {
                 }
-                part(documentFiles; "E-Document Files API")
+                field(fileName; Rec."File Name")
                 {
-                    EntityName = 'documentFile';
-                    EntitySetName = 'documentFiles';
-                    SubPageLink = "Related E-Doc. Entry No." = field("Entry No");
+                }
+                field(fileByteSize; this.fileSize)
+                {
+                }
+                field(fileContent; this.fileContent)
+                {
                 }
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    var
+        EDocumentsAPIHelper: Codeunit "E-Documents API Helper";
+    begin
+        EDocumentsAPIHelper.LoadEDocumentFile(Rec."Entry No", this.fileContent, this.fileSize);
+    end;
+
+    var
+        fileContent: Text;
+
+        fileSize: Integer;
 }

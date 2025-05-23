@@ -7,24 +7,28 @@ namespace Microsoft.eServices.EDocument.API;
 using Microsoft.eServices.EDocument;
 using System.Utilities;
 using Microsoft.Integration.Graph;
+using System.Text;
 
 codeunit 6129 "E-Documents API Helper"
 {
-    internal procedure LoadEDocumentFile(var TempEDocumentsFileBuffer: Record "E-Document File Entity Buffer" temporary; EDocumentNoFilter: Text)
+
+    var
+        EDocumentLog: Codeunit "E-Document Log";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+        FileTypeNotSupportedErr: Label 'File type not supported';
+
+    internal procedure LoadEDocumentFile(EntryNo: Integer; var Base64EDocument: Text; var byteSize: Integer)
     var
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
-        EDocumentLog: Codeunit "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
-        GraphMgtAttachmentBuffer: Codeunit "Graph Mgt - Attachment Buffer";
+        Base64Convert: Codeunit "Base64 Convert";
         EDocumentServiceStatus: Enum "E-Document Service Status";
-        OutStr: OutStream;
     begin
-        TempEDocumentsFileBuffer.DeleteAll(true);
-
-        if EDocumentNoFilter <> '' then begin
-            EDocument.SetFilter("Entry No", EDocumentNoFilter);
-            if not EDocument.FindFirst() then
+        Base64EDocument := '';
+        byteSize := 0;
+        if EntryNo <> 0 then begin
+            if not EDocument.Get(EntryNo) then
                 exit;
 
             EDocumentService := EDocumentLog.GetLastServiceFromLog(EDocument);
@@ -39,16 +43,72 @@ codeunit 6129 "E-Documents API Helper"
             EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
 
             if TempBlob.HasValue() then begin
-                TempEDocumentsFileBuffer.Init();
-                TempEDocumentsFileBuffer."Related E-Doc. Entry No." := EDocument."Entry No";
-                TempEDocumentsFileBuffer."Byte Size" := GraphMgtAttachmentBuffer.GetContentLength(TempBlob);
-
-                TempEDocumentsFileBuffer.Content.CreateOutStream(OutStr);
-                CopyStream(OutStr, TempBlob.CreateInStream());
-
-                TempEDocumentsFileBuffer.UpdateRelatedEDocumentId();
-                TempEDocumentsFileBuffer.Insert(true);
+                Base64EDocument := Base64Convert.ToBase64(TempBlob.CreateInStream());
+                byteSize := TempBlob.Length();
             end;
         end;
+    end;
+
+    internal procedure CreateEDocumentFromReceivedFile(FileBase64Text: Text; EDocumentServiceCode: Code[20]; FileName: Text)
+    var
+        EDocumentService: Record "E-Document Service";
+        EDocument: Record "E-Document";
+        TempBlob: Codeunit "Temp Blob";
+        EDocImport: Codeunit "E-Doc. Import";
+        EDocumentServiceStatus: Enum "E-Document Service Status";
+        BlobType: Enum "E-Doc. Data Storage Blob Type";
+    begin
+        if not EDocumentService.Get(EDocumentServiceCode) then
+            exit;
+
+        if not GetFileContent(FileBase64Text, TempBlob) then
+            exit;
+
+
+        BlobType := EDocImport.GetFileType(FileName);
+        if BlobType = Enum::"E-Doc. Data Storage Blob Type"::Unspecified then
+            Error(this.FileTypeNotSupportedErr);
+
+        EDocument.Direction := EDocument.Direction::Incoming;
+        EDocument."Document Type" := Enum::"E-Document Type"::None;
+        EDocument.Service := EDocumentService.Code;
+        EDocumentServiceStatus := "E-Document Service Status"::Imported;
+
+
+        EDocument."File Name" := CopyStr(FileName, 1, 256);
+        EDocument."File Type" := BlobType;
+
+        if EDocument."Entry No" = 0 then begin
+            EDocument.Insert(true);
+            this.EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
+        end else begin
+            EDocument.Modify(true);
+            this.EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
+        end;
+
+        this.LogUploadedEDocument(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
+    end;
+
+
+    local procedure GetFileContent(FileBase64Text: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        Base64Convert: Codeunit "Base64 Convert";
+    begin
+        if FileBase64Text = '' then
+            exit(false);
+
+        Base64Convert.FromBase64(FileBase64Text, TempBlob.CreateOutStream());
+        if TempBlob.HasValue() then
+            exit(true);
+    end;
+
+
+    local procedure LogUploadedEDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; var EDocumentServiceStatus: Enum "E-Document Service Status")
+    var
+        EDocLog: Record "E-Document Log";
+    begin
+        EDocLog := this.EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
+        EDocument."Unstructured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No.";
+        EDocument.Modify(false);
     end;
 }
