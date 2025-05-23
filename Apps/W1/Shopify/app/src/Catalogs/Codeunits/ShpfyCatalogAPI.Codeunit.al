@@ -103,9 +103,9 @@ codeunit 30290 "Shpfy Catalog API"
     begin
         GraphQLType := "Shpfy GraphQL Type"::GetMarketCatalogs;
         repeat
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            JResponse := this.CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JResponse.IsObject() then
-                if ExtractShopifyMarketCatalogs(JResponse.AsObject(), Cursor) then begin
+                if this.ExtractShopifyMarketCatalogs(JResponse.AsObject(), Cursor) then begin
                     if Parameters.ContainsKey('After') then
                         Parameters.Set('After', Cursor)
                     else
@@ -113,7 +113,7 @@ codeunit 30290 "Shpfy Catalog API"
                     GraphQLType := "Shpfy GraphQL Type"::GetNextMarketCatalogs;
                 end else
                     break;
-        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalogs.pageInfo.hasNextPage');
+        until not this.JsonHelper.GetValueAsBoolean(JResponse, 'data.catalogs.pageInfo.hasNextPage');
     end;
 
     internal procedure GetCatalogPrices(Catalog: Record "Shpfy Catalog"; var TempCatalogPrice: Record "Shpfy Catalog Price" temporary)
@@ -263,10 +263,10 @@ codeunit 30290 "Shpfy Catalog API"
     begin
         if JsonHelper.GetJsonArray(JResponse, JCatalogs, 'data.catalogs.edges') then begin
             foreach JEdge in JCatalogs do begin
-                Cursor := JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
-                if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
-                    CatalogId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
-                    CurrencyCode := JsonHelper.GetValueAsText(JNode, 'priceList.currency');
+                Cursor := this.JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
+                if this.JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
+                    CatalogId := this.CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+                    CurrencyCode := this.JsonHelper.GetValueAsText(JNode, 'priceList.currency');
                     Catalog.SetRange(Id, CatalogId);
                     Catalog.SetRange("Catalog Type", "Shpfy Catalog Type"::Market);
                     if not Catalog.FindFirst() then begin
@@ -275,11 +275,11 @@ codeunit 30290 "Shpfy Catalog API"
                         Catalog.Insert(true);
                     end;
                     Catalog."Shop Code" := Shop.Code;
-                    Catalog.Name := CopyStr(JsonHelper.GetValueAsText(JNode, 'title'), 1, MaxStrLen(Catalog.Name));
+                    Catalog.Name := CopyStr(this.JsonHelper.GetValueAsText(JNode, 'title'), 1, MaxStrLen(Catalog.Name));
                     Catalog."Currency Code" := CopyStr(CurrencyCode, 1, MaxStrLen(Catalog."Currency Code"));
                     Catalog.Modify(true);
 
-                    GetMarketsLinkedToCatalog(Catalog);
+                    this.GetMarketsLinkedToCatalog(Catalog);
                 end;
             end;
             exit(true);
@@ -293,13 +293,13 @@ codeunit 30290 "Shpfy Catalog API"
         JResponse: JsonToken;
         Parameters: Dictionary of [Text, Text];
     begin
-        ClearCatalogMarketRelations(Catalog);
+        this.ClearCatalogMarketRelations(Catalog);
         GraphQLType := "Shpfy GraphQL Type"::GetCatalogMarkets;
         Parameters.Add('CatalogId', Format(Catalog.Id));
         repeat
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            JResponse := this.CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JResponse.IsObject() then
-                if ExtractMarketsLinkedToCatalog(JResponse.AsObject(), Catalog, Cursor) then begin
+                if this.ExtractMarketsLinkedToCatalog(JResponse.AsObject(), Catalog, Cursor) then begin
                     if Parameters.ContainsKey('After') then
                         Parameters.Set('After', Cursor)
                     else
@@ -307,7 +307,7 @@ codeunit 30290 "Shpfy Catalog API"
                     GraphQLType := "Shpfy GraphQL Type"::GetNextCatalogMarkets;
                 end else
                     break;
-        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalog.markets.pageInfo.hasNextPage');
+        until not this.JsonHelper.GetValueAsBoolean(JResponse, 'data.catalog.markets.pageInfo.hasNextPage');
     end;
 
     local procedure ClearCatalogMarketRelations(Catalog: Record "Shpfy Catalog")
@@ -327,11 +327,11 @@ codeunit 30290 "Shpfy Catalog API"
         JEdge: JsonToken;
         JNode: JsonObject;
     begin
-        if JsonHelper.GetJsonArray(JResponse, JMarkets, 'data.catalog.markets.edges') then begin
+        if this.JsonHelper.GetJsonArray(JResponse, JMarkets, 'data.catalog.markets.edges') then begin
             foreach JEdge in JMarkets do begin
-                Cursor := JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
-                if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
-                    MarketId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+                Cursor := this.JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
+                if this.JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
+                    MarketId := this.CommunicationMgt.GetIdOfGId(this.JsonHelper.GetValueAsText(JNode, 'id'));
 
                     MarketCatalogRelation.SetRange("Market Id", MarketId);
                     MarketCatalogRelation.SetRange("Catalog Id", Catalog.Id);
@@ -340,7 +340,7 @@ codeunit 30290 "Shpfy Catalog API"
                         MarketCatalogRelation."Catalog Id" := Catalog.Id;
                         MarketCatalogRelation.Insert(true);
                     end;
-                    MarketCatalogRelation."Shop Code" := Shop.Code;
+                    MarketCatalogRelation."Shop Code" := this.Shop.Code;
                     MarketCatalogRelation."Market Name" := CopyStr(JsonHelper.GetValueAsText(JNode, 'name'), 1, MaxStrLen(MarketCatalogRelation."Market Name"));
                     MarketCatalogRelation."Catalog Title" := Catalog.Name;
                     MarketCatalogRelation.Modify(true);
@@ -400,14 +400,14 @@ codeunit 30290 "Shpfy Catalog API"
 
     internal procedure GetCatalogProductsURL(CatalogId: BigInteger): Text
     begin
-        case CatalogType of
+        case this.CatalogType of
             "Shpfy Catalog Type"::Company:
-                exit(StrSubstNo(ShopifyCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)));
+                exit(StrSubstNo(this.ShopifyCatalogURLLbl, this.Shop."Shopify URL".Substring(1, this.Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)));
             "Shpfy Catalog Type"::Market:
-                if IsUnifiedMarketsEnabled(Shop) then
-                    exit(StrSubstNo(ShopifyUnifiedMarketCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)))
+                if this.IsUnifiedMarketsEnabled(this.Shop) then
+                    exit(StrSubstNo(this.ShopifyUnifiedMarketCatalogURLLbl, this.Shop."Shopify URL".Substring(1, this.Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(CatalogId)))
                 else
-                    exit(StrSubstNo(ShopifyMarketCatalogURLLbl, Shop."Shopify URL".Substring(1, Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(GetMartetIdForNotUnifiedMarket(CatalogId))));
+                    exit(StrSubstNo(this.ShopifyMarketCatalogURLLbl, this.Shop."Shopify URL".Substring(1, this.Shop."Shopify URL".IndexOf('.myshopify.com') - 1).Replace('https://', ''), Format(this.GetMartetIdForNotUnifiedMarket(CatalogId))));
         end;
     end;
 
@@ -415,9 +415,9 @@ codeunit 30290 "Shpfy Catalog API"
     var
         JResponse: JsonToken;
     begin
-        CommunicationMgt.SetShop(ShopifyShop);
-        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { features { unifiedMarkets } } }"}');
-        exit(JsonHelper.GetValueAsBoolean(JResponse, 'data.shop.features.unifiedMarkets'));
+        this.CommunicationMgt.SetShop(ShopifyShop);
+        JResponse := this.CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { features { unifiedMarkets } } }"}');
+        exit(this.JsonHelper.GetValueAsBoolean(JResponse, 'data.shop.features.unifiedMarkets'));
     end;
 
     local procedure GetMartetIdForNotUnifiedMarket(CatalogId: BigInteger): BigInteger
@@ -425,7 +425,7 @@ codeunit 30290 "Shpfy Catalog API"
         MarketCatalogRelation: Record "Shpfy Market Catalog Relation";
     begin
         MarketCatalogRelation.SetRange("Catalog Id", CatalogId);
-        MarketCatalogRelation.SetRange("Shop Code", Shop.Code);
+        MarketCatalogRelation.SetRange("Shop Code", this.Shop.Code);
         if MarketCatalogRelation.FindFirst() then
             exit(MarketCatalogRelation."Market Id");
     end;
@@ -438,6 +438,6 @@ codeunit 30290 "Shpfy Catalog API"
 
     internal procedure SetCatalogType(ShopifyCatalogType: Enum "Shpfy Catalog Type")
     begin
-        CatalogType := ShopifyCatalogType;
+        this.CatalogType := ShopifyCatalogType;
     end;
 }

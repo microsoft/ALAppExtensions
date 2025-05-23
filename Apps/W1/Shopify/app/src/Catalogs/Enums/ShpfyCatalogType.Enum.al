@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Enum Shpfy Catalog Type (ID 30167).
+/// Enum Shpfy Catalog Type (ID 30168).
 /// </summary>
-enum 30167 "Shpfy Catalog Type"
+enum 30168 "Shpfy Catalog Type"
 {
     Extensible = true;
 
