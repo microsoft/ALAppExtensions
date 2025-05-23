@@ -88,6 +88,7 @@ pageextension 36951 "A/P Administrator RC" extends "A/P Administrator RC"
                 }
                 action(PurchasesByPurchaser)
                 {
+                    ApplicationArea = Basic, Suite;
                     Caption = 'Purchases by Purchaser (Power BI)';
                     Image = PowerBI;
                     RunObject = page "Purchases by Purchaser";
