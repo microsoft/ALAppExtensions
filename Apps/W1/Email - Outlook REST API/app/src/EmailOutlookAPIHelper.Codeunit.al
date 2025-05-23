@@ -271,18 +271,6 @@ codeunit 4509 "Email - Outlook API Helper"
             IsolatedStorage.Delete(Rec.ClientSecret, DataScope::Module);
     end;
 
-#if not CLEAN24
-    [Obsolete('Replaced by InitializeClients with v2 interfaces.', '24.0')]
-    procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client"; var OAuthClient: interface "Email - OAuth Client")
-    var
-        DefaultAPIClient: Codeunit "Email - Outlook API Client";
-        DefaultOAuthClient: Codeunit "Email - OAuth Client";
-    begin
-        OutlookAPIClient := DefaultAPIClient;
-        OAuthClient := DefaultOAuthClient;
-        OnAfterInitializeClients(OutlookAPIClient, OAuthClient);
-    end;
-#endif
     procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client v2"; var OAuthClient: interface "Email - OAuth Client v2")
     var
         DefaultAPIClient: Codeunit "Email - Outlook API Client";
@@ -663,12 +651,6 @@ codeunit 4509 "Email - Outlook API Helper"
         exit(JToken.AsValue().AsText());
     end;
 
-#if not CLEAN24
-    [InternalEvent(false)]
-    local procedure OnAfterInitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client"; var OAuthClient: interface "Email - OAuth Client")
-    begin
-    end;
-#endif
     [InternalEvent(false)]
     local procedure OnAfterInitializeClientsV2(var OutlookAPIClient: interface "Email - Outlook API Client v2"; var OAuthClient: interface "Email - OAuth Client v2")
     begin

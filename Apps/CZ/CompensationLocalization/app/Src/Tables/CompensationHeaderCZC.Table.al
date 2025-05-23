@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -334,18 +334,10 @@ table 31272 "Compensation Header CZC"
         CompensationsSetupCZC: Record "Compensations Setup CZC";
         CompensationHeader: Record "Compensation Header CZC";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
     begin
         CompensationsSetupCZC.Get();
         if "No." = '' then begin
             CompensationsSetupCZC.TestField("Compensation Nos.");
-#if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(CompensationsSetupCZC."Compensation Nos.", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := CompensationsSetupCZC."Compensation Nos.";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
@@ -354,10 +346,6 @@ table 31272 "Compensation Header CZC"
                 CompensationHeader.SetLoadFields("No.");
                 while CompensationHeader.Get("No.") do
                     "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", CompensationsSetupCZC."Compensation Nos.", 0D, "No.");
-            end;
-#endif
         end;
         "User ID" := CopyStr(UserId(), 1, MaxStrLen("User ID"));
     end;

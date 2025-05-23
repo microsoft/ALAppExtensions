@@ -121,7 +121,7 @@ page 8095 "Get Vendor Contract Lines"
                 }
                 field("Service Object Quantity"; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
@@ -341,7 +341,7 @@ page 8095 "Get Vendor Contract Lines"
         Rec.Validate(Amount, VendorInvoiceAmount);
     end;
 
-    internal procedure TestPurchaseDocument(PurchaseHeader: Record "Purchase Header")
+    local procedure TestPurchaseDocument(PurchaseHeader: Record "Purchase Header")
     begin
         PurchaseHeader.TestField("Document Type", PurchaseHeader."Document Type"::Invoice);
         PurchaseHeader.TestField(Status, PurchaseHeader.Status::Open);

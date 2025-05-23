@@ -144,7 +144,8 @@ codeunit 139694 "Usage Based Rebilling Test"
         RebillingUsageDataImport.CollectCustomerContractsAndCreateInvoices(InitialUsageDataImport);
 
         // [THEN] Check invoice and usage data billing line
-        SalesInvoiceHeader.FindLast();
+        SalesInvoiceHeader.SetRange("Sell-to Customer No.", Customer."No.");
+        SalesInvoiceHeader.FindFirst();
         SalesInvoiceHeader.TestField("Recurring Billing", true);
         UsageDataBilling.Reset();
         UsageDataBilling.FilterOnDocumentTypeAndDocumentNo("Service Partner"::Customer, UsageDataBilling."Document Type"::"Posted Invoice", SalesInvoiceHeader."No.");
@@ -228,7 +229,8 @@ codeunit 139694 "Usage Based Rebilling Test"
         RebillingUsageDataImport.CollectCustomerContractsAndCreateInvoices(RebillingUsageDataImport);
 
         // [THEN] Check invoice and usage data billing line
-        SalesInvoiceHeader.FindLast();
+        SalesInvoiceHeader.SetRange("Sell-to Customer No.", Customer."No.");
+        SalesInvoiceHeader.FindFirst();
         SalesInvoiceHeader.TestField("Recurring Billing", true);
         UsageDataBilling.FilterOnDocumentTypeAndDocumentNo("Service Partner"::Customer, UsageDataBilling."Document Type"::"Posted Invoice", SalesInvoiceHeader."No.");
         Assert.AreEqual(1, UsageDataBilling.Count(), 'Expected one usage data billing to be invoiced, but found a different count.');

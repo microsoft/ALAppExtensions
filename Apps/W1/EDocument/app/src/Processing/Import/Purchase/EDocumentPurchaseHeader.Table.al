@@ -10,6 +10,7 @@ using Microsoft.eServices.EDocument;
 table 6100 "E-Document Purchase Header"
 {
     Access = Internal;
+    ReplicateData = false;
 #pragma warning disable AS0034
     InherentEntitlements = RIMDX;
     InherentPermissions = RIMDX;

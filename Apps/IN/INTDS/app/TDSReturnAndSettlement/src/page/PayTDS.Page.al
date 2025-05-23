@@ -240,6 +240,8 @@ page 18746 "Pay TDS"
                             TDSEntry.Modify();
                         until TDSEntry.Next() = 0;
 
+                    CurrPage.SetSelectionFilter(Rec);
+
                     TDSEntry.Copy(Rec);
                     if TDSEntry.FindSet() then
                         repeat

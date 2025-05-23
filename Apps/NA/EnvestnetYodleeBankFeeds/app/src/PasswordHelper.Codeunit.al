@@ -5,22 +5,6 @@ using System.Security.AccessControl;
 
 codeunit 1267 "Password Helper"
 {
-#if not CLEAN24
-    [NonDebuggable]
-    [Obsolete('Use GenerateSecretPassword with SecretText return type.', '24.0')]
-    procedure GeneratePassword(Length: Integer): Text;
-    var
-        Regex: Codeunit "Regex";
-        PasswordHandler: Codeunit "Password Handler";
-        Result: Text;
-    begin
-        Regex.Regex('[\[\]\{\}\(\)\+\-&%\.\^;,:\|=\\\/\?''"`\~><_]');
-        Result := Regex.Replace(PasswordHandler.GenerateSecretPassword(Length).Unwrap(), '');
-        while WeakYodleePassword(Result) do
-            Result := Regex.Replace(PasswordHandler.GenerateSecretPassword(Length).Unwrap(), '');
-        exit(Result);
-    end;
-#endif
 
     [NonDebuggable]
     procedure GenerateSecretPassword(Length: Integer): SecretText;
@@ -36,17 +20,6 @@ codeunit 1267 "Password Helper"
         exit(Result);
     end;
 
-#if not CLEAN24
-    [NonDebuggable]
-    [Obsolete('Use WeakYodleePassword with SecretText data type for Password parameter.', '24.0')]
-    procedure WeakYodleePassword(Password: Text): Boolean
-    var
-        Pass: SecretText;
-    begin
-        Pass := Password;
-        exit(WeakYodleePassword(Pass));
-    end;
-#endif
 
     [NonDebuggable]
     procedure WeakYodleePassword(Pass: SecretText): Boolean
@@ -114,4 +87,3 @@ codeunit 1267 "Password Helper"
         exit(false);
     end;
 }
-

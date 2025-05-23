@@ -22,6 +22,7 @@ codeunit 148156 "Service Commitment Test"
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
+        PackageLineMissingInvoicingItemNoErr: Label 'The %1 %2 can not be used with Item %3, because at least one of the Service Commitment Package lines is missing an %4.', Locked = true;
 
     #region Tests
 
@@ -368,6 +369,58 @@ codeunit 148156 "Service Commitment Test"
         CopiedServiceCommPackageLines.TestField("Initial Term", ServiceCommPackageLine."Initial Term");
     end;
 
+    [Test]
+    procedure ExpectErrorWhenItemAssignedToServCommPackageWhenInvoicingItemIsEmptyForPackageLine()
+    var
+        SalesWithServCommItem: Record Item;
+        ServCommPackage: Record "Subscription Package";
+        ServCommPackageLine: Record "Subscription Package Line";
+    begin
+        // [SCENARIO] When Service Commitment Package has one line with "Invoice Via" = Contract and "Invoicing Item No." is empty, then the item cannot be assigned to the package
+
+        // [GIVEN] Service Commitment Package with a line where Invoicing Item is empty and "Invoicing Via" = Contract
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServCommPackage, ServCommPackageLine);
+        ServCommPackageLine.Validate("Invoicing via", Enum::"Invoicing Via"::Contract);
+        ServCommPackageLine.Modify(false);
+
+        // [WHEN] Assigning an Item with Service Commitment Option = Sales with Service Commitment to the Service Commitment Package
+        ContractTestLibrary.CreateItemForServiceObject(SalesWithServCommItem, false);
+        asserterror ContractTestLibrary.AssignItemToServiceCommitmentPackage(SalesWithServCommItem."No.", ServCommPackage.Code, true, true);
+
+        // [THEN] Error expected that the item cannot be used with a package while there is a package line with "Invoicing Via" = Contract and "Invoicing Item No." is blank
+        Assert.ExpectedError(StrSubstNo(PackageLineMissingInvoicingItemNoErr, ServCommPackage.TableCaption, ServCommPackage.Code, SalesWithServCommItem."No.", ServCommPackageLine.FieldCaption("Invoicing Item No.")));
+    end;
+
+    [Test]
+    procedure ExpectErrorOnChangeItemServiceCommTypeFromSrvCommToSalesWithSrvComm()
+    var
+        SrvCommItem: Record Item;
+        ServCommPackage: Record "Subscription Package";
+        ServCommPackageLine: Record "Subscription Package Line";
+    begin
+        // [SCENARIO] When changing the Service Commitment Option of an Item from "Service Commitment Item" to "Sales with Service Commitment", error is thrown if the item is assigned to a Service Commitment Package with "Invoicing via" = Contract and "Invoicing Item No." is blank
+
+        // [GIVEN] Item with Service Commitment Option = Service Commitment Item
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(SrvCommItem, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+
+        // [GIVEN] Service Commitment Package with a line where "Invoicing Via" = Sales
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine('', ServCommPackage, ServCommPackageLine);
+        ServCommPackageLine.Validate("Invoicing via", Enum::"Invoicing Via"::Sales);
+        ServCommPackageLine.Modify(false);
+
+        // [GIVEN] Assigning an Item to the Service Commitment Package
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(SrvCommItem, ServCommPackage.Code);
+
+        // [GIVEN] Service Commitment Package Line has been updated in the meantime (mistakenly) to "Invoicing Via" = Contract with a blank "Invoicing Item No."
+        ServCommPackageLine.Validate("Invoicing via", Enum::"Invoicing Via"::Contract);
+        ServCommPackageLine.Modify(false);
+
+        // [WHEN] Changing the Service Commitment Option of the Item to "Sales with Service Commitment"
+        asserterror SrvCommItem.Validate("Subscription Option", Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
+
+        // [THEN] Error expected that the item cannot be used with a package while there is a package line with "Invoicing Via" = Contract and "Invoicing Item No." is blank
+        Assert.ExpectedError(StrSubstNo(PackageLineMissingInvoicingItemNoErr, ServCommPackage.TableCaption, ServCommPackage.Code, SrvCommItem."No.", ServCommPackageLine.FieldCaption("Invoicing Item No.")));
+    end;
     #endregion Tests
 
     #region Procedures

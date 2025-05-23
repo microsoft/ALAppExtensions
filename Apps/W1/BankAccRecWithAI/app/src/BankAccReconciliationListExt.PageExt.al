@@ -7,18 +7,6 @@ pageextension 7254 BankAccReconciliationListExt extends "Bank Acc. Reconciliatio
 {
     actions
     {
-#if not CLEAN24
-        addbefore(Category_Posting)
-        {
-            actionref("Reconcile With Copilot_Promoted"; "Reconcile With Copilot")
-            {
-                Visible = false;
-                ObsoleteReason = 'Action in the Prompting area.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '24.0';
-            }
-        }
-#endif
         addfirst(Prompting)
         {
             action("Reconcile With Copilot")

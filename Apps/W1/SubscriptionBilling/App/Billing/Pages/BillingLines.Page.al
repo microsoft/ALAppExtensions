@@ -44,7 +44,7 @@ page 8074 "Billing Lines"
                 }
                 field("Contract No."; Rec."Subscription Contract No.")
                 {
-                    ToolTip = 'Specifies the number of the Contract No.';
+                    ToolTip = 'Specifies the number of the Subscription Contract.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
                     Visible = false;
@@ -57,7 +57,7 @@ page 8074 "Billing Lines"
                 field(ContractDescriptionField; ContractDescriptionTxt)
                 {
                     Caption = 'Subscription Contract Description';
-                    ToolTip = 'Specifies the subscriptions being offered.';
+                    ToolTip = 'Specifies the description of the Subscription Contract.';
                     Editable = false;
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
@@ -69,7 +69,7 @@ page 8074 "Billing Lines"
                 }
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
 
@@ -116,7 +116,7 @@ page 8074 "Billing Lines"
                 }
                 field("Service Object Quantity"; Rec."Service Object Quantity")
                 {
-                    ToolTip = 'Quantity from Subscription.';
+                    ToolTip = 'Specifies the quantity from the Subscription.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
                 }

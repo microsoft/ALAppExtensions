@@ -490,6 +490,26 @@ page 36951 "PowerBI Reports Setup"
                     ToolTip = 'Specifies the date formula for Sustainability report filter. Set this if you have specified Relative Date as the Load Date Type.';
                 }
             }
+            group(SubscriptionBillingReport)
+            {
+                Caption = 'Subscription Billing Report';
+                group(SubscriptionBillingGeneral)
+                {
+                    ShowCaption = false;
+                    field("Subscription Billing Report Name"; Format(Rec."Subs. Billing Report Name"))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Power BI Subscription Billing App';
+                        ToolTip = 'Specifies where you have installed the Power BI Subscription Billing App.';
+
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Subscription Billing Report ID", Rec."Subs. Billing Report Name");
+                        end;
+                    }
+                }
+            }
 
 
             group(Dimensions)

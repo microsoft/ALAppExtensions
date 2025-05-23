@@ -37,8 +37,8 @@ report 4408 "EXR Trial Bal by Period Excel"
 
             dataitem(EXRTrialBalanceBuffer; "EXR Trial Balance Buffer")
             {
+                DataItemTableView = sorting("G/L Account No.");
                 DataItemLink = "G/L Account No." = field("No.");
-                RequestFilterFields = Balance, "Net Change";
                 column(Account; "G/L Account No.") { IncludeCaption = true; }
                 column(Dimension1Code; "Dimension 1 Code") { IncludeCaption = true; }
                 column(Dimension2Code; "Dimension 2 Code") { IncludeCaption = true; }

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -615,7 +615,7 @@ table 11732 "Cash Document Header CZP"
         CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
     begin
         TestField(Status, Status::Open);
-        if not ConfirmManagement.GetResponseOrDefault(DeleteQst, false) then
+        if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(DeleteQst, "No."), false) then
             Error('');
 
         DeleteRecordInApprovalRequest();
@@ -629,15 +629,14 @@ table 11732 "Cash Document Header CZP"
         CashDocumentLineCZP.SetRange("Cash Desk No.", "Cash Desk No.");
         CashDocumentLineCZP.SetRange("Cash Document No.", "No.");
         CashDocumentLineCZP.DeleteAll(true);
+
+        Message(PostedDocsToPrintCreatedMsg);
     end;
 
     trigger OnInsert()
     var
         CashDeskUserCZP: Record "Cash Desk User CZP";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        IsHandled: Boolean;
-#endif
     begin
         TestField("Cash Desk No.");
         TestField("Document Type");
@@ -659,34 +658,18 @@ table 11732 "Cash Document Header CZP"
                 "Document Type"::Receipt:
                     begin
                         CashDeskCZP.TestField("Cash Document Receipt Nos.");
-#if not CLEAN24
-                        NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(CashDeskCZP."Cash Document Receipt Nos.", xRec."No. Series", WorkDate(), "No.", "No. Series", IsHandled);
-                        if not IsHandled then begin
-#endif
                             "No. Series" := CashDeskCZP."Cash Document Receipt Nos.";
                             if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                                 "No. Series" := xRec."No. Series";
                             "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                            NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", CashDeskCZP."Cash Document Receipt Nos.", WorkDate(), "No.");
-                        end;
-#endif
                     end;
                 "Document Type"::Withdrawal:
                     begin
                         CashDeskCZP.TestField("Cash Document Withdrawal Nos.");
-#if not CLEAN24
-                        NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(CashDeskCZP."Cash Document Withdrawal Nos.", xRec."No. Series", WorkDate(), "No.", "No. Series", IsHandled);
-                        if not IsHandled then begin
-#endif
                             "No. Series" := CashDeskCZP."Cash Document Withdrawal Nos.";
                             if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                                 "No. Series" := xRec."No. Series";
                             "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                            NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", CashDeskCZP."Cash Document Withdrawal Nos.", WorkDate(), "No.");
-                        end;
-#endif
                     end;
             end;
 
@@ -730,9 +713,6 @@ table 11732 "Cash Document Header CZP"
         Contact: Record Contact;
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         Employee: Record Employee;
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
         DimensionManagement: Codeunit DimensionManagement;
         ConfirmManagement: Codeunit "Confirm Management";
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
@@ -745,7 +725,8 @@ table 11732 "Cash Document Header CZP"
         RespCenterDeleteErr: Label 'You cannot delete this document. Your identification is set up to process from %1 %2 only.', Comment = '%1 = fieldcaption of Responsibility Center; %2 = Responsibility Center';
         RespCreateErr: Label 'You are not allowed create %1 on %2 %3.', Comment = '%1 = TableCaption, %2 = Cash Desk TableCaption, %3= Cash Desk No.';
         CreateQst: Label 'Do you want to create %1 at Cash Desk %2?', Comment = '%1 = Cash Document Type, %2 = Cash Desk No.';
-        DeleteQst: Label 'Deleting this document will cause a gap in the number series for posted cash documents.\Do you want continue?';
+        DeleteQst: Label 'Deleting this document will cause a gap in the number series for posted cash documents. An empty posted cash document %1 will be created to fill this gap in the number series.\\Do you want to continue?', Comment = '%1 = Document No.';
+        PostedDocsToPrintCreatedMsg: Label 'One or more related posted documents have been generated during deletion to fill gaps in the number series. You can view or print the documents from the respective document archive.';
         CurrencyDate: Date;
         SkipLineNo: Integer;
         HideValidationDialog: Boolean;

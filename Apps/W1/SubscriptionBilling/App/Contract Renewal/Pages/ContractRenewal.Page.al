@@ -86,7 +86,7 @@ page 8005 "Contract Renewal"
                 field(ContractDescriptionField; ContractDescriptionTxt)
                 {
                     Caption = 'Subscription Contract Description';
-                    ToolTip = 'Specifies the subscriptions being offered.';
+                    ToolTip = 'Specifies the description of the Subscription Contract.';
                     Editable = false;
 
                     trigger OnDrillDown()

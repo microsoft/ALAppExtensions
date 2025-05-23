@@ -222,30 +222,16 @@ report 31287 "Create General Journal CZB"
         GenJournalLine.Validate("Document No.", IssBankStatementHeaderCZB."No.");
         case IssBankStatementLineCZB.Type of
             IssBankStatementLineCZB.Type::Customer:
-                begin
-                    GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Customer);
-                    if IssBankStatementLineCZB.Positive then
-                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment)
-                    else
-                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
-                end;
+                GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Customer);
             IssBankStatementLineCZB.Type::Vendor:
-                begin
-                    GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Vendor);
-                    if IssBankStatementLineCZB.Positive then
-                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund)
-                    else
-                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
-                end;
+                GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Vendor);
             IssBankStatementLineCZB.Type::"Bank Account":
                 GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::"Bank Account");
             IssBankStatementLineCZB.Type::Employee:
-                begin
-                    GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Employee);
-                    if not IssBankStatementLineCZB.Positive then
-                        GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Payment);
-                end;
+                GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::Employee);
         end;
+        GenJournalLine.InitDocumentTypeCZB(-IssBankStatementLineCZB."Amount (Bank Stat. Currency)");
+        GenJournalLine.Validate("Document Type");
 
         OnCreateGeneralJournalLineOnAfterValidateAccountType(IssBankStatementHeaderCZB, IssBankStatementLineCZB, GenJournalLine);
 

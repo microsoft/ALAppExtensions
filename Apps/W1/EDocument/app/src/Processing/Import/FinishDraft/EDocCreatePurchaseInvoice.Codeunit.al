@@ -52,6 +52,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         EDocumentHeaderMapping: Record "E-Document Header Mapping";
         EDocumentLineMapping: Record "E-Document Line Mapping";
         PurchaseLine: Record "Purchase Line";
+        EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");
@@ -60,6 +61,10 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         PurchaseHeader."Document Type" := "Purchase Document Type"::Invoice;
         PurchaseHeader."Vendor Invoice No." := CopyStr(EDocumentPurchaseHeader."Sales Invoice No.", 1, MaxStrLen(PurchaseHeader."Vendor Invoice No."));
         PurchaseHeader.Insert(true);
+
+        // Track changes for history
+        EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseHeader, PurchaseHeader);
+
         EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocument."Entry No");
         if EDocumentPurchaseLine.FindSet() then
             repeat
@@ -67,7 +72,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
                 PurchaseLine."Document Type" := PurchaseHeader."Document Type";
                 PurchaseLine."Document No." := PurchaseHeader."No.";
                 PurchaseLine."Line No." += 10000;
-                PurchaseLine."Unit of Measure Code" := EDocumentLineMapping."Unit of Measure";
+                PurchaseLine."Unit of Measure Code" := CopyStr(EDocumentLineMapping."Unit of Measure", 1, MaxStrLen(PurchaseLine."Unit of Measure Code"));
                 PurchaseLine.Type := EDocumentLineMapping."Purchase Line Type";
                 PurchaseLine.Validate("No.", EDocumentLineMapping."Purchase Type No.");
                 PurchaseLine.Description := EDocumentPurchaseLine.Description;
@@ -76,7 +81,12 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
                 PurchaseLine.Validate("Deferral Code", EDocumentLineMapping."Deferral Code");
                 PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentLineMapping."Shortcut Dimension 1 Code");
                 PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentLineMapping."Shortcut Dimension 2 Code");
+                EDocumentPurchaseHistMapping.ApplyHistoryValuesToPurchaseLine(EDocumentLineMapping, PurchaseLine);
                 PurchaseLine.Insert();
+
+                // Track changes for history
+                EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseLine, PurchaseLine);
+
             until EDocumentPurchaseLine.Next() = 0;
     end;
 

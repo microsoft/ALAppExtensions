@@ -23,6 +23,8 @@ using Microsoft.Finance.Dimension;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.TestLibraries.Foundation.NoSeries;
+using System.TestLibraries.Utilities;
 
 #endregion Using
 
@@ -422,8 +424,16 @@ codeunit 139685 "Contract Test Library"
 
     procedure CreateVendorContract(var VendorContract: Record "Vendor Subscription Contract"; VendorNo: Code[20])
     var
+        ServiceContractSetup: Record "Subscription Contract Setup";
         VendorContractNo: Code[20];
     begin
+        // set no. series for vendor contract
+        ServiceContractSetup.Get();
+        if ServiceContractSetup."Vend. Sub. Contract Nos." = '' then begin
+            ServiceContractSetup."Vend. Sub. Contract Nos." := CreateNoSeries();
+            ServiceContractSetup.Modify();
+        end;
+
         VendorContractNo := PrefixTok + 'VEC000000';
         repeat
             VendorContractNo := IncStr(VendorContractNo);
@@ -437,6 +447,18 @@ codeunit 139685 "Contract Test Library"
 
         OnCreateVendorSubscriptionContractOnBeforeModify(VendorContract);
         VendorContract.Modify(true);
+    end;
+
+    procedure CreateNoSeries(): Code[20]
+    var
+        LibraryNoSeries: Codeunit "Library - No. Series";
+        Any: Codeunit Any;
+        NoSeriesCode: Code[20];
+    begin
+        Any.SetDefaultSeed();
+        NoSeriesCode := CopyStr(Any.AlphabeticText(10), 1, 10);
+        LibraryNoSeries.CreateNoSeries(NoSeriesCode, true, true, false);
+        exit(NoSeriesCode)
     end;
 
     procedure CreateVendorContractAndCreateContractLinesForItems(var VendorContract: Record "Vendor Subscription Contract"; var ServiceObject: Record "Subscription Header"; VendorNo: Code[20])
@@ -495,6 +517,7 @@ codeunit 139685 "Contract Test Library"
         ServiceCommitmentTemplate."Calculation Base Type" := CalculationBaseType;
         if Discount then
             ServiceCommitmentTemplate.Discount := true;
+        ServiceCommitmentTemplate."Create Contract Deferrals" := ServiceCommitmentTemplate."Create Contract Deferrals"::Yes;
 
         OnCreateSubPackageLineTemplateOnBeforeInsert(ServiceCommitmentTemplate);
         ServiceCommitmentTemplate.Insert(true)
@@ -545,6 +568,18 @@ codeunit 139685 "Contract Test Library"
     procedure CreateServiceCommitmentPackageLine(ServiceCommitmentPackageCode: Code[20]; ServiceCommitmentTemplateCode: Code[20]; var ServiceCommPackageLine: Record "Subscription Package Line";
     BillingBasePeriodText: Text; BillingRhythmText: Text; ServicePartner: Enum "Service Partner"; PriceBindingPeriod: Text)
     var
+        Item: Record Item;
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+    begin
+        if ServiceCommitmentTemplate."Invoicing via" = ServiceCommitmentTemplate."Invoicing via"::Contract then
+            CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+        CreateServiceCommitmentPackageLine(ServiceCommitmentPackageCode, ServiceCommitmentTemplateCode, ServiceCommPackageLine, BillingBasePeriodText,
+                                BillingRhythmText, ServicePartner, PriceBindingPeriod, Item."No.");
+    end;
+
+    procedure CreateServiceCommitmentPackageLine(ServiceCommitmentPackageCode: Code[20]; ServiceCommitmentTemplateCode: Code[20]; var ServiceCommPackageLine: Record "Subscription Package Line";
+    BillingBasePeriodText: Text; BillingRhythmText: Text; ServicePartner: Enum "Service Partner"; PriceBindingPeriod: Text; InvoicingItemNo: Code[20])
+    var
         RecRef: RecordRef;
     begin
         ServiceCommPackageLine.Init();
@@ -557,9 +592,10 @@ codeunit 139685 "Contract Test Library"
         Evaluate(ServiceCommPackageLine."Billing Rhythm", BillingRhythmText);
         ServiceCommPackageLine.Validate(Partner, ServicePartner);
         Evaluate(ServiceCommPackageLine."Price Binding Period", PriceBindingPeriod);
+        ServiceCommPackageLine.Validate("Create Contract Deferrals", Enum::"Create Contract Deferrals"::Yes);
 
         OnCreateSubscriptionPackageLineOnBeforeInsert(ServiceCommPackageLine);
-        ServiceCommPackageLine.Insert(true);
+        ServiceCommPackageLine.Insert(false);
     end;
 
     procedure CreateServiceCommitmentPackageLine(ServiceCommitmentPackageCode: Code[20]; ServiceCommitmentTemplateCode: Code[20]; var ServiceCommPackageLine: Record "Subscription Package Line")
@@ -573,7 +609,13 @@ codeunit 139685 "Contract Test Library"
     end;
 
     procedure UpdateServiceCommitmentPackageLine(var ServiceCommPackageLine: Record "Subscription Package Line"; BillingBasePeriod: Text; CalculationBase: Decimal; ExtensionTerm: Text; ServicePartner: Enum "Service Partner"; ItemNo: Code[20]; InvoicingVia: Enum "Invoicing Via"; CalculationBaseType: Enum "Calculation Base Type"; PriceBindingPeriod: Text; CalculationRhythmDateFormulaTxt: Text; CreateDiscountLine: Boolean)
+    var
+        Item: Record Item;
     begin
+        if (InvoicingVia = InvoicingVia::Contract) and (ItemNo = '') then begin
+            CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+            ItemNo := Item."No.";
+        end;
         ServiceCommPackageLine."Invoicing Item No." := ItemNo;
         ServiceCommPackageLine.Partner := ServicePartner;
         ServiceCommPackageLine."Invoicing via" := InvoicingVia;
@@ -740,18 +782,23 @@ codeunit 139685 "Contract Test Library"
     end;
 
     procedure AssignItemToServiceCommitmentPackage(Item: Record Item; ItemServCommitmentPackageCode: Code[20]; DeclareAsStandard: Boolean)
+    begin
+        AssignItemToServiceCommitmentPackage(Item."No.", ItemServCommitmentPackageCode, DeclareAsStandard, false);
+    end;
+
+    procedure AssignItemToServiceCommitmentPackage(ItemNo: Code[20]; ItemServCommitmentPackageCode: Code[20]; DeclareAsStandard: Boolean; RunTrigger: Boolean)
     var
         ItemServCommitmentPackage: Record "Item Subscription Package";
     begin
         ItemServCommitmentPackage.Init();
-        ItemServCommitmentPackage."Item No." := Item."No.";
+        ItemServCommitmentPackage."Item No." := ItemNo;
         ItemServCommitmentPackage.Validate(Code, ItemServCommitmentPackageCode);
         if DeclareAsStandard then
             ItemServCommitmentPackage.Standard := true;
 
         OnAssignItemToSubscriptionPackage(ItemServCommitmentPackage);
 
-        ItemServCommitmentPackage.Insert(false);
+        ItemServCommitmentPackage.Insert(RunTrigger);
     end;
 
     procedure BillingProposalCreateBillingProposal(BillingProposal: Codeunit "Billing Proposal"; BillingTemplateCode: Code[20]; BillingDate: Date; BillingToDate: Date)
@@ -906,7 +953,7 @@ codeunit 139685 "Contract Test Library"
     var
         ServiceCommitment: Record "Subscription Line";
     begin
-        FilterNonContractRelatedServiceCommitment(ServiceCommitment, ServiceObject."No.", Enum::"Service Partner"::Customer);
+        FilterSubscriptionLinesWithoutContractNo(ServiceCommitment, ServiceObject."No.", Enum::"Service Partner"::Customer);
         ServiceCommitment.FindSet();
         repeat
             TempServiceCommitment.TransferFields(ServiceCommitment);
@@ -919,7 +966,7 @@ codeunit 139685 "Contract Test Library"
     var
         ServiceCommitment: Record "Subscription Line";
     begin
-        FilterNonContractRelatedServiceCommitment(ServiceCommitment, ServiceObject."No.", Enum::"Service Partner"::Vendor);
+        FilterSubscriptionLinesWithoutContractNo(ServiceCommitment, ServiceObject."No.", Enum::"Service Partner"::Vendor);
         ServiceCommitment.FindSet();
         repeat
             TempServiceCommitment.TransferFields(ServiceCommitment);
@@ -936,7 +983,7 @@ codeunit 139685 "Contract Test Library"
             FilteredBillingLineArchive.SetRange("Subscription Contract Line No.", ContractLineNo);
     end;
 
-    local procedure FilterNonContractRelatedServiceCommitment(var ServiceCommitment: Record "Subscription Line"; ServiceObjectNo: Code[20]; ServicePartner: Enum "Service Partner")
+    local procedure FilterSubscriptionLinesWithoutContractNo(var ServiceCommitment: Record "Subscription Line"; ServiceObjectNo: Code[20]; ServicePartner: Enum "Service Partner")
     begin
         ServiceCommitment.Reset();
         ServiceCommitment.SetRange("Subscription Header No.", ServiceObjectNo);
@@ -1300,6 +1347,7 @@ codeunit 139685 "Contract Test Library"
     procedure CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplateCode: Code[20]; var ServiceCommitmentPackage: Record "Subscription Package"; var ServiceCommPackageLine: Record "Subscription Package Line"; Item: Record Item; CalculationRhythmDateFormulaTxt: Text; PeriodCalculation: Enum "Period Calculation")
     begin
         CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplateCode, ServiceCommitmentPackage, ServiceCommPackageLine);
+        UpdateServiceCommitmentPackageLineWithInvoicingItem(ServiceCommPackageLine, '');
         ServiceCommPackageLine."Period Calculation" := PeriodCalculation;
         ServiceCommPackageLine."Invoicing Item No." := Item."No.";
         if CalculationRhythmDateFormulaTxt <> '' then begin
@@ -1397,6 +1445,19 @@ codeunit 139685 "Contract Test Library"
             ServiceCommitment.TestField("Amount (LCY)", ImportedServiceCommitment."Amount (LCY)");
         if ImportedServiceCommitment."Calculation Base Amount (LCY)" <> 0 then
             ServiceCommitment.TestField("Calculation Base Amount (LCY)", ImportedServiceCommitment."Calculation Base Amount (LCY)");
+    end;
+
+    procedure UpdateServiceCommitmentPackageLineWithInvoicingItem(var ServiceCommPackageLine: Record "Subscription Package Line"; ItemNo: Code[20])
+    var
+        Item: Record Item;
+    begin
+        if ItemNo <> '' then
+            ServiceCommPackageLine."Invoicing Item No." := ItemNo
+        else begin
+            CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+            ServiceCommPackageLine."Invoicing Item No." := Item."No.";
+        end;
+        ServiceCommPackageLine.Modify(false);
     end;
 
     procedure UpdateServiceCommitmentPackageWithPriceGroup(var ServiceCommitmentPackage: Record "Subscription Package"; NewPriceGroupCode: Code[10])

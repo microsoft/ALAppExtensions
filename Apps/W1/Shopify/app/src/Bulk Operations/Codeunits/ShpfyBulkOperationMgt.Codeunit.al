@@ -74,6 +74,7 @@ codeunit 30270 "Shpfy Bulk Operation Mgt."
         Evaluate(BulkOperationType, JsonHelper.GetValueAsText(JNotification, 'type'));
 
         if BulkOperation.Get(BulkOperationId, Shop.Code, BulkOperationType) then begin
+            BulkOperationAPI.SetShop(Shop);
             BulkOperationAPI.GetBulkRequest(BulkOperationId, BulkOperationStatus, ErrorCode, CompletedAt, Url, PartialDataUrl);
             BulkOperation.Status := BulkOperationStatus;
             if ErrorCode <> '' then

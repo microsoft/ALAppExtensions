@@ -34,9 +34,9 @@
     }
   ],
   "resourceExposurePolicy": {
-    "allowDebugging": false,
-    "allowDownloadingSource": false,
-    "includeSourceInSymbolFile": false
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
   },
   "target": "OnPrem",
   "features": [

@@ -1,4 +1,26 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
+using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.Common;
+using Microsoft.DemoData.CRM;
+using Microsoft.DemoData.eServices;
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.HumanResources;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoData.Jobs;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.Purchases;
+using Microsoft.DemoData.Sales;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoData.Warehousing;
+
 enum 5160 "Contoso Demo Data Module" implements "Contoso Demo Data Module"
 {
     Extensible = true;

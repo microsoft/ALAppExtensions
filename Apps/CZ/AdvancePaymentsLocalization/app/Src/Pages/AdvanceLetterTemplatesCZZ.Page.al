@@ -64,10 +64,17 @@ page 31179 "Advance Letter Templates CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies automatic post VAT document.';
                 }
+#if not CLEAN27
                 field("Automatic Post Non-Ded.VAT CZZ"; Rec."Automatic Post Non-Ded. VAT")
                 {
                     ApplicationArea = Basic, Suite;
+                    Visible = false;
+                    Enabled = false;
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
+                    ObsoleteReason = 'The field is obsolete and will be removed in a future version. Non-deductible VAT must always be posted in advances so this field is useless.';
                 }
+#endif
                 field("Post VAT Doc. for Rev. Charge"; Rec."Post VAT Doc. for Rev. Charge")
                 {
                     ApplicationArea = Basic, Suite;

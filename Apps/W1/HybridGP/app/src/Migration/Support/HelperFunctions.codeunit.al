@@ -334,17 +334,6 @@ codeunit 4037 "Helper Functions"
         CustomerDataMigrationFacade.CreateCountryIfNeeded(CountryCode, CountryName, AddressFormatToSet::"City+County+Post Code", ContactAddressFormatToSet::"After Company Name");
     end;
 
-#if not CLEAN24
-    [Obsolete('Data cleanup is no longer performed before migration.', '24.0')]
-    procedure CleanupGenJournalBatches()
-    begin
-    end;
-
-    [Obsolete('Data cleanup is no longer performed before migration.', '24.0')]
-    procedure CleanupVatPostingSetup()
-    begin
-    end;
-#endif
 
     local procedure GetAcctCategoryEntryNo(Category: Option): Integer
     var
@@ -950,17 +939,6 @@ codeunit 4037 "Helper Functions"
             until GPCompanyMigrationSettings.Next() = 0;
     end;
 
-#if not CLEAN24
-    [Obsolete('Cleaning up tables before running the migration is no longer wanted.', '24.0')]
-    procedure Cleanup();
-    begin
-    end;
-
-    [Obsolete('Cleaning up tables before running the migration is no longer wanted.', '24.0')]
-    procedure CleanupBeforeSynchronization();
-    begin
-    end;
-#endif
 
     procedure SetTransactionProcessedFlag()
     begin
@@ -2029,16 +2007,6 @@ codeunit 4037 "Helper Functions"
         exit(GPConfiguration."Customer Classes Created");
     end;
 
-#if not CLEAN24
-    [Obsolete('Cleaning up tables before running the migration is no longer wanted.', '24.0')]
-    procedure PreMigrationCleanupCompleted(): Boolean
-    begin
-        GPConfiguration.GetSingleInstance();
-#pragma warning disable AL0432        
-        exit(GPConfiguration."PreMigration Cleanup Completed");
-#pragma warning restore AL0432
-    end;
-#endif
 
     procedure GetLastError()
     begin
@@ -2265,6 +2233,14 @@ codeunit 4037 "Helper Functions"
         end;
 
         exit(true);
+    end;
+
+    internal procedure RunPreMigrationCleanup()
+    var
+        Dimension: Record Dimension;
+    begin
+        if not Dimension.IsEmpty() then
+            Dimension.DeleteAll(true);
     end;
 
     [IntegrationEvent(false, false)]

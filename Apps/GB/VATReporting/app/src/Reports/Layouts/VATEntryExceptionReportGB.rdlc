@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString />
+      </ConnectionProperties>
+      <rd:SecurityType>None</rd:SecurityType>
+    </DataSource>
+  </DataSources>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <Height>2in</Height>
+        <Style />
+      </Body>
+      <Width>6.5in</Width>
+      <Page>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <Language>=User!Language</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>0eeb6585-38ae-40f1-885b-8d50088d51b4</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="FORMAT_TODAY_0_4_">
+          <DataField>FORMAT_TODAY_0_4_</DataField>
+        </Field>
+        <Field Name="COMPANYNAME">
+          <DataField>COMPANYNAME</DataField>
+        </Field>
+        <Field Name="USERID">
+          <DataField>USERID</DataField>
+        </Field>
+        <Field Name="VAT_Entry__TABLENAME__________VATEntryFilter">
+          <DataField>VAT_Entry__TABLENAME__________VATEntryFilter</DataField>
+        </Field>
+        <Field Name="VATEntryFilter">
+          <DataField>VATEntryFilter</DataField>
+        </Field>
+        <Field Name="Manual_Word">
+          <DataField>Manual_Word</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Type">
+          <DataField>VAT_Entry_Type</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Reporting_Date_">
+          <DataField>VAT_Entry__VAT_Reporting_Date_</DataField>
+        </Field>
+        <Field Name="VAT_Entry__Document_Type_">
+          <DataField>VAT_Entry__Document_Type_</DataField>
+        </Field>
+        <Field Name="VAT_Entry__Document_No__">
+          <DataField>VAT_Entry__Document_No__</DataField>
+        </Field>
+        <Field Name="VAT_Entry__External_Document_No__">
+          <DataField>VAT_Entry__External_Document_No__</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Calculation_Type_">
+          <DataField>VAT_Entry__VAT_Calculation_Type_</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Bus__Posting_Group_">
+          <DataField>VAT_Entry__VAT_Bus__Posting_Group_</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Prod__Posting_Group_">
+          <DataField>VAT_Entry__VAT_Prod__Posting_Group_</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Base">
+          <DataField>VAT_Entry_Base</DataField>
+        </Field>
+        <Field Name="VAT_Entry_BaseFormat">
+          <DataField>VAT_Entry_BaseFormat</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Base_Discount___">
+          <DataField>VAT_Entry__VAT_Base_Discount___</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Base_Discount___Format">
+          <DataField>VAT_Entry__VAT_Base_Discount___Format</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Amount">
+          <DataField>VAT_Entry_Amount</DataField>
+        </Field>
+        <Field Name="VAT_Entry_AmountFormat">
+          <DataField>VAT_Entry_AmountFormat</DataField>
+        </Field>
+        <Field Name="Manual_VAT_Difference">
+          <DataField>Manual_VAT_Difference</DataField>
+        </Field>
+        <Field Name="Manual_VAT_DifferenceFormat">
+          <DataField>Manual_VAT_DifferenceFormat</DataField>
+        </Field>
+        <Field Name="ErrorText">
+          <DataField>ErrorText</DataField>
+        </Field>
+        <Field Name="Total_for___FIELDNAME_Type_______FORMAT_Type_">
+          <DataField>Total_for___FIELDNAME_Type_______FORMAT_Type_</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Base_Control50">
+          <DataField>VAT_Entry_Base_Control50</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Base_Control50Format">
+          <DataField>VAT_Entry_Base_Control50Format</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Amount_Control51">
+          <DataField>VAT_Entry_Amount_Control51</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Amount_Control51Format">
+          <DataField>VAT_Entry_Amount_Control51Format</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Difference_">
+          <DataField>VAT_Entry__VAT_Difference_</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Difference_Format">
+          <DataField>VAT_Entry__VAT_Difference_Format</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Entry_No_">
+          <DataField>VAT_Entry_Entry_No_</DataField>
+        </Field>
+        <Field Name="VAT_Entry_Exception_ReportCaption">
+          <DataField>VAT_Entry_Exception_ReportCaption</DataField>
+        </Field>
+        <Field Name="CurrReport_PAGENOCaption">
+          <DataField>CurrReport_PAGENOCaption</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Reporting_Date_Caption">
+          <DataField>VAT_Entry__VAT_Reporting_Date_Caption</DataField>
+        </Field>
+        <Field Name="VAT_Entry__Document_Type_Caption">
+          <DataField>VAT_Entry__Document_Type_Caption</DataField>
+        </Field>
+        <Field Name="VAT_Entry__Document_No__Caption">
+          <DataField>VAT_Entry__Document_No__Caption</DataField>
+        </Field>
+        <Field Name="VAT_Entry__External_Document_No__Caption">
+          <DataField>VAT_Entry__External_Document_No__Caption</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Calculation_Type_Caption">
+          <DataField>VAT_Entry__VAT_Calculation_Type_Caption</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Bus__Posting_Group_Caption">
+          <DataField>VAT_Entry__VAT_Bus__Posting_Group_Caption</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Prod__Posting_Group_Caption">
+          <DataField>VAT_Entry__VAT_Prod__Posting_Group_Caption</DataField>
+        </Field>
+        <Field Name="VAT_Entry_BaseCaption">
+          <DataField>VAT_Entry_BaseCaption</DataField>
+        </Field>
+        <Field Name="VAT_Entry__VAT_Base_Discount___Caption">
+          <DataField>VAT_Entry__VAT_Base_Discount___Caption</DataField>
+        </Field>
+        <Field Name="VAT_Entry_AmountCaption">
+          <DataField>VAT_Entry_AmountCaption</DataField>
+        </Field>
+        <Field Name="Manual_VAT_DifferenceCaption">
+          <DataField>Manual_VAT_DifferenceCaption</DataField>
+        </Field>
+        <Field Name="VAT_Entry_TypeCaption">
+          <DataField>VAT_Entry_TypeCaption</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
+</Report>

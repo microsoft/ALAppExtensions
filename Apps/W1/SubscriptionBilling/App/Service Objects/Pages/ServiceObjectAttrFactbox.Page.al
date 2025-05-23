@@ -120,7 +120,7 @@ page 8012 "Service Object Attr. Factbox"
             until ItemAttributeValueMapping.Next() = 0;
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnLoadItemAttributesFactBoxDataOnBeforeInsert(var ItemAttributeValueMapping: Record "Item Attribute Value Mapping"; var ItemAttributeValue: Record "Item Attribute Value")
     begin
     end;

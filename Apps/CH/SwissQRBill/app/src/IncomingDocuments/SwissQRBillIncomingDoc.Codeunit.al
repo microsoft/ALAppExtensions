@@ -196,8 +196,8 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
                 Validate("Payment Reference", DelChr(IncomingDocument."Swiss QR-Bill Reference No."));
             if IncomingDocument."Vendor Invoice No." <> '' then
                 Validate("Vendor Invoice No.", IncomingDocument."Vendor Invoice No.");
-
-            Validate("Bank Code", IncomingDocument."Vendor Bank Account No.");
+            if IncomingDocument."Vendor Bank Account No." <> '' then
+                Validate("Bank Code", IncomingDocument."Vendor Bank Account No.");
 
             "Swiss QR-Bill IBAN" := IncomingDocument."Vendor IBAN";
             "Swiss QR-Bill Currency" := IncomingDocument."Currency Code";

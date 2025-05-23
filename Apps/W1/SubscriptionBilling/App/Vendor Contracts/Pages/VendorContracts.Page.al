@@ -29,7 +29,7 @@ page 8071 "Vendor Contracts"
                 {
                     ApplicationArea = Suite;
                     Caption = 'Description';
-                    ToolTip = 'Specifies the subscriptions being offered.';
+                    ToolTip = 'Specifies the description of the Subscription Contract.';
                 }
                 field("Buy-from Vendor No."; Rec."Buy-from Vendor No.")
                 {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Root>
+    <AITSuite Code="EDOC-AC" Description="E-Document PO Accuracy Tests" Dataset="accuracy"
+        TestRunnerId="130451">
+        <Line CodeunitID="133502" Description="Accuracy - Tests" Dataset="accuracy" />
+    </AITSuite>
+</Root>

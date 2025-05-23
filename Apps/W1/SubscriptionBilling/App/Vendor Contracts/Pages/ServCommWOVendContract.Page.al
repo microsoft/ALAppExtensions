@@ -74,7 +74,7 @@ page 8076 "Serv. Comm. WO Vend. Contract"
                 }
                 field(Quantity; ServiceObject.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                     Editable = false;
                     BlankZero = true;
                     Caption = 'Quantity';

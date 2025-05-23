@@ -11,6 +11,7 @@ codeunit 139883 "E-Doc Process Test"
         LibraryEDoc: Codeunit "Library - E-Document";
         EDocImplState: Codeunit "E-Doc. Impl. State";
         LibraryLowerPermission: Codeunit "Library - Lower Permissions";
+        LibraryPurchase: Codeunit "Library - Purchase";
         IsInitialized: Boolean;
 
 
@@ -273,6 +274,196 @@ codeunit 139883 "E-Doc Process Test"
         Assert.RecordIsEmpty(PurchaseHeader);
     end;
 
+    #region HistoricalMatchingTest
+
+    [Test]
+    procedure ProcessingInboundDocumentCreatesLinks()
+    var
+        EDocument: Record "E-Document";
+        EDocImportParams: Record "E-Doc. Import Parameters";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        EDocRecordLink: Record "E-Doc. Record Link";
+    begin
+        // [SCENARIO] A incoming e-document purchase invoice is received and processed, links should be created between the e-document and the purchase header and lines.
+        Initialize(Enum::"Service Integration"::"Mock");
+        EDocumentService."E-Document Structured Format" := "E-Document Structured Format"::"PEPPOL BIS 3.0";
+        EDocumentService.Modify();
+
+        EDocRecordLink.DeleteAll();
+
+        // [GIVEN] An inbound e-document is received and fully processed
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        Assert.IsTrue(LibraryEDoc.CreateInboundPEPPOLDocumentToState(EDocument, EDocumentService, 'peppol/peppol-invoice-0.xml', EDocImportParams), 'The e-document should be processed');
+
+        EDocument.Get(EDocument."Entry No");
+        PurchaseHeader.Get(EDocument."Document Record ID");
+
+        // [THEN] The e-document is linked to the purchase header and lines
+        EDocRecordLink.SetRange("Target Table No.", Database::"Purchase Header");
+        EDocRecordLink.SetRange("Target SystemId", PurchaseHeader.SystemId);
+        Assert.RecordCount(EDocRecordLink, 1);
+
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.FindSet();
+        repeat
+            EDocRecordLink.SetRange("Target Table No.", Database::"Purchase Line");
+            EDocRecordLink.SetRange("Target SystemId", PurchaseLine.SystemId);
+            Assert.RecordCount(EDocRecordLink, 1);
+        until PurchaseLine.Next() = 0;
+    end;
+
+    [Test]
+    procedure PostingInboundDocumentCreatesHistoricalRecords()
+    var
+        EDocument: Record "E-Document";
+        EDocImportParams: Record "E-Doc. Import Parameters";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseInvoiceHeader: Record "Purch. Inv. Header";
+        EDocVendorAssignmentHistory: Record "E-Doc. Vendor Assign. History";
+        EDocPurchaseLineHistory: Record "E-Doc. Purchase Line History";
+        PurchaseInvoiceLine: Record "Purch. Inv. Line";
+        EDocRecordLink: Record "E-Doc. Record Link";
+    begin
+        // [SCENARIO] A incoming e-document purchase invoice is received, processed, and posted. Historical records should be created.
+        Initialize(Enum::"Service Integration"::"Mock");
+        EDocumentService."E-Document Structured Format" := "E-Document Structured Format"::"PEPPOL BIS 3.0";
+        EDocumentService.Modify();
+
+        // [GIVEN] An inbound e-document is received and fully processed
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        Assert.IsTrue(LibraryEDoc.CreateInboundPEPPOLDocumentToState(EDocument, EDocumentService, 'peppol/peppol-invoice-0.xml', EDocImportParams), 'The e-document should be processed');
+
+        EDocument.Get(EDocument."Entry No");
+        PurchaseHeader.Get(EDocument."Document Record ID");
+        // [GIVEN] The received purchase invoice is modified for posting
+        LibraryEDoc.EditPurchaseDocumentFromEDocumentForPosting(PurchaseHeader, EDocument);
+
+        // [WHEN] The received purchase invoice is posted
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.SetRange("Pre-Assigned No.", PurchaseHeader."No.");
+        PurchaseInvoiceHeader.FindFirst();
+
+        // [THEN] The historical records are created
+        EDocVendorAssignmentHistory.SetRange("Purch. Inv. Header SystemId", PurchaseInvoiceHeader.SystemId);
+        Assert.RecordCount(EDocVendorAssignmentHistory, 1);
+        PurchaseInvoiceLine.SetRange("Document No.", PurchaseInvoiceHeader."No.");
+        PurchaseInvoiceLine.FindSet();
+        repeat
+            EDocPurchaseLineHistory.SetRange("Purch. Inv. Line SystemId", PurchaseInvoiceLine.SystemId);
+            Assert.RecordCount(EDocPurchaseLineHistory, 1);
+        until PurchaseInvoiceLine.Next() = 0;
+        // [THEN] The links should be deleted, these are there momentarily while the purchase invoice is not yet posted
+        EDocRecordLink.SetRange("E-Document Entry No.", EDocument."Entry No");
+        Assert.RecordCount(EDocRecordLink, 0);
+    end;
+    #endregion
+
+    [Test]
+    procedure AdditionalFieldsAreConsideredWhenCreatingPurchaseInvoice()
+    var
+        EDocPurchLineFieldSetup: Record "EDoc. Purch. Line Field Setup";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseInvoiceLine: Record "Purch. Inv. Line";
+        EDocument: Record "E-Document";
+        EDocImportParams: Record "E-Doc. Import Parameters";
+        PurchaseHeader: Record "Purchase Header";
+        EDocPurchLineField: Record "E-Document Line - Field";
+        EDocPurchaseLine: Record "E-Document Purchase Line";
+        Location: Record Location;
+        EDocImport: Codeunit "E-Doc. Import";
+    begin
+        // [SCENARIO] Additional fields are configured for the e-document, and an incoming e-document is received. When creating a purchase invoice, the configured fields should be considered.
+        Initialize(Enum::"Service Integration"::"Mock");
+        EDocumentService."E-Document Structured Format" := "E-Document Structured Format"::"PEPPOL BIS 3.0";
+        EDocumentService.Modify();
+        // [GIVEN] Additional fields are configured
+        EDocPurchLineFieldSetup."Field No." := PurchaseInvoiceLine.FieldNo("Location Code");
+        EDocPurchLineFieldSetup.Insert();
+        EDocPurchLineFieldSetup."Field No." := PurchaseInvoiceLine.FieldNo("IC Partner Code");
+        EDocPurchLineFieldSetup.Insert();
+        // [GIVEN] An inbound e-document is received and a draft created
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Prepare draft";
+        Assert.IsTrue(LibraryEDoc.CreateInboundPEPPOLDocumentToState(EDocument, EDocumentService, 'peppol/peppol-invoice-0.xml', EDocImportParams), 'The draft for the e-document should be created');
+
+        // [WHEN] Storing custom values for the additional fields of the first line
+        EDocPurchLineField."E-Document Entry No." := EDocument."Entry No";
+        EDocPurchaseLine.SetRange("E-Document Entry No.", EDocument."Entry No");
+        EDocPurchaseLine.FindFirst();
+        EDocPurchLineField."Line No." := EDocPurchaseLine."Line No.";
+        EDocPurchLineField."Field No." := PurchaseInvoiceLine.FieldNo("Location Code");
+        Location.Code := 'TESTLOC';
+        if Location.Insert() then;
+        EDocPurchLineField."Code Value" := Location.Code;
+        EDocPurchLineField.Insert();
+
+        // [WHEN] Creating a purchase invoice from the draft
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        Assert.IsTrue(EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParams), 'The e-document should be processed');
+
+        // [THEN] The additional fields should be set on the purchase invoice line
+        EDocument.Get(EDocument."Entry No");
+        PurchaseHeader.Get(EDocument."Document Record ID");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.FindFirst();
+        Assert.AreEqual(Location.Code, PurchaseLine."Location Code", 'The location code should be set on the purchase line.');
+    end;
+
+    [Test]
+    procedure AdditionalFieldsShouldNotBeConsideredIfNotConfigured()
+    var
+        EDocPurchLineFieldSetup: Record "EDoc. Purch. Line Field Setup";
+        PurchaseLine: Record "Purchase Line";
+        PurchaseInvoiceLine: Record "Purch. Inv. Line";
+        EDocument: Record "E-Document";
+        EDocImportParams: Record "E-Doc. Import Parameters";
+        PurchaseHeader: Record "Purchase Header";
+        EDocPurchLineField: Record "E-Document Line - Field";
+        EDocPurchaseLine: Record "E-Document Purchase Line";
+        Location: Record Location;
+        EDocImport: Codeunit "E-Doc. Import";
+    begin
+        // [SCENARIO] Additional fields are configured for the e-document, but the general setup is not configured. When creating a purchase invoice, the configured fields should not be considered.
+        Initialize(Enum::"Service Integration"::"Mock");
+        EDocumentService."E-Document Structured Format" := "E-Document Structured Format"::"PEPPOL BIS 3.0";
+        EDocumentService.Modify();
+        // [GIVEN] Additional fields are configured
+        EDocPurchLineFieldSetup."Field No." := PurchaseInvoiceLine.FieldNo("Location Code");
+        EDocPurchLineFieldSetup.Insert();
+        EDocPurchLineFieldSetup."Field No." := PurchaseInvoiceLine.FieldNo("IC Partner Code");
+        EDocPurchLineFieldSetup.Insert();
+        // [GIVEN] An inbound e-document is received and a draft created
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Prepare draft";
+        Assert.IsTrue(LibraryEDoc.CreateInboundPEPPOLDocumentToState(EDocument, EDocumentService, 'peppol/peppol-invoice-0.xml', EDocImportParams), 'The draft for the e-document should be created');
+
+        // [GIVEN] Custom values for the additional fields of the first line are configured
+        EDocPurchLineField."E-Document Entry No." := EDocument."Entry No";
+        EDocPurchaseLine.SetRange("E-Document Entry No.", EDocument."Entry No");
+        EDocPurchaseLine.FindFirst();
+        EDocPurchLineField."Line No." := EDocPurchaseLine."Line No.";
+        EDocPurchLineField."Field No." := PurchaseInvoiceLine.FieldNo("Location Code");
+        Location.Code := 'TESTLOC';
+        if Location.Insert() then;
+        EDocPurchLineField."Code Value" := Location.Code;
+        EDocPurchLineField.Insert();
+
+        // [WHEN] Removing the general setup for the additional fields
+        EDocPurchLineFieldSetup.DeleteAll();
+        // [WHEN] Creating a purchase invoice from the draft
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        Assert.IsTrue(EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParams), 'The e-document should be processed');
+
+        // [THEN] The additional fields should not be set on the purchase invoice line
+        EDocument.Get(EDocument."Entry No");
+        PurchaseHeader.Get(EDocument."Document Record ID");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.FindFirst();
+        Assert.AreNotEqual(Location.Code, PurchaseLine."Location Code", 'The location code should not be set on the purchase line.');
+    end;
+
     local procedure Initialize(Integration: Enum "Service Integration")
     var
         TransformationRule: Record "Transformation Rule";
@@ -280,10 +471,12 @@ codeunit 139883 "E-Doc Process Test"
         EDocDataStorage: Record "E-Doc. Data Storage";
         EDocumentsSetup: Record "E-Documents Setup";
         EDocumentServiceStatus: Record "E-Document Service Status";
+        EDocPurchLineFieldSetup: Record "EDoc. Purch. Line Field Setup";
     begin
         LibraryLowerPermission.SetOutsideO365Scope();
         LibraryVariableStorage.Clear();
         Clear(EDocImplState);
+        EDocPurchLineFieldSetup.DeleteAll();
 
         if IsInitialized then
             exit;
@@ -306,4 +499,6 @@ codeunit 139883 "E-Doc Process Test"
 
         IsInitialized := true;
     end;
+
+
 }

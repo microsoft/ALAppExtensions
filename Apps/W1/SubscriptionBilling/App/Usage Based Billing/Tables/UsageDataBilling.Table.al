@@ -11,7 +11,6 @@ table 8006 "Usage Data Billing"
     DataClassification = CustomerContent;
     DrillDownPageId = "Usage Data Billings";
     LookupPageId = "Usage Data Billings";
-    Access = Internal;
 
     fields
     {
@@ -296,7 +295,7 @@ table 8006 "Usage Data Billing"
         end;
     end;
 
-    internal procedure DeleteUsageDataBillingMetadata()
+    local procedure DeleteUsageDataBillingMetadata()
     var
         UsageDataBillingMetadata: Record "Usage Data Billing Metadata";
     begin
@@ -304,7 +303,7 @@ table 8006 "Usage Data Billing"
         UsageDataBillingMetadata.DeleteAll();
     end;
 
-    internal procedure RevertServiceCommitmentNextBillingDateIfRebillingMetadataExist()
+    local procedure RevertServiceCommitmentNextBillingDateIfRebillingMetadataExist()
     var
         ServiceCommitment: Record "Subscription Line";
         UsageDataBillingMetadata: Record "Usage Data Billing Metadata";
@@ -482,7 +481,7 @@ table 8006 "Usage Data Billing"
         PurchaseHeader.MarkedOnly(true);
     end;
 
-    internal procedure MarkPurchInvHeaderFromUsageDataBilling(var UsageDataBilling: Record "Usage Data Billing"; var PurchInvHeader: Record "Purch. Inv. Header")
+    local procedure MarkPurchInvHeaderFromUsageDataBilling(var UsageDataBilling: Record "Usage Data Billing"; var PurchInvHeader: Record "Purch. Inv. Header")
     begin
         UsageDataBilling.SetRange("Document Type", "Usage Based Billing Doc. Type"::"Posted Invoice");
         UsageDataBilling.SetFilter("Document No.", '<>%1', '');
@@ -494,7 +493,7 @@ table 8006 "Usage Data Billing"
         PurchInvHeader.MarkedOnly(true);
     end;
 
-    internal procedure MarkSalesInvHeaderFromUsageDataBilling(var UsageDataBilling: Record "Usage Data Billing"; var SalesInvoiceHeader: Record "Sales Invoice Header")
+    local procedure MarkSalesInvHeaderFromUsageDataBilling(var UsageDataBilling: Record "Usage Data Billing"; var SalesInvoiceHeader: Record "Sales Invoice Header")
     begin
         UsageDataBilling.SetRange("Document Type", "Usage Based Billing Doc. Type"::"Posted Invoice");
         UsageDataBilling.SetFilter("Document No.", '<>%1', '');
@@ -506,7 +505,7 @@ table 8006 "Usage Data Billing"
         SalesInvoiceHeader.MarkedOnly(true);
     end;
 
-    internal procedure MarkSalesHeaderFromUsageDataBilling(var UsageDataBilling: Record "Usage Data Billing"; var SalesHeader: Record "Sales Header")
+    local procedure MarkSalesHeaderFromUsageDataBilling(var UsageDataBilling: Record "Usage Data Billing"; var SalesHeader: Record "Sales Header")
     begin
         UsageDataBilling.SetRange("Document Type", "Usage Based Billing Doc. Type"::Invoice);
         UsageDataBilling.SetFilter("Document No.", '<>%1', '');
@@ -520,6 +519,7 @@ table 8006 "Usage Data Billing"
 
     internal procedure FilterOnDocumentTypeAndDocumentNo(ServicePartner: Enum "Service Partner"; UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"; DocumentNo: Code[20])
     begin
+        Rec.SetRange(Partner, ServicePartner);
         Rec.SetRange("Document Type", UsageBasedBillingDocType);
         Rec.SetRange("Document No.", DocumentNo);
     end;
@@ -531,6 +531,7 @@ table 8006 "Usage Data Billing"
         Rec."Document Line No." := DocumentEntryNo;
         Rec."Billing Line Entry No." := BillingLineEntryNo;
         Rec.Modify(false);
+        OnAfterSaveDocumentValues(Rec);
     end;
 
     internal procedure IsPartnerVendor(): Boolean
@@ -679,15 +680,9 @@ table 8006 "Usage Data Billing"
         exit((Rec."Document Type" <> "Usage Based Billing Doc. Type"::None) and (Rec."Document No." <> ''));
     end;
 
-    internal procedure SetBillingProposalFilters(ServiceCommitment: Record "Subscription Line"; BillingFromDate: Date; BillingToDate: Date)
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSaveDocumentValues(UsageDateBilling: Record "Usage Data Billing")
     begin
-        Rec.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
-        Rec.SetRange("Subscription Line Entry No.", ServiceCommitment."Entry No.");
-        Rec.SetRange(Partner, ServiceCommitment.Partner);
-        Rec.SetRange("Usage Base Pricing", "Usage Based Pricing"::"Usage Quantity", "Usage Based Pricing"::"Unit Cost Surcharge");
-        Rec.SetRange("Document Type", "Usage Based Billing Doc. Type"::None);
-        Rec.SetFilter("Charge Start Date", '>=%1', BillingFromDate);
-        Rec.SetFilter("Charge End Date", '<=%1', CalcDate('<1D>', BillingToDate));
     end;
 
     var

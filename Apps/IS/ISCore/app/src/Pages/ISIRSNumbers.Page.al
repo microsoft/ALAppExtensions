@@ -3,10 +3,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.IRS;
-#if not CLEAN24
-using Microsoft.Finance;
-using Microsoft.Finance.VAT.Setup;
-#endif
 
 page 14601 "IS IRS Numbers"
 {
@@ -46,16 +42,4 @@ page 14601 "IS IRS Numbers"
     {
     }
 
-#if not CLEAN24
-    trigger OnOpenPage()
-    var
-        ISCoreAppSetup: Record "IS Core App Setup";
-    begin
-        if not ISCoreAppSetup.IsEnabled() then begin
-            Page.Run(Page::"IRS Number");
-            Error('');
-        end;
-    end;
-#endif
 }
-

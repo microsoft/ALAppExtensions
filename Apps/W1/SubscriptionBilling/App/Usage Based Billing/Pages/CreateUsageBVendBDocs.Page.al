@@ -67,12 +67,6 @@ page 8034 "Create Usage B. Vend. B. Docs"
         BillingRhytmFilter: Text;
         NoInvoiceCreatedErr: Label 'No contract lines were found that can be billed with the specified parameters.';
 
-    internal procedure GetData(var NewDocumentDate: Date; var NewPostingDate: Date)
-    begin
-        NewDocumentDate := DocumentDate;
-        NewPostingDate := PostingDate;
-    end;
-
     local procedure CreateBillingDocumentForContract()
     var
         VendorContract: Record "Vendor Subscription Contract";

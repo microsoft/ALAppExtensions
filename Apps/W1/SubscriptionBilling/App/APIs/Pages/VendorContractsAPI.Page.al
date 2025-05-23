@@ -135,7 +135,15 @@ page 8023 "Vendor Contracts API"
                 field(contractType; Rec."Contract Type")
                 {
                 }
+#if not CLEAN27
                 field(withoutContractDeferrals; Rec."Without Contract Deferrals")
+                {
+                    ObsoleteReason = 'Removed in favor of Create Contract Deferrals.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
+                }
+#endif
+                field(createContractDeferrals; Rec."Create Contract Deferrals")
                 {
                 }
                 field(billingRhythmFilter; Rec."Billing Rhythm Filter")

@@ -66,6 +66,12 @@ codeunit 18245 "GST Journal Subscribers"
         Rec.Validate(amount, Rec.amount);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Journal Bank Charges", 'OnAfterValidateEvent', 'External Document No.', false, false)]
+    local procedure validateExternalDocumentNo(var Rec: Record "Journal Bank Charges")
+    begin
+        GSTJournalValidations.JournalBankChargesforForexExchangeGSTInvRounding(rec);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Journal Bank Charges", 'OnAfterValidateEvent', 'GST Document Type', false, false)]
     local procedure ValidateGSTDocumentType(var Rec: Record "Journal Bank Charges")
     begin
