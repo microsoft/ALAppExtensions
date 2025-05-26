@@ -44,7 +44,7 @@ codeunit 139624 "E-Doc E2E Test"
 
         // [THEN] OnBeforeCreatedEDocument is fired and edocument is empty
         EDocImplState.GetVariableStorage(LibraryVariableStorage);
-        Assert.AreEqual(2, LibraryVariableStorage.Length(), IncorrectValueErr);
+        Assert.AreEqual(3, LibraryVariableStorage.Length(), IncorrectValueErr);
         LibraryVariableStorage.Dequeue(Variant);
         EDocument := Variant;
         Assert.AreEqual('', EDocument."Document No.", 'OnBeforeCreatedEDocument should give empty edocument');
@@ -256,7 +256,6 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryLowerPermission.SetTeamMember();
         LibraryEDoc.PostInvoice(Customer);
         EDocument.FindLast();
-        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
 
         // [WHEN] Posting document is not going to succeed
         EDocumentPage.OpenView();
@@ -324,7 +323,6 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryLowerPermission.SetTeamMember();
         LibraryEDoc.PostInvoice(Customer);
         EDocument.FindLast();
-        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
 
         EDocumentPage.OpenView();
         EDocumentPage.Last();
@@ -607,6 +605,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         EDocumentServiceStatus.FindLast();
+        EDocument.Get(EDocument."Entry No");
 
         Assert.AreEqual(EDocument."Entry No", EDocumentServiceStatus."E-Document Entry No", IncorrectValueErr);
         Assert.AreEqual(EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", IncorrectValueErr);
@@ -659,6 +658,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         EDocumentServiceStatus.FindLast();
+        EDocument.Get(EDocument."Entry No");
 
         Assert.AreEqual(EDocument."Entry No", EDocumentServiceStatus."E-Document Entry No", IncorrectValueErr);
         Assert.AreEqual(EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", IncorrectValueErr);
@@ -692,6 +692,7 @@ codeunit 139624 "E-Doc E2E Test"
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
         JobQueueEntry: Record "Job Queue Entry";
     begin
         // [FEATURE] [E-Document] [Processing] 
@@ -707,12 +708,14 @@ codeunit 139624 "E-Doc E2E Test"
 
         // [WHEN] Team member post invoice
         LibraryLowerPermission.SetTeamMember();
-        LibraryEDoc.PostInvoice(Customer);
+        SalesInvoiceHeader := LibraryEDoc.PostInvoice(Customer);
+        EDocument.SetRange("Document Record ID", SalesInvoiceHeader.RecordId());
         EDocument.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
         EDocumentServiceStatus.FindLast();
 
+        EDocument.Get(EDocument."Entry No");
         Assert.AreEqual(EDocument."Entry No", EDocumentServiceStatus."E-Document Entry No", IncorrectValueErr);
         Assert.AreEqual(EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", IncorrectValueErr);
         Assert.AreEqual(EDocumentServiceStatus.Status::"Pending Response", EDocumentServiceStatus.Status, IncorrectValueErr);
@@ -720,10 +723,12 @@ codeunit 139624 "E-Doc E2E Test"
 
         // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
+        JobQueueEntry.Status := JobQueueEntry.Status::Ready;
+        JobQueueEntry.Modify(false);
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
         // [THEN] Status is Sent on service, and document is processed
-        EDocument.FindLast();
+        EDocument.Get(EDocument."Entry No");
         EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
         EDocumentServiceStatus.FindLast();
         Assert.AreEqual(EDocument."Entry No", EDocumentServiceStatus."E-Document Entry No", IncorrectValueErr);
