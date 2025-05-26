@@ -3,10 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.API;
-using Microsoft.eServices.EDocument.API;
-using System.Utilities;
+
 using Microsoft.eServices.EDocument;
-using System.Text;
 
 page 6115 "E-Documents Insert API"
 {
@@ -54,7 +52,6 @@ page 6115 "E-Documents Insert API"
         }
     }
 
-
     var
         fileContent: Text;
         eDocService: Text[20];
@@ -68,7 +65,6 @@ page 6115 "E-Documents Insert API"
         else
             Error('File content or E-Document Service Code is empty.');
     end;
-
 
     trigger OnFindRecord(Which: Text): Boolean
     begin

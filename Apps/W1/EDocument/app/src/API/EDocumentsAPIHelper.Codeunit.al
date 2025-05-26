@@ -6,7 +6,6 @@ namespace Microsoft.eServices.EDocument.API;
 
 using Microsoft.eServices.EDocument;
 using System.Utilities;
-using Microsoft.Integration.Graph;
 using System.Text;
 
 codeunit 6129 "E-Documents API Helper"
@@ -17,7 +16,7 @@ codeunit 6129 "E-Documents API Helper"
         EDocumentProcessing: Codeunit "E-Document Processing";
         FileTypeNotSupportedErr: Label 'File type not supported';
 
-    internal procedure LoadEDocumentFile(EntryNo: Integer; var Base64EDocument: Text; var byteSize: Integer)
+    internal procedure LoadEDocumentFile(EntryNo: Integer; var Base64EDocument: Text; var ByteSize: Integer)
     var
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
@@ -26,7 +25,7 @@ codeunit 6129 "E-Documents API Helper"
         EDocumentServiceStatus: Enum "E-Document Service Status";
     begin
         Base64EDocument := '';
-        byteSize := 0;
+        ByteSize := 0;
         if EntryNo <> 0 then begin
             if not EDocument.Get(EntryNo) then
                 exit;
@@ -44,7 +43,7 @@ codeunit 6129 "E-Documents API Helper"
 
             if TempBlob.HasValue() then begin
                 Base64EDocument := Base64Convert.ToBase64(TempBlob.CreateInStream());
-                byteSize := TempBlob.Length();
+                ByteSize := TempBlob.Length();
             end;
         end;
     end;
@@ -94,7 +93,6 @@ codeunit 6129 "E-Documents API Helper"
             Error('Error processing the incoming E-Document. Please check the log for more details.');
     end;
 
-
     local procedure GetFileContent(FileBase64Text: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
     var
         Base64Convert: Codeunit "Base64 Convert";
@@ -106,7 +104,6 @@ codeunit 6129 "E-Documents API Helper"
         if TempBlob.HasValue() then
             exit(true);
     end;
-
 
     local procedure LogUploadedEDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; var EDocumentServiceStatus: Enum "E-Document Service Status")
     var

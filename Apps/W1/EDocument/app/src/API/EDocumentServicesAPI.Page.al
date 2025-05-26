@@ -34,23 +34,18 @@ page 6113 "E-Document Services API"
             {
                 field(id; Rec.SystemId)
                 {
-                    Caption = 'Id';
                 }
                 field(code; Rec.Code)
                 {
-                    Caption = 'Code';
                 }
                 field(description; Rec.Description)
                 {
-                    Caption = 'Description';
                 }
                 field(serviceIntegrationV2; Rec."Service Integration V2")
                 {
-                    Caption = 'Service Integration V2';
                 }
                 field(documentFormat; Rec."Document Format")
                 {
-                    Caption = 'Document Format';
                 }
             }
         }
