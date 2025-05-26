@@ -25,23 +25,30 @@ codeunit 6393 "Continia Api Requests"
     #region Get Network Profiles from Continia Delivery Network Api
     internal procedure GetNetworkProfiles(Network: Enum "Continia E-Delivery Network")
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
-        IsLastPage: Boolean;
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
         CurrPage: Integer;
         PageSize: Integer;
+        TotalCount: Integer;
+        HandledRecordsCount: Integer;
+        PageRecordsCount: Integer;
     begin
+        TotalCount := 0;
+        HandledRecordsCount := 0;
         CurrPage := 0;
         PageSize := 100;
-        IsLastPage := false;
         repeat
             CurrPage += 1;
-            if ExecuteRequest('GET', ApiUrlMgt.NetworkProfilesUrl(Network, CurrPage, PageSize), HttpResponse) then
-                IsLastPage := HandleNetworkProfileResponse(HttpResponse, Network, PageSize);
-        until IsLastPage;
+            if ExecuteRequest('GET', ApiUrlMgt.NetworkProfilesUrl(Network, CurrPage, PageSize), HttpResponse) then begin
+                if TotalCount = 0 then
+                    TotalCount := GetRecordsCount(HttpResponse);
+                PageRecordsCount := HandleNetworkProfileResponse(HttpResponse, Network);
+                HandledRecordsCount += PageRecordsCount;
+            end;
+        until (HandledRecordsCount >= TotalCount) or (PageRecordsCount = 0);
     end;
 
-    local procedure HandleNetworkProfileResponse(var HttpResponse: HttpResponseMessage; NetworkName: Enum "Continia E-Delivery Network"; PageSize: Integer) IsLastPage: Boolean
+    local procedure HandleNetworkProfileResponse(var HttpResponse: HttpResponseMessage; NetworkName: Enum "Continia E-Delivery Network") HandledRecordsCount: Integer
     var
         NetworkProfile: Record "Continia Network Profile";
         Insert: Boolean;
@@ -54,53 +61,54 @@ codeunit 6393 "Continia Api Requests"
         XMLNodeList: XmlNodeList;
     begin
         HttpResponse.Content.ReadAs(ResponseBody);
-        if ResponseBody <> '' then begin
-            XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
-            ResponseXmlDoc.SelectNodes('/network_profiles/network_profile', XMLNodeList);
-            for i := 1 to XMLNodeList.Count do begin
-                if XMLNodeList.Count < PageSize then
-                    IsLastPage := true;
-                XMLNodeList.Get(i, TempXMLNode);
+        if ResponseBody = '' then
+            exit;
+        XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
+        if not ResponseXmlDoc.SelectNodes('/network_profiles/network_profile', XMLNodeList) then
+            exit;
 
-                TempXMLNode.SelectSingleNode('network_profile_id', TempXMLNode2);
+        HandledRecordsCount := XMLNodeList.Count;
+        for i := 1 to XMLNodeList.Count do begin
+            XMLNodeList.Get(i, TempXMLNode);
 
-                NetworkProfileId := StrSubstNo('{%1}', TempXMLNode2.AsXmlElement().InnerText);
+            TempXMLNode.SelectSingleNode('network_profile_id', TempXMLNode2);
 
-                if NetworkProfile.Get(NetworkProfileId) then
-                    Insert := false
-                else begin
-                    NetworkProfile.Init();
-                    NetworkProfile.Id := NetworkProfileId;
-                    Insert := true;
-                end;
+            NetworkProfileId := StrSubstNo('{%1}', TempXMLNode2.AsXmlElement().InnerText);
 
-                NetworkProfile.Network := NetworkName;
-
-                if TempXMLNode.SelectSingleNode('description', TempXMLNode2) then
-                    NetworkProfile.Description := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkProfile.Description));
-
-                if TempXMLNode.SelectSingleNode('document_identifier', TempXMLNode2) then
-                    NetworkProfile."Document Identifier" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkProfile."Document Identifier"));
-
-                if TempXMLNode.SelectSingleNode('mandatory', TempXMLNode2) then
-                    NetworkProfile.Mandatory := TempXMLNode2.AsXmlElement().InnerText = 'true';
-
-                if TempXMLNode.SelectSingleNode('mandatory_in_country_iso3166', TempXMLNode2) then
-                    NetworkProfile."Mandatory for Country" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkProfile."Mandatory for Country"));
-
-                if TempXMLNode.SelectSingleNode('process_identifier', TempXMLNode2) then
-                    NetworkProfile."Process Identifier" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkProfile."Process Identifier"));
-
-                if TempXMLNode.SelectSingleNode('enabled', TempXMLNode2) then
-                    NetworkProfile.Enabled := TempXMLNode2.AsXmlElement().InnerText = 'true'
-                else
-                    NetworkProfile.Enabled := true;
-
-                if Insert then
-                    NetworkProfile.Insert()
-                else
-                    NetworkProfile.Modify();
+            if NetworkProfile.Get(NetworkProfileId) then
+                Insert := false
+            else begin
+                NetworkProfile.Init();
+                NetworkProfile.Id := NetworkProfileId;
+                Insert := true;
             end;
+
+            NetworkProfile.Network := NetworkName;
+
+            if TempXMLNode.SelectSingleNode('description', TempXMLNode2) then
+                NetworkProfile.Description := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkProfile.Description));
+
+            if TempXMLNode.SelectSingleNode('document_identifier', TempXMLNode2) then
+                NetworkProfile."Document Identifier" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkProfile."Document Identifier"));
+
+            if TempXMLNode.SelectSingleNode('mandatory', TempXMLNode2) then
+                NetworkProfile.Mandatory := TempXMLNode2.AsXmlElement().InnerText = 'true';
+
+            if TempXMLNode.SelectSingleNode('mandatory_in_country_iso3166', TempXMLNode2) then
+                NetworkProfile."Mandatory for Country" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkProfile."Mandatory for Country"));
+
+            if TempXMLNode.SelectSingleNode('process_identifier', TempXMLNode2) then
+                NetworkProfile."Process Identifier" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkProfile."Process Identifier"));
+
+            if TempXMLNode.SelectSingleNode('enabled', TempXMLNode2) then
+                NetworkProfile.Enabled := TempXMLNode2.AsXmlElement().InnerText = 'true'
+            else
+                NetworkProfile.Enabled := true;
+
+            if Insert then
+                NetworkProfile.Insert()
+            else
+                NetworkProfile.Modify();
         end;
     end;
     #endregion
@@ -108,23 +116,30 @@ codeunit 6393 "Continia Api Requests"
     #region Get Network Id Types from Continia Delivery Network Api
     internal procedure GetNetworkIdTypes(Network: Enum "Continia E-Delivery Network")
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
-        IsLastPage: Boolean;
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
         CurrPage: Integer;
         PageSize: Integer;
+        TotalCount: Integer;
+        HandledRecordsCount: Integer;
+        PageRecordsCount: Integer;
     begin
+        TotalCount := 0;
+        HandledRecordsCount := 0;
         CurrPage := 0;
         PageSize := 100;
-        IsLastPage := false;
         repeat
             CurrPage += 1;
-            if ExecuteRequest('GET', ApiUrlMgt.NetworkIdentifiersUrl(Network, CurrPage, PageSize), HttpResponse) then
-                IsLastPage := HandleNetworkIdTypeResponse(HttpResponse, Network, PageSize);
-        until IsLastPage;
+            if ExecuteRequest('GET', ApiUrlMgt.NetworkIdentifiersUrl(Network, CurrPage, PageSize), HttpResponse) then begin
+                if TotalCount = 0 then
+                    TotalCount := GetRecordsCount(HttpResponse);
+                PageRecordsCount := HandleNetworkIdTypeResponse(HttpResponse, Network);
+                HandledRecordsCount += PageRecordsCount;
+            end;
+        until (HandledRecordsCount >= TotalCount) or (PageRecordsCount = 0);
     end;
 
-    local procedure HandleNetworkIdTypeResponse(var HttpResponse: HttpResponseMessage; NetworkName: Enum "Continia E-Delivery Network"; PageSize: Integer) IsLastPage: Boolean
+    local procedure HandleNetworkIdTypeResponse(var HttpResponse: HttpResponseMessage; NetworkName: Enum "Continia E-Delivery Network") HandleRecordsCount: Integer
     var
         NetworkIdentifier: Record "Continia Network Identifier";
         Insert: Boolean;
@@ -137,66 +152,67 @@ codeunit 6393 "Continia Api Requests"
         XMLNodeList: XmlNodeList;
     begin
         HttpResponse.Content.ReadAs(ResponseBody);
-        if ResponseBody <> '' then begin
-            XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
-            ResponseXmlDoc.SelectNodes('/network_id_types/network_id_type', XMLNodeList);
-            for i := 1 to XMLNodeList.Count do begin
-                if XMLNodeList.Count < PageSize then
-                    IsLastPage := true;
-                XMLNodeList.Get(i, TempXMLNode);
+        if ResponseBody = '' then
+            exit;
+        XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
+        if not ResponseXmlDoc.SelectNodes('/network_id_types/network_id_type', XMLNodeList) then
+            exit;
 
-                TempXMLNode.SelectSingleNode('network_id_type_id', TempXMLNode2);
+        HandleRecordsCount := XMLNodeList.Count;
+        for i := 1 to XMLNodeList.Count do begin
+            XMLNodeList.Get(i, TempXMLNode);
 
-                NetworkIdentifierId := StrSubstNo('{%1}', TempXMLNode2.AsXmlElement().InnerText);
+            TempXMLNode.SelectSingleNode('network_id_type_id', TempXMLNode2);
 
-                if NetworkIdentifier.Get(NetworkIdentifierId) then
-                    Insert := false
-                else begin
-                    NetworkIdentifier.Init();
-                    NetworkIdentifier.Id := NetworkIdentifierId;
-                    Insert := true;
-                end;
+            NetworkIdentifierId := StrSubstNo('{%1}', TempXMLNode2.AsXmlElement().InnerText);
 
-                NetworkIdentifier.Network := NetworkName;
-
-                if TempXMLNode.SelectSingleNode('code_iso6523-1', TempXMLNode2) then
-                    NetworkIdentifier."Identifier Type Id" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Identifier Type Id"));
-
-                if TempXMLNode.SelectSingleNode('default_in_country_iso3166', TempXMLNode2) then
-                    NetworkIdentifier."Default in Country" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Default in Country"));
-
-                if TempXMLNode.SelectSingleNode('description', TempXMLNode2) then
-                    NetworkIdentifier.Description := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier.Description));
-
-                if TempXMLNode.SelectSingleNode('icd_code', TempXMLNode2) then
-                    NetworkIdentifier."ICD Code" := TempXMLNode2.AsXmlElement().InnerText = 'true';
-
-                if TempXMLNode.SelectSingleNode('network_id_type_id', TempXMLNode2) then
-                    NetworkIdentifier.Id := TempXMLNode2.AsXmlElement().InnerText;
-
-                if TempXMLNode.SelectSingleNode('scheme_id', TempXMLNode2) then
-                    NetworkIdentifier."Scheme Id" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Scheme Id"));
-
-                if TempXMLNode.SelectSingleNode('vat_in_country_iso3166', TempXMLNode2) then
-                    NetworkIdentifier."VAT in Country" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."VAT in Country"));
-
-                if TempXMLNode.SelectSingleNode('validation_rule', TempXMLNode2) then
-                    NetworkIdentifier."Validation Rule" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Validation Rule"));
-
-                if TempXMLNode.SelectSingleNode('enabled', TempXMLNode2) then
-                    NetworkIdentifier.Enabled := TempXMLNode2.AsXmlElement().InnerText = 'true'
-                else
-                    NetworkIdentifier.Enabled := true;
-
-                if NetworkIdentifier."Default in Country" <> '' then
-                    if NetworkIdentifier."Default in Country" = GetCurrentCountryCode() then
-                        NetworkIdentifier.Default := true;
-
-                if Insert then
-                    NetworkIdentifier.Insert()
-                else
-                    NetworkIdentifier.Modify();
+            if NetworkIdentifier.Get(NetworkIdentifierId) then
+                Insert := false
+            else begin
+                NetworkIdentifier.Init();
+                NetworkIdentifier.Id := NetworkIdentifierId;
+                Insert := true;
             end;
+
+            NetworkIdentifier.Network := NetworkName;
+
+            if TempXMLNode.SelectSingleNode('code_iso6523-1', TempXMLNode2) then
+                NetworkIdentifier."Identifier Type Id" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Identifier Type Id"));
+
+            if TempXMLNode.SelectSingleNode('default_in_country_iso3166', TempXMLNode2) then
+                NetworkIdentifier."Default in Country" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Default in Country"));
+
+            if TempXMLNode.SelectSingleNode('description', TempXMLNode2) then
+                NetworkIdentifier.Description := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier.Description));
+
+            if TempXMLNode.SelectSingleNode('icd_code', TempXMLNode2) then
+                NetworkIdentifier."ICD Code" := TempXMLNode2.AsXmlElement().InnerText = 'true';
+
+            if TempXMLNode.SelectSingleNode('network_id_type_id', TempXMLNode2) then
+                NetworkIdentifier.Id := TempXMLNode2.AsXmlElement().InnerText;
+
+            if TempXMLNode.SelectSingleNode('scheme_id', TempXMLNode2) then
+                NetworkIdentifier."Scheme Id" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Scheme Id"));
+
+            if TempXMLNode.SelectSingleNode('vat_in_country_iso3166', TempXMLNode2) then
+                NetworkIdentifier."VAT in Country" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."VAT in Country"));
+
+            if TempXMLNode.SelectSingleNode('validation_rule', TempXMLNode2) then
+                NetworkIdentifier."Validation Rule" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Validation Rule"));
+
+            if TempXMLNode.SelectSingleNode('enabled', TempXMLNode2) then
+                NetworkIdentifier.Enabled := TempXMLNode2.AsXmlElement().InnerText = 'true'
+            else
+                NetworkIdentifier.Enabled := true;
+
+            if NetworkIdentifier."Default in Country" <> '' then
+                if NetworkIdentifier."Default in Country" = GetCurrentCountryCode() then
+                    NetworkIdentifier.Default := true;
+
+            if Insert then
+                NetworkIdentifier.Insert()
+            else
+                NetworkIdentifier.Modify();
         end;
     end;
     #endregion
@@ -204,7 +220,7 @@ codeunit 6393 "Continia Api Requests"
     #region Participation endpoints in Continia Delivery Network
     internal procedure GetParticipation(var Participation: Record "Continia Participation")
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
     begin
         if ExecuteRequest('GET', ApiUrlMgt.SingleParticipationUrl(Participation.Network, Participation.Id), HttpResponse) then
@@ -214,7 +230,7 @@ codeunit 6393 "Continia Api Requests"
     internal procedure PostParticipation(var TempParticipation: Record "Continia Participation" temporary) ParticipationGuid: Guid;
     var
         Participation: Record "Continia Participation";
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
         HttpContentData: Text;
     begin
@@ -231,7 +247,7 @@ codeunit 6393 "Continia Api Requests"
     internal procedure PatchParticipation(var TempParticipation: Record "Continia Participation" temporary)
     var
         Participation: Record "Continia Participation";
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
         HttpContentData: Text;
     begin
@@ -245,7 +261,7 @@ codeunit 6393 "Continia Api Requests"
 
     internal procedure DeleteParticipation(var Participation: Record "Continia Participation")
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
     begin
         if ExecuteRequest('DELETE', ApiUrlMgt.SingleParticipationUrl(Participation.Network, Participation.Id), HttpResponse) then
@@ -451,7 +467,7 @@ codeunit 6393 "Continia Api Requests"
     internal procedure PostParticipationProfile(var TempActivatedNetworkProfile: Record "Continia Activated Net. Prof." temporary; ParticipationGuid: Guid) ActivatedNetworkProfileGuid: Guid
     var
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
         HttpContentData: Text;
     begin
@@ -468,7 +484,7 @@ codeunit 6393 "Continia Api Requests"
     internal procedure PatchParticipationProfile(var TempActivatedNetworkProfile: Record "Continia Activated Net. Prof." temporary; ParticipationGuid: Guid)
     var
         ActivatedNetProf: Record "Continia Activated Net. Prof.";
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
         HttpContentData: Text;
     begin
@@ -482,7 +498,7 @@ codeunit 6393 "Continia Api Requests"
 
     internal procedure DeleteParticipationProfile(var ActivatedNetworkProfile: Record "Continia Activated Net. Prof."; ParticipationGuid: Guid)
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
     begin
         if ExecuteRequest('DELETE', ApiUrlMgt.SingleParticipationProfileUrl(ActivatedNetworkProfile.Network, ParticipationGuid, ActivatedNetworkProfile.Id), HttpResponse) then begin
@@ -493,47 +509,49 @@ codeunit 6393 "Continia Api Requests"
 
     internal procedure GetAllParticipationProfiles(Participation: Record "Continia Participation")
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
-        IsLastPage: Boolean;
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
         CurrPage: Integer;
         PageSize: Integer;
+        TotalCount: Integer;
+        PageRecordsCount: Integer;
+        HandledRecordsCount: Integer;
     begin
+        TotalCount := 0;
+        HandledRecordsCount := 0;
         CurrPage := 0;
         PageSize := 100;
-        IsLastPage := false;
         repeat
             CurrPage += 1;
             if ExecuteRequest('GET', ApiUrlMgt.ParticipationProfilesUrl(Participation.Network, Participation.Id, CurrPage, PageSize), HttpResponse) then begin
+                if TotalCount = 0 then
+                    TotalCount := GetRecordsCount(HttpResponse);
                 HandleApiError(HttpResponse);
-                IsLastPage := ReadParticipationProfilesResponse(HttpResponse, Participation, PageSize);
+                PageRecordsCount := ReadParticipationProfilesResponse(HttpResponse, Participation);
+                HandledRecordsCount += PageRecordsCount;
             end;
-        until IsLastPage;
+        until (HandledRecordsCount >= TotalCount) or (PageRecordsCount = 0);
     end;
 
-    local procedure ReadParticipationProfilesResponse(var HttpResponse: HttpResponseMessage; Participation: Record "Continia Participation"; PageSize: Integer) IsLastPage: Boolean
+    local procedure ReadParticipationProfilesResponse(var HttpResponse: HttpResponseMessage; Participation: Record "Continia Participation") HandledRecordsCount: Integer
     var
         i: Integer;
-        NodeCount: Integer;
         ResponseBody: Text;
         ResponseXmlDoc: XmlDocument;
         Node: XmlNode;
         NodeList: XmlNodeList;
     begin
-        IsLastPage := false;
-
         HttpResponse.Content.ReadAs(ResponseBody);
         if ResponseBody = '' then
             exit;
 
         XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
-        ResponseXmlDoc.SelectNodes('/participation_profiles/participation_profile', NodeList);
+        if not ResponseXmlDoc.SelectNodes('/participation_profiles/participation_profile', NodeList) then
+            exit;
 
-        NodeCount := NodeList.Count;
-        if NodeCount < PageSize then
-            IsLastPage := true;
+        HandledRecordsCount := NodeList.Count;
 
-        for i := 1 to NodeCount do begin
+        for i := 1 to NodeList.Count do begin
             NodeList.Get(i, Node);
             CreateOrUpdateParticipProfiles(Participation, Node);
         end;
@@ -640,7 +658,7 @@ codeunit 6393 "Continia Api Requests"
     internal procedure CheckProfilesNotRegistered(var TempParticipation: Record "Continia Participation" temporary)
     var
         NetworkIdentifier: Record "Continia Network Identifier";
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpResponse: HttpResponseMessage;
     begin
         NetworkIdentifier := TempParticipation.GetNetworkIdentifier();
@@ -713,7 +731,7 @@ codeunit 6393 "Continia Api Requests"
     internal procedure GetDocuments(ActivatedNetworkProfile: Record "Continia Activated Net. Prof."; ReceiveContext: Codeunit ReceiveContext): Boolean
     var
         Participation: Record "Continia Participation";
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
         CurrPage: Integer;
@@ -748,7 +766,7 @@ codeunit 6393 "Continia Api Requests"
         ConnectionSetup: Record "Continia Connection Setup";
         CredentialManagement: Codeunit "Continia Credential Management";
         Base64Convert: Codeunit "Base64 Convert";
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         TempBlob: Codeunit "Temp Blob";
         HttpResponse: HttpResponseMessage;
         HttpRequest: HttpRequestMessage;
@@ -812,7 +830,7 @@ codeunit 6393 "Continia Api Requests"
     #region Get Technical response
     internal procedure GetTechnicalResponse(var EDocument: Record "E-Document"; SendContext: Codeunit SendContext): Boolean
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         SuccessfulStatusTok: Label 'SuccessEnum', Locked = true;
         ErrorStatusTok: Label 'ErrorEnum', Locked = true;
@@ -866,7 +884,7 @@ codeunit 6393 "Continia Api Requests"
     #region Get Document Business Responses
     internal procedure GetBusinessResponses(DocumentGuid: Guid; ActionContext: Codeunit ActionContext): Boolean
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
         Success: Boolean;
@@ -917,7 +935,7 @@ codeunit 6393 "Continia Api Requests"
 
     internal procedure PerformActionOnDocument(DocumentGuid: Guid; Action: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         HttpContentData: Text;
         ActionNode: XmlElement;
         RootNode: XmlElement;
@@ -1004,6 +1022,19 @@ codeunit 6393 "Continia Api Requests"
 
         if HttpClient.Send(HttpRequest, HttpResponse) then
             exit(HandleApiError(HttpResponse));
+    end;
+
+    local procedure GetRecordsCount(var HttpResponse: HttpResponseMessage) Count: Integer
+    var
+        ResponseHeaders: HttpHeaders;
+        HeaderValues: List of [Text];
+    begin
+        ResponseHeaders := HttpResponse.Headers();
+        if not ResponseHeaders.Contains('X-Total-Count') then
+            exit;
+
+        ResponseHeaders.GetValues('X-Total-Count', HeaderValues);
+        Evaluate(Count, HeaderValues.Get(1));
     end;
 
     internal procedure HandleApiError(var HttpResponse: HttpResponseMessage): Boolean

@@ -17,7 +17,7 @@ codeunit 6397 "Continia Subscription Mgt."
     Access = Internal;
 
     var
-        ApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ApiUrlMgt: Codeunit "Continia Api Url";
         ClientCredentialsMissingErr: Label 'Client credentials missing.';
         CreateClientErrTitleErr: Label 'Failed to create client credentials';
         ExpectedStatusOKErr: Label 'Could not connect to Continia Online.\Invalid response, expected Status = OK';

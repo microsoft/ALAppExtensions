@@ -14,7 +14,7 @@ permissionset 6390 ContEDocConnObjects
                   page "Continia Ext. Connection Setup" = X,
                   codeunit "Continia Integration Impl." = X,
                   codeunit "Continia EDocument Processing" = X,
-                  codeunit "Continia Api Url Mgt." = X,
+                  codeunit "Continia Api Url" = X,
                   codeunit "Continia Api Requests" = X,
                   codeunit "Continia Onboarding Helper" = X,
                   codeunit "Continia Credential Management" = X,

@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 using System.Environment;
 
-codeunit 6392 "Continia Api Url Mgt."
+codeunit 6392 "Continia Api Url"
 {
     Access = Internal;
 

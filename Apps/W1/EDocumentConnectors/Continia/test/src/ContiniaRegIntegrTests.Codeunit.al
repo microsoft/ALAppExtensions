@@ -22,7 +22,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
     procedure Registration_AdvancedFlow()
     var
         EDocServicePage: TestPage "E-Document Service";
-        OnboardingWizard: TestPage "Continia Onboarding Wizard";
+        OnboardingGuide: TestPage "Continia Onboarding Guide";
         ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
         Participations: TestPage "Continia Participations";
         ParticipationAlreadyRegisteredPeppolErr: Label 'There is already a registration in Peppol network with the identifier type';
@@ -45,18 +45,18 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual('0', ExtConnectionSetup.NoOfParticipations.Value, IncorrectValueErr);
 
         // [When] Click on Register New Participation and on CDN Onboarding Click Next
-        OnboardingWizard.Trap();
+        OnboardingGuide.Trap();
         ExtConnectionSetup.RegisterNewParticipation.Invoke();
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] not set credentials and try click Next
-        asserterror OnboardingWizard.ActionNext.Invoke();
+        asserterror OnboardingGuide.ActionNext.Invoke();
         Assert.ExpectedError('Partner credentials for Continia PartnerZone are invalid or missing.');
 
         // [When] set Credential Click Next and expect Credentials are not correct
-        OnboardingWizard.PartnerUserName.SetValue('PartnerUserName@contoso.com');
-        OnboardingWizard.PartnerPassword.SetValue('PartnerPassword');
+        OnboardingGuide.PartnerUserName.SetValue('PartnerUserName@contoso.com');
+        OnboardingGuide.PartnerPassword.SetValue('PartnerPassword');
         ContiniaMockHttpHandler.ClearHandler();
         ContiniaMockHttpHandler.AddResponse(
             HttpRequestType::Post,
@@ -64,7 +64,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             200,
             GetMockResponseContent('PartnerZoneLogin200Incorrect.txt')
         );
-        asserterror OnboardingWizard.ActionNext.Invoke();
+        asserterror OnboardingGuide.ActionNext.Invoke();
 
         // [Then] check the error exists
         Assert.ExpectedError('Partner credentials for Continia PartnerZone are invalid or missing.');
@@ -114,106 +114,106 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             GetMockResponseContent('NemhandelNetworkProfiles200.txt')
         );
 
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Legal company information step opens and values are filled in correctly
-        Assert.AreEqual(true, OnboardingWizard."Company Name".Visible(), 'Legal company information should be visible');
-        Assert.AreEqual(CompanyInformation.Name, OnboardingWizard."Company Name".Value, IncorrectValueErr);
-        Assert.AreEqual(CompanyInformation."VAT Registration No.", OnboardingWizard."VAT Registration No.".Value, IncorrectValueErr);
-        Assert.AreEqual(CompanyInformation.Address, OnboardingWizard.Address.Value, IncorrectValueErr);
-        Assert.AreEqual(CompanyInformation."Post Code", OnboardingWizard."Post Code".Value, IncorrectValueErr);
-        Assert.AreEqual(CompanyInformation."Country/Region Code", OnboardingWizard."Country/Region Code".Value, IncorrectValueErr);
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next should be disabled');
+        Assert.AreEqual(true, OnboardingGuide."Company Name".Visible(), 'Legal company information should be visible');
+        Assert.AreEqual(CompanyInformation.Name, OnboardingGuide."Company Name".Value, IncorrectValueErr);
+        Assert.AreEqual(CompanyInformation."VAT Registration No.", OnboardingGuide."VAT Registration No.".Value, IncorrectValueErr);
+        Assert.AreEqual(CompanyInformation.Address, OnboardingGuide.Address.Value, IncorrectValueErr);
+        Assert.AreEqual(CompanyInformation."Post Code", OnboardingGuide."Post Code".Value, IncorrectValueErr);
+        Assert.AreEqual(CompanyInformation."Country/Region Code", OnboardingGuide."Country/Region Code".Value, IncorrectValueErr);
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next should be disabled');
 
         // [When] fill mandatory information
-        OnboardingWizard."Signatory Name".SetValue('Signatory Name');
-        OnboardingWizard."Signatory Email".SetValue('signatory@email.address');
-        OnboardingWizard.LicenseTerms.SetValue(true);
+        OnboardingGuide."Signatory Name".SetValue('Signatory Name');
+        OnboardingGuide."Signatory Email".SetValue('signatory@email.address');
+        OnboardingGuide.LicenseTerms.SetValue(true);
 
         // [Then] Next is enabled
-        Assert.AreEqual(true, OnboardingWizard.ActionNext.Enabled(), 'Next should be enabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionNext.Enabled(), 'Next should be enabled');
 
         // [When] click Next
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Company contact information step opens and Next is disabled
-        Assert.AreEqual(false, OnboardingWizard."Company Name".Visible(), 'Legal company information should not be visible');
-        Assert.AreEqual(true, OnboardingWizard.CompanyContactName.Visible(), 'Company company information should be visible');
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next should be disabled');
+        Assert.AreEqual(false, OnboardingGuide."Company Name".Visible(), 'Legal company information should not be visible');
+        Assert.AreEqual(true, OnboardingGuide.CompanyContactName.Visible(), 'Company company information should be visible');
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next should be disabled');
 
         // [When] fill mandatory information
-        OnboardingWizard.CompanyContactName.SetValue('Company Contact Name');
-        OnboardingWizard.CompanyContactVAT.SetValue('123456789');
-        OnboardingWizard.CompanyContactAddress.SetValue('CompanyContact Address');
-        OnboardingWizard.CompanyContactPostCode.SetValue('111222');
-        OnboardingWizard.CompanyContactCounty.SetValue('Company Contact County');
-        OnboardingWizard.CompanyContactCountryRegion.SetValue(CompanyInformation."Country/Region Code");
-        OnboardingWizard.CompanyContactPersonName.SetValue('Contact Name');
-        OnboardingWizard.CompanyContactPersonEmail.SetValue('contact@email.address');
-        OnboardingWizard.CompanyContactPersonPhoneNo.SetValue('999888777');
+        OnboardingGuide.CompanyContactName.SetValue('Company Contact Name');
+        OnboardingGuide.CompanyContactVAT.SetValue('123456789');
+        OnboardingGuide.CompanyContactAddress.SetValue('CompanyContact Address');
+        OnboardingGuide.CompanyContactPostCode.SetValue('111222');
+        OnboardingGuide.CompanyContactCounty.SetValue('Company Contact County');
+        OnboardingGuide.CompanyContactCountryRegion.SetValue(CompanyInformation."Country/Region Code");
+        OnboardingGuide.CompanyContactPersonName.SetValue('Contact Name');
+        OnboardingGuide.CompanyContactPersonEmail.SetValue('contact@email.address');
+        OnboardingGuide.CompanyContactPersonPhoneNo.SetValue('999888777');
 
         // [Then] Next is enabled
-        Assert.AreEqual(true, OnboardingWizard.ActionNext.Enabled(), 'Next should be enabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionNext.Enabled(), 'Next should be enabled');
 
         // [When] click Next
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Participation Network registration details step opens
-        Assert.AreEqual(false, OnboardingWizard.CompanyContactName.Visible(), 'Company company information should not be visible');
-        Assert.AreEqual(true, OnboardingWizard.Network.Visible(), 'Participation Network registration details should be visible');
+        Assert.AreEqual(false, OnboardingGuide.CompanyContactName.Visible(), 'Company company information should not be visible');
+        Assert.AreEqual(true, OnboardingGuide.Network.Visible(), 'Participation Network registration details should be visible');
 
         // [When] click Next
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Document Types selection step opens
-        Assert.AreEqual(false, OnboardingWizard.Network.Visible(), 'Participation Network registration details should not be visible');
-        Assert.AreEqual(true, OnboardingWizard.SendInvoiceCreditMemo.Visible(), 'Document Types selection should be visible');
+        Assert.AreEqual(false, OnboardingGuide.Network.Visible(), 'Participation Network registration details should not be visible');
+        Assert.AreEqual(true, OnboardingGuide.SendInvoiceCreditMemo.Visible(), 'Document Types selection should be visible');
 
         // [When] Select Document Types and Expect Participation registered externally and click Next
-        OnboardingWizard.SendInvoiceCreditMemo.SetValue(true);
-        OnboardingWizard.ReceiveInvoiceResponse.SetValue(true);
-        OnboardingWizard.ReceiveOrder.SetValue(true);
-        OnboardingWizard.SendOrderResponse.SetValue(true);
-        OnboardingWizard.ReceiveInvoiceCreditMemo.SetValue(true);
-        OnboardingWizard.SendInvoiceResponse.SetValue(true);
-        OnboardingWizard.SendOrder.SetValue(true);
-        OnboardingWizard.ReceiveOrderResponse.SetValue(true);
+        OnboardingGuide.SendInvoiceCreditMemo.SetValue(true);
+        OnboardingGuide.ReceiveInvoiceResponse.SetValue(true);
+        OnboardingGuide.ReceiveOrder.SetValue(true);
+        OnboardingGuide.SendOrderResponse.SetValue(true);
+        OnboardingGuide.ReceiveInvoiceCreditMemo.SetValue(true);
+        OnboardingGuide.SendInvoiceResponse.SetValue(true);
+        OnboardingGuide.SendOrder.SetValue(true);
+        OnboardingGuide.ReceiveOrderResponse.SetValue(true);
         ContiniaMockHttpHandler.ClearHandler();
         ContiniaMockHttpHandler.AddResponse(
             HttpRequestType::Get,
             ContiniaApiUrlMgt.ParticipationLookupUrl(
                 Enum::"Continia E-Delivery Network"::Peppol,
-                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
-                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+                CopyStr(OnboardingGuide.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingGuide.CompanyIdentifierValue.Value, 1, 50)),
             200,
             GetMockResponseContent('ParticipationLookup200-external.txt'));
 
-        asserterror OnboardingWizard.ActionNext.Invoke();
+        asserterror OnboardingGuide.ActionNext.Invoke();
 
         // [Then] check the error thrown
         Assert.ExpectedError(ParticipationAlreadyRegisteredPeppolErr);
 
         // [When] click Advanced Setup
-        OnboardingWizard.ActionAdvancedSetup.Invoke();
+        OnboardingGuide.ActionAdvancedSetup.Invoke();
         Commit();
 
         // [Then] Advanced Setup step opens
-        Assert.AreEqual(false, OnboardingWizard.SendInvoiceCreditMemo.Visible(), 'Document Types selection should not be visible');
-        Assert.AreEqual(true, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
+        Assert.AreEqual(false, OnboardingGuide.SendInvoiceCreditMemo.Visible(), 'Document Types selection should not be visible');
+        Assert.AreEqual(true, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
 
         // [When] assign E-Document Service Code on each record
-        OnboardingWizard.SelectProfilesPeppol.First();
+        OnboardingGuide.SelectProfilesPeppol.First();
         repeat
-            if OnboardingWizard.SelectProfilesPeppol."Profile Name".Value <> '' then
-                OnboardingWizard.SelectProfilesPeppol."E-Document Service Code".SetValue(EDocumentService.Code);
-        until not OnboardingWizard.SelectProfilesPeppol.Next();
+            if OnboardingGuide.SelectProfilesPeppol."Profile Name".Value <> '' then
+                OnboardingGuide.SelectProfilesPeppol."E-Document Service Code".SetValue(EDocumentService.Code);
+        until not OnboardingGuide.SelectProfilesPeppol.Next();
 
         // [When] Participation registered externally and click Next
-        asserterror OnboardingWizard.ActionNext.Invoke();
+        asserterror OnboardingGuide.ActionNext.Invoke();
 
         // [Then] check the error thrown
         Assert.ExpectedError(ParticipationAlreadyRegisteredPeppolErr);
@@ -224,16 +224,16 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             HttpRequestType::Get,
             ContiniaApiUrlMgt.ParticipationLookupUrl(
                 Enum::"Continia E-Delivery Network"::Peppol,
-                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
-                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+                CopyStr(OnboardingGuide.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingGuide.CompanyIdentifierValue.Value, 1, 50)),
             200,
             GetMockResponseContent('ParticipationLookup200.txt'));
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
 
         // [Then] Last step opens
-        Assert.AreEqual(false, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next must be disabled');
-        Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
+        Assert.AreEqual(false, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next must be disabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
         ContiniaMockHttpHandler.ClearHandler();
@@ -272,7 +272,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, ConnectorLibrary.ParticipationId(true), 1, 100),
             200,
             GetMockResponseContent('ParticipationProfile200-randomId.txt'));
-        OnboardingWizard.ActionFinish.Invoke();
+        OnboardingGuide.ActionFinish.Invoke();
         Commit();
 
         // [Then] Participation is created in pending state
@@ -445,7 +445,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
         Participations: TestPage "Continia Participations";
-        OnboardingWizard: TestPage "Continia Onboarding Wizard";
+        OnboardingGuide: TestPage "Continia Onboarding Guide";
     begin
         Initialize();
 
@@ -491,54 +491,54 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Edit Participation
-        OnboardingWizard.Trap();
+        OnboardingGuide.Trap();
         Participations.EditParticipation.Invoke();
 
         // [Then] Onboarding Wizard Legal company information step opens and values are filled in correctly
-        Assert.AreEqual(true, OnboardingWizard."Company Name".Visible(), 'Legal company information should be visible');
-        Assert.AreNotEqual('', OnboardingWizard."Company Name".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."VAT Registration No.".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard.Address.Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Post Code".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Country/Region Code".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Signatory Name".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Signatory Email".Value, IncorrectValueErr);
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next should be disabled');
+        Assert.AreEqual(true, OnboardingGuide."Company Name".Visible(), 'Legal company information should be visible');
+        Assert.AreNotEqual('', OnboardingGuide."Company Name".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."VAT Registration No.".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide.Address.Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Post Code".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Country/Region Code".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Signatory Name".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Signatory Email".Value, IncorrectValueErr);
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next should be disabled');
 
         // [When] fill mandatory information
-        OnboardingWizard.LicenseTerms.SetValue(true);
+        OnboardingGuide.LicenseTerms.SetValue(true);
 
         // [Then] Next is enabled
-        Assert.AreEqual(true, OnboardingWizard.ActionNext.Enabled(), 'Next should be enabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionNext.Enabled(), 'Next should be enabled');
 
         // [When] click Next
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Onboarding Wizard Advanced Setup step opens
-        Assert.AreEqual(false, OnboardingWizard.PartnerUserName.Visible(), 'Partner Details should not be visible');
-        Assert.AreEqual(true, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
+        Assert.AreEqual(false, OnboardingGuide.PartnerUserName.Visible(), 'Partner Details should not be visible');
+        Assert.AreEqual(true, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
 
         // [When] Set participation profile direction to Outgoing and click Next 
-        OnboardingWizard.SelectProfilesPeppol.First();
-        OnboardingWizard.SelectProfilesPeppol."Profile Direction".SetValue(Enum::"Continia Profile Direction"::Outbound);
+        OnboardingGuide.SelectProfilesPeppol.First();
+        OnboardingGuide.SelectProfilesPeppol."Profile Direction".SetValue(Enum::"Continia Profile Direction"::Outbound);
 
         ContiniaMockHttpHandler.ClearHandler();
         ContiniaMockHttpHandler.AddResponse(
             HttpRequestType::Get,
             ContiniaApiUrlMgt.ParticipationLookupUrl(
                 Enum::"Continia E-Delivery Network"::Peppol,
-                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
-                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+                CopyStr(OnboardingGuide.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingGuide.CompanyIdentifierValue.Value, 1, 50)),
             200,
             GetMockResponseContent('ParticipationLookup200.txt'));
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Last step opens
-        Assert.AreEqual(false, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next must be disabled');
-        Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
+        Assert.AreEqual(false, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next must be disabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
         ContiniaMockHttpHandler.ClearHandler();
@@ -552,7 +552,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             ContiniaApiUrlMgt.SingleParticipationProfileUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, ActivatedNetProf.Id),
             200,
             GetMockResponseContent('ParticipationProfile-outgoing.txt'));
-        OnboardingWizard.ActionFinish.Invoke();
+        OnboardingGuide.ActionFinish.Invoke();
         Commit();
 
         // [Then] Profile Direction is Outgoing
@@ -578,7 +578,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
         Participations: TestPage "Continia Participations";
-        OnboardingWizard: TestPage "Continia Onboarding Wizard";
+        OnboardingGuide: TestPage "Continia Onboarding Guide";
         NetworkProfileIds: List of [Guid];
     begin
         Initialize();
@@ -626,33 +626,33 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Edit Participation
-        OnboardingWizard.Trap();
+        OnboardingGuide.Trap();
         Participations.EditParticipation.Invoke();
 
         // [Then] Onboarding Wizard Legal company information step opens and values are filled in correctly
-        Assert.AreEqual(true, OnboardingWizard."Company Name".Visible(), 'Legal company information should be visible');
-        Assert.AreNotEqual('', OnboardingWizard."Company Name".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."VAT Registration No.".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard.Address.Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Post Code".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Country/Region Code".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Signatory Name".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Signatory Email".Value, IncorrectValueErr);
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next should be disabled');
+        Assert.AreEqual(true, OnboardingGuide."Company Name".Visible(), 'Legal company information should be visible');
+        Assert.AreNotEqual('', OnboardingGuide."Company Name".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."VAT Registration No.".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide.Address.Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Post Code".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Country/Region Code".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Signatory Name".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Signatory Email".Value, IncorrectValueErr);
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next should be disabled');
 
         // [When] fill mandatory information
-        OnboardingWizard.LicenseTerms.SetValue(true);
+        OnboardingGuide.LicenseTerms.SetValue(true);
 
         // [Then] Next is enabled
-        Assert.AreEqual(true, OnboardingWizard.ActionNext.Enabled(), 'Next should be enabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionNext.Enabled(), 'Next should be enabled');
 
         // [When] click Next
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Onboarding Wizard Advanced Setup step opens
-        Assert.AreEqual(false, OnboardingWizard.PartnerUserName.Visible(), 'Partner Details should not be visible');
-        Assert.AreEqual(true, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
+        Assert.AreEqual(false, OnboardingGuide.PartnerUserName.Visible(), 'Partner Details should not be visible');
+        Assert.AreEqual(true, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
 
         // [When] Add participation profile and click Next 
         ContiniaMockHttpHandler.ClearHandler();
@@ -660,22 +660,22 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             HttpRequestType::Get,
             ContiniaApiUrlMgt.ParticipationLookupUrl(
                 Enum::"Continia E-Delivery Network"::Peppol,
-                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
-                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+                CopyStr(OnboardingGuide.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingGuide.CompanyIdentifierValue.Value, 1, 50)),
             200,
             GetMockResponseContent('ParticipationLookup200.txt'));
-        OnboardingWizard.SelectProfilesPeppol.New();
-        OnboardingWizard.SelectProfilesPeppol."Profile Name".Lookup();
+        OnboardingGuide.SelectProfilesPeppol.New();
+        OnboardingGuide.SelectProfilesPeppol."Profile Name".Lookup();
         // HandlePeppolInvoiceProfileSelection()
-        OnboardingWizard.SelectProfilesPeppol."Profile Direction".SetValue(Enum::"Continia Profile Direction"::Both);
-        OnboardingWizard.SelectProfilesPeppol."E-Document Service Code".SetValue(EDocumentService.Code);
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.SelectProfilesPeppol."Profile Direction".SetValue(Enum::"Continia Profile Direction"::Both);
+        OnboardingGuide.SelectProfilesPeppol."E-Document Service Code".SetValue(EDocumentService.Code);
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Last step opens
-        Assert.AreEqual(false, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next must be disabled');
-        Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
+        Assert.AreEqual(false, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next must be disabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
         ContiniaMockHttpHandler.ClearHandler();
@@ -684,7 +684,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             ContiniaApiUrlMgt.ParticipationProfilesUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
             200,
             GetMockResponseContent('ParticipationProfile200-randomId.txt'));
-        OnboardingWizard.ActionFinish.Invoke();
+        OnboardingGuide.ActionFinish.Invoke();
         Commit();
 
         // [Then] Make sure all needed activated profiles exist
@@ -711,7 +711,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
         Participations: TestPage "Continia Participations";
-        OnboardingWizard: TestPage "Continia Onboarding Wizard";
+        OnboardingGuide: TestPage "Continia Onboarding Guide";
         NetworkProfileIds: List of [Guid];
     begin
         Initialize();
@@ -760,33 +760,33 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Edit Participation
-        OnboardingWizard.Trap();
+        OnboardingGuide.Trap();
         Participations.EditParticipation.Invoke();
 
         // [Then] Onboarding Wizard Legal company information step opens and values are filled in correctly
-        Assert.AreEqual(true, OnboardingWizard."Company Name".Visible(), 'Legal company information should be visible');
-        Assert.AreNotEqual('', OnboardingWizard."Company Name".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."VAT Registration No.".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard.Address.Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Post Code".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Country/Region Code".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Signatory Name".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Signatory Email".Value, IncorrectValueErr);
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next should be disabled');
+        Assert.AreEqual(true, OnboardingGuide."Company Name".Visible(), 'Legal company information should be visible');
+        Assert.AreNotEqual('', OnboardingGuide."Company Name".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."VAT Registration No.".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide.Address.Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Post Code".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Country/Region Code".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Signatory Name".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Signatory Email".Value, IncorrectValueErr);
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next should be disabled');
 
         // [When] fill mandatory information
-        OnboardingWizard.LicenseTerms.SetValue(true);
+        OnboardingGuide.LicenseTerms.SetValue(true);
 
         // [Then] Next is enabled
-        Assert.AreEqual(true, OnboardingWizard.ActionNext.Enabled(), 'Next should be enabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionNext.Enabled(), 'Next should be enabled');
 
         // [When] click Next
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Onboarding Wizard Advanced Setup step opens
-        Assert.AreEqual(false, OnboardingWizard.PartnerUserName.Visible(), 'Partner Details should not be visible');
-        Assert.AreEqual(true, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
+        Assert.AreEqual(false, OnboardingGuide.PartnerUserName.Visible(), 'Partner Details should not be visible');
+        Assert.AreEqual(true, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
 
         // [When] Delete invoice participation profile and click Next 
         ContiniaMockHttpHandler.ClearHandler();
@@ -794,20 +794,20 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             HttpRequestType::Get,
             ContiniaApiUrlMgt.ParticipationLookupUrl(
                 Enum::"Continia E-Delivery Network"::Peppol,
-                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
-                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+                CopyStr(OnboardingGuide.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingGuide.CompanyIdentifierValue.Value, 1, 50)),
             200,
             GetMockResponseContent('ParticipationLookup200.txt'));
         ConnectorLibrary.GetActivatedNetworkProfile(ConnectorLibrary.NetworkProfileIdPeppolBis3Invoice(), ActivatedNetProf);
-        OnboardingWizard.SelectProfilesPeppol.GoToRecord(ActivatedNetProf);
-        OnboardingWizard.SelectProfilesPeppol.DeleteProfile.Invoke();
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.SelectProfilesPeppol.GoToRecord(ActivatedNetProf);
+        OnboardingGuide.SelectProfilesPeppol.DeleteProfile.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Last step opens
-        Assert.AreEqual(false, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next must be disabled');
-        Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
+        Assert.AreEqual(false, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next must be disabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
         ContiniaMockHttpHandler.ClearHandler();
@@ -815,7 +815,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             HttpRequestType::Delete,
             ContiniaApiUrlMgt.SingleParticipationProfileUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id, ActivatedNetProf.Id),
             200);
-        OnboardingWizard.ActionFinish.Invoke();
+        OnboardingGuide.ActionFinish.Invoke();
         Commit();
 
         // [Then] Make sure activated and disabled profiles exist
@@ -845,7 +845,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         EDocServicePage: TestPage "E-Document Service";
         ExtConnectionSetup: TestPage "Continia Ext. Connection Setup";
         Participations: TestPage "Continia Participations";
-        OnboardingWizard: TestPage "Continia Onboarding Wizard";
+        OnboardingGuide: TestPage "Continia Onboarding Guide";
     begin
         Initialize();
 
@@ -892,34 +892,34 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         Assert.AreEqual(Format(Enum::"Continia Registration Status"::Connected), Participations.RegistrationStatus.Value, IncorrectValueErr);
 
         // [When] click Edit Participation
-        OnboardingWizard.Trap();
+        OnboardingGuide.Trap();
         Participations.EditParticipation.Invoke();
 
         // [Then] Onboarding Wizard Legal company information step opens and values are filled in correctly
-        Assert.AreEqual(true, OnboardingWizard."Company Name".Visible(), 'Legal company information should be visible');
-        Assert.AreNotEqual('', OnboardingWizard."Company Name".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."VAT Registration No.".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard.Address.Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Post Code".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Country/Region Code".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Signatory Name".Value, IncorrectValueErr);
-        Assert.AreNotEqual('', OnboardingWizard."Signatory Email".Value, IncorrectValueErr);
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next should be disabled');
+        Assert.AreEqual(true, OnboardingGuide."Company Name".Visible(), 'Legal company information should be visible');
+        Assert.AreNotEqual('', OnboardingGuide."Company Name".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."VAT Registration No.".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide.Address.Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Post Code".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Country/Region Code".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Signatory Name".Value, IncorrectValueErr);
+        Assert.AreNotEqual('', OnboardingGuide."Signatory Email".Value, IncorrectValueErr);
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next should be disabled');
 
         // [When] Change VAT number and Accept License terms
-        OnboardingWizard."VAT Registration No.".SetValue('111222334');
-        OnboardingWizard.LicenseTerms.SetValue(true);
+        OnboardingGuide."VAT Registration No.".SetValue('111222334');
+        OnboardingGuide.LicenseTerms.SetValue(true);
 
         // [Then] Next is enabled
-        Assert.AreEqual(true, OnboardingWizard.ActionNext.Enabled(), 'Next should be enabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionNext.Enabled(), 'Next should be enabled');
 
         // [When] click Next
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Onboarding Wizard Advanced Setup step opens
-        Assert.AreEqual(false, OnboardingWizard.PartnerUserName.Visible(), 'Partner Details should not be visible');
-        Assert.AreEqual(true, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
+        Assert.AreEqual(false, OnboardingGuide.PartnerUserName.Visible(), 'Partner Details should not be visible');
+        Assert.AreEqual(true, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should be visible');
 
         // [When] click Next
         ContiniaMockHttpHandler.ClearHandler();
@@ -927,17 +927,17 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             HttpRequestType::Get,
             ContiniaApiUrlMgt.ParticipationLookupUrl(
                 Enum::"Continia E-Delivery Network"::Peppol,
-                CopyStr(OnboardingWizard.IdentifierTypeDesc.Value, 1, 4),
-                CopyStr(OnboardingWizard.CompanyIdentifierValue.Value, 1, 50)),
+                CopyStr(OnboardingGuide.IdentifierTypeDesc.Value, 1, 4),
+                CopyStr(OnboardingGuide.CompanyIdentifierValue.Value, 1, 50)),
             200,
             GetMockResponseContent('ParticipationLookup200.txt'));
-        OnboardingWizard.ActionNext.Invoke();
+        OnboardingGuide.ActionNext.Invoke();
         Commit();
 
         // [Then] Last step opens
-        Assert.AreEqual(false, OnboardingWizard.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
-        Assert.AreEqual(false, OnboardingWizard.ActionNext.Enabled(), 'Next must be disabled');
-        Assert.AreEqual(true, OnboardingWizard.ActionFinish.Enabled(), 'Finish must be enabled');
+        Assert.AreEqual(false, OnboardingGuide.SelectProfilesPeppol."Profile Name".Visible(), 'Advanced Setup should not be visible');
+        Assert.AreEqual(false, OnboardingGuide.ActionNext.Enabled(), 'Next must be disabled');
+        Assert.AreEqual(true, OnboardingGuide.ActionFinish.Enabled(), 'Finish must be enabled');
 
         // [When] click Finish
         ContiniaMockHttpHandler.ClearHandler();
@@ -946,7 +946,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
             ContiniaApiUrlMgt.SingleParticipationUrl(Enum::"Continia E-Delivery Network"::Peppol, Participation.Id),
             200,
             GetMockResponseContent('Participation200-Suspended.txt'));
-        OnboardingWizard.ActionFinish.Invoke();
+        OnboardingGuide.ActionFinish.Invoke();
         Commit();
 
         // [Then] Participation registration status is In Process
@@ -1067,7 +1067,7 @@ codeunit 148204 "Continia Reg. Integr. Tests"
         LibraryPermission: Codeunit "Library - Lower Permissions";
         Assert: Codeunit Assert;
         ContiniaMockHttpHandler: Codeunit "Continia Mock Http Handler";
-        ContiniaApiUrlMgt: Codeunit "Continia API URL Mgt.";
+        ContiniaApiUrlMgt: Codeunit "Continia Api Url";
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         ConnectorLibrary: Codeunit "Continia Connector Library";
         IsInitialized: Boolean;

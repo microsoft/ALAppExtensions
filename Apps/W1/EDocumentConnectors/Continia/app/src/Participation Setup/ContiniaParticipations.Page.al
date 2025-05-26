@@ -57,9 +57,9 @@ page 6391 "Continia Participations"
 
                 trigger OnAction()
                 var
-                    OnboardingWizard: Page "Continia Onboarding Wizard";
+                    OnboardingGuide: Page "Continia Onboarding Guide";
                 begin
-                    OnboardingWizard.Run();
+                    OnboardingGuide.Run();
                 end;
             }
             action(EditParticipation)
@@ -71,12 +71,12 @@ page 6391 "Continia Participations"
 
                 trigger OnAction()
                 var
-                    OnBoardingWizard: Page "Continia Onboarding Wizard";
+                    OnboardingGuide: Page "Continia Onboarding Guide";
                     RunScenario: Enum "Continia Wizard Scenario";
                 begin
-                    OnBoardingWizard.SetRunScenario(RunScenario::EditParticipation); //Update Participation and profiles 
-                    OnBoardingWizard.SetParticipation(Rec);
-                    OnBoardingWizard.Run();
+                    OnboardingGuide.SetRunScenario(RunScenario::EditParticipation); //Update Participation and profiles 
+                    OnboardingGuide.SetParticipation(Rec);
+                    OnboardingGuide.Run();
                     CurrPage.Update(false);
                 end;
 

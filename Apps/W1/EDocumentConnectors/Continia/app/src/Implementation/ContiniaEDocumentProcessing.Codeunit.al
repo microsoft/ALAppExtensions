@@ -159,7 +159,7 @@ codeunit 6391 "Continia EDocument Processing"
         exit(ResponseCode in ['RE', 'BusinessReject']);
     end;
 
-    procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; ReceivedEDocuments: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
+    internal procedure ReceiveDocuments(var EDocumentService: Record "E-Document Service"; ReceivedEDocuments: Codeunit "Temp Blob List"; ReceiveContext: Codeunit ReceiveContext)
     var
         ActivatedNetworkProfile: Record "Continia Activated Net. Prof.";
     begin
@@ -202,7 +202,7 @@ codeunit 6391 "Continia EDocument Processing"
         end;
     end;
 
-    procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
+    internal procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     var
         ApiRequests: Codeunit "Continia Api Requests";
         XMLFileToken: Text;
@@ -237,7 +237,7 @@ codeunit 6391 "Continia EDocument Processing"
         ApiRequests.MarkDocumentAsProcessed(EDocument."Continia Document Id", ReceiveContext);
     end;
 
-    procedure GetCancellationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext) Success: Boolean
+    internal procedure GetCancellationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext) Success: Boolean
     var
         ApiRequests: Codeunit "Continia Api Requests";
     begin

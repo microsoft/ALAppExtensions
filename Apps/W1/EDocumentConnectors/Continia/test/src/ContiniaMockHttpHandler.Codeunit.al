@@ -3,24 +3,27 @@ codeunit 148201 "Continia Mock Http Handler"
     var
         ResponseStatusCodes: Dictionary of [Text, Integer];
         ResponseContents: Dictionary of [Text, Text];
+        ResponseHeaders: Dictionary of [Text, Dictionary of [Text, Text]];
         DefaultRequest: Boolean;
 
-    internal procedure AddResponse(Method: HttpRequestType; RequestPath: Text; StatusCode: Integer; ResponseContent: Text)
-    var
-        DictionaryKey: Text;
-
+    internal procedure AddResponse(Method: HttpRequestType; RequestPath: Text; StatusCode: Integer; ResponseContent: Text; Headers: Dictionary of [Text, Text])
     begin
         if StrPos(RequestPath, '?') > 0 then
             RequestPath := CopyStr(RequestPath, 1, StrPos(RequestPath, '?') - 1);
 
-        if (Method = Method::Unknown) and (RequestPath = '') then begin
-            DefaultRequest := true;
-            DictionaryKey := '';
-        end else
-            DictionaryKey := GetDictionaryKey(RequestPath, Method);
+        IncludeResponse(Method, RequestPath, StatusCode, ResponseContent, Headers);
+    end;
 
-        ResponseStatusCodes.Add(DictionaryKey, StatusCode);
-        ResponseContents.Add(DictionaryKey, ResponseContent);
+    internal procedure AddResponseWithParameters(Method: HttpRequestType; RequestPath: Text; StatusCode: Integer; ResponseContent: Text; Headers: Dictionary of [Text, Text])
+    begin
+        IncludeResponse(Method, RequestPath, StatusCode, ResponseContent, Headers);
+    end;
+
+    internal procedure AddResponse(Method: HttpRequestType; RequestPath: Text; StatusCode: Integer; ResponseContent: Text)
+    var
+        Headers: Dictionary of [Text, Text];
+    begin
+        AddResponse(Method, RequestPath, StatusCode, ResponseContent, Headers);
     end;
 
     internal procedure AddResponse(Method: HttpRequestType; RequestPath: Text; StatusCode: Integer)
@@ -41,14 +44,23 @@ codeunit 148201 "Continia Mock Http Handler"
             DictionaryKey := ''
         else
             DictionaryKey := GetDictionaryKey(Request.Path, Request.RequestType);
-        HttpResponseMessage.HttpStatusCode := ResponseStatusCodes.Get(DictionaryKey);
-        HttpResponseMessage.Content().WriteFrom(ReplaceContentPlaceholders(ResponseContents.Get(DictionaryKey), Request.Path));
-        Clear(DefaultRequest);
+        HttpResponseMessage := GetResponse(Request, DictionaryKey);
+    end;
+
+    internal procedure GetResponseWithParameters(Request: TestHttpRequestMessage) HttpResponseMessage: TestHttpResponseMessage
+    var
+        DictionaryKey: Text;
+    begin
+        if DefaultRequest then
+            DictionaryKey := ''
+        else
+            DictionaryKey := GetDictionaryKeyWithParameters(Request);
+        HttpResponseMessage := GetResponse(Request, DictionaryKey);
     end;
 
     internal procedure HandleAuthorization(Request: TestHttpRequestMessage; var HttpResponseMessage: TestHttpResponseMessage): Boolean
     var
-        ContiniaApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ContiniaApiUrlMgt: Codeunit "Continia Api Url";
     begin
         if Request.Path = ContiniaApiUrlMgt.ClientAccessTokenUrl() then begin
             HttpResponseMessage.HttpStatusCode := 200;
@@ -91,5 +103,56 @@ codeunit 148201 "Continia Mock Http Handler"
         KeyPatternTok: Label '%1;%2', Comment = '%1 = Method, %2 = RequestPath', Locked = true;
     begin
         returnValue := StrSubstNo(KeyPatternTok, Format(Method), RequestPath).ToLower();
+    end;
+
+    local procedure GetDictionaryKeyWithParameters(Request: TestHttpRequestMessage) returnValue: Text
+    var
+        KeyPatternTok: Label '%1;%2?%3', Comment = '%1 = Method, %2 = RequestPath, %3 = Parameters', Locked = true;
+        Parameters: Dictionary of [Text, Text];
+        Parameter: Text;
+        QueryParameters: TextBuilder;
+    begin
+        Parameters := Request.QueryParameters();
+        foreach Parameter in Parameters.Keys() do begin
+            if QueryParameters.Length() > 0 then
+                QueryParameters.Append('&');
+            if Parameters.Get(Parameter) = '' then
+                QueryParameters.Append(Parameter)
+            else
+                QueryParameters.Append(Parameter + '=' + Parameters.Get(Parameter));
+        end;
+        returnValue := StrSubstNo(KeyPatternTok, Format(Request.RequestType), Request.Path, QueryParameters.ToText()).ToLower();
+    end;
+
+    local procedure IncludeResponse(Method: HttpRequestType; RequestPath: Text; StatusCode: Integer; ResponseContent: Text; Headers: Dictionary of [Text, Text])
+    var
+        DictionaryKey: Text;
+    begin
+        if (Method = Method::Unknown) and (RequestPath = '') then begin
+            DefaultRequest := true;
+            DictionaryKey := '';
+        end else
+            DictionaryKey := GetDictionaryKey(RequestPath, Method);
+
+        ResponseStatusCodes.Add(DictionaryKey, StatusCode);
+        ResponseContents.Add(DictionaryKey, ResponseContent);
+        if Headers.Count() > 0 then
+            ResponseHeaders.Add(DictionaryKey, Headers);
+    end;
+
+    local procedure GetResponse(var Request: TestHttpRequestMessage; DictionaryKey: Text) HttpResponseMessage: TestHttpResponseMessage
+    var
+        Headers: Dictionary of [Text, Text];
+        HeaderName: Text;
+    begin
+        HttpResponseMessage.HttpStatusCode := ResponseStatusCodes.Get(DictionaryKey);
+        HttpResponseMessage.Content().WriteFrom(ReplaceContentPlaceholders(ResponseContents.Get(DictionaryKey), Request.Path));
+
+        if ResponseHeaders.ContainsKey(DictionaryKey) then begin
+            Headers := ResponseHeaders.Get(DictionaryKey);
+            foreach HeaderName in Headers.Keys() do
+                HttpResponseMessage.Headers.Add(HeaderName, Headers.Get(HeaderName));
+        end;
+        Clear(DefaultRequest);
     end;
 }

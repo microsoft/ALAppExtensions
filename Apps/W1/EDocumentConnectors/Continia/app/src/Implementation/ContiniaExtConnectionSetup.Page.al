@@ -79,9 +79,9 @@ page 6390 "Continia Ext. Connection Setup"
 
                 trigger OnAction()
                 var
-                    OnboardingWizard: Page "Continia Onboarding Wizard";
+                    OnboardingGuide: Page "Continia Onboarding Guide";
                 begin
-                    OnboardingWizard.Run();
+                    OnboardingGuide.Run();
                     CurrPage.Update(false);
                 end;
             }
@@ -95,14 +95,14 @@ page 6390 "Continia Ext. Connection Setup"
                 trigger OnAction()
                 var
                     ActivationMgt: Codeunit "Continia Subscription Mgt.";
-                    OnBoardingWizard: Page "Continia Onboarding Wizard";
+                    OnboardingGuide: Page "Continia Onboarding Guide";
                     RunScenario: Enum "Continia Wizard Scenario";
                 begin
                     if ActivationMgt.HasOtherAppsInSubscription() then
                         Message(UseContiniaSolutionMgtMsg)
                     else begin
-                        OnBoardingWizard.SetRunScenario(RunScenario::EditSubscriptionInfo);
-                        OnBoardingWizard.Run();
+                        OnboardingGuide.SetRunScenario(RunScenario::EditSubscriptionInfo);
+                        OnboardingGuide.Run();
                     end;
                 end;
             }

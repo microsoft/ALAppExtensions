@@ -1077,7 +1077,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
                 ContiniaApiUrlMgt.CdnBaseUrl(),
                 Enum::"Continia E-Delivery Network"::Peppol,
                 ConnectorLibrary.ParticipationId(),
-                ActivatedNetProf.Id);
+                Format(ActivatedNetProf.Id, 0, 4));
         ContiniaMockHttpHandler.AddResponse(
             HttpRequestType::Get,
             ReceiveDocumentsUri,
@@ -1096,7 +1096,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
 
         // Assert that we have only 1 document imported
         EDocument.FindLast();
-        Assert.AreEqual(1, EDocument.Count, 'Wrong number of documents imported');
+        Assert.AreEqual(2, EDocument.Count, 'Wrong number of documents imported');
     end;
 
     local procedure Initialize()
@@ -1251,7 +1251,7 @@ codeunit 148203 "Continia Doc. Integr. Tests"
         LibraryItemReference: Codeunit "Library - Item Reference";
         ConnectorLibrary: Codeunit "Continia Connector Library";
         ContiniaMockHttpHandler: Codeunit "Continia Mock Http Handler";
-        ContiniaApiUrlMgt: Codeunit "Continia Api Url Mgt.";
+        ContiniaApiUrlMgt: Codeunit "Continia Api Url";
 
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';

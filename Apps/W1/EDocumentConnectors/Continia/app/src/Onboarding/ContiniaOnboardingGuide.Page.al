@@ -7,7 +7,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 using System.Email;
 using Microsoft.Foundation.Address;
 
-page 6393 "Continia Onboarding Wizard"
+page 6393 "Continia Onboarding Guide"
 {
     ApplicationArea = All;
     Caption = 'Continia Delivery Network Onboarding';

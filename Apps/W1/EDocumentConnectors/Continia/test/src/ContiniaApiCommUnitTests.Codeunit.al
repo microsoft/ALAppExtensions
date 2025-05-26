@@ -1,5 +1,7 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
+using Microsoft.EServices.EDocumentConnector.Continia;
+
 codeunit 148200 "Continia Api Comm. Unit Tests"
 {
     Subtype = Test;
@@ -936,6 +938,142 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
         Assert.ExpectedError(Response500ErrorMessageLbl);
     end;
 
+    [Test]
+    [HandlerFunctions('HttpClientHandlerWithParameters')]
+    procedure GetnetworkProfilesMultiplePages()
+    var
+        ContiniaNetworkProfile: Record "Continia Network Profile";
+        ApiRequests: Codeunit "Continia Api Requests";
+        LibraryRandom: Codeunit "Library - Random";
+        ContiniaApiUrlMgt: Codeunit "Continia Api Url";
+        NumberOfRecords: Integer;
+        LeftRecordsCount: Integer;
+        ResponseHeader: Dictionary of [Text, Text];
+        PageSize: Integer;
+        PageNumber: Integer;
+        Url: Text;
+        UrlPatternTok: Label '%1/networks/peppol/profiles.xml?page=%2&page_size=%3', Comment = '%1 - Base URL, %2 - page number, %3 - page size', Locked = true;
+    begin
+        Initialize();
+        if not ContiniaNetworkProfile.IsEmpty() then
+            ContiniaNetworkProfile.DeleteAll();
+
+        // [Given] Prepare mock response
+        LibraryRandom.Init();
+        PageSize := 100;
+        PageNumber := 0;
+        NumberOfRecords := LibraryRandom.RandIntInRange(200, 300);
+        ResponseHeader.Add('X-Total-Count', Format(NumberOfRecords));
+
+        LeftRecordsCount := NumberOfRecords;
+        while LeftRecordsCount > 0 do begin
+            PageNumber += 1;
+            if LeftRecordsCount < PageSize then
+                PageSize := LeftRecordsCount;
+            Url := StrSubstNo(UrlPatternTok, ContiniaApiUrlMgt.CdnBaseUrl(), PageNumber, 100);
+            ContiniaMockHttpHandler.AddResponseWithParameters(HttpRequestType::Get, Url, 200, GenerateNetworkProfilesResponse(PageSize), ResponseHeader);
+            LeftRecordsCount := LeftRecordsCount - PageSize;
+        end;
+
+        // [When] Get Network Profiles
+        ApiRequests.GetNetworkProfiles(Enum::"Continia E-Delivery Network"::Peppol);
+        // [Then] Make sure Network Profiles exist
+        Assert.AreEqual(NumberOfRecords, ContiniaNetworkProfile.Count(), 'Incorrect number of Network Profiles');
+    end;
+
+    [Test]
+    [HandlerFunctions('HttpClientHandlerWithParameters')]
+    procedure GetnetworkIdentifiersMultiplePages()
+    var
+        ContiniaNetworkIdentifier: Record "Continia Network Identifier";
+        ApiRequests: Codeunit "Continia Api Requests";
+        LibraryRandom: Codeunit "Library - Random";
+        ContiniaApiUrlMgt: Codeunit "Continia Api Url";
+        NumberOfRecords: Integer;
+        LeftRecordsCount: Integer;
+        ResponseHeader: Dictionary of [Text, Text];
+        PageSize: Integer;
+        PageNumber: Integer;
+        Url: Text;
+        UrlPatternTok: Label '%1/networks/peppol/id_types.xml?page=%2&page_size=%3', Comment = '%1 - Base URL, %2 - page number, %3 - page size', Locked = true;
+    begin
+        Initialize();
+        if not ContiniaNetworkIdentifier.IsEmpty() then
+            ContiniaNetworkIdentifier.DeleteAll();
+
+        // [Given] Prepare mock response
+        LibraryRandom.Init();
+        PageSize := 100;
+        PageNumber := 0;
+        NumberOfRecords := LibraryRandom.RandIntInRange(200, 300);
+        ResponseHeader.Add('X-Total-Count', Format(NumberOfRecords));
+
+        LeftRecordsCount := NumberOfRecords;
+        while LeftRecordsCount > 0 do begin
+            PageNumber += 1;
+            if LeftRecordsCount < PageSize then
+                PageSize := LeftRecordsCount;
+            Url := StrSubstNo(UrlPatternTok, ContiniaApiUrlMgt.CdnBaseUrl(), PageNumber, 100);
+            ContiniaMockHttpHandler.AddResponseWithParameters(HttpRequestType::Get, Url, 200, GenerateIdentifiersResponse(PageSize), ResponseHeader);
+            LeftRecordsCount := LeftRecordsCount - PageSize;
+        end;
+
+        // [When] Get Network Profiles
+        ApiRequests.GetNetworkIdTypes(Enum::"Continia E-Delivery Network"::Peppol);
+        // [Then] Make sure Network Profiles exist
+        Assert.AreEqual(NumberOfRecords, ContiniaNetworkIdentifier.Count(), 'Incorrect number of Network Identifiers');
+    end;
+
+    [Test]
+    [HandlerFunctions('HttpClientHandlerWithParameters')]
+    procedure GetParticipationProfilesMultiplePages()
+    var
+        ContiniaParticipationProfile: Record "Continia Activated Net. Prof.";
+        ContiniaNetworkProfile: Record "Continia Network Profile";
+        Participation: Record "Continia Participation";
+        ApiRequests: Codeunit "Continia Api Requests";
+        LibraryRandom: Codeunit "Library - Random";
+        ContiniaApiUrlMgt: Codeunit "Continia Api Url";
+        NumberOfRecords: Integer;
+        LeftRecordsCount: Integer;
+        ResponseHeader: Dictionary of [Text, Text];
+        PageSize: Integer;
+        PageNumber: Integer;
+        Url: Text;
+        UrlPatternTok: Label '%1/networks/peppol/participations/%2/profiles.xml?page=%3&page_size=%4', Comment = '%1 - Base URL, %2 - Participation Id, %3 - page number, %4 - page size', Locked = true;
+    begin
+        Initialize();
+        if not ContiniaParticipationProfile.IsEmpty() then
+            ContiniaParticipationProfile.DeleteAll();
+        if not ContiniaNetworkProfile.IsEmpty() then
+            ContiniaNetworkProfile.DeleteAll();
+
+        // [Given] Prepare Participation
+        ConnectorLibrary.PrepareParticipation(Participation);
+
+        // [Given] Prepare mock response
+        LibraryRandom.Init();
+        PageSize := 100;
+        PageNumber := 0;
+        NumberOfRecords := LibraryRandom.RandIntInRange(200, 300);
+        ResponseHeader.Add('X-Total-Count', Format(NumberOfRecords));
+
+        LeftRecordsCount := NumberOfRecords;
+        while LeftRecordsCount > 0 do begin
+            PageNumber += 1;
+            if LeftRecordsCount < PageSize then
+                PageSize := LeftRecordsCount;
+            Url := StrSubstNo(UrlPatternTok, ContiniaApiUrlMgt.CdnBaseUrl(), Format(Participation.Id, 0, 4), PageNumber, 100);
+            ContiniaMockHttpHandler.AddResponseWithParameters(HttpRequestType::Get, Url, 200, GenerateParticpationProfilesResponse(PageSize), ResponseHeader);
+            LeftRecordsCount := LeftRecordsCount - PageSize;
+        end;
+
+        // [When] Get Network Profiles
+        ApiRequests.GetAllParticipationProfiles(Participation);
+        // [Then] Make sure Network Profiles exist
+        Assert.AreEqual(NumberOfRecords, ContiniaParticipationProfile.Count(), 'Incorrect number of Participation Profiles');
+    end;
+
     local procedure Initialize()
     begin
         LibraryPermission.SetOutsideO365Scope();
@@ -946,6 +1084,153 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
             exit;
 
         IsInitialized := true;
+    end;
+
+    local procedure GenerateNetworkProfilesResponse(NumberOfProfiles: Integer) ResponseText: Text;
+    var
+        LibraryRandom: Codeunit "Library - Random";
+        XMLDoc: XmlDocument;
+        RootElement: XmlElement;
+        NetworkProfileElement: XmlElement;
+        DescriptionElement: XmlElement;
+        DocumentIdentifierElement: XmlElement;
+        NetworkProfileIdElement: XmlElement;
+        ProcessIdentifierElement: XmlElement;
+        i: Integer;
+    begin
+        XMLDoc := XMLDocument.Create();
+        RootElement := XmlElement.Create('network_profiles');
+        for i := 1 to NumberOfProfiles do begin
+            NetworkProfileElement := XmlElement.Create('network_profile');
+
+            DescriptionElement := XmlElement.Create('description');
+            DescriptionElement.Add(LibraryRandom.RandText(50));
+            NetworkProfileElement.Add(DescriptionElement);
+
+            DocumentIdentifierElement := XmlElement.Create('document_identifier');
+            DocumentIdentifierElement.Add(LibraryRandom.RandText(50));
+            NetworkProfileElement.Add(DocumentIdentifierElement);
+
+            NetworkProfileIdElement := XmlElement.Create('network_profile_id');
+            NetworkProfileIdElement.Add(Format(CreateGuid(), 0, 4));
+            NetworkProfileElement.Add(NetworkProfileIdElement);
+
+            ProcessIdentifierElement := XmlElement.Create('process_identifier');
+            ProcessIdentifierElement.Add(LibraryRandom.RandText(50));
+            NetworkProfileElement.Add(ProcessIdentifierElement);
+            RootElement.Add(NetworkProfileElement);
+        end;
+        XMLDoc.Add(RootElement);
+        XMLDoc.WriteTo(ResponseText);
+    end;
+
+    local procedure GenerateIdentifiersResponse(NumberOfIdentifiers: Integer) ResponseText: Text;
+    var
+        LibraryRandom: Codeunit "Library - Random";
+        XMLDoc: XmlDocument;
+        RootElement: XmlElement;
+        NetworkIdTypeElement: XmlElement;
+        CodeElement: XmlElement;
+        DefaultInCountryElement: XmlElement;
+        IcdCodeElement: XmlElement;
+        NetworkIdTypeIdElement: XmlElement;
+        DescriptionElement: XmlElement;
+        SchemeIdElement: XmlElement;
+        i: Integer;
+    begin
+        XMLDoc := XMLDocument.Create();
+        RootElement := XmlElement.Create('network_id_types');
+        for i := 1 to NumberOfIdentifiers do begin
+            NetworkIdTypeElement := XmlElement.Create('network_id_type');
+
+            CodeElement := XmlElement.Create('code_iso6523-1');
+            CodeElement.Add(Format(LibraryRandom.RandIntInRange(1000, 9999)));
+            NetworkIdTypeElement.Add(CodeElement);
+
+            DefaultInCountryElement := XmlElement.Create('default_in_country_iso3166');
+            DefaultInCountryElement.Add(GetRandomCountryCode());
+            NetworkIdTypeElement.Add(DefaultInCountryElement);
+
+            IcdCodeElement := XmlElement.Create('icd_code');
+            IcdCodeElement.Add(Format(true));
+            NetworkIdTypeElement.Add(IcdCodeElement);
+
+            DescriptionElement := XmlElement.Create('description');
+            DescriptionElement.Add(LibraryRandom.RandText(50));
+            NetworkIdTypeElement.Add(DescriptionElement);
+
+            NetworkIdTypeIdElement := XmlElement.Create('network_id_type_id');
+            NetworkIdTypeIdElement.Add(Format(CreateGuid(), 0, 4));
+            NetworkIdTypeElement.Add(NetworkIdTypeIdElement);
+
+            SchemeIdElement := XmlElement.Create('scheme_id');
+            SchemeIdElement.Add(LibraryRandom.RandText(10));
+            NetworkIdTypeElement.Add(SchemeIdElement);
+
+            RootElement.Add(NetworkIdTypeElement);
+        end;
+        XMLDoc.Add(RootElement);
+        XMLDoc.WriteTo(ResponseText);
+    end;
+
+    local procedure GenerateParticpationProfilesResponse(NumberOfProfiles: Integer) ResponseText: Text
+    var
+        XMLDoc: XmlDocument;
+        RootElement: XmlElement;
+        NetworkProfileElement: XmlElement;
+        NetworkProfileIdElement: XmlElement;
+        DirectionElement: XmlElement;
+        ParticipationProfileIdElement: XmlElement;
+        CreatedUtcElement: XmlElement;
+        UpdatedUtcElement: XmlElement;
+        i: Integer;
+    begin
+        XMLDoc := XMLDocument.Create();
+        RootElement := XmlElement.Create('participation_profiles');
+        for i := 1 to NumberOfProfiles do begin
+            NetworkProfileElement := XmlElement.Create('participation_profile');
+
+            NetworkProfileIdElement := XmlElement.Create('network_profile_id');
+            NetworkProfileIdElement.Add(Format(CreateNetworkProfile().Id, 0, 4));
+            NetworkProfileElement.Add(NetworkProfileIdElement);
+
+            ParticipationProfileIdElement := XmlElement.Create('participation_profile_id');
+            ParticipationProfileIdElement.Add(Format(CreateGuid(), 0, 4));
+            NetworkProfileElement.Add(ParticipationProfileIdElement);
+
+            DirectionElement := XmlElement.Create('direction');
+            DirectionElement.Add('BothEnum');
+            NetworkProfileElement.Add(DirectionElement);
+
+            CreatedUtcElement := XmlElement.Create('created_utc');
+            CreatedUtcElement.Add(Format(CurrentDateTime(), 0, 9));
+            NetworkProfileElement.Add(CreatedUtcElement);
+
+            UpdatedUtcElement := XmlElement.Create('updated_utc');
+            UpdatedUtcElement.Add(Format(CurrentDateTime(), 0, 9));
+            NetworkProfileElement.Add(UpdatedUtcElement);
+            RootElement.Add(NetworkProfileElement);
+        end;
+        XMLDoc.Add(RootElement);
+        XMLDoc.WriteTo(ResponseText);
+    end;
+
+    local procedure GetRandomCountryCode() CountryCode: Text
+    var
+        LibraryRandom: Codeunit "Library - Random";
+        CountryCodeList: List of [Text];
+        CountryCodesTok: Label 'AU,BE,CA,DE,DK,EE,FI,FR,GB,IE,IT,NZ,NL,NO,PL,RU,SE,SG', Comment = 'List of country codes', Locked = true;
+    begin
+        LibraryRandom.Init();
+        CountryCodeList := CountryCodesTok.Split(',');
+        CountryCode := CountryCodeList.Get(LibraryRandom.RandIntInRange(1, CountryCodeList.Count()));
+    end;
+
+    local procedure CreateNetworkProfile() NetworkProfile: Record "Continia Network Profile";
+    begin
+        NetworkProfile.Init();
+        NetworkProfile.Id := CreateGuid();
+        NetworkProfile.Insert()
     end;
 
     local procedure GetMockResponseContent(FileName: Text) ContentText: Text
@@ -960,6 +1245,15 @@ codeunit 148200 "Continia Api Comm. Unit Tests"
             exit;
 
         Response := ContiniaMockHttpHandler.GetResponse(Request);
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpClientHandlerWithParameters(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    begin
+        if ContiniaMockHttpHandler.HandleAuthorization(Request, Response) then
+            exit;
+
+        Response := ContiniaMockHttpHandler.GetResponseWithParameters(Request);
     end;
 
     var
