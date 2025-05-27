@@ -1,15 +1,15 @@
-namespace Microsoft.EServices.EDocumentConnector.ForNAV;
+namespace ForNAV;
 
 using Microsoft.EServices.EDocument;
-tableextension 6246260 "ForNAV EDocument" extends "E-Document"
+tableextension 6412 "ForNAV EDocument" extends "E-Document"
 {
     fields
     {
-        field(6246260; "ForNAV Core ID"; Text[80]) // Needs to have same length as "ForNAV Incoming Doc".ID
+        field(6410; "ForNAV Edoc. ID"; Text[80]) // Needs to have same length as "ForNAV Incoming Doc".ID
         {
             Access = Internal;
             DataClassification = CustomerContent;
-            Caption = 'ForNAV ID', Locked = true;
+            Caption = 'ForNAV Edocument ID', Locked = true;
         }
     }
     internal procedure DocumentLog() Log: Record "E-Document Integration Log";

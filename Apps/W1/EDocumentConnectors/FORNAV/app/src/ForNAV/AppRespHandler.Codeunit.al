@@ -2,7 +2,12 @@ namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
 using System.Threading;
 using Microsoft.EServices.EDocument;
-codeunit 6246260 "ForNAV App. Resp. Handler"
+
+
+/// <summary>
+/// Processes the FORNAV Incoming Documents
+/// </summary>
+codeunit 6410 "ForNAV App. Resp. Handler"
 {
     Permissions =
         tabledata Microsoft.eServices.EDocument."E-Document Service Status" = RIMD;
@@ -31,11 +36,13 @@ codeunit 6246260 "ForNAV App. Resp. Handler"
         EDocumentService: Record "E-Document Service";
         EDocLogHelper: Codeunit "E-Document Log Helper";
     begin
+        if not EDocumentService.Get('FORNAV') then
+            exit(false);
+
         EDocument.SetRange("Document No.", DocNo);
         EDocument.SetRange("Document Type", DocumentType);
         EDocument.SetRange(Direction, "E-Document Direction"::Outgoing);
         if EDocument.FindFirst() then begin
-            EDocumentService.Get('FORNAV');
             EDocLogHelper.InsertLog(EDocument, EDocumentService, Status);
             UpdateServiceStatus(EDocument, EDocumentService, Status);
             exit(true);
@@ -44,16 +51,14 @@ codeunit 6246260 "ForNAV App. Resp. Handler"
 
     trigger OnRun()
     var
-        IncomingDoc: Record "ForNAV Incoming Doc";
-        EDocHelper: Codeunit "E-Document Log Helper";
+        IncomingDoc: Record "ForNAV Incoming E-Document";
     begin
         IncomingDoc.Get(rec."Record ID to Process");
-        if IncomingDoc.DocType = IncomingDoc.DocType::ApplicationResponse then begin
+        if IncomingDoc.DocType = IncomingDoc.DocType::ApplicationResponse then
             if IncomingDoc.EDocumentType <> "E-Document Type"::None then
                 if ProcessApplicationResponse(IncomingDoc.EDocumentType, IncomingDoc.DocNo, IncomingDoc.Status = IncomingDoc.Status::Approved ? "E-Document Service Status"::Approved : "E-Document Service Status"::Rejected) then begin
                     IncomingDoc.Status := IncomingDoc.Status::Processed;
                     IncomingDoc.Modify();
                 end;
-        end;
     end;
 }

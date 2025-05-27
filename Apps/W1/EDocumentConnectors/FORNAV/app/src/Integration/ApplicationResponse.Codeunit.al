@@ -1,7 +1,6 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
 using Microsoft.Foundation.Company;
-using System.Utilities;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Foundation.Address;
 using Microsoft.eServices.EDocument;
@@ -9,7 +8,7 @@ using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Purchases.Document;
 
-codeunit 6246275 "ForNAV Application Response"
+codeunit 6415 "ForNAV Application Response"
 {
     Access = Internal;
     procedure ApproveEDocument(EDocument: Record "E-Document")
@@ -17,12 +16,13 @@ codeunit 6246275 "ForNAV Application Response"
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
         ForNAVAPIRequests: Codeunit "ForNAV API Requests";
+        SendContext: Codeunit SendContext;
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
         SendApproveRejectCheckStatusErr: Label 'You cannot send %1 response with the E-Socument in this current status %2. You can send response when E-document status is ''Imported Document Created''.', Comment = '%1 - Action response, %2 - Status', Locked = true;
-        SendContext: Codeunit SendContext;
     begin
-        EDocumentService.Get('FORNAV');
+        if not EDocumentService.Get('FORNAV') then
+            exit;
 
         EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
         if not (EDocumentServiceStatus.Status in
@@ -33,10 +33,10 @@ codeunit 6246275 "ForNAV Application Response"
             ]) then
             Error(SendApproveRejectCheckStatusErr, 'Approve', EDocumentServiceStatus.Status);
 
-        Init(EDocument, true, '');
+        Init(EDocument, true);
         PrepareResponse(SendContext);
 
-        ForNAVAPIRequests.SendFilePostRequest(SendContext);
+        ForNAVAPIRequests.SendFilePostRequest(EDocument, SendContext);
         EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
 
         if HttpResponse.IsSuccessStatusCode then begin
@@ -50,25 +50,25 @@ codeunit 6246275 "ForNAV Application Response"
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
         ReasonCode: Record "Reason Code";
+        SendContext: Codeunit SendContext;
         ForNAVAPIRequests: Codeunit "ForNAV API Requests";
-        TempBlob: Codeunit "Temp Blob";
         ReasonCodes: Page "Reason Codes";
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
-        Parameters: Dictionary of [Text, Text];
-        SendContext: Codeunit SendContext;
     begin
-        EDocumentService.Get('FORNAV');
+        if not EDocumentService.Get('FORNAV') then
+            exit;
+
         EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
 
         ReasonCodes.LookupMode(true);
         if ReasonCodes.RunModal() = Action::LookupOK then
             ReasonCodes.GetRecord(ReasonCode);
 
-        Init(EDocument, false, ReasonCode.Code);
+        Init(EDocument, false);
         PrepareResponse(SendContext);
 
-        ForNAVAPIRequests.SendFilePostRequest(SendContext);
+        ForNAVAPIRequests.SendFilePostRequest(EDocument, SendContext);
         EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
 
         if HttpResponse.IsSuccessStatusCode then begin
@@ -78,9 +78,9 @@ codeunit 6246275 "ForNAV Application Response"
         end;
     end;
 
-    local procedure Init(EDocument: Record "E-Document"; ApproveValue: Boolean; RejectReasonValue: Text);
+    local procedure Init(EDocument: Record "E-Document"; ApproveValue: Boolean);
     begin
-        DocumentId := EDocument."ForNAV Core ID";
+        DocumentId := EDocument."ForNAV Edoc. ID";
         ResponseId := EDocument."Incoming E-Document No.";
         DocumentReference := EDocument."Incoming E-Document No.";
         VendorNo := EDocument."Bill-to/Pay-to No.";
@@ -142,8 +142,8 @@ codeunit 6246275 "ForNAV Application Response"
     local procedure InsertSenderParty(var SenderPartyElement: XmlElement);
     var
         CompanyInformation: Record "Company Information";
-        ChildElement: XmlElement;
         Country: Record "Country/Region";
+        ChildElement: XmlElement;
     begin
         CompanyInformation.Get();
         if not CompanyInformation."Use GLN in Electronic Document" then
@@ -151,20 +151,19 @@ codeunit 6246275 "ForNAV Application Response"
                 Error(InvalidVATSchemeErr, CompanyInformation.TableCaption(), CompanyInformation."Country/Region Code", Country."VAT Scheme");
 
         ChildElement := XmlElement.Create('SenderParty', DocNameSpaceCAC);
-        if CompanyInformation."Use GLN in Electronic Document" then begin
-            ChildElement.Add(XmlElement.Create('EndpointID', DocNameSpaceCBC, XmlAttribute.Create('schemeID', '0088'), CompanyInformation.GLN));
-        end else begin
+        if CompanyInformation."Use GLN in Electronic Document" then
+            ChildElement.Add(XmlElement.Create('EndpointID', DocNameSpaceCBC, XmlAttribute.Create('schemeID', '0088'), CompanyInformation.GLN))
+        else
             ChildElement.Add(XmlElement.Create('EndpointID', DocNameSpaceCBC, XmlAttribute.Create('schemeID', Country."VAT Scheme"), CompanyInformation."VAT Registration No."));
-        end;
         InsertPartyLegalEntity(ChildElement, CompanyInformation.Name);
         SenderPartyElement.Add(ChildElement);
     end;
 
     local procedure InsertReceiverParty(var ReceiverPartyElement: XmlElement);
     var
+        Country: Record "Country/Region";
         Vendor: Record Vendor;
         ChildElement: XmlElement;
-        Country: Record "Country/Region";
         "VAT Registration No.": Text;
         InvalidIsoCodeErr: Label '%1 %2 does not have a valid ISO Code', Comment = '%1 = Table Caption, %2 = "Country/Region Code"';
     begin
@@ -257,9 +256,9 @@ codeunit 6246275 "ForNAV Application Response"
     end;
 
     var
+        EDocumentLogHelper: Codeunit "E-Document Log Helper";
         DocNameSpaceCBC, DocNameSpaceCAC : Text[250];
         InvalidVATSchemeErr: Label '%1 %2 does not have a valid four digit VAT Scheme %3', Comment = '%1 = Table Caption, %2 = "Country/Region Code", %3 = "VAT Scheme"';
-        EDocumentLogHelper: Codeunit "E-Document Log Helper";
         DocumentId, ResponseId, DocumentReference, VendorNo, Note, RejectReason : Text;
         Approve: Boolean;
         "Document Type": Enum "E-Document Type";

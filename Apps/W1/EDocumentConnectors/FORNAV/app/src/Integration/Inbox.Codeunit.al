@@ -5,32 +5,19 @@ using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
 
-codeunit 6246265 "ForNAV Inbox"
+codeunit 6417 "ForNAV Inbox"
 {
     Access = Internal;
 
-    local procedure GetHttpResponse(var HttpContentResponseMessage: HttpResponseMessage; Payload: Text)
-    var
-        JObject: JsonObject;
-        Headers: HttpHeaders;
-    begin
-        JObject.ReadFrom(Payload);
-        HttpContentResponseMessage.Content.Clear();
-        HttpContentResponseMessage.Content.WriteFrom(Payload);
-        HttpContentResponseMessage.Content.GetHeaders(Headers);
-        Headers.Remove('Content-Type');
-        Headers.Add('Content-Type', 'application/json');
-    end;
-
     internal procedure GetEvidence(EDocument: Record "E-Document"; SendContext: Codeunit SendContext): Boolean
     var
-        Incoming: Record "ForNAV Incoming Doc";
+        Incoming: Record "ForNAV Incoming E-Document";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         Error: BigText;
         InStr: InStream;
     begin
         Incoming.SetRange(DocType, Incoming.DocType::Evidence);
-        Incoming.SetRange(Incoming.ID, EDocument."ForNAV Core ID");
+        Incoming.SetRange(Incoming.ID, EDocument."ForNAV Edoc. ID");
         if Incoming.FindFirst() then begin
             if Incoming.Status = Incoming.Status::Send then
                 exit(true);
@@ -45,7 +32,7 @@ codeunit 6246265 "ForNAV Inbox"
 
     internal procedure DeleteDocs(var DocumentIds: JsonArray; SendContext: Codeunit SendContext): Boolean
     var
-        Incoming: Record "ForNAV Incoming Doc";
+        Incoming: Record "ForNAV Incoming E-Document";
         DocumentId: JsonToken;
     begin
         foreach DocumentId in DocumentIds do begin
@@ -61,15 +48,10 @@ codeunit 6246265 "ForNAV Inbox"
         exit(true);
     end;
 
-    local procedure GetIncomingDocs(var Incoming: Record "ForNAV Incoming Doc"; DocumentsMetadata: Codeunit "Temp Blob List"): Boolean
+    local procedure GetIncomingDocs(var Incoming: Record "ForNAV Incoming E-Document"; DocumentsMetadata: Codeunit "Temp Blob List"): Boolean
     var
-        item: JsonObject;
-        documentInfo: JsonObject;
-        itemsArray: JsonArray;
-        items: JsonObject;
-        OutStr: OutStream;
-        Output: Text;
         TempBlob: Codeunit "Temp Blob";
+        OutStr: OutStream;
     begin
         Incoming.SetFilter(Status, '%1|%2|%3', Incoming.Status::Received, Incoming.Status::Approved, Incoming.Status::Rejected);
         if not Incoming.FindSet() then
@@ -86,7 +68,7 @@ codeunit 6246265 "ForNAV Inbox"
 
     internal procedure GetIncomingBussinessDocs(DocumentsMetadata: Codeunit "Temp Blob List"): Boolean
     var
-        Incoming: Record "ForNAV Incoming Doc";
+        Incoming: Record "ForNAV Incoming E-Document";
     begin
         Incoming.SetFilter(Incoming.DocType, '%1|%2', Incoming.DocType::CreditNote, Incoming.DocType::Invoice);
         exit(GetIncomingDocs(Incoming, DocumentsMetadata));
@@ -94,7 +76,7 @@ codeunit 6246265 "ForNAV Inbox"
 
     internal procedure GetIncomingAppResponseDocs(EDocument: Record "E-Document"; DocumentsMetadata: Codeunit "Temp Blob List"): Boolean
     var
-        Incoming: Record "ForNAV Incoming Doc";
+        Incoming: Record "ForNAV Incoming E-Document";
     begin
         Incoming.SetRange(Incoming.DocType, Incoming.DocType::ApplicationResponse);
         exit(GetIncomingDocs(Incoming, DocumentsMetadata));
@@ -102,7 +84,7 @@ codeunit 6246265 "ForNAV Inbox"
 
     internal procedure GetIncomingDoc(DocumentId: Text; ReceiveContext: Codeunit ReceiveContext): Boolean
     var
-        Incoming: Record "ForNAV Incoming Doc";
+        Incoming: Record "ForNAV Incoming E-Document";
         output: Text;
     begin
         Incoming.SetRange(Incoming.ID, DocumentId);
@@ -114,12 +96,12 @@ codeunit 6246265 "ForNAV Inbox"
         exit(ReceiveContext.Http().GetHttpResponseMessage().IsSuccessStatusCode);
     end;
 
-    internal procedure GetApprovalStatus(EDocument: Record "E-Document"; var StatusDescription: Text) Status: Enum "ForNAV Incoming Doc Status"
+    internal procedure GetApprovalStatus(EDocument: Record "E-Document"; var StatusDescription: Text) Status: Enum "ForNAV Incoming E-Doc Status"
     var
-        Incoming: Record "ForNAV Incoming Doc";
+        Incoming: Record "ForNAV Incoming E-Document";
     begin
         Incoming.SetRange(DocType, Incoming.DocType::ApplicationResponse);
-        Incoming.SetRange(Incoming.ID, EDocument."ForNAV Core ID");
+        Incoming.SetRange(Incoming.ID, EDocument."ForNAV Edoc. ID");
 
         if Incoming.FindFirst() then begin
             Status := Incoming.Status;
@@ -181,7 +163,7 @@ codeunit 6246265 "ForNAV Inbox"
         DocId: Text;
         JToken: JsonToken;
     begin
-        RecRef.Open(Database::"ForNAV Incoming Doc");
+        RecRef.Open(Database::"ForNAV Incoming E-Document");
         foreach DocId in JsonRecs.Keys do
             if DocId = 'Next' then
                 More := true

@@ -1,9 +1,9 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
-page 6246261 "ForNAV Peppol Oauth API"
+page 6411 "ForNAV Peppol Oauth API"
 {
     PageType = API;
-    APIPublisher = 'forNav';
+    APIPublisher = 'microsoft';
     APIGroup = 'peppol';
     APIVersion = 'v1.0';
     EntityName = 'peppolOauth';

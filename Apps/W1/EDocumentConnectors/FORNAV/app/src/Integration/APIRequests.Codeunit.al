@@ -1,12 +1,14 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
+
 using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Send;
 using System.Utilities;
 using System.Xml;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration;
+using Microsoft.eServices.EDocument.Service.Participant;
 
-codeunit 6246262 "ForNAV API Requests"
+codeunit 6414 "ForNAV API Requests"
 {
     Access = Internal;
 
@@ -48,7 +50,7 @@ codeunit 6246262 "ForNAV API Requests"
             ResetRequest('Inbox', 'GET', Http);
 
             if Setup.Send(HttpClient, Http) = 200 then begin
-                Http.GetHttpResponseMessage.Content.ReadAs(Json);
+                Http.GetHttpResponseMessage().Content.ReadAs(Json);
                 JObject.ReadFrom(Json);
                 More := Inbox.GetDocsFromJson(RecKeys, JObject);
                 SendDocumentsDeleteRequest(Http, RecKeys);
@@ -59,8 +61,9 @@ codeunit 6246262 "ForNAV API Requests"
         exit(Http.GetHttpResponseMessage().IsSuccessStatusCode);
     end;
 
-    internal procedure SendFilePostRequest(SendContext: Codeunit SendContext): Boolean
+    internal procedure SendFilePostRequest(var EDocument: Record "E-Document"; SendContext: Codeunit SendContext): Boolean
     var
+        ServiceParticipant: Record "Service Participant";
         Setup: Codeunit "ForNAV Peppol Setup";
         Payload: Text;
         HttpClient: HttpClient;
@@ -74,6 +77,15 @@ codeunit 6246262 "ForNAV API Requests"
         ResetRequest('Outgoing', 'POST', SendContext.Http());
         SendContext.Http().GetHttpRequestMessage().GetHeaders(HttpHeaders);
         HttpHeaders.Add('Accept', '*/*');
+        case EDocument."Source Type" of
+            EDocument."Source Type"::Customer:
+                if ServiceParticipant.Get('FORNAV', "E-Document Source Type"::Customer, EDocument."Bill-to/Pay-to No.") then
+                    HttpHeaders.Add('receiver-peppolid', ServiceParticipant."Participant Identifier");
+            EDocument."Source Type"::Vendor:
+                if ServiceParticipant.Get('FORNAV', "E-Document Source Type"::Vendor, EDocument."Bill-to/Pay-to No.") then
+                    HttpHeaders.Add('receiver-peppolid', ServiceParticipant."Participant Identifier");
+        end;
+
         SendContext.Http().GetHttpRequestMessage().Method('POST');
 
         HttpContent.WriteFrom(Payload);
@@ -81,6 +93,7 @@ codeunit 6246262 "ForNAV API Requests"
         if HttpHeaders.Contains('Content-Type') then
             HttpHeaders.Remove('Content-Type');
         HttpHeaders.Add('Content-Type', 'application/xml');
+
         SendContext.Http().GetHttpRequestMessage().Content := HttpContent;
 
         Setup.Send(HttpClient, SendContext.Http());

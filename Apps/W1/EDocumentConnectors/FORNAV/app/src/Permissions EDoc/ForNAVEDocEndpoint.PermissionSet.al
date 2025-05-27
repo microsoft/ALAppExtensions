@@ -1,7 +1,6 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 using System.Security.AccessControl;
-
-permissionset 6246261 "ForNAV Endpoint"
+permissionset 6411 "ForNAV EDoc Endpoint"
 {
     Access = Internal;
     Assignable = true;
@@ -9,6 +8,6 @@ permissionset 6246261 "ForNAV Endpoint"
     Permissions =
         table * = X,
         codeunit * = X,
-        page "ForNAV Incoming Docs Api" = X,
-        tabledata "ForNAV Incoming Doc" = IMRD;
+        page "ForNAV Incoming E-Docs Api" = X,
+        tabledata "ForNAV Incoming E-Document" = IMRD;
 }

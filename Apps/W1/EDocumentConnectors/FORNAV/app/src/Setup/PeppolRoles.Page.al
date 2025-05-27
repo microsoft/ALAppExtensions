@@ -1,4 +1,6 @@
-page 6246264 "ForNAV Peppol Roles"
+namespace Microsoft.EServices.EDocumentConnector.ForNAV;
+
+page 6412 "ForNAV Peppol Roles"
 {
     PageType = List;
     SourceTable = "Fornav Peppol Role";

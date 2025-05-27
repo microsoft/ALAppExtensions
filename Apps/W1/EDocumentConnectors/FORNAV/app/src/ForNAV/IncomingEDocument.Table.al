@@ -3,12 +3,12 @@ namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 using Microsoft.EServices.EDocument;
 
 // Used by Azure function - do not modify
-table 6246260 "ForNAV Incoming Doc"
+table 6415 "ForNAV Incoming E-Document"
 {
     DataClassification = CustomerContent;
     Access = Internal;
     Permissions = tabledata "E-Document" = RIMD;
-    Caption = 'ForNAV Incoming Doc', Locked = true;
+    Caption = 'ForNAV Incoming Doc';
     fields
     {
         field(1; ID; Text[80]) // Needs to have same length as tableextension "ForNAV EDocument"."ForNAV ID"
@@ -37,7 +37,7 @@ table 6246260 "ForNAV Incoming Doc"
             DataClassification = CustomerContent;
             Caption = 'Doc', Locked = true;
         }
-        field(5; Status; Enum "ForNAV Incoming Doc Status")
+        field(5; Status; Enum "ForNAV Incoming E-Doc Status")
         {
             DataClassification = SystemMetadata;
             Caption = 'Status', Locked = true;
@@ -81,24 +81,24 @@ table 6246260 "ForNAV Incoming Doc"
     }
     procedure GetDoc(): Text;
     var
-        _Doc: BigText;
+        Document: BigText;
         InStr: InStream;
     begin
         Rec.CalcFields(Doc);
         Rec.Doc.CreateInStream(InStr, TextEncoding::UTF8);
-        _Doc.Read(InStr);
-        Exit(Format(_Doc));
+        Document.Read(InStr);
+        Exit(Format(Document));
     end;
 
     procedure GetHtml(): Text;
     var
-        _Doc: BigText;
+        Document: BigText;
         InStr: InStream;
     begin
         CalcFields("HTML Preview");
         "HTML Preview".CreateInStream(InStr, TextEncoding::UTF8);
-        _Doc.Read(InStr);
-        Exit(Format(_Doc));
+        Document.Read(InStr);
+        Exit(Format(Document));
     end;
 
     procedure GetComment(): Text;

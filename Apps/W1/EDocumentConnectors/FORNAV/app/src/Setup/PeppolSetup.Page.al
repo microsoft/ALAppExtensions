@@ -1,4 +1,5 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
+
 using System.EMail;
 using System.Utilities;
 using Microsoft.eServices.EDocument;
@@ -7,16 +8,15 @@ using System.Azure.Identity;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 
-page 6246262 "ForNAV Peppol Setup"
+page 6413 "ForNAV Peppol Setup"
 {
     PageType = Card;
-    Caption = 'ForNAV Peppol Setup';
+    Caption = 'ForNAV E-Document Connector Setup';
     ApplicationArea = All;
     UsageCategory = Administration;
     SourceTable = "ForNAV Peppol Setup";
     DataCaptionExpression = Rec.Authorized ? Format(Rec.Status) : AuthorizeLbl;
-    Extensible = false;
-    AdditionalSearchTerms = 'ForNAV';
+    AdditionalSearchTerms = 'ForNAV Peppol Setup';
     DeleteAllowed = false;
 
     layout
@@ -98,6 +98,7 @@ page 6246262 "ForNAV Peppol Setup"
                 {
                     Caption = 'Peppol Endpoint', Locked = true;
                     ApplicationArea = All;
+                    Editable = ShowConnectionSetup;
                     ToolTip = 'Specifies the Peppol Endpoint. You can get this from your ForNAV partner.';
 
                     trigger OnValidate()
@@ -152,12 +153,14 @@ page 6246262 "ForNAV Peppol Setup"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Oauth Secret Valid From. The secret will renew automatically, if a secret is expired please contact your ForNAV partner.';
                     Editable = false;
+                    Visible = ShowConnectionSetup;
                 }
                 field(SecretValidTo; SecretValidTo)
                 {
                     Caption = 'Secret Expiration', Locked = true;
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Oauth Secret Expiration. The secret will renew automatically, if a secret is expired please contact your ForNAV partner.';
+                    Visible = ShowConnectionSetup;
                     Editable = false;
                     trigger OnValidate()
                     begin
@@ -225,7 +228,7 @@ page 6246262 "ForNAV Peppol Setup"
                         CreateTestSetup();
                 end;
             }
-            action(CompanyInformation)
+            action(CompanyInformationFld)
             {
                 Enabled = Rec.Status <> Rec.Status::Published;
                 ApplicationArea = All;
@@ -277,6 +280,7 @@ page 6246262 "ForNAV Peppol Setup"
 
                     if not Confirm(SureQst) then
                         exit;
+
                     Rec.RotateClientSecret();
                     CurrPage.Update();
                 end;
@@ -308,6 +312,7 @@ page 6246262 "ForNAV Peppol Setup"
                 Visible = Rec.Authorized;
                 Image = Permission;
                 Caption = 'Roles', Locked = true;
+                ToolTip = 'Setup the roles for the ForNAV Peppol setup.';
                 RunObject = page "ForNAV Peppol Roles";
             }
             Action(RecreateJobQueue)
@@ -316,6 +321,7 @@ page 6246262 "ForNAV Peppol Setup"
                 Visible = Rec.Authorized;
                 Image = Task;
                 Caption = 'Recreate Job Queue', Locked = true;
+                ToolTip = 'Recreate the job queue for the ForNAV Peppol setup.';
                 trigger OnAction()
                 var
                     PeppolJobQueue: Codeunit "ForNAV Peppol Job Queue";
@@ -392,8 +398,9 @@ page 6246262 "ForNAV Peppol Setup"
     local procedure ShowNotification()
     var
         Notification: Notification;
+        Info: ModuleInfo;
     begin
-        if Rec.SetupNotification.HasValue then begin
+        if Rec.SetupNotification.HasValue and not NavApp.GetModuleInfo('9a217e38-6091-4d50-9169-672a2896b5d4', Info) then begin// Peppol app
             Notification.Message := Rec.GetSetupNotification();
             Notification.Scope := NotificationScope::LocalScope;
             Notification.AddAction('Link', Codeunit::"ForNAV Peppol Setup", 'NotificationLink');
@@ -456,7 +463,6 @@ page 6246262 "ForNAV Peppol Setup"
     begin
         ShowConnectionSetup := not EnvironmentInformation.IsSaaSInfrastructure();
         EnableUnauthorize := Rec.Authorized or (Rec."Oauth Setup Request Sent" <> 0D);
-        ShowConnectionSetup := true;
         ClientId := PeppolOauth.GetClientID();
         PeppolEndpoint := PeppolOauth.GetEndpoint();
         ForNAVTenantId := PeppolOauth.GetForNAVTenantID();

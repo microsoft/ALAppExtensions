@@ -5,7 +5,7 @@ using System.Azure.Identity;
 using System.Security.AccessControl;
 using Microsoft.eServices.EDocument.Integration.Send;
 
-codeunit 6246274 "ForNAV Peppol Oauth"
+codeunit 6422 "ForNAV Peppol Oauth"
 {
     Access = Internal;
 
@@ -289,13 +289,13 @@ codeunit 6246274 "ForNAV Peppol Oauth"
 
     internal procedure TestOAuth(): Boolean
     var
+        SendContex: Codeunit SendContext;
         Setup: Codeunit "ForNAV Peppol Setup";
         HttpClient: HttpClient;
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
         EndpointLbl: Label '%1Test', Locked = true;
         HttpErrLbl: Label 'Http error: %1\Reason: %2', Comment = '%1= statuscode %2= reasonphrase', Locked = true;
-        SendContex: Codeunit SendContext;
     begin
         Setup.ClearAccessToken();
         if GetClientID() = '' then
@@ -459,6 +459,7 @@ codeunit 6246274 "ForNAV Peppol Oauth"
         HttpHeaders.Add('contactEmail', PeppolSetup."E-Mail");
         NavApp.GetCurrentModuleInfo(AppInfo);
         HttpHeaders.Add('appVersion', Format(AppInfo.AppVersion));
+        HttpHeaders.Add('appPublisher', Format(AppInfo.Publisher));
     end;
 
     local procedure SwapEndpoint(NewEndpoint: Text): Boolean

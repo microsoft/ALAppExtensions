@@ -1,6 +1,6 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
-codeunit 6246273 "ForNAV Peppol Upgrade"
+codeunit 6413 "ForNAV Peppol Upgrade"
 {
     Subtype = Upgrade;
     Access = Internal;

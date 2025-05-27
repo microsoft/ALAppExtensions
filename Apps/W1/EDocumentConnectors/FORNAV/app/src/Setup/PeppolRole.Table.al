@@ -1,4 +1,6 @@
-table 6246262 "Fornav Peppol Role"
+namespace Microsoft.EServices.EDocumentConnector.ForNAV;
+
+table 6411 "Fornav Peppol Role"
 {
     DataClassification = SystemMetadata;
     Caption = 'ForNAV Peppol Roles';

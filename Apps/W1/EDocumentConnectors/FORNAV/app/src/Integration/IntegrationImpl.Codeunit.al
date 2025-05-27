@@ -7,7 +7,7 @@ using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration.Send;
 using System.Privacy;
 
-codeunit 6246266 "ForNAV Integration Impl." implements IDocumentSender, IDocumentResponseHandler, IDocumentReceiver, ISentDocumentActions, IConsentManager
+codeunit 6418 "ForNAV Integration Impl." implements IDocumentSender, IDocumentResponseHandler, IDocumentReceiver, ISentDocumentActions, IConsentManager
 {
     Access = Internal;
 
@@ -40,7 +40,7 @@ codeunit 6246266 "ForNAV Integration Impl." implements IDocumentSender, IDocumen
     var
         ConnectionSetupCard: Page "ForNAV Peppol Setup";
     begin
-        if not EDocumentService.IsForNAVServiceIntegration() then
+        if not EDocumentService.ForNAVIsServiceIntegration() then
             exit;
         ConnectionSetupCard.RunModal();
         IsServiceIntegrationSetupRun := true;
@@ -49,13 +49,13 @@ codeunit 6246266 "ForNAV Integration Impl." implements IDocumentSender, IDocumen
     procedure GetApprovalStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
     begin
         ActionContext.Http().GetHttpRequestMessage().SetRequestUri('https://GetApprovalStatus');
-        exit(ForNAVProcessing.GetDocumentApproval(EDocument) = "ForNAV Incoming Doc Status"::Approved);
+        exit(ForNAVProcessing.GetDocumentApproval(EDocument) = "ForNAV Incoming E-Doc Status"::Approved);
     end;
 
     procedure GetCancellationStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; ActionContext: Codeunit ActionContext): Boolean
     begin
         ActionContext.Http().GetHttpRequestMessage().SetRequestUri('https://GetCancellationStatus');
-        exit(ForNAVProcessing.GetDocumentApproval(EDocument) = "ForNAV Incoming Doc Status"::Rejected);
+        exit(ForNAVProcessing.GetDocumentApproval(EDocument) = "ForNAV Incoming E-Doc Status"::Rejected);
     end;
 
     procedure ObtainPrivacyConsent(): Boolean

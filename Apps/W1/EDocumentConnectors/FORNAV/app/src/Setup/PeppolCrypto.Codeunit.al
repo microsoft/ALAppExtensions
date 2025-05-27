@@ -1,4 +1,7 @@
-codeunit 6246263 "ForNAV Peppol Crypto"
+namespace Microsoft.EServices.EDocumentConnector.ForNAV;
+
+using System.Security.Encryption;
+codeunit 6421 "ForNAV Peppol Crypto"
 {
     Access = Internal;
 

@@ -4,7 +4,7 @@ using System.Environment.Configuration;
 using System.Environment;
 using System.Security.AccessControl;
 using System.Security.Authentication;
-codeunit 6246269 "ForNAV Peppol AAD App"
+codeunit 6420 "ForNAV Peppol AAD App"
 {
     Access = Internal;
 

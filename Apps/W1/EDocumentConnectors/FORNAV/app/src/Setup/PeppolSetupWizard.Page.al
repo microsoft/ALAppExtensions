@@ -1,10 +1,8 @@
-#pragma warning disable AA0218 // Warning cleanup. Please consider if warnings are relevant and remove this comment.
-
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
 using System.Utilities;
 using System.Environment;
-page 6246263 "ForNAV Peppol Setup Wizard"
+page 6414 "ForNAV Peppol Setup Wizard"
 {
     PageType = NavigatePage;
     SourceTable = "ForNAV Peppol Setup";
@@ -337,6 +335,7 @@ page 6246263 "ForNAV Peppol Setup Wizard"
                 end;
             Step::Step3:
                 begin
+                    // TODO add processing bar
                     Rec.TestField(Name);
                     Rec.TestField("Identification Code");
                     Rec.TestField("Identification Value");
@@ -383,6 +382,7 @@ page 6246263 "ForNAV Peppol Setup Wizard"
     begin
         Step := Step::Step4;
         Step4Visible := true;
+        // BackActionEnabled := false;
         NextActionEnabled := false;
     end;
 

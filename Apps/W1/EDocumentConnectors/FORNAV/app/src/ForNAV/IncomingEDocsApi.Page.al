@@ -3,17 +3,17 @@ namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 using System.Threading;
 using Microsoft.EServices.EDocument;
 
-page 6246260 "ForNAV Incoming Docs Api"
+page 6417 "ForNAV Incoming E-Docs Api"
 {
     PageType = API;
-    APIPublisher = 'forNav';
+    APIPublisher = 'microsoft';
     APIGroup = 'peppol';
     APIVersion = 'v1.0';
-    EntityName = 'peppolDoc';
-    EntitySetName = 'peppolDocs';
-    SourceTable = "ForNAV Incoming Doc";
+    EntityName = 'eDoc';
+    EntitySetName = 'eDocs';
+    SourceTable = "ForNAV Incoming E-Document";
     DelayedInsert = true;
-    Caption = 'ForNavPeppolDoc', Locked = true;
+    Caption = 'ForNavPeppolE-Doc', Locked = true;
     InsertAllowed = true;
     DeleteAllowed = false;
     ModifyAllowed = false;
@@ -46,11 +46,11 @@ page 6246260 "ForNAV Incoming Docs Api"
                     ApplicationArea = All;
 
                 }
-                field(doc; _Doc)
+                field(doc; Document)
                 {
                     ApplicationArea = All;
                 }
-                field(message; _Message)
+                field(message; Message)
                 {
                     ApplicationArea = All;
                 }
@@ -75,7 +75,7 @@ page 6246260 "ForNAV Incoming Docs Api"
     }
 
     var
-        _Doc, _Message : BigText;
+        Document, Message : BigText;
 
     [TryFunction]
     local procedure ScheduleJob(JobQueueCodeunit: Integer; RecId: RecordId)
@@ -116,22 +116,24 @@ page 6246260 "ForNAV Incoming Docs Api"
         case Rec.DocType of
             Rec.DocType::Evidence:
                 if not ScheduleJob(Codeunit::"E-Document Get Response", BlankRecordId) then
-                    SetErrorMessage(_Message);
+                    SetErrorMessage(Message);
             Rec.DocType::ApplicationResponse:
                 if not ScheduleJob(Codeunit::"ForNAV App. Resp. Handler", Rec.RecordId()) then
-                    SetErrorMessage(_Message);
+                    SetErrorMessage(Message);
             Rec.DocType::Invoice, Rec.DocType::CreditNote:
                 begin
-                    EDocumentService.Get('FORNAV');
+                    if not EDocumentService.Get('FORNAV') then
+                        exit(false);
+
                     if not ScheduleJob(6147, EDocumentService.RecordId()) then // Codeunit::"E-Document Import Job"
-                        SetErrorMessage(_Message);
+                        SetErrorMessage(Message);
                 end;
         end;
 
         Rec.Doc.CreateOutStream(DocOs, TextEncoding::UTF8);
-        _Doc.Write(DocOs);
+        Document.Write(DocOs);
         Rec.Message.CreateOutStream(MessageOs, TextEncoding::UTF8);
-        _Message.Write(MessageOs);
+        Message.Write(MessageOs);
         exit(true);
     end;
 

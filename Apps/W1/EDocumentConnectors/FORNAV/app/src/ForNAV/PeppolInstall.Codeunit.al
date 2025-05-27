@@ -1,6 +1,6 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
-codeunit 6246261 "ForNAV Peppol Install"
+codeunit 6411 "ForNAV Peppol Install"
 {
     Subtype = Install;
     Access = Internal;

@@ -8,7 +8,8 @@ using System.EMail;
 using Microsoft.eServices.EDocument;
 using Microsoft.Foundation.Reporting;
 using System.Automation;
-table 6246261 "ForNAV Peppol Setup"
+
+table 6414 "ForNAV Peppol Setup"
 {
     DataClassification = CustomerContent;
     Caption = 'ForNAV Peppol Setup', Locked = true;
@@ -88,7 +89,7 @@ table 6246261 "ForNAV Peppol Setup"
 #pragma warning restore AA0139
             end;
         }
-        field(35; "Home Page"; Text[80])
+        field(35; "Home Page"; Text[255])
         {
             Caption = 'Home Page', Locked = true;
             ExtendedDatatype = URL;
@@ -314,6 +315,7 @@ table 6246261 "ForNAV Peppol Setup"
     begin
         if PeppolOauth.GetSecretValidFrom() > CreateDateTime(CalcDate('<-1w>', Today), Time) then
             exit;
+
         PeppolOauth.GetNewSecurityKey();
         ValidateConnection();
     end;
@@ -364,7 +366,7 @@ table 6246261 "ForNAV Peppol Setup"
         "Phone No." := CompanyInformation."Phone No.";
         "E-mail" := CompanyInformation."E-Mail";
 #pragma warning disable AL0432
-        "Home Page" := CompanyInformation."Home Page";
+        "Home Page" := CopyStr(CompanyInformation."Home Page", 1, MaxStrLen("Home Page"));
 #pragma warning restore AL0432
         "Country/Region Code" := CompanyInformation."Country/Region Code";
         "Contact Person" := CompanyInformation."Contact Person";
@@ -404,8 +406,9 @@ table 6246261 "ForNAV Peppol Setup"
         WorkflowStep: Record "Workflow Step";
         WorkflowStepArgument: Record "Workflow Step Argument";
     begin
-        IF EDocumentService.Get('FORNAV') then
+        if EDocumentService.Get('FORNAV') then
             exit;
+
         EDocumentService.Code := 'FORNAV';
         EDocumentService.Description := 'ForNAV Service';
         EDocumentService."Service Integration V2" := EDocumentService.ForNAVServiceIntegration();

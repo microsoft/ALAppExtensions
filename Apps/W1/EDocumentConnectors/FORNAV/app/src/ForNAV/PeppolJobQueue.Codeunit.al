@@ -1,9 +1,10 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
+
 using System.Threading;
 using System.Environment;
 using System.Security.User;
 
-codeunit 6246267 "ForNAV Peppol Job Queue"
+codeunit 6412 "ForNAV Peppol Job Queue"
 {
     Access = Internal;
     trigger OnRun()
@@ -54,8 +55,8 @@ codeunit 6246267 "ForNAV Peppol Job Queue"
     var
         JobQueueEntry: Record "Job Queue Entry";
         Enqueue: Codeunit "Job Queue - Enqueue";
-        JobQueueDescriptionLbl: Label 'Used by ForNAV to process incoming e-documents', Locked = true;
         EnvironmentInformation: Codeunit "Environment Information";
+        JobQueueDescriptionLbl: Label 'Used by ForNAV to process incoming e-documents', Locked = true;
     begin
         JobQueueEntry.SetRange("Job Queue Category Code", GetForNAVCategoryCode());
         JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);

@@ -5,7 +5,7 @@ using System.Text;
 using System.Utilities;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
-codeunit 6246268 "ForNAV Processing"
+codeunit 6419 "ForNAV Processing"
 {
     Access = Internal;
     Permissions = tabledata "E-Document" = m,
@@ -16,14 +16,14 @@ codeunit 6246268 "ForNAV Processing"
         EDocumentServiceStatus: Record "E-Document Service Status";
         EdocumentService: Record "E-Document Service";
     begin
-        EdocumentService := GetEdocumentService(EDocument);
+        EdocumentService := GetEdocumentService();
         EDocumentServiceStatus.Get(EDocument."Entry No", EdocumentService.Code);
 
         case EDocumentServiceStatus.Status of
             EDocumentServiceStatus.Status::Exported:
                 SendEDocument(EDocument, SendContext);
             EDocumentServiceStatus.Status::"Sending Error":
-                if EDocument."ForNAV Core ID" = '' then
+                if EDocument."ForNAV Edoc. ID" = '' then
                     SendEDocument(EDocument, SendContext)
                 else
                     RestartDocument(EDocument, SendContext);
@@ -34,26 +34,24 @@ codeunit 6246268 "ForNAV Processing"
     var
         EDocumentService: Record "E-Document Service";
     begin
-        EdocumentService := GetEdocumentService(EDocument);
-        if not EDocumentService.IsForNAVServiceIntegration() then
+        EdocumentService := GetEdocumentService();
+        if not EDocumentService.ForNAVIsServiceIntegration() then
             exit;
 
         if ForNAVConnection.HandleSendActionRequest(EDocument, SendContext, 'Restart') then
             exit(true);
     end;
 
-    procedure GetDocumentApproval(EDocument: Record "E-Document") Status: Enum "ForNAV Incoming Doc Status"
+    procedure GetDocumentApproval(EDocument: Record "E-Document") Status: Enum "ForNAV Incoming E-Doc Status"
     var
         IncomingDoc: Codeunit "ForNAV Inbox";
         StatusDescription: Text;
     begin
         Status := IncomingDoc.GetApprovalStatus(EDocument, StatusDescription);
         case IncomingDoc.GetApprovalStatus(EDocument, StatusDescription) of
-            "ForNAV Incoming Doc Status"::Rejected:
-                begin
-                    if StatusDescription <> '' then
-                        EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, 'Reason: ' + StatusDescription);
-                end;
+            "ForNAV Incoming E-Doc Status"::Rejected:
+                if StatusDescription <> '' then
+                    EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, 'Reason: ' + StatusDescription);
         end;
         exit(Status);
     end;
@@ -68,8 +66,8 @@ codeunit 6246268 "ForNAV Processing"
 
     local procedure FetchDocument(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; DocumentId: Text)
     var
-        Documents: JsonArray;
         SendContext: Codeunit SendContext;
+        Documents: JsonArray;
     begin
         if DocumentId = '' then
             exit;
@@ -115,31 +113,6 @@ codeunit 6246268 "ForNAV Processing"
         SetEDocument(EDocument."Entry No", FileId);
     end;
 
-    local procedure ParseReceivedDocument(InputTxt: Text; Index: Integer; var DocumentId: Text): Boolean
-    var
-        JsonManagement: Codeunit "JSON Management";
-        JsonManagement2: Codeunit "JSON Management";
-        IncrementalTable: Text;
-        Value: Text;
-    begin
-        if not JsonManagement.InitializeFromString(InputTxt) then
-            exit(false);
-
-        JsonManagement.GetArrayPropertyValueAsStringByName('items', Value);
-        JsonManagement.InitializeCollection(Value);
-
-        if Index = 0 then
-            Index := 1;
-
-        if Index > JsonManagement.GetCollectionCount() then
-            exit(false);
-
-        JsonManagement.GetObjectFromCollectionByIndex(IncrementalTable, Index - 1);
-        JsonManagement2.InitializeObject(IncrementalTable);
-        JsonManagement2.GetArrayPropertyValueAsStringByName('id', DocumentId);
-        exit(true);
-    end;
-
     local procedure GetNumberOfReceivedDocuments(InputTxt: Text): Integer
     var
         JsonManagement: Codeunit "JSON Management";
@@ -180,7 +153,7 @@ codeunit 6246268 "ForNAV Processing"
         if not EDocument.Get(EDocEntryNo) then
             exit;
 
-        EDocument."ForNAV Core ID" := CopyStr(FileId, 1, MaxStrLen(EDocument."ForNAV Core ID"));
+        EDocument."ForNAV Edoc. ID" := CopyStr(FileId, 1, MaxStrLen(EDocument."ForNAV Edoc. ID"));
         EDocument.Modify();
     end;
 
@@ -214,13 +187,13 @@ codeunit 6246268 "ForNAV Processing"
 
     procedure GetDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadata: codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
     var
+        TempBlob: Codeunit "Temp Blob";
         InStream: InStream;
         DocumentOutStream: OutStream;
         ContentData: Text;
         DocumentId: Text;
-        TempBlob: Codeunit "Temp Blob";
     begin
-        if not EDocumentService.IsForNAVServiceIntegration() then
+        if not EDocumentService.ForNAVIsServiceIntegration() then
             exit;
         DocumentMetadata.CreateInStream(InStream, TextEncoding::UTF8);
         InStream.ReadText(DocumentId);
@@ -238,22 +211,21 @@ codeunit 6246268 "ForNAV Processing"
 
         FetchDocument(EDocument, EDocumentService, DocumentId);
 
-        EDocument."ForNAV Core ID" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."ForNAV Core ID"));
+        EDocument."ForNAV Edoc. ID" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."ForNAV Edoc. ID"));
         EDocument."Document Sending Profile" := 'FORNAV';
         EDocument.Modify();
         EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, "E-Document Service Status"::Imported);
     end;
 
-    local procedure GetEdocumentService(EDocument: Record "E-Document") EDocumentService: Record "E-Document Service"
+    local procedure GetEdocumentService() EDocumentService: Record "E-Document Service"
     begin
-        EDocumentService.Get('FORNAV');
+        if not EDocumentService.Get('FORNAV') then
+            exit;
     end;
 
     var
         ForNAVConnection: Codeunit "ForNAV Connection";
         EDocumentLogHelper: Codeunit "E-Document Log Helper";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
-        GetApprovalCheckStatusErr: Label 'You cannot ask for approval with the E-Document in this current status %1. You can request for approval when E-document status is Sent.', Comment = '%1 - Status', Locked = true;
         CouldNotRetrieveDocumentErr: Label 'Could not retrieve document with id: %1 from the service', Comment = '%1 - Document ID', Locked = true;
-        DocumentIdNotFoundErr: Label 'Document ID not found in response', Locked = true;
 }

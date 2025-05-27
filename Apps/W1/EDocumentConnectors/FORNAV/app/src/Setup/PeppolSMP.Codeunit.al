@@ -1,12 +1,14 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
+
 using Microsoft.eServices.EDocument.Integration.Send;
 
-codeunit 6246271 "ForNAV Peppol SMP"
+codeunit 6425 "ForNAV Peppol SMP"
 {
     Access = internal;
     procedure CallSMP(Req: Text; var Input: JsonObject; action: Text; var Error: integer; var Message: Text) Output: JsonObject;
     var
         Setup: Record "ForNAV Peppol Setup";
+        SendContext: Codeunit SendContext;
         PeppolSetup: Codeunit "ForNAV Peppol Setup";
         HttpClient: HttpClient;
         HttpResponse: HttpResponseMessage;
@@ -19,7 +21,6 @@ codeunit 6246271 "ForNAV Peppol SMP"
         Url: Text;
         HttpHeaders: HttpHeaders;
         ServiceErrorLbl: Label 'SMP %1 service error : %2 %3', Locked = true;
-        SendContext: Codeunit SendContext;
     begin
         Setup.InitSetup();
 
@@ -83,7 +84,7 @@ codeunit 6246271 "ForNAV Peppol SMP"
 
     internal procedure ParticipantExists(var Setup: record "ForNAV Peppol Setup")
     var
-        output, dummy : JsonObject;
+        output: JsonObject;
         message: Text;
         result: Integer;
         LicenseLbl: Label 'You need a valid ForNAV license to use this App "%1"', Comment = '%1 = meessage', Locked = true;
@@ -142,7 +143,7 @@ codeunit 6246271 "ForNAV Peppol SMP"
     begin
         // Used by Azure function - do not modify
         input.Add('Identifier', Setup.ID());
-        input.Add('IncomingDocsUrl', GetUrl(ClientType::Api, Setup.CurrentCompany(), ObjectType::Page, Page::"ForNAV Incoming Docs Api"));
+        input.Add('IncomingDocsUrl', GetUrl(ClientType::Api, Setup.CurrentCompany(), ObjectType::Page, Page::"ForNAV Incoming E-Docs Api"));
         input.Add('BusinessEntity', Setup.CreateBusinessEntity());
         input.Add('License', PeppolSetup.GetJLicense());
         error := 409;

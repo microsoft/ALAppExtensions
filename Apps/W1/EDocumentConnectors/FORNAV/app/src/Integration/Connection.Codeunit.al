@@ -1,20 +1,21 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
 using Microsoft.EServices.EDocument;
+using Microsoft.eServices.EDocument.Service.Participant;
 using System.Utilities;
 using System.Environment;
 using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Document;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
-codeunit 6246264 "ForNAV Connection"
+codeunit 6416 "ForNAV Connection"
 {
     Access = Internal;
     Permissions = tabledata "E-Document" = m;
 
     procedure HandleSendFilePostRequest(var EDocument: Record "E-Document"; SendContext: Codeunit SendContext): Boolean
     begin
-        ForNAVAPIRequests.SendFilePostRequest(SendContext);
+        ForNAVAPIRequests.SendFilePostRequest(EDocument, SendContext);
         exit(CheckIfSuccessfulRequest(EDocument, SendContext.Http().GetHttpResponseMessage()));
     end;
 

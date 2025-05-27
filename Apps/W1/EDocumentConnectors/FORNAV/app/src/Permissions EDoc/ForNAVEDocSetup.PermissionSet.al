@@ -1,7 +1,7 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 using System.Security.AccessControl;
 
-permissionset 6246264 "ForNAV Peppol Setup"
+permissionset 6414 "ForNAV EDoc Setup"
 {
     Access = Internal;
     Assignable = true;

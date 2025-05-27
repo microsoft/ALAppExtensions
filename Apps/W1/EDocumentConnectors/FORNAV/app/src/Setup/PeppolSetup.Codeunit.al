@@ -2,8 +2,10 @@ namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
 using System.Environment;
 using System.Azure.Identity;
+using System.Security.Authentication;
+using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration;
-codeunit 6246270 "ForNAV Peppol Setup"
+codeunit 6424 "ForNAV Peppol Setup"
 {
     SingleInstance = true;
     Access = Internal;
