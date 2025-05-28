@@ -3,6 +3,7 @@ namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 using System.Environment;
 using System.Azure.Identity;
 using System.Security.AccessControl;
+using System.Reflection;
 using Microsoft.eServices.EDocument.Integration.Send;
 
 codeunit 6422 "ForNAV Peppol Oauth"
@@ -451,15 +452,15 @@ codeunit 6422 "ForNAV Peppol Oauth"
         HttpHeaders.Add('environmentName', EnvironmentInformation.GetEnvironmentName());
         Company.Get(CompanyName);
         HttpHeaders.Add('companyId', Format(Company.SystemId).TrimStart('{').TrimEnd('}'));
-        HttpHeaders.Add('companyName', PeppolSetup.Name);
-        HttpHeaders.Add('idCode', PeppolSetup."Identification Code");
-        HttpHeaders.Add('idValue', PeppolSetup."Identification Value");
+        HttpHeaders.Add('companyName', HtmlEncode(PeppolSetup.Name));
+        HttpHeaders.Add('idCode', HtmlEncode(PeppolSetup."Identification Code"));
+        HttpHeaders.Add('idValue', HtmlEncode(PeppolSetup."Identification Value"));
         HttpHeaders.Add('serialNumber', Database.SerialNumber());
-        HttpHeaders.Add('contactName', PeppolSetup."Contact Person");
+        HttpHeaders.Add('contactName', HtmlEncode(PeppolSetup."Contact Person"));
         HttpHeaders.Add('contactEmail', PeppolSetup."E-Mail");
         NavApp.GetCurrentModuleInfo(AppInfo);
-        HttpHeaders.Add('appVersion', Format(AppInfo.AppVersion));
-        HttpHeaders.Add('appPublisher', Format(AppInfo.Publisher));
+        HttpHeaders.Add('appVersion', HtmlEncode(Format(AppInfo.AppVersion)));
+        HttpHeaders.Add('appPublisher', HtmlEncode(Format(AppInfo.Publisher)));
     end;
 
     local procedure SwapEndpoint(NewEndpoint: Text): Boolean
@@ -511,5 +512,12 @@ codeunit 6422 "ForNAV Peppol Oauth"
         jObject.Get('scope', jToken);
         ValidateScope(jToken.AsValue().AsText());
         exit(true);
+    end;
+
+    local procedure HTMLEncode(Input: Text): Text
+    var
+        TypeHelper: Codeunit "Type Helper";
+    begin
+        exit(TypeHelper.HtmlEncode(Input));
     end;
 }
