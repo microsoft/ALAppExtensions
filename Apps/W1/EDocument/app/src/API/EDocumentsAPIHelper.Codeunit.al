@@ -10,11 +10,11 @@ using System.Text;
 
 codeunit 6129 "E-Documents API Helper"
 {
-
     var
         EDocumentLog: Codeunit "E-Document Log";
         EDocumentProcessing: Codeunit "E-Document Processing";
-        FileTypeNotSupportedErr: Label 'File type not supported';
+        FileTypeNotSupportedErr: Label 'File type not supported.';
+        ProcessingNewEDocErr: Label 'Error processing the incoming E-Document.';
 
     internal procedure LoadEDocumentFile(EntryNo: Integer; var Base64EDocument: Text; var ByteSize: Integer)
     var
@@ -37,8 +37,8 @@ codeunit 6129 "E-Documents API Helper"
                     EDocumentServiceStatus := EDocumentServiceStatus::Imported;
                 Enum::"E-Document Direction"::Outgoing:
                     EDocumentServiceStatus := EDocumentServiceStatus::Exported;
-
             end;
+
             EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
 
             if TempBlob.HasValue() then begin
@@ -90,7 +90,7 @@ codeunit 6129 "E-Documents API Helper"
         Success := EDocImport.ProcessAutomaticallyIncomingEDocument(EDocument);
 
         if not Success then
-            Error('Error processing the incoming E-Document. Please check the log for more details.');
+            Error(ProcessingNewEDocErr);
     end;
 
     local procedure GetFileContent(FileBase64Text: Text; var TempBlob: Codeunit "Temp Blob"): Boolean

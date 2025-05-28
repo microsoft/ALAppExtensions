@@ -6,7 +6,7 @@ namespace Microsoft.eServices.EDocument.API;
 
 using Microsoft.eServices.EDocument;
 
-page 6115 "E-Documents Insert API"
+page 6115 "Create E-Documents API"
 {
     PageType = API;
 
@@ -25,6 +25,7 @@ page 6115 "E-Documents Insert API"
 
     Extensible = false;
     Editable = true;
+    DeleteAllowed = false;
     DelayedInsert = true;
 
     layout
@@ -55,6 +56,8 @@ page 6115 "E-Documents Insert API"
     var
         fileContent: Text;
         eDocService: Text[20];
+        ReceivingNotSupportedErr: Label 'This API does not support the receiving data.';
+        ContentOrFileEmptyErr: Label 'File content or E-Document Service Code is empty.';
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
@@ -63,11 +66,11 @@ page 6115 "E-Documents Insert API"
         if (this.fileContent <> '') and (this.eDocService <> '') then
             EDocumentsAPIHelper.CreateEDocumentFromReceivedFile(this.fileContent, this.eDocService, Rec."File Name")
         else
-            Error('File content or E-Document Service Code is empty.');
+            Error(ContentOrFileEmptyErr);
     end;
 
     trigger OnFindRecord(Which: Text): Boolean
     begin
-        Error('This API does not support the receiving data.');
+        Error(ReceivingNotSupportedErr);
     end;
 }

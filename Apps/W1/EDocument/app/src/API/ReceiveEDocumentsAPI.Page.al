@@ -6,7 +6,7 @@ namespace Microsoft.eServices.EDocument.API;
 
 using Microsoft.eServices.EDocument;
 
-page 6112 "E-Documents API"
+page 6112 "Receive E-Documents API"
 {
     PageType = API;
 
@@ -24,6 +24,7 @@ page 6112 "E-Documents API"
 
     Extensible = false;
     Editable = false;
+    DataAccessIntent = ReadOnly;
     DelayedInsert = true;
 
     layout
