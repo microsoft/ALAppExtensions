@@ -3,6 +3,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
     var
         Any: Codeunit Any;
         JsonHelper: codeunit "Shpfy Json Helper";
+        DisableEventMocking: Boolean;
 
     internal procedure GetOrdersToImport(B2B: Boolean) JResult: JsonObject
     var
@@ -95,6 +96,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JCompany: JsonObject;
         JMainContact: JsonObject;
         JCustomer: JsonObject;
+        JStaffMember: JsonObject;
         JArray: JsonArray;
         Price: Decimal;
         ItemPrice: Decimal;
@@ -191,6 +193,8 @@ codeunit 139607 "Shpfy Order Handling Helper"
             JCompany.Add('mainContact', JMainContact);
             JPurchasingEntity.Add('company', JCompany);
             JOrder.Add('purchasingEntity', JPurchasingEntity);
+            JStaffMember.Add('id', 'gid://shopify/StaffMember/1234567890');
+            JOrder.Add('staffMember', JStaffMember);
         end else
             JOrder.Add('purchasingEntity', JPurchasingEntity);
 
@@ -218,6 +222,8 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JLocation: JsonObject;
         GidLbl: Label 'gid://shopify/LineItem/%1', Locked = true, Comment = '%1 = Line Id';
     begin
+        if DisableEventMocking then
+            ProductInitTest.SetDisableEventMocking();
         Item := ProductInitTest.CreateItem();
         Item.SetRecFilter();
         CreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant, TempTag);
@@ -291,6 +297,29 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JNodes.Add(JNode);
         JPaymentSchedules.Add('nodes', JNodes);
         JPaymentTerms.Add('paymentSchedules', JPaymentSchedules);
+    end;
+
+    internal procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var OrdersToImport: Record "Shpfy Orders to Import"; var ImportOrder: Codeunit "Shpfy Import Order"; var JShopifyOrder: JsonObject; var JShopifyLineItems: JsonArray)
+    var
+    begin
+        ImportOrder.SetShop(Shop.Code);
+        ImportOrder.ImportCreateAndUpdateOrderHeaderFromMock(Shop.Code, OrdersToImport.Id, JShopifyOrder);
+        ImportOrder.ImportCreateAndUpdateOrderLinesFromMock(OrdersToImport.Id, JShopifyLineItems);
+        Commit();
+        OrderHeader.Get(OrdersToImport.Id);
+    end;
+
+    internal procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var ImportOrder: Codeunit "Shpfy Import Order"; B2B: Boolean)
+    var
+        OrdersToImport: Record "Shpfy Orders to Import";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        JShopifyOrder: JsonObject;
+        JShopifyLineItems: JsonArray;
+    begin
+        if DisableEventMocking then
+            OrderHandlingHelper.SetDisableEventMocking();
+        JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, B2B);
+        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
     end;
 
     local procedure CreateTaxLines(TaxPrice: Decimal; TaxRate: Decimal) JTaxLines: JsonArray;
@@ -422,5 +451,13 @@ codeunit 139607 "Shpfy Order Handling Helper"
         ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
         ShopifyCompany.Modify();
         exit(ShopifyCompany.Id);
+    end;
+
+    /// <summary>
+    /// Sets the DisableEventMocking flag to true.
+    /// </summary>
+    internal procedure SetDisableEventMocking()
+    begin
+        this.DisableEventMocking := true;
     end;
 }
