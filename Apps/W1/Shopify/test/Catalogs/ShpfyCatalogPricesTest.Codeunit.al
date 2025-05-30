@@ -30,7 +30,7 @@ codeunit 139646 "Shpfy Catalog Prices Test"
         // Creating test data.
         Shop := InitializeTest.CreateShop();
         CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
-        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany);
+        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany, "Shpfy Catalog Type"::Company);
         CatalogInitialize.CopyParametersFromShop(Catalog, Shop);
         InitUnitCost := Any.DecimalInRange(10, 100, 1);
         InitPrice := Any.DecimalInRange(2 * InitUnitCost, 4 * InitUnitCost, 1);
@@ -100,7 +100,7 @@ codeunit 139646 "Shpfy Catalog Prices Test"
         // [GIVEN] Initializing test environment and creating necessary test records.
         Shop := InitializeTest.CreateShop();
         CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
-        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany);
+        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany, "Shpfy Catalog Type"::Company);
         CatalogInitialize.CopyParametersFromShop(Catalog, Shop);
         InitUnitCost := Any.DecimalInRange(10, 100, 1);
         InitPrice := Any.DecimalInRange(2 * InitUnitCost, 4 * InitUnitCost, 1);
@@ -163,7 +163,7 @@ codeunit 139646 "Shpfy Catalog Prices Test"
         // [GIVEN] Setting up the test environment: Shop, Catalog, Item, and Customer with specific pricing and discount.
         Shop := InitializeTest.CreateShop();
         CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
-        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany);
+        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany, "Shpfy Catalog Type"::Company);
         CatalogInitialize.CopyParametersFromShop(Catalog, Shop);
         InitUnitCost := Any.DecimalInRange(10, 100, 1);
         InitPrice := Any.DecimalInRange(2 * InitUnitCost, 4 * InitUnitCost, 1);
@@ -223,7 +223,7 @@ codeunit 139646 "Shpfy Catalog Prices Test"
         // [GIVEN] Setting up shop, catalog, item, and customer-specific pricing.
         Shop := InitializeTest.CreateShop();
         CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
-        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany);
+        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany, "Shpfy Catalog Type"::Company);
         CatalogInitialize.CopyParametersFromShop(Catalog, Shop);
         InitUnitCost := Any.DecimalInRange(10, 100, 1);
         InitPrice := Any.DecimalInRange(2 * InitUnitCost, 4 * InitUnitCost, 1);
@@ -287,7 +287,7 @@ codeunit 139646 "Shpfy Catalog Prices Test"
         // [GIVEN] Creating shop, catalog, item, and setting customer discount details.
         Shop := InitializeTest.CreateShop();
         CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
-        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany);
+        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany, "Shpfy Catalog Type"::Company);
         CatalogInitialize.CopyParametersFromShop(Catalog, Shop);
         InitUnitCost := Any.DecimalInRange(10, 100, 1);
         InitPrice := Any.DecimalInRange(2 * InitUnitCost, 4 * InitUnitCost, 1);
