@@ -429,6 +429,11 @@ table 18689 "TDS Entry"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(92; "Original Invoice Amount"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
     }
 
     keys

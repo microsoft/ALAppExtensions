@@ -8,7 +8,6 @@ using Microsoft.eServices.EDocument.OrderMatch;
 using System.Environment;
 using Microsoft.eServices.EDocument;
 using System.Telemetry;
-using System.Upgrade;
 
 codeunit 6163 "E-Doc. PO Copilot Matching"
 {
@@ -145,15 +144,6 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
         end;
     end;
 
-    procedure IsCopilotVisible(): Boolean
-    var
-        CopilotCapability: Codeunit "Copilot Capability";
-        AIMatchingImpl: Codeunit "E-Doc. PO Copilot Matching";
-    begin
-        AIMatchingImpl.RegisterAICapability();
-        exit(CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"E-Document Matching Assistance"));
-    end;
-
     procedure SumUnitCostForAIMatches(var TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer" temporary) Sum: Decimal
     var
         EDocument: Record "E-Document";
@@ -174,19 +164,14 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
     var
         CopilotCapability: Codeunit "Copilot Capability";
         EnvironmentInformation: Codeunit "Environment Information";
-        UpgradeTag: Codeunit "Upgrade Tag";
     begin
         if not EnvironmentInformation.IsSaaSInfrastructure() then
             exit;
 
-        if UpgradeTag.HasUpgradeTag(RegisterEDocumentPurchaseOrderMatchingCopilotCapability()) then
-            exit;
-
-        if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"E-Document Matching Assistance") then
+        if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"E-Document Matching Assistance") then begin
             CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"E-Document Matching Assistance", LearnMoreUrlTxt);
-
-        UpgradeTag.SetUpgradeTag(RegisterEDocumentPurchaseOrderMatchingCopilotCapability());
-        FeatureTelemetry.LogUptake('0000MMI', FeatureName(), Enum::"Feature Uptake Status"::"Set up");
+            FeatureTelemetry.LogUptake('0000MMI', FeatureName(), Enum::"Feature Uptake Status"::"Set up");
+        end;
     end;
 
     local procedure PreparePrompt(Prompt: Text): Text
@@ -338,12 +323,7 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
         exit(TokenCount);
     end;
 
-    local procedure RegisterEDocumentPurchaseOrderMatchingCopilotCapability(): Code[250]
-    begin
-        exit('MS-477518-RegisterEDocumentPurchaseOrderMatchingCopilotCapability-20240112');
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::"Copilot AI Capabilities", 'OnRegisterCopilotCapability', '', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::"Copilot AI Capabilities", OnRegisterCopilotCapability, '', false, false)]
     local procedure HandleOnRegisterCopilotCapability()
     begin
         RegisterAICapability();

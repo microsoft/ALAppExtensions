@@ -213,6 +213,10 @@ page 8009 "Imported Service Commitments"
                         CurrPage.Update();
                     end;
                 }
+                field("Create Contract Deferrals"; Rec."Create Contract Deferrals")
+                {
+                    ToolTip = 'Specifies whether this Subscription Line should generate contract deferrals. If it is set to No, no deferrals are generated and the invoices are posted directly to profit or loss.';
+                }
             }
         }
     }

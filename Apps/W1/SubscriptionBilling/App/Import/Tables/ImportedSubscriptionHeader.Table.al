@@ -9,7 +9,6 @@ table 8008 "Imported Subscription Header"
 {
     DataClassification = CustomerContent;
     Caption = 'Imported Subscription Header';
-    Access = Internal;
 
     fields
     {

@@ -13,7 +13,6 @@ using Microsoft.Inventory.BOM;
 
 codeunit 8055 "Sub. Contracts Item Management"
 {
-    Access = Internal;
     SingleInstance = true;
 
     [EventSubscriber(ObjectType::Table, Database::Item, OnAfterValidateEvent, Type, false, false)]
@@ -119,7 +118,7 @@ codeunit 8055 "Sub. Contracts Item Management"
         exit(Item."Subscription Option" = "Item Service Commitment Type"::"Service Commitment Item");
     end;
 
-    procedure IsItemWithServiceCommitments(ItemNo: Code[20]): Boolean
+    internal procedure IsItemWithServiceCommitments(ItemNo: Code[20]): Boolean
     var
         Item: Record Item;
     begin
@@ -132,7 +131,7 @@ codeunit 8055 "Sub. Contracts Item Management"
               "Item Service Commitment Type"::"Service Commitment Item"]));
     end;
 
-    internal procedure GetSalesPriceForItem(var UnitPrice: Decimal; ItemNo: Code[20]; Quantity: Decimal; CurrencyCode: Code[10]; SellToCustomerNo: Code[20]; BillToCustomerNo: Code[20])
+    procedure GetSalesPriceForItem(var UnitPrice: Decimal; ItemNo: Code[20]; Quantity: Decimal; CurrencyCode: Code[10]; SellToCustomerNo: Code[20]; BillToCustomerNo: Code[20])
     var
         TempSalesLine: Record "Sales Line" temporary;
         TempSalesHeader: Record "Sales Header" temporary;
@@ -166,7 +165,7 @@ codeunit 8055 "Sub. Contracts Item Management"
         CreateTempSalesLine(TempSalesLine, TempSalesHeader, ServiceObject.Type, ServiceObject."Source No.", ServiceObject.Quantity, OrderDate);
     end;
 
-    internal procedure CreateTempSalesLine(var TempSalesLine: Record "Sales Line" temporary; var TempSalesHeader: Record "Sales Header" temporary; ServiceObjectType: enum "Service Object Type"; SourceNo: Code[20]; Quantity: Decimal; OrderDate: Date)
+    local procedure CreateTempSalesLine(var TempSalesLine: Record "Sales Line" temporary; var TempSalesHeader: Record "Sales Header" temporary; ServiceObjectType: enum "Service Object Type"; SourceNo: Code[20]; Quantity: Decimal; OrderDate: Date)
     begin
         CreateTempSalesLine(TempSalesLine, TempSalesHeader, ServiceObjectType, SourceNo, Quantity, OrderDate, '');
     end;
@@ -197,7 +196,7 @@ codeunit 8055 "Sub. Contracts Item Management"
             TempSalesLine."Posting Date" := OrderDate; //Field is empty in the temp table and affects whether the correct sales price will be picked. Field has to be forced either it will use WorkDate
     end;
 
-    internal procedure CalculateUnitPrice(var TempSalesHeader: Record "Sales Header" temporary; var TempSalesLine: Record "Sales Line" temporary): Decimal
+    procedure CalculateUnitPrice(var TempSalesHeader: Record "Sales Header" temporary; var TempSalesLine: Record "Sales Line" temporary): Decimal
     var
         PriceCalculation: Interface "Price Calculation";
     begin
@@ -207,7 +206,7 @@ codeunit 8055 "Sub. Contracts Item Management"
         exit(TempSalesLine."Unit Price");
     end;
 
-    internal procedure CalculateUnitCost(ItemNo: Code[20]): Decimal
+    procedure CalculateUnitCost(ItemNo: Code[20]): Decimal
     var
         Item: Record Item;
     begin
@@ -286,7 +285,7 @@ codeunit 8055 "Sub. Contracts Item Management"
             ItemServCommitmentPackage.Standard := Standard;
             ItemServCommitmentPackage.ErrorIfInvoicingItemIsNotServiceCommitmentItemForDiscount(PackageCode);
             ItemServCommitmentPackage.Validate("Price Group", ServiceCommitmentPackage."Price Group");
-            ItemServCommitmentPackage.Insert(false);
+            ItemServCommitmentPackage.Insert(true);
         end
     end;
 
@@ -299,7 +298,7 @@ codeunit 8055 "Sub. Contracts Item Management"
                 PriceListLine."Allow Invoice Disc." := Item."Allow Invoice Disc.";
     end;
 
-    internal procedure GetItemTranslation(ItemNo: Code[20]; VariantCode: Code[10]; CustomerNo: Code[20]): Text[100]
+    procedure GetItemTranslation(ItemNo: Code[20]; VariantCode: Code[10]; CustomerNo: Code[20]): Text[100]
     var
         Item: Record Item;
         ItemTranslation: Record "Item Translation";

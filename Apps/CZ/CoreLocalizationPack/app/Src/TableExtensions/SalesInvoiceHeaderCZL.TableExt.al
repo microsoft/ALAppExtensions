@@ -202,6 +202,8 @@ tableextension 11726 "Sales Invoice Header CZL" extends "Sales Invoice Header"
             if "SWIFT Code CZL" <> '' then
                 SWIFT := "SWIFT Code CZL";
         end;
+        if IBAN <> '' then
+            IBAN := DelChr(IBAN, '=', ' ');
 
         CalcFields("Remaining Amount");
 

@@ -10,7 +10,6 @@ table 8058 "Item Subscription Package"
     DataClassification = CustomerContent;
     DrillDownPageId = "Item Serv. Commitment Packages";
     LookupPageId = "Item Serv. Commitment Packages";
-    Access = Internal;
 
     fields
     {
@@ -59,8 +58,15 @@ table 8058 "Item Subscription Package"
             Clustered = true;
         }
     }
+
+    trigger OnInsert()
+    begin
+        TestPackageLinesInvoicedViaContracts();
+    end;
+
     var
         DiscountCannotBeAssignedErr: Label 'Subscription Package Lines, which are discounts can only be assigned to Subscription Items.';
+        EmptyInvoicingItemNoInPackageLineErr: Label 'The %1 %2 can not be used with Item %3, because at least one of the Service Commitment Package lines is missing an %4.';
 
     internal procedure ErrorIfInvoicingItemIsNotServiceCommitmentItemForDiscount(ServiceCommitmentPackageCode: Code[20])
     var
@@ -105,7 +111,7 @@ table 8058 "Item Subscription Package"
         TextManagement.ReplaceInvalidFilterChar(PackageFilter);
     end;
 
-    internal procedure IsPackageAssignedToServiceObject(ServiceObjectNo: Code[20]; ItemServCommitmentPackageCode: Code[20]): Boolean
+    local procedure IsPackageAssignedToServiceObject(ServiceObjectNo: Code[20]; ItemServCommitmentPackageCode: Code[20]): Boolean
     var
         ServiceCommitment: Record "Subscription Line";
     begin
@@ -166,5 +172,39 @@ table 8058 "Item Subscription Package"
             Rec.SetFilter("Price Group", '%1', '');
         if Rec.IsEmpty() then
             Rec.SetRange("Price Group");
+    end;
+
+    local procedure TestPackageLinesInvoicedViaContracts()
+    var
+        Item: Record Item;
+    begin
+        if Rec.IsTemporary then
+            exit;
+        if not Item.Get(Rec."Item No.") then
+            exit;
+        if Item."Subscription Option" <> "Item Service Commitment Type"::"Sales with Service Commitment" then
+            exit;
+
+        ErrorIfPackageLineInvoicedViaContractWithoutInvoicingItemExist();
+    end;
+
+    internal procedure ErrorIfPackageLineInvoicedViaContractWithoutInvoicingItemExist()
+    var
+        SubscriptionPackage: Record "Subscription Package";
+        SubscriptionPackageLine: Record "Subscription Package Line";
+        ErrorInfo: ErrorInfo;
+        OpenSubscriptionPackageTxt: Label 'Open %1';
+    begin
+        if Rec.Code = '' then
+            exit;
+
+        SubscriptionPackage.Get(Rec.Code);
+        if SubscriptionPackage.PackageLineInvoicedViaContractWithoutInvoicingItemExist() then begin
+            ErrorInfo.Message(StrSubstNo(EmptyInvoicingItemNoInPackageLineErr, SubscriptionPackage.TableCaption, Rec.Code, Rec."Item No.", SubscriptionPackageLine.FieldCaption("Invoicing Item No.")));
+            ErrorInfo.RecordId(SubscriptionPackage.RecordId);
+            ErrorInfo.PageNo(Page::"Service Commitment Package");
+            ErrorInfo.AddNavigationAction(StrSubstNo(OpenSubscriptionPackageTxt, SubscriptionPackage.TableCaption));
+            Error(ErrorInfo);
+        end
     end;
 }

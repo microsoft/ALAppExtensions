@@ -378,16 +378,6 @@ table 8061 "Billing Line"
         end;
     end;
 
-    internal procedure GetBillingDocumentTypeFromTextDocumentType(DocumentType: Text) RecurringBillingDocumentType: Enum "Rec. Billing Document Type"
-    begin
-        case DocumentType of
-            Format(RecurringBillingDocumentType::Invoice):
-                RecurringBillingDocumentType := RecurringBillingDocumentType::Invoice;
-            Format(RecurringBillingDocumentType::"Credit Memo"):
-                RecurringBillingDocumentType := RecurringBillingDocumentType::"Credit Memo";
-        end;
-    end;
-
     internal procedure InitNewBillingLine()
     begin
         Init();
@@ -395,7 +385,7 @@ table 8061 "Billing Line"
         "Entry No." := 0;
     end;
 
-    internal procedure OpenSalesDocumentCard()
+    local procedure OpenSalesDocumentCard()
     var
         SalesHeader: Record "Sales Header";
     begin
@@ -403,7 +393,7 @@ table 8061 "Billing Line"
             PageManagement.PageRunModal(SalesHeader);
     end;
 
-    internal procedure OpenPurchaseDocumentCard()
+    local procedure OpenPurchaseDocumentCard()
     var
         PurchaseHeader: Record "Purchase Header";
     begin
@@ -474,7 +464,7 @@ table 8061 "Billing Line"
         Rec.SetRange("Document Line No.", DocumentLineNo);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateNextBillingDateInResetSubscriptionLineNextBillingDate(var SubscriptionLine: Record "Subscription Line")
     begin
     end;

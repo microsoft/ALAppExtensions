@@ -56,7 +56,7 @@ codeunit 6385 "Outlook Processing"
         TempFilters."Last Message Only" := true;
         TempFilters.Insert();
         Email.RetrieveEmails(OutlookSetup."Email Account ID", OutlookSetup."Email Connector", EmailInbox, TempFilters);
-        BuildDocumentsArray(EmailInbox, DocumentsArray);
+        BuildDocumentsArray(EmailInbox, DocumentsArray, ReceiveContext);
         BuildDocumentsList(Documents, DocumentsArray);
 
         // set the last synch time 1 minute before now.
@@ -83,13 +83,15 @@ codeunit 6385 "Outlook Processing"
         exit('Microsoft 365 E-Document Connector')
     end;
 
-    local procedure BuildDocumentsArray(var EmailInbox: Record "Email Inbox"; var DocumentsArray: JsonArray)
+    local procedure BuildDocumentsArray(var EmailInbox: Record "Email Inbox"; var DocumentsArray: JsonArray; ReceiveContext: Codeunit ReceiveContext)
     var
         EmailMessage: Codeunit "Email Message";
         TempBlob: Codeunit "Temp Blob";
         Attachment: JSonObject;
     begin
-        if EmailInbox.FindSet() then
+        if EmailInbox.FindSet() then begin
+            ReceiveContext.SetSourceDetails(EmailInbox."Sender Address");
+            ReceiveContext.SetAdditionalSourceDetails(EmailInbox.Description);
             repeat
                 if EmailMessage.Get(EmailInbox."Message Id") then
                     if EmailMessage.Attachments_First() then
@@ -107,6 +109,7 @@ codeunit 6385 "Outlook Processing"
                             end;
                         until EmailMessage.Attachments_Next() = 0;
             until EmailInbox.Next() = 0;
+        end;
     end;
 
     internal procedure BuildDocumentsList(Documents: Codeunit "Temp Blob List"; var AttachmentsJson: JSonArray)
