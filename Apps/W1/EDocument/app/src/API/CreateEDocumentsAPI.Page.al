@@ -40,7 +40,7 @@ page 6115 "Create E-Documents API"
                 field(service; this.EDocService)
                 {
                 }
-                field(base64file; this.fileContent)
+                field(base64file; this.FileContent)
                 {
                 }
                 field(fileName; Rec."File Name")
@@ -54,8 +54,8 @@ page 6115 "Create E-Documents API"
     }
 
     var
-        fileContent: Text;
-        eDocService: Text[20];
+        FileContent: Text;
+        EDocService: Text[20];
         ReceivingNotSupportedErr: Label 'This API does not support the receiving data.';
         ContentOrFileEmptyErr: Label 'File content or E-Document Service Code is empty.';
 
@@ -63,8 +63,8 @@ page 6115 "Create E-Documents API"
     var
         EDocumentsAPIHelper: Codeunit "E-Documents API Helper";
     begin
-        if (this.fileContent <> '') and (this.eDocService <> '') then
-            EDocumentsAPIHelper.CreateEDocumentFromReceivedFile(this.fileContent, this.eDocService, Rec."File Name")
+        if (this.FileContent <> '') and (this.EDocService <> '') then
+            EDocumentsAPIHelper.CreateEDocumentFromReceivedFile(this.FileContent, this.EDocService, Rec."File Name")
         else
             Error(ContentOrFileEmptyErr);
     end;

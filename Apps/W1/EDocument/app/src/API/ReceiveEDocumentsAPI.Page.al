@@ -105,10 +105,10 @@ page 6112 "Receive E-Documents API"
                 field(fileType; Rec."File Type")
                 {
                 }
-                field(fileByteSize; this.fileSize)
+                field(fileByteSize; this.FileSize)
                 {
                 }
-                field(fileContent; this.fileContent)
+                field(fileContent; this.FileContent)
                 {
                 }
             }
@@ -116,13 +116,13 @@ page 6112 "Receive E-Documents API"
     }
 
     var
-        fileContent: Text;
-        fileSize: Integer;
+        FileContent: Text;
+        FileSize: Integer;
 
     trigger OnAfterGetCurrRecord()
     var
         EDocumentsAPIHelper: Codeunit "E-Documents API Helper";
     begin
-        EDocumentsAPIHelper.LoadEDocumentFile(Rec."Entry No", this.fileContent, this.fileSize);
+        EDocumentsAPIHelper.LoadEDocumentFile(Rec."Entry No", this.FileContent, this.FileSize);
     end;
 }
