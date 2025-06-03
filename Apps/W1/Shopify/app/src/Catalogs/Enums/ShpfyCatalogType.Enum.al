@@ -9,7 +9,7 @@ enum 30168 "Shpfy Catalog Type"
 
     value(0; " ")
     {
-        Caption = ' ';
+        Caption = ' ', Locked = true;
     }
     value(1; "Company")
     {

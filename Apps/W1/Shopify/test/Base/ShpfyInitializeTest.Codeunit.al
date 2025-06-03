@@ -393,11 +393,11 @@ codeunit 139561 "Shpfy Initialize Test"
         if not RegisteredStoreNew.Get(Store) then begin
             RegisteredStoreNew.Init();
             RegisteredStoreNew.Store := CopyStr(Store, 1, MaxStrLen(RegisteredStoreNew.Store));
-            RegisteredStoreNew.Insert();
+            RegisteredStoreNew.Insert(false);
         end;
         RegisteredStoreNew."Requested Scope" := ScopeTxt;
         RegisteredStoreNew."Actual Scope" := ScopeTxt;
-        RegisteredStoreNew.Modify();
+        RegisteredStoreNew.Modify(false);
         RegisteredStoreNew.SetAccessToken(AccessToken);
     end;
 }
