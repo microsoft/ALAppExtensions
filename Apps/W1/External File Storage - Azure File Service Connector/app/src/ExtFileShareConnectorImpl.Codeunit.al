@@ -240,13 +240,12 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
         AFSOptionalParameters.MaxResults(1);
         AFSOperationResponse := AFSFileClient.ListDirectory(CopyStr(Path, 1, 2048), AFSDirectoryContent, AFSOptionalParameters);
         if AFSOperationResponse.IsSuccessful() then
-            exit(not AFSDirectoryContent.IsEmpty());
+            exit(true);
 
         if AFSOperationResponse.GetError().Contains(NotFoundTok) then
             exit(false)
         else
             Error(AFSOperationResponse.GetError());
-
     end;
 
     /// <summary>
