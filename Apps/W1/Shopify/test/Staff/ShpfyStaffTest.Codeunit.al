@@ -3,7 +3,6 @@ codeunit 139542 "Shpfy Staff Test"
     Subtype = Test;
     TestPermissions = Disabled;
     TestHttpRequestPolicy = BlockOutboundRequests;
-    EventSubscriberInstance = Manual;
 
     var
         ShpfyShop: Record "Shpfy Shop";
@@ -26,7 +25,7 @@ codeunit 139542 "Shpfy Staff Test"
 
         // [When] Set store as not B2B and check action is not visible
         ShpfyShop."B2B Enabled" := false;
-        ShpfyShop.Modify();
+        ShpfyShop.Modify(false);
         ShpfyShopCard.OpenView();
         ShpfyShopCard.GoToRecord(ShpfyShop);
 
@@ -36,7 +35,7 @@ codeunit 139542 "Shpfy Staff Test"
 
         // [When] Set store as B2B and check action is visible
         ShpfyShop."B2B Enabled" := true;
-        ShpfyShop.Modify();
+        ShpfyShop.Modify(false);
         ShpfyShopCard.OpenView();
         ShpfyShopCard.GoToRecord(ShpfyShop);
 
@@ -53,10 +52,9 @@ codeunit 139542 "Shpfy Staff Test"
         ShpfyStaffMemberAPI: Codeunit "Shpfy Staff Member API";
         LibraryAssert: Codeunit "Library Assert";
     begin
-        this.Initialize();
-        StaffMember.DeleteAll();
-
         // [Given] Staff exists in Shopify and is available for import
+        this.Initialize();
+
         // [When] Staff is imported into BC
         ShpfyStaffMemberAPI.GetStaffMembers(ShpfyShop.Code);
 
@@ -72,12 +70,11 @@ codeunit 139542 "Shpfy Staff Test"
         ShpfyStaffMemberAPI: Codeunit "Shpfy Staff Member API";
         LibraryAssert: Codeunit "Library Assert";
     begin
+        // [Given] Staff was deleted in Shopify
         this.Initialize();
-        StaffMember.DeleteAll();
 
         this.CreateNewStaffMember(ShpfyShop.Code, StaffMember);
 
-        // [Given] Staff was deleted in Shopify
         // [When] Staff is imported into BC
         ShpfyStaffMemberAPI.GetStaffMembers(ShpfyShop.Code);
 
@@ -95,12 +92,12 @@ codeunit 139542 "Shpfy Staff Test"
         LibraryAssert: Codeunit "Library Assert";
         OriginalName: Text;
     begin
+        // [Given] Staff was modified in Shopify
         this.Initialize();
-        StaffMember.DeleteAll();
 
         CreateNewStaffMember(ShpfyShop.Code, StaffMember);
         OriginalName := StaffMember.Name;
-        // [Given] Staff was modified in Shopify
+
         // [When] Staff is imported into BC
         ShpfyStaffMemberAPI.GetStaffMembers(ShpfyShop.Code);
 
@@ -119,7 +116,6 @@ codeunit 139542 "Shpfy Staff Test"
         SalespersonPurchaserMappingErr: Label '%1 = %2 already mapped for the Shopify Staff Member %3.', Comment = '%1 = Salesperson/Purchaser table caption, %2 = Salesperson/Purchaser code, %3 = Shopify Staff Member name';
     begin
         this.Initialize();
-        StaffMember.DeleteAll();
 
         this.CreateNewStaffMember(ShpfyShop.Code, StaffMember);
         this.CreateNewStaffMember(ShpfyShop.Code, StaffMember);
@@ -157,7 +153,6 @@ codeunit 139542 "Shpfy Staff Test"
         JShopifyLineItems: JsonArray;
     begin
         this.Initialize();
-        StaffMember.DeleteAll();
 
         this.CreateNewStaffMember(ShpfyShop.Code, StaffMember, GetStaffIdToModify());
         LibrarySales.CreateSalesperson(Salesperson);
@@ -192,7 +187,6 @@ codeunit 139542 "Shpfy Staff Test"
         OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
     begin
         this.Initialize();
-        StaffMember.DeleteAll();
 
         this.CreateNewStaffMember(ShpfyShop.Code, StaffMember, GetStaffIdToModify());
         LibrarySales.CreateSalesperson(Salesperson);
@@ -217,6 +211,7 @@ codeunit 139542 "Shpfy Staff Test"
 
     local procedure Initialize()
     var
+        ShpfyStaffMember: Record "Shpfy Staff Member";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryRandom: Codeunit "Library - Random";
@@ -242,8 +237,7 @@ codeunit 139542 "Shpfy Staff Test"
         ShpfyShop."B2B Enabled" := true;
         ShpfyShop.Modify();
 
-        // Disable Event Mocking 
-        // CommunicationMgt.(false);
+        ShpfyStaffMember.DeleteAll(false);
 
         //Register Shopify Access Token
         AccessToken := LibraryRandom.RandText(20);

@@ -579,14 +579,6 @@ codeunit 30103 "Shpfy Communication Mgt."
         IsTestInProgress := TestInProgress;
     end;
 
-    /// <summary>
-    /// Disables event mocking by setting IsTestInProgress to false.
-    /// </summary>
-    internal procedure DisableEventMocking()
-    begin
-        this.IsTestInProgress := false;
-    end;
-
     internal procedure GetTestInProgress(): Boolean
     begin
         exit(IsTestInProgress);
