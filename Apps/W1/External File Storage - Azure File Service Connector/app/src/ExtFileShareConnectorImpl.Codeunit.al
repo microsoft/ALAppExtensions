@@ -137,16 +137,14 @@ codeunit 4570 "Ext. File Share Connector Impl" implements "External File Storage
     var
         AFSFileClient: Codeunit "AFS File Client";
         AFSOperationResponse: Codeunit "AFS Operation Response";
-        AFSOptionalParameters: Codeunit "AFS Optional Parameters";
-        TargetText: Text;
+        TargetMetaData: Dictionary of [Text, Text];
     begin
         if Path = '' then
             exit(false);
 
         InitFileClient(AccountId, AFSFileClient);
-        AFSOptionalParameters.Range(0, 1);
 
-        AFSOperationResponse := AFSFileClient.GetFileAsText(Path, TargetText, AFSOptionalParameters);
+        AFSOperationResponse := AFSFileClient.GetFileMetadata(Path, TargetMetaData);
         if AFSOperationResponse.IsSuccessful() then
             exit(true);
 
