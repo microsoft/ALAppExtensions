@@ -1571,12 +1571,41 @@ codeunit 139624 "E-Doc E2E Test"
         this.LibraryEDoc.PostInvoice(this.Customer);
 
         // [WHEN] Export EDocument
+        EDocument.SetRange("Document Type", EDocument."Document Type"::"Sales Invoice");
         EDocument.FindLast();
         this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, DocumentBlob, Enum::"E-Document Service Status"::Exported);
 
         // [THEN] PDF is embedded in the XML
         CheckPDFEmbedToXML(DocumentBlob);
+    end;
+
+    [Test]
+    procedure CreateEDocumentShipmentSuccessful()
+    var
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        EDocument: Record "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when posting sales shipment
+        this.Initialize(Enum::"Service Integration"::"Mock");
+
+        // [GIVEN] Setup E-Document service for sending shipment
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [WHEN] Create sales order and post shipment for it
+        SalesShipmentHeader := this.LibraryEDoc.PostSalesShipment(this.Customer);
+
+        // [THEN] Check that E-Document is created for posted shipment
+        EDocument.FindLast();
+        this.Assert.AreEqual(SalesShipmentHeader."No.", EDocument."Document No.", this.IncorrectValueErr);
+
+        // [WHEN] Export E-Document 
+        this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
+
+        // [THEN] Check that xml file was created
+        this.CheckXmlCreated(EDocument);
     end;
 
     [Test]
@@ -1651,6 +1680,15 @@ codeunit 139624 "E-Doc E2E Test"
 
         TempXMLBuffer.SetRange(Path, '/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject');
         Assert.RecordIsNotEmpty(TempXMLBuffer, '');
+    end;
+
+    local procedure CheckXmlCreated(EDocument: Record "E-Document")
+    var
+        EDocumentLog: Codeunit "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+    begin
+        EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, TempBlob, "E-Document Service Status"::Exported);
+        Assert.IsTrue(TempBlob.HasValue(), 'XML not created.');
     end;
 
     [Test]
