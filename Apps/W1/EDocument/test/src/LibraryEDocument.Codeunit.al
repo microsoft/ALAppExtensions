@@ -761,6 +761,9 @@ codeunit 139629 "Library - E-Document"
 
         EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Issued Reminder";
         EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Transfer Shipment";
+        EDocServiceSupportedType.Insert(false);
     end;
 
     procedure CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration")
@@ -903,6 +906,18 @@ codeunit 139629 "Library - E-Document"
     local procedure OnAfterCreateEDocument(var EDocument: Record "E-Document")
     begin
         LibraryVariableStorage.Enqueue(EDocument);
+    end;
+
+    internal procedure GetWorkflowFromService(EDocService: Record "E-Document Service") Workflow: Record Workflow;
+    var
+        WorkflowStep: Record "Workflow Step";
+        WorkflowStepArgument: Record "Workflow Step Argument";
+    begin
+        WorkflowStepArgument.SetRange("E-Document Service", EDocService.Code);
+        WorkflowStepArgument.FindFirst();
+        WorkflowStep.SetRange(Argument, WorkflowStepArgument.ID);
+        WorkflowStep.FindFirst();
+        Workflow.Get(WorkflowStep."Workflow Code");
     end;
 
 }
