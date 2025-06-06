@@ -2,7 +2,7 @@ codeunit 139542 "Shpfy Market Catalog API Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
-    TestHttpRequestPolicy = AllowOutboundFromHandler;
+    TestHttpRequestPolicy = BlockOutboundRequests;
 
     var
         LibraryAssert: Codeunit "Library Assert";
