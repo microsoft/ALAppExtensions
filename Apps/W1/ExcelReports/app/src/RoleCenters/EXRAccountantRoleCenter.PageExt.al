@@ -16,26 +16,6 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
     {
         addlast("Excel Reports")
         {
-            action(EXRTrialBalanceBudgetExcel)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Trial Balance/Budget (Excel)';
-                Image = "Report";
-                RunObject = report "EXR Trial BalanceBudgetExcel";
-                ToolTip = 'Open a spreadsheet that shows Trial Balance/Budget data.';
-            }
-            action(EXRTrialBalanceExcel)
-            {
-                ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                Caption = 'Trial Balance (Preview)';
-#else
-                Caption = 'Trial Balance (Excel)';
-#endif
-                Image = "Report";
-                RunObject = report "EXR Trial Balance Excel";
-                ToolTip = 'Open a spreadsheet that shows Trial Balance Excel data.';
-            }
             action(EXRTrialBalbyPeriodExcel)
             {
                 ApplicationArea = Basic, Suite;
@@ -52,18 +32,6 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
                 RunObject = report "EXR Trial Bal. Prev Year Excel";
                 ToolTip = 'Open a spreadsheet that shows Trial Balance/Previous Year data';
             }
-            action(EXRAgedAccountsRecExcel)
-            {
-                ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                Caption = 'Aged Accounts Receivable (Preview)';
-#else
-                Caption = 'Aged Accounts Receivable (Excel)';
-#endif
-                Image = "Report";
-                RunObject = report "EXR Aged Accounts Rec Excel";
-                ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
-            }
             action(EXRCustomerTopListExcel)
             {
                 ApplicationArea = Basic, Suite;
@@ -79,18 +47,6 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
                 Image = "Report";
                 RunObject = report "EXR Vendor Top List";
                 ToolTip = 'Open a spreadsheet that shows a list of top vendors.';
-            }
-            action(EXRAgedAccPayableExcel)
-            {
-                ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                Caption = 'Aged Accounts Payable (Preview)';
-#else
-                Caption = 'Aged Accounts Payable (Excel)';
-#endif
-                Image = "Report";
-                RunObject = report "EXR Aged Acc Payable Excel";
-                ToolTip = 'Open a spreadsheet that shows the Aged Accounts Payable data.';
             }
             action(EXRConsolidatedTrialBalance)
             {
@@ -123,6 +79,59 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
                 Image = "Report";
                 RunObject = report "EXR Fixed Asset Projected";
                 ToolTip = 'Open an Excel workbook that shows posted fixed asset ledger entries and projected fixed asset ledger entries.';
+            }
+        }
+        addfirst("G/L Reports")
+        {
+            action(EXRTrialBalanceExcel)
+            {
+                ApplicationArea = Basic, Suite;
+#if not CLEAN25
+                Caption = 'Trial Balance (Preview)';
+#else
+                Caption = 'Trial Balance (Excel)';
+#endif
+                Image = "Report";
+                RunObject = report "EXR Trial Balance Excel";
+                ToolTip = 'Open a spreadsheet that shows Trial Balance Excel data.';
+            }
+        }
+        addafter("Bu&dget")
+        {
+            action(EXRTrialBalanceBudgetExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Trial Balance/Budget (Excel)';
+                Image = "Report";
+                RunObject = report "EXR Trial BalanceBudgetExcel";
+                ToolTip = 'Open a spreadsheet that shows Trial Balance/Budget data.';
+            }
+        }
+        addfirst("Customers and Vendors")
+        {
+            action(EXRAgedAccountsRecExcel)
+            {
+                ApplicationArea = Basic, Suite;
+#if not CLEAN25
+                Caption = 'Aged Accounts Receivable (Preview)';
+#else
+                Caption = 'Aged Accounts Receivable (Excel)';
+#endif
+                Image = "Report";
+                RunObject = report "EXR Aged Accounts Rec Excel";
+                ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
+            }
+            action(EXRAgedAccPayableExcel)
+            {
+                ApplicationArea = Basic, Suite;
+#if not CLEAN25
+                Caption = 'Aged Accounts Payable (Preview)';
+#else
+                Caption = 'Aged Accounts Payable (Excel)';
+#endif
+                Image = "Report";
+                RunObject = report "EXR Aged Acc Payable Excel";
+                ToolTip = 'Open a spreadsheet that shows the Aged Accounts Payable data.';
             }
         }
     }
