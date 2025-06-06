@@ -15,17 +15,19 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
         Catalog: Record "Shpfy Catalog";
         CatalogIds: List of [BigInteger];
     begin
-        SetShop(Rec);
-        Catalog.SetRange("Shop Code", Shop.Code);
+        this.SetShop(Rec);
+        Catalog.SetRange("Shop Code", this.Shop.Code);
         Catalog.SetRange("Sync Prices", true);
-        if CompanyId <> '' then
-            Catalog.SetRange("Company SystemId", CompanyId);
+        if this.CatalogType <> this.CatalogType::" " then
+            Catalog.SetRange("Catalog Type", this.CatalogType);
+        if this.CompanyId <> '' then
+            Catalog.SetRange("Company SystemId", this.CompanyId);
         if Catalog.FindSet() then
             repeat
                 if not CatalogIds.Contains(Catalog.Id) then begin
                     CatalogIds.Add(Catalog.Id);
-                    ProductPriceCalc.SetShopAndCatalog(Shop, Catalog);
-                    SyncCatalogPrices(Catalog);
+                    this.ProductPriceCalc.SetShopAndCatalog(this.Shop, Catalog);
+                    this.SyncCatalogPrices(Catalog);
                 end;
             until Catalog.Next() = 0;
     end;
@@ -35,6 +37,7 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
         CatalogAPI: Codeunit "Shpfy Catalog API";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         CompanyId: Text;
+        CatalogType: Enum "Shpfy Catalog Type";
 
     internal procedure SyncCatalogPrices(var Catalog: Record "Shpfy Catalog")
     var
@@ -107,5 +110,11 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
     internal procedure SetCompanyId(ShopifyCompanyId: Text)
     begin
         CompanyId := ShopifyCompanyId;
+    end;
+
+    internal procedure SetCatalogType(ShopifyCatalogType: Enum "Shpfy Catalog Type")
+    begin
+        this.CatalogType := ShopifyCatalogType;
+        this.CatalogAPI.SetCatalogType(ShopifyCatalogType);
     end;
 }

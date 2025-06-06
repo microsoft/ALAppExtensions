@@ -5,7 +5,14 @@ codeunit 139639 "Shpfy Catalog Initialize"
     var
         Any: Codeunit Any;
 
-    internal procedure CreateCatalog(Company: Record "Shpfy Company"): Record "Shpfy Catalog"
+    internal procedure CreateCatalog(CatalogType: Enum "Shpfy Catalog Type"): Record "Shpfy Catalog"
+    var
+        Company: Record "Shpfy Company";
+    begin
+        exit(this.CreateCatalog(Company, CatalogType));
+    end;
+
+    internal procedure CreateCatalog(Company: Record "Shpfy Company"; CatalogType: Enum "Shpfy Catalog Type"): Record "Shpfy Catalog"
     var
         Catalog: Record "Shpfy Catalog";
     begin
@@ -14,6 +21,7 @@ codeunit 139639 "Shpfy Catalog Initialize"
         Catalog.Init();
         Catalog.Id := Any.IntegerInRange(1, 99999);
         Catalog.Name := 'Name';
+        Catalog."Catalog Type" := CatalogType;
         Catalog."Company SystemId" := Company.SystemId;
         Catalog.Insert();
         exit(Catalog);

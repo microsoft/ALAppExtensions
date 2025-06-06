@@ -33,6 +33,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         SendShippingConfirmationUpgrade();
         OrderAttributeValueUpgrade();
         CreditMemoCanBeCreatedUpgrade();
+        this.SetShopifyCatalogsType();
     end;
 
     internal procedure UpgradeTemplatesData()
@@ -387,6 +388,20 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         RefundLineDataTransfer.CopyFields();
     end;
 
+    local procedure SetShopifyCatalogsType()
+    var
+        Catalog: Record "Shpfy Catalog";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(this.GetShopifyCatalogsTypeUpgradeTag()) then
+            exit;
+
+        Catalog.SetRange("Catalog Type", Catalog."Catalog Type"::" ");
+        Catalog.ModifyAll("Catalog Type", Catalog."Catalog Type"::"Company", false);
+
+        UpgradeTag.SetUpgradeTag(this.GetShopifyCatalogsTypeUpgradeTag());
+    end;
+
     local procedure WebhookSubscriptionUpgrade()
     var
         WebhookSubscription: Record "Webhook Subscription";
@@ -457,6 +472,11 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         exit('MS-471880-CreditMemoCanBeCreatedUpgradeTag-20240201');
     end;
 
+    local procedure GetShopifyCatalogsTypeUpgradeTag(): Code[250]
+    begin
+        exit('MS-471880-ShopifyCatalogsTypeUpgradeTag-20250423');
+    end;
+
     local procedure GetWebhookSubscriptionUpgradeTag(): Code[250]
     begin
         exit('MS-574620-WebHookSubscriptionUpgradeTag-20250419');
@@ -477,5 +497,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         PerCompanyUpgradeTags.Add(GetLoggingModeUpgradeTag());
         PerCompanyUpgradeTags.Add(GetLocationUpgradeTag());
         PerCompanyUpgradeTags.Add(GetSyncPricesWithProductsUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetShopifyCatalogsTypeUpgradeTag());
     end;
 }

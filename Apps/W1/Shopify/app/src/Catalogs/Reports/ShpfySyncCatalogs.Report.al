@@ -17,23 +17,8 @@ report 30115 "Shpfy Sync Catalogs"
             RequestFilterFields = Code;
 
             trigger OnAfterGetRecord()
-            var
-                ShopifyCompany: Record "Shpfy Company";
             begin
-                if RunForOneCompany then
-                    exit;
-                if CompanyId <> 0 then begin
-                    ShopifyCompany.SetRange(Id, CompanyId);
-                    RunForOneCompany := true;
-                end else begin
-                    CatalogAPI.SetShop(Shop);
-                    ShopifyCompany.SetRange("Shop Id", Shop."Shop Id");
-                end;
-
-                if ShopifyCompany.FindSet() then
-                    repeat
-                        CatalogAPI.GetCatalogs(ShopifyCompany);
-                    until ShopifyCompany.Next() = 0;
+                this.SyncShopifyShopCatalogs();
             end;
         }
     }
@@ -42,11 +27,59 @@ report 30115 "Shpfy Sync Catalogs"
         CatalogAPI: Codeunit "Shpfy Catalog API";
         RunForOneCompany: Boolean;
         CompanyId: BigInteger;
+        CatalogType: Enum "Shpfy Catalog Type";
+
+    local procedure SyncShopifyShopCatalogs()
+    begin
+        case this.CatalogType of
+            this.CatalogType::Company:
+                this.SyncCompanyCatalogs();
+            this.CatalogType::Market:
+                this.SyncMarketCatalogs();
+            this.CatalogType::" ":
+                begin
+                    this.SyncCompanyCatalogs();
+                    this.SyncMarketCatalogs();
+                end;
+        end;
+    end;
+
+    local procedure SyncCompanyCatalogs()
+    var
+        ShopifyCompany: Record "Shpfy Company";
+    begin
+        if this.RunForOneCompany then
+            exit;
+        if this.CompanyId <> 0 then begin
+            ShopifyCompany.SetRange(Id, this.CompanyId);
+            this.RunForOneCompany := true;
+        end else begin
+            this.CatalogAPI.SetShop(Shop);
+            ShopifyCompany.SetRange("Shop Id", Shop."Shop Id");
+        end;
+
+        if ShopifyCompany.FindSet() then
+            repeat
+                this.CatalogAPI.GetCatalogs(ShopifyCompany);
+            until ShopifyCompany.Next() = 0;
+    end;
+
+    local procedure SyncMarketCatalogs()
+    begin
+        this.CatalogAPI.SetShop(Shop);
+        this.CatalogAPI.GetMarketCatalogs();
+    end;
 
     internal procedure SetCompany(ShopifyCompany: Record "Shpfy Company")
     begin
-        CompanyId := ShopifyCompany.Id;
+        this.CompanyId := ShopifyCompany.Id;
         Shop.Get(ShopifyCompany."Shop Code");
-        CatalogAPI.SetShop(Shop);
+        this.CatalogAPI.SetShop(Shop);
+    end;
+
+    internal procedure SetCatalogType(ShopifyCatalogType: Enum "Shpfy Catalog Type")
+    begin
+        this.CatalogType := ShopifyCatalogType;
+        this.CatalogAPI.SetCatalogType(this.CatalogType);
     end;
 }
