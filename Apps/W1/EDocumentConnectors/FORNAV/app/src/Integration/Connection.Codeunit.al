@@ -1,7 +1,6 @@
 namespace Microsoft.EServices.EDocumentConnector.ForNAV;
 
 using Microsoft.EServices.EDocument;
-using Microsoft.eServices.EDocument.Service.Participant;
 using System.Utilities;
 using System.Environment;
 using Microsoft.Purchases.Posting;
