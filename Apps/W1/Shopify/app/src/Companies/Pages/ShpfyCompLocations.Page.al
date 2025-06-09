@@ -1,4 +1,5 @@
 namespace Microsoft.Integration.Shopify;
+using Microsoft.Sales.Customer;
 
 /// <summary>
 /// Page Shpfy Company Locations (ID 30165).
@@ -46,6 +47,30 @@ page 30165 "Shpfy Comp. Locations"
                 field("Shpfy Payment Term"; Rec."Shpfy Payment Term") { Editable = false; }
                 field("Sell-to Customer No."; Rec."Sell-to Customer No.") { }
                 field("Bill-to Customer No."; Rec."Bill-to Customer No.") { }
+            }
+        }
+    }
+
+    actions
+    {
+        area(processing)
+        {
+            action(AddCustomerAsLocation)
+            {
+                ApplicationArea = All;
+                Caption = 'Add customer as Shopify Location';
+                ToolTip = 'Create a new Shopify location from a customer record.';
+                Image = NewCustomer;
+
+                trigger OnAction()
+                var
+                    Customer: Record Customer;
+                    ShpfyCompanyAPI: Codeunit "Shpfy Company API";
+                begin
+                    if Page.RunModal(Page::"Customer List", Customer) = Action::LookupOK then
+                        ShpfyCompanyAPI.CreateCompanyLocation(Rec, Customer);
+                    CurrPage.Update(false);
+                end;
             }
         }
     }

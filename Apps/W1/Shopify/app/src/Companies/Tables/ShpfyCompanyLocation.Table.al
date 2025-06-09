@@ -144,6 +144,13 @@ table 30151 "Shpfy Company Location"
                 TestField("Sell-to Customer No.");
             end;
         }
+        field(20; "Customer Id"; Guid)
+        {
+            Caption = 'Customer Id';
+            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the unique identifier of the customer associated with the company location.';
+            Editable = false;
+        }
     }
     keys
     {
