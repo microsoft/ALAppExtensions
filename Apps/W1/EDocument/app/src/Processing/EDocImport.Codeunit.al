@@ -832,7 +832,7 @@ codeunit 6140 "E-Doc. Import"
         HideDialogs := Hide;
     end;
 
-    local procedure GetFileType(FileName: Text): Enum "E-Doc. Data Storage Blob Type"
+    internal procedure GetFileType(FileName: Text): Enum "E-Doc. Data Storage Blob Type"
     var
         FileMgt: Codeunit "File Management";
     begin
