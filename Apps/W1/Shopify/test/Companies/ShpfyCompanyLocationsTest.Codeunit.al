@@ -4,7 +4,6 @@ codeunit 139542 "Shpfy Company Locations Test"
     TestPermissions = Disabled;
     TestHttpRequestPolicy = BlockOutboundRequests;
 
-
     var
         ShpfyCompanyLocation: Record "Shpfy Company Location";
         Customer: Record Customer;
@@ -22,7 +21,7 @@ codeunit 139542 "Shpfy Company Locations Test"
     var
         ShpfyCompany: Record "Shpfy Company";
         ShpfyCompanyAPI: Codeunit "Shpfy Company API";
-        ShpfyCompanies: TestPage "Shpfy Companies";        
+        ShpfyCompanies: TestPage "Shpfy Companies";
     begin
         // [Given] A valid customer and company location setup
         this.Initialize();

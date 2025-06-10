@@ -277,9 +277,9 @@ codeunit 30157 "Shpfy Json Helper"
         TokenPaths := TokenPath.Split('.');
         foreach TokenPath in TokenPaths do
             if JToken.AsObject().Get(TokenPath, JToken) then
-                if TokenPaths.IndexOf(TokenPath) = TokenPaths.Count then
-                    if JToken.IsValue then
-                        exit(JToken.AsValue().IsNull);
+                if TokenPaths.IndexOf(TokenPath) = TokenPaths.Count() then
+                    if JToken.IsValue() then
+                        exit(JToken.AsValue().IsNull());
     end;
 
     internal procedure IsNull(JObject: JsonObject; TokenPath: Text): boolean
@@ -289,8 +289,8 @@ codeunit 30157 "Shpfy Json Helper"
 
     internal procedure IsTokenNull(JToken: JsonToken): Boolean
     begin
-        if JToken.IsValue then
-            exit(JToken.AsValue().IsNull)
+        if JToken.IsValue() then
+            exit(JToken.AsValue().IsNull())
         else
             exit(false);
     end;

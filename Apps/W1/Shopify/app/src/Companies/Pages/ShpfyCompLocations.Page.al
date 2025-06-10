@@ -1,4 +1,5 @@
 namespace Microsoft.Integration.Shopify;
+
 using Microsoft.Sales.Customer;
 
 /// <summary>
