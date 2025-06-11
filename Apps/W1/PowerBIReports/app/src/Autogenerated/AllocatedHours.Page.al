@@ -6,9 +6,7 @@ page 37043 "Allocated Hours"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Manufacturing;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Allocated Hours';
     AboutTitle = 'About Allocated Hours';
     AboutText = 'View the number of hours remaining for production allocated to each Work Centre in a specified period. Allows you to determine if a Work Centre is under or overloaded and requires rescheduling.';
@@ -25,7 +23,7 @@ page 37043 "Allocated Hours"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

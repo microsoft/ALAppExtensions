@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AdvancePayments;
 
+using Microsoft.Purchases.Setup;
 using System.Utilities;
 
 codeunit 31178 "Copy Document Mgt. CZZ"
@@ -128,6 +129,7 @@ codeunit 31178 "Copy Document Mgt. CZZ"
         FromPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
         FormPurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
         OldPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         ToPurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
         ErrorContextElement: Codeunit "Error Context Element";
         ErrorMessageHandler: Codeunit "Error Message Handler";
@@ -164,6 +166,12 @@ codeunit 31178 "Copy Document Mgt. CZZ"
             ToPurchAdvLetterHeaderCZZ.TransferFields(FromPurchAdvLetterHeaderCZZ, false);
             ToPurchAdvLetterHeaderCZZ.Status := ToPurchAdvLetterHeaderCZZ.Status::New;
             ToPurchAdvLetterHeaderCZZ."No. Printed" := 0;
+            PurchasesPayablesSetup.Get();
+            if PurchasesPayablesSetup.IsDocumentTotalAmountsAllowedCZZ(ToPurchAdvLetterHeaderCZZ) then begin
+                FromPurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT", Amount);
+                ToPurchAdvLetterHeaderCZZ.Validate("Doc. Amount Incl. VAT", FromPurchAdvLetterHeaderCZZ."Amount Including VAT");
+                ToPurchAdvLetterHeaderCZZ.Validate("Doc. Amount VAT", FromPurchAdvLetterHeaderCZZ."Amount Including VAT" - FromPurchAdvLetterHeaderCZZ.Amount);
+            end;
             CopyFieldsFromOldPurchAdvLetterHeader(ToPurchAdvLetterHeaderCZZ, OldPurchAdvLetterHeaderCZZ);
             OnBeforeModifyPurchAdvLetterHeader(ToPurchAdvLetterHeaderCZZ, FromPurchAdvLetterHeaderCZZ, IncludeHeader, RecalculateLines, OldPurchAdvLetterHeaderCZZ);
             ToPurchAdvLetterHeaderCZZ.Modify();

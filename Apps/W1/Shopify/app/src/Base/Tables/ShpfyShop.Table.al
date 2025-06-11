@@ -353,7 +353,7 @@ table 30102 "Shpfy Shop"
         }
         field(44; "Allow Background Syncs"; Boolean)
         {
-            Caption = 'Allow Background Syncs';
+            Caption = 'Run Syncs in Background';
             DataClassification = CustomerContent;
             InitValue = true;
         }

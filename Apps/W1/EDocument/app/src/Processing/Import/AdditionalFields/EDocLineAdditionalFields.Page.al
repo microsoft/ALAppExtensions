@@ -5,6 +5,7 @@
 namespace Microsoft.EServices.EDocument.Processing.Import;
 using Microsoft.Purchases.History;
 using System.Reflection;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 page 6104 "E-Doc. Line Additional Fields"
 {
@@ -61,7 +62,7 @@ page 6104 "E-Doc. Line Additional Fields"
                 var
                     LocalEDocPurchaseLineField: Record "E-Document Line - Field";
                 begin
-                    LocalEDocPurchaseLineField.DeleteCustomizedRecords(CurrentEDocumentLineMapping);
+                    LocalEDocPurchaseLineField.DeleteCustomizedRecords(CurrentEDocumentPurchaseLine);
                     CurrPage.Update();
                 end;
             }
@@ -69,7 +70,7 @@ page 6104 "E-Doc. Line Additional Fields"
     }
 
     var
-        CurrentEDocumentLineMapping: Record "E-Document Line Mapping";
+        CurrentEDocumentPurchaseLine: Record "E-Document Purchase Line";
         CurrentPurchaseInvoiceLine: Record "Purch. Inv. Line";
         EDocPurchLineField: Record "E-Document Line - Field";
         FieldName, FieldValue : Text;
@@ -84,7 +85,7 @@ page 6104 "E-Doc. Line Additional Fields"
     var
         Field: Record Field;
     begin
-        EDocPurchLineField.Get(CurrentEDocumentLineMapping, Rec);
+        EDocPurchLineField.Get(CurrentEDocumentPurchaseLine, Rec);
         FieldValue := EDocPurchLineField.GetValueAsText();
         if Field.Get(Database::"Purch. Inv. Line", Rec."Field No.") then
             this.FieldName := Field.FieldName;
@@ -94,12 +95,12 @@ page 6104 "E-Doc. Line Additional Fields"
     var
         LocalEDocPurchaseLineField: Record "E-Document Line - Field";
     begin
-        HasCustomizations := LocalEDocPurchaseLineField.HasCustomizedRecords(CurrentEDocumentLineMapping);
+        HasCustomizations := LocalEDocPurchaseLineField.HasCustomizedRecords(CurrentEDocumentPurchaseLine);
     end;
 
-    internal procedure SetEDocumentLine(EDocumentLineMapping: Record "E-Document Line Mapping"; PurchaseInvoiceLine: Record "Purch. Inv. Line")
+    internal procedure SetEDocumentLine(EDocumentPurchaseLine: Record "E-Document Purchase Line"; PurchaseInvoiceLine: Record "Purch. Inv. Line")
     begin
-        CurrentEDocumentLineMapping := EDocumentLineMapping;
+        CurrentEDocumentPurchaseLine := EDocumentPurchaseLine;
         CurrentPurchaseInvoiceLine := PurchaseInvoiceLine;
     end;
 

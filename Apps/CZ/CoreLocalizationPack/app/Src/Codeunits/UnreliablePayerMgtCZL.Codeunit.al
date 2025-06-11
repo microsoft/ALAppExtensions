@@ -95,7 +95,7 @@ codeunit 11758 "Unreliable Payer Mgt. CZL"
 
         ClearVATRegNoList();
         if AddVATRegNoToList(Vendor."VAT Registration No.") then
-            exit(ImportUnrPayerStatus(true));
+            exit(ImportUnrPayerStatus(false));
     end;
 
     procedure ImportUnrPayerList(ShowMessage: Boolean): Boolean

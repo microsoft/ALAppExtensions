@@ -6,7 +6,7 @@ using Microsoft.Inventory.Location;
 query 36990 "Prod. Order Routing Lines"
 {
     Access = Internal;
-    Caption = 'Power BI Prod. Order Routing Lines';
+    Caption = 'Power BI Production Order Routing Lines';
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';

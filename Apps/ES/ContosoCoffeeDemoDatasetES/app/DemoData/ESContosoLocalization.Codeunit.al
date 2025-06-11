@@ -83,6 +83,8 @@ codeunit 10824 "ES Contoso Localization"
     end;
 
     local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    var
+        CreateESInvPostingSetup: Codeunit "Create ES Inv Posting Setup";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
@@ -91,6 +93,7 @@ codeunit 10824 "ES Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create ES Item Template");
                     Codeunit.Run(Codeunit::"Create ES Location");
+                    CreateESInvPostingSetup.UpdateInventorySetup();
                 end;
         end;
     end;

@@ -10,7 +10,7 @@ codeunit 1911 "MigrationQB Account Migrator"
         GlDocNoTxt: Label 'G00001', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
-    local procedure OnMigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         MigrationQBAccount: Record "MigrationQB Account";
     begin
@@ -64,12 +64,12 @@ codeunit 1911 "MigrationQB Account Migrator"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigratePostingGroups', '', true, true)]
-    local procedure OnMigratePostingGroups(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure OnMigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     begin
         MigratePostingGroups(Sender, RecordIdToMigrate);
     end;
 
-    procedure MigratePostingGroups(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    procedure MigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         MigrationQBAccount: Record "MigrationQB Account";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
@@ -161,7 +161,7 @@ codeunit 1911 "MigrationQB Account Migrator"
 
             if not MigrationQBAccount.Get(EntityId) then begin
                 MigrationQBAccount.Init();
-                MigrationQBAccount.VALIDATE(MigrationQBAccount.AcctNum, EntityId);
+                MigrationQBAccount.Validate(MigrationQBAccount.AcctNum, EntityId);
                 MigrationQBAccount.Insert(true);
             end;
 
@@ -179,19 +179,19 @@ codeunit 1911 "MigrationQB Account Migrator"
         MigrationQBAccount: Record "MigrationQB Account";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
     begin
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(Name), JToken.AsObject(), 'Name');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(SubAccount), JToken.AsObject(), 'SubAccount');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(FullyQualifiedName), JToken.AsObject(), 'FullyQualifiedName');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(Active), JToken.AsObject(), 'Active');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(Classification), JToken.AsObject(), 'Classification');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(AccountType), JToken.AsObject(), 'AccountType');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(AccountSubType), JToken.AsObject(), 'AccountSubType');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(CurrentBalance), JToken.AsObject(), 'CurrentBalance');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(CurrentBalanceWithSubAccounts), JToken.AsObject(), 'CurrentBalanceWithSubAccounts');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(Name), JToken.AsObject(), 'Name');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(SubAccount), JToken.AsObject(), 'SubAccount');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(FullyQualifiedName), JToken.AsObject(), 'FullyQualifiedName');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(Active), JToken.AsObject(), 'Active');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(Classification), JToken.AsObject(), 'Classification');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(AccountType), JToken.AsObject(), 'AccountType');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(AccountSubType), JToken.AsObject(), 'AccountSubType');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(CurrentBalance), JToken.AsObject(), 'CurrentBalance');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(CurrentBalanceWithSubAccounts), JToken.AsObject(), 'CurrentBalanceWithSubAccounts');
 
         if HelperFunctions.IsOnlineData() then
-            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(Id), JToken.AsObject(), 'Id')
+            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(Id), JToken.AsObject(), 'Id')
         else
-            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNO(Id), JToken.AsObject(), 'ListID');
+            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBAccount.FieldNo(Id), JToken.AsObject(), 'ListID');
     end;
 }

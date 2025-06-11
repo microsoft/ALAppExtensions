@@ -15,20 +15,20 @@ page 1914 "MigrationQB VendorTable"
             group(General)
             {
 #pragma warning disable AA0218
-                field(GivenName; GivenName) { ApplicationArea = All; }
-                field(FamilyName; FamilyName) { ApplicationArea = All; }
-                field(CompanyName; CompanyName) { ApplicationArea = All; }
-                field(DisplayName; DisplayName) { ApplicationArea = All; }
-                field(BillAddrLine1; BillAddrLine1) { ApplicationArea = All; }
-                field(BillAddrLine2; BillAddrLine2) { ApplicationArea = All; }
-                field(BillAddrCity; BillAddrCity) { ApplicationArea = All; }
-                field(BillAddrCountry; BillAddrCountry) { ApplicationArea = All; }
-                field(BillAddrPostalCode; BillAddrPostalCode) { ApplicationArea = All; }
-                field(BillAddrCountrySubDivCode; BillAddrCountrySubDivCode) { ApplicationArea = All; }
-                field(PrimaryPhone; PrimaryPhone) { ApplicationArea = All; }
-                field(PrimaryEmailAddr; PrimaryEmailAddr) { ApplicationArea = All; }
-                field(WebAddr; WebAddr) { ApplicationArea = All; }
-                field(Fax; Fax) { ApplicationArea = All; }
+                field(GivenName; Rec.GivenName) { ApplicationArea = All; }
+                field(FamilyName; Rec.FamilyName) { ApplicationArea = All; }
+                field(CompanyName; Rec.CompanyName) { ApplicationArea = All; }
+                field(DisplayName; Rec.DisplayName) { ApplicationArea = All; }
+                field(BillAddrLine1; Rec.BillAddrLine1) { ApplicationArea = All; }
+                field(BillAddrLine2; Rec.BillAddrLine2) { ApplicationArea = All; }
+                field(BillAddrCity; Rec.BillAddrCity) { ApplicationArea = All; }
+                field(BillAddrCountry; Rec.BillAddrCountry) { ApplicationArea = All; }
+                field(BillAddrPostalCode; Rec.BillAddrPostalCode) { ApplicationArea = All; }
+                field(BillAddrCountrySubDivCode; Rec.BillAddrCountrySubDivCode) { ApplicationArea = All; }
+                field(PrimaryPhone; Rec.PrimaryPhone) { ApplicationArea = All; }
+                field(PrimaryEmailAddr; Rec.PrimaryEmailAddr) { ApplicationArea = All; }
+                field(WebAddr; Rec.WebAddr) { ApplicationArea = All; }
+                field(Fax; Rec.Fax) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

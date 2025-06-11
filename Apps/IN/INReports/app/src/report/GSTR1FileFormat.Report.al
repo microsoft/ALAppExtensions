@@ -1558,22 +1558,6 @@ report 18049 "GSTR-1 File Format"
             ExempCustInterUnRegAmt += Abs(GSTR1EXEMPQuery.GST_Base_Amount);
     end;
 
-    local procedure GetInvoiceTypeforTransferShip(GSTR1B2BSalesTranship: Query GSTR1B2BSalesTranship): Text[50]
-    begin
-        case GSTR1B2BSalesTranship.GST_Customer_Type of
-            GSTR1B2BSalesTranship.GST_Customer_Type::Registered:
-                exit(RegularTxt);
-            GSTR1B2BSalesTranship.GST_Customer_Type::"SEZ Development", GSTR1B2BSalesTranship.GST_Customer_Type::"SEZ Unit":
-                begin
-                    if GSTR1B2BSalesTranship.GST_Without_Payment_of_Duty then
-                        exit(SEZWOPayTxt);
-                    exit(SEZWPayTxt);
-                end;
-            GSTR1B2BSalesTranship.GST_Customer_Type::"Deemed Export":
-                exit(DeemedExportTxt);
-        end;
-    end;
-
     local procedure GetInvoiceType(GSTR1B2BQuery: Query GSTR1B2BQuery): Text[50]
     begin
         case GSTR1B2BQuery.GST_Customer_Type of
@@ -1672,4 +1656,3 @@ report 18049 "GSTR-1 File Format"
     end;
 
 }
-

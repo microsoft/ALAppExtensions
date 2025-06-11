@@ -14,14 +14,12 @@ using System.Environment.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Media;
-using System.Text;
 using System.Utilities;
 
 codeunit 20117 "AMC Bank Assisted Mgt."
 {
     trigger OnRun()
     begin
-
     end;
 
     var
@@ -44,9 +42,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         AssistedSetupTxt: Label 'Set up AMC Banking 365 Fundamentals extension';
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2115384', Locked = true;
         AssistedSetupDescriptionTxt: Label 'Connect to an online bank service that can convert bank data from Business Central into the formats of your bank, to make it easier, and more accurate, to send data to your banks.';
-        ReturnPathTxt: Label '//return/pack', Locked = true;
         ModuleWebCallTxt: Label 'amcwebservice', locked = true;
-        DataExchangeWebCallTxt: Label 'dataExchange', Locked = true;
 
     procedure GetApplVersion() ApplVersion: Text;
     var
@@ -320,45 +316,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         exit(GetModuleInfoData(ModuleTempBlob, XTLUrl, SignUpUrl, SupportUrl, Solution, AMCBankingMgt.GetAppCaller())); //Get reponse and XTLUrl and Solution
     end;
 
-    local procedure SendDataExchRequestToWebService(var TempBlob: Codeunit "Temp Blob"; EnableUI: Boolean; Timeout: Integer; ApplVersion: Text; BuildNumber: Text; AppCaller: Text[30]): Boolean
-    var
-        AMCBankingSetup: Record "AMC Banking Setup";
-        HttpRequestMessage: HttpRequestMessage;
-        HttpResponseMessage: HttpResponseMessage;
-        webcall: text;
-        Handled: Boolean;
-        Result: Text;
-    begin
-        webcall := DataExchangeWebCallTxt;
-        AMCBankingMgt.CheckCredentials();
-        AMCBankingSetup.Get();
-
-        AMCBankServiceRequestMgt.InitializeHttp(HttpRequestMessage, AMCBankingSetup."Service URL", 'POST');
-
-        PrepareSOAPRequestBodyDataExchangeDef(HttpRequestMessage, ApplVersion, BuildNumber);
-
-        //Set Content-Type header
-        AMCBankServiceRequestMgt.SetHttpContentsDefaults(HttpRequestMessage);
-
-        if not EnableUI then
-            AMCBankServiceRequestMgt.DisableProgressDialog();
-
-        //Send Request to webservice
-        Handled := false;
-        AMCBankServiceRequestMgt.SetTimeout(Timeout);
-        AMCBankServiceRequestMgt.OnBeforeExecuteWebServiceRequest(Handled, HttpRequestMessage, HttpResponseMessage, webcall, AppCaller); //For mockup testing
-        AMCBankServiceRequestMgt.ExecuteWebServiceRequest(Handled, HttpRequestMessage, HttpResponseMessage, webcall, AppCaller, true);
-        AMCBankServiceRequestMgt.GetWebServiceResponse(HttpResponseMessage, TempBlob, webcall + AMCBankServiceRequestMgt.GetResponseTag(), true);
-        if (AMCBankServiceRequestMgt.HasResponseErrors(TempBlob, AMCBankServiceRequestMgt.GetHeaderXPath(), webcall + AMCBankServiceRequestMgt.GetResponseTag(), Result, AppCaller)) then begin
-            if (EnableUI) then
-                AMCBankServiceRequestMgt.ShowResponseError(Result);
-
-            exit(false)
-        end
-        else
-            exit(true);
-    end;
-
     [NonDebuggable]
     local procedure PrepareSOAPRequestBodyModuleCreate(var HttpRequestMessage: HttpRequestMessage);
     var
@@ -536,99 +493,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
             end;
 
         exit(false);
-    end;
-
-    [NonDebuggable]
-    local procedure PrepareSOAPRequestBodyDataExchangeDef(var HttpRequestMessage: HttpRequestMessage; ApplVersion: Text; BuildNumber: Text);
-    var
-        AMCBankingSetup: Record "AMC Banking Setup";
-        contentHttpContent: HttpContent;
-        BodyContentXmlDoc: XmlDocument;
-        BodyDeclaration: Xmldeclaration;
-        EnvelopeXMLElement: XmlElement;
-        BodyXMLElement: XMLElement;
-        OperationXmlNode: XMLElement;
-        ChildXmlElement: XmlElement;
-        TempXmlDocText: Text;
-        SecretContent: SecretText;
-    begin
-        BodyContentXmlDoc := XmlDocument.Create();
-        BodyDeclaration := XmlDeclaration.Create('1.0', 'UTF-8', 'No');
-        BodyContentXmlDoc.SetDeclaration(BodyDeclaration);
-
-        AMCBankingSetup.Get();
-        AMCBankServiceRequestMgt.CreateEnvelope(BodyContentXmlDoc, EnvelopeXmlElement, AMCBankingSetup.GetUserName(), AMCBankingSetup.GetPassword(), '');
-        AMCBankServiceRequestMgt.AddElement(EnvelopeXMLElement, EnvelopeXMLElement.NamespaceUri(), 'Body', '', BodyXMLElement, '', '', '');
-        AMCBankServiceRequestMgt.AddElement(BodyXMLElement, AMCBankingMgt.GetNamespace(), 'dataExchange', '', OperationXmlNode, '', '', '');
-
-        if (ApplVersion <> '') then begin
-            AMCBankServiceRequestMgt.AddElement(OperationXmlNode, '', 'appl', ApplVersion, ChildXmlElement, '', '', '');
-            AMCBankServiceRequestMgt.AddElement(OperationXmlNode, '', 'build', BuildNumber, ChildXmlElement, '', '', '');
-        end
-        else begin
-            AMCBankServiceRequestMgt.AddElement(OperationXmlNode, '', 'appl', GetApplVersion(), ChildXmlElement, '', '', '');
-            AMCBankServiceRequestMgt.AddElement(OperationXmlNode, '', 'build', GetBuildNumber(), ChildXmlElement, '', '', '');
-        end;
-
-        BodyContentXmlDoc.WriteTo(TempXmlDocText);
-        AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
-        SecretContent := TempXmlDocText;
-        contentHttpContent.WriteFrom(SecretContent);
-        HttpRequestMessage.Content(contentHttpContent);
-    end;
-
-    local procedure GetDataExchangeData(TempBlob: Codeunit "Temp Blob"; DataExchDefFilter: Text): Boolean;
-    var
-        DataTempBlob: Codeunit "Temp Blob";
-        Base64Convert: Codeunit "Base64 Convert";
-        XMLDocOut: XmlDocument;
-        DataExchXMLNodeList: XmlNodeList;
-        DataExchXMLNodeCount: Integer;
-        ResponseInStream: InStream;
-        OutStream: OutStream;
-        ChildNode: XmlNode;
-
-        DataExchDefCode: Code[20];
-        Base64String: Text;
-    begin
-        TempBlob.CreateInStream(ResponseInStream);
-        XmlDocument.ReadFrom(ResponseInStream, XMLDocOut);
-
-        if (XMLDocOut.selectNodes(ReturnPathTxt, DataExchXMLNodeList)) then //V17.5
-            IF DataExchXMLNodeList.Count() > 0 THEN
-                FOR DataExchXMLNodeCount := 1 TO DataExchXMLNodeList.Count() DO begin
-                    DataExchXMLNodeList.Get(DataExchXMLNodeCount, ChildNode);
-                    CLEAR(DataExchDefCode);
-                    CLEAR(DataTempBlob);
-                    DataExchDefCode := COPYSTR(AMCBankServiceRequestMgt.getNodeValue(ChildNode, './type'), 1, 20);
-                    Base64String := AMCBankServiceRequestMgt.getNodeValue(ChildNode, './data');
-                    DataTempBlob.CreateOutStream(OutStream);
-                    Base64Convert.FromBase64(Base64String, OutStream);
-                    //READ DATA INTO DataTempBlob
-                    if ((DataTempBlob.HasValue()) and (DataExchDefCode <> '') and
-                        (StrPos(DataExchDefFilter, DataExchDefCode) <> 0)) then
-                        ImportDataExchDef(DataExchDefCode, DataTempBlob);
-
-                end;
-        exit(true);
-    end;
-
-    local procedure ImportDataExchDef(DataExchCode: Code[20]; TempBlob: Codeunit "Temp Blob");
-    var
-        DataExchDef: Record "Data Exch. Def";
-        DataExchDefInStream: InStream;
-    begin
-
-        if DataExchDef.GET(DataExchCode) then
-            DataExchDef.DELETE(true);
-
-        CLEAR(DataExchDef);
-        TempBlob.CREATEINSTREAM(DataExchDefInStream);
-        XMLPORT.IMPORT(XMLPORT::"Imp / Exp Data Exch Def & Map", DataExchDefInStream);
-
-        CLEAR(DataExchDef);
-        if DataExchDef.GET(DataExchCode) then
-            InsertUpdateBankExportImport(DataExchCode, DataExchDef.Name);
     end;
 
     local procedure InsertUpdateBankExportImport(DataExchDefCode: Code[20]; DefName: Text[100])

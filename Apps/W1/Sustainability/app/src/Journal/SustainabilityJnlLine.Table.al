@@ -1,13 +1,14 @@
 namespace Microsoft.Sustainability.Journal;
 
-using Microsoft.Foundation.UOM;
 using Microsoft.Foundation.Address;
-using Microsoft.Inventory.Location;
-using Microsoft.Finance.Dimension;
-using Microsoft.Sustainability.Account;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.UOM;
+using Microsoft.Finance.Dimension;
+using Microsoft.Inventory.Location;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Calculation;
 using Microsoft.Sustainability.Setup;
+using System.Automation;
 
 table 6214 "Sustainability Jnl. Line"
 {
@@ -380,6 +381,19 @@ table 6214 "Sustainability Jnl. Line"
         }
     }
 
+    trigger OnDelete()
+    var
+        SustJournalBatch: Record "Sustainability Jnl. Batch";
+        SustJournalLine: Record "Sustainability Jnl. Line";
+    begin
+        SustJournalLine.SetRange("Journal Template Name", "Journal Template Name");
+        SustJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
+        SustJournalLine.SetFilter("Line No.", '<>%1', "Line No.");
+        if SustJournalLine.IsEmpty() then
+            if SustJournalBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name") then
+                ApprovalsMgmt.PreventDeletingRecordWithOpenApprovalEntry(SustJournalBatch);
+    end;
+
     trigger OnInsert()
     var
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
@@ -387,11 +401,24 @@ table 6214 "Sustainability Jnl. Line"
     begin
         SustainabilityJnlTemplate.Get("Journal Template Name");
         SustainabilityJnlBatch.Get("Journal Template Name", "Journal Batch Name");
+
+        ApprovalsMgmt.PreventInsertRecIfOpenApprovalEntryExist(SustainabilityJnlBatch);
+    end;
+
+    trigger OnModify()
+    begin
+        CheckOpenApprovalEntryExistForCurrentUser();
+    end;
+
+    trigger OnRename()
+    begin
+        ApprovalsMgmt.OnRenameRecordInApprovalRequest(xRec.RecordId, RecordId);
     end;
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
         DimMgt: Codeunit DimensionManagement;
+        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
         JnlRecRefLbl: Label '%1 %2 %3', Locked = true;
         ValuesMustBeZeroErr: Label '%1, %2, %3 must be Zero.', Comment = '%1,%2,%3 = Field Caption';
         CanBeUsedOnlyForWaterErr: Label '%1 can be used only for water.', Comment = '%1 = Field Value';
@@ -604,6 +631,20 @@ table 6214 "Sustainability Jnl. Line"
                 Error(CanBeUsedOnlyForWaterErr, SustainabilityJnlLine."Water/Waste Intensity Type");
     end;
 
+    local procedure CheckOpenApprovalEntryExistForCurrentUser()
+    var
+        SustJournalBatch: Record "Sustainability Jnl. Batch";
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckOpenApprovalEntryExistForCurrentUser(Rec, CurrFieldNo, IsHandled);
+        if IsHandled then
+            exit;
+
+        ApprovalsMgmt.PreventModifyRecIfOpenApprovalEntryExistForCurrentUser(Rec);
+        if SustJournalBatch.Get("Journal Template Name", "Journal Batch Name") then
+            ApprovalsMgmt.PreventModifyRecIfOpenApprovalEntryExistForCurrentUser(SustJournalBatch);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitDefaultDimensionSources(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
     begin
@@ -614,4 +655,8 @@ table 6214 "Sustainability Jnl. Line"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckOpenApprovalEntryExistForCurrentUser(SustJnlLine: Record "Sustainability Jnl. Line"; CurrFieldNo: Integer; var IsHandled: Boolean)
+    begin
+    end;
 }

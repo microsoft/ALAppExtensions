@@ -2030,7 +2030,7 @@ table 8052 "Customer Subscription Contract"
         NotifyIfShipToAddressDiffers();
     end;
 
-    internal procedure CreateCustomerContractLineFromServiceCommitment(TempServiceCommitment: Record "Subscription Line" temporary; ContractNo: Code[20])
+    procedure CreateCustomerContractLineFromServiceCommitment(TempServiceCommitment: Record "Subscription Line" temporary; ContractNo: Code[20])
     var
         CustomerContractLine: Record "Cust. Sub. Contract Line";
         ServiceCommitment2: Record "Subscription Line";
@@ -2044,7 +2044,7 @@ table 8052 "Customer Subscription Contract"
         CreateCustomerContractLineFromServiceCommitment(ServiceCommitment2, ContractNo, CustomerContractLine);
     end;
 
-    internal procedure CreateCustomerContractLineFromServiceCommitment(var ServiceCommitment: Record "Subscription Line"; ContractNo: Code[20]; var CustomerContractLine: Record "Cust. Sub. Contract Line")
+    procedure CreateCustomerContractLineFromServiceCommitment(var ServiceCommitment: Record "Subscription Line"; ContractNo: Code[20]; var CustomerContractLine: Record "Cust. Sub. Contract Line")
     var
         ServiceObject: Record "Subscription Header";
         CustomerContract: Record "Customer Subscription Contract";

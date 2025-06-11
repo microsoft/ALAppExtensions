@@ -227,12 +227,14 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         "VAT Base Amount" := AdvancePostingBufferCZZ."VAT Base Amount";
         "VAT Difference" := "VAT Amount" -
             Round(Amount * "VAT %" / (100 + "VAT %"), Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
-        "Amount (LCY)" := AdvancePostingBufferCZZ."Amount (ACY)";
-        "VAT Amount (LCY)" := AdvancePostingBufferCZZ."VAT Amount (ACY)";
-        "VAT Base Amount (LCY)" := AdvancePostingBufferCZZ."VAT Base Amount (ACY)";
+        "Amount (LCY)" := AdvancePostingBufferCZZ."Amount (LCY)";
+        "VAT Amount (LCY)" := AdvancePostingBufferCZZ."VAT Amount (LCY)";
+        "VAT Base Amount (LCY)" := AdvancePostingBufferCZZ."VAT Base Amount (LCY)";
         "Currency Factor" := 1;
         if "Amount (LCY)" <> 0 then
             "Currency Factor" := Amount / "Amount (LCY)";
+        if AdvancePostingBufferCZZ."Amount (ACY)" <> 0 then
+            "Additional Currency Factor CZL" := AdvancePostingBufferCZZ."Amount (ACY)" / "Amount (LCY)";
         OnAfterCopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ, Rec);
     end;
 

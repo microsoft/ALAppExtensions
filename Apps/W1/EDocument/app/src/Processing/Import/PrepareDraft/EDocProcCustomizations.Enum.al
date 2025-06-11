@@ -6,12 +6,17 @@ namespace Microsoft.eServices.EDocument.Processing.Import;
 
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 
-enum 6110 "E-Doc. Proc. Customizations" implements IVendorProvider, IPurchaseOrderProvider, IPurchaseLineAccountProvider, IUnitOfMeasureProvider, IEDocumentCreatePurchaseInvoice
+enum 6110 "E-Doc. Proc. Customizations" implements
+    IVendorProvider,
+    IPurchaseOrderProvider,
+    IPurchaseLineProvider,
+    IUnitOfMeasureProvider,
+    IEDocumentCreatePurchaseInvoice
 {
     Extensible = true;
     DefaultImplementation = IVendorProvider = "E-Doc. Providers",
                             IPurchaseOrderProvider = "E-Doc. Providers",
-                            IPurchaseLineAccountProvider = "E-Doc. Providers",
+                            IPurchaseLineProvider = "E-Doc. Providers",
                             IUnitOfMeasureProvider = "E-Doc. Providers",
                             IEDocumentCreatePurchaseInvoice = "E-Doc. Create Purchase Invoice";
 

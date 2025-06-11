@@ -9,12 +9,17 @@ codeunit 133506 "E-DOC Tests Install"
         ResourcePath: Text;
     begin
         // Load Datasets
-        DatasetPaths := NavApp.ListResources('datasets/*.jsonl');
+        DatasetPaths := NavApp.ListResources('AITestSuite/*.jsonl');
+        foreach ResourcePath in DatasetPaths do
+            SetupDataInput(ResourcePath);
+
+        // Load Datasets
+        DatasetPaths := NavApp.ListResources('AITestSuite/*.yaml');
         foreach ResourcePath in DatasetPaths do
             SetupDataInput(ResourcePath);
 
         // Load Test Suites
-        TestSuitePaths := NavApp.ListResources('datasets/*.xml');
+        TestSuitePaths := NavApp.ListResources('AITestSuite/*.xml');
         foreach ResourcePath in TestSuitePaths do
             SetupTestSuite(ResourcePath);
     end;

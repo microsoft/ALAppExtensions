@@ -6,9 +6,7 @@ page 37032 "Bin Contents by Item Tracking"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Bin Contents by Item Tracking';
     AboutTitle = 'About Bin Contents by Item Tracking';
     AboutText = 'The Bin Contents by Item Tracking report provides a detailed view of warehouse quantities by Item, Location, Bin Code, Zone Code, Lot number or Serial number. ';
@@ -25,7 +23,7 @@ page 37032 "Bin Contents by Item Tracking"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

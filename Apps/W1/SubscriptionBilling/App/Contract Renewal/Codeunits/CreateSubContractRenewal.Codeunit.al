@@ -411,7 +411,7 @@ codeunit 8002 "Create Sub. Contract Renewal"
         OnAfterInsertSubscriptionContractDescriptionSalesLines(CustomerContract, CurrentSalesHeader);
     end;
 
-    internal procedure GetSalesQuoteNo(): Code[20]
+    procedure GetSalesQuoteNo(): Code[20]
     begin
         exit(CurrentSalesHeader."No.");
     end;

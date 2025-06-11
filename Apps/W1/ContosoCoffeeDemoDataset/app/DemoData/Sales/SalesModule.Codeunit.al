@@ -14,8 +14,10 @@ codeunit 5181 "Sales Module" implements "Contoso Demo Data Module"
     InherentPermissions = X;
 
     procedure RunConfigurationPage()
+    var
+        ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
-        exit;
+        Message(ContosoDemoTool.GetNoConfiguirationMsg());
     end;
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"]

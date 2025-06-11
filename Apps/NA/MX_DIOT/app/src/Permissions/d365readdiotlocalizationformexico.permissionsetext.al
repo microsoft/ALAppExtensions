@@ -6,7 +6,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Security.AccessControl;
 
-permissionsetextension 23717 "D365 READ - DIOT - Localization for Mexico" extends "D365 READ"
+permissionsetextension 27035 "D365 READ - DIOT - Localization for Mexico" extends "D365 READ"
 {
     Permissions = tabledata "DIOT Concept" = R,
                   tabledata "DIOT Concept Link" = R,

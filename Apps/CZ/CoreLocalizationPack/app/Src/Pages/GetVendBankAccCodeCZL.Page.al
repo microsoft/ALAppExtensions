@@ -35,6 +35,12 @@ page 11752 "Get Vend. Bank Acc. Code CZL"
                     Caption = 'Vendor Bank Account Name';
                     ToolTip = 'Specifies vendor bank account name.';
                 }
+                field(PreferredBankAccount; PreferredBankAccount)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Preferred Bank Account';
+                    ToolTip = 'Specifies if this bank account is preferred for vendor.';
+                }
             }
         }
     }
@@ -42,15 +48,25 @@ page 11752 "Get Vend. Bank Acc. Code CZL"
         VendorNo: Code[20];
         VendorBankAccCode: Code[10];
         VendorBankAccName: Text[100];
+        PreferredBankAccount: Boolean;
 
     procedure SetValue(NewVendorNo: Code[20])
     begin
         VendorNo := NewVendorNo;
     end;
-
+#if not CLEAN27
+    [Obsolete('The function is replaced by GetValue with PreferredBankAccount parameter.', '27.0')]
     procedure GetValue(var NewVendorBankAccCode: Code[10]; var NewVendorBankAccName: Text[100])
     begin
         NewVendorBankAccCode := VendorBankAccCode;
         NewVendorBankAccName := VendorBankAccName;
+    end;
+#endif
+
+    procedure GetValue(var NewVendorBankAccCode: Code[10]; var NewVendorBankAccName: Text[100]; var NewPreferredBankAccount: Boolean)
+    begin
+        NewVendorBankAccCode := VendorBankAccCode;
+        NewVendorBankAccName := VendorBankAccName;
+        NewPreferredBankAccount := PreferredBankAccount;
     end;
 }

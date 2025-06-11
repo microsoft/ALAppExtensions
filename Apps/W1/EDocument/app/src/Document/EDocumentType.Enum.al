@@ -10,7 +10,7 @@ using Microsoft.eServices.EDocument.Processing.Interfaces;
 enum 6121 "E-Document Type" implements IEDocumentFinishDraft
 {
     Extensible = true;
-    DefaultImplementation = IEDocumentFinishDraft = "E-Doc. Default Implementation";
+    DefaultImplementation = IEDocumentFinishDraft = "E-Doc. Unspecified Impl.";
 
     value(0; "None")
     {

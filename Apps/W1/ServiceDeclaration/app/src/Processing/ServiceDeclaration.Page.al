@@ -67,8 +67,8 @@ page 5023 "Service Declaration"
             part(Lines; "Service Declaration Subform")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "Service Declaration No." = FIELD("No.");
-                SubPageView = SORTING("Service Declaration No.", "Line No.");
+                SubPageLink = "Service Declaration No." = field("No.");
+                SubPageView = sorting("Service Declaration No.", "Line No.");
             }
         }
     }
@@ -200,4 +200,3 @@ page 5023 "Service Declaration"
         ShowOverview := ServDeclSetup."Show Serv. Decl. Overview";
     end;
 }
-

@@ -530,7 +530,8 @@ table 31254 "Iss. Bank Statement Header CZB"
         CreateGeneralJournalCZB.RunModal();
         exit(CreateGeneralJournalCZB.JournalCreated());
     end;
-
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the IssBankStatementStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
     procedure ShowStatistics()
     var
         BankingDocStatisticsCZB: Page "Banking Doc. Statistics CZB";
@@ -541,6 +542,7 @@ table 31254 "Iss. Bank Statement Header CZB"
         BankingDocStatisticsCZB.SetValues("Bank Account No.", "Document Date", Amount);
         BankingDocStatisticsCZB.Run();
     end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateJournal(var IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB")

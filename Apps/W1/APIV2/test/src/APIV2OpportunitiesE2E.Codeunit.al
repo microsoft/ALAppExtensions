@@ -336,22 +336,21 @@ codeunit 139855 "APIV2 - Opportunities E2E"
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         SalesCycle: Record "Sales Cycle";
     begin
-        with Opportunity do begin
-            Init();
-            "No." := LibraryUtility.GenerateGUID();
-            Validate("Contact No.", ContactNo);
-            Contact.Get(ContactNo);
-            if Contact."Salesperson Code" <> '' then
-                SalespersonPurchaser.Code := Contact."Salesperson Code"
-            else
-                SalespersonPurchaser.FindFirst();
-            Validate("Salesperson Code", SalespersonPurchaser.Code);
-            Validate(Description, "No." + "Contact No.");  // Validating No. as Description because value is not important.
-            SalesCycle.FindFirst();
-            Validate("Sales Cycle Code", SalesCycle.Code);
-            Validate(Status, Status::Won);
-            Insert(true);
-        end;
+        Opportunity.Init();
+        Opportunity."No." := LibraryUtility.GenerateGUID();
+        Opportunity.Validate("Contact No.", ContactNo);
+        Contact.Get(ContactNo);
+        if Contact."Salesperson Code" <> '' then
+            SalespersonPurchaser.Code := Contact."Salesperson Code"
+        else
+            SalespersonPurchaser.FindFirst();
+        Opportunity.Validate("Salesperson Code", SalespersonPurchaser.Code);
+        Opportunity.Validate(Description, Opportunity."No." + Opportunity."Contact No.");
+        // Validating No. as Description because value is not important.
+        SalesCycle.FindFirst();
+        Opportunity.Validate("Sales Cycle Code", SalesCycle.Code);
+        Opportunity.Validate(Status, Opportunity.Status::Won);
+        Opportunity.Insert(true);
     end;
 
     local procedure CreateInProgressOpportunity(var Opportunity: Record Opportunity; ContactNo: Code[20])
@@ -360,22 +359,21 @@ codeunit 139855 "APIV2 - Opportunities E2E"
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         SalesCycle: Record "Sales Cycle";
     begin
-        with Opportunity do begin
-            Init();
-            "No." := LibraryUtility.GenerateGUID();
-            Validate("Contact No.", ContactNo);
-            Contact.Get(ContactNo);
-            if Contact."Salesperson Code" <> '' then
-                SalespersonPurchaser.Code := Contact."Salesperson Code"
-            else
-                SalespersonPurchaser.FindFirst();
-            Validate("Salesperson Code", SalespersonPurchaser.Code);
-            Validate(Description, "No." + "Contact No.");  // Validating No. as Description because value is not important.
-            SalesCycle.FindFirst();
-            Validate("Sales Cycle Code", SalesCycle.Code);
-            Validate(Status, Status::"In Progress");
-            Insert(true);
-        end;
+        Opportunity.Init();
+        Opportunity."No." := LibraryUtility.GenerateGUID();
+        Opportunity.Validate("Contact No.", ContactNo);
+        Contact.Get(ContactNo);
+        if Contact."Salesperson Code" <> '' then
+            SalespersonPurchaser.Code := Contact."Salesperson Code"
+        else
+            SalespersonPurchaser.FindFirst();
+        Opportunity.Validate("Salesperson Code", SalespersonPurchaser.Code);
+        Opportunity.Validate(Description, Opportunity."No." + Opportunity."Contact No.");
+        // Validating No. as Description because value is not important.
+        SalesCycle.FindFirst();
+        Opportunity.Validate("Sales Cycle Code", SalesCycle.Code);
+        Opportunity.Validate(Status, Opportunity.Status::"In Progress");
+        Opportunity.Insert(true);
     end;
 
     local procedure CreatePersonContactWithCompanyNo(CompanyNo: Code[20]): Code[20]
@@ -410,18 +408,3 @@ codeunit 139855 "APIV2 - Opportunities E2E"
         Assert.IsFalse(Opportunity.IsEmpty(), 'Opportunity does not exist');
     end;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

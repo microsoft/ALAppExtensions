@@ -52,12 +52,18 @@ permissionset 11782 "CZ Cash Desk - Objects CZP"
                   Page "Cash Document CZP" = X,
                   Page "Cash Document Lines CZP" = X,
                   Page "Cash Document List CZP" = X,
+#if not CLEAN27
                   Page "Cash Document Statistics CZP" = X,
+#endif
+                  Page "Cash Doc. Statistics CZP" = X,
                   Page "Cash Document Subform CZP" = X,
                   Page "Currency Nominal Values CZP" = X,
                   Page "Posted Cash Document CZP" = X,
                   Page "Posted Cash Document List CZP" = X,
+#if not CLEAN27
                   Page "Posted Cash Document Stat. CZP" = X,
+#endif
+                  Page "Posted Cash Doc. Stat. CZP" = X,
                   Page "Posted Cash Document Subf. CZP" = X,
                   Page "Posted Cash Document Lines CZP" = X,
                   Page "Report Selection Cash Desk CZP" = X,

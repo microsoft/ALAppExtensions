@@ -237,6 +237,7 @@ page 31166 "Posted Cash Document Subf. CZP"
             {
                 Caption = 'Line';
                 Image = Line;
+#if not CLEAN27
                 action(Statistics)
                 {
                     ApplicationArea = Basic, Suite;
@@ -244,12 +245,16 @@ page 31166 "Posted Cash Document Subf. CZP"
                     Image = Statistics;
                     ShortCutKey = 'F7';
                     ToolTip = 'View the statistics on the selected cash document.';
+                    ObsoleteReason = 'The statistics action will be replaced with the PostedCashDocumentStatistics action in Posted Cash Document CZP. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
 
                     trigger OnAction()
                     begin
                         Rec.ExtStatistics();
                     end;
                 }
+#endif
                 action(Dimensions)
                 {
                     ApplicationArea = Basic, Suite;

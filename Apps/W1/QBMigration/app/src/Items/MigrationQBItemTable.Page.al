@@ -15,13 +15,13 @@ page 1916 "MigrationQB ItemTable"
             group(General)
             {
 #pragma warning disable AA0218
-                field(Name; Name) { ApplicationArea = All; }
-                field(Description; Description) { ApplicationArea = All; }
-                field(Type; Type) { ApplicationArea = All; }
-                field(UnitPrice; UnitPrice) { ApplicationArea = All; }
-                field(PurchaseCost; PurchaseCost) { ApplicationArea = All; }
-                field(QtyOnHand; QtyOnHand) { ApplicationArea = All; }
-                field(Taxable; Taxable) { ApplicationArea = All; }
+                field(Name; Rec.Name) { ApplicationArea = All; }
+                field(Description; Rec.Description) { ApplicationArea = All; }
+                field(Type; Rec.Type) { ApplicationArea = All; }
+                field(UnitPrice; Rec.UnitPrice) { ApplicationArea = All; }
+                field(PurchaseCost; Rec.PurchaseCost) { ApplicationArea = All; }
+                field(QtyOnHand; Rec.QtyOnHand) { ApplicationArea = All; }
+                field(Taxable; Rec.Taxable) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

@@ -10,6 +10,7 @@ using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration.Send;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
 
 codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker, IConsentManager
 {
@@ -43,9 +44,21 @@ codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentS
 
     procedure ObtainPrivacyConsent(): Boolean
     var
+        OutlookSetup: Record "Outlook Setup";
         CustomerConsentMgt: codeunit "Customer Consent Mgt.";
+        OutlookSetupExists: Boolean;
     begin
-        exit(CustomerConsentMgt.ConfirmUserConsentToMicrosoftService());
+        OutlookSetupExists := OutlookSetup.FindFirst();
+        if OutlookSetupExists then
+            if OutlookSetup."Consent Received" then
+                exit(true);
+        if not CustomerConsentMgt.ConfirmUserConsentToMicrosoftService() then
+            exit(false);
+        if not OutlookSetupExists then
+            OutlookSetup.Insert();
+        OutlookSetup."Consent Received" := true;
+        OutlookSetup.Modify();
+        exit(true);
     end;
 
     internal procedure PreviewContent(var EDocument: Record "E-Document")
@@ -119,9 +132,17 @@ codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentS
     local procedure HandleOnBeforeExportDataStorage(EDocumentLog: Record "E-Document Log"; var FileName: Text)
     var
         EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
         EDocDataStorage: Record "E-Doc. Data Storage";
+        IEDocFileFormat: Interface IEDocFileFormat;
     begin
         if not EDocument.Get(EDocumentLog."E-Doc. Entry No") then
+            exit;
+
+        if not EDocumentService.Get(EDocumentLog."Service Code") then
+            exit;
+
+        if not (EDocumentService."Service Integration V2" in [EDocumentService."Service Integration V2"::SharePoint, EDocumentService."Service Integration V2"::OneDrive]) then
             exit;
 
         if EDocument."File Name" = '' then
@@ -129,9 +150,11 @@ codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentS
 
         FileName := EDocument."File Name";
 
-        if EDocDataStorage.Get(EDocumentLog."E-Doc. Data Storage Entry No.") then
-            if EDocDataStorage."Data Type" <> EDocDataStorage."Data Type"::Unspecified then
-                FileName += ('.' + Format(EDocDataStorage."Data Type"));
+        if EDocDataStorage.Get(EDocumentLog."E-Doc. Data Storage Entry No.") then begin
+            IEDocFileFormat := EDocDataStorage."File Format";
+            if EDocDataStorage."File Format" <> EDocDataStorage."File Format"::Unspecified then
+                FileName += ('.' + IEDocFileFormat.FileExtension());
+        end;
     end;
 
     var

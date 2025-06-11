@@ -6,9 +6,7 @@ page 37066 "Sales by Location"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Sales by Location';
     AboutTitle = 'About Sales by Location';
     AboutText = 'The Sales by Location report breaks down sales performance by location, highlighting metrics such as Sales Amount, Sales Quantity, Gross Profit and Gross Profit Margin.';
@@ -25,7 +23,7 @@ page 37066 "Sales by Location"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

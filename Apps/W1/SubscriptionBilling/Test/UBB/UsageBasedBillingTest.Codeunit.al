@@ -1533,7 +1533,7 @@ codeunit 148153 "Usage Based Billing Test"
             UBBTestLibrary.CreateSimpleUsageDataGenericImport(UsageDataGenericImport, UsageDataImport."Entry No.", ServiceObject."No.", Customer."No.", Item."Unit Cost",
              BillingPeriodStartDate, CalcDate('<CM>', BillingPeriodStartDate), SubscriptionStartDate, CalcDate('<CM>', SubscriptionStartDate), LibraryRandom.RandInt(10));
 
-            UsageDataGenericImport."Supp. Subscription ID" := SubscriptionID;
+            UsageDataGenericImport."Supp. Subscription ID" := CopyStr(SubscriptionID, 1, MaxStrLen(UsageDataGenericImport."Supp. Subscription ID"));
             UsageDataGenericImport.Modify();
             BillingPeriodStartDate := CalcDate('<1M>', BillingPeriodStartDate);
             SubscriptionStartDate := CalcDate('<1M>', SubscriptionStartDate);
@@ -2146,12 +2146,12 @@ codeunit 148153 "Usage Based Billing Test"
         Assert.AreEqual(ExpectedServiceObjectNo, UsageDataGenericImport."Subscription Header No.", 'Service Object No. is not set to expected value in Usage Data Generic Import.');
     end;
 
-    local procedure MockServiceCommitment(var ServiceCommitment: Record "Subscription Line"; BillingBasePeriod: DateFormula; BillingRhythm: DateFormula; Price: Decimal)
+    local procedure MockServiceCommitment(var ServiceCommitment2: Record "Subscription Line"; BillingBasePeriod: DateFormula; BillingRhythm: DateFormula; Price: Decimal)
     begin
-        ServiceCommitment.Init();
-        ServiceCommitment."Billing Base Period" := BillingBasePeriod;
-        ServiceCommitment."Billing Rhythm" := BillingRhythm;
-        ServiceCommitment.Price := Price;
+        ServiceCommitment2.Init();
+        ServiceCommitment2."Billing Base Period" := BillingBasePeriod;
+        ServiceCommitment2."Billing Rhythm" := BillingRhythm;
+        ServiceCommitment2.Price := Price;
     end;
     #endregion Procedures
 

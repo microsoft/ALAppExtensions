@@ -737,7 +737,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine."Bill-to/Pay-to No." := SalesInvoiceHeader."Bill-to Customer No.";
         GenJournalLine."Country/Region Code" := SalesInvoiceHeader."Bill-to Country/Region Code";
         GenJournalLine."VAT Registration No." := SalesInvoiceHeader."VAT Registration No.";
-        GenJournalLine."Registration No. CZL" := SalesInvoiceHeader."Registration No. CZL";
+        GenJournalLine."Registration No. CZL" := CopyStr(SalesInvoiceHeader."Registration Number", 1, 20);
         GenJournalLine."Tax Registration No. CZL" := SalesInvoiceHeader."Tax Registration No. CZL";
         GenJournalLine.Amount := 0;
         GenJournalLine."VAT Amount" := -VATAmountCorr;

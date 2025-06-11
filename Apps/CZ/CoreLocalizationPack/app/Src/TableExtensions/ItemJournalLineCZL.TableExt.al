@@ -111,5 +111,13 @@ tableextension 11709 "Item Journal Line CZL" extends "Item Journal Line"
             Caption = 'G/L Correction';
             DataClassification = CustomerContent;
         }
+        field(11765; "Additional Currency Factor CZL"; Decimal)
+        {
+            Caption = 'Additional Currency Factor';
+            DecimalPlaces = 0 : 15;
+            Editable = false;
+            MinValue = 0;
+            DataClassification = CustomerContent;
+        }
     }
 }

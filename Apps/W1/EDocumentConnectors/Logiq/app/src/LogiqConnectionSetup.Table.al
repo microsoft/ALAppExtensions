@@ -34,6 +34,27 @@ table 6430 "Logiq Connection Setup"
             Caption = 'File List Endpoint';
             ToolTip = 'Specifies the Endpoint to list available files.';
         }
+        field(26; Environment; Enum "Logiq Environment")
+        {
+            Caption = 'Environment';
+            ToolTip = 'Specifies the environment to connect.';
+
+            trigger OnValidate()
+            begin
+                case Rec.Environment of
+                    Environment::Pilot:
+                        begin
+                            Rec."Authentication URL" := this.PilotAuthenticationUrlTok;
+                            Rec."Base URL" := this.PilotBaseUrlTok;
+                        end;
+                    Environment::Production:
+                        begin
+                            Rec."Authentication URL" := this.ProdAuthenticationUrlTok;
+                            Rec."Base URL" := this.ProdBaseUrlTok;
+                        end;
+                end;
+            end;
+        }
         field(31; "Client ID"; Text[100])
         {
             Caption = 'Client ID';
@@ -52,14 +73,17 @@ table 6430 "Logiq Connection Setup"
 
     trigger OnInsert()
     begin
-        Rec."Authentication URL" := this.AuthenticationUrlTok;
+        Rec."Authentication URL" := this.PilotAuthenticationUrlTok;
         Rec."File List Endpoint" := this.FileListTok;
-        Rec."Base URL" := this.BaseUrlTok;
+        Rec."Base URL" := this.PilotBaseUrlTok;
     end;
 
     var
-        AuthenticationUrlTok: Label 'https://pilot-sso.logiq.no/auth/realms/connect-api/protocol/openid-connect/token', Locked = true;
-        BaseUrlTok: Label 'https://pilot-api.logiq.no/edi/connect/', Locked = true;
+        PilotAuthenticationUrlTok: Label 'https://pilot-sso.logiq.no/auth/realms/connect-api/protocol/openid-connect/token', Locked = true;
+        PilotBaseUrlTok: Label 'https://pilot-api.logiq.no/edi/connect/', Locked = true;
+        ProdAuthenticationUrlTok: Label 'https://sso.logiq.no/auth/realms/connect-api/protocol/openid-connect/token', Locked = true;
+        ProdBaseUrlTok: Label 'https://api.logiq.no/edi/connect/', Locked = true;
         FileListTok: Label '1.0/listfiles', Locked = true;
+
 
 }

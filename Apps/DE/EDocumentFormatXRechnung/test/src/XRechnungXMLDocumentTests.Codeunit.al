@@ -53,7 +53,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post Sales Invoice.
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -76,7 +76,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
 
         // [GIVEN] Create and Post Sales Invoice with Customer X, E-invoice routing no. = XY
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -99,7 +99,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
 
         // [GIVEN] Create and Post Sales Invoice with your reference = XX
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -118,7 +118,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post Sales Invoice.
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -137,7 +137,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post Sales Invoice.
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -156,7 +156,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post Sales Invoice.
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -175,7 +175,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post Sales Invoice.
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -194,7 +194,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post Sales Invoice.
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -213,7 +213,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post Sales Invoice.
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -232,7 +232,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post Sales Invoice.
-        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item));
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
@@ -241,6 +241,63 @@ codeunit 13918 "XRechnung XML Document Tests"
         VerifyInvoiceLine(SalesInvoiceHeader, TempXMLBuffer);
     end;
 
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyInvoiceLineWithLineDiscount();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 575895] Export posted sales invoice creates electronic document in XRechnung format with 2 invoice lines, one line has line discount
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with line discount
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLinesLineDiscount("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 invoice lines and one line has line discount
+        VerifyInvoiceLineWithDiscount(SalesInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyInvoiceWithInvoiceDiscounts();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 575895] Export posted sales invoice creates electronic document in XRechnung format with 2 invoice lines and invoice discount
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with invoice discount
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, true));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 invoice lines and invoice discount
+        VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyInvoiceWithInvoiceDiscountsAndLineDiscount();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 575895] Export posted sales invoice creates electronic document in XRechnung format with 2 invoice lines with discount and invoice discount
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with invoice discount and line discount on one line
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocumentWithTwoLinesLineDiscount("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, true));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 invoice lines with line discount and invoice discount
+        VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
+        VerifyInvoiceLineWithDiscount(SalesInvoiceHeader, TempXMLBuffer);
+    end;
     #endregion
 
     #region SalesCreditMemo
@@ -254,7 +311,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post sales cr. memo.
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -277,7 +334,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
 
         // [GIVEN] Create and Post sales cr. memo with Customer X, E-invoice routing no. = XY
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -300,7 +357,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
 
         // [GIVEN] Create and Post sales cr. memo with your reference = XX
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -319,7 +376,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post sales cr. memo.
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -338,7 +395,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post sales cr. memo.
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -357,7 +414,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post sales cr. memo.
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -376,7 +433,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post sales cr. memo.
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -395,7 +452,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post sales cr. memo.
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -414,7 +471,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post sales cr. memo.
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -433,7 +490,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Initialize();
 
         // [GIVEN] Create and Post sales cr. memo.
-        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item));
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
 
         // [WHEN] Export XRechnung Electronic Document.
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
@@ -442,40 +499,114 @@ codeunit 13918 "XRechnung XML Document Tests"
         VerifyCrMemoLine(SalesCrMemoHeader, TempXMLBuffer);
     end;
 
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyCrMemoWithInvoiceDiscounts();
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 575895] Export posted sales cr. memo creates electronic document in XRechnung format with 2 lines and invoice discount
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice with invoice discount
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithTwoLines("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, true));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 lines and invoice discount
+        VerifyCrMemoWithInvDiscount(SalesCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyCrMemoWithInvoiceDiscountsAndLineDiscount();
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO 575895] Export posted sales cr.memo creates electronic document in XRechnung format with 2 cr.memo lines with discount and invoice discount
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Cr. Memo with invoice discount and line discount on one line
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocumentWithTwoLinesLineDiscount("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, true));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] XRechnung Electronic Document is created with 2 lines with line discount and invoice discount
+        VerifyCrMemoWithInvDiscount(SalesCrMemoHeader, TempXMLBuffer);
+        VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader, TempXMLBuffer);
+    end;
     #endregion
-    local procedure CreateAndPostSalesDocument(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20];
+    local procedure CreateAndPostSalesDocument(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
     begin
-        SalesHeader.Get(DocumentType, CreateSalesDocumentWithLine(DocumentType, LineType));
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWithLine(DocumentType, LineType, InvoiceDiscount));
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
-    local procedure CreateAndPostSalesDocumentWithTwoLines(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20];
+    local procedure CreateAndPostSalesDocumentWithTwoLines(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
     begin
-        SalesHeader.Get(DocumentType, CreateSalesDocumentWitTwoLine(DocumentType, LineType));
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWithTwoLine(DocumentType, LineType, InvoiceDiscount));
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
-    local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20];
+    local procedure CreateAndPostSalesDocumentWithTwoLinesLineDiscount(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(DocumentType, CreateSalesDocumentWithTwoLineLineDiscount(DocumentType, LineType, InvoiceDiscount));
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
     begin
         CreateSalesHeader(SalesHeader, DocumentType);
         CreateSalesLine(SalesHeader, LineType);
+
+        if InvoiceDiscount then
+            ApplyInvoiceDiscount(SalesHeader);
         exit(SalesHeader."No.");
     end;
 
-    local procedure CreateSalesDocumentWitTwoLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"): Code[20];
+    local procedure CreateSalesDocumentWithTwoLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
     begin
         CreateSalesHeader(SalesHeader, DocumentType);
         CreateSalesLine(SalesHeader, LineType);
         CreateSalesLine(SalesHeader, LineType);
+
+        if InvoiceDiscount then
+            ApplyInvoiceDiscount(SalesHeader);
         exit(SalesHeader."No.");
+    end;
+
+    local procedure CreateSalesDocumentWithTwoLineLineDiscount(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeader(SalesHeader, DocumentType);
+        CreateSalesLine(SalesHeader, LineType);
+        CreateSalesLineLineDiscount(SalesHeader, LineType);
+
+        if InvoiceDiscount then
+            ApplyInvoiceDiscount(SalesHeader);
+        exit(SalesHeader."No.");
+    end;
+
+    local procedure ApplyInvoiceDiscount(SalesHeader: Record "Sales Header");
+    var
+        SalesCalcDiscountByType: Codeunit "Sales - Calc Discount By Type";
+    begin
+        LibrarySales.SetCalcInvDiscount(true);
+        SalesHeader.CalcFields(Amount);
+        SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(SalesHeader.Amount / 2, SalesHeader);
     end;
 
     local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type");
@@ -524,6 +655,23 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesLine.Validate("Unit Price", LibraryRandom.RandDecInRange(100, 200, 2));
         SalesLine.Validate("Unit of Measure", UnitOfMeasure.Code);
         SalesLine.Validate("Tax Category", 'S');
+        SalesLine.Modify(true);
+    end;
+
+    local procedure CreateSalesLineLineDiscount(SalesHeader: Record "Sales Header"; LineType: Enum "Sales Line Type");
+    var
+        SalesLine: Record "Sales Line";
+        UnitOfMeasure: Record "Unit of Measure";
+    begin
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+        UnitOfMeasure."International Standard Code" := LibraryUtility.GenerateGUID();
+        UnitOfMeasure.Modify(true);
+        LibrarySales.CreateSalesLine(
+        SalesLine, SalesHeader, LineType, LibraryInventory.CreateItemNo(), LibraryRandom.RandDecInRange(10, 20, 2));
+        SalesLine.Validate("Unit Price", LibraryRandom.RandDecInRange(100, 200, 2));
+        SalesLine.Validate("Unit of Measure", UnitOfMeasure.Code);
+        SalesLine.Validate("Tax Category", 'S');
+        SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
         SalesLine.Modify(true);
     end;
 
@@ -745,13 +893,55 @@ codeunit 13918 "XRechnung XML Document Tests"
                 Assert.AreEqual(SalesInvoiceLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
             Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
             if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
+                Assert.AreEqual(FormatFourDecimal(SalesInvoiceLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
             else
-                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+                Assert.AreEqual(FormatFourDecimal(SalesInvoiceLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
             Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
             Assert.AreEqual(SalesInvoiceLine."Tax Category", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
             SecondLine := true;
         until SalesInvoiceLine.Next() = 0;
+    end;
+
+    local procedure VerifyInvoiceLineWithDiscount(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
+    var
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        DocumentTok: Label '/ubl:Invoice/cac:InvoiceLine/cac:AllowanceCharge', Locked = true;
+        Path: Text;
+        SecondLine: Boolean;
+    begin
+        SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        SalesInvoiceLine.FindSet();
+        repeat
+            Path := DocumentTok + '/cbc:AllowanceChargeReason';
+            if SecondLine then
+                Assert.AreEqual('LineDiscount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
+            if SecondLine then
+                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            Path := DocumentTok + '/cbc:Amount';
+            if SecondLine then
+                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Line Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            Path := DocumentTok + '/cbc:BaseAmount';
+            if SecondLine then
+                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Unit Price" * SalesInvoiceLine.Quantity), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            SecondLine := true;
+        until SalesInvoiceLine.Next() = 0;
+    end;
+
+    local procedure VerifyInvoiceWithInvDiscount(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
+    var
+        DocumentTok: Label '/ubl:Invoice/cac:AllowanceCharge', Locked = true;
+        Path: Text;
+    begin
+        SalesInvoiceHeader.CalcFields(Amount, "Invoice Discount Amount");
+        Path := DocumentTok + '/cbc:AllowanceChargeReason';
+        Assert.AreEqual('Document discount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
+        Assert.AreEqual(FormatDecimal(100 * SalesInvoiceHeader."Invoice Discount Amount" / (SalesInvoiceHeader."Invoice Discount Amount" + SalesInvoiceHeader.Amount)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:Amount';
+        Assert.AreEqual(FormatDecimal(SalesInvoiceHeader."Invoice Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:BaseAmount';
+        Assert.AreEqual(FormatDecimal(SalesInvoiceHeader."Invoice Discount Amount" + SalesInvoiceHeader.Amount), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyCrMemoLine(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -791,13 +981,55 @@ codeunit 13918 "XRechnung XML Document Tests"
                 Assert.AreEqual(SalesCrMemoLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
             Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
             if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
+                Assert.AreEqual(FormatFourDecimal(SalesCrMemoLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
             else
-                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+                Assert.AreEqual(FormatFourDecimal(SalesCrMemoLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
             Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
             Assert.AreEqual(SalesCrMemoLine."Tax Category", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
             SecondLine := true;
         until SalesCrMemoLine.Next() = 0;
+    end;
+
+    local procedure VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
+    var
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        DocumentTok: Label '/ns0:CreditNote/cac:CreditNoteLine/cac:AllowanceCharge', Locked = true;
+        Path: Text;
+        SecondLine: Boolean;
+    begin
+        SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
+        SalesCrMemoLine.FindSet();
+        repeat
+            Path := DocumentTok + '/cbc:AllowanceChargeReason';
+            if SecondLine then
+                Assert.AreEqual('LineDiscount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
+            if SecondLine then
+                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            Path := DocumentTok + '/cbc:Amount';
+            if SecondLine then
+                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Line Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            Path := DocumentTok + '/cbc:BaseAmount';
+            if SecondLine then
+                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Unit Price" * SalesCrMemoLine.Quantity), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+            SecondLine := true;
+        until SalesCrMemoLine.Next() = 0;
+    end;
+
+    local procedure VerifyCrMemoWithInvDiscount(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
+    var
+        DocumentTok: Label '/ns0:CreditNote/cac:AllowanceCharge', Locked = true;
+        Path: Text;
+    begin
+        SalesCrMemoHeader.CalcFields(Amount, "Invoice Discount Amount");
+        Path := DocumentTok + '/cbc:AllowanceChargeReason';
+        Assert.AreEqual('Document discount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
+        Assert.AreEqual(FormatDecimal(100 * SalesCrMemoHeader."Invoice Discount Amount" / (SalesCrMemoHeader."Invoice Discount Amount" + SalesCrMemoHeader.Amount)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:Amount';
+        Assert.AreEqual(FormatDecimal(SalesCrMemoHeader."Invoice Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:BaseAmount';
+        Assert.AreEqual(FormatDecimal(SalesCrMemoHeader."Invoice Discount Amount" + SalesCrMemoHeader.Amount), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure GetCurrencyCode(CurrencyCode: Code[10]): Code[10];
@@ -946,6 +1178,11 @@ codeunit 13918 "XRechnung XML Document Tests"
     local procedure FormatDecimal(VarDecimal: Decimal): Text[30];
     begin
         exit(Format(Round(VarDecimal, 0.01), 0, 9));
+    end;
+
+    procedure FormatFourDecimal(VarDecimal: Decimal): Text[30];
+    begin
+        exit(Format(Round(VarDecimal, 0.0001), 0, 9));
     end;
 
     local procedure Initialize();

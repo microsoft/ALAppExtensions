@@ -3,8 +3,8 @@ codeunit 139630 "E-Doc. Impl. State"
     EventSubscriberInstance = Manual;
 
     var
-        TmpPurchHeader: Record "Purchase Header" temporary;
-        TmpPurchLine: Record "Purchase Line" temporary;
+        TempPurchHeader: Record "Purchase Header" temporary;
+        TempPurchLine: Record "Purchase Line" temporary;
         PurchDocTestBuffer: Codeunit "E-Doc. Test Buffer";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         EnableOnCheck, DisableOnCreateOutput, DisableOnCreateBatch, IsAsync2, EnableHttpData, ThrowIntegrationRuntimeError, ThrowIntegrationLoggedError : Boolean;
@@ -89,36 +89,36 @@ codeunit 139630 "E-Doc. Impl. State"
         CompanyInformation.Get();
         GLSetup.Get();
 
-        PurchDocTestBuffer.GetPurchaseDocToTempVariables(TmpPurchHeader, TmpPurchLine);
-        if TmpPurchHeader.FindFirst() then begin
+        PurchDocTestBuffer.GetPurchaseDocToTempVariables(TempPurchHeader, TempPurchLine);
+        if TempPurchHeader.FindFirst() then begin
             if EDocument."Index In Batch" <> 0 then
-                TmpPurchHeader.Next(EDocument."Index In Batch" - 1);
+                TempPurchHeader.Next(EDocument."Index In Batch" - 1);
 
-            case TmpPurchHeader."Document Type" of
-                TmpPurchHeader."Document Type"::Invoice:
+            case TempPurchHeader."Document Type" of
+                TempPurchHeader."Document Type"::Invoice:
                     begin
                         EDocument."Document Type" := EDocument."Document Type"::"Purchase Invoice";
-                        EDocument."Incoming E-Document No." := TmpPurchHeader."Vendor Invoice No.";
+                        EDocument."Incoming E-Document No." := TempPurchHeader."Vendor Invoice No.";
                     end;
-                TmpPurchHeader."Document Type"::"Credit Memo":
+                TempPurchHeader."Document Type"::"Credit Memo":
                     begin
                         EDocument."Document Type" := EDocument."Document Type"::"Purchase Credit Memo";
-                        EDocument."Incoming E-Document No." := TmpPurchHeader."Vendor Cr. Memo No.";
+                        EDocument."Incoming E-Document No." := TempPurchHeader."Vendor Cr. Memo No.";
                     end;
             end;
 
-            EDocument."Bill-to/Pay-to No." := TmpPurchHeader."Pay-to Vendor No.";
-            EDocument."Bill-to/Pay-to Name" := TmpPurchHeader."Pay-to Name";
-            EDocument."Document Date" := TmpPurchHeader."Document Date";
-            EDocument."Due Date" := TmpPurchHeader."Due Date";
+            EDocument."Bill-to/Pay-to No." := TempPurchHeader."Pay-to Vendor No.";
+            EDocument."Bill-to/Pay-to Name" := TempPurchHeader."Pay-to Name";
+            EDocument."Document Date" := TempPurchHeader."Document Date";
+            EDocument."Due Date" := TempPurchHeader."Due Date";
             EDocument."Receiving Company VAT Reg. No." := CompanyInformation."VAT Registration No.";
             EDocument."Receiving Company GLN" := CompanyInformation.GLN;
             EDocument."Receiving Company Name" := CompanyInformation.Name;
             EDocument."Receiving Company Address" := CompanyInformation.Address;
             EDocument."Currency Code" := GLSetup."LCY Code";
-            TmpPurchHeader.CalcFields(Amount, "Amount Including VAT");
-            EDocument."Amount Excl. VAT" := TmpPurchHeader.Amount;
-            EDocument."Amount Incl. VAT" := TmpPurchHeader."Amount Including VAT";
+            TempPurchHeader.CalcFields(Amount, "Amount Including VAT");
+            EDocument."Amount Excl. VAT" := TempPurchHeader.Amount;
+            EDocument."Amount Incl. VAT" := TempPurchHeader."Amount Including VAT";
             EDocument."Order No." := PurchDocTestBuffer.GetEDocOrderNo();
         end;
     end;
@@ -126,34 +126,34 @@ codeunit 139630 "E-Doc. Impl. State"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Format Mock", 'OnGetCompleteInfoFromReceivedDocument', '', false, false)]
     local procedure OnGetCompleteInfoFromReceivedDocument(var EDocument: Record "E-Document"; var CreatedDocumentHeader: RecordRef; var CreatedDocumentLines: RecordRef; var TempBlob: codeunit "Temp Blob")
     var
-        TmpPurchHeader2: Record "Purchase Header" temporary;
-        TmpPurchLine2: Record "Purchase Line" temporary;
+        TempPurchHeader2: Record "Purchase Header" temporary;
+        TempPurchLine2: Record "Purchase Line" temporary;
     begin
         if ThrowCompleteInfoError then
             Error('Test Get Complete Info From Received Document Error.');
 
-        PurchDocTestBuffer.GetPurchaseDocToTempVariables(TmpPurchHeader, TmpPurchLine);
-        if TmpPurchHeader.FindFirst() then begin
+        PurchDocTestBuffer.GetPurchaseDocToTempVariables(TempPurchHeader, TempPurchLine);
+        if TempPurchHeader.FindFirst() then begin
             if EDocument."Index In Batch" <> 0 then
-                TmpPurchHeader.Next(EDocument."Index In Batch" - 1);
+                TempPurchHeader.Next(EDocument."Index In Batch" - 1);
 
-            TmpPurchHeader2.Init();
-            TmpPurchHeader2.TransferFields(TmpPurchHeader);
-            TmpPurchHeader2."Vendor Invoice No." := TmpPurchHeader."No.";
-            TmpPurchHeader2.Insert();
+            TempPurchHeader2.Init();
+            TempPurchHeader2.TransferFields(TempPurchHeader);
+            TempPurchHeader2."Vendor Invoice No." := TempPurchHeader."No.";
+            TempPurchHeader2.Insert();
 
-            TmpPurchLine.SetRange("Document Type", TmpPurchHeader."Document Type");
-            TmpPurchLine.SetRange("Document No.", TmpPurchHeader."No.");
-            if TmpPurchLine.FindSet() then
+            TempPurchLine.SetRange("Document Type", TempPurchHeader."Document Type");
+            TempPurchLine.SetRange("Document No.", TempPurchHeader."No.");
+            if TempPurchLine.FindSet() then
                 repeat
-                    TmpPurchLine2.Init();
-                    TmpPurchLine2.TransferFields(TmpPurchLine);
-                    TmpPurchLine2.Insert();
-                until TmpPurchLine.Next() = 0;
+                    TempPurchLine2.Init();
+                    TempPurchLine2.TransferFields(TempPurchLine);
+                    TempPurchLine2.Insert();
+                until TempPurchLine.Next() = 0;
         end;
 
-        CreatedDocumentHeader.GetTable(TmpPurchHeader2);
-        CreatedDocumentLines.GetTable(TmpPurchLine2);
+        CreatedDocumentHeader.GetTable(TempPurchHeader2);
+        CreatedDocumentLines.GetTable(TempPurchLine2);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock V2", OnSend, '', false, false)]
@@ -247,9 +247,9 @@ codeunit 139630 "E-Doc. Impl. State"
             for I := 1 to C do
                 ReceivedEDocuments.Add(TempBlob)
         end else begin
-            PurchDocTestBuffer.GetPurchaseDocToTempVariables(TmpPurchHeader, TmpPurchLine);
-            if TmpPurchHeader.Count() > 0 then
-                for I := 1 to TmpPurchHeader.Count() do
+            PurchDocTestBuffer.GetPurchaseDocToTempVariables(TempPurchHeader, TempPurchLine);
+            if TempPurchHeader.Count() > 0 then
+                for I := 1 to TempPurchHeader.Count() do
                     ReceivedEDocuments.Add(TempBlob);
         end;
     end;
@@ -294,6 +294,7 @@ codeunit 139630 "E-Doc. Impl. State"
 
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock", 'OnSend', '', false, false)]
     local procedure OnSend(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
@@ -346,15 +347,15 @@ codeunit 139630 "E-Doc. Impl. State"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock", 'OnGetDocumentCountInBatch', '', false, false)]
     local procedure OnGetDocumentCountInBatch(var Count: Integer)
     var
-        TmpPurchHeader: Record "Purchase Header" temporary;
-        TmpPurchLine: Record "Purchase Line" temporary;
-        PurchDocTestBuffer: Codeunit "E-Doc. Test Buffer";
+        TempPurchHeader2: Record "Purchase Header" temporary;
+        TempPurchLine2: Record "Purchase Line" temporary;
+        PurchDocTestBuffer2: Codeunit "E-Doc. Test Buffer";
     begin
         if LibraryVariableStorage.Length() > 0 then
             Count := LibraryVariableStorage.DequeueInteger()
         else begin
-            PurchDocTestBuffer.GetPurchaseDocToTempVariables(TmpPurchHeader, TmpPurchLine);
-            Count := TmpPurchHeader.Count();
+            PurchDocTestBuffer2.GetPurchaseDocToTempVariables(TempPurchHeader2, TempPurchLine2);
+            Count := TempPurchHeader2.Count();
         end;
     end;
 
@@ -384,6 +385,7 @@ codeunit 139630 "E-Doc. Impl. State"
         if ThrowIntegrationLoggedError then
             EDocErrorHelper.LogSimpleErrorMessage(EDocument, 'TEST');
     end;
+#pragma warning restore AL0432
 #endif
 
 #if not CLEAN26

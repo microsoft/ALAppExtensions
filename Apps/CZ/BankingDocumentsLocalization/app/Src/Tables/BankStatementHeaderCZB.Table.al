@@ -394,14 +394,14 @@ table 31252 "Bank Statement Header CZB"
         if "No." = '' then begin
             BankAccount.Get("Bank Account No.");
             BankAccount.Testfield("Bank Statement Nos. CZB");
-                "No. Series" := BankAccount."Bank Statement Nos. CZB";
-                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                    "No. Series" := xRec."No. Series";
+            "No. Series" := BankAccount."Bank Statement Nos. CZB";
+            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                "No. Series" := xRec."No. Series";
+            "No." := NoSeries.GetNextNo("No. Series");
+            BankStatementHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
+            BankStatementHeader.SetLoadFields("No.");
+            while BankStatementHeader.Get("No.") do
                 "No." := NoSeries.GetNextNo("No. Series");
-                BankStatementHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
-                BankStatementHeader.SetLoadFields("No.");
-                while BankStatementHeader.Get("No.") do
-                    "No." := NoSeries.GetNextNo("No. Series");
         end;
     end;
 
@@ -597,6 +597,8 @@ table 31252 "Bank Statement Header CZB"
         DocumentAttachment.SaveAttachmentFromStream(DocumentInStream, RecordRef, FileName);
         DocumentAttachmentMgmt.ShowNotification(RecordRef, 1, true);
     end;
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the BankStatementStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
 
     procedure ShowStatistics()
     var
@@ -608,7 +610,7 @@ table 31252 "Bank Statement Header CZB"
         BankingDocStatisticsCZB.SetValues("Bank Account No.", "Document Date", Amount);
         BankingDocStatisticsCZB.Run();
     end;
-
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeImportBankStatement(var BankStatementHeaderCZB: Record "Bank Statement Header CZB"; var IsHandled: Boolean)

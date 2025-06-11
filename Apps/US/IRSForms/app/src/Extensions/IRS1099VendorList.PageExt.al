@@ -8,6 +8,52 @@ using Microsoft.Purchases.Vendor;
 
 pageextension 10050 "IRS 1099 Vendor List" extends "Vendor List"
 {
+    layout
+    {
+        addlast(Control1)
+        {
+            field("IRS Reporting Period"; Rec."IRS Reporting Period")
+            {
+                ApplicationArea = BasicUS;
+                ToolTip = 'Specifies the last IRS reporting period where the vendor has a vendor form box setup';
+#if not CLEAN25
+                Visible = IsNewFeatureEnabled;
+#endif
+            }
+            field("E-Mail For IRS"; Rec."E-Mail For IRS")
+            {
+                ApplicationArea = BasicUS;
+                ToolTip = 'Specifies the email address of the vendor to receive the IRS 1099 form.';
+#if not CLEAN25
+                Visible = IsNewFeatureEnabled;
+#endif
+            }
+            field("IRS 1099 Form No."; Rec."IRS 1099 Form No.")
+            {
+                ApplicationArea = BasicUS;
+                ToolTip = 'Specifies the IRS form number where the vendor has a vendor form box setup';
+#if not CLEAN25
+                Visible = IsNewFeatureEnabled;
+#endif
+            }
+            field("IRS 1099 Form Box No."; Rec."IRS 1099 Form Box No.")
+            {
+                ApplicationArea = BasicUS;
+                ToolTip = 'Specifies the IRS form box number where the vendor has a vendor form box setup';
+#if not CLEAN25
+                Visible = IsNewFeatureEnabled;
+#endif
+            }
+            field("Receive Elec. IRS Forms"; Rec."Receiving 1099 E-Form Consent")
+            {
+                ApplicationArea = BasicUS;
+                Tooltip = 'Specifies that your vendor has provided signed consent to receive their 1099 form electronically.';
+#if not CLEAN25
+                Visible = IsNewFeatureEnabled;
+#endif
+            }
+        }
+    }
     actions
     {
 #if not CLEAN25

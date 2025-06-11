@@ -6,7 +6,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Security.AccessControl;
 
-permissionsetextension 9987 "D365 TEAM MEMBER - DIOT - Localization for Mexico" extends "D365 TEAM MEMBER"
+permissionsetextension 27036 "D365 TEAM MEMBER - DIOT - Localization for Mexico" extends "D365 TEAM MEMBER"
 {
     Permissions = tabledata "DIOT Concept" = RIMD,
                   tabledata "DIOT Concept Link" = RIMD,

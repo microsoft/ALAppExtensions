@@ -6,9 +6,7 @@ page 37013 "Purchases Moving Annual Total"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Purchases Moving Annual Total';
     AboutTitle = 'About Purchases Moving Annual Total';
     AboutText = 'The Purchases Moving Annual Total report provides a rolling 12-month view of procurement figures, tracking current year to the previous year''s performance. ';
@@ -25,7 +23,7 @@ page 37013 "Purchases Moving Annual Total"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

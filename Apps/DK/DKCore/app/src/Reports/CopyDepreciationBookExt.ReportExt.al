@@ -6,7 +6,6 @@
 namespace Microsoft.Finance.Core;
 
 using Microsoft.FixedAssets.Depreciation;
-using Microsoft.FixedAssets.Ledger;
 
 reportextension 13602 CopyDepreciationBookExt extends "Copy Depreciation Book"
 {
@@ -26,6 +25,4 @@ reportextension 13602 CopyDepreciationBookExt extends "Copy Depreciation Book"
         }
     }
 
-    var
-        CancelFALedgEntries: Codeunit "Cancel FA Ledger Entries";
 }

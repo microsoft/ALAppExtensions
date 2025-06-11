@@ -51,7 +51,7 @@ pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
         }
         addafter("Currency Code")
         {
-            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCode())
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL())
             {
                 ApplicationArea = Suite;
                 Caption = 'Additional Currency Code';
@@ -61,7 +61,9 @@ pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
                 trigger OnAssistEdit()
                 begin
                     Clear(ChangeExchangeRate);
-                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    if Rec."Additional Currency Factor CZL" = 0 then
+                        Rec.UpdateAddCurrencyFactorCZL();
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
                     if ChangeExchangeRate.RunModal() = Action::OK then
                         Rec."Additional Currency Factor CZL" := ChangeExchangeRate.GetParameter();
                     Clear(ChangeExchangeRate);
@@ -202,7 +204,7 @@ pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
 
     trigger OnOpenPage()
     begin
-        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
     end;
 
     var

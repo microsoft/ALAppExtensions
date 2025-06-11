@@ -38,6 +38,7 @@ codeunit 6169 "E-Doc. Attachment Processor"
     begin
         RecordRef.GetTable(EDocument);
         DocumentAttachment.SaveAttachmentFromStream(DocStream, RecordRef, FileName);
+        DocumentAttachment."Document Flow Purchase" := true;
         DocumentAttachment.Validate("E-Document Attachment", true);
         DocumentAttachment.Validate("E-Document Entry No.", EDocument."Entry No");
         DocumentAttachment.Modify();
@@ -111,13 +112,27 @@ codeunit 6169 "E-Doc. Attachment Processor"
         until DocumentAttachment.Next() = 0;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnCopyAttachmentsOnAfterSetFromParameters, '', false, false)]
+    local procedure OnCopyAttachmentsOnAfterSetFromParameters(FromRecRef: RecordRef; var FromDocumentAttachment: Record "Document Attachment"; var FromAttachmentDocumentType: Enum "Attachment Document Type")
+    var
+        EDocument: Record "E-Document";
+    begin
+        if FromRecRef.Number() <> Database::"E-Document" then
+            exit;
+
+        EDocument := FromRecRef;
+        FromDocumentAttachment.SetRange("No.", Format(EDocument."Entry No"));
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnAfterTableHasNumberFieldPrimaryKey, '', false, false)]
     local procedure OnAfterTableHasNumberFieldPrimaryKeyForEDocs(TableNo: Integer; var Result: Boolean; var FieldNo: Integer)
+    var
+        EDocument: Record "E-Document";
     begin
         case TableNo of
             Database::"E-Document":
                 begin
-                    FieldNo := 1;
+                    FieldNo := EDocument.FieldNo("Entry No");
                     Result := true;
                 end;
         end;

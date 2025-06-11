@@ -524,15 +524,18 @@
     },
     {
       "id": "AS0131",
-      "action": "Error"
+      "action": "None",
+      "justification": "Schema additive changes are allowed."
     },
     {
       "id": "AS0132",
-      "action": "Error"
+      "action": "None",
+      "justification": "Schema additive changes are allowed."
     },
     {
       "id": "AS0133",
-      "action": "Error"
+      "action": "None",
+      "justification": "Schema additive changes are allowed."
     },
     {
       "id": "AS0134",

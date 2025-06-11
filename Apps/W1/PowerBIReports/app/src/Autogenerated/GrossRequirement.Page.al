@@ -6,9 +6,7 @@ page 37027 "Gross Requirement"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Gross Requirement';
     AboutTitle = 'About Gross Requirement';
     AboutText = 'The Gross Requirement report visualizes Gross Requirements against Projected Available Balance over time, offering a clear view of inventory demands. A table matrix breaks down this data by item, showcasing key metrics like Gross Requirement, Projected Available Balance, and quantities from demand documents (sales orders and purchase return orders). ';
@@ -25,7 +23,7 @@ page 37027 "Gross Requirement"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

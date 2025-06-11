@@ -8,6 +8,7 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GST.Base;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Inventory.Item;
+using Microsoft.Finance.TaxEngine.PostingHandler;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Transfer;
 
@@ -153,5 +154,16 @@ codeunit 18392 "GST Transfer Subscribers"
     begin
         Item.Get(Rec."Item No.");
         Rec.Validate("Transfer Price", Item."Unit Cost" * Rec."Qty. per Unit of Measure");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnBeforeErrorIfNegativeAmt', '', false, false)]
+    local procedure OnBeforeErrorIfNegativeAmt(GenJnlLine: Record "Gen. Journal Line"; var RaiseError: Boolean)
+    var
+        TaxJnlMgmt: Codeunit "Tax Posting Buffer Mgmt.";
+        AmountLCYToAdjust: Decimal;
+    begin
+        AmountLCYToAdjust := TaxJnlMgmt.GetTaxAmount(GenJnlLine."Tax ID");
+        if Abs(AmountLCYToAdjust) > 0 then
+            RaiseError := false;
     end;
 }

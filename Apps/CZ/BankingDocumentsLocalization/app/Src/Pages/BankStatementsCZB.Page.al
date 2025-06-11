@@ -106,6 +106,7 @@ page 31253 "Bank Statements CZB"
     {
         area(Navigation)
         {
+#if not CLEAN27
             action(Statistics)
             {
                 ApplicationArea = Basic, Suite;
@@ -113,11 +114,31 @@ page 31253 "Bank Statements CZB"
                 Image = Statistics;
                 ShortCutKey = 'F7';
                 ToolTip = 'View the statistics on the selected bank statement.';
+                ObsoleteReason = 'The statistics action will be replaced with the BankStatementStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
 
                 trigger OnAction()
                 begin
                     Rec.ShowStatistics();
                 end;
+            }
+#endif
+            action(BankStatementStatistics)
+            {
+                ApplicationArea = VAT;
+                Caption = 'Statistics';
+                Image = Statistics;
+                ShortcutKey = 'F7';
+                Enabled = Rec."No." <> '';
+                ToolTip = 'View statistical information for the record.';
+#if CLEAN27
+                Visible = true;
+#else
+                Visible = false;
+#endif
+                RunObject = Page "Bank Statement Statistics CZB";
+                RunPageOnRec = true;
             }
             action(DocAttach)
             {
@@ -283,9 +304,18 @@ page 31253 "Bank Statements CZB"
             {
                 Caption = 'Bank Statement';
 
+#if not CLEAN27
                 actionref(Statistics_Promoted; Statistics)
                 {
+                    ObsoleteReason = 'The statistics action will be replaced with the BankStatementStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
                 }
+#else
+                actionref(BankStatementStatistics_Promoted; BankStatementStatistics)
+                {
+                }
+#endif
             }
         }
     }

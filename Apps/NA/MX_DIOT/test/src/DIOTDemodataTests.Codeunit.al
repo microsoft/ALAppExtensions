@@ -25,6 +25,11 @@ codeunit 148044 "DIOT Demodata Tests"
         Assert.RecordIsEmpty(DIOTCountryDATA);
         DIOTCountryDATA.SetFilter("Country/Region Code", '<>%1', '');
         Assert.RecordIsNotEmpty(DIOTCountryDATA);
+
+        DIOTCountryDATA.Get('DK');
+        Assert.AreEqual('Dinamarca', DIOTCountryDATA.Nationality, '');
+        Assert.AreEqual('DK', DIOTCountryDATA."BC Country/Region Code", '');
+        Assert.AreEqual('DNK', DIOTCountryDATA."ISO A-3 Country/Region Code", '');
     end;
 
     [Test]
@@ -33,10 +38,12 @@ codeunit 148044 "DIOT Demodata Tests"
         DIOTConcept: Record "DIOT Concept";
         i: Integer;
     begin
-        // [SCENARIO] There are 17 default DIOT Concepts with descriptions
+        // [SCENARIO] There are 46 default DIOT Concepts with descriptions
         Initialize();
 
-        for i := 1 to 17 do begin
+        Assert.AreEqual(46, DIOTConcept.Count(), 'There should be 46 default DIOT Concepts');
+
+        for i := 1 to 46 do begin
             DIOTConcept.Get(i);
             DIOTConcept.TestField(Description);
         end;

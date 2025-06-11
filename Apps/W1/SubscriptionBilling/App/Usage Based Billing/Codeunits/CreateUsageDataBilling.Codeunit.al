@@ -54,6 +54,7 @@ codeunit 8023 "Create Usage Data Billing"
     internal procedure CollectServiceCommitments(var TempServiceCommitment: Record "Subscription Line" temporary; ServiceObjectNo: Code[20]; SubscriptionEndDate: Date)
     begin
         FillTempServiceCommitment(TempServiceCommitment, ServiceObjectNo, SubscriptionEndDate);
+        OnAfterCollectServiceCommitments(TempServiceCommitment, ServiceObjectNo, SubscriptionEndDate);
     end;
 
     internal procedure CreateUsageDataBillingFromTempServiceCommitments(var TempServiceCommitment: Record "Subscription Line"; SupplierNo: Code[20]; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; BillingPeriodStartDate: Date;
@@ -140,6 +141,11 @@ codeunit 8023 "Create Usage Data Billing"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreateUsageDataBillingFromTempSubscriptionLines(var TempSubscriptionLine: Record "Subscription Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCollectServiceCommitments(var TempSubscriptionLine: Record "Subscription Line" temporary; SubscriptionHeaderNo: Code[20]; SubscriptionLineEndDate: Date)
     begin
     end;
 

@@ -1089,7 +1089,13 @@ codeunit 18147 "e-Invoice Json Handler"
         TransportDocDt: Text[10];
         VehNo: Text[20];
         VehType: Text[1];
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeReadEwbDtls(DocumentNo, IsInvoice, IsHandled);
+        if IsHandled then
+            exit;
+
         TransDocNo := '';
         if IsInvoice then
             if SalesInvHeader.Get(DocumentNo) then begin
@@ -1182,6 +1188,7 @@ codeunit 18147 "e-Invoice Json Handler"
             SalesInvoiceLine.SetRange("Document No.", DocumentNo);
             SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
             SalesInvoiceLine.SetFilter(Quantity, '<>%1', 0);
+            OnBeforeFindSalesInvoiceLineSetFilter(DocumentNo, SalesInvoiceLine);
             if SalesInvoiceLine.FindSet() then begin
                 if SalesInvoiceLine.Count > 100 then
                     Error(SalesLinesMaxCountLimitErr, SalesInvoiceLine.Count);
@@ -1236,6 +1243,7 @@ codeunit 18147 "e-Invoice Json Handler"
             SalesCrMemoLine.SetRange("Document No.", DocumentNo);
             SalesCrMemoLine.SetFilter(Type, '<>%1', SalesCrMemoLine.Type::" ");
             SalesCrMemoLine.SetFilter(Quantity, '<>%1', 0);
+            OnBeforeFindSalesCrMemoLineSetFilter(DocumentNo, SalesCrMemoLine);
             if SalesCrMemoLine.FindSet() then begin
                 if SalesCrMemoLine.Count > 100 then
                     Error(SalesLinesMaxCountLimitErr, SalesCrMemoLine.Count);
@@ -1341,6 +1349,8 @@ codeunit 18147 "e-Invoice Json Handler"
     var
         JItem: JsonObject;
     begin
+        OnBeforeWriteItem(IsServc, Unit);
+
         JItem.Add('SlNo', SlNo);
         JItem.Add('PrdDesc', ProductName);
         JItem.Add('IsServc', IsServc);
@@ -1362,6 +1372,7 @@ codeunit 18147 "e-Invoice Json Handler"
         JItem.Add('CesNonAdval', CessNonAdvanceAmount);
         JItem.Add('TotItemVal', TotalItemValue);
 
+        OnAfterWriteItem(JItem);
         JsonArrayData.Add(JItem);
     end;
 
@@ -1371,7 +1382,13 @@ codeunit 18147 "e-Invoice Json Handler"
         ToFile: Variant;
         InStream: InStream;
         OutStream: OutStream;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeExportAsJson(JsonArrayData, JObject, FileName, IsHandled);
+        if IsHandled then
+            exit;
+
         JsonArrayData.Add(JObject);
         JsonArrayData.WriteTo(JsonText);
         TempBlob.CreateOutStream(OutStream);
@@ -1655,4 +1672,33 @@ codeunit 18147 "e-Invoice Json Handler"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeWriteItem(var IsServc: Text[1]; var UnitOfMeasure: Text[3])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterWriteItem(var JItem: JsonObject)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeReadEwbDtls(DocumentNo: Text[20]; IsInvoice: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFindSalesInvoiceLineSetFilter(DocumentNo: Text[20]; var SalesInvoiceLine: Record "Sales Invoice Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFindSalesCrMemoLineSetFilter(DocumentNo: Text[20]; var SalesCrMemoLine: Record "Sales Cr.Memo Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeExportAsJson(var JsonArrayData: JsonArray; var JObject: JsonObject; FileName: Text[20]; var IsHandled: Boolean)
+    begin
+    end;
 }

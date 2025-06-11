@@ -1,22 +1,23 @@
 namespace Microsoft.Finance.PowerBIReports.Test;
 
-using Microsoft.PowerBIReports;
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.GeneralLedger.Ledger;
-using System.Text;
-using System.Utilities;
 using Microsoft.Finance.GeneralLedger.Budget;
-using Microsoft.Sales.History;
-using Microsoft.Sales.Receivables;
-using Microsoft.Sales.Document;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.PowerBIReports;
+using Microsoft.PowerBIReports;
+using Microsoft.PowerBIReports.Test;
+using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
-using Microsoft.Purchases.Document;
-using Microsoft.PowerBIReports.Test;
-using System.TestLibraries.Utilities;
-using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
 using System.TestLibraries.Security.AccessControl;
+using System.TestLibraries.Utilities;
+using System.Text;
+using System.Utilities;
 
 codeunit 139876 "PowerBI Finance Test"
 {
@@ -613,6 +614,35 @@ codeunit 139876 "PowerBI Finance Test"
 
         // [THEN] A filter text of format "%1..%2" should be created 
         Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+    end;
+
+    [Test]
+    procedure VerifyEditingPowerBIAccCategoryWhenGLAccCategoryContainsSpecialCharacter()
+    var
+        GLAccountCategory: Record "G/L Account Category";
+        AccountCategories: TestPage "Account Categories";
+    begin
+        // [SCENARIO 572645] Verify editing of Power BI account categories when the G/L account category contains the special character ')', and ensure the update is successful without errors.
+        // Permission Set.
+        PermissionsMock.Assign('SUPER');
+        PowerBICoreTest.AssignAdminPermissionSet();
+        RecreatePBISetup();
+
+        // [GIVEN] Create G/L Account Category.
+        LibERM.CreateGLAccountCategory(GLAccountCategory);
+
+        // [GIVEN] Change the G/L account category description and add a special character to the description.
+        GLAccountCategory.Validate(Description, '');
+        GLAccountCategory.Validate(Description, '3)Cash');
+        GLAccountCategory.Modify();
+        PermissionsMock.ClearAssignments();
+
+        // [WHEN] Account Category page is open
+        AccountCategories.OpenEdit();
+        AccountCategories.First();
+
+        // [THEN] Edit the Power BI account categories and add the G/L account category that contains the special character.The system did not display any errors, and the category was successfully changed.
+        AccountCategories.AccountCategoryDescription.SetValue(GLAccountCategory.Description);
     end;
 
     local procedure RecreatePBISetup()

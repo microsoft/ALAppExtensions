@@ -606,6 +606,7 @@ codeunit 148190 "Sust. Value Entry Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
     [Test]
     [HandlerFunctions('PurchaseOrderStatisticsPageHandler')]
@@ -722,6 +723,7 @@ codeunit 148190 "Sust. Value Entry Test"
         OpenPurchaseOrderStatistics(PurchaseHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
 
     [Test]
@@ -1607,6 +1609,7 @@ codeunit 148190 "Sust. Value Entry Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandler')]
@@ -1701,6 +1704,7 @@ codeunit 148190 "Sust. Value Entry Test"
         OpenSalesOrderStatistics(SalesHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandlerNM')]

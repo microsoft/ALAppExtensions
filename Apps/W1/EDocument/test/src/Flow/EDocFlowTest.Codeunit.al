@@ -21,7 +21,7 @@ codeunit 139631 "E-Doc. Flow Test"
         EDocWorkflowProcessing: Codeunit "E-Document WorkFlow Processing";
         CustomerNo, DocSendProfileNo, WorkflowCode, ServiceCode : Code[20];
     begin
-        // [FEATURE] [E-Document] [Flow] 
+        // [FEATURE] [E-Document] [Flow]
         // [SCENARIO] Get services from workflow
 
         // [GIVEN] Created posting a document
@@ -33,7 +33,7 @@ codeunit 139631 "E-Doc. Flow Test"
         ServiceCode := LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock");
         WorkflowCode := LibraryEDoc.CreateFlowWithService(DocSendProfileNo, ServiceCode);
 
-        // [THEN] Team Member DoesFlowHasEDocService returns Service A 
+        // [THEN] Team Member DoesFlowHasEDocService returns Service A
         LibraryLowerPermission.SetTeamMember();
         EDocWorkflowProcessing.DoesFlowHasEDocService(EDocService, WorkflowCode);
         EDocService.FindSet();
@@ -48,20 +48,20 @@ codeunit 139631 "E-Doc. Flow Test"
         EDocWorkflowProcessing: Codeunit "E-Document WorkFlow Processing";
         CustomerNo, DocSendProfileNo, WorkflowCode, ServiceCodeA, ServiceCodeB : Code[20];
     begin
-        // [FEATURE] [E-Document] [Flow] 
+        // [FEATURE] [E-Document] [Flow]
         // [SCENARIO] Get services from workflow with multiple services
 
         // [GIVEN] Created posting a document
         Initialize();
 
-        // [WHEN] Creating worfklow with Service A and B 
+        // [WHEN] Creating worfklow with Service A and B
         CustomerNo := LibrarySales.CreateCustomerNo();
         DocSendProfileNo := LibraryEDoc.CreateDocumentSendingProfileForWorkflow(CustomerNo, '');
         ServiceCodeA := LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock");
         ServiceCodeB := LibraryEDoc.CreateService(Enum::"Service Integration"::"Mock");
         WorkflowCode := LibraryEDoc.CreateFlowWithServices(DocSendProfileNo, ServiceCodeA, ServiceCodeB);
 
-        // [THEN] DoesFlowHasEDocService returns service A and B 
+        // [THEN] DoesFlowHasEDocService returns service A and B
         EDocWorkflowProcessing.DoesFlowHasEDocService(EDocService, WorkflowCode);
         Assert.AreEqual(2, EDocService.Count(), WrongValueErr);
         EDocService.FindSet();
@@ -77,7 +77,7 @@ codeunit 139631 "E-Doc. Flow Test"
         EDocWorkflowProcessing: Codeunit "E-Document WorkFlow Processing";
         WorkflowCode: Code[20];
     begin
-        // [FEATURE] [E-Document] [Flow] 
+        // [FEATURE] [E-Document] [Flow]
         // [SCENARIO] Get services from empty workflow
 
         // [GIVEN] Empty workflow
@@ -99,10 +99,10 @@ codeunit 139631 "E-Doc. Flow Test"
         EDocWorkflowProcessing: Codeunit "E-Document WorkFlow Processing";
         CustomerNo, DocSendProfileNo : Code[20];
     begin
-        // [FEATURE] [E-Document] [Flow] 
-        // [SCENARIO] Call SendEDocument with no service specified as argument 
+        // [FEATURE] [E-Document] [Flow]
+        // [SCENARIO] Call SendEDocument with no service specified as argument
 
-        // [GIVEN] 
+        // [GIVEN]
         Initialize();
 
         EDocument."Entry No" := 0;
@@ -126,6 +126,7 @@ codeunit 139631 "E-Doc. Flow Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Test]
     [Obsolete('Obsolete in 26.0', '26.0')]
     procedure EDocFlowGetServiceInFlowSuccess()
@@ -134,7 +135,7 @@ codeunit 139631 "E-Doc. Flow Test"
         EDocWorkflowProcessing: Codeunit "E-Document WorkFlow Processing";
         CustomerNo, DocSendProfileNo, WorkflowCode, ServiceCode : Code[20];
     begin
-        // [FEATURE] [E-Document] [Flow] 
+        // [FEATURE] [E-Document] [Flow]
         // [SCENARIO] Get services from workflow
 
         // [GIVEN] Created posting a document
@@ -146,7 +147,7 @@ codeunit 139631 "E-Doc. Flow Test"
         ServiceCode := LibraryEDoc.CreateService(Enum::"E-Document Integration"::Mock);
         WorkflowCode := LibraryEDoc.CreateFlowWithService(DocSendProfileNo, ServiceCode);
 
-        // [THEN] Team Member DoesFlowHasEDocService returns Service A 
+        // [THEN] Team Member DoesFlowHasEDocService returns Service A
         LibraryLowerPermission.SetTeamMember();
         EDocWorkflowProcessing.DoesFlowHasEDocService(EDocService, WorkflowCode);
         EDocService.FindSet();
@@ -162,20 +163,20 @@ codeunit 139631 "E-Doc. Flow Test"
         EDocWorkflowProcessing: Codeunit "E-Document WorkFlow Processing";
         CustomerNo, DocSendProfileNo, WorkflowCode, ServiceCodeA, ServiceCodeB : Code[20];
     begin
-        // [FEATURE] [E-Document] [Flow] 
+        // [FEATURE] [E-Document] [Flow]
         // [SCENARIO] Get services from workflow with multiple services
 
         // [GIVEN] Created posting a document
         Initialize();
 
-        // [WHEN] Creating worfklow with Service A and B 
+        // [WHEN] Creating worfklow with Service A and B
         CustomerNo := LibrarySales.CreateCustomerNo();
         DocSendProfileNo := LibraryEDoc.CreateDocumentSendingProfileForWorkflow(CustomerNo, '');
         ServiceCodeA := LibraryEDoc.CreateService(Enum::"E-Document Integration"::Mock);
         ServiceCodeB := LibraryEDoc.CreateService(Enum::"E-Document Integration"::Mock);
         WorkflowCode := LibraryEDoc.CreateFlowWithServices(DocSendProfileNo, ServiceCodeA, ServiceCodeB);
 
-        // [THEN] DoesFlowHasEDocService returns service A and B 
+        // [THEN] DoesFlowHasEDocService returns service A and B
         EDocWorkflowProcessing.DoesFlowHasEDocService(EDocService, WorkflowCode);
         Assert.AreEqual(2, EDocService.Count(), WrongValueErr);
         EDocService.FindSet();
@@ -183,6 +184,7 @@ codeunit 139631 "E-Doc. Flow Test"
         EDocService.Next();
         Assert.AreEqual(ServiceCodeB, EDocService.Code, WrongValueErr);
     end;
+#pragma warning restore AL0432
 #endif
 
     local procedure Initialize()

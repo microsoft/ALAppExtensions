@@ -17,6 +17,7 @@ codeunit 139567 "Shpfy Create Item Test"
         Shop: Record "Shpfy Shop";
         ShopifyProduct: Record "Shpfy Product";
         ShopifyVariant: Record "Shpfy Variant";
+        ItemTempl: Record "Item Templ.";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         InitializeTest: Codeunit "Shpfy Initialize Test";
     begin
@@ -38,7 +39,7 @@ codeunit 139567 "Shpfy Create Item Test"
         LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item SystemId"), 'Item SystemId <> NullGuid');
         LibraryAssert.IsTrue(Item.GetBySystemId(ShopifyVariant."Item SystemId"), 'Get Item');
 
-        // [THEN] On the "Shpfy Variant" record, the field "ITem Varaint SystemId" must be a null guid value.
+        // [THEN] On the "Shpfy Variant" record, the field "ITem Variant SystemId" must be a null guid value.
         LibraryAssert.IsTrue(IsNullGuid(ShopifyVariant."Item Variant SystemId"), 'Item Variant System Id = NullGuid');
 
         // [THEN] Check Item fields
@@ -47,6 +48,8 @@ codeunit 139567 "Shpfy Create Item Test"
         LibraryAssert.AreEqual(CopyStr(ShopifyProduct.Title, 1, MaxStrLen(Item.Description)), Item.Description, 'Description');
         LibraryAssert.AreEqual(ShopifyVariant."Unit Cost", Item."Unit Cost", 'Unit Cost');
         LibraryAssert.AreEqual(ShopifyVariant.Price, Item."Unit Price", 'Unit Price');
+        ItemTempl.Get(Shop."Item Templ. Code");
+        LibraryAssert.AreEqual(ItemTempl."Costing Method", Item."Costing Method", 'Item."Costing Method" = ItemTempl."Costing Method"');
     end;
 
     [Test]
@@ -89,7 +92,7 @@ codeunit 139567 "Shpfy Create Item Test"
                 LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item SystemId"), 'Item SystemId <> NullGuid');
                 LibraryAssert.IsTrue(Item.GetBySystemId(ShopifyVariant."Item SystemId"), 'Get Item');
 
-                // [THEN] On the "Shpfy Variant" record, the field "ITem Varaint SystemId" must be a null guid value.
+                // [THEN] On the "Shpfy Variant" record, the field "ITem Variant SystemId" must be a null guid value.
                 LibraryAssert.IsTrue(IsNullGuid(ShopifyVariant."Item Variant SystemId"), 'Item Variant System Id = NullGuid');
 
                 // [THEN] Check Item fields
@@ -135,7 +138,7 @@ codeunit 139567 "Shpfy Create Item Test"
         LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item SystemId"), 'Item SystemId <> NullGuid');
         LibraryAssert.IsTrue(Item.GetBySystemId(ShopifyVariant."Item SystemId"), 'Get Item');
 
-        // [THEN] On the "Shpfy Variant" record, the field "ITem Varaint SystemId" filled in and then "Item Variant" record must exist..
+        // [THEN] On the "Shpfy Variant" record, the field "ITem Variant SystemId" filled in and then "Item Variant" record must exist..
         LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item Variant SystemId"), 'Item Variant System Id <> NullGuid');
         LibraryAssert.IsTrue(ItemVariant.GetBySystemId(ShopifyVariant."Item Variant SystemId"), 'Get Item Variant');
 
@@ -146,12 +149,12 @@ codeunit 139567 "Shpfy Create Item Test"
         LibraryAssert.AreEqual(ShopifyVariant."Unit Cost", Item."Unit Cost", 'Unit Cost');
         LibraryAssert.AreEqual(ShopifyVariant.Price, Item."Unit Price", 'Unit Price');
 
-        // [THEN] The 'Item Varaint".Code must be equal to the variant part of the SKU.
+        // [THEN] The 'Item Variant".Code must be equal to the variant part of the SKU.
         LibraryAssert.AreEqual(ShopifyVariant.SKU.ToUpper().Split(Shop."SKU Field Separator").Get(2), ItemVariant.Code, '"Item Variant".Code." = SKU.Spilt(Shop."SKU Field Separator")[2]');
     end;
 
     [Test]
-    procedure UnitTestCreateItemSKUIsItemNoAndVaraintCodeFromProductWithMultiVariants()
+    procedure UnitTestCreateItemSKUIsItemNoAndVariantCodeFromProductWithMultiVariants()
     var
         Item: Record Item;
         ItemVariant: Record "Item Variant";
@@ -184,7 +187,7 @@ codeunit 139567 "Shpfy Create Item Test"
                 LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item SystemId"), 'Item SystemId <> NullGuid');
                 LibraryAssert.IsTrue(Item.GetBySystemId(ShopifyVariant."Item SystemId"), 'Get Item');
 
-                // [THEN] On the "Shpfy Variant" record, the field "ITem Varaint SystemId" filled in and then "Item Variant" record must exist..
+                // [THEN] On the "Shpfy Variant" record, the field "ITem Variant SystemId" filled in and then "Item Variant" record must exist..
                 LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item Variant SystemId"), 'Item Variant System Id <> NullGuid');
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(ShopifyVariant."Item Variant SystemId"), 'Get Item Variant');
 
@@ -197,14 +200,14 @@ codeunit 139567 "Shpfy Create Item Test"
                     LibraryAssert.AreEqual(ShopifyVariant.Price, Item."Unit Price", 'Unit Price');
                 end;
 
-                // [THEN] The 'Item Varaint".Code must be equal to the variant part of the SKU.
+                // [THEN] The 'Item Variant".Code must be equal to the variant part of the SKU.
                 LibraryAssert.AreEqual(ShopifyVariant.SKU.ToUpper().Split(Shop."SKU Field Separator").Get(2), ItemVariant.Code, '"Item Variant".Code." = SKU.Spilt(Shop."SKU Field Separator")[2]');
             until ShopifyVariant.Next() = 0;
         end;
     end;
 
     [Test]
-    procedure UnitTestCreateItemSKUIsVaraintCode()
+    procedure UnitTestCreateItemSKUIsVariantCode()
     var
         Item: Record Item;
         ItemVariant: Record "Item Variant";
@@ -232,7 +235,7 @@ codeunit 139567 "Shpfy Create Item Test"
         LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item SystemId"), 'Item SystemId <> NullGuid');
         LibraryAssert.IsTrue(Item.GetBySystemId(ShopifyVariant."Item SystemId"), 'Get Item');
 
-        // [THEN] On the "Shpfy Variant" record, the field "ITem Varaint SystemId" filled in and then "Item Variant" record must exist..
+        // [THEN] On the "Shpfy Variant" record, the field "ITem Variant SystemId" filled in and then "Item Variant" record must exist..
         LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item Variant SystemId"), 'Item Variant System Id <> NullGuid');
         LibraryAssert.IsTrue(ItemVariant.GetBySystemId(ShopifyVariant."Item Variant SystemId"), 'Get Item Variant');
 
@@ -242,12 +245,12 @@ codeunit 139567 "Shpfy Create Item Test"
         LibraryAssert.AreEqual(ShopifyVariant."Unit Cost", Item."Unit Cost", 'Unit Cost');
         LibraryAssert.AreEqual(ShopifyVariant.Price, Item."Unit Price", 'Unit Price');
 
-        // [THEN] The 'Item Varaint".Code must be equal to the SKU.
+        // [THEN] The 'Item Variant".Code must be equal to the SKU.
         LibraryAssert.AreEqual(ShopifyVariant.SKU.ToUpper(), ItemVariant.Code, '"Item Variant".Code" = SKU');
     end;
 
     [Test]
-    procedure UnitTestCreateItemSKUIsVaraintCodeFromProductWithMultiVariants()
+    procedure UnitTestCreateItemSKUIsVariantCodeFromProductWithMultiVariants()
     var
         Item: Record Item;
         ItemVariant: Record "Item Variant";
@@ -278,7 +281,7 @@ codeunit 139567 "Shpfy Create Item Test"
                 LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item SystemId"), 'Item SystemId <> NullGuid');
                 LibraryAssert.IsTrue(Item.GetBySystemId(ShopifyVariant."Item SystemId"), 'Get Item');
 
-                // [THEN] On the "Shpfy Variant" record, the field "ITem Varaint SystemId" filled in and then "Item Variant" record must exist..
+                // [THEN] On the "Shpfy Variant" record, the field "ITem Variant SystemId" filled in and then "Item Variant" record must exist..
                 LibraryAssert.IsFalse(IsNullGuid(ShopifyVariant."Item Variant SystemId"), 'Item Variant System Id <> NullGuid');
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(ShopifyVariant."Item Variant SystemId"), 'Get Item Variant');
 
@@ -286,7 +289,7 @@ codeunit 139567 "Shpfy Create Item Test"
                 ShopifyProduct.Get(ShopifyVariant."Product Id");
                 LibraryAssert.AreEqual(CopyStr(ShopifyProduct.Title, 1, MaxStrLen(Item.Description)), Item.Description, 'Description');
 
-                // [THEN] The 'Item Varaint".Code must be equal to the SKU.
+                // [THEN] The 'Item Variant".Code must be equal to the SKU.
                 LibraryAssert.AreEqual(ShopifyVariant.SKU.ToUpper(), ItemVariant.Code, '"Item Variant".Code" = SKU');
             until ShopifyVariant.Next() = 0;
     end;

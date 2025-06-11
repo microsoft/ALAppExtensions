@@ -226,7 +226,7 @@ table 8062 "Cust. Sub. Contract Line"
         ServiceObject.OpenServiceObjectCard("Subscription Header No.");
     end;
 
-    internal procedure GetNextLineNo(CustomerContractNo: Code[20]) LineNo: Integer
+    procedure GetNextLineNo(CustomerContractNo: Code[20]) LineNo: Integer
     var
         CustomerContractLine: Record "Cust. Sub. Contract Line";
     begin
@@ -268,7 +268,7 @@ table 8062 "Cust. Sub. Contract Line"
         OnAfterUpdateSubscriptionLineDescription(Rec);
     end;
 
-    internal procedure LoadServiceCommitmentForContractLine(var ServiceCommitment: Record "Subscription Line")
+    procedure LoadServiceCommitmentForContractLine(var ServiceCommitment: Record "Subscription Line")
     var
         LocalServiceCommitment: Record "Subscription Line"; //in case the parameter is passed as temporary table
     begin
@@ -286,7 +286,7 @@ table 8062 "Cust. Sub. Contract Line"
         OnAfterLoadAmountsForContractLine(Rec, ServiceCommitment);
     end;
 
-    internal procedure GetServiceCommitment(var ServiceCommitment: Record "Subscription Line"): Boolean
+    procedure GetServiceCommitment(var ServiceCommitment: Record "Subscription Line"): Boolean
     var
     begin
         ServiceCommitment.Init();
@@ -424,7 +424,7 @@ table 8062 "Cust. Sub. Contract Line"
         SetRange("Contract Line Type", "Contract Line Type"::Item, "Contract Line Type"::"G/L Account");
     end;
 
-    internal procedure MergeContractLines(var CustomerContractLine: Record "Cust. Sub. Contract Line")
+    procedure MergeContractLines(var CustomerContractLine: Record "Cust. Sub. Contract Line")
     var
         RefCustomerContractLine: Record "Cust. Sub. Contract Line";
         SelectCustContractLines: Page "Select Cust. Contract Lines";

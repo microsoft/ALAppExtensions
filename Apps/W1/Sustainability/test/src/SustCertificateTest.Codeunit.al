@@ -2944,7 +2944,7 @@ codeunit 148187 "Sust. Certificate Test"
         PostedDocNo: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Sales Return Order and Lines of 
+        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Sales Return Order and Lines of
         // Sales Return Order and no Sustainability Ledger Entry or Sustainability Value Entry is created
         // if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -3120,7 +3120,7 @@ codeunit 148187 "Sust. Certificate Test"
         TotalCO2e: Decimal;
     begin
         // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Sales Invoice, Lines of Sales Invoice,
-        // Posted Sales Invoice and Lines of Posted Sales Invoice and no Sustainability Ledger Entry 
+        // Posted Sales Invoice and Lines of Posted Sales Invoice and no Sustainability Ledger Entry
         // or Sustainability Value Entry is created if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -3319,7 +3319,7 @@ codeunit 148187 "Sust. Certificate Test"
         TotalCO2e: Decimal;
     begin
         // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Sales Cr. Memo, Lines of Sales Cr. Memo,
-        // Posted Sales Cr. Memo and Lines of Posted Sales Cr. Memo and no Sustainability Ledger Entry 
+        // Posted Sales Cr. Memo and Lines of Posted Sales Cr. Memo and no Sustainability Ledger Entry
         // or Sustainability Value Entry is created if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -3646,7 +3646,7 @@ codeunit 148187 "Sust. Certificate Test"
         SubcategoryCode: Code[20];
         Quanity: Decimal;
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are Visible on Work Center List, 
+        // [SCENARIO 561536] Verify Sustainability Fields are Visible on Work Center List,
         // Work Center Card, Machine Center List, Machine Center Card, Routing Lines, Routing Version Lines,
         // Production BOM, Production BOM List, production BOM Lines, Production BOM Version Lines,
         // Prod. Order Routing, Prod. Order Components, Released Production Order, Released Prod. Order Lines.
@@ -4038,7 +4038,7 @@ codeunit 148187 "Sust. Certificate Test"
         SubcategoryCode: Code[20];
         Quanity: Decimal;
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Work Center List, 
+        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Work Center List,
         // Work Center Card, Machine Center List, Machine Center Card, Routing Lines, Routing Version Lines,
         // Production BOM, Production BOM List, production BOM Lines, Production BOM Version Lines,
         // Prod. Order Routing, Prod. Order Components, Released Production Order, Released Prod. Order Lines.
@@ -4413,7 +4413,7 @@ codeunit 148187 "Sust. Certificate Test"
         ExpectedCO2ePerUnit: array[2] of Decimal;
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are Visible on Production Journal, Finished Production Orders, 
+        // [SCENARIO 561536] Verify Sustainability Fields are Visible on Production Journal, Finished Production Orders,
         // Finished Production Orders, Finished Prod. Order Lines and Capacity Ledger Entries.
         // if Enable Value Chain Tracking is true in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -4480,8 +4480,8 @@ codeunit 148187 "Sust. Certificate Test"
         FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
         LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
 
-        // [THEN] Sust. Account No., CO2e per Unit and Total CO2e are Visible 
-        // on Production Journal in ProductionJournalModalPageHandler. 
+        // [THEN] Sust. Account No., CO2e per Unit and Total CO2e are Visible
+        // on Production Journal in ProductionJournalModalPageHandler.
 
         // [GIVEN] Find Capacity Ledger Entry.
         CapacityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
@@ -4606,9 +4606,9 @@ codeunit 148187 "Sust. Certificate Test"
         ExpectedCO2ePerUnit: array[2] of Decimal;
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Production Journal, Finished Production Orders, 
-        // Finished Production Orders, Finished Prod. Order Lines and Capacity Ledger Entries and 
-        // also no Sustainability Ledger Entry or Sustainability Value Entry is created 
+        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Production Journal, Finished Production Orders,
+        // Finished Production Orders, Finished Prod. Order Lines and Capacity Ledger Entries and
+        // also no Sustainability Ledger Entry or Sustainability Value Entry is created
         // if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -4674,8 +4674,8 @@ codeunit 148187 "Sust. Certificate Test"
         FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
         LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
 
-        // [THEN] Sust. Account No., CO2e per Unit and Total CO2e are not Visible 
-        // on Production Journal in ProductionJournalModalPageHandler. 
+        // [THEN] Sust. Account No., CO2e per Unit and Total CO2e are not Visible
+        // on Production Journal in ProductionJournalModalPageHandler.
 
         // [GIVEN] Find Capacity Ledger Entry.
         CapacityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
@@ -5120,7 +5120,7 @@ codeunit 148187 "Sust. Certificate Test"
         // [WHEN] Update "Replenishment System" in Item.
         ItemCard."Replenishment System".SetValue(Item."Replenishment System"::"Prod. Order");
 
-        // [THEN] Confirmation Box should not pop up as there is no confirm Handler. 
+        // [THEN] Confirmation Box should not pop up as there is no confirm Handler.
     end;
 
     [Test]
@@ -5296,12 +5296,6 @@ codeunit 148187 "Sust. Certificate Test"
         TransferShipmentHeader.FindSet();
     end;
 
-    local procedure GetTransferReceiptHeader(var TransferReceiptHeader: Record "Transfer Receipt Header"; FromLocationCode: Code[10])
-    begin
-        TransferReceiptHeader.SetRange("Transfer-from Code", FromLocationCode);
-        TransferReceiptHeader.FindSet();
-    end;
-
     local procedure CreateTransferOrderWithLocation(var TransferHeader: Record "Transfer Header"; Item: Record Item; FromLocationCode: Code[10]; ToLocationCode: Code[10]; IntransitLocationCode: Code[10]; Quantity: Decimal; CO2ePerUnit: Decimal)
     var
         TransferLine: Record "Transfer Line";
@@ -5365,7 +5359,7 @@ codeunit 148187 "Sust. Certificate Test"
         BOMComponent: Record "BOM Component";
     begin
         BOMComponent.SetRange("Parent Item No.", ParentItem."No.");
-        BOMComponent.FindSet();
+        BOMComponent.FindFirst();
 
         exit(BOMComponent."No.")
     end;

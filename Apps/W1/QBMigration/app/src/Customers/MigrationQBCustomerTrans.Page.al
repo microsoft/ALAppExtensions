@@ -12,11 +12,11 @@ page 1913 "MigrationQB CustomerTrans"
             repeater(General)
             {
 #pragma warning disable AA0218
-                field(TransType; TransType) { ApplicationArea = All; }
-                field(DocNumber; DocNumber) { ApplicationArea = All; }
-                field(GLDocNo; GLDocNo) { ApplicationArea = All; }
-                field(TxnDate; TxnDate) { ApplicationArea = All; }
-                field(Amount; Amount) { ApplicationArea = All; }
+                field(TransType; Rec.TransType) { ApplicationArea = All; }
+                field(DocNumber; Rec.DocNumber) { ApplicationArea = All; }
+                field(GLDocNo; Rec.GLDocNo) { ApplicationArea = All; }
+                field(TxnDate; Rec.TxnDate) { ApplicationArea = All; }
+                field(Amount; Rec.Amount) { ApplicationArea = All; }
 #pragma warning restore
 
             }

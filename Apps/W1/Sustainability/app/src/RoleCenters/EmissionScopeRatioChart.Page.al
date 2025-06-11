@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.RoleCenters;
 
-using System.Visualization;
 using System.Integration;
+using System.Visualization;
 
 page 6237 "Emission Scope Ratio Chart"
 {
@@ -35,7 +35,7 @@ page 6237 "Emission Scope Ratio Chart"
 
     local procedure UpdateChartData()
     begin
-        SustainabilityChartMgmt.GenerateChartByEmissionGas(Rec, 'CO2');
+        SustainabilityChartMgmt.GenerateChartByEmissionGas(Rec, SustainabilityChartMgmt.GetCO2());
         Rec.UpdateChart(CurrPage.BusinessChart);
     end;
 }

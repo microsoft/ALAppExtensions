@@ -296,7 +296,7 @@ codeunit 139603 "Shpfy Product Init Test"
         ShopifyProduct: Record "Shpfy Product";
     begin
         ShopifyProduct := InitProduct(Shop);
-        ShopifyProduct."Has Variants" := (Shop."SKU Mapping" = Enum::"Shpfy SKU Mapping"::"Item No. + Variant Code");
+        ShopifyProduct."Has Variants" := Shop."SKU Mapping" in [Enum::"Shpfy SKU Mapping"::"Item No. + Variant Code", Enum::"Shpfy SKU Mapping"::"Variant Code"];
         ShopifyProduct.Insert();
         Clear(LastItemNo);
         exit(AddProductVariants(Shop, ShopifyProduct, Any.IntegerInRange(2, 5)));

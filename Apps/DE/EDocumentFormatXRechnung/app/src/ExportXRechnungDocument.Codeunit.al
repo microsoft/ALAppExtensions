@@ -90,8 +90,10 @@ codeunit 13916 "Export XRechnung Document"
         XMLDoc: XmlDocument;
         XMLDocText: Text;
         CurrencyCode: Code[10];
-        InvDiscountAmount: Decimal;
         LineAmounts: Dictionary of [Text, Decimal];
+        LineVATAmount: Dictionary of [Decimal, Decimal];
+        LineAmount: Dictionary of [Decimal, Decimal];
+        LineDiscAmount: Dictionary of [Decimal, Decimal];
     begin
         GetSetups();
         if not DocumentLinesExist(SalesInvoiceHeader, SalesInvLine) then
@@ -113,10 +115,11 @@ codeunit 13916 "Export XRechnung Document"
         InsertDelivery(RootXMLNode, SalesInvoiceHeader);
         InsertPaymentMeans(RootXMLNode, '68', 'PayeeFinancialAccount');
         InsertPaymentTerms(RootXMLNode, SalesInvoiceHeader."Payment Terms Code");
-        InsertInvDiscountAllowanceCharge(LineAmounts, SalesInvLine, CurrencyCode, RootXMLNode, InvDiscountAmount);
-        InsertTaxTotal(RootXMLNode, SalesInvLine, CurrencyCode, InvDiscountAmount);
+        InsertVATAmounts(SalesInvLine, LineVATAmount, LineAmount, LineDiscAmount, SalesInvoiceHeader."Prices Including VAT", Currency);
+        InsertInvDiscountAllowanceCharge(LineAmounts, SalesInvLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
+        InsertTaxTotal(RootXMLNode, SalesInvLine, CurrencyCode, LineAmount, LineVATAmount);
         InsertLegalMonetaryTotal(RootXMLNode, SalesInvLine, LineAmounts, CurrencyCode);
-        InsertInvoiceLine(RootXMLNode, SalesInvLine, Currency, CurrencyCode);
+        InsertInvoiceLine(RootXMLNode, SalesInvLine, Currency, CurrencyCode, SalesInvoiceHeader."Prices Including VAT");
         OnCreateXMLOnBeforeSalesInvXmlDocumentWriteToFile(XMLDoc, SalesInvoiceHeader);
         XMLDoc.WriteTo(XMLDocText);
         FileOutstream.WriteText(XMLDocText);
@@ -131,8 +134,10 @@ codeunit 13916 "Export XRechnung Document"
         XMLDoc: XmlDocument;
         XMLDocText: Text;
         CurrencyCode: Code[10];
-        InvDiscountAmount: Decimal;
         LineAmounts: Dictionary of [Text, Decimal];
+        LineVATAmount: Dictionary of [Decimal, Decimal];
+        LineAmount: Dictionary of [Decimal, Decimal];
+        LineDiscAmount: Dictionary of [Decimal, Decimal];
     begin
         GetSetups();
         if not DocumentLinesExist(SalesCrMemoHeader, SalesCrMemoLine) then
@@ -154,10 +159,11 @@ codeunit 13916 "Export XRechnung Document"
         InsertDelivery(RootXMLNode, SalesCrMemoHeader);
         InsertPaymentMeans(RootXMLNode, '68', '');
         InsertPaymentTerms(RootXMLNode, SalesCrMemoHeader."Payment Terms Code");
-        InsertInvDiscountAllowanceCharge(LineAmounts, SalesCrMemoLine, CurrencyCode, RootXMLNode, InvDiscountAmount);
-        InsertTaxTotal(RootXMLNode, SalesCrMemoLine, CurrencyCode, InvDiscountAmount);
+        InsertVATAmounts(SalesCrMemoLine, LineVATAmount, LineAmount, LineDiscAmount, SalesCrMemoHeader."Prices Including VAT", Currency);
+        InsertInvDiscountAllowanceCharge(LineAmounts, SalesCrMemoLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
+        InsertTaxTotal(RootXMLNode, SalesCrMemoLine, CurrencyCode, LineAmount, LineVATAmount);
         InsertLegalMonetaryTotal(RootXMLNode, SalesCrMemoLine, LineAmounts, CurrencyCode);
-        InsertCrMemoLine(RootXMLNode, SalesCrMemoLine, Currency, CurrencyCode);
+        InsertCrMemoLine(RootXMLNode, SalesCrMemoLine, Currency, CurrencyCode, SalesCrMemoHeader."Prices Including VAT");
         OnCreateXMLOnBeforeSalesCrMemoXmlDocumentWriteToFile(XMLDoc, SalesCrMemoHeader);
         XMLDoc.WriteTo(XMLDocText);
         FileOutstream.WriteText(XMLDocText);
@@ -233,36 +239,45 @@ codeunit 13916 "Export XRechnung Document"
         end;
     end;
 
-    local procedure InsertInvDiscountAllowanceCharge(var LineAmounts: Dictionary of [Text, Decimal]; var SalesInvLine: Record "Sales Invoice Line"; CurrencyCode: Code[10]; var RootXMLNode: XmlElement; var InvDiscountAmount: Decimal)
+    local procedure InsertInvDiscountAllowanceCharge(var LineAmounts: Dictionary of [Text, Decimal]; var SalesInvLine: Record "Sales Invoice Line"; CurrencyCode: Code[10]; var RootXMLNode: XmlElement; LineDiscAmount: Dictionary of [Decimal, Decimal]; LineAmount: Dictionary of [Decimal, Decimal]; RoundingPrecision: Decimal)
     var
-        BaseAmount: Decimal;
-        InvDiscountPercent: Decimal;
+        InvDiscountAmount: Decimal;
     begin
         InvDiscountAmount := LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount"));
         if InvDiscountAmount = 0 then
             exit;
-        InvDiscountPercent := GetInvoiceDiscountPercent(SalesInvLine, BaseAmount);
-        InsertAllowanceCharge(
-            RootXMLNode, 'Discount',
-            GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group"),
-            InvDiscountAmount, BaseAmount,
-            CurrencyCode, 0, InvDiscountPercent, true);
+        if SalesInvLine.FindSet() then
+            repeat
+                if LineDiscAmount.ContainsKey(SalesInvLine."VAT %") and LineAmount.ContainsKey(SalesInvLine."VAT %") then begin
+                    InsertAllowanceCharge(
+                               RootXMLNode, 'Document discount',
+                               GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group"),
+                               LineDiscAmount.Get(SalesInvLine."VAT %"), Round(LineAmount.Get(SalesInvLine."VAT %"), RoundingPrecision) + Round(LineDiscAmount.Get(SalesInvLine."VAT %"), RoundingPrecision),
+                               CurrencyCode, SalesInvLine."VAT %", 100 * LineDiscAmount.Get(SalesInvLine."VAT %") / (Round(LineAmount.Get(SalesInvLine."VAT %"), RoundingPrecision) + Round(LineDiscAmount.Get(SalesInvLine."VAT %"), RoundingPrecision)), true);
+                    LineDiscAmount.Remove(SalesInvLine."VAT %");
+                end;
+            until SalesInvLine.Next() = 0;
+
     end;
 
-    local procedure InsertInvDiscountAllowanceCharge(var LineAmounts: Dictionary of [Text, Decimal]; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; CurrencyCode: Code[10]; var RootXMLNode: XmlElement; var InvDiscountAmount: Decimal)
+    local procedure InsertInvDiscountAllowanceCharge(var LineAmounts: Dictionary of [Text, Decimal]; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; CurrencyCode: Code[10]; var RootXMLNode: XmlElement; LineDiscAmount: Dictionary of [Decimal, Decimal]; LineAmount: Dictionary of [Decimal, Decimal]; RoundingPrecision: Decimal)
     var
-        BaseAmount: Decimal;
-        InvDiscountPercent: Decimal;
+        InvDiscountAmount: Decimal;
     begin
         InvDiscountAmount := LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount"));
         if InvDiscountAmount = 0 then
             exit;
-        InvDiscountPercent := GetInvoiceDiscountPercent(SalesCrMemoLine, BaseAmount);
-        InsertAllowanceCharge(
-            RootXMLNode, 'Discount',
-            GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"),
-            InvDiscountAmount, BaseAmount,
-            CurrencyCode, 0, InvDiscountPercent, true);
+        if SalesCrMemoLine.FindSet() then
+            repeat
+                if LineDiscAmount.ContainsKey(SalesCrMemoLine."VAT %") and LineAmount.ContainsKey(SalesCrMemoLine."VAT %") then begin
+                    InsertAllowanceCharge(
+                               RootXMLNode, 'Document discount',
+                               GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"),
+                               LineDiscAmount.Get(SalesCrMemoLine."VAT %"), Round(LineAmount.Get(SalesCrMemoLine."VAT %"), RoundingPrecision) + Round(LineDiscAmount.Get(SalesCrMemoLine."VAT %"), RoundingPrecision),
+                               CurrencyCode, SalesCrMemoLine."VAT %", 100 * LineDiscAmount.Get(SalesCrMemoLine."VAT %") / (Round(LineAmount.Get(SalesCrMemoLine."VAT %"), RoundingPrecision) + Round(LineDiscAmount.Get(SalesCrMemoLine."VAT %"), RoundingPrecision)), true);
+                    LineDiscAmount.Remove(SalesCrMemoLine."VAT %");
+                end;
+            until SalesCrMemoLine.Next() = 0;
     end;
 
     local procedure InsertAccountingSupplierParty(var RootXMLNode: XmlElement)
@@ -424,7 +439,7 @@ codeunit 13916 "Export XRechnung Document"
         PriceElement: XmlElement;
     begin
         PriceElement := XmlElement.Create('Price', XmlNamespaceCAC);
-        PriceElement.Add(XmlElement.Create('PriceAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(UnitPrice)));
+        PriceElement.Add(XmlElement.Create('PriceAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatFourDecimal(UnitPrice)));
         RootElement.Add(PriceElement);
     end;
 
@@ -656,17 +671,12 @@ codeunit 13916 "Export XRechnung Document"
         exit(VATPostingSetup."Tax Category");
     end;
 
-    local procedure InsertTaxTotal(var RootXMLNode: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; CurrencyCode: Code[10]; InvDiscountAmount: Decimal)
+    local procedure InsertTaxTotal(var RootXMLNode: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; CurrencyCode: Code[10]; var LineAmount: Dictionary of [Decimal, Decimal]; var LineVATAmount: Dictionary of [Decimal, Decimal])
     var
-        LineVATAmount: Dictionary of [Decimal, Decimal];
-        LineAmount: Dictionary of [Decimal, Decimal];
         TaxTotalElement: XmlElement;
-        SalesInvLineTotalAmount: Decimal;
     begin
         TaxTotalElement := XmlElement.Create('TaxTotal', XmlNamespaceCAC);
         TaxTotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(GetTotalTaxAmount(SalesInvLine))));
-
-        InsertVATAmounts(SalesInvLine, LineVATAmount, LineAmount);
 
         SalesInvLine.SetFilter("VAT %", '<>0');
         if SalesInvLine.FindSet() then
@@ -682,28 +692,19 @@ codeunit 13916 "Export XRechnung Document"
 
         SalesInvLine.SetRange("VAT %", 0);
         SalesInvLine.CalcSums(Amount);
-        SalesInvLineTotalAmount := SalesInvLine.Amount;
         if SalesInvLine.FindLast() then;
-        if (SalesInvLineTotalAmount > 0) or (InvDiscountAmount > 0) then
-            InsertTaxSubtotal(
-                TaxTotalElement, GetTaxCategoryID(SalesInvLine."Tax Category", SalesInvLine."VAT Bus. Posting Group", SalesInvLine."VAT Prod. Posting Group"), SalesInvLineTotalAmount + InvDiscountAmount, 0, SalesInvLine."VAT %", CurrencyCode);
 
         SalesInvLine.SetRange("VAT Calculation Type");
         SalesInvLine.SetRange("VAT %");
         RootXMLNode.Add(TaxTotalElement);
     end;
 
-    local procedure InsertTaxTotal(var RootXMLNode: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; CurrencyCode: Code[10]; InvDiscountAmount: Decimal)
+    local procedure InsertTaxTotal(var RootXMLNode: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; CurrencyCode: Code[10]; var LineAmount: Dictionary of [Decimal, Decimal]; var LineVATAmount: Dictionary of [Decimal, Decimal])
     var
-        LineVATAmount: Dictionary of [Decimal, Decimal];
-        LineAmount: Dictionary of [Decimal, Decimal];
         TaxTotalElement: XmlElement;
-        SalesCrMemoLineTotalAmount: Decimal;
     begin
         TaxTotalElement := XmlElement.Create('TaxTotal', XmlNamespaceCAC);
         TaxTotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(GetTotalTaxAmount(SalesCrMemoLine))));
-
-        InsertVATAmounts(SalesCrMemoLine, LineVATAmount, LineAmount);
 
         SalesCrMemoLine.SetFilter("VAT %", '<>0');
         if SalesCrMemoLine.FindSet() then
@@ -719,11 +720,7 @@ codeunit 13916 "Export XRechnung Document"
 
         SalesCrMemoLine.SetRange("VAT %", 0);
         SalesCrMemoLine.CalcSums(Amount);
-        SalesCrMemoLineTotalAmount := SalesCrMemoLine.Amount;
         if SalesCrMemoLine.FindLast() then;
-        if (SalesCrMemoLineTotalAmount > 0) or (InvDiscountAmount > 0) then
-            InsertTaxSubtotal(
-                TaxTotalElement, GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group"), SalesCrMemoLineTotalAmount + InvDiscountAmount, 0, SalesCrMemoLine."VAT %", CurrencyCode);
 
         SalesCrMemoLine.SetRange("VAT Calculation Type");
         SalesCrMemoLine.SetRange("VAT %");
@@ -735,7 +732,7 @@ codeunit 13916 "Export XRechnung Document"
         LegalMonetaryTotalElement: XmlElement;
     begin
         LegalMonetaryTotalElement := XmlElement.Create('LegalMonetaryTotal', XmlNamespaceCAC);
-        LegalMonetaryTotalElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName(Amount)) - LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")))));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName(Amount)) + LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")))));
         LegalMonetaryTotalElement.Add(XmlElement.Create('TaxExclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName(Amount)))));
         LegalMonetaryTotalElement.Add(XmlElement.Create('TaxInclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName("Amount Including VAT")))));
         if LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")) > 0 then
@@ -749,7 +746,7 @@ codeunit 13916 "Export XRechnung Document"
         LegalMonetaryTotalElement: XmlElement;
     begin
         LegalMonetaryTotalElement := XmlElement.Create('LegalMonetaryTotal', XmlNamespaceCAC);
-        LegalMonetaryTotalElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName(Amount)) - LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")))));
+        LegalMonetaryTotalElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName(Amount)) + LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")))));
         LegalMonetaryTotalElement.Add(XmlElement.Create('TaxExclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName(Amount)))));
         LegalMonetaryTotalElement.Add(XmlElement.Create('TaxInclusiveAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName("Amount Including VAT")))));
         if LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")) > 0 then
@@ -799,7 +796,7 @@ codeunit 13916 "Export XRechnung Document"
         RootElement.Add(OrderReferenceElement);
     end;
 
-    local procedure InsertInvoiceLine(var InvoiceElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10])
+    local procedure InsertInvoiceLine(var InvoiceElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
     var
         InvoiceLineElement: XmlElement;
     begin
@@ -807,9 +804,11 @@ codeunit 13916 "Export XRechnung Document"
         repeat
             InvoiceLineElement := XmlElement.Create('InvoiceLine', XmlNamespaceCAC);
 
+            if PricesIncVAT then
+                ExcludeVAT(SalesInvLine, Currency."Amount Rounding Precision");
             InvoiceLineElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, Format(SalesInvLine."Line No.")));
             InvoiceLineElement.Add(XmlElement.Create('InvoicedQuantity', XmlNamespaceCBC, XmlAttribute.Create('unitCode', GetUoMCode(SalesInvLine."Unit of Measure Code")), FormatDecimal(SalesInvLine.Quantity)));
-            InvoiceLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesInvLine.Amount - SalesInvLine."Inv. Discount Amount")));
+            InvoiceLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesInvLine.Amount + SalesInvLine."Inv. Discount Amount")));
             InsertOrderLineReference(InvoiceLineElement, SalesInvLine."Line No.");
             if SalesInvLine."Line Discount Amount" > 0 then
                 InsertAllowanceCharge(
@@ -818,12 +817,12 @@ codeunit 13916 "Export XRechnung Document"
                     CurrencyCode, SalesInvLine."Line Discount %", SalesInvLine."Line Discount %", false);
 
             InsertItem(InvoiceLineElement, SalesInvLine);
-            InsertPrice(InvoiceLineElement, Round(SalesInvLine."Unit Price", Currency."Unit-Amount Rounding Precision"), CurrencyCode);
+            InsertPrice(InvoiceLineElement, SalesInvLine."Unit Price", CurrencyCode);
             InvoiceElement.Add(InvoiceLineElement);
         until SalesInvLine.Next() = 0;
     end;
 
-    local procedure InsertCrMemoLine(var CrMemoElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10])
+    local procedure InsertCrMemoLine(var CrMemoElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
     var
         CrMemoLineElement: XmlElement;
     begin
@@ -831,9 +830,11 @@ codeunit 13916 "Export XRechnung Document"
         repeat
             CrMemoLineElement := XmlElement.Create('CreditNoteLine', XmlNamespaceCAC);
 
+            if PricesIncVAT then
+                ExcludeVAT(SalesCrMemoLine, Currency."Amount Rounding Precision");
             CrMemoLineElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, Format(SalesCrMemoLine."Line No.")));
             CrMemoLineElement.Add(XmlElement.Create('CreditedQuantity', XmlNamespaceCBC, XmlAttribute.Create('unitCode', GetUoMCode(SalesCrMemoLine."Unit of Measure Code")), FormatDecimal(SalesCrMemoLine.Quantity)));
-            CrMemoLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesCrMemoLine.Amount - SalesCrMemoLine."Inv. Discount Amount")));
+            CrMemoLineElement.Add(XmlElement.Create('LineExtensionAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount")));
             InsertOrderLineReference(CrMemoLineElement, SalesCrMemoLine."Line No.");
             if SalesCrMemoLine."Line Discount Amount" > 0 then
                 InsertAllowanceCharge(
@@ -842,7 +843,7 @@ codeunit 13916 "Export XRechnung Document"
                     CurrencyCode, SalesCrMemoLine."Line Discount %", SalesCrMemoLine."Line Discount %", false);
 
             InsertItem(CrMemoLineElement, SalesCrMemoLine);
-            InsertPrice(CrMemoLineElement, Round(SalesCrMemoLine."Unit Price", Currency."Unit-Amount Rounding Precision"), CurrencyCode);
+            InsertPrice(CrMemoLineElement, SalesCrMemoLine."Unit Price", CurrencyCode);
             CrMemoElement.Add(CrMemoLineElement);
         until SalesCrMemoLine.Next() = 0;
     end;
@@ -907,62 +908,82 @@ codeunit 13916 "Export XRechnung Document"
     end;
 
     local procedure CalculateLineAmounts(SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
+    var
+        TotalInvDiscountAmount: Decimal;
     begin
-        if SalesInvoiceHeader."Prices Including VAT" then
-            repeat
-                SalesInvLine."Line Discount Amount" := Round(SalesInvLine."Line Discount Amount" / (1 + SalesInvLine."VAT %" / 100), Currency."Amount Rounding Precision");
+        repeat
+            if SalesInvoiceHeader."Prices Including VAT" then
                 SalesInvLine."Inv. Discount Amount" := Round(SalesInvLine."Inv. Discount Amount" / (1 + SalesInvLine."VAT %" / 100), Currency."Amount Rounding Precision");
-                SalesInvLine."Unit Price" := Round(SalesInvLine."Unit Price" / (1 + SalesInvLine."VAT %" / 100), Currency."Amount Rounding Precision");
-                SalesInvLine.Modify(true);
-            until SalesInvLine.Next() = 0;
+            TotalInvDiscountAmount += SalesInvLine."Inv. Discount Amount";
+        until SalesInvLine.Next() = 0;
 
-        SalesInvLine.CalcSums(Amount, "Amount Including VAT", "Inv. Discount Amount");
+        SalesInvLine.CalcSums(Amount, "Amount Including VAT");
 
         if not LineAmounts.ContainsKey(SalesInvLine.FieldName(Amount)) then
             LineAmounts.Add(SalesInvLine.FieldName(Amount), SalesInvLine.Amount);
         if not LineAmounts.ContainsKey(SalesInvLine.FieldName("Amount Including VAT")) then
             LineAmounts.Add(SalesInvLine.FieldName("Amount Including VAT"), SalesInvLine."Amount Including VAT");
         if not LineAmounts.ContainsKey(SalesInvLine.FieldName("Inv. Discount Amount")) then
-            LineAmounts.Add(SalesInvLine.FieldName("Inv. Discount Amount"), SalesInvLine."Inv. Discount Amount");
+            LineAmounts.Add(SalesInvLine.FieldName("Inv. Discount Amount"), TotalInvDiscountAmount);
         OnAfterCalculateInvoiceLineAmounts(SalesInvoiceHeader, SalesInvLine, Currency, LineAmounts);
     end;
 
     local procedure CalculateLineAmounts(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
+    var
+        TotalInvDiscountAmount: Decimal;
     begin
-        if SalesCrMemoHeader."Prices Including VAT" then
-            repeat
-                SalesCrMemoLine."Line Discount Amount" := Round(SalesCrMemoLine."Line Discount Amount" / (1 + SalesCrMemoLine."VAT %" / 100), Currency."Amount Rounding Precision");
+        repeat
+            if SalesCrMemoHeader."Prices Including VAT" then
                 SalesCrMemoLine."Inv. Discount Amount" := Round(SalesCrMemoLine."Inv. Discount Amount" / (1 + SalesCrMemoLine."VAT %" / 100), Currency."Amount Rounding Precision");
-                SalesCrMemoLine."Unit Price" := Round(SalesCrMemoLine."Unit Price" / (1 + SalesCrMemoLine."VAT %" / 100), Currency."Amount Rounding Precision");
-                SalesCrMemoLine.Modify(true);
-            until SalesCrMemoLine.Next() = 0;
+            TotalInvDiscountAmount += SalesCrMemoLine."Inv. Discount Amount";
+        until SalesCrMemoLine.Next() = 0;
 
-        SalesCrMemoLine.CalcSums(Amount, "Amount Including VAT", "Inv. Discount Amount");
+        SalesCrMemoLine.CalcSums(Amount, "Amount Including VAT");
 
         if not LineAmounts.ContainsKey(SalesCrMemoLine.FieldName(Amount)) then
             LineAmounts.Add(SalesCrMemoLine.FieldName(Amount), SalesCrMemoLine.Amount);
         if not LineAmounts.ContainsKey(SalesCrMemoLine.FieldName("Amount Including VAT")) then
             LineAmounts.Add(SalesCrMemoLine.FieldName("Amount Including VAT"), SalesCrMemoLine."Amount Including VAT");
         if not LineAmounts.ContainsKey(SalesCrMemoLine.FieldName("Inv. Discount Amount")) then
-            LineAmounts.Add(SalesCrMemoLine.FieldName("Inv. Discount Amount"), SalesCrMemoLine."Inv. Discount Amount");
+            LineAmounts.Add(SalesCrMemoLine.FieldName("Inv. Discount Amount"), TotalInvDiscountAmount);
         OnAfterCalculateCrMemoLineAmounts(SalesCrMemoHeader, SalesCrMemoLine, Currency, LineAmounts);
     end;
 
-    local procedure InsertVATAmounts(var SalesInvLine: Record "Sales Invoice Line"; var LineVATAmount: Dictionary of [Decimal, Decimal]; var LineAmount: Dictionary of [Decimal, Decimal])
+    local procedure ExcludeVAT(var SalesInvLine: Record "Sales Invoice Line"; RoundingPrecision: Decimal)
+    begin
+        SalesInvLine."Line Discount Amount" := Round(SalesInvLine."Line Discount Amount" / (1 + SalesInvLine."VAT %" / 100), RoundingPrecision);
+        SalesInvLine."Unit Price" := SalesInvLine."Unit Price" / (1 + SalesInvLine."VAT %" / 100);//
+        SalesInvLine."Inv. Discount Amount" := Round(SalesInvLine."Inv. Discount Amount" / (1 + SalesInvLine."VAT %" / 100), RoundingPrecision);
+    end;
+
+    local procedure ExcludeVAT(var SalesCrMemoLine: Record "Sales Cr.Memo Line"; RoundingPrecision: Decimal)
+    begin
+        SalesCrMemoLine."Line Discount Amount" := Round(SalesCrMemoLine."Line Discount Amount" / (1 + SalesCrMemoLine."VAT %" / 100), RoundingPrecision);
+        SalesCrMemoLine."Unit Price" := SalesCrMemoLine."Unit Price" / (1 + SalesCrMemoLine."VAT %" / 100);//
+        SalesCrMemoLine."Inv. Discount Amount" := Round(SalesCrMemoLine."Inv. Discount Amount" / (1 + SalesCrMemoLine."VAT %" / 100), RoundingPrecision);
+    end;
+
+    local procedure InsertVATAmounts(var SalesInvLine: Record "Sales Invoice Line"; var LineVATAmount: Dictionary of [Decimal, Decimal]; var LineAmount: Dictionary of [Decimal, Decimal]; var LineDiscAmount: Dictionary of [Decimal, Decimal]; PricesIncVAT: Boolean; Currency: Record Currency)
     begin
         if SalesInvLine.FindSet() then
             repeat
                 AddAmountForVAT(SalesInvLine."VAT %", SalesInvLine."Amount Including VAT" - SalesInvLine.Amount, LineVATAmount);
                 AddAmountForVAT(SalesInvLine."VAT %", SalesInvLine.Amount, LineAmount);
+                if PricesIncVAT then
+                    ExcludeVAT(SalesInvLine, Currency."Amount Rounding Precision");
+                AddAmountForVAT(SalesInvLine."VAT %", SalesInvLine."Inv. Discount Amount", LineDiscAmount);
             until SalesInvLine.Next() = 0;
     end;
 
-    local procedure InsertVATAmounts(var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var LineVATAmount: Dictionary of [Decimal, Decimal]; var LineAmount: Dictionary of [Decimal, Decimal])
+    local procedure InsertVATAmounts(var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var LineVATAmount: Dictionary of [Decimal, Decimal]; var LineAmount: Dictionary of [Decimal, Decimal]; var LineDiscAmount: Dictionary of [Decimal, Decimal]; PricesIncVAT: Boolean; Currency: Record Currency)
     begin
         if SalesCrMemoLine.FindSet() then
             repeat
                 AddAmountForVAT(SalesCrMemoLine."VAT %", SalesCrMemoLine."Amount Including VAT" - SalesCrMemoLine.Amount, LineVATAmount);
                 AddAmountForVAT(SalesCrMemoLine."VAT %", SalesCrMemoLine.Amount, LineAmount);
+                if PricesIncVAT then
+                    ExcludeVAT(SalesCrMemoLine, Currency."Amount Rounding Precision");
+                AddAmountForVAT(SalesCrMemoLine."VAT %", SalesCrMemoLine."Inv. Discount Amount", LineDiscAmount);
             until SalesCrMemoLine.Next() = 0;
     end;
 
@@ -972,24 +993,6 @@ codeunit 13916 "Export XRechnung Document"
             TotalAmounts.Add(VATPercent, NewAmount)
         else
             TotalAmounts.Set(VATPercent, TotalAmounts.Get(VATPercent) + NewAmount);
-    end;
-
-    local procedure GetInvoiceDiscountPercent(var SalesInvLine: Record "Sales Invoice Line"; var BaseAmount: Decimal): Decimal
-    begin
-        SalesInvLine.SetRange("Allow Invoice Disc.", true);
-        SalesInvLine.CalcSums("Line Amount", "Inv. Discount Amount");
-        BaseAmount := SalesInvLine."Line Amount";
-        SalesInvLine.SetRange("Allow Invoice Disc.");
-        exit(100 * SalesInvLine."Inv. Discount Amount" / BaseAmount);
-    end;
-
-    local procedure GetInvoiceDiscountPercent(var SalesCrMemoLine: Record "Sales Cr.Memo Line"; var BaseAmount: Decimal): Decimal
-    begin
-        SalesCrMemoLine.SetRange("Allow Invoice Disc.", true);
-        SalesCrMemoLine.CalcSums("Line Amount", "Inv. Discount Amount");
-        BaseAmount := SalesCrMemoLine."Line Amount";
-        SalesCrMemoLine.SetRange("Allow Invoice Disc.");
-        exit(100 * SalesCrMemoLine."Inv. Discount Amount" / BaseAmount);
     end;
 
     local procedure FindEDocumentService(EDocumentFormat: Code[20])
@@ -1014,6 +1017,11 @@ codeunit 13916 "Export XRechnung Document"
     procedure FormatDecimal(VarDecimal: Decimal): Text[30];
     begin
         exit(Format(Round(VarDecimal, 0.01), 0, 9));
+    end;
+
+    procedure FormatFourDecimal(VarDecimal: Decimal): Text[30];
+    begin
+        exit(Format(Round(VarDecimal, 0.0001), 0, 9));
     end;
 
     procedure GetUoMCode(UoMCode: Code[10]): Text;

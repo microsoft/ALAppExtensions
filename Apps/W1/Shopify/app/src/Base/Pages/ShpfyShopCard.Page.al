@@ -100,7 +100,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     Importance = Additional;
-                    ToolTip = 'Specifies whether background syncs are allowed.';
+                    ToolTip = 'Specifies whether synchronization runs in the background. When enabled, you can continue working while large data sets synchronize. Disable for demos or troubleshooting to see real-time progress and receive detailed error messages.';
                 }
                 field("Allow Outgoing Requests"; Rec."Allow Outgoing Requests")
                 {

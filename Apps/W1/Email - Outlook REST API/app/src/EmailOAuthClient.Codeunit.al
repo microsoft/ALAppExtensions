@@ -59,7 +59,12 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
         UrlHelper: Codeunit "Url Helper";
         EnvironmentInformation: Codeunit "Environment Information";
         OAuthErr: Text;
+        IsHandled: Boolean;
     begin
+        OnBeforeGetToken(IsHandled);
+        if IsHandled then
+            exit;
+
         CheckIfThirdParty(CallerModuleInfo);
         Initialize();
 
@@ -130,6 +135,12 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
     begin
         AuthUrl := UrlHelper.GetAzureADAuthEndpoint();
         exit(AuthUrl.Replace('/authorize', ''));
+    end;
+
+    // This event is ONLY used for testing purposes. This can help us to mock the GetAccessToken function. Never use this event in production code.
+    [InternalEvent(false)]
+    local procedure OnBeforeGetToken(var IsHandled: Boolean)
+    begin
     end;
 
     var

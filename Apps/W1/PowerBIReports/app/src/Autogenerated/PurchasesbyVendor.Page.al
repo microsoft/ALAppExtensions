@@ -6,9 +6,7 @@ page 37018 "Purchases by Vendor"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Purchases by Vendor';
     AboutTitle = 'About Purchases by Vendor';
     AboutText = 'The Purchases by Vendor report shows purchase amounts and quantities by vendor. Featuring a Treemap for item spending contributions and a bar chart for purchase amounts by item category, offering a clear view of vendor performance and spending patterns.';
@@ -25,7 +23,7 @@ page 37018 "Purchases by Vendor"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

@@ -60,7 +60,8 @@ page 36961 "Account Categories"
                         if AccountCategoryDesc = '' then
                             Rec."G/L Acc. Category Entry No." := 0
                         else begin
-                            GLAccountCategory.SetFilter(Description, AccountCategoryDesc + '*');
+                            AccountCategoryDesc := '' + AccountCategoryDesc + '';
+                            GLAccountCategory.SetFilter(Description, '%1', AccountCategoryDesc + '*');
                             if not GLAccountCategory.FindFirst() then
                                 Error(NoAccountCategoryMatchErr, AccountCategoryDesc);
                             Rec."G/L Acc. Category Entry No." := GLAccountCategory."Entry No.";

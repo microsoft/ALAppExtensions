@@ -13,7 +13,7 @@
   "logo": "ExtensionLogo.png",
   "dependencies": [],
   "application": "27.0.0.0",
-  "target": "OnPrem",
+  "target": "Cloud",
   "resourceExposurePolicy": {
     "allowDebugging": false,
     "allowDownloadingSource": true,

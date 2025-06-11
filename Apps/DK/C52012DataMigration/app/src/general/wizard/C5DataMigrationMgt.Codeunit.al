@@ -14,12 +14,15 @@ using Microsoft.Finance.GeneralLedger.Account;
 
 codeunit 1860 "C5 Data Migration Mgt."
 {
+    Permissions = tabledata "G/L Account" = r;
+
     var
         DataMigratorDescTxt: Label 'Import from Microsoft Dynamics C5 2012';
         C5FileTypeTxt: Label 'Zip Files (*.zip)|*.zip';
         SomethingWentWrongErr: Label 'Oops, something went wrong.\Please try again later.';
         AccountsNotSelectedQst: Label 'You are about to migrate data for one or more entities without migrating general ledger accounts. If you continue, transactions for the entities will not be migrated. To migrate transactions, you must migrate general ledger accounts. Do you want to continue without general ledger accounts?';
         LedgerEntriesErr: Label 'To migrate C5 ledger entries you must also migrate general ledger accounts.';
+        GLAccountsNotEmptyProceedMigrationQst: Label 'Chart of Accounts is already defined. There is a risk of that the duplicate G/L Accounts will cause the migration to fail. If this happens one of the solutions would be to to clear the G/L Accounts before migration or to remove the duplicates.\\Do you want to proceed with the migration?';
 
     procedure ImportC5Data(): Boolean
     var
@@ -41,13 +44,36 @@ codeunit 1860 "C5 Data Migration Mgt."
     procedure CreateDataMigrationEntites(var DataMigrationEntity: Record "Data Migration Entity"): Boolean
     var
         C5SchemaReader: Codeunit "C5 Schema Reader";
+        NumberOfGLAccounts: Integer;
     begin
         DataMigrationEntity.InsertRecord(Database::Customer, C5SchemaReader.GetNumberOfCustomers());
         DataMigrationEntity.InsertRecord(Database::Vendor, C5SchemaReader.GetNumberOfVendors());
         DataMigrationEntity.InsertRecord(Database::Item, C5SchemaReader.GetNumberOfItems());
-        DataMigrationEntity.InsertRecord(Database::"G/L Account", C5SchemaReader.GetNumberOfAccounts());
+        NumberOfGLAccounts := C5SchemaReader.GetNumberOfAccounts();
+        VerifyGLAccounts(NumberOfGLAccounts);
+        DataMigrationEntity.InsertRecord(Database::"G/L Account", NumberOfGLAccounts);
+
         DataMigrationEntity.InsertRecord(Database::"C5 LedTrans", C5SchemaReader.GetNumberOfHistoricalEntries());
         exit(true);
+    end;
+
+    local procedure VerifyGLAccounts(NumberOfGLAccounts: Integer)
+    var
+        GLAccount: Record "G/L Account";
+        C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
+    begin
+        if (NumberOfGLAccounts = 0) then
+            exit;
+
+        GLAccount.ReadIsolation := IsolationLevel::ReadUncommitted;
+        if GLAccount.Count() = 0 then
+            exit;
+
+        Session.LogMessage('0000PDD', 'G/L Accounts are not empty, possible clash with duplicates. The solution is to clear the G/L Accounts before migration', Verbosity::Warning, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
+
+        if GuiAllowed() then
+            if not Confirm(GLAccountsNotEmptyProceedMigrationQst) then
+                Error('')
     end;
 
     procedure ApplySelectedData(var DataMigrationEntity: Record "Data Migration Entity"): Boolean

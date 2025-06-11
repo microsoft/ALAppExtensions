@@ -381,6 +381,7 @@ page 1693 "Bank Deposit Subform"
         BankDepositHeader.SetRange("Journal Batch Name", Rec."Journal Batch Name");
         BankDepositHeader.FindFirst();
         Rec."Dimension Set ID" := BankDepositPost.CombineDimensionSets(BankDepositHeader, Rec);
+        Rec."Applies-to ID" := BankDepositPost.GetAppliesToIDForLine(BankDepositHeader."No.", Rec."Line No.");
         exit(true);
     end;
 

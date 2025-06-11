@@ -130,6 +130,9 @@ codeunit 18869 "TCS Validation and Settlement"
                 TCSEntry.Reversed := true;
                 TCSEntry.Modify();
 
+                if TCSEntry.Reversed then
+                    NewTCSEntry."Payment Amount" := -TCSEntry."Payment Amount";
+
                 NewTCSEntry.Insert();
             until TCSEntry.Next() = 0;
     end;

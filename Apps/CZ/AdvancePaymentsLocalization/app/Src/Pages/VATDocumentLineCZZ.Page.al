@@ -101,7 +101,7 @@ page 31186 "VAT Document Line CZZ"
                         ValidateVATAmount();
                     end;
                 }
-                field("Amount (ACY)"; Rec."Amount (ACY)")
+                field("Amount (LCY)"; Rec."Amount (LCY)")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Amount (LCY)';
@@ -113,21 +113,21 @@ page 31186 "VAT Document Line CZZ"
                         GetCurrency('');
 
                         Rec.TestField(Amount);
-                        Rec."Amount (ACY)" := Round(Rec."Amount (ACY)");
+                        Rec."Amount (LCY)" := Round(Rec."Amount (LCY)");
                         case Rec."VAT Calculation Type" of
                             Rec."VAT Calculation Type"::"Normal VAT":
-                                Rec."VAT Amount (ACY)" :=
-                                  Round(Rec."Amount (ACY)" * Rec."VAT %" / (100 + Rec."VAT %"),
+                                Rec."VAT Amount (LCY)" :=
+                                  Round(Rec."Amount (LCY)" * Rec."VAT %" / (100 + Rec."VAT %"),
                                     Currency."Amount Rounding Precision",
                                     Currency.VATRoundingDirection());
                             Rec."VAT Calculation Type"::"Reverse Charge VAT":
                                 Rec."VAT Amount" := 0;
                         end;
 
-                        Rec."VAT Base Amount (ACY)" := Rec."Amount (ACY)" - Rec."VAT Amount (ACY)";
+                        Rec."VAT Base Amount (LCY)" := Rec."Amount (LCY)" - Rec."VAT Amount (LCY)";
                     end;
                 }
-                field("VAT Amount (ACY)"; Rec."VAT Amount (ACY)")
+                field("VAT Amount (LCY)"; Rec."VAT Amount (LCY)")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'VAT Amount (LCY)';
@@ -139,7 +139,7 @@ page 31186 "VAT Document Line CZZ"
                         ValidateVATAmountLCY();
                     end;
                 }
-                field("VAT Base Amount (ACY)"; Rec."VAT Base Amount (ACY)")
+                field("VAT Base Amount (LCY)"; Rec."VAT Base Amount (LCY)")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'VAT Base Amount (LCY)';
@@ -150,12 +150,36 @@ page 31186 "VAT Document Line CZZ"
                     begin
                         GetCurrency('');
 
-                        Rec.TestField("Amount (ACY)");
+                        Rec.TestField("Amount (LCY)");
                         Rec.TestField("VAT Calculation Type", Rec."VAT Calculation Type"::"Normal VAT");
-                        Rec."VAT Base Amount (ACY)" := Round(Rec."VAT Base Amount (ACY)", Currency."Amount Rounding Precision");
-                        Rec."VAT Amount (ACY)" := Rec."Amount (ACY)" - Rec."VAT Base Amount (ACY)";
+                        Rec."VAT Base Amount (LCY)" := Round(Rec."VAT Base Amount (LCY)", Currency."Amount Rounding Precision");
+                        Rec."VAT Amount (LCY)" := Rec."Amount (LCY)" - Rec."VAT Base Amount (LCY)";
                         ValidateVATAmountLCY();
                     end;
+                }
+                field("Amount (ACY)"; Rec."Amount (ACY)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Amount (ACY)';
+                    ToolTip = 'Specifies amount (ACY).';
+                    Editable = false;
+                    Visible = false;
+                }
+                field("VAT Amount (ACY)"; Rec."VAT Amount (ACY)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'VAT Amount (ACY)';
+                    ToolTip = 'Specifies VAT amount (ACY).';
+                    Editable = false;
+                    Visible = false;
+                }
+                field("VAT Base Amount (ACY)"; Rec."VAT Base Amount (ACY)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'VAT Base Amount (ACY)';
+                    ToolTip = 'Specifies VAT base amount (ACY).';
+                    Editable = false;
+                    Visible = false;
                 }
             }
         }
@@ -165,6 +189,7 @@ page 31186 "VAT Document Line CZZ"
         Currency: Record Currency;
         CurrencyCode: Code[10];
         CurrencyFactor: Decimal;
+        AddCurrencyFactor: Decimal;
         MustBeNegativeErr: label '%1 must be negative.', Comment = '%1 = field caption';
         MustBePositiveErr: label '%1 must be positive.', Comment = '%1 = field caption';
         MustNotBeMoreErr: label 'The VAT Differnce must not be more than %1.', Comment = '%1 = value';
@@ -189,6 +214,7 @@ page 31186 "VAT Document Line CZZ"
         Rec."VAT Base Amount" := Rec.Amount - Rec."VAT Amount";
 
         Rec.UpdateLCYAmounts(CurrencyCode, CurrencyFactor);
+        Rec.UpdateACYAmounts(AddCurrencyFactor);
     end;
 
     procedure InitDocumentLines(NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
@@ -201,6 +227,12 @@ page 31186 "VAT Document Line CZZ"
                 Rec := AdvancePostingBufferCZZ;
                 Rec.Insert();
             until AdvancePostingBufferCZZ.Next() = 0;
+    end;
+
+    procedure InitDocumentLines(NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewAddCurrencyFactor: Decimal; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
+    begin
+        InitDocumentLines(NewCurrencyCode, NewCurrencyFactor, AdvancePostingBufferCZZ);
+        AddCurrencyFactor := NewAddCurrencyFactor;
     end;
 
     local procedure GetCurrency(NewCurrencyCode: Code[10])
@@ -236,6 +268,17 @@ page 31186 "VAT Document Line CZZ"
             until Rec.Next() = 0;
     end;
 
+    procedure UpdateAddCurrencyFactor(NewAddCurrencyFactor: Decimal)
+    begin
+        AddCurrencyFactor := NewAddCurrencyFactor;
+
+        if Rec.FindSet() then
+            repeat
+                Rec.UpdateACYAmounts(AddCurrencyFactor);
+                Rec.Modify();
+            until Rec.Next() = 0;
+    end;
+
     local procedure ValidateVATAmount()
     var
         CalcVATAmount: Decimal;
@@ -259,6 +302,7 @@ page 31186 "VAT Document Line CZZ"
         Rec."VAT Base Amount" := Rec.Amount - Rec."VAT Amount";
 
         Rec.UpdateLCYAmounts(CurrencyCode, CurrencyFactor);
+        Rec.UpdateACYAmounts(AddCurrencyFactor);
     end;
 
     local procedure ValidateVATAmountLCY()
@@ -269,20 +313,21 @@ page 31186 "VAT Document Line CZZ"
 
         Rec.TestField(Amount);
         Rec.TestField("VAT Calculation Type", Rec."VAT Calculation Type"::"Normal VAT");
-        Rec."VAT Amount (ACY)" := Round(Rec."VAT Amount (ACY)", Currency."Amount Rounding Precision");
+        Rec."VAT Amount (LCY)" := Round(Rec."VAT Amount (LCY)", Currency."Amount Rounding Precision");
 
         CalcAdvancePostingBuffer := Rec;
         CalcAdvancePostingBuffer.UpdateLCYAmounts(CurrencyCode, CurrencyFactor);
 
-        if Rec."VAT Amount (ACY)" * Rec."Amount (ACY)" < 0 then
-            if Rec."VAT Amount (ACY)" > 0 then
-                Error(MustBeNegativeErr, Rec.FieldCaption("VAT Amount (ACY)"))
+        if Rec."VAT Amount (LCY)" * Rec."Amount (LCY)" < 0 then
+            if Rec."VAT Amount (LCY)" > 0 then
+                Error(MustBeNegativeErr, Rec.FieldCaption("VAT Amount (LCY)"))
             else
-                Error(MustBePositiveErr, Rec.FieldCaption("VAT Amount (ACY)"));
+                Error(MustBePositiveErr, Rec.FieldCaption("VAT Amount (LCY)"));
 
-        if Abs(CalcAdvancePostingBuffer."VAT Amount (ACY)" - Rec."VAT Amount (ACY)") > Currency."Max. VAT Difference Allowed" then
+        if Abs(CalcAdvancePostingBuffer."VAT Amount (LCY)" - Rec."VAT Amount (LCY)") > Currency."Max. VAT Difference Allowed" then
             Error(MustNotBeMoreErr, Currency."Max. VAT Difference Allowed");
 
-        Rec."VAT Base Amount (ACY)" := Rec."Amount (ACY)" - Rec."VAT Amount (ACY)";
+        Rec."VAT Base Amount (LCY)" := Rec."Amount (LCY)" - Rec."VAT Amount (LCY)";
+        Rec.UpdateACYAmounts(AddCurrencyFactor);
     end;
 }

@@ -34,7 +34,6 @@ reportextension 11702 "Calculate Inventory CZA" extends "Calculate Inventory"
     end;
 
     var
-        CalculateInventHandlerCZA: Codeunit "Calculate Invent. Handler CZA";
         ItemsWithoutChangeCZA, UseItemDimensionsCZA : Boolean;
 
     [IntegrationEvent(false, false)]

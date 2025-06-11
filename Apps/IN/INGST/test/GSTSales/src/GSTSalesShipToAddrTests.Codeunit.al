@@ -28,6 +28,7 @@ codeunit 18191 "GST Sales Ship To Addr Tests"
         CustomerNoLbl: Label 'CustomerNo';
         ToStateCodeLbl: Label 'ToStateCode';
         PostedDocumentNoLbl: Label 'PostedDocumentNo';
+        FOCLbl: Label 'FOC';
 
     [Test]
     [HandlerFunctions('TaxRatePageHandler')]
@@ -269,6 +270,37 @@ codeunit 18191 "GST Sales Ship To Addr Tests"
         LibraryGST.VerifyGLEntries(SalesHeader."Document Type"::Invoice, PostedDocumentNo, 2);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromRegCustSalesInvInterstateWithFOCItem()
+    var
+        CustomerLedgerEntry: Record "Cust. Ledger Entry";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        LibraryAssert: Codeunit "Library Assert";
+    begin
+        // [SCENARIO] Check if the system is calculating Inter State Sales of Services from Registered Customer through Sales Order/Invoice.
+
+        // [GIVEN] Create GST Setup and tax rates for Registered Customer where GST Group Type is Services for InterState Transactions
+        CreateGSTSetup(Enum::"GST Customer Type"::Registered, Enum::"GST Group Type"::Goods, true, true);
+        InitializeShareStep(false, false);
+
+        StorageBoolean.Set(FOCLbl, true);
+
+        // [WHEN] Create and Post Sales Invoice with GST and Line Type as G/L Account for Interstate Transaction With FOC
+        CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine, Enum::"Sales Line Type"::"G/L Account",
+            Enum::"Sales Document Type"::Invoice);
+
+        // [THEN] Verify Customer Ledger Entry
+        CustomerLedgerEntry.SetRange("Document Type", SalesHeader."Document Type");
+        CustomerLedgerEntry.SetRange("Customer No.", SalesHeader."Sell-to Customer No.");
+        CustomerLedgerEntry.FindFirst();
+        LibraryAssert.RecordCount(CustomerLedgerEntry, 1);
+    end;
+
+
     local procedure CreateSalesHeaderWithGST(
         var SalesHeader: Record "Sales Header";
         CustomerNo: Code[20];
@@ -306,6 +338,8 @@ codeunit 18191 "GST Sales Ship To Addr Tests"
 
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, LineType, LineTypeno, Quantity);
         SalesLine.Validate("VAT Prod. Posting Group", VATPostingsetup."VAT Prod. Posting Group");
+
+        SalesLine.Validate(FOC, StorageBoolean.Get(FOCLbl));
 
         if LineDiscount then begin
             SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));

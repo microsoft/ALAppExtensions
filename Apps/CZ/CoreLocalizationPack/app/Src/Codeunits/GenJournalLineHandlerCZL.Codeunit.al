@@ -89,7 +89,7 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
     local procedure UpdateFieldsOnAfterCopyGenJnlLineFromSalesHeader(var GenJournalLine: Record "Gen. Journal Line"; SalesHeader: Record "Sales Header")
     begin
         GenJournalLine."VAT Reporting Date" := SalesHeader."VAT Reporting Date";
-        GenJournalLine."Registration No. CZL" := SalesHeader."Registration No. CZL";
+        GenJournalLine."Registration No. CZL" := SalesHeader.GetRegistrationNoTrimmedCZL();
         GenJournalLine."Tax Registration No. CZL" := SalesHeader."Tax Registration No. CZL";
         GenJournalLine."EU 3-Party Intermed. Role CZL" := SalesHeader."EU 3-Party Intermed. Role CZL";
         GenJournalLine."Original Doc. VAT Date CZL" := SalesHeader."Original Doc. VAT Date CZL";

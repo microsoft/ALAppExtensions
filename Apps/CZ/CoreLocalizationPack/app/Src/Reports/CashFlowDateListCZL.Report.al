@@ -164,15 +164,6 @@ report 31005 "Cash Flow Date List CZL"
                 }
             }
         }
-
-        actions
-        {
-        }
-
-        trigger OnOpenPage()
-        begin
-            UserInputDateFrom := WorkDate();
-        end;
     }
 
     labels

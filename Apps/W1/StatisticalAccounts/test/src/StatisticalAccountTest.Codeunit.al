@@ -603,6 +603,95 @@ codeunit 139683 "Statistical Account Test"
             StrSubstNo(BalanceMustBeEqualErr, ExpectedAmount));
     end;
 
+    [Test]
+    [HandlerFunctions('AllocationAccountPreview,MessageDialogHandler,ConfirmationDialogHandler')]
+    procedure AmtInAllocAccPreviewCantHaveRoundingValueWhereBreakDownAccBalIsZero()
+    var
+        AllocationAccount: Record "Allocation Account";
+        AllocAccountDistribution: array[4] of Record "Alloc. Account Distribution";
+        DimensionValue: array[5] of Record "Dimension Value";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        StatisticalAccount: Record "Statistical Account";
+        AllocationAccountPage: TestPage "Allocation Account";
+        GLAccountNo: Code[20];
+    begin
+        // [SCENARIO 579311] Amount in Allocation Account Preview page cannot have rounding value and 
+        // it is equal to 0 if "Breakdown Account Balance" is 0.
+        Initialize();
+
+        // [GIVEN] Find General Ledger Setup.
+        GeneralLedgerSetup.Get();
+
+        // [GIVEN] Create three Dimension Values for "GLobal Dimension 1 Code".
+        LibraryDimension.CreateDimensionValue(DimensionValue[1], GeneralLedgerSetup."Global Dimension 1 Code");
+        LibraryDimension.CreateDimensionValue(DimensionValue[2], GeneralLedgerSetup."Global Dimension 1 Code");
+        LibraryDimension.CreateDimensionValue(DimensionValue[3], GeneralLedgerSetup."Global Dimension 1 Code");
+
+        // [GIVEN] Create two Dimension Values for "Shortcut Dimension 3 Code".
+        LibraryDimension.CreateDimensionValue(DimensionValue[4], GeneralLedgerSetup."Shortcut Dimension 3 Code");
+        LibraryDimension.CreateDimensionValue(DimensionValue[5], GeneralLedgerSetup."Shortcut Dimension 3 Code");
+
+        // [GIVEN] Create Statistical Account.
+        CreateStatisticalAccount(StatisticalAccount);
+
+        // [GIVEN] Create and Register Statistical Account Journal Lines.
+        CreateAndRegisterStatisticalAccountJournalLines(
+            StatisticalAccount,
+            DimensionValue[1],
+            DimensionValue[2],
+            DimensionValue[3],
+            DimensionValue[4]);
+
+        // [GIVEN] Generate and save GL Account No. in a Variable.
+        GLAccountNo := LibraryERM.CreateGLAccountNo();
+
+        // [GIVEN] Create Allocation Account.
+        CreateAllocationAccount(AllocationAccount);
+
+        // [GIVEN] Create Allocation Account Distribution 1.
+        CreateAllocationAccDistribution(
+            AllocAccountDistribution[1],
+            AllocationAccount,
+            GLAccountNo,
+            StatisticalAccount,
+            DimensionValue[1],
+            DimensionValue[4]);
+
+        // [GIVEN] Create Allocation Account Distribution 2.
+        CreateAllocationAccDistribution(
+            AllocAccountDistribution[2],
+            AllocationAccount,
+            GLAccountNo,
+            StatisticalAccount,
+            DimensionValue[2],
+            DimensionValue[4]);
+
+        // [GIVEN] Create Allocation Account Distribution 3.
+        CreateAllocationAccDistribution(
+            AllocAccountDistribution[3],
+            AllocationAccount,
+            GLAccountNo,
+            StatisticalAccount,
+            DimensionValue[3],
+            DimensionValue[4]);
+
+        // [GIVEN] Create Allocation Account Distribution 4.
+        CreateAllocationAccDistribution(
+            AllocAccountDistribution[4],
+            AllocationAccount,
+            GLAccountNo,
+            StatisticalAccount,
+            DimensionValue[1],
+            DimensionValue[5]);
+
+        // [WHEN] Open Allocation Account Page and run Preview Distribution.
+        AllocationAccountPage.OpenEdit();
+        AllocationAccountPage.GoToRecord(AllocationAccount);
+        AllocationAccountPage.VariableAccountDistribution.PreviewDistributions.Invoke();
+
+        // [THEN] Amount of Allocation Line having 0 Breakdown Account Balance is equal to 0 in AllocationAccountPreview.
+    end;
+
     local procedure SetupFinancialReport()
     var
         AccScheduleLine: Record "Acc. Schedule Line";
@@ -942,6 +1031,70 @@ codeunit 139683 "Statistical Account Test"
         RegisterJournal(StatisticalAccountsJournal);
     end;
 
+    local procedure CreateAllocationAccount(var AllocationAccount: Record "Allocation Account")
+    begin
+        AllocationAccount.Init();
+        AllocationAccount."No." := LibraryUtility.GenerateRandomCode20(AllocationAccount.FieldNo("No."), Database::"Allocation Account");
+        AllocationAccount.Validate("Account Type", AllocationAccount."Account Type"::Variable);
+        AllocationAccount.Insert(true);
+    end;
+
+    local procedure CreateAndRegisterStatisticalAccountJournalLines(StatisticalAccount: Record "Statistical Account"; DimensionValue: Record "Dimension Value"; DimensionValue2: Record "Dimension Value"; DimensionValue3: Record "Dimension Value"; DimensionValue4: Record "Dimension Value")
+    var
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+    begin
+        StatisticalAccountsJournal.OpenEdit();
+        StatisticalAccountsJournal.New();
+        StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+        StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+        StatisticalAccountsJournal."Shortcut Dimension 1 Code".SetValue(DimensionValue.Code);
+        StatisticalAccountsJournal.ShortcutDimCode3.SetValue(DimensionValue4.Code);
+        StatisticalAccountsJournal.Amount.SetValue(83.75);
+
+        StatisticalAccountsJournal.Next();
+        StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+        StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+        StatisticalAccountsJournal."Shortcut Dimension 1 Code".SetValue(DimensionValue2.Code);
+        StatisticalAccountsJournal.ShortcutDimCode3.SetValue(DimensionValue4.Code);
+        StatisticalAccountsJournal.Amount.SetValue(25.50);
+
+        StatisticalAccountsJournal.Next();
+        StatisticalAccountsJournal."Posting Date".SetValue(WorkDate());
+        StatisticalAccountsJournal."Document No.".SetValue(LibraryRandom.RandText(10));
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+        StatisticalAccountsJournal."Shortcut Dimension 1 Code".SetValue(DimensionValue3.Code);
+        StatisticalAccountsJournal.ShortcutDimCode3.SetValue(DimensionValue4.Code);
+        StatisticalAccountsJournal.Amount.SetValue(26.00);
+        StatisticalAccountsJournal.Close();
+
+        StatisticalAccountsJournal.OpenEdit();
+        RegisterJournal(StatisticalAccountsJournal);
+    end;
+
+    local procedure CreateAllocationAccDistribution(
+        var AllocAccountDistribution: Record "Alloc. Account Distribution";
+        AllocationAccount: Record "Allocation Account";
+        GLAccountNo: Code[20];
+        StatisticalAccount: Record "Statistical Account";
+        DimensionValue: Record "Dimension Value";
+        DimensionValue2: Record "Dimension Value")
+    begin
+        AllocAccountDistribution.Init();
+        AllocAccountDistribution."Allocation Account No." := AllocationAccount."No.";
+        AllocAccountDistribution."Line No." := LibraryUtility.GetNewRecNo(AllocAccountDistribution, AllocAccountDistribution.FieldNo("Line No."));
+        AllocAccountDistribution.Validate("Account Type", AllocAccountDistribution."Account Type"::Variable);
+        AllocAccountDistribution.Validate("Destination Account Type", AllocAccountDistribution."Destination Account Type"::"G/L Account");
+        AllocAccountDistribution.Validate("Destination Account Number", GLAccountNo);
+        AllocAccountDistribution.Validate("Breakdown Account Type", AllocAccountDistribution."Breakdown Account Type"::"Statistical Account");
+        AllocAccountDistribution.Validate("Breakdown Account Number", StatisticalAccount."No.");
+        AllocAccountDistribution.Validate("Calculation Period", AllocAccountDistribution."Calculation Period"::Month);
+        AllocAccountDistribution.Validate("Dimension 1 Filter", DimensionValue.Code);
+        AllocAccountDistribution.Validate("Dimension 3 Filter", DimensionValue2.Code);
+        AllocAccountDistribution.Insert(true);
+    end;
+
     [ModalPageHandler]
     procedure StatAccJnlBatcheModalPageHandler(var StatBatch: TestPage "Statistical Acc. Journal Batch")
     begin
@@ -949,4 +1102,13 @@ codeunit 139683 "Statistical Account Test"
         StatBatch.OK().Invoke();
     end;
 
+    [PageHandler]
+    procedure AllocationAccountPreview(var AllocationAccountPreview: TestPage "Allocation Account Preview")
+    begin
+        AllocationAccountPreview.AmountToAllocate.SetValue(205.14);
+        AllocationAccountPreview.Next();
+        AllocationAccountPreview.Next();
+        AllocationAccountPreview.Next();
+        AllocationAccountPreview.Amount.AssertEquals(0);
+    end;
 }

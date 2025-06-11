@@ -1583,9 +1583,6 @@ report 18023 "Sales Document - Test GST"
                     }
                     dataitem("Item Charge Assignment (Sales)"; "Item Charge Assignment (Sales)")
                     {
-                        DataItemLink = "Document Type" = field("Document Type"),
-                                       "Document No." = field("Document No.");
-                        DataItemLinkReference = "Sales Line";
                         DataItemTableView = sorting("Document Type", "Document No.", "Document Line No.", "Line No.");
 
                         column(Item_Charge_Assignment__Sales___Qty__to_Assign_; "Qty. to Assign")
@@ -1681,6 +1678,9 @@ report 18023 "Sales Document - Test GST"
 
                         trigger OnPreDataItem()
                         begin
+                            SetRange("Document Type", "Sales Line"."Document Type");
+                            SetRange("Document No.", "Sales Line"."Document No.");
+
                             if not ShowCostAssignment then
                                 CurrReport.Break();
                         end;

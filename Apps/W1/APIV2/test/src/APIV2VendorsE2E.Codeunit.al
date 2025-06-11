@@ -95,12 +95,10 @@ codeunit 139803 "APIV2 - Vendors E2E"
         Initialize();
         LibraryInventory.CreatePaymentTerms(PaymentTerms);
         LibraryInventory.CreatePaymentMethod(PaymentMethod);
-
         // [GIVEN] A template selection rule exists to set the payment terms based on the payment method.
-        with Vendor do
-            LibraryGraphMgt.CreateSimpleTemplateSelectionRule(ConfigTmplSelectionRules, Page::"APIV2 - Vendors", Database::Vendor,
-              FieldNo("Payment Method Code"), PaymentMethod.Code,
-              FieldNo("Payment Terms Code"), PaymentTerms.Code);
+        LibraryGraphMgt.CreateSimpleTemplateSelectionRule(ConfigTmplSelectionRules, Page::"APIV2 - Vendors", Database::Vendor,
+  Vendor.FieldNo("Payment Method Code"), PaymentMethod.Code,
+  Vendor.FieldNo("Payment Terms Code"), PaymentTerms.Code);
 
         // [GIVEN] The user has constructed a vendor object containing a templated payment method code.
         CreateSimpleVendor(TempVendor);
@@ -249,40 +247,6 @@ codeunit 139803 "APIV2 - Vendors E2E"
 
     local procedure VerifyVendorAddress(VendorJSON: Text; var Vendor: Record "Vendor")
     begin
-        with Vendor do
-            LibraryGraphMgt.VerifyAddressProperties(VendorJSON, Address, "Address 2", City, County, "Country/Region Code", "Post Code");
+        LibraryGraphMgt.VerifyAddressProperties(VendorJSON, Vendor.Address, Vendor."Address 2", Vendor.City, Vendor.County, Vendor."Country/Region Code", Vendor."Post Code");
     end;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -733,6 +733,13 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             FieldClass = FlowField;
             CalcFormula = sum("Purch. Adv. Letter Line CZZ"."Amount Including VAT (LCY)" where("Document No." = field("No.")));
         }
+        field(202; Amount; Decimal)
+        {
+            Caption = 'Amount';
+            Editable = false;
+            FieldClass = FlowField;
+            CalcFormula = sum("Purch. Adv. Letter Line CZZ"."Amount" where("Document No." = field("No.")));
+        }
         field(205; "To Pay"; Decimal)
         {
             Caption = 'To Pay Amount';
@@ -760,6 +767,46 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             Editable = false;
             FieldClass = FlowField;
             CalcFormula = sum("Purch. Adv. Letter Entry CZZ"."Amount (LCY)" where("Purch. Adv. Letter No." = field("No."), "Entry Type" = filter(Payment | Usage | Close | "VAT Adjustment")));
+        }
+        field(220; "Doc. Amount Incl. VAT"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 1;
+            Caption = 'Doc. Amount Incl. VAT';
+            ToolTip = 'Specifies the total amount (including VAT) of the purchase advance letter as specified in the external document.';
+
+            trigger OnValidate()
+            var
+                TotalPurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
+            begin
+                TestStatusOpen();
+                CalcLineTotals(TotalPurchAdvLetterLineCZZ);
+                "Doc. Amount VAT" := CalcDocAmountVAT(
+                    "Doc. Amount Incl. VAT", TotalPurchAdvLetterLineCZZ."VAT Amount", TotalPurchAdvLetterLineCZZ."Amount Including VAT");
+            end;
+        }
+        field(221; "Doc. Amount VAT"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 1;
+            Caption = 'Doc. Amount VAT';
+            ToolTip = 'Specifies the VAT amount of the purchase advance letter as specified in the external document.';
+
+            trigger OnValidate()
+            var
+                TotalPurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
+                DocAmountVAT: Decimal;
+            begin
+                TestStatusOpen();
+                if "Doc. Amount VAT" > "Doc. Amount Incl. VAT" then
+                    Error(ErrorInfo.Create(
+                            StrSubstNo(MustNotBeMoreThanErr, FieldCaption("Doc. Amount VAT"), Format("Doc. Amount Incl. VAT")), true, Rec));
+
+                CalcLineTotals(TotalPurchAdvLetterLineCZZ);
+                DocAmountVAT := CalcDocAmountVAT(
+                    "Doc. Amount Incl. VAT", TotalPurchAdvLetterLineCZZ."VAT Amount", TotalPurchAdvLetterLineCZZ."Amount Including VAT");
+                CheckVATDifference("Doc. Amount VAT", DocAmountVAT);
+            end;
         }
         field(480; "Dimension Set ID"; Integer)
         {
@@ -841,6 +888,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
     var
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
+        Currency: Record Currency;
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         Vendor: Record Vendor;
         PostCode: Record "Post Code";
@@ -857,6 +905,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         DocumentResetErr: Label 'You cannot reset %1 because the document still has one or more lines.', Comment = '%1 = a Field Caption like Bill-to Contact No.';
         DocumentDeleteErr: Label 'You cannot delete this document. Your identification is set up to process from %1 %2 only.', Comment = '%1 = table caption of responsibility center, %2 = code of responsibility center';
         PostedEntriesExistErr: Label 'You cannot delete this document because there are posted entries.';
+        MustNotBeMoreThanErr: Label '%1 must not be more than %2.', comment = '%1 = field caption; %2 = amount';
 
     trigger OnInsert()
     begin
@@ -929,10 +978,10 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             if "No." = '' then begin
                 GetSetup();
                 AdvanceLetterTemplateCZZ.TestField("Advance Letter Document Nos.");
-                    "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
-                    if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                        "No. Series" := xRec."No. Series";
-                    "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
+                "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
             end;
         OnInitInsertOnBeforeInitRecord(Rec, xRec);
         InitRecord();
@@ -1630,6 +1679,47 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
         CopyAdvLetterDocumentCZZ.SetPurchAdvLetterHeader(Rec);
         CopyAdvLetterDocumentCZZ.RunModal();
+    end;
+
+    local procedure CalcLineTotals(var TotalPurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ")
+    begin
+        TotalPurchAdvLetterLineCZZ.Reset();
+        TotalPurchAdvLetterLineCZZ.SetRange("Document No.", "No.");
+        TotalPurchAdvLetterLineCZZ.CalcSums("Amount Including VAT", "VAT Amount");
+    end;
+
+    procedure CalcDocAmountVAT(DocAmountInclVAT: Decimal; TotalVATAmount: Decimal; TotalAmountInclVAT: Decimal): Decimal
+    begin
+        if TotalAmountInclVAT = 0 then
+            exit(0);
+
+        GetCurrency();
+        exit(Round(DocAmountInclVAT * TotalVATAmount / TotalAmountInclVAT, Currency."Amount Rounding Precision"));
+    end;
+
+    local procedure CheckVATDifference(DocAmountVAT: Decimal; TotalDocAmountVAT: Decimal)
+    var
+        PurchasePayablesSetup: Record "Purchases & Payables Setup";
+        VATDifference: Decimal;
+    begin
+        if DocAmountVAT = TotalDocAmountVAT then
+            exit;
+
+        PurchasePayablesSetup.Get();
+        if not PurchasePayablesSetup."Allow VAT Difference" then
+            exit;
+
+        GetCurrency();
+        VATDifference := Abs(DocAmountVAT) - Abs(TotalDocAmountVAT);
+        if Abs(VATDifference) > Currency."Max. VAT Difference Allowed" then
+            Error(ErrorInfo.Create(
+                    StrSubstNo(MustNotBeMoreThanErr, FieldCaption("Doc. Amount VAT"), Format(DocAmountVAT)), true, Rec));
+    end;
+
+    local procedure GetCurrency()
+    begin
+        Currency.Initialize("Currency Code");
+        Currency.TestField("Amount Rounding Precision");
     end;
 
     [IntegrationEvent(false, false)]

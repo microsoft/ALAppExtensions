@@ -1,0 +1,17 @@
+test_setup:
+  deferralTemplatesToCreate:
+  - deferral_code: "DEF-Q01"
+    number_of_periods: 3
+    description: Quarterly deferral
+  - deferral_code: "DEF-S01"
+    number_of_periods: 6
+    description: Semi-annual deferral
+  - deferral_code: "DEF-A01"
+    number_of_periods: 12
+    description: Annual deferral
+  - deferral_code: "DEF-C01"
+    number_of_periods: 18
+    description: Custom 18-month deferral
+  - deferral_code: "DEF-A03"
+    number_of_periods: 36
+    description: Deferral over 3 years

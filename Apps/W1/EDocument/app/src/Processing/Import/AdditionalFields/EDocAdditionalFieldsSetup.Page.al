@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Processing.Import;
 
+using Microsoft.eServices.EDocument;
+
 page 6100 "EDoc Additional Fields Setup"
 {
     Caption = 'E-Document Additional Fields Setup';
@@ -21,5 +23,10 @@ page 6100 "EDoc Additional Fields Setup"
             }
         }
     }
+
+    internal procedure SetEDocumentService(EDocumentService: Record "E-Document Service")
+    begin
+        CurrPage.EDocPurchLineFields.Page.SetEDocumentService(EDocumentService);
+    end;
 
 }

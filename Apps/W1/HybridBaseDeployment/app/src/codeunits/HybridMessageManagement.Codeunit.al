@@ -25,6 +25,7 @@ codeunit 4011 "Hybrid Message Management"
         ColumnMappingLengthErr: Label 'Incompatible length.';
         UnsupportedVersionErr: Label 'Business Central on-premises must be at least version 15 to use the cloud migration functionality.';
         CopyTableTimeoutErr: Label 'The table copy operation timed out after 24 hours.';
+        NonPrintingCharactersInCompanyNameErr: Label 'One or more companies contain non-printing characters in the name. You must remove the non-printing characters and try again. For more information, see the Troubleshooting Cloud Migration documentation article. Additional details: %1.', Comment = '%1 - the error message from the service';
 
     procedure ResolveMessageCode(MessageCode: Code[10]; InnerMessage: Text) Message: Text
     var
@@ -74,6 +75,8 @@ codeunit 4011 "Hybrid Message Management"
                 Message := UnsupportedVersionErr;
             '50020':
                 Message := ChangeTrackingDisabledErr;
+            '50021':
+                Message := StrSubstNo(NonPrintingCharactersInCompanyNameErr, InnerMessage);
             '52100':
                 Message := HandleWebhookError();
             '52110':

@@ -81,7 +81,7 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
         }
         addafter("Currency Code")
         {
-            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCode())
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL())
             {
                 ApplicationArea = Suite;
                 Editable = false;
@@ -91,7 +91,7 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
 
                 trigger OnAssistEdit()
                 begin
-                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
                     ChangeExchangeRate.Editable(false);
                     ChangeExchangeRate.RunModal();
                 end;
@@ -260,7 +260,7 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
 
     trigger OnOpenPage()
     begin
-        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
     end;
 
     trigger OnAfterGetCurrRecord()

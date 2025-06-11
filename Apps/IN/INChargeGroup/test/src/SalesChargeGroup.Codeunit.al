@@ -7,11 +7,7 @@ codeunit 18991 "Sales Charge Group"
         LibrarySales: Codeunit "Library - Sales";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryCharge: Codeunit "Library - Charge";
-        LibraryGSTSales: Codeunit "Library GST Sales";
         LibraryRandom: Codeunit "Library - Random";
-        LibraryERM: Codeunit "Library - ERM";
-        LibraryJournals: Codeunit "Library - Journals";
-        Assert: Codeunit Assert;
         Storage: Dictionary of [Text, Code[20]];
         StorageBoolean: Dictionary of [Text, Boolean];
         StorageChargeGroupLineType: Dictionary of [Text[50], Enum "Charge Group Type"];
@@ -36,10 +32,6 @@ codeunit 18991 "Sales Charge Group"
         FromStateCodeLbl: Label 'FromStateCode';
         CustomerNoLbl: Label 'CustomerNo';
         ToStateCodeLbl: Label 'ToStateCode';
-        PaymentDocNoLbl: Label 'PaymentDocNo';
-        AccountNoLbl: Label 'AccountNo';
-        AccountTypeLbl: Label 'AccountType';
-        VerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
         SuccessMsg: Label 'GST Payment Lines Posted Successfully.', Locked = true;
         NotPostedErr: Label 'The entries were not posted.', locked = true;
         PostedDocumentNoLbl: Label 'PostedDocumentNo';
@@ -1063,21 +1055,6 @@ codeunit 18991 "Sales Charge Group"
         Storage.Set(ReverseDocumentNoLbl, ReverseDocumentNo);
     end;
 
-    local procedure CreateAndPostSalesDocumentFromCorrectAndCancel(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type")
-    var
-        ReverseDocumentNo: Code[20];
-    begin
-        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, Storage.Get(CustomerNoLbl));
-        SalesHeader.Validate("Posting Date", WorkDate());
-        SalesHeader.Validate("Location Code", Storage.Get(LocationCodeLbl));
-        SalesHeader.Modify(true);
-        GetPostedDocumentToReverse(SalesHeader);
-        UpdateReferenceInvoiceNoAndVerify(SalesHeader);
-
-        ReverseDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        Storage.Set(ReverseDocumentNoLbl, ReverseDocumentNo);
-    end;
-
     local procedure UpdateReferenceInvoiceNoAndVerify(SalesHeader: Record "Sales Header")
     var
         SalesReturnOrder: TestPage "Sales Return Order";
@@ -1196,22 +1173,6 @@ codeunit 18991 "Sales Charge Group"
         StorageBoolean.Set(LineDiscountLbl, LineDiscount);
     end;
 
-    local procedure CreateSalesDocument(
-        var SalesHeader: Record "Sales Header";
-        var SalesLine: Record "Sales Line";
-        LineType: Enum "Sales Line Type";
-        DocumentType: Enum "Sales Document Type"): Code[20]
-    var
-        CustomerNo: Code[20];
-        LocationCode: Code[10];
-    begin
-        CustomerNo := Storage.Get(CustomerNoLbl);
-        LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
-        CreateSalesHeaderWithGST(SalesHeader, CustomerNo, DocumentType, LocationCode);
-        CreateSalesLineWithGST(SalesHeader, SalesLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
-        exit(SalesHeader."No.");
-    end;
-
     local procedure CreateGSTComponentAndPostingSetup(
         IntraState: Boolean;
         LocationStateCode: Code[10];
@@ -1284,53 +1245,6 @@ codeunit 18991 "Sales Charge Group"
         TaxTypes.OpenEdit();
         TaxTypes.Filter.SetFilter(Code, GSTSetup."GST Tax Type");
         TaxTypes.TaxRates.Invoke();
-    end;
-
-    local procedure CreateAndPostSalesDocument(
-        var SalesHeader: Record "Sales Header";
-        var SalesLine: Record "Sales Line";
-        LineType: Enum "Sales Line Type";
-        DocumentType: Enum "Sales Document Type"): Code[20];
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-        CustomerNo: Code[20];
-        LocationCode: Code[10];
-        PostedDocumentNo: Code[20];
-    begin
-        GeneralLedgerSetup.Get();
-        if GeneralLedgerSetup."Generate E-Inv. on Sales Post" = false then begin
-            GeneralLedgerSetup."Generate E-Inv. on Sales Post" := true;
-            GeneralLedgerSetup.Modify();
-        end;
-
-        CustomerNo := Storage.Get(CustomerNoLbl);
-        LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
-        CreateSalesHeaderWithGST(SalesHeader, CustomerNo, DocumentType, LocationCode);
-        CreateSalesLineWithGST(SalesHeader, SalesLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
-        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        Storage.Set(PostedDocumentNoLbl, PostedDocumentNo);
-        exit(PostedDocumentNo);
-    end;
-
-    local procedure CreateAndPostSalesDocumentWithApplication(
-        var SalesHeader: Record "Sales Header";
-        var SalesLine: Record "Sales Line";
-        LineType: Enum "Sales Line Type";
-        DocumentType: Enum "Sales Document Type"): Code[20];
-    var
-        CustomerNo: Code[20];
-        LocationCode: Code[10];
-        PostedDocumentNo: Code[20];
-    begin
-        CustomerNo := Storage.Get(CustomerNoLbl);
-        LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
-        CreateSalesHeaderWithGST(SalesHeader, CustomerNo, DocumentType, LocationCode);
-        CreateSalesLineWithGST(SalesHeader, SalesLine, LineType, LibraryRandom.RandDecInRange(2, 10, 0), StorageBoolean.Get(ExemptedLbl), StorageBoolean.Get(LineDiscountLbl));
-        SalesHeader.Validate("Applies-to Doc. Type", SalesHeader."Applies-to Doc. Type"::Payment);
-        SalesHeader.Validate("Applies-to Doc. No.", Storage.Get(PaymentDocNoLbl));
-
-        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        exit(PostedDocumentNo);
     end;
 
     local procedure CreateSalesHeaderWithGST(
@@ -1422,185 +1336,11 @@ codeunit 18991 "Sales Charge Group"
         end;
     end;
 
-    local procedure CreateGenJnlLineForVoucherWithAdvancePayment(
-        var GenJournalLine: Record "Gen. Journal Line";
-        TemplateType: Enum "Gen. Journal Template Type")
-    var
-        GenJournalTemplate: Record "Gen. Journal Template";
-        GenJournalBatch: Record "Gen. Journal Batch";
-        CustomerNo: Code[20];
-        LocationCode: Code[10];
-        AccountType: Enum "Gen. Journal Account Type";
-    begin
-        CreateLocationWithVoucherSetup(TemplateType);
-        CreateGenJournalTemplateBatch(GenJournalTemplate, GenJournalBatch, TemplateType);
-
-        CustomerNo := CopyStr(Storage.Get(CustomerNoLbl), 1, 20);
-        Evaluate(LocationCode, Storage.Get(LocationCodeLbl));
-        Evaluate(AccountType, Storage.Get(AccountTypeLbl));
-
-        LibraryJournals.CreateGenJournalLine(
-            GenJournalLine,
-            GenJournalTemplate.Name,
-            GenJournalBatch.Name,
-            GenJournalLine."Document Type"::Payment,
-            GenJournalLine."Account Type"::Customer,
-            CustomerNo,
-            AccountType,
-            CopyStr(Storage.Get(AccountNoLbl), 1, 20),
-            -LibraryRandom.RandIntInRange(1, 10000));
-
-        GenJournalLine.Validate("Location Code", LocationCode);
-        GenJournalLine.Validate("GST Group Code", CopyStr(Storage.Get(GSTGroupCodeLbl), 1, 20));
-        GenJournalLine.Validate("HSN/SAC Code", CopyStr(Storage.Get(HSNSACCodeLbl), 1, 10));
-        GenJournalLine.Validate("GST on Advance Payment", true);
-        GenJournalLine.Modify(true);
-        CalculateGST(GenJournalLine);
-    end;
-
-    local procedure CreateGenJnlLineForVoucher(var GenJournalLine: Record "Gen. Journal Line"; TemplateType: Enum "Gen. Journal Template Type")
-    var
-        GenJournalTemplate: Record "Gen. Journal Template";
-        GenJournalBatch: Record "Gen. Journal Batch";
-        CustomerNo: Code[20];
-        LocationCode: Code[10];
-        AccountType: Enum "Gen. Journal Account Type";
-    begin
-        CreateLocationWithVoucherSetup(TemplateType);
-        CreateGenJournalTemplateBatch(GenJournalTemplate, GenJournalBatch, TemplateType);
-
-        CustomerNo := CopyStr(Storage.Get(CustomerNoLbl), 1, 20);
-        Evaluate(LocationCode, Storage.Get(LocationCodeLbl));
-        Evaluate(AccountType, Storage.Get(AccountTypeLbl));
-
-        LibraryJournals.CreateGenJournalLine(
-            GenJournalLine,
-            GenJournalTemplate.Name,
-            GenJournalBatch.Name,
-            GenJournalLine."Document Type"::Payment,
-            GenJournalLine."Account Type"::Customer,
-            CustomerNo,
-            AccountType,
-            CopyStr(Storage.Get(AccountNoLbl), 1, 20),
-            -LibraryRandom.RandIntInRange(1, 10000));
-
-        GenJournalLine.Validate("Location Code", LocationCode);
-        GenJournalLine.Modify(true);
-    end;
-
-    local procedure CreateLocationWithVoucherSetup(Type: Enum "Gen. Journal Template Type"): Code[20]
-    var
-        BankAccount: Record "Bank Account";
-        GLAccount: Record "G/L Account";
-        LocationCode: Code[10];
-        AccountType: Enum "Gen. Journal Account Type";
-    begin
-        Evaluate(LocationCode, Storage.Get(LocationCodeLbl));
-        case Type of
-            Type::"Bank Payment Voucher", Type::"Bank Receipt Voucher":
-                begin
-                    LibraryERM.CreateBankAccount(BankAccount);
-                    Storage.Set(AccountNoLbl, BankAccount."No.");
-                    Storage.Set(AccountTypeLbl, Format(AccountType::"Bank Account"));
-                    CreateVoucherAccountSetup(Type, LocationCode);
-                end;
-            Type::"Contra Voucher", Type::"Cash Receipt Voucher":
-                begin
-                    LibraryERM.CreateGLAccount(GLAccount);
-                    Storage.Set(AccountNoLbl, GLAccount."No.");
-                    Storage.Set(AccountTypeLbl, Format(AccountType::"G/L Account"));
-                    CreateVoucherAccountSetup(Type, LocationCode);
-                end;
-        end;
-    end;
-
-    local procedure CreateVoucherAccountSetup(SubType: Enum "Gen. Journal Template Type"; LocationCode: Code[10])
-    var
-        TaxBaseTestPublishers: Codeunit "Tax Base Test Publishers";
-        TransactionDirection: Option " ",Debit,Credit,Both;
-        AccountNo: Code[20];
-    begin
-        AccountNo := CopyStr(Storage.Get(AccountNoLbl), 1, MaxStrLen(AccountNo));
-        case SubType of
-            SubType::"Bank Payment Voucher", SubType::"Cash Payment Voucher", SubType::"Contra Voucher":
-                begin
-                    TaxBaseTestPublishers.InsertJournalVoucherPostingSetupWithLocationCode(SubType, LocationCode, TransactionDirection::Credit);
-                    TaxBaseTestPublishers.InsertVoucherCreditAccountNoWithLocationCode(SubType, LocationCode, AccountNo);
-                end;
-            SubType::"Cash Receipt Voucher", SubType::"Bank Receipt Voucher", SubType::"Journal Voucher":
-                begin
-                    TaxBaseTestPublishers.InsertJournalVoucherPostingSetupWithLocationCode(SubType, LocationCode, TransactionDirection::Debit);
-                    TaxBaseTestPublishers.InsertVoucherDebitAccountNoWithLocationCode(SubType, LocationCode, AccountNo);
-                end;
-        end;
-    end;
-
-    local procedure CreateGenJournalTemplateBatch(
-        var GenJournalTemplate: Record "Gen. Journal Template";
-        var GenJournalBatch: Record "Gen. Journal Batch";
-        TemplateType: Enum "Gen. Journal Template Type")
-    var
-        LocationCode: Code[10];
-    begin
-        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
-        GenJournalTemplate.Validate(Type, TemplateType);
-        GenJournalTemplate.Modify(true);
-
-        Evaluate(LocationCode, Storage.Get(LocationCodeLbl));
-        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
-        GenJournalBatch.Validate("Location Code", LocationCode);
-        GenJournalBatch.Modify(true);
-    end;
-
-    local procedure CalculateGST(GenJournalLine: Record "Gen. Journal Line")
-    var
-        CalculateTax: Codeunit "Calculate Tax";
-    begin
-        CalculateTax.CallTaxEngineOnGenJnlLine(GenJournalLine, GenJournalLine);
-    end;
-
     local procedure CalculateGSTOnSalesLine(SalesLine: Record "Sales Line")
     var
         CalculateTax: Codeunit "Calculate Tax";
     begin
         CalculateTax.CallTaxEngineOnSalesLine(SalesLine, SalesLine);
-    end;
-
-    local procedure UnapplyCustLedgerEntry(DocumentType: Enum "Gen. Journal Document Type"; DocumentNo: Code[20]);
-    var
-        CustLedgerEntry: Record "Cust. Ledger Entry";
-    begin
-        LibraryERM.FindCustomerLedgerEntry(CustLedgerEntry, DocumentType, DocumentNo);
-        LibraryERM.UnapplyCustomerLedgerEntry(CustLedgerEntry);
-    end;
-
-    local procedure VerifyAdvPaymentApplied()
-    var
-        CustLedgerEntry: Record "Cust. Ledger Entry";
-    begin
-        CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Payment);
-        CustLedgerEntry.SetRange("Document No.", Storage.Get(PaymentDocNoLbl));
-        CustLedgerEntry.FindFirst();
-        CustLedgerEntry.CalcFields(Amount, "Remaining Amount");
-
-        Assert.AreNotEqual(CustLedgerEntry.Amount, CustLedgerEntry."Remaining Amount",
-            StrSubstNo(VerifyErr, CustLedgerEntry.FieldName("Remaining Amount"), CustLedgerEntry.TableCaption));
-    end;
-
-    local procedure VerifyGSTEntries(DocumentNo: Code[20]; TableID: Integer)
-    begin
-        LibraryGSTSales.VerifyGSTEntries(DocumentNo, TableID, ComponentPerArray);
-    end;
-
-    local procedure VerifyAdvPaymentUnapplied()
-    var
-        CustLedgerEntry: Record "Cust. Ledger Entry";
-    begin
-        CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Payment);
-        CustLedgerEntry.SetRange("Document No.", Storage.Get(PaymentDocNoLbl));
-        CustLedgerEntry.FindFirst();
-
-        Assert.AreEqual(true, CustLedgerEntry.Open, StrSubstNo(VerifyErr, CustLedgerEntry.FieldName(Open), CustLedgerEntry.TableCaption));
     end;
 
     procedure CreateChargeGroupHeader(var ChargeGroupHeader: Record "Charge Group Header"; InvoiceCombination: Enum "Charge Group Invoice Comb.")

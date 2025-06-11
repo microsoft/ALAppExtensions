@@ -52,6 +52,28 @@ codeunit 18438 "GST Item Charge Subscribers"
         end;
     end;
 
+    local procedure GetItemChargeGSTPercent(PurchaseLine: Record "Purchase Line") GSTPercent: Integer;
+    var
+        TaxTransactionValue: Record "Tax Transaction Value";
+    begin
+        if (PurchaseLine.Type = PurchaseLine.Type::"Charge (Item)") and (PurchaseLine."GST Credit" = PurchaseLine."GST Credit"::"Non-Availment") then begin
+            if not GSTSetup.Get() then
+                exit;
+
+            GSTSetup.TestField("GST Tax Type");
+
+            TaxTransactionValue.SetLoadFields("Tax Record ID", "Tax Type", Percent, "Value ID", "Amount (LCY)");
+            TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
+            TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
+            TaxTransactionValue.SetRange("Tax Record ID", PurchaseLine.RecordId);
+            TaxTransactionValue.SetFilter(Percent, '<>%1', 0);
+            if TaxTransactionValue.FindSet() then
+                repeat
+                    GSTPercent += TaxTransactionValue.Percent;
+                until TaxTransactionValue.Next() = 0;
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostItemChargePerOrder', '', false, false)]
     local procedure PurchPostOnBeforePostItemChargePerOrder(
         var PurchHeader: Record "Purchase Header";
@@ -81,7 +103,9 @@ codeunit 18438 "GST Item Charge Subscribers"
         var TempItemChargeAssgntPurch: Record "Item Charge Assignment (Purch)" temporary)
     var
         GSTAmountLoaded: Decimal;
+        GSTPercent: Integer;
     begin
+        GSTPercent := GetItemChargeGSTPercent(PurchaseLine);
         GSTAmountLoaded := GetItemChargeGSTAmount(PurchaseLine);
         if TempItemChargeAssgntPurch."Document Type" in [TempItemChargeAssgntPurch."Document Type"::"Credit Memo", TempItemChargeAssgntPurch."Document Type"::"Return Order"] then
             GSTAmountLoaded := -1 * GSTAmountLoaded;
@@ -90,7 +114,11 @@ codeunit 18438 "GST Item Charge Subscribers"
             (TempItemChargeAssgntPurch."Applies-to Doc. Type" = Enum::"Purchase Applies-to Document Type"::"Sales Shipment") then
             GSTAmountLoaded := -1 * GSTAmountLoaded;
 
-        GSTApplicationSessionMgt.SetGSTAmountLoaded(GSTAmountLoaded * TempItemChargeAssgntPurch."Qty. to Assign");
+        if (PurchaseLine.Type = PurchaseLine.Type::"Charge (Item)") and (PurchaseLine."GST Credit" = PurchaseLine."GST Credit"::"Non-Availment") then
+            if (TempItemChargeAssgntPurch."Applies-to Doc. Type" = TempItemChargeAssgntPurch."Applies-to Doc. Type"::Receipt) and (TempItemChargeAssgntPurch."Applies-to Doc. No." <> '') then
+                GSTApplicationSessionMgt.SetGSTAmountLoaded(PurchaseLineToPost."Line Amount" * GSTPercent / 100)
+            else
+                GSTApplicationSessionMgt.SetGSTAmountLoaded(GSTAmountLoaded * TempItemChargeAssgntPurch."Qty. to Assign");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemChargePerTransferOnBeforePostItemJnlLine', '', false, false)]

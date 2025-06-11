@@ -286,7 +286,8 @@ codeunit 18544 "Tax Base Subscribers"
         PurchaseLine: Record "Purchase Line";
         CalculateTax: Codeunit "Calculate Tax";
     begin
-        PurchaseHeader.Modify();
+        if not PurchaseHeader.Modify() then
+            exit; // If purchase header does not exist exit. (called from OnDeleteTrigger)
         PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
         if PurchaseLine.FindSet() then

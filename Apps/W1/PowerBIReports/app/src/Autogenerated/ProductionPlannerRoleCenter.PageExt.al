@@ -21,29 +21,41 @@ pageextension 36958 "Production Planner Role Center" extends "Production Planner
                     RunObject = page "Manufacturing Report";
                     Tooltip = 'Open a Power BI Report that offers a consolidated view of all manufacturing report pages, conveniently embedded into a single page for easy access.';
                 }
+#if not CLEAN26
                 action("Current Utilization")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Current Utilization';
                     Image = "PowerBI";
                     RunObject = page "Current Utilization";
-                    Tooltip = 'Open a Power BI Report to view the current Weeks Utilization % by comparing Capacity Used to Available Capacity in Hours. View all or some Work Centres to measure throughput and efficiency.';
+                    Tooltip = 'Open a Power BI Report to view the current Weeks Utilization % by comparing Capacity Used to Available Capacity in Hours. View all or some Work Centers to measure throughput and efficiency.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'The Power BI report has been changed/removed and this is no longer required.';
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                 }
+#endif
+#if not CLEAN26
                 action("Historical Utilization")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Historical Utilization';
                     Image = "PowerBI";
                     RunObject = page "Historical Utilization";
-                    Tooltip = 'Open a Power BI Report to view the historical Utilization % by comparing Capacity Used vs Available Capacity in Hours viewed over a timeline you can define to see trends. View all or some Work Centres.';
+                    Tooltip = 'Open a Power BI Report to view the historical Utilization % by comparing Capacity Used vs. Available Capacity in Hours viewed over a timeline you can define to see trends. View all or some Work Centers.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'The Power BI report has been changed/removed and this is no longer required.';
+                    ObsoleteTag = '26.0';
+                    Visible = false;
                 }
+#endif
                 action("Work Center Load")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Work Center Load';
                     Image = "PowerBI";
                     RunObject = page "PowerBI Work Center Load";
-                    Tooltip = 'Open a Power BI Report to view the percentage of production order time assigned vs Available Capacity for each Work Centre Group and/or Work Centre in a specified period. Allows you to determine if a Work Centre is overloaded and requires rescheduling.';
+                    Tooltip = 'Open a Power BI Report to view the percentage of production order time assigned vs. Available Capacity for each Work Centre Group and/or Work Centre in a specified period. Allows you to determine if a Work Centre is overloaded and requires rescheduling.';
                 }
                 action("Allocated Hours")
                 {
@@ -64,10 +76,10 @@ pageextension 36958 "Production Planner Role Center" extends "Production Planner
                 action("Finished Prod. Order Breakdown")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Finished Prod. Order Breakdown';
+                    Caption = 'Finished Production Order Breakdown';
                     Image = "PowerBI";
                     RunObject = page "Finished Prod. Order Breakdown";
-                    Tooltip = 'Open a Power BI Report to view Expected Quantities and Cost vs Actual Quantities and Costs over time, analyze the detail per item and drill down to the Production Order to track where variances are occurring.';
+                    Tooltip = 'Open a Power BI Report to view Expected Quantities and Cost vs. Actual Quantities and Costs over time, analyze the detail per item and drill down to the Production Order to track where variances are occurring.';
                 }
                 action("Consumption Variance")
                 {
@@ -99,7 +111,7 @@ pageextension 36958 "Production Planner Role Center" extends "Production Planner
                     Caption = 'Released Production Orders';
                     Image = "PowerBI";
                     RunObject = page "PowerBI Released Prod. Orders";
-                    Tooltip = 'Open a Power BI Report to view how your released production orders are tracking by comparing Expected Quantity vs Finished Quantity';
+                    Tooltip = 'Open a Power BI Report to view how your released production orders are tracking by comparing Expected Quantity vs. Finished Quantity';
                 }
                 action("Production Scrap")
                 {

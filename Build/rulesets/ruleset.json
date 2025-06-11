@@ -138,6 +138,26 @@
       "id": "AL0678",
       "action": "None",
       "justification": "Information diagnostic reported on obsolete symbols contributing to metadata name conflicts, ex: 'My Page' and 'My_Page'."
+    },
+    {
+      "id": "AA0471",
+      "action": "None",
+      "justification": "AutoformatType should be defined for decimal fields in Page objects to ensure proper formatting behavior."
+    },
+    {
+      "id": "AA0472",
+      "action": "None",
+      "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
+    },
+    {
+      "id": "AA0473",
+      "action": "None",
+      "justification": "AutoformatType should be defined for decimal fields in Table objects to ensure proper formatting behavior."
+    },
+    {
+      "id": "AA0474",
+      "action": "None",
+      "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
     }
   ]
 }

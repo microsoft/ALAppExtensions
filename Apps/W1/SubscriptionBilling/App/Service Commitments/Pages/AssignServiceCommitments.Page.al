@@ -91,13 +91,13 @@ page 8065 "Assign Service Commitments"
         ServiceObject := NewServiceObject;
     end;
 
-    internal procedure SetSalesLine(NewSalesLine: Record "Sales Line")
+    procedure SetSalesLine(NewSalesLine: Record "Sales Line")
     begin
         SalesLine := NewSalesLine;
         OpenedFromSalesLine := true;
     end;
 
-    internal procedure GetSelectionFilter(var ServiceCommitmentPackage: Record "Subscription Package")
+    procedure GetSelectionFilter(var ServiceCommitmentPackage: Record "Subscription Package")
     begin
         CurrPage.SetSelectionFilter(ServiceCommitmentPackage);
     end;

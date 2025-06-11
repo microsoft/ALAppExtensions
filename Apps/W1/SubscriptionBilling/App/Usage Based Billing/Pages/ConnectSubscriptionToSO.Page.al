@@ -67,7 +67,7 @@ page 8031 "Connect Subscription To SO"
                 }
                 field("Connect to Service Object No."; Rec."Connect to Sub. Header No.")
                 {
-                    ToolTip = 'Specifies the Subscription to which the subscription should be connected.';
+                    ToolTip = 'Specifies the Subscription to which the Supplier Subscription should be connected.';
                     StyleExpr = UsageDataSubscriptionStyle;
                 }
                 field("Connect to SO Method"; Rec."Connect to Sub. Header Method")
@@ -163,7 +163,7 @@ page 8031 "Connect Subscription To SO"
             action("Connect Subscriptions to Service Objects")
             {
                 Caption = 'Connect Supplier Subscriptions to Subscriptions';
-                ToolTip = 'Connects the selected subscriptions to the selected Subscriptions as specified.';
+                ToolTip = 'Connects the Supplier Subscriptions to the selected Subscriptions as specified.';
                 Ellipsis = true;
                 Image = CarryOutActionMessage;
                 Scope = Repeater;
@@ -238,6 +238,6 @@ page 8031 "Connect Subscription To SO"
 
     var
         UsageDataSubscriptionStyle: Text;
-        ProceedConnectingServiceObjectToSubscriptionQst: Label 'If you continue, the selected Subscriptions will be connected to their respective Subscription by either creating new Subscription Line or by updating existing Subscription Line.\\Do you want to continue?';
+        ProceedConnectingServiceObjectToSubscriptionQst: Label 'If you continue, the selected Supplier Subscriptions will be connected to their respective Subscription by either creating new a Subscription Line or by updating the existing Subscription Line.\\\\Do you want to continue?';
         ResetProcessingStatusQst: Label 'Do you want to reset the Processing Status for all selected Subscriptions?';
 }

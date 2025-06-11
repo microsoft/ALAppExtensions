@@ -70,7 +70,7 @@ pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
                 ToolTip = 'Map received E-Document to the Purchase Order';
                 ApplicationArea = All;
                 Image = SparkleFilled;
-                Visible = ShowMapToEDocument and CopilotVisible;
+                Visible = ShowMapToEDocument;
 
                 trigger OnAction()
                 var
@@ -95,13 +95,7 @@ pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
 
 
     var
-        ShowMapToEDocument, CopilotVisible : Boolean;
-
-
-    trigger OnOpenPage()
-    begin
-        CopilotVisible := false; // 573812
-    end;
+        ShowMapToEDocument: Boolean;
 
     trigger OnAfterGetCurrRecord()
     var

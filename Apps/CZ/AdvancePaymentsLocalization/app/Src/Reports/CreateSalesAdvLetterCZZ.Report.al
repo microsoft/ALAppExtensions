@@ -195,7 +195,7 @@ report 31012 "Create Sales Adv. Letter CZZ"
         SalesAdvLetterHeaderCZZ."Posting Description" := SalesHeader."Posting Description";
         SalesAdvLetterHeaderCZZ."Payment Method Code" := SalesHeader."Payment Method Code";
         SalesAdvLetterHeaderCZZ."Payment Terms Code" := SalesHeader."Payment Terms Code";
-        SalesAdvLetterHeaderCZZ."Registration No." := SalesHeader."Registration No. CZL";
+        SalesAdvLetterHeaderCZZ."Registration No." := SalesHeader.GetRegistrationNoTrimmedCZL();
         SalesAdvLetterHeaderCZZ."Tax Registration No." := SalesHeader."Tax Registration No. CZL";
         SalesAdvLetterHeaderCZZ."VAT Registration No." := SalesHeader."VAT Registration No.";
         SalesAdvLetterHeaderCZZ."Order No." := SalesHeader."No.";

@@ -237,7 +237,7 @@ page 1830 "MS - QBO Data Migration"
                         MigrationQBConfig: Record "MigrationQB Config";
                     begin
                         if MigrationQBConfig.Get() then
-                            if (UnitOfMeasure <> '') AND (MigrationQBConfig."Total Items" > 0) then
+                            if (UnitOfMeasure <> '') and (MigrationQBConfig."Total Items" > 0) then
                                 NextEnabled := true
                             else
                                 NextEnabled := false;
@@ -310,7 +310,7 @@ page 1830 "MS - QBO Data Migration"
 
     trigger OnClosePage()
     begin
-        if Authorized AND not HasErrors then
+        if Authorized and not HasErrors then
             SetAccountNumbers();
     end;
 

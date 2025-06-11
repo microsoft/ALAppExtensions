@@ -517,7 +517,11 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
 
         VATCtrlReportCardCZL.OpenView();
         VATCtrlReportCardCZL.GoToRecord(VATCtrlReportHeaderCZL);
+#if not CLEAN27        
         VATCtrlReportCardCZL.Statistics.Invoke();
+#else
+        VATCtrlReportCardCZL.VATCtrlReportStatistics.Invoke();
+#endif
     end;
 
     local procedure RunVATCtrlReportTest(var VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL")

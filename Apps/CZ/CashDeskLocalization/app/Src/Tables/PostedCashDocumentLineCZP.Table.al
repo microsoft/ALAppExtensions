@@ -490,7 +490,8 @@ table 11738 "Posted Cash Document Line CZP"
     begin
         DimensionManagement.ShowDimensionSet("Dimension Set ID", StrSubstNo(ThreePlaceholdersTok, TableCaption, "Cash Document No.", "Line No."));
     end;
-
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the CashDocumentStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
     procedure ExtStatistics()
     var
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
@@ -504,4 +505,5 @@ table 11738 "Posted Cash Document Line CZP"
         PostedCashDocumentLineCZP.SetRange("Line No.", "Line No.");
         Page.RunModal(Page::"Posted Cash Document Stat. CZP", PostedCashDocumentLineCZP);
     end;
+#endif
 }

@@ -7,7 +7,6 @@ namespace Microsoft.DemoData.Service;
 
 using Microsoft.Service.Setup;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Common;
 
 codeunit 5103 "Create Svc Setup"
 {
@@ -41,8 +40,6 @@ codeunit 5103 "Create Svc Setup"
         ContosoService.InsertBaseCalendar(DefaultBaseCalendar(), DefaultBaseCalendar());
 
         CreateServiceSetup();
-        CreateInventoryPostingSetup();
-
         CreateSkillCodes();
         CreateServiceOrderTypes();
         CreateFaultReasonCodes();
@@ -94,17 +91,6 @@ codeunit 5103 "Create Svc Setup"
         ServiceMgtSetup.Modify(true);
     end;
 
-    local procedure CreateInventoryPostingSetup()
-    var
-        SvcDemoDataSetup: Record "Service Module Setup";
-        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
-        CommonPostingGroup: Codeunit "Create Common Posting Group";
-        CommonGLAccount: Codeunit "Create Common GL Account";
-    begin
-        SvcDemoDataSetup.Get();
-
-        ContosoPostingSetup.InsertInventoryPostingSetup(SvcDemoDataSetup."Service Location", CommonPostingGroup.Resale(), CommonGLAccount.Resale(), CommonGLAccount.ResaleInterim());
-    end;
 
     local procedure CreateSkillCodes()
     begin

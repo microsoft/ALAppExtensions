@@ -1,3 +1,4 @@
+#if not CLEAN26
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,6 +10,10 @@ namespace Microsoft.eServices.EDocument.Processing.Interfaces;
 /// </summary>
 interface IBlobType
 {
+    ObsoleteReason = 'Use IEDocFileFormat and IStructureReceivedEDocument instead.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '26.0';
+
     /// <summary>
     /// Check if the blob type is structured
     /// </summary>
@@ -28,3 +33,4 @@ interface IBlobType
     procedure GetStructuredDataConverter(): Interface IBlobToStructuredDataConverter
 
 }
+#endif

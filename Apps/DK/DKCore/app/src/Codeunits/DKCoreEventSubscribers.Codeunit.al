@@ -59,7 +59,7 @@ codeunit 13601 "DK Core Event Subscribers"
         if not Handled then begin
             Handled := true;
 
-            GetBankAccNo(CustomerBankAccount."Bank Account No.", CustomerBankAccount."Bank Branch No.", CustomerBankAccount.IBAN, ResultBankAccountNo);
+            GetSenderRecipientBankAccNo(CustomerBankAccount."Bank Account No.", CustomerBankAccount."Bank Branch No.", CustomerBankAccount.IBAN, ResultBankAccountNo);
         end;
     end;
 
@@ -75,7 +75,7 @@ codeunit 13601 "DK Core Event Subscribers"
         if not Handled then begin
             Handled := true;
 
-            GetBankAccNo(VendorBankAccount."Bank Account No.", VendorBankAccount."Bank Branch No.", VendorBankAccount.IBAN, ResultBankAccountNo);
+            GetSenderRecipientBankAccNo(VendorBankAccount."Bank Account No.", VendorBankAccount."Bank Branch No.", VendorBankAccount.IBAN, ResultBankAccountNo);
         end;
     end;
 
@@ -143,6 +143,14 @@ codeunit 13601 "DK Core Event Subscribers"
     end;
 
     local procedure GetBankAccNo(BankAccountNo: Text[30]; BankBranchNo: Text[20]; IBAN: Code[50]; var ResultAccountNo: Text)
+    begin
+        if (BankAccountNo = '') or (BankBranchNo = '') then
+            ResultAccountNo := DelChr(IBAN, '=<>')
+        else
+            ResultAccountNo := BankBranchNo + BankAccountNo;
+    end;
+
+    local procedure GetSenderRecipientBankAccNo(BankAccountNo: Text[30]; BankBranchNo: Text[20]; IBAN: Code[50]; var ResultAccountNo: Text)
     begin
         if (BankAccountNo = '') or (BankBranchNo = '') or (IBAN <> '') then
             ResultAccountNo := DelChr(IBAN, '=<>')

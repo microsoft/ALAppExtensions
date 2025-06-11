@@ -65,6 +65,9 @@ codeunit 31418 "Cross Application Handler CZZ"
 
         PurchAdvLetterHeaderCZZ := CollectedFor;
 
+        if PurchAdvLetterHeaderCZZ."No." = '' then
+            exit;
+
         IssPaymentOrderLineCZB.SetRange("Purch. Advance Letter No. CZZ", PurchAdvLetterHeaderCZZ."No.");
         IssPaymentOrderLineCZB.SetFilter(Status, '<>%1', IssPaymentOrderLineCZB.Status::Canceled);
         if IssPaymentOrderLineCZB.FindSet() then

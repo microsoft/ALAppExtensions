@@ -181,6 +181,7 @@ codeunit 148090 "Swiss QR-Bill Test Library"
             with PaymentTerms do begin
                 Validate("Discount %", Discount);
                 Evaluate("Discount Date Calculation", '<' + Format(Days) + 'D>');
+                Evaluate("Due Date Calculation", '<' + Format(Days + LibraryRandom.RandIntInRange(5, 10)) + 'D>');
                 Modify();
             end;
         exit(PaymentTerms.Code);

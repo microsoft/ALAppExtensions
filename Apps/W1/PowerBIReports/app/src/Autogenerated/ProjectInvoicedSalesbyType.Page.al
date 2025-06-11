@@ -6,9 +6,7 @@ page 37038 "Project Invoiced Sales by Type"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Project Invoiced Sales by Type';
     AboutTitle = 'About Project Invoiced Sales by Type';
     AboutText = 'The Project Invoiced Sales by Type report details invoiced sales for a project categorized by line type. It includes key KPIs such as % Invoiced, Billable Invoiced Price, and Billable Total Price, providing a clear overview of project invoicing performance and statistics.';
@@ -25,7 +23,7 @@ page 37038 "Project Invoiced Sales by Type"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

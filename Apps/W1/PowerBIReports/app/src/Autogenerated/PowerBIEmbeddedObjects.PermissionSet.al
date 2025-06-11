@@ -65,8 +65,16 @@ permissionset 36955 "Power BI Embedded - Objects"
         page "Project Performance to Budget" = X,
         page "Project Invoiced Sales by Type" = X,
         page "Project Invd. Sales by Cust." = X,
+#if not CLEAN26
+#pragma warning disable AL0432
         page "Current Utilization" = X,
+#pragma warning restore AL0432
+#endif
+#if not CLEAN26
+#pragma warning disable AL0432
         page "Historical Utilization" = X,
+#pragma warning restore AL0432
+#endif
         page "PowerBI Work Center Load" = X,
         page "Allocated Hours" = X,
         page "Expected Capacity Need" = X,
@@ -101,6 +109,31 @@ permissionset 36955 "Power BI Embedded - Objects"
         page "Customer Deferrals" = X,
         page "Vendor Deferrals" = X,
         page "Sales and Cost forecast" = X,
-        page "Billing Schedule" = X;
+        page "Billing Schedule" = X,
+        page "Sustainability Overview" = X,
+        page "Realized Emissions vs Target" = X,
+        page "Realized Emissions vs Baseline" = X,
+        page "Water and Waste Analysis" = X,
+        page "Emissions by Cat and Scope" = X,
+        page "CO2e Analysis" = X,
+        page "Journey to Net Zero Carbon" = X,
+        page "Social Analysis" = X,
+        page "Sustainability Report" = X,
+        page "CO2e Key Influences" = X,
+        page "PBI Work Center Statistics" = X,
+        page "PBI Machine Center Statistics" = X,
+        page "PBI Machine Center Load" = X,
+        page "Prod. Order - List" = X,
+        page "Production Order Overview" = X,
+        page "Prod. Order Routings Gantt" = X,
+        page "Sales Demographics" = X,
+        page "Sales Decomposition" = X,
+        page "Key Sales Influencers" = X,
+        page "Opportunity Overview" = X,
+        page "Sales Quote Overview" = X,
+        page "Return Order Overview" = X,
+        page "Project Timeline" = X,
+        page "Production Order WIP" = X,
+        page "CO2e Decomposition Tree" = X;
 }
 

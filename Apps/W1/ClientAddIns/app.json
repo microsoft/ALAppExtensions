@@ -25,5 +25,6 @@
   },
   "help": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2009120",
-  "application": "27.0.0.0"
+  "application": "27.0.0.0",
+  "target": "Cloud"
 }

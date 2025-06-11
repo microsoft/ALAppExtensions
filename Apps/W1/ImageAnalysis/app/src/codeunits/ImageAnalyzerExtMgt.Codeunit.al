@@ -8,8 +8,8 @@ using System.Security.User;
 using System.Globalization;
 using System.Media;
 // ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved. 
-// Licensed under the MIT License. See License.txt in the project root for license information. 
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
 codeunit 2027 "Image Analyzer Ext. Mgt."
@@ -30,7 +30,9 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         NeverShowAgainTxt: Label 'Don''t tell me again';
         ImageAnalysisCategoryLbl: Label 'Image Analysis', Locked = true;
         ImageAnalysisEnabledLbl: Label 'Image Analysis enabled.', Locked = true;
+#if not CLEAN27
         EnableNotificationSentLbl: Label 'Enable notification sent.', Locked = true;
+#endif
         ImageAnalysisSuccesfulLbl: Label 'Image successfully analyzed.', Locked = true;
         CategoryAssignedLbl: Label 'Category was assigned.', Locked = true;
         AttributeAssignedLbl: Label 'Attribute was assigned.', Locked = true;
@@ -256,22 +258,6 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         exit('e6fd1a12-6d79-4aec-bfff-404e0f0b21a7');
     end;
 
-    local procedure GetContactNoForNotificationData(): Text
-    begin
-        exit('contactno');
-    end;
-
-    local procedure GetItemNoForNotificationData(): Text
-    begin
-        exit('itemno');
-    end;
-
-
-    local procedure GetEnabledNotificationId(): Guid
-    begin
-        exit('e54eb2c9-ebc2-4934-91d9-97af900e89b1');
-    end;
-
     procedure GetSetupNotificationId(): Guid
     begin
         exit('e54eb2c9-ebc2-4934-91d9-97af900e89b2');
@@ -292,11 +278,13 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         exit('e54eb2c9-ebc2-4934-91d9-97af900e89b5');
     end;
 
+#if not CLEAN27
+    [Obsolete('The event is never raised.', '27.0')]
     [IntegrationEvent(false, false)]
     local procedure OnSendEnableNotification()
     begin
     end;
-
+#endif
     [IntegrationEvent(false, false)]
     local procedure OnSuccessfullyAnalyseImage()
     begin
@@ -313,12 +301,13 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         Session.LogMessage('00001K6', ImageAnalysisEnabledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageAnalysisCategoryLbl);
     end;
 
+#if not CLEAN27
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Image Analyzer Ext. Mgt.", 'OnSendEnableNotification', '', false, false)]
     local procedure OnSendEnableNotificationSubscriber()
     begin
         Session.LogMessage('00001K7', EnableNotificationSentLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageAnalysisCategoryLbl);
     end;
-
+#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Image Analyzer Ext. Mgt.", 'OnSuccessfullyAnalyseImage', '', false, false)]
     local procedure OnSuccessfullyAnalyseImageSubscriber()
     begin

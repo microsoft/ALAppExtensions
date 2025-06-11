@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.RoleCenters;
 
-using System.Visualization;
 using System.Integration;
+using System.Visualization;
 
 page 6246 "CH4 Emission Ratio Chart"
 {
@@ -35,7 +35,7 @@ page 6246 "CH4 Emission Ratio Chart"
 
     local procedure UpdateChartData()
     begin
-        SustainabilityChartMgmt.GenerateChartByEmissionGas(Rec, 'CH4');
+        SustainabilityChartMgmt.GenerateChartByEmissionGas(Rec, SustainabilityChartMgmt.GetCH4());
         Rec.UpdateChart(CurrPage.BusinessChart);
     end;
 }

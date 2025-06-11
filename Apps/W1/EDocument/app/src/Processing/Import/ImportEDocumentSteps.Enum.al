@@ -18,9 +18,9 @@ enum 6114 "Import E-Document Steps"
         Caption = 'Structure received data';
     }
     // Readable
-    value(1; "Read into IR")
+    value(1; "Read into Draft")
     {
-        Caption = 'Read into IR';
+        Caption = 'Read into draft';
     }
     // Ready for draft
     value(2; "Prepare draft")

@@ -178,6 +178,6 @@ page 8042 "Usage Data Subscriptions"
     end;
 
     var
-        AlreadyConnectedErr: Label 'This Subscription is already connected to Subscription %1 Subscription Line %2. Contract extension is not possible.';
+        AlreadyConnectedErr: Label 'This Supplier Subscription is already connected to Subscription %1 Line %2. Contract extension is not possible.';
         UsageDataSubscriptionStyle: Text;
 }

@@ -164,7 +164,7 @@ table 8016 "Usage Data Supp. Subscription"
         }
         field(23; "Connect to Sub. Header at Date"; Date)
         {
-            Caption = 'Connect to Subscription at Date';
+            Caption = 'Connect to Subscription to Date';
 
             trigger OnValidate()
             begin

@@ -14,6 +14,41 @@ pageextension 6129 "E-Doc. Purchase Invoice" extends "Purchase Invoice"
         {
             group("E-Document")
             {
+                action(OpenEDocumentDraft)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Open E-Document Draft';
+                    Image = Open;
+                    ToolTip = 'Opens the E-Document draft.';
+                    Visible = HasEDocumentLinked;
+
+                    trigger OnAction()
+                    var
+                        EDocument: Record "E-Document";
+                        EDocumentHelper: Codeunit "E-Document Helper";
+                    begin
+                        if not EDocument.GetBySystemId(Rec."E-Document Link") then
+                            exit;
+                        EDocumentHelper.OpenDraftPage(EDocument);
+                    end;
+                }
+                action(ViewDocumentSource)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'View E-Document Source';
+                    Image = View;
+                    ToolTip = 'Opens a view of the document source, like a PDF or XML file.';
+                    Visible = HasEDocumentLinked;
+
+                    trigger OnAction()
+                    var
+                        EDocument: Record "E-Document";
+                    begin
+                        if not EDocument.GetBySystemId(Rec."E-Document Link") then
+                            exit;
+                        EDocument.ViewSourceFile();
+                    end;
+                }
                 action("PreviewEDocumentMapping")
                 {
                     ApplicationArea = Basic, Suite;
@@ -31,5 +66,26 @@ pageextension 6129 "E-Doc. Purchase Invoice" extends "Purchase Invoice"
                 }
             }
         }
+        addlast(Promoted)
+        {
+            group("E-Document Promoted")
+            {
+                Caption = 'E-Document';
+                actionref(OpenEDocumentDraft_Promoted; OpenEDocumentDraft)
+                {
+                }
+                actionref(ViewDocumentSource_Promoted; ViewDocumentSource)
+                {
+                }
+            }
+        }
     }
+
+    var
+        HasEDocumentLinked: Boolean;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        HasEDocumentLinked := not IsNullGuid(Rec."E-Document Link");
+    end;
 }

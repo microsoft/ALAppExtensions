@@ -6,9 +6,7 @@ page 37076 "Total Contract Value YoY"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Total Contract Value YoY';
     AboutTitle = 'About Total Contract Value YoY';
     AboutText = 'The Total Contract Value YoY report compares the Total Contract Value and Active Customers across a year-over-year period.';
@@ -25,7 +23,7 @@ page 37076 "Total Contract Value YoY"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

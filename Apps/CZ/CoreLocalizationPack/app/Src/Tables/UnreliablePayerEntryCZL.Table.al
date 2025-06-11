@@ -103,10 +103,12 @@ table 11753 "Unreliable Payer Entry CZL"
 
     procedure CreateVendorBankAccountCZL(UnreliablePayerNoCZL: Code[20]);
     var
+        Vendor: Record Vendor;
         VendorBankAccount: Record "Vendor Bank Account";
         GetVendBankAccCodeCZL: Page "Get Vend. Bank Acc. Code CZL";
         VendorBankAccountCode: Code[10];
         VendorBankAccountName: Text[100];
+        PreferredBankAccount: Boolean;
         VendorBankAccountAlreadyExistsErr: Label '%1 %2 already exists.', Comment = '%1 = TableCaption, ;%2 = Bank Account No.';
         UnknownPayerNoErr: Label '%1 cannot be created because %2 is not specified.', Comment = '%1 = Vendor Bank Account TableCaption, %2 = Vendor No. FieldCaption';
     begin
@@ -129,7 +131,7 @@ table 11753 "Unreliable Payer Entry CZL"
 
         GetVendBankAccCodeCZL.SetValue(UnreliablePayerNoCZL);
         if GetVendBankAccCodeCZL.RunModal() = Action::OK then begin
-            GetVendBankAccCodeCZL.GetValue(VendorBankAccountCode, VendorBankAccountName);
+            GetVendBankAccCodeCZL.GetValue(VendorBankAccountCode, VendorBankAccountName, PreferredBankAccount);
             Clear(VendorBankAccount);
             VendorBankAccount.Validate("Vendor No.", UnreliablePayerNoCZL);
             VendorBankAccount.Validate(Code, VendorBankAccountCode);
@@ -142,6 +144,12 @@ table 11753 "Unreliable Payer Entry CZL"
                     VendorBankAccount.Validate(IBAN, "Full Bank Account No.");
             end;
             VendorBankAccount.Insert(true);
+
+            if PreferredBankAccount then
+                if Vendor.Get(UnreliablePayerNoCZL) then begin
+                    Vendor.Validate("Preferred Bank Account Code", VendorBankAccountCode);
+                    Vendor.Modify(true);
+                end;
         end;
     end;
 }

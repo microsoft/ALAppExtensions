@@ -50,6 +50,22 @@ codeunit 139554 "Library - Intrastat"
         IntrastatReportNo := IntrastatReportHeader."No.";
     end;
 
+    procedure CreateSalesIntrastatReport(ReportDate: Date; var IntrastatReportNo: Code[20])
+    var
+        IntrastatReportHeader: Record "Intrastat Report Header";
+    begin
+        IntrastatReportHeader.Init();
+        IntrastatReportHeader.Validate("No.", GetIntrastatNo());
+        IntrastatReportHeader.Insert();
+
+        IntrastatReportHeader.Validate("Statistics Period", GetStatisticalPeriod(ReportDate));
+        IntrastatReportHeader.Validate(Type, IntrastatReportHeader.Type::Sales);
+
+        IntrastatReportHeader.Modify();
+
+        IntrastatReportNo := IntrastatReportHeader."No.";
+    end;
+
     procedure CreateIntrastatReportLine(var IntrastatReportLine: Record "Intrastat Report Line")
     var
         IntrastatReportHeader: Record "Intrastat Report Header";

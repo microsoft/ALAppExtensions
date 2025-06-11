@@ -179,7 +179,7 @@ page 27032 "DIOT Setup Wizard"
     var
         ConfirmManagement: Codeunit "Confirm Management";
     begin
-        If not DIOTDataMgmt.GetAssistedSetupComplete() then
+        if not DIOTDataMgmt.GetAssistedSetupComplete() then
             if not ConfirmManagement.GetResponseOrDefault(SetupNotCompletedQst, false) then
                 exit(false);
         exit(true);
@@ -197,7 +197,7 @@ page 27032 "DIOT Setup Wizard"
         DoActionOnNext(Step);
         if Backwards then
             Step := Step - 1
-        ELSE
+        else
             Step := Step + 1;
         EnableControls();
     end;

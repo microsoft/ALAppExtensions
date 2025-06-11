@@ -16,11 +16,19 @@ codeunit 5387 "Create Inventory Posting Setup"
     trigger OnRun()
     var
         ContosoPostingSetup: Codeunit "Contoso Posting Setup";
-        CreateLocation: Codeunit "Create Location";
         CreateGLAccount: Codeunit "Create G/L Account";
         CreateInvPostingGroup: Codeunit "Create Inventory Posting Group";
     begin
         ContosoPostingSetup.InsertInventoryPostingSetup('', CreateInvPostingGroup.Resale(), CreateGLAccount.ResaleItems(), CreateGLAccount.ResaleItemsInterim());
+    end;
+
+    procedure UpdateInventoryPostingSetup()
+    var
+        CreateLocation: Codeunit "Create Location";
+        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
+        CreateGLAccount: Codeunit "Create G/L Account";
+        CreateInvPostingGroup: Codeunit "Create Inventory Posting Group";
+    begin
         ContosoPostingSetup.InsertInventoryPostingSetup(CreateLocation.EastLocation(), CreateInvPostingGroup.Resale(), CreateGLAccount.ResaleItems(), CreateGLAccount.ResaleItemsInterim());
         ContosoPostingSetup.InsertInventoryPostingSetup(CreateLocation.MainLocation(), CreateInvPostingGroup.Resale(), CreateGLAccount.ResaleItems(), CreateGLAccount.ResaleItemsInterim());
         ContosoPostingSetup.InsertInventoryPostingSetup(CreateLocation.OutLogLocation(), CreateInvPostingGroup.Resale(), CreateGLAccount.ResaleItems(), CreateGLAccount.ResaleItemsInterim());

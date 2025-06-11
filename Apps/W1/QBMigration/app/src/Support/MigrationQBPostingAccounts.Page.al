@@ -15,77 +15,77 @@ page 1918 "MigrationQB Posting Accounts"
             group(General)
             {
 #pragma warning disable AA0218
-                field(SalesAccount; SalesAccount)
+                field(SalesAccount; Rec.SalesAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Account';
                 }
-                field(SalesCreditMemoAccount; SalesCreditMemoAccount)
+                field(SalesCreditMemoAccount; Rec.SalesCreditMemoAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Credit Memo Account';
                 }
-                field(SalesLineDiscAccount; SalesLineDiscAccount)
+                field(SalesLineDiscAccount; Rec.SalesLineDiscAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Line Disc. Account';
                 }
-                field(SalesInvDiscAccount; SalesInvDiscAccount)
+                field(SalesInvDiscAccount; Rec.SalesInvDiscAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Inv. Disc. Account';
                 }
-                field(PurchAccount; PurchAccount)
+                field(PurchAccount; Rec.PurchAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Account';
                 }
-                field(PurchCreditMemoAccount; PurchCreditMemoAccount)
+                field(PurchCreditMemoAccount; Rec.PurchCreditMemoAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Credit Memo Account';
                 }
-                field(PurchLineDiscAccount; PurchLineDiscAccount)
+                field(PurchLineDiscAccount; Rec.PurchLineDiscAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Line Disc. Account';
                 }
-                field(PurchInvDiscAccount; PurchInvDiscAccount)
+                field(PurchInvDiscAccount; Rec.PurchInvDiscAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Inv. Disc. Account';
                 }
-                field(COGSAccount; COGSAccount)
+                field(COGSAccount; Rec.COGSAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'COGS Account';
                 }
-                field(InventoryAdjmtAccount; InventoryAdjmtAccount)
+                field(InventoryAdjmtAccount; Rec.InventoryAdjmtAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Inventory Adjmt. Account';
                 }
-                field(InventoryAccount; InventoryAccount)
+                field(InventoryAccount; Rec.InventoryAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Inventory Account';
                 }
-                field(ReceivablesAccount; ReceivablesAccount)
+                field(ReceivablesAccount; Rec.ReceivablesAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Receivables Account';
                 }
-                field(ServiceChargeAccount; ServiceChargeAccount)
+                field(ServiceChargeAccount; Rec.ServiceChargeAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Service Charge Acc.';
                 }
-                field(PayablesAccount; PayablesAccount)
+                field(PayablesAccount; Rec.PayablesAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Payables Account';
                 }
-                field(PurchServiceChargeAccount; PurchServiceChargeAccount)
+                field(PurchServiceChargeAccount; Rec.PurchServiceChargeAccount)
                 {
                     ApplicationArea = All;
                     Caption = 'Purch. Service Charge Acc.';

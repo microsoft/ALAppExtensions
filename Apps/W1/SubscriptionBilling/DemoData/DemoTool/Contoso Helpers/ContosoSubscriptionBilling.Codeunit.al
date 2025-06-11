@@ -208,7 +208,7 @@ codeunit 8105 "Contoso Subscription Billing"
                 exit;
 
         ContosoItem.InsertItem(ItemNo, ItemType, Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, InventoryPostingGroup, Enum::"Costing Method"::FIFO, CommonUOM.Piece(), '', '', 0, '', '', 0,
-            Enum::"Replenishment System"::Purchase, 1, VendorNo, '', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", false, '', Picture, '', LastDirectCost, 0, 0, 0, '');
+            Enum::"Replenishment System"::Purchase, 1, VendorNo, '', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::" ", false, '', Picture, '', LastDirectCost, 0, 0, 0, '');
 
         Item.Get(ItemNo);
         Item.Validate("Subscription Option", ServiceCommitmentOption);

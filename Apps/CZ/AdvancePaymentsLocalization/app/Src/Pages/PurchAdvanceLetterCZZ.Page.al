@@ -10,6 +10,7 @@ using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Setup;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
 using System.Automation;
@@ -236,6 +237,22 @@ page 31181 "Purch. Advance Letter CZZ"
                     begin
                         Rec.DrillDownSuggestedAmountToApply();
                     end;
+                }
+                field("Doc. Amount Incl. VAT"; Rec."Doc. Amount Incl. VAT")
+                {
+                    ApplicationArea = Basic, Suite;
+                    BlankZero = true;
+                    Enabled = DocAmountsEnable;
+                    Visible = DocAmountsEnable;
+                    Editable = DocAmountsEditable;
+                    ShowMandatory = true;
+                }
+                field("Doc. Amount VAT"; Rec."Doc. Amount VAT")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Enabled = DocAmountsEnable;
+                    Visible = DocAmountsEnable;
+                    Editable = DocAmountsEditable;
                 }
             }
             part(AdvLetterLines; "Purch. Advance Letter Line CZZ")
@@ -596,6 +613,7 @@ page 31181 "Purch. Advance Letter CZZ"
                         RelPurchAdvLetterDoc: Codeunit "Rel. Purch.Adv.Letter Doc. CZZ";
                     begin
                         RelPurchAdvLetterDoc.PerformManualRelease(Rec);
+                        ActivateFields();
                     end;
                 }
                 action(Reopen)
@@ -611,6 +629,7 @@ page 31181 "Purch. Advance Letter CZZ"
                         RelPurchAdvLetterDoc: Codeunit "Rel. Purch.Adv.Letter Doc. CZZ";
                     begin
                         RelPurchAdvLetterDoc.PerformManualReopen(Rec);
+                        ActivateFields();
                     end;
                 }
             }
@@ -901,6 +920,7 @@ page 31181 "Purch. Advance Letter CZZ"
     var
         FormatAddress: Codeunit "Format Address";
         DocNoVisible, IsBillToCountyVisible, DynamicEditable, OpenApprovalEntriesExistForCurrUser, OpenApprovalEntriesExist, HasIncomingDocument : Boolean;
+        DocAmountsEnable, DocAmountsEditable : Boolean;
 
     local procedure SetDocNoVisible()
     var
@@ -913,8 +933,13 @@ page 31181 "Purch. Advance Letter CZZ"
     end;
 
     local procedure ActivateFields()
+    var
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
     begin
+        PurchasesPayablesSetup.Get();
         IsBillToCountyVisible := FormatAddress.UseCounty(Rec."Pay-to Country/Region Code");
+        DocAmountsEnable := PurchasesPayablesSetup.IsDocumentTotalAmountsAllowedCZZ(Rec);
+        DocAmountsEditable := PurchasesPayablesSetup.IsDocumentTotalAmountsEditableCZZ(Rec);
     end;
 
     local procedure SetControlVisibility()

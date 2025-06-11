@@ -11,9 +11,12 @@ codeunit 5394 "Purchase Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
+
     procedure RunConfigurationPage()
+    var
+        ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
-        exit;
+        Message(ContosoDemoTool.GetNoConfiguirationMsg());
     end;
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"]

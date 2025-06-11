@@ -138,7 +138,7 @@ page 8002 "Extend Contract"
                 field("Contract Type"; CustomerContract."Contract Type")
                 {
                     Caption = 'Contract Type';
-                    ToolTip = 'Shows the Subscription Contract Type of the selected Customer Subscription Contract.';
+                    ToolTip = 'Specifies the Subscription Contract Type of the selected Customer Subscription Contract.';
                     Editable = false;
                     Enabled = false;
                     Visible = false;
@@ -403,7 +403,7 @@ page 8002 "Extend Contract"
     var
         SubscriptionPackage: Record "Subscription Package";
         ItemSubscriptionPackage: Record "Item Subscription Package";
-        NoUBBServiceCommitmentPackFoundMsg: Label 'No standard Subscription Package for usage-based billing is assigned to the item %1.';
+        NoUBBServiceCommitmentPackFoundMsg: Label 'No standard Subscription Package for usage-based billing is assigned to the item %1.', Comment = '%1 = Item No.';
     begin
         if UsageDataSupplierNo = '' then
             exit;
@@ -487,7 +487,7 @@ page 8002 "Extend Contract"
         UsageDataCustomer: Record "Usage Data Supp. Customer";
         ItemVendor: Record "Item Vendor";
         ServiceCommitment: Record "Subscription Line";
-        SubscriptionAlreadyConnectedErr: Label 'This Subscription is already connected to Subscription %1 Subscription Line %2. Contract extension is not possible.', Comment = '%1 = SubscriptionLine."Subscription No.",  %2 = SubscriptionLine."Line No."';
+        SubscriptionAlreadyConnectedErr: Label 'This Supplier Subscription is already connected to Subscription %1 Line %2. Contract extension is not possible.', Comment = '%1 = SubscriptionLine."Subscription No.",  %2 = SubscriptionLine."Line No."';
     begin
         SubscriptionDescription := '';
         if SubscriptionEntryNo <> 0 then begin
@@ -646,7 +646,7 @@ page 8002 "Extend Contract"
         UnitCostLCY: Decimal;
         ProvisionStartDate: Date;
         ProvisionStartDateEmptyErr: Label 'Provision Start Date cannot be empty.';
-        NoOfSelectedPackagesLbl: Label '%1 of %2';
+        NoOfSelectedPackagesLbl: Label '%1 of %2', Comment = '%1 = No. of selected service commitment packages, %2 = Total service commitment packages';
         SelectedServiceCommitmentPackages: Integer;
         IsLookupMode: Boolean;
         TotalServiceCommitmentPackage: Integer;
@@ -660,7 +660,7 @@ page 8002 "Extend Contract"
         SubscriptionEntryNo: Integer;
         SubscriptionEntryNoParam: Integer;
         SupplierReferenceEntryNo: Integer;
-        SubscriptionIsLinkedToServiceCommitmentErr: Label 'The action can only be called for Subscriptions that are not yet linked to a Subscription Line. The Subscription is already connected to Subscription %1. If necessary, detach the Subscription(s) from the Subscription Line(s).';
+        SubscriptionIsLinkedToServiceCommitmentErr: Label 'The action can only be called for Supplier Subscriptions that are not yet linked to a Subscription Line. The Supplier Subscription is already connected to Subscription %1. If necessary, detach the Subscription(s) from the Subscription Line(s).', Comment = '%1 = Subscription No.';
         OpenItemCardTxt: Label 'Open Item Card.';
         ItemMissingServCommPackageTxt: Label 'No Subscription Package is available for this item.';
         AssignServCommPackageToItemTxt: Label 'In order to extend the contract properly, please make sure that at least one package is assigned.';

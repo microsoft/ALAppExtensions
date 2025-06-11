@@ -6,9 +6,7 @@ page 37078 "Customer Deferrals"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Customer Deferrals';
     AboutTitle = 'About Customer Deferrals';
     AboutText = 'The Customer Deferrals report provides an overview of deferred vs. released subscription sales amount.';
@@ -25,7 +23,7 @@ page 37078 "Customer Deferrals"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

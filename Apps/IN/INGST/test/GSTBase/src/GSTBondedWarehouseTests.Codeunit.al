@@ -159,6 +159,35 @@ codeunit 18428 "GST Bonded Warehouse Tests"
         VerifyMultipleValueEntryForRevaluationEntryType(PostedDocumentNo);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostCustomDutyAmountwithZeroValueItemAndBondedWarehouse()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check Transfer Order Received if Custom Duty Amount must be there for 'Inventory Value Zero' Item while transferring from Bonded Warehouse location.
+        // [GIVEN] Created GST Setup ,Transfer Locations with ITC for GSTGroupType Goods
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTVendorType::Import, GSTGroupType::Goods, false, true);
+        StorageBoolean.Set(InventoryValueZeroLbl, true);
+
+        // [WHEN] Create Interstate Transfer Order with ITC for Bonded Warehouse
+        DocumentNo := CreateTransferOrder(
+            TransferHeader,
+            TransferLine);
+        TransferLine.Validate(TransferLine."GST Assessable Value", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Validate(TransferLine."Custom Duty Amount", LibraryRandom.RandDecInRange(100, 1000, 0));
+        TransferLine.Modify(true);
+
+        // [THEN] Assert Error Verified for CustomDutyAmount for InterState Transactions
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
+    end;
+
     local procedure CreateItemWithInventory(): Code[20]
     var
         Item: Record Item;
@@ -166,8 +195,10 @@ codeunit 18428 "GST Bonded Warehouse Tests"
         VATPostingSetup: Record "VAT Posting Setup";
         InputCreditAvailment: Boolean;
         ItemNo: Code[20];
+        InventoryValueZero: Boolean;
     begin
         InputCreditAvailment := StorageBoolean.Get(AvailmentLbl);
+        InventoryValueZero := StorageBoolean.Get(InventoryValueZeroLbl);
 
         ItemNo := LibraryGST.CreateItemWithGSTDetails(
               VATPostingSetup,
@@ -176,6 +207,10 @@ codeunit 18428 "GST Bonded Warehouse Tests"
               InputCreditAvailment, false);
 
         Item.Get(ItemNo);
+
+        if InventoryValueZero then
+            item.Validate("Inventory Value Zero", true);
+
         UpdateInventoryPostingSetup((LibraryStorage.Get(InTransitLocationLbl)), Item."Inventory Posting Group");
         UpdateInventoryPostingSetup((LibraryStorage.Get(FromLocationLbl)), Item."Inventory Posting Group");
         UpdateInventoryPostingSetup((LibraryStorage.Get(ToLocationLbl)), Item."Inventory Posting Group");
@@ -644,6 +679,7 @@ codeunit 18428 "GST Bonded Warehouse Tests"
         GSTCustomDutyErr: Label 'Custom Duty Amount must be 0 if GST Group Type is Service while transferring from Bonded Warehouse location.';
         GSTAssessableErr: Label 'GST Assessable Value must be 0 if GST Group Type is Service while transferring from Bonded Warehouse location.';
         LocGSTRegNoLbl: Label 'LocGSTRegNo';
+        InventoryValueZeroLbl: Label 'InventoryValueZero';
         InTransitLocationLbl: Label 'InTransitLocation';
         ValueEntryVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
 }

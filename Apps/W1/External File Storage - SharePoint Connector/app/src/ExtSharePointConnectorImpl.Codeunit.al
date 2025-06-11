@@ -359,12 +359,7 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
         exit(true);
     end;
 
-    internal procedure CreateAccount(
-        var AccountToCopy: Record "Ext. SharePoint Account";
-        ClientSecretOrCertificate: SecretText;
-        CertificatePassword: SecretText;
-        var TempFileAccount: Record "File Account" temporary
-    )
+    internal procedure CreateAccount(var AccountToCopy: Record "Ext. SharePoint Account"; ClientSecretOrCertificate: SecretText; CertificatePassword: SecretText; var TempFileAccount: Record "File Account" temporary)
     var
         NewExtSharePointAccount: Record "Ext. SharePoint Account";
     begin

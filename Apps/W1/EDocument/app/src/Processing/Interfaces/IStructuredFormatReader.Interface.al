@@ -8,10 +8,9 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Import;
 using System.Utilities;
 
-
 /// <summary>
-/// Describe the interface for reading a structured data format into data structures.
-/// The data structures will be used in the data processing flow. 
+/// Specifies how a structured data type should be interpreted and read into a draft.
+/// A structure data type is a textual representation of the e-document that is stored in a TempBlob to allow different encodings.
 /// </summary>
 interface IStructuredFormatReader
 {
@@ -22,6 +21,14 @@ interface IStructuredFormatReader
     /// <param name="EDocument">The E-Document record.</param>
     /// <param name="TempBlob">The temporary blob that contains the data to read</param>
     /// <returns>The data process to run on the structured data.</returns>
-    procedure Read(EDocument: Record "E-Document"; TempBlob: Codeunit "Temp Blob"): Enum "E-Doc. Structured Data Process";
+    procedure ReadIntoDraft(EDocument: Record "E-Document"; TempBlob: Codeunit "Temp Blob"): Enum "E-Doc. Process Draft";
+
+
+    /// <summary>
+    /// Presents a view of the data 
+    /// </summary>
+    /// <param name="EDocument">The E-Document record.</param>
+    /// <param name="TempBlob">The temporary blob that contains the data to read</param>
+    procedure View(EDocument: Record "E-Document"; TempBlob: Codeunit "Temp Blob");
 
 }

@@ -31,11 +31,11 @@ page 8038 "Usage Data Generic Import"
                 }
                 field("Service Object"; Rec."Service Object Availability")
                 {
-                    ToolTip = 'Specifies whether a Subscription is available to be connected with the subscription or if the connection has been established already.';
+                    ToolTip = 'Specifies whether a Subscription is available to be connected with the Supplier Subscription or if the connection has been established already.';
                 }
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifices to which Subscription the usage data refers.';
+                    ToolTip = 'Specifies to which Subscription the usage data refers.';
                 }
                 field(CustomerId; Rec."Customer ID")
                 {
@@ -123,32 +123,32 @@ page 8038 "Usage Data Generic Import"
                 }
                 field(Text1; Rec.Text1)
                 {
-                    ToolTip = 'This field can be used for any text.';
+                    ToolTip = 'Specifies a text value that can be used for any purpose.';
                     Visible = false;
                 }
                 field(Text2; Rec.Text2)
                 {
-                    ToolTip = 'This field can be used for any text.';
+                    ToolTip = 'Specifies a text value that can be used for any purpose.';
                     Visible = false;
                 }
                 field(Text3; Rec.Text3)
                 {
-                    ToolTip = 'This field can be used for any text.';
+                    ToolTip = 'Specifies a text value that can be used for any purpose.';
                     Visible = false;
                 }
                 field(Decimal1; Rec.Decimal1)
                 {
-                    ToolTip = 'This field can be used for any number.';
+                    ToolTip = 'Specifies a text value that can be used for any purpose.';
                     Visible = false;
                 }
                 field(Decimal2; Rec.Decimal2)
                 {
-                    ToolTip = 'This field can be used for any number.';
+                    ToolTip = 'Specifies a text value that can be used for any purpose.';
                     Visible = false;
                 }
                 field(Decimal3; Rec.Decimal3)
                 {
-                    ToolTip = 'This field can be used for any number.';
+                    ToolTip = 'Specifies a text value that can be used for any purpose.';
                     Visible = false;
                 }
             }
@@ -186,7 +186,7 @@ page 8038 "Usage Data Generic Import"
             action(ConnectSubscriptionToServiceObject)
             {
                 Caption = 'Connect Supplier Subscriptions to Subscriptions';
-                ToolTip = 'Opens the page for connecting Supplier Subscriptions to Subscriptions, filtered to the currently selected subscription.';
+                ToolTip = 'Opens the page for connecting Supplier Subscriptions to Subscriptions, filtered to the currently selected Subscription.';
                 Image = AddAction;
                 RunObject = page "Connect Subscription To SO";
                 RunPageLink = "Supplier Reference" = field("Supp. Subscription ID");

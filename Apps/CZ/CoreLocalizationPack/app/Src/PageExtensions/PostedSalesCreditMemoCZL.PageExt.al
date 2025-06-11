@@ -11,6 +11,12 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
 {
     layout
     {
+        modify("VAT Registration No.")
+        {
+            Importance = Standard;
+            Visible = true;
+        }
+        movelast("Invoice Details"; "VAT Registration No.")
         addlast(General)
         {
             field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
@@ -49,16 +55,22 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
         }
         addlast("Invoice Details")
         {
+#if not CLEAN27
             field("VAT Registration No. CZL"; Rec."VAT Registration No.")
             {
                 ApplicationArea = Basic, Suite;
                 Editable = false;
                 ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+                ObsoleteReason = 'Replaced by standard "VAT Registration No." field.';
             }
-            field("Registration No. CZL"; Rec."Registration No. CZL")
+#endif
+            field("Registration No. CZL"; Rec."Registration Number")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of customer.';
+                ToolTip = 'Specifies the customer''s registration number.';
                 Editable = false;
             }
             field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
@@ -71,7 +83,7 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
         }
         addafter("Currency Code")
         {
-            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCode())
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL())
             {
                 ApplicationArea = Suite;
                 Editable = false;
@@ -81,7 +93,7 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
 
                 trigger OnAssistEdit()
                 begin
-                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
                     ChangeExchangeRate.Editable(false);
                     ChangeExchangeRate.RunModal();
                 end;
@@ -232,7 +244,7 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
 
     trigger OnOpenPage()
     begin
-        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
     end;
 
     var

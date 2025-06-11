@@ -8,7 +8,9 @@ permissionset 8311 "LatePayment - Objects"
     Caption = 'LatePaymentPredictor - Objects';
 
     Permissions = codeunit "Late Payment Install" = X,
+#if not CLEAN27
                      codeunit "Late Payment Upgrade" = X,
+#endif
                      page "LP Machine Learning Setup" = X,
                      table "LP Machine Learning Setup" = X,
                      table "LP ML Input Data" = X,

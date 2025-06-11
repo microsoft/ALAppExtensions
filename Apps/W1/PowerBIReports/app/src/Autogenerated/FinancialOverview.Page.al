@@ -6,9 +6,7 @@ page 36984 "Financial Overview"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Financial Overview';
     AboutTitle = 'About Financial Overview';
     AboutText = 'The Financial Overview provides a snapshot of the organization''s financial health and performance. This page displays key performance indicators that give stakeholders a clear view of revenue, profitability, and financial stability. ';
@@ -25,7 +23,7 @@ page 36984 "Financial Overview"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

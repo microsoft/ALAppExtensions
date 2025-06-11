@@ -324,6 +324,7 @@ page 31160 "Cash Document CZP"
             {
                 Caption = 'Cash Document';
                 Image = Document;
+#if not CLEAN27
                 action(Statistics)
                 {
                     ApplicationArea = Basic, Suite;
@@ -332,11 +333,30 @@ page 31160 "Cash Document CZP"
                     ShortCutKey = 'F7';
                     RunPageMode = View;
                     ToolTip = 'View the statistics on the selected cash document.';
+                    ObsoleteReason = 'The statistics action will be replaced with the CashDocumentStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
 
                     trigger OnAction()
                     begin
                         CurrPage.CashDocLines.Page.ShowStatistics();
                     end;
+                }
+#endif
+                action(CashDocumentStatistics)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Statistics';
+                    Image = Statistics;
+                    ShortCutKey = 'F7';
+                    ToolTip = 'View the statistics on the selected cash document.';
+#if CLEAN27
+                    Visible = true;
+#else
+                    Visible = false;
+#endif
+                    RunObject = Page "Cash Doc. Statistics CZP";
+                    RunPageLink = "Cash Desk No." = field("Cash Desk No."), "No." = field("No.");
                 }
                 action(Dimensions)
                 {

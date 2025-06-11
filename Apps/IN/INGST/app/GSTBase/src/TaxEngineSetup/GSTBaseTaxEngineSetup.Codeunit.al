@@ -4,8 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TaxEngine.JsonExchange;
 
+#if not CLEAN27
 using Microsoft.Finance.GST.Base;
-
+#endif
 codeunit 18004 "GST Base Tax Engine Setup"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnSetupTaxTypes', '', false, false)]
@@ -46,6 +47,7 @@ codeunit 18004 "GST Base Tax Engine Setup"
             TaxJsonDeserialization.ImportUseCases(GetText(CaseId));
     end;
 
+#if not CLEAN27
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade GST Tax Config", 'OnUpgradeGSTUseCases', '', false, false)]
     local procedure OnUpgradeGSTUseCases(CaseID: Guid; var UseCaseConfig: Text; var IsHandled: Boolean)
     begin
@@ -56,7 +58,7 @@ codeunit 18004 "GST Base Tax Engine Setup"
         if UseCaseConfig <> '' then
             IsHandled := true;
     end;
-
+#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnGetTaxTypeConfig', '', false, false)]
     local procedure OnGetTaxTypeConfig(TaxType: Code[20]; var ConfigText: Text; var IsHandled: Boolean)
     var

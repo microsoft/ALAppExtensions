@@ -182,6 +182,7 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeEnableNonDeductibleVATCZ();
         UpgradeVATReport();
         UpgradeSetEnableNonDeductibleVATCZ();
+        UpgradeUseW1RegistrationNumberFromSalesDoc();
     end;
 
     local procedure UpgradeReplaceVATDateCZL()
@@ -729,6 +730,36 @@ codeunit 31017 "Upgrade Application CZL"
                 end;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.SetEnableNonDeductibleVATCZUpgradeTag());
+    end;
+
+    local procedure UpgradeUseW1RegistrationNumberFromSalesDoc()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesHeaderDataTransfer: DataTransfer;
+        SalesInvoiceDataTransfer: DataTransfer;
+        SalesCrMemoDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberFromSalesDocUpgradeTag()) then
+            exit;
+
+        SalesHeaderDataTransfer.SetTables(Database::"Sales Header", Database::"Sales Header");
+        SalesHeaderDataTransfer.AddSourceFilter(SalesHeader.FieldNo("Registration No. CZL"), '<>%1', '');
+        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Registration No. CZL"), SalesHeader.FieldNo("Registration Number"));
+        SalesHeaderDataTransfer.CopyFields();
+
+        SalesInvoiceDataTransfer.SetTables(Database::"Sales Invoice Header", Database::"Sales Invoice Header");
+        SalesInvoiceDataTransfer.AddSourceFilter(SalesInvoiceHeader.FieldNo("Registration No. CZL"), '<>%1', '');
+        SalesInvoiceDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Registration No. CZL"), SalesInvoiceHeader.FieldNo("Registration Number"));
+        SalesInvoiceDataTransfer.CopyFields();
+
+        SalesCrMemoDataTransfer.SetTables(Database::"Sales Cr.Memo Header", Database::"Sales Cr.Memo Header");
+        SalesCrMemoDataTransfer.AddSourceFilter(SalesCrMemoHeader.FieldNo("Registration No. CZL"), '<>%1', '');
+        SalesCrMemoDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Registration No. CZL"), SalesCrMemoHeader.FieldNo("Registration Number"));
+        SalesCrMemoDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberFromSalesDocUpgradeTag());
     end;
 
     local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10]; ReportID: Integer)

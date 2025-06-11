@@ -2,7 +2,6 @@
 codeunit 19011 "India Migartion Assisted Setup"
 {
     var
-        Info: ModuleInfo;
         SetupWizardTxt: Label 'Finalize data migration';
 
 
@@ -37,14 +36,5 @@ codeunit 19011 "India Migartion Assisted Setup"
             SetupWizardTxt);
 
         GlobalLanguage(CurrentGlobalLanguage);
-    end;
-
-    local procedure GetAppId(): Guid
-    var
-        EmptyGuid: Guid;
-    begin
-        if Info.Id() = EmptyGuid then
-            NavApp.GetCurrentModuleInfo(Info);
-        exit(Info.Id());
     end;
 }

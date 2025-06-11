@@ -6,9 +6,7 @@ page 37019 "Purchases by Location"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Purchases by Location';
     AboutTitle = 'About Purchases by Location';
     AboutText = 'The Purchases by Location report displays purchase amounts and quantities by location. Including a Treemap to highlight item spending contributions and a bar chart to show purchase amounts by item category.';
@@ -25,7 +23,7 @@ page 37019 "Purchases by Location"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

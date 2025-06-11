@@ -1075,7 +1075,7 @@ table 8057 "Subscription Header"
         OnAfterGetCustomerSubscriptionContractSetup(Rec, ServiceContractSetup, CurrFieldNo);
     end;
 
-    internal procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)
+    procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)
     begin
         HideValidationDialog := NewHideValidationDialog;
     end;
@@ -1738,12 +1738,12 @@ table 8057 "Subscription Header"
         end;
     end;
 
-    internal procedure InsertServiceCommitmentsFromServCommPackage(ServiceAndCalculationStartDate: Date; var ServiceCommitmentPackage: Record "Subscription Package")
+    procedure InsertServiceCommitmentsFromServCommPackage(ServiceAndCalculationStartDate: Date; var ServiceCommitmentPackage: Record "Subscription Package")
     begin
         InsertServiceCommitmentsFromServCommPackage(ServiceAndCalculationStartDate, 0D, ServiceCommitmentPackage, false);
     end;
 
-    internal procedure InsertServiceCommitmentsFromServCommPackage(ServiceAndCalculationStartDate: Date; ServiceEndDate: Date; var ServiceCommitmentPackage: Record "Subscription Package"; UsageBasedBillingPackageLinesOnly: Boolean)
+    procedure InsertServiceCommitmentsFromServCommPackage(ServiceAndCalculationStartDate: Date; ServiceEndDate: Date; var ServiceCommitmentPackage: Record "Subscription Package"; UsageBasedBillingPackageLinesOnly: Boolean)
     var
         ServiceCommitment: Record "Subscription Line";
         ServiceCommPackageLine: Record "Subscription Package Line";
@@ -2191,11 +2191,14 @@ table 8057 "Subscription Header"
     local procedure GetRecalculateLinesDialog(ChangedFieldName: Text): Text
     var
         RecalculateLinesQst: Label 'If you change %1, the existing Subscription Lines prices will be recalculated.\\Do you want to continue?', Comment = '%1: FieldCaption';
+        RecalculateLinesFromQuantityQst: Label 'If you change %1, only the Amount for existing service commitments will be recalculated.\\Do you want to continue?', Comment = '%1= Changed Field Name.';
         RecalculateLinesFromVariantCodeQst: Label 'The %1 has been changed.\\Do you want to update the price and description?';
     begin
         case ChangedFieldName of
             Rec.FieldName(Rec."Variant Code"):
                 exit(StrSubstNo(RecalculateLinesFromVariantCodeQst, ChangedFieldName));
+            Rec.FieldName(Rec.Quantity):
+                exit(StrSubstNo(RecalculateLinesFromQuantityQst, ChangedFieldName));
             else
                 exit(StrSubstNo(RecalculateLinesQst, ChangedFieldName));
         end;

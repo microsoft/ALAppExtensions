@@ -35,9 +35,7 @@ codeunit 4768 "Create Mfg Posting Setup"
         ManufacturingDemoDataSetup.Get();
 
         ContosoPostingSetup.InsertInventoryPostingSetup('', MfgPostingGroup.Finished(), MfgGLAccount.FinishedGoods(), '', MfgGLAccount.WIPAccountFinishedGoods(), MfgGLAccount.MaterialVariance(), MfgGLAccount.CapacityVariance(), MfgGLAccount.SubcontractedVariance(), MfgGLAccount.CapOverheadVariance(), MfgGLAccount.MfgOverheadVariance());
-        ContosoPostingSetup.InsertInventoryPostingSetup(ManufacturingDemoDataSetup."Manufacturing Location", MfgPostingGroup.Finished(), MfgGLAccount.FinishedGoods(), '', MfgGLAccount.WIPAccountFinishedGoods(), MfgGLAccount.MaterialVariance(), MfgGLAccount.CapacityVariance(), MfgGLAccount.SubcontractedVariance(), MfgGLAccount.CapOverheadVariance(), MfgGLAccount.MfgOverheadVariance());
         ContosoPostingSetup.InsertInventoryPostingSetup('', CommonPostingGroup.RawMaterial(), CommonGLAccount.RawMaterials(), '', MfgGLAccount.WIPAccountFinishedGoods(), '', '', '', '', '');
-        ContosoPostingSetup.InsertInventoryPostingSetup(ManufacturingDemoDataSetup."Manufacturing Location", CommonPostingGroup.RawMaterial(), CommonGLAccount.RawMaterials(), '', MfgGLAccount.WIPAccountFinishedGoods(), '', '', '', '', '');
     end;
 
     local procedure CreateGeneralPostingSetup()

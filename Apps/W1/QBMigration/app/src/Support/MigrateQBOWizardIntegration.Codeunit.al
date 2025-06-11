@@ -15,6 +15,8 @@ codeunit 1830 "MigrateQBO Wizard Integration"
         NoCustomersTxt: Label 'customer: %1; ', comment = '%1 = Number of Customer records';
         NoGLAccountsTxt: Label 'gl_acc: %1; ', comment = '%1 = Number of G/L Account records';
         NoItemsTxt: Label 'item: %1; ', comment = '%1 = Number of Item records';
+        CloudMigrationLbl: Label 'CloudMigration', Locked = true;
+        QBOLbl: Label 'QuickBooks Online', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnRegisterDataMigrator', '', true, true)]
     local procedure OnRegisterDataMigratorRegisterQBDataMigrator(var DataMigratorRegistration: Record "Data Migrator Registration")
@@ -126,6 +128,25 @@ codeunit 1830 "MigrateQBO Wizard Integration"
     local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
     begin
         Codeunit.Run(Codeunit::"Categ. Generate Acc. Schedules");
+        if DataMigrationStatus."Migration Type" = HelperFunctions.GetMigrationTypeTxt() then
+            SendMigrationFinishedTelemetry(WasAborted, Retry);
+    end;
+
+    local procedure SendMigrationFinishedTelemetry(WasAborted: Boolean; Retry: Boolean)
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        if WasAborted or Retry then
+            exit;
+
+        TelemetryDimensions.Add('Category', CloudMigrationLbl);
+        TelemetryDimensions.Add('NumberOfCompanies', Format(1, 0, 9));
+        TelemetryDimensions.Add('TotalMigrationSize', Format(0, 0, 9));
+        TelemetryDimensions.Add('TotalOnPremSize', Format(0, 0, 9));
+        TelemetryDimensions.Add('Product', QBOLbl);
+        TelemetryDimensions.Add('MigrationDateTime', Format(CurrentDateTime(), 0, 9));
+        FeatureTelemetry.LogUsage('0000JMR', 'Cloud Migration', 'Tenant was cloud migrated', TelemetryDimensions);
     end;
 
     local procedure SendTelemetryForSelectedEntities(var DataMigrationEntity: Record "Data Migration Entity")

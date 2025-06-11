@@ -1,0 +1,3012 @@
+tests:
+  - name: EDocLineMatching-Deferral-001
+    question: Match basic transportation montly subscription.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Bus ticket
+      - line_id: 20000
+        description: Bus subscription - yearly pass
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+  
+  - name: EDocLineMatching-Deferral-002
+    question: Match software subscriptions and services with appropriate deferral periods.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Software installation and setup fee
+      - line_id: 20000
+        description: Office 365 Business Premium - Annual subscription
+      - line_id: 30000
+        description: Adobe Creative Cloud - 6 month subscription
+      - line_id: 40000
+        description: Technical support consultation - 2 hours
+      - line_id: 50000
+        description: Training materials and documentation
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+  
+  - name: EDocLineMatching-Deferral-003
+    question: Some items in the invoice may qualify for deferral. Select only the applicable ones.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Leadership workshop - March 2025
+      - line_id: 20000
+        description: Adobe Creative Cloud - annual plan
+      - line_id: 30000
+        description: Light fixture replacement
+      - line_id: 40000
+        description: Daily equipment rental - May 3
+      - line_id: 50000
+        description: Server support contract (2025-2027)
+      - line_id: 60000
+        description: Inbound freight - raw materials
+    expected_data:
+      - line_id: 20000
+        deferral_code: DEF-A01
+      - line_id: 50000
+        deferral_code: DEF-A03
+
+  - name: EDocLineMatching-Deferral-004
+    question: Some items in the invoice may qualify for deferral. Select only the applicable ones.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Gasoline - company vehicle
+      - line_id: 20000
+        description: Q1 office space rent (Jan-Mar)
+      - line_id: 30000
+        description: Cybersecurity advisor - annual retainer
+      - line_id: 40000
+        description: Legal advice - contract review
+      - line_id: 50000
+        description: Annual business liability insurance premium
+      - line_id: 60000
+        description: Daily equipment rental - May 3
+    expected_data:
+      - line_id: 20000
+        deferral_code: DEF-Q01
+      - line_id: 30000
+        deferral_code: DEF-A01
+      - line_id: 50000
+        deferral_code: DEF-A01
+
+  - name: EDocLineMatching-Deferral-005
+    question: Evaluate invoice for deferrable items. None should match any deferral criteria.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Gasoline - company vehicle
+      - line_id: 20000
+        description: Staff wages - May 1-15
+      - line_id: 30000
+        description: Light fixture replacement
+      - line_id: 40000
+        description: Team lunch - quarterly wrap-up
+      - line_id: 50000
+        description: Inbound freight - raw materials
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-006
+    question: All line items are prepaid or multi-period. Identify appropriate deferral codes.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Annual HVAC maintenance contract
+      - line_id: 20000
+        description: Legal services retainer - quarterly
+      - line_id: 30000
+        description: ERP license - 3-year agreement
+      - line_id: 40000
+        description: Retail unit rent - 6 months prepaid
+      - line_id: 50000
+        description: Financial data feed - 1-year subscription
+    expected_data:
+      - line_id: 10000
+        deferral_code: DEF-A01
+      - line_id: 20000
+        deferral_code: DEF-Q01
+      - line_id: 30000
+        deferral_code: DEF-A03
+      - line_id: 40000
+        deferral_code: DEF-S01
+      - line_id: 50000
+        deferral_code: DEF-A01
+
+  - name: EDocLineMatching-Deferral-007
+    question: Evaluate invoice for deferrable items. None should match any deferral criteria.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Electricity bill - May usage
+      - line_id: 20000
+        description: Payroll taxes - April
+      - line_id: 30000
+        description: Whiteboard markers and erasers
+      - line_id: 40000
+        description: Gas utility - current period
+      - line_id: 50000
+        description: Recruitment agency fee - candidate placement
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-008
+    question: Some items in the invoice may qualify for deferral. Select only the applicable ones.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Extended warranty - 3 years
+      - line_id: 20000
+        description: Tent rental - corporate picnic
+      - line_id: 30000
+        description: Certification course - Q3 enrollment
+      - line_id: 40000
+        description: Gasoline - company vehicle
+      - line_id: 50000
+        description: Sponsored content
+    expected_data:
+      - line_id: 10000
+        deferral_code: DEF-A03
+      - line_id: 30000
+        deferral_code: DEF-Q01
+
+  - name: EDocLineMatching-Deferral-009
+    question: All line items are prepaid or multi-period. Identify appropriate deferral codes.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Annual digital marketing toolkit
+      - line_id: 20000
+        description: Professional indemnity insurance - full year
+      - line_id: 30000
+        description: IT systems support - full year prepaid
+      - line_id: 40000
+        description: Storage facility rent - prepayment
+      - line_id: 50000
+        description: Adobe Creative Cloud - annual plan
+    expected_data:
+      - line_id: 10000
+        deferral_code: DEF-A01
+      - line_id: 20000
+        deferral_code: DEF-A01
+      - line_id: 30000
+        deferral_code: DEF-A01
+      - line_id: 40000
+        deferral_code: DEF-A01
+      - line_id: 50000
+        deferral_code: DEF-A01
+
+  - name: EDocLineMatching-Deferral-010
+    question: Evaluate invoice for deferrable items. None should match any deferral criteria.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Phone bill - standard usage
+      - line_id: 20000
+        description: Team lunch - quarterly wrap-up
+      - line_id: 30000
+        description: Toll charges - delivery route
+      - line_id: 40000
+        description: Recruitment agency fee - candidate placement
+      - line_id: 50000
+        description: Internet service - June
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-011
+    question: Professional retainers and prepaid services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Tax filing - current year return
+      - line_id: 20000
+        description: Cybersecurity advisor - annual retainer
+      - line_id: 30000
+        description: PR agency retainer - 6 month prepaid
+      - line_id: 40000
+        description: Recruitment agency fee - candidate placement  
+      - line_id: 50000
+        description: Legal services retainer - quarterly
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-012
+    question: Conference and travel prepayments.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Gasoline - company vehicle
+      - line_id: 20000
+        description: Conference registration - summit
+      - line_id: 30000
+        description: Trade show booth fee - 6 month prepaid
+      - line_id: 40000
+        description: Rideshare - client visit
+      - line_id: 50000
+        description: Team offsite venue deposit - quarterly event
+    expected_data:
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-013
+    question: Non-deferrable office expenses and utilities.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Printer ink cartridges
+      - line_id: 20000
+        description: Water and sewer - monthly invoice
+      - line_id: 30000
+        description: Copy paper - 10 reams
+      - line_id: 40000
+        description: Phone bill - standard usage
+      - line_id: 50000
+        description: Coffee for office kitchen
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-014
+    question: Match insurance and maintenance contracts with appropriate deferral periods.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Annual business liability insurance premium
+      - line_id: 20000
+        description: HVAC maintenance contract - 12 months
+      - line_id: 30000
+        description: Professional indemnity insurance - full year
+      - line_id: 40000
+        description: IT systems support - quarterly contract
+      - line_id: 50000
+        description: Elevator maintenance - 6 month agreement
+      - line_id: 60000
+        description: Security system maintenance - annual plan
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-Q01"
+      - line_id: 50000
+        deferral_code: "DEF-S01"
+      - line_id: 60000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-015
+    question: Match mixed office expenses with some deferrable items.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Printer ink cartridges
+      - line_id: 20000
+        description: Adobe Creative Cloud - annual plan
+      - line_id: 30000
+        description: Office stationery - pens and notebooks
+      - line_id: 40000
+        description: Electricity bill - May usage
+      - line_id: 50000
+        description: Data analytics license - 18 months upfront
+      - line_id: 60000
+        description: Copy paper - 10 reams
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-016
+    question: Match utility and operational expenses - no deferrals expected.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Water and sewer - monthly invoice
+      - line_id: 20000
+        description: Staff wages - May 1-15
+      - line_id: 30000
+        description: Team lunch - quarterly wrap-up
+      - line_id: 40000
+        description: Emergency AC repair
+      - line_id: 50000
+        description: Gasoline - company vehicle
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-017
+    question: Match prepaid rent and lease agreements.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Q1 office space rent (Jan-Mar)
+      - line_id: 20000
+        description: Warehouse lease paid in advance - 12 months
+      - line_id: 30000
+        description: Retail unit rent - 6 months prepaid
+      - line_id: 40000
+        description: Storage facility rent - quarterly prepayment
+      - line_id: 50000
+        description: Land lease - annual payment
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 40000
+        deferral_code: "DEF-Q01"
+      - line_id: 50000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-018
+    question: Match training and education services with mixed expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Legal advice - contract review
+      - line_id: 20000
+        description: Annual compliance training package
+      - line_id: 30000
+        description: HR compliance audit
+      - line_id: 40000
+        description: Leadership workshop - 6 month program
+      - line_id: 50000
+        description: Tax filing - current year return
+      - line_id: 60000
+        description: Advanced sales training - quarterly sessions
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 60000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-019
+    question: Match subscription services and licenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Industry journal subscription - 12 months
+      - line_id: 20000
+        description: Financial data feed - 1-year subscription
+      - line_id: 30000
+        description: Market intelligence report - 6 month prepaid
+      - line_id: 40000
+        description: Benchmarking tool - annual license
+      - line_id: 50000
+        description: ERP license - 3-year agreement
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-020
+    question: Match warranty and service plans.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Extended warranty - 18 months
+      - line_id: 20000
+        description: Annual hardware support agreement
+      - line_id: 30000
+        description: Printer extended service plan - 12 months
+      - line_id: 40000
+        description: Server support contract - 3 years
+      - line_id: 50000
+        description: Laptop warranty package - 6 months
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-C01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-A03"
+      - line_id: 50000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-021
+    question: Match immediate expense items - no deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Light fixture replacement
+      - line_id: 20000
+        description: FedEx overnight delivery
+      - line_id: 30000
+        description: Recruitment agency fee - candidate placement
+      - line_id: 40000
+        description: Rideshare - client visit
+      - line_id: 50000
+        description: Parking fees - downtown meeting
+      - line_id: 60000
+        description: Coffee for office kitchen
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-022
+    question: Match marketing campaigns and advertising with mixed timing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Q4 social media ad package - booked in advance
+      - line_id: 20000
+        description: Billboard rental - prepaid for 6 months
+      - line_id: 30000
+        description: Digital ad campaign - annual package
+      - line_id: 40000
+        description: Client dinner - closing meeting
+      - line_id: 50000
+        description: TV spot slot - prepaid quarterly
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+      - line_id: 20000
+        deferral_code: "DEF-S01"
+      - line_id: 30000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-023
+    question: Match retainer agreements and consulting services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Legal services retainer - quarterly
+      - line_id: 20000
+        description: PR agency retainer - 6 months prepaid
+      - line_id: 30000
+        description: Cybersecurity advisor - annual retainer
+      - line_id: 40000
+        description: Architect design retainer - 18 month project
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+      - line_id: 20000
+        deferral_code: "DEF-S01"
+      - line_id: 30000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-024
+    question: Match travel and event expenses with some prepaid items.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Conference registration - annual pass
+      - line_id: 20000
+        description: Toll charges - delivery route
+      - line_id: 30000
+        description: Hotel booking - annual sales summit
+      - line_id: 40000
+        description: Trade show booth fee - 6 month prepaid
+      - line_id: 50000
+        description: Mileage reimbursement - May trips
+      - line_id: 60000
+        description: Team offsite venue deposit - quarterly events
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 60000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-025
+    question: Match immediate operational costs - no deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Plumbing repair - office restroom
+      - line_id: 20000
+        description: Sales tax - Q2
+      - line_id: 30000
+        description: Overtime pay - hourly staff
+      - line_id: 40000
+        description: Catering - internal workshop
+      - line_id: 50000
+        description: Courier - client package
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-026
+    question: Match comprehensive software and technology expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Microsoft Office 365 E3 - 1-year subscription
+      - line_id: 20000
+        description: IT equipment troubleshooting
+      - line_id: 30000
+        description: Prepaid SaaS platform - 18 months
+      - line_id: 40000
+        description: Cloud storage - 6 month plan
+      - line_id: 50000
+        description: Software installation and setup fee
+      - line_id: 60000
+        description: Database license - 3 year agreement
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-C01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 60000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-027
+    question: Match facility and property related expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: 12-month auto fleet insurance
+      - line_id: 20000
+        description: Broken window replacement
+      - line_id: 30000
+        description: Prepaid workers comp insurance - 6 months
+      - line_id: 40000
+        description: General commercial policy (Jan-Dec)
+      - line_id: 50000
+        description: Internet service - June
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-028
+    question: Match short-term rental and equipment costs - no deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Daily equipment rental - May 3
+      - line_id: 20000
+        description: Short-term vehicle lease - 2 days
+      - line_id: 30000
+        description: Audio/visual gear - one-day event
+      - line_id: 40000
+        description: Tent rental - corporate picnic
+      - line_id: 50000
+        description: Portable toilet rental - site work
+      - line_id: 60000
+        description: Phone bill - standard usage
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-029
+    question: Match comprehensive training and development programs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Prepaid employee training - annual package
+      - line_id: 20000
+        description: Certification course - 6 month program
+      - line_id: 30000
+        description: Leadership development - quarterly workshops
+      - line_id: 40000
+        description: Skills assessment - one-time evaluation
+      - line_id: 50000
+        description: Training materials and documentation - 18 months
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-S01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-030
+    question: Match maintenance and service contracts with mixed timing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Copier service agreement - 12 months
+      - line_id: 20000
+        description: Whiteboard markers and erasers
+      - line_id: 30000
+        description: Network maintenance - quarterly contract
+      - line_id: 40000
+        description: Building maintenance - 6 month agreement
+      - line_id: 50000
+        description: Desk organizers and folders
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-031
+    question: Match professional services and consulting fees.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Management consulting retainer - annual
+      - line_id: 20000
+        description: Financial advisory services - 18 months
+      - line_id: 30000
+        description: Strategic planning consultant - quarterly
+      - line_id: 40000
+        description: Business process consulting - 6 months
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-C01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-032
+    question: Match immediate payroll and tax expenses - no deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Payroll taxes - April
+      - line_id: 20000
+        description: Bonuses - Q1 performance
+      - line_id: 30000
+        description: Contractor invoice - May services
+      - line_id: 40000
+        description: Local business license renewal
+      - line_id: 50000
+        description: State tax remittance
+      - line_id: 60000
+        description: VAT - April reporting
+      - line_id: 70000
+        description: Use tax - equipment purchase
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-033
+    question: Match digital marketing and advertising services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Annual digital marketing toolkit
+      - line_id: 20000
+        description: SEO services - 12 month contract
+      - line_id: 30000
+        description: Social media management - quarterly package
+      - line_id: 40000
+        description: Content creation - 6 month retainer
+      - line_id: 50000
+        description: Email marketing platform - 18 months prepaid
+      - line_id: 60000
+        description: PPC campaign management - annual
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+      - line_id: 60000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-034
+    question: Match logistics and shipping costs - no deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Inbound freight - raw materials
+      - line_id: 20000
+        description: Logistics charge - warehouse transfer
+      - line_id: 30000
+        description: Shipping cost - replacement part
+      - line_id: 40000
+        description: Entertainment - team-building event
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-035
+    question: Match comprehensive insurance and protection plans.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Cyber liability insurance - annual premium
+      - line_id: 20000
+        description: Equipment insurance - 6 month policy
+      - line_id: 30000
+        description: Directors and officers insurance - 12 months
+      - line_id: 40000
+        description: Product liability coverage - quarterly premium
+      - line_id: 50000
+        description: Employment practices liability - 18 months
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-S01"
+      - line_id: 30000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-Q01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-036
+    question: Match technology infrastructure and support services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Cloud hosting - annual plan
+      - line_id: 20000
+        description: Network monitoring - 6 month service
+      - line_id: 30000
+        description: Data backup service - quarterly subscription
+      - line_id: 40000
+        description: Technical support hotline - 18 months
+      - line_id: 50000
+        description: System integration project - one-time
+      - line_id: 60000
+        description: Cybersecurity monitoring - 12 months
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-S01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-C01"
+      - line_id: 60000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-037
+    question: Match facility management and utilities - mostly immediate.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Janitorial services - annual contract
+      - line_id: 20000
+        description: Gas utility - current period
+      - line_id: 30000
+        description: Landscaping maintenance - 6 months
+      - line_id: 40000
+        description: Pest control - quarterly service
+      - line_id: 50000
+        description: Electricity bill - current month
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 40000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-038
+    question: Match vehicle and transportation expenses with some prepaid items.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Fleet management service - annual contract
+      - line_id: 20000
+        description: Vehicle maintenance - quarterly plan
+      - line_id: 30000
+        description: Fuel cards - monthly usage
+      - line_id: 40000
+        description: GPS tracking service - 18 months
+      - line_id: 50000
+        description: Parking permits - 6 month pass
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-C01"
+      - line_id: 50000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-039
+    question: Match office equipment and supplies - mixed timing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Printer paper - monthly supply
+      - line_id: 20000
+        description: Office furniture lease - 12 months
+      - line_id: 30000
+        description: Computer peripherals - immediate use
+      - line_id: 40000
+        description: Software maintenance - 6 month agreement
+      - line_id: 50000
+        description: Ergonomic assessments - one-time service
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-040
+    question: Match comprehensive professional development programs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Executive coaching - quarterly sessions
+      - line_id: 20000
+        description: Industry conference membership - annual
+      - line_id: 30000
+        description: Online learning platform - 18 months
+      - line_id: 40000
+        description: Professional certification - 6 month program
+      - line_id: 50000
+        description: Skills workshop - one-day event
+      - line_id: 60000
+        description: Mentorship program - 12 months
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-C01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 60000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-041
+    question: Match research and development expenses - no deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Laboratory testing - current samples
+      - line_id: 20000
+        description: Research materials - immediate use
+      - line_id: 30000
+        description: Patent filing fees - current application
+      - line_id: 40000
+        description: Prototype development - current phase
+      - line_id: 50000
+        description: Market research survey - May results
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-042
+    question: Match comprehensive business services and memberships.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Chamber of Commerce membership - annual
+      - line_id: 20000
+        description: Industry association dues - 12 months
+      - line_id: 30000
+        description: Trade publication subscription - quarterly
+      - line_id: 40000
+        description: Business directory listing - 6 months
+      - line_id: 50000
+        description: Networking event sponsorship - annual
+      - line_id: 60000
+        description: Professional society membership - 18 months
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-A01"
+      - line_id: 60000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-043
+    question: Match manufacturing and production costs - immediate expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Raw materials - current production run
+      - line_id: 20000
+        description: Quality control testing - May batch
+      - line_id: 30000
+        description: Equipment calibration - monthly service
+      - line_id: 40000
+        description: Safety equipment - immediate replacement
+      - line_id: 50000
+        description: Production line cleaning - weekly service
+      - line_id: 60000
+        description: Waste disposal - current period
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-044
+    question: Match financial and accounting services with mixed timing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Bookkeeping services - monthly
+      - line_id: 20000
+        description: Financial audit - annual engagement
+      - line_id: 30000
+        description: Tax preparation - current year
+      - line_id: 40000
+        description: Payroll processing - quarterly contract
+      - line_id: 50000
+        description: Financial planning - 18 month retainer
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-Q01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-045
+    question: Match technology services with mixed immediate and deferred costs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Software license - 3 year subscription
+      - line_id: 20000
+        description: Server maintenance - current month
+      - line_id: 30000
+        description: Cloud storage - annual plan
+      - line_id: 40000
+        description: Security patch installation - immediate
+      - line_id: 50000
+        description: Technical support contract - 6 months
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-046
+    question: Match marketing and advertising services with mixed immediate and deferred costs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Social media advertising campaign - 3 year contract
+      - line_id: 20000
+        description: Press release distribution - immediate
+      - line_id: 30000
+        description: Brand consulting services - 18 month engagement
+      - line_id: 40000
+        description: Trade show booth rental - current event
+      - line_id: 50000
+        description: Marketing automation software - annual license
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-C01"
+      - line_id: 50000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-047
+    question: Match office supplies and utilities - immediate expenses only.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Office paper and stationery - current month
+      - line_id: 20000
+        description: Electricity bill - March consumption
+      - line_id: 30000
+        description: Water and sewer services - monthly
+      - line_id: 40000
+        description: Printer toner cartridges - immediate use
+      - line_id: 50000
+        description: Janitorial supplies - current period
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-048
+    question: Match comprehensive insurance policies with various terms.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: General liability insurance - annual policy
+      - line_id: 20000
+        description: Property insurance - 3 year premium
+      - line_id: 30000
+        description: Workers compensation - quarterly premium
+      - line_id: 40000
+        description: Professional indemnity - 6 month policy
+      - line_id: 50000
+        description: Cyber security insurance - 18 month coverage
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-049
+    question: Match employee payroll and benefits - immediate expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Monthly salaries - March payroll
+      - line_id: 20000
+        description: Overtime wages - current period
+      - line_id: 30000
+        description: Health insurance premiums - March
+      - line_id: 40000
+        description: Retirement plan contributions - monthly
+      - line_id: 50000
+        description: Payroll taxes - current quarter
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-050
+    question: Match software and technology subscriptions with mixed terms.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Microsoft Office 365 - annual subscription
+      - line_id: 20000
+        description: Antivirus software - 3 year license
+      - line_id: 30000
+        description: Database maintenance - monthly service
+      - line_id: 40000
+        description: Backup software - 6 month license
+      - line_id: 50000
+        description: Project management tool - quarterly subscription
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-051
+    question: Match freight and shipping costs - immediate expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Express delivery - overnight shipment
+      - line_id: 20000
+        description: Freight charges - March deliveries
+      - line_id: 30000
+        description: Packaging materials - current use
+      - line_id: 40000
+        description: International shipping - customs fees
+      - line_id: 50000
+        description: Local courier services - weekly deliveries
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-052
+    question: Match training and education services with future delivery dates.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Employee certification program - 12 month course
+      - line_id: 20000
+        description: Leadership development - quarterly workshops
+      - line_id: 30000
+        description: Technical training - 6 month program
+      - line_id: 40000
+        description: Safety training - immediate session
+      - line_id: 50000
+        description: Professional development - 18 month curriculum
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-053
+    question: Match repairs and maintenance - one-time services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: HVAC system repair - emergency service
+      - line_id: 20000
+        description: Plumbing leak fix - immediate repair
+      - line_id: 30000
+        description: Electrical panel replacement - one-time
+      - line_id: 40000
+        description: Carpet cleaning - monthly service
+      - line_id: 50000
+        description: Window replacement - current project
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-054
+    question: Match lease and rental agreements with various terms.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Office space lease - annual payment
+      - line_id: 20000
+        description: Equipment rental - 3 year agreement
+      - line_id: 30000
+        description: Vehicle lease - quarterly payment
+      - line_id: 40000
+        description: Storage unit - 6 month prepayment
+      - line_id: 50000
+        description: Conference room rental - daily rate
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-055
+    question: Match meals and entertainment - immediate expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Client dinner - business meeting
+      - line_id: 20000
+        description: Team lunch - monthly gathering
+      - line_id: 30000
+        description: Conference catering - event expenses
+      - line_id: 40000
+        description: Office coffee service - weekly delivery
+      - line_id: 50000
+        description: Holiday party - company celebration
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-056
+    question: Match warranty and service plans with extended coverage.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Equipment warranty extension - 3 year coverage
+      - line_id: 20000
+        description: Software support plan - annual contract
+      - line_id: 30000
+        description: Vehicle service plan - 18 month coverage
+      - line_id: 40000
+        description: Appliance warranty - 6 month extension
+      - line_id: 50000
+        description: Emergency repair service - immediate call
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-C01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-057
+    question: Match fuel and transportation costs - immediate consumption.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Gasoline for fleet vehicles - March consumption
+      - line_id: 20000
+        description: Public transportation - employee commute
+      - line_id: 30000
+        description: Parking fees - monthly charges
+      - line_id: 40000
+        description: Taxi and rideshare - business trips
+      - line_id: 50000
+        description: Vehicle maintenance - oil change service
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-058
+    question: Match legal and consulting retainers with various terms.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Legal counsel retainer - annual agreement
+      - line_id: 20000
+        description: Management consulting - 18 month engagement
+      - line_id: 30000
+        description: Tax advisory services - quarterly retainer
+      - line_id: 40000
+        description: HR consulting - 6 month contract
+      - line_id: 50000
+        description: One-time legal review - immediate service
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-C01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-059
+    question: Match various tax obligations - immediate expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Sales tax payment - March liability
+      - line_id: 20000
+        description: Property tax - quarterly installment
+      - line_id: 30000
+        description: Business license fee - annual renewal
+      - line_id: 40000
+        description: Import duties - current shipment
+      - line_id: 50000
+        description: Payroll tax deposit - weekly requirement
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-060
+    question: Match publication and subscription services with mixed terms.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Industry magazine - annual subscription
+      - line_id: 20000
+        description: Research database access - 3 year license
+      - line_id: 30000
+        description: News service - quarterly subscription
+      - line_id: 40000
+        description: Online library - 6 month access
+      - line_id: 50000
+        description: Daily newspaper - current month
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-061
+    question: Match travel expenses and prepaid arrangements.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Conference registration - 18 month advance booking
+      - line_id: 20000
+        description: Hotel accommodation - current business trip
+      - line_id: 30000
+        description: Flight tickets - immediate travel
+      - line_id: 40000
+        description: Travel insurance - annual policy
+      - line_id: 50000
+        description: Car rental - weekly business use
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-C01"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-062
+    question: Match manufacturing equipment and supplies.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Machine maintenance contract - 3 year agreement
+      - line_id: 20000
+        description: Safety equipment - monthly supply
+      - line_id: 30000
+        description: Quality control testing - current batch
+      - line_id: 40000
+        description: Equipment calibration - quarterly service
+      - line_id: 50000
+        description: Production line upgrade - immediate installation
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 40000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-063
+    question: Match various professional services - immediate deliverables.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Accounting services - bookkeeping
+      - line_id: 20000
+        description: Audit fees - annual financial review
+      - line_id: 30000
+        description: Translation services - immediate project
+      - line_id: 40000
+        description: Graphic design - logo creation
+      - line_id: 50000
+        description: Website development - one-time build
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-064
+    question: Match comprehensive maintenance contracts and services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Building maintenance - annual contract
+      - line_id: 20000
+        description: IT support services - 3 year agreement
+      - line_id: 30000
+        description: Security system monitoring - quarterly service
+      - line_id: 40000
+        description: Landscaping services - 6 month contract
+      - line_id: 50000
+        description: Elevator maintenance - 18 month agreement
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-065
+    question: Match office supplies and immediate consumption items.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Copy paper - monthly supply
+      - line_id: 20000
+        description: Pens and pencils - office restocking
+      - line_id: 30000
+        description: Cleaning supplies - weekly service
+      - line_id: 40000
+        description: Break room snacks - current period
+      - line_id: 50000
+        description: First aid supplies - safety kit refill
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-066
+    question: Match advertising campaigns with future execution dates.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Digital marketing campaign - 12 month strategy
+      - line_id: 20000
+        description: Billboard advertising - 3 year contract
+      - line_id: 30000
+        description: Radio sponsorship - quarterly agreement
+      - line_id: 40000
+        description: Print advertisement - current magazine issue
+      - line_id: 50000
+        description: SEO services - 6 month optimization
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 50000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-067
+    question: Match utility services and consumption-based charges.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Natural gas bill - March consumption
+      - line_id: 20000
+        description: Internet service - monthly connection
+      - line_id: 30000
+        description: Telephone charges - current billing period
+      - line_id: 40000
+        description: Waste collection - weekly service
+      - line_id: 50000
+        description: Security alarm monitoring - monthly fee
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-068
+    question: Match equipment rentals and lease agreements.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Forklift lease - annual agreement
+      - line_id: 20000
+        description: Computer equipment rental - 18 month term
+      - line_id: 30000
+        description: Construction tools - daily rental
+      - line_id: 40000
+        description: Office furniture lease - quarterly payment
+      - line_id: 50000
+        description: Vehicle fleet lease - 3 year contract
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-C01"
+      - line_id: 40000
+        deferral_code: "DEF-Q01"
+      - line_id: 50000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-069
+    question: Match one-time professional fees and immediate services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Patent filing fee - immediate processing
+      - line_id: 20000
+        description: Legal document review - one-time service
+      - line_id: 30000
+        description: Trademark registration - current application
+      - line_id: 40000
+        description: Notary services - document certification
+      - line_id: 50000
+        description: Court filing fees - litigation expenses
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-070
+    question: Match comprehensive software licensing and support.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: ERP software license - 3 year agreement
+      - line_id: 20000
+        description: Database software - annual subscription
+      - line_id: 30000
+        description: Security software - quarterly updates
+      - line_id: 40000
+        description: Design software - 6 month license
+      - line_id: 50000
+        description: Analytics platform - 18 month contract
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-071
+    question: Match shipping and logistics - immediate services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Ground shipping - weekly deliveries
+      - line_id: 20000
+        description: Air freight - urgent shipment
+      - line_id: 30000
+        description: Warehousing fees - storage
+      - line_id: 40000
+        description: Customs brokerage - import clearance
+      - line_id: 50000
+        description: Packaging services - current orders
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-072
+    question: Match employee training programs with future delivery.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Management training - 12 month program
+      - line_id: 20000
+        description: Safety certification - immediate workshop
+      - line_id: 30000
+        description: Skills development - quarterly sessions
+      - line_id: 40000
+        description: Language training - 18 month course
+      - line_id: 50000
+        description: Team building workshop - current event
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-073
+    question: Match facility services and immediate repairs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Roof repair - emergency fix
+      - line_id: 20000
+        description: Painting services - current project
+      - line_id: 30000
+        description: Floor refinishing - immediate work
+      - line_id: 40000
+        description: Window cleaning - service
+      - line_id: 50000
+        description: Pest control - quarterly treatment
+    expected_data:
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-074
+    question: Match comprehensive insurance coverage plans.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Commercial auto insurance - annual policy
+      - line_id: 20000
+        description: Umbrella liability - 3 year coverage
+      - line_id: 30000
+        description: Equipment insurance - quarterly premium
+      - line_id: 40000
+        description: Directors and officers - 6 month policy
+      - line_id: 50000
+        description: Business interruption - 18 month coverage
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-075
+    question: Match payroll and immediate compensation expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Base salaries - March payroll
+      - line_id: 20000
+        description: Bonus payments - quarterly distribution
+      - line_id: 30000
+        description: Commission payments - current sales period
+      - line_id: 40000
+        description: Vacation payout - employee termination
+      - line_id: 50000
+        description: Workers compensation - monthly premium
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-076
+    question: Match subscription services with various renewal terms.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Cloud storage service - annual plan
+      - line_id: 20000
+        description: Streaming service - 3 year contract
+      - line_id: 30000
+        description: Professional membership - quarterly dues
+      - line_id: 40000
+        description: Email marketing platform - 6 month subscription
+      - line_id: 50000
+        description: Industry newsletter - immediate issue
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-077
+    question: Match immediate office and operational expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Coffee and refreshments - weekly delivery
+      - line_id: 20000
+        description: Postage and mailing - current month
+      - line_id: 30000
+        description: Bank service charges - monthly fees
+      - line_id: 40000
+        description: Office equipment repair - one-time fix
+      - line_id: 50000
+        description: Document shredding - quarterly service
+    expected_data:
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-078
+    question: Match marketing campaigns and advertising with future execution.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Social media campaign - 12 month strategy
+      - line_id: 20000
+        description: Trade show participation - immediate event
+      - line_id: 30000
+        description: Promotional materials - current production
+      - line_id: 40000
+        description: Website redesign - 6 month project
+      - line_id: 50000
+        description: Brand development - 18 month initiative
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-079
+    question: Match vehicle and transportation expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Fleet fuel costs - March consumption
+      - line_id: 20000
+        description: Vehicle registration fees - annual renewal
+      - line_id: 30000
+        description: Tire replacement - immediate service
+      - line_id: 40000
+        description: Oil change service - current maintenance
+      - line_id: 50000
+        description: GPS tracking service - fee
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-080
+    question: Match comprehensive service contracts and agreements.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: IT managed services - annual contract
+      - line_id: 20000
+        description: Cleaning services - 3 year agreement
+      - line_id: 30000
+        description: Security services - quarterly contract
+      - line_id: 40000
+        description: Landscaping maintenance - 6 month agreement
+      - line_id: 50000
+        description: Pest control services - 18 month contract
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-081
+    question: Match enterprise software license with long-term deferral.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Enterprise CRM software license - 3 year contract
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-082
+    question: Match prepaid insurance coverage.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: General liability insurance - annual premium
+      - line_id: 20000
+        description: Property insurance - 6 month coverage
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-083
+    question: Match office supplies and utilities - immediate expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Office paper and stationery - current month
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-084
+    question: Match maintenance contract with mixed expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: HVAC maintenance contract - quarterly service
+      - line_id: 20000
+        description: Emergency repair - immediate fix
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-085
+    question: Match software subscriptions with various terms.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Cloud storage subscription - annual plan
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-086
+    question: Match employee training and development.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Leadership training program - 18 month curriculum
+      - line_id: 20000
+        description: One-day workshop attendance - current period
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-087
+    question: Match freight and shipping costs - immediate expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Express shipping charges - current delivery
+      - line_id: 20000
+        description: Freight costs - shipment
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-088
+    question: Match legal retainer and consulting fees.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Legal retainer - quarterly arrangement
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-089
+    question: Match prepaid rent and facility costs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Office lease prepayment - 6 months
+      - line_id: 20000
+        description: Warehouse rent - annual contract
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-S01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-090
+    question: Match utility bills and facility maintenance.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Electricity bill - current month usage
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-091
+    question: Match warranty and service plans.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Equipment extended warranty - 3 year coverage
+      - line_id: 20000
+        description: Service plan - semi-annual maintenance
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 20000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-092
+    question: Match marketing campaign expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Digital advertising campaign - quarterly budget
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-093
+    question: Match payroll and employee costs - immediate expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Monthly salary payments - June
+      - line_id: 20000
+        description: Employee benefits - current period
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-094
+    question: Match consulting retainer with mixed timing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Management consulting retainer - 18 months
+      - line_id: 20000
+        description: Ad-hoc consulting session - current period
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-095
+    question: Match trade publication subscriptions.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Industry magazine subscription - annual
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-096
+    question: Match travel and accommodation costs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Prepaid conference accommodation - 6 months advance
+      - line_id: 20000
+        description: Business meal expenses - current trip
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-097
+    question: Match fuel and transportation - immediate expenses.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Fleet fuel costs - current month
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-098
+    question: Match software maintenance and support.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Software support contract - 3 year agreement
+      - line_id: 20000
+        description: Database maintenance - quarterly service
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-099
+    question: Match professional development and training.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Professional certification program - annual enrollment
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-100
+    question: Match equipment rental and leasing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Short-term equipment rental - weekly basis
+      - line_id: 20000
+        description: Copier lease agreement - quarterly payments
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-101
+    question: Match business licenses and permits.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Business license renewal - annual fee
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-102
+    question: Match tax preparation and filing costs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Corporate tax preparation - current year filing
+      - line_id: 20000
+        description: Quarterly tax advisory service - 3 month retainer
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-103
+    question: Match office equipment maintenance - immediate costs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Printer repair service - emergency fix
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-104
+    question: Match cloud services and hosting.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Cloud hosting service - 6 month prepayment
+      - line_id: 20000
+        description: Website hosting - annual contract
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-S01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-105
+    question: Match security services and monitoring.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Security monitoring service - quarterly contract
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-106
+    question: Match office cleaning and janitorial services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Weekly cleaning service - current month
+      - line_id: 20000
+        description: Deep cleaning service - one-time project
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-107
+    question: Match event planning and conference fees.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Annual conference registration - early bird pricing
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-108
+    question: Match telecommunications and internet services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Internet service - 18 month business contract
+      - line_id: 20000
+        description: Monthly phone bill - current usage
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-109
+    question: Match research and development costs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Market research study - 6 month project
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-110
+    question: Match parking and facility access fees.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Employee parking passes
+      - line_id: 20000
+        description: Visitor parking fee - daily rate
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-111
+    question: Match audit and compliance services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Annual financial audit - comprehensive review
+      - line_id: 20000
+        description: Compliance monitoring service - quarterly assessments
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-112
+    question: Match banking and financial services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Monthly banking fees - account maintenance
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-113
+    question: Match intellectual property and patent costs.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Patent filing and prosecution - 3 year process
+      - line_id: 20000
+        description: Trademark registration - annual maintenance
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-114
+    question: Match waste management and recycling.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Waste disposal service - current month pickup
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-115
+    question: Match promotional materials and branding.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Brand marketing campaign - 6 month rollout
+      - line_id: 20000
+        description: Trade show materials - annual exhibition package
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-S01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-116
+    question: Match health and safety compliance.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Safety training program - quarterly sessions
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-117
+    question: Match postage and mailing services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Postage meter refill - current month usage
+      - line_id: 20000
+        description: Bulk mailing service - immediate delivery
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-118
+    question: Match data backup and recovery services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Cloud backup service - 3 year enterprise plan
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-119
+    question: Match inventory management and tracking.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Inventory tracking software - annual license
+      - line_id: 20000
+        description: Physical inventory count service - one-time audit
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-120
+    question: Match quality assurance and testing services.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Product testing service - 18 month quality program
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-121
+    question: Match comprehensive IT and business services invoice with mixed timing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Cloud infrastructure hosting - 3 year enterprise contract
+      - line_id: 20000
+        description: Monthly server maintenance - current period
+      - line_id: 30000
+        description: Software licensing - annual enterprise suite
+      - line_id: 40000
+        description: Emergency technical support - immediate response
+      - line_id: 50000
+        description: Security monitoring service - quarterly agreement
+      - line_id: 60000
+        description: Data backup and recovery - current month
+      - line_id: 70000
+        description: Employee training program - 18 month certification
+      - line_id: 80000
+        description: Network equipment repair - one-time fix
+      - line_id: 90000
+        description: Business insurance premium - 6 month coverage
+      - line_id: 100000
+        description: Office supply delivery - immediate consumption
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+      - line_id: 70000
+        deferral_code: "DEF-C01"
+      - line_id: 90000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-122
+    question: Match office equipment and software expenses - all items deferrable.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Antivirus software license - 12 month subscription
+      - line_id: 20000
+        description: Office 365 business premium - annual plan
+      - line_id: 30000
+        description: Equipment maintenance contract - quarterly service
+      - line_id: 40000
+        description: Extended warranty - 3 year coverage
+      - line_id: 50000
+        description: Adobe Creative Suite - 18 month license
+      - line_id: 60000
+        description: Cloud storage subscription - 6 month plan
+      - line_id: 70000
+        description: Project management software - annual license
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-A03"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+      - line_id: 60000
+        deferral_code: "DEF-S01"
+      - line_id: 70000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-123
+    question: Match manufacturing operations - no deferrals possible.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Raw steel materials - current batch
+      - line_id: 20000
+        description: Factory utilities - May electric bill
+      - line_id: 30000
+        description: Equipment repair - immediate fix needed
+      - line_id: 40000
+        description: Employee overtime wages - current week
+      - line_id: 50000
+        description: Shipping costs - outbound freight
+      - line_id: 60000
+        description: Safety equipment replacement - immediate need
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-124
+    question: Match consulting and professional services - mixed deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Legal retainer fee - 12 month agreement
+      - line_id: 20000
+        description: One-time legal consultation - contract review
+      - line_id: 30000
+        description: Marketing campaign - 6 month digital strategy
+      - line_id: 40000
+        description: Accounting services - monthly bookkeeping
+      - line_id: 50000
+        description: IT consulting retainer - quarterly support
+      - line_id: 60000
+        description: Business meal expenses - client dinner
+      - line_id: 70000
+        description: Conference registration - 18 month training program
+      - line_id: 80000
+        description: Travel reimbursement - employee trip
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+      - line_id: 70000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-125
+    question: Match prepaid expenses and subscriptions - all deferrable.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Business insurance premium - annual policy
+      - line_id: 20000
+        description: Trade magazine subscription - quarterly delivery
+      - line_id: 30000
+        description: Equipment lease - 3 year contract
+      - line_id: 40000
+        description: Software maintenance - 6 month support
+      - line_id: 50000
+        description: Professional development course - 18 month program
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+      - line_id: 30000
+        deferral_code: "DEF-A03"
+      - line_id: 40000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-126
+    question: Match operational expenses - no deferrals available.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Office supplies - immediate consumption
+      - line_id: 20000
+        description: Internet bill - current month
+      - line_id: 30000
+        description: Cleaning services - weekly office cleaning
+      - line_id: 40000
+        description: Parking fees - employee reimbursement
+      - line_id: 50000
+        description: Postage and courier - urgent delivery
+      - line_id: 60000
+        description: Coffee and refreshments - office pantry
+      - line_id: 70000
+        description: Taxi fare - business meeting transport
+      - line_id: 80000
+        description: Phone bill - current period charges
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-127
+    question: Match marketing and advertising expenses - mixed timing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Digital advertising campaign - 12 month budget
+      - line_id: 20000
+        description: Social media management - quarterly retainer
+      - line_id: 30000
+        description: Print advertisement - current month magazine
+      - line_id: 40000
+        description: Website hosting - annual contract
+      - line_id: 50000
+        description: SEO services - 18 month optimization
+      - line_id: 60000
+        description: Business cards printing - immediate order
+      - line_id: 70000
+        description: Trade show booth - 6 month expo series
+      - line_id: 80000
+        description: Promotional materials - one-time production
+      - line_id: 90000
+        description: Brand consulting - 3 year strategy
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+      - line_id: 70000
+        deferral_code: "DEF-S01"
+      - line_id: 90000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-128
+    question: Match facility and maintenance expenses - partial deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Building maintenance contract - annual service
+      - line_id: 20000
+        description: Emergency plumbing repair - immediate fix
+      - line_id: 30000
+        description: Security system monitoring - 6 month contract
+      - line_id: 40000
+        description: Elevator inspection - one-time service
+      - line_id: 50000
+        description: HVAC maintenance agreement - quarterly service
+      - line_id: 60000
+        description: Fire safety equipment - immediate replacement
+      - line_id: 70000
+        description: Landscaping services - weekly maintenance
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-129
+    question: Match training and development - all items deferrable.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Employee certification program - 12 month course
+      - line_id: 20000
+        description: Leadership training - quarterly workshops
+      - line_id: 30000
+        description: Technical skills bootcamp - 18 month program
+      - line_id: 40000
+        description: Safety training certification - 3 year validity
+      - line_id: 50000
+        description: Professional conference pass - 6 month series
+      - line_id: 60000
+        description: Online learning platform - annual subscription
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+      - line_id: 30000
+        deferral_code: "DEF-C01"
+      - line_id: 40000
+        deferral_code: "DEF-A03"
+      - line_id: 50000
+        deferral_code: "DEF-S01"
+      - line_id: 60000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-130
+    question: Match warehouse and logistics - no deferrals needed.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Forklift fuel - current consumption
+      - line_id: 20000
+        description: Packaging materials - immediate use
+      - line_id: 30000
+        description: Warehouse electricity - monthly bill
+      - line_id: 40000
+        description: Loading dock repair - emergency fix
+      - line_id: 50000
+        description: Inventory counting service - one-time audit
+      - line_id: 60000
+        description: Shipping labels - current batch
+      - line_id: 70000
+        description: Employee lunch allowance - daily provision
+      - line_id: 80000
+        description: Waste removal - weekly pickup
+      - line_id: 90000
+        description: Security guard wages - current shift
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-131
+    question: Match professional services and retainers - mixed deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Accounting firm retainer - quarterly engagement
+      - line_id: 20000
+        description: Tax filing service - current year return
+      - line_id: 30000
+        description: Legal services retainer - 18 month agreement
+      - line_id: 40000
+        description: Patent application fee - one-time filing
+      - line_id: 50000
+        description: Financial audit - annual service
+      - line_id: 60000
+        description: Business valuation - immediate assessment
+      - line_id: 70000
+        description: HR consulting - 6 month project
+      - line_id: 80000
+        description: Court filing fees - current case
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+      - line_id: 30000
+        deferral_code: "DEF-C01"
+      - line_id: 50000
+        deferral_code: "DEF-A01"
+      - line_id: 70000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-132
+    question: Match insurance and warranty coverage - all deferrable.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: General liability insurance - annual premium
+      - line_id: 20000
+        description: Equipment warranty extension - 3 year coverage
+      - line_id: 30000
+        description: Professional indemnity insurance - 6 month term
+      - line_id: 40000
+        description: Vehicle insurance - quarterly payments
+      - line_id: 50000
+        description: Cyber security insurance - 18 month policy
+      - line_id: 60000
+        description: Product liability coverage - 12 month term
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 40000
+        deferral_code: "DEF-Q01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+      - line_id: 60000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-133
+    question: Match utilities and immediate operational costs - no deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Electricity bill - May consumption
+      - line_id: 20000
+        description: Water and sewer - current month
+      - line_id: 30000
+        description: Natural gas heating - monthly usage
+      - line_id: 40000
+        description: Trash collection - weekly service
+      - line_id: 50000
+        description: Office cleaning - daily janitorial
+      - line_id: 60000
+        description: Snow removal - emergency service
+      - line_id: 70000
+        description: Telephone service - current billing cycle
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-134
+    question: Match travel and entertainment expenses - partial deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Corporate travel program - annual membership
+      - line_id: 20000
+        description: Hotel accommodation - business trip
+      - line_id: 30000
+        description: Airline tickets - conference travel
+      - line_id: 40000
+        description: Corporate credit card - annual fee
+      - line_id: 50000
+        description: Car rental - business meeting
+      - line_id: 60000
+        description: Client entertainment - dinner expenses
+      - line_id: 70000
+        description: Travel insurance - 6 month coverage
+      - line_id: 80000
+        description: Taxi and rideshare - daily commute
+      - line_id: 90000
+        description: Parking fees - monthly charges
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+      - line_id: 70000
+        deferral_code: "DEF-S01"
+
+  - name: EDocLineMatching-Deferral-135
+    question: Match technology infrastructure - all items deferrable.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Network security software - 12 month license
+      - line_id: 20000
+        description: Server maintenance contract - quarterly service
+      - line_id: 30000
+        description: Cloud computing services - 3 year agreement
+      - line_id: 40000
+        description: Database software license - annual subscription
+      - line_id: 50000
+        description: Backup solution - 18 month service
+      - line_id: 60000
+        description: Firewall management - 6 month contract
+      - line_id: 70000
+        description: Technical support - annual coverage
+      - line_id: 80000
+        description: Software development tools - quarterly license
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+      - line_id: 30000
+        deferral_code: "DEF-A03"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+      - line_id: 60000
+        deferral_code: "DEF-S01"
+      - line_id: 70000
+        deferral_code: "DEF-A01"
+      - line_id: 80000
+        deferral_code: "DEF-Q01"
+
+  - name: EDocLineMatching-Deferral-136
+    question: Match retail and customer service - no deferrals possible.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Cash register supplies - receipt paper
+      - line_id: 20000
+        description: Customer service wages - current payroll
+      - line_id: 30000
+        description: Shopping bags - immediate inventory
+      - line_id: 40000
+        description: Credit card processing fees - monthly charges
+      - line_id: 50000
+        description: Store cleaning supplies - weekly restocking
+      - line_id: 60000
+        description: Security guard services - daily shifts
+      - line_id: 70000
+        description: Product display repair - urgent fix
+      - line_id: 80000
+        description: Customer complaint resolution - immediate handling
+      - line_id: 90000
+        description: Point of sale maintenance - emergency repair
+      - line_id: 100000
+        description: Store utilities - current month usage
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-137
+    question: Match education and certification programs - mixed timing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Professional certification - 3 year validity
+      - line_id: 20000
+        description: Exam registration fee - immediate payment
+      - line_id: 30000
+        description: Training materials - study guides
+      - line_id: 40000
+        description: Online course subscription - 12 month access
+      - line_id: 50000
+        description: Workshop attendance - quarterly sessions
+      - line_id: 60000
+        description: Conference proceedings - immediate download
+      - line_id: 70000
+        description: Continuing education - 18 month program
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+      - line_id: 70000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-138
+    question: Match subscription services and memberships - all deferrable.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Industry publication - quarterly subscription
+      - line_id: 20000
+        description: Professional association - annual membership
+      - line_id: 30000
+        description: Business directory - 6 month listing
+      - line_id: 40000
+        description: Research database access - 18 month license
+      - line_id: 50000
+        description: Trade organization - 3 year membership
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 40000
+        deferral_code: "DEF-C01"
+      - line_id: 50000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-139
+    question: Match manufacturing support services - no deferrals needed.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Machine operator wages - current shift
+      - line_id: 20000
+        description: Production line electricity - hourly consumption
+      - line_id: 30000
+        description: Quality control testing - batch inspection
+      - line_id: 40000
+        description: Material handling - immediate transport
+      - line_id: 50000
+        description: Equipment lubrication - daily maintenance
+      - line_id: 60000
+        description: Safety inspection - regulatory requirement
+      - line_id: 70000
+        description: Waste disposal - production byproducts
+      - line_id: 80000
+        description: Floor cleaning - shift changeover
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-140
+    question: Match research and development costs - mixed deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Research software license - annual subscription
+      - line_id: 20000
+        description: Laboratory supplies - immediate consumption
+      - line_id: 30000
+        description: Patent research service - 6 month project
+      - line_id: 40000
+        description: Testing equipment calibration - one-time service
+      - line_id: 50000
+        description: Scientific publication access - quarterly subscription
+      - line_id: 60000
+        description: Prototype materials - current batch
+      - line_id: 70000
+        description: Regulatory compliance consulting - 18 month engagement
+      - line_id: 80000
+        description: Lab equipment rental - daily usage
+      - line_id: 90000
+        description: Research collaboration - 3 year partnership
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 50000
+        deferral_code: "DEF-Q01"
+      - line_id: 70000
+        deferral_code: "DEF-C01"
+      - line_id: 90000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-141
+    question: Match vehicle and transportation services - partial deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Fleet management software - 12 month license
+      - line_id: 20000
+        description: Vehicle fuel - current consumption
+      - line_id: 30000
+        description: Commercial vehicle insurance - 6 month premium
+      - line_id: 40000
+        description: Emergency roadside service - annual coverage
+      - line_id: 50000
+        description: Vehicle inspection - regulatory compliance
+      - line_id: 60000
+        description: GPS tracking service - quarterly subscription
+      - line_id: 70000
+        description: Driver training program - 18 month certification
+      - line_id: 80000
+        description: Vehicle registration fees - annual renewal
+      - line_id: 90000
+        description: Parking violations - immediate payment
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+      - line_id: 60000
+        deferral_code: "DEF-Q01"
+      - line_id: 70000
+        deferral_code: "DEF-C01"
+      - line_id: 80000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-142
+    question: Match event planning and corporate hospitality - all deferrable.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Corporate event planning - quarterly celebrations
+      - line_id: 20000
+        description: Annual company retreat - 12 month planning
+      - line_id: 30000
+        description: Holiday party venue - 6 month booking
+      - line_id: 40000
+        description: Team building activities - 18 month program
+      - line_id: 50000
+        description: Corporate gifts program - 3 year contract
+      - line_id: 60000
+        description: Employee recognition awards - annual budget
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-Q01"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 40000
+        deferral_code: "DEF-C01"
+      - line_id: 50000
+        deferral_code: "DEF-A03"
+      - line_id: 60000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-143
+    question: Match office administrative costs - no deferrals available.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Copy paper and printing - weekly supply
+      - line_id: 20000
+        description: Postal services - current mailing
+      - line_id: 30000
+        description: Office coffee service - daily consumption
+      - line_id: 40000
+        description: Receptionist wages - current pay period
+      - line_id: 50000
+        description: Bank service charges - monthly fees
+      - line_id: 60000
+        description: Courier delivery - urgent documents
+      - line_id: 70000
+        description: Petty cash replenishment - immediate needs
+      - line_id: 80000
+        description: Office plant maintenance - weekly service
+      - line_id: 90000
+        description: Meeting room catering - today's lunch
+      - line_id: 100000
+        description: Newspaper and magazine - daily delivery
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-144
+    question: Match healthcare and benefits administration - mixed timing.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Employee health insurance - annual premium
+      - line_id: 20000
+        description: Occupational health screening - immediate service
+      - line_id: 30000
+        description: Wellness program - quarterly initiatives
+      - line_id: 40000
+        description: First aid training - one-time certification
+      - line_id: 50000
+        description: Employee assistance program - 6 month contract
+      - line_id: 60000
+        description: Safety equipment inspection - monthly check
+      - line_id: 70000
+        description: Mental health support - 18 month program
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 50000
+        deferral_code: "DEF-S01"
+      - line_id: 70000
+        deferral_code: "DEF-C01"
+
+  - name: EDocLineMatching-Deferral-145
+    question: Match software development and licensing - all items deferrable.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: IDE software license - 3 year enterprise
+      - line_id: 20000
+        description: Code repository hosting - annual plan
+      - line_id: 30000
+        description: Testing framework license - quarterly updates
+      - line_id: 40000
+        description: API management platform - 18 month subscription
+      - line_id: 50000
+        description: Development environment - 6 month setup
+      - line_id: 60000
+        description: Version control system - 12 month service
+      - line_id: 70000
+        description: Continuous integration tools - annual license
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 20000
+        deferral_code: "DEF-A01"
+      - line_id: 30000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-C01"
+      - line_id: 50000
+        deferral_code: "DEF-S01"
+      - line_id: 60000
+        deferral_code: "DEF-A01"
+      - line_id: 70000
+        deferral_code: "DEF-A01"
+
+  - name: EDocLineMatching-Deferral-146
+    question: Match construction and maintenance - no deferrals needed.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Construction materials - current project
+      - line_id: 20000
+        description: Contractor labor - daily wages
+      - line_id: 30000
+        description: Equipment rental - weekly usage
+      - line_id: 40000
+        description: Building permits - immediate filing
+      - line_id: 50000
+        description: Site cleanup - end of day service
+      - line_id: 60000
+        description: Safety barriers - immediate installation
+      - line_id: 70000
+        description: Tool maintenance - urgent repair
+      - line_id: 80000
+        description: Concrete delivery - today's pour
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-147
+    question: Match legal and compliance services - mixed deferrals.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Legal document review - immediate service
+      - line_id: 20000
+        description: Compliance monitoring - quarterly audits
+      - line_id: 30000
+        description: Regulatory filing fees - current submission
+      - line_id: 40000
+        description: Legal research subscription - annual access
+      - line_id: 50000
+        description: Contract management system - 18 month license
+      - line_id: 60000
+        description: Court appearance fees - immediate payment
+      - line_id: 70000
+        description: Intellectual property protection - 6 month service
+      - line_id: 80000
+        description: Notary services - document certification
+      - line_id: 90000
+        description: Legal training program - 3 year membership
+    expected_data:
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+      - line_id: 70000
+        deferral_code: "DEF-S01"
+      - line_id: 90000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-148
+    question: Match quality assurance and testing - all items deferrable.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Quality management software - 12 month license
+      - line_id: 20000
+        description: Testing equipment lease - quarterly payments
+      - line_id: 30000
+        description: Calibration services - 6 month contract
+      - line_id: 40000
+        description: ISO certification maintenance - annual fee
+      - line_id: 50000
+        description: Quality audit program - 18 month engagement
+      - line_id: 60000
+        description: Testing standards subscription - 3 year access
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A01"
+      - line_id: 20000
+        deferral_code: "DEF-Q01"
+      - line_id: 30000
+        deferral_code: "DEF-S01"
+      - line_id: 40000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+      - line_id: 60000
+        deferral_code: "DEF-A03"
+
+  - name: EDocLineMatching-Deferral-149
+    question: Match food service and catering - no deferrals possible.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Employee lunch catering - daily meal service
+      - line_id: 20000
+        description: Coffee machine supplies - weekly restocking
+      - line_id: 30000
+        description: Break room snacks - immediate consumption
+      - line_id: 40000
+        description: Water cooler service - monthly delivery
+      - line_id: 50000
+        description: Corporate event catering - today's meeting
+      - line_id: 60000
+        description: Kitchen cleaning supplies - daily usage
+      - line_id: 70000
+        description: Food safety inspection - regulatory requirement
+      - line_id: 80000
+        description: Vending machine restocking - weekly service
+      - line_id: 90000
+        description: Disposable plates and utensils - immediate need
+    expected_data:
+
+  - name: EDocLineMatching-Deferral-150
+    question: Match comprehensive business operations - mixed timing scenarios.
+    test_setup: EDocLineMatch-Setup-Deferrals-Large.yaml
+    line_items:
+      - line_id: 10000
+        description: Business process automation - 3 year implementation
+      - line_id: 20000
+        description: Monthly financial reporting - current period
+      - line_id: 30000
+        description: Customer relationship management - annual license
+      - line_id: 40000
+        description: Emergency business continuity - immediate planning
+      - line_id: 50000
+        description: Strategic consulting retainer - 18 month engagement
+      - line_id: 60000
+        description: Daily operations monitoring - current surveillance
+      - line_id: 70000
+        description: Business intelligence platform - quarterly subscription
+      - line_id: 80000
+        description: Vendor payment processing - immediate transaction
+      - line_id: 90000
+        description: Executive coaching program - 6 month series
+      - line_id: 100000
+        description: Competitive analysis service - 12 month research
+      - line_id: 110000
+        description: Office space rental - current month
+      - line_id: 120000
+        description: Market research subscription - annual access
+    expected_data:
+      - line_id: 10000
+        deferral_code: "DEF-A03"
+      - line_id: 30000
+        deferral_code: "DEF-A01"
+      - line_id: 50000
+        deferral_code: "DEF-C01"
+      - line_id: 70000
+        deferral_code: "DEF-Q01"
+      - line_id: 90000
+        deferral_code: "DEF-S01"
+      - line_id: 100000
+        deferral_code: "DEF-A01"
+      - line_id: 120000
+        deferral_code: "DEF-A01"

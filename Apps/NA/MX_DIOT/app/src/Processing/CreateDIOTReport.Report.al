@@ -30,13 +30,13 @@ report 27030 "Create DIOT Report"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Starting Date';
-                        ToolTip = 'Starting Date for the report';
+                        ToolTip = 'Specifies the starting date for the report';
                     }
                     field(EndingDate; EndingDateVariable)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Ending Date';
-                        ToolTip = 'Ending Date for the report';
+                        ToolTip = 'Specifies the ending date for the report';
 
                         trigger OnValidate()
                         begin

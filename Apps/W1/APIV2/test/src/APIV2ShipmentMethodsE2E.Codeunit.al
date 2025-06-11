@@ -91,19 +91,9 @@ codeunit 139805 "APIV2 - Shipment Methods E2E"
 
     local procedure CreateShipmentMethod(var ShipmentMethod: Record "Shipment Method")
     begin
-        with ShipmentMethod do begin
-            Init();
-            Code := LibraryUtility.GenerateRandomCode(FieldNo(Code), Database::"Shipment Method");
-            Description := DescriptionTxt;
-            Insert(true);
-        end;
+        ShipmentMethod.Init();
+        ShipmentMethod.Code := LibraryUtility.GenerateRandomCode(ShipmentMethod.FieldNo(Code), Database::"Shipment Method");
+        ShipmentMethod.Description := DescriptionTxt;
+        ShipmentMethod.Insert(true);
     end;
 }
-
-
-
-
-
-
-
-

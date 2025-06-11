@@ -304,8 +304,12 @@ report 31073 "Phys. Inventory Document CZL"
                     ChangeCost2 += ItemLedgerEntry."Cost Amount (Actual)";
                     ChangeQty2 += ItemLedgerEntry.Quantity;
                 until ItemLedgerEntry.Next() = 0;
-                ChangeCost2 := Round(ChangeCost2 / ChangeQty2 *
-                    (PhysInventoryLedgerEntry."Qty. (Phys. Inventory)" - PhysInventoryLedgerEntry."Qty. (Calculated)"), 0.01);
+
+                if ChangeQty2 <> 0 then
+                    ChangeCost2 := Round(ChangeCost2 / ChangeQty2 *
+                        (PhysInventoryLedgerEntry."Qty. (Phys. Inventory)" - PhysInventoryLedgerEntry."Qty. (Calculated)"), 0.01)
+                else
+                    ChangeCost2 := 0;
             end;
         end;
         exit(ChangeCost2);

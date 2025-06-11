@@ -140,14 +140,22 @@ page 6103 "E-Document Services"
                         EDocumentInstall.ImportServiceCreditMemoXML();
                     end;
                 }
-            }
-            action(ConfigureAdditionalFields)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Configure additional fields';
-                Tooltip = 'Configure the additional fields to consider when importing an E-Document.';
-                Image = AddContacts;
-                RunObject = page "EDoc Additional Fields Setup";
+
+                action(ConfigureAdditionalFields)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Configure additional fields';
+                    Tooltip = 'Configure the additional fields to consider when importing an E-Document.';
+                    Image = AddContacts;
+
+                    trigger OnAction()
+                    var
+                        EDocAdditionalFieldsSetup: Page "EDoc Additional Fields Setup";
+                    begin
+                        EDocAdditionalFieldsSetup.SetEDocumentService(Rec);
+                        EDocAdditionalFieldsSetup.RunModal();
+                    end;
+                }
             }
         }
         area(Navigation)

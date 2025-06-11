@@ -6,9 +6,7 @@ page 36997 "Detailed Cust. Ledger Entries"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Detailed Cust. Ledger Entries';
     AboutTitle = 'About Detailed Cust. Ledger Entries';
     AboutText = 'The Detailed Customer Ledger Entries report provides granular detail about the entries posted to Customer Ledger and Detailed Customer Sub Ledger.';
@@ -25,7 +23,7 @@ page 36997 "Detailed Cust. Ledger Entries"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

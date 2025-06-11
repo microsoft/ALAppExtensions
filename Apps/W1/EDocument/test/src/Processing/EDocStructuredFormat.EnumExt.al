@@ -1,7 +1,7 @@
-enumextension 139782 EDocStructuredFormat extends "E-Document Structured Format"
+enumextension 139782 EDocStructuredFormat extends "Structure Received E-Doc."
 {
     value(139781; "PDF Mock")
     {
-        Implementation = IStructuredFormatReader = "E-Doc PDF Mock";
+        Implementation = IStructureReceivedEDocument = "E-Doc PDF Mock";
     }
 }

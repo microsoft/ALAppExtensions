@@ -189,6 +189,15 @@ codeunit 1690 "Bank Deposit-Post"
         exit(GenJournalLine."Line No.");
     end;
 
+    internal procedure GetAppliesToIDForLine(BankDepositHeaderNo: Code[20]; GenJournalLineNo: Integer): Code[50]
+    var
+        DummyGenJournalLine: Record "Gen. Journal Line";
+        AppliesToID: Text;
+    begin
+        AppliesToID := StrSubstNo(AppliesToIDTxt, BankDepositHeaderNo, GenJournalLineNo);
+        exit(CopyStr(AppliesToID, 1, MaxStrLen(DummyGenJournalLine."Applies-to ID")));
+    end;
+
     local procedure ModifyGenJournalLinesForBankDepositPosting(BankDepositHeader: Record "Bank Deposit Header"; ForceDocumentNo: Boolean) TotalAmountLCY: Decimal
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -336,6 +345,7 @@ codeunit 1690 "Bank Deposit-Post"
         StatusTxt: Label 'Status        #4###################\', Comment = '#4 - a number (progress indicator)';
         MovingToHistoryTxt: Label 'Moving Bank Deposit to History';
         PostingLinesToLedgersTxt: Label 'Posting Lines to Ledgers';
+        AppliesToIDTxt: Label '%1-%2', Comment = '%1 - Bank Deposit No., %2 - Line No.';
 
     local procedure CopyBankComments(BankDepositHeader: Record "Bank Deposit Header")
     var

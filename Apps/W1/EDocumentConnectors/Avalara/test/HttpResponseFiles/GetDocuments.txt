@@ -1,0 +1,21 @@
+{
+	"@recordsetCount": 1,
+	"@nextLink": null,
+	"value": [
+		{
+			"id": "562f7a55-17a4-4b1f-9433-095b483592b0",
+			"companyId": "610f55f3-76b6-42eb-a697-2b0b2e02a5bf",
+			"processDateTime": "2024-08-16T11:59:50:618",
+			"status": "Complete",
+			"documentNumber": "100000",
+			"documentDate": "2024-04-08T00:00:00",
+			"flow": "in",
+			"countryCode": "GB",
+			"countryMandate": "GB-B2B-PEPPOL",
+			"interface": "PEPPOL",
+			"receiver": "9932:GB777777771",
+			"supplierName": "CRONUS UK Ltd.",
+			"customerName": "Adatum Corporation"
+		}
+	]
+}

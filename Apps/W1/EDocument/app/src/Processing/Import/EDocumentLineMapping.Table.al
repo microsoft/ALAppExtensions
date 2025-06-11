@@ -1,4 +1,3 @@
-#pragma warning disable AS0049, AS0009, AS0005, AS0125
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -8,6 +7,7 @@ namespace Microsoft.EServices.EDocument.Processing.Import;
 using Microsoft.Purchases.Document;
 using Microsoft.Finance.Deferral;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Utilities;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.FixedAssets.FixedAsset;
@@ -17,16 +17,12 @@ using Microsoft.Finance.AllocationAccount;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Foundation.UOM;
 using Microsoft.Finance.Dimension;
-using System.Reflection;
-using Microsoft.Purchases.History;
 
 table 6105 "E-Document Line Mapping"
 {
-#pragma warning disable AS0034
     Access = Internal;
     InherentEntitlements = RIMDX;
     InherentPermissions = RIMDX;
-#pragma warning restore AS0034
     DataClassification = CustomerContent;
     ReplicateData = false;
 
@@ -89,7 +85,6 @@ table 6105 "E-Document Line Mapping"
             TableRelation = "Dimension Value".Code where("Global Dimension No." = const(1),
                                                           Blocked = const(false));
 
-
         }
         field(9; "Shortcut Dimension 2 Code"; Code[20])
         {
@@ -99,6 +94,33 @@ table 6105 "E-Document Line Mapping"
             DataClassification = CustomerContent;
             TableRelation = "Dimension Value".Code where("Global Dimension No." = const(2),
                                                           Blocked = const(false));
+        }
+        field(10; "Item Reference No."; Code[20])
+        {
+            Caption = 'Item Reference No.';
+            ToolTip = 'Specifies the item reference number.';
+            TableRelation = "Item Reference"."Reference No." where("Unit of Measure" = field("Unit of Measure"), "Variant Code" = field("Variant Code"));
+        }
+        field(11; "Variant Code"; Code[10])
+        {
+            Caption = 'Variant Code';
+            ToolTip = 'Specifies the variant code.';
+            TableRelation = "Item Variant".Code where("Item No." = field("Purchase Type No."));
+        }
+        field(12; "Dimension Set ID"; Integer)
+        {
+            Caption = 'Dimension Set ID';
+            Editable = false;
+            TableRelation = "Dimension Set Entry";
+
+            trigger OnLookup()
+            begin
+            end;
+
+            trigger OnValidate()
+            begin
+                DimMgt.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
+            end;
         }
         field(50; "E-Doc. Purch. Line History Id"; Integer)
         {
@@ -116,6 +138,9 @@ table 6105 "E-Document Line Mapping"
         }
     }
 
+    var
+        DimMgt: Codeunit DimensionManagement;
+
     procedure InsertForEDocumentLine(EDocument: Record "E-Document"; LineNo: Integer)
     begin
         Clear(Rec);
@@ -129,32 +154,4 @@ table 6105 "E-Document Line Mapping"
         Rec.Insert();
     end;
 
-    /// <summary>
-    /// Returns any additional columns defined for this line in a human-readable format.
-    /// </summary>
-    /// <returns></returns>
-    internal procedure AdditionalColumnsDisplayText() AdditionalColumns: Text
-    var
-        EDocPurchLineFieldSetup: Record "EDoc. Purch. Line Field Setup";
-        EDocPurchLineField: Record "E-Document Line - Field";
-        Field: Record Field;
-        AdditionalColumnValue: Text;
-    begin
-        if not EDocPurchLineFieldSetup.FindSet() then
-            exit;
-        repeat
-            if Field.Get(Database::"Purch. Inv. Line", EDocPurchLineFieldSetup."Field No.") then;
-            if AdditionalColumns <> '' then
-                AdditionalColumns += ', ';
-            AdditionalColumns += Field.FieldName;
-            AdditionalColumns += ': ';
-            EDocPurchLineField.Get(Rec, EDocPurchLineFieldSetup);
-            AdditionalColumnValue := EDocPurchLineField.GetValueAsText();
-            if AdditionalColumnValue = '' then
-                AdditionalColumnValue := '-';
-            AdditionalColumns += AdditionalColumnValue;
-        until EDocPurchLineFieldSetup.Next() = 0;
-    end;
-
 }
-#pragma warning restore AS0049, AS0009, AS0005, AS0125

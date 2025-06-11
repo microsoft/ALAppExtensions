@@ -10,7 +10,7 @@ pageextension 27030 "DIOT Purch. & Payables Setup" extends "Purchases & Payables
     {
         addafter("Default Qty. to Receive")
         {
-            field("Default Vendor DIOT Type"; "Default Vendor DIOT Type")
+            field("Default Vendor DIOT Type"; Rec."Default Vendor DIOT Type")
             {
                 ApplicationArea = BasicMX;
                 Caption = 'Default Vendor DIOT Type';

@@ -6,8 +6,6 @@
 namespace Microsoft.DemoData.Localization;
 
 using Microsoft.Bank.Documents;
-using Microsoft.DemoData.Bank;
-using Microsoft.DemoTool;
 
 codeunit 31429 "Contoso Bank Documents CZB"
 {
@@ -17,7 +15,8 @@ codeunit 31429 "Contoso Bank Documents CZB"
         tabledata "Bank Statement Header CZB" = rim,
         tabledata "Bank Statement Line CZB" = rim,
         tabledata "Payment Order Header CZB" = rim,
-        tabledata "Payment Order Line CZB" = rim;
+        tabledata "Payment Order Line CZB" = rim,
+        tabledata "Search Rule CZB" = rim;
 
     var
         OverwriteData: Boolean;
@@ -111,25 +110,25 @@ codeunit 31429 "Contoso Bank Documents CZB"
             exit(10000);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
-    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
+    procedure InsertSearchRule(Code: Code[10]; Description: Text[100]; Default: Boolean)
     var
-        CreateBankAccountCZB: Codeunit "Create Bank Account CZB";
+        SearchRuleCZB: Record "Search Rule CZB";
+        Exists: Boolean;
     begin
-        if Module <> Enum::"Contoso Demo Data Module"::Bank then
-            exit;
+        if SearchRuleCZB.Get(Code) then begin
+            Exists := true;
 
-        BindSubscription(CreateBankAccountCZB);
-    end;
+            if not OverwriteData then
+                exit;
+        end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnAfterGeneratingDemoData', '', false, false)]
-    local procedure OnAfterGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
-    var
-        CreateBankAccountCZB: Codeunit "Create Bank Account CZB";
-    begin
-        if Module <> Enum::"Contoso Demo Data Module"::Bank then
-            exit;
+        SearchRuleCZB.Validate(Code, Code);
+        SearchRuleCZB.Validate(Description, Description);
+        SearchRuleCZB.Validate(Default, Default);
 
-        UnbindSubscription(CreateBankAccountCZB);
+        if Exists then
+            SearchRuleCZB.Modify(true)
+        else
+            SearchRuleCZB.Insert(true);
     end;
 }

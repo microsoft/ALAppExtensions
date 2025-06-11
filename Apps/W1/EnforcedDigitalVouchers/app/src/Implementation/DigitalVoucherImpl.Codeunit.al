@@ -607,7 +607,8 @@ codeunit 5579 "Digital Voucher Impl."
         if not DigitalVoucherFeature.IsFeatureEnabled() then
             exit;
         GLRegister.Get(GLRegNo);
-        GLEntry.SetCurrentKey("Document No.", "Posting Date");
+        GLEntry.ReadIsolation := IsolationLevel::ReadCommitted;
+        GLEntry.SetLoadFields("Entry No.", "Posting Date", "Document No.", "Source Type", "Source Code", "System-Created Entry");
         GLEntry.SetRange("Entry No.", GLRegister."From Entry No.", GLRegister."To Entry No.");
         if not GLEntry.FindSet() then
             exit;

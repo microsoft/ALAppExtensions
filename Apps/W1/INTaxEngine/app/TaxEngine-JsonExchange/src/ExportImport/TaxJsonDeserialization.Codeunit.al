@@ -2518,11 +2518,6 @@ codeunit 20361 "Tax Json Deserialization"
         exit(CopyStr(JToken2Text(JToken), 1, 10));
     end;
 
-    local procedure JToken2Text100(JToken: JsonToken): Text[100]
-    begin
-        exit(CopyStr(JToken2Text(JToken), 1, 100));
-    end;
-
     local procedure JToken2Text250(JToken: JsonToken): Text[250]
     begin
         exit(CopyStr(JToken2Text(JToken), 1, 250));
@@ -2583,14 +2578,6 @@ codeunit 20361 "Tax Json Deserialization"
     begin
         if JObject.Get(Name, JToken) then
             exit(JToken.AsValue().AsText());
-    end;
-
-    local procedure GetDecimalPropertyValue(JObject: JsonObject; Name: Text): Decimal
-    var
-        JToken: JsonToken;
-    begin
-        if JObject.Get(Name, JToken) then
-            exit(JToken.AsValue().AsDecimal());
     end;
 
     local procedure GetComponentID(TaxType: Code[20]; Name: Text[30]): Integer
