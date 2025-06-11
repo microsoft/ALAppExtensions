@@ -5,13 +5,16 @@
 namespace Microsoft.DemoTool.Helpers;
 
 using Microsoft.Finance.Currency;
+using Microsoft.DemoData.Finance;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 5587 "Contoso Currency"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
     Permissions = tabledata Currency = rim,
-                tabledata "Currency Exchange Rate" = rim;
+                tabledata "Currency Exchange Rate" = rim,
+                tabledata "General Ledger Setup" = r;
 
     var
         OverwriteData: Boolean;
@@ -24,6 +27,8 @@ codeunit 5587 "Contoso Currency"
     procedure InsertCurrency(Code: Code[10]; ISONumericCode: Code[3]; Description: Text[30]; UnrealizedGainsAcc: Code[20]; RealizedGainsAcc: Code[20]; UnrealizedLossesAcc: Code[20]; RealizedLossesAcc: Code[20]; InvoiceRoundingPrecision: Decimal; InvoiceRoundingType: Option Nearest,Up,Down; AmountRoundingPrecision: Decimal; UnitAmountRoundingPrecision: Decimal; EMUCurrency: Boolean; AmountDecimalPlaces: Text[5]; UnitAmountDecimalPlaces: Text[5])
     var
         Currency: Record "Currency";
+        GLSetup: Record "General Ledger Setup";
+        CreateGLAccount: Codeunit "Create G/L Account";
         Exists: Boolean;
     begin
         if Currency.Get(Code) then begin
@@ -51,6 +56,15 @@ codeunit 5587 "Contoso Currency"
         Currency.Validate("Amount Decimal Places", AmountDecimalPlaces);
         Currency.Validate("Unit-Amount Decimal Places", UnitAmountDecimalPlaces);
         Currency.Validate("EMU Currency", EMUCurrency);
+
+        if Currency.Code in ['EUR', 'GBP'] then begin
+            if GLSetup.Get() then begin
+                if GLSetup."Additional Reporting Currency" <> '' then begin
+                    Currency.Validate("Residual Gains Account", CreateGLAccount.ResidualFXGains());
+                    Currency.Validate("Residual Losses Account", CreateGLAccount.ResidualFXLosses());
+                end;
+            end;
+        end;
 
         if Exists then
             Currency.Modify(true)
