@@ -112,15 +112,38 @@ page 31185 "VAT Document CZZ"
                     Editable = false;
 
                     trigger OnAssistEdit()
-                    var
-                        ChangeExchangeRate: Page "Change Exchange Rate";
                     begin
                         if PostingDate <> 0D then
                             ChangeExchangeRate.SetParameter(CurrencyCode, CurrencyFactor, PostingDate)
                         else
                             ChangeExchangeRate.SetParameter(CurrencyCode, CurrencyFactor, WorkDate());
-                        if ChangeExchangeRate.RunModal() = Action::OK then
+                        if ChangeExchangeRate.RunModal() = Action::OK then begin
                             UpdateCurrencyFactor(ChangeExchangeRate.GetParameter());
+                            UpdateAddCurrencyFactor(AddCurrencyFactor);
+                        end;
+
+                        Clear(ChangeExchangeRate);
+                    end;
+                }
+                field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL())
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Additional Currency Code';
+                    ToolTip = 'Specifies the exchange rate to be used if you post in an additional currency.';
+                    Visible = AddCurrencyVisible;
+                    Editable = false;
+
+                    trigger OnAssistEdit()
+                    begin
+                        if PostingDate <> 0D then
+                            ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), AddCurrencyFactor, PostingDate)
+                        else
+                            ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), AddCurrencyFactor, WorkDate());
+                        ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), AddCurrencyFactor, PostingDate);
+                        if ChangeExchangeRate.RunModal() = Action::OK then
+                            UpdateAddCurrencyFactor(ChangeExchangeRate.GetParameter());
+
+                        Clear(ChangeExchangeRate);
                     end;
                 }
             }
@@ -135,11 +158,14 @@ page 31185 "VAT Document CZZ"
     begin
         if DocumentNo = '' then
             DocumentNo := NoSeriesBatch.GetNextNo(NoSeriesCode, PostingDate);
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
     end;
 
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
         NoSeriesBatch: Codeunit "No. Series - Batch";
         NoSeries: Codeunit "No. Series";
+        ChangeExchangeRate: Page "Change Exchange Rate";
         DocumentNo: Code[20];
         InitDocumentNo: Code[20];
         ExternalDocumentNo: Code[35];
@@ -151,12 +177,14 @@ page 31185 "VAT Document CZZ"
         VATDate: Date;
         OriginalDocumentVATDate: Date;
         CurrencyFactor: Decimal;
+        AddCurrencyFactor: Decimal;
         DocumentNoEditable: Boolean;
         IsSalesDocument: Boolean;
+        AddCurrencyVisible: Boolean;
 
     procedure InitDocument(NewNoSeriesCode: Code[20]; NewDocumentNo: Code[20]; NewDocumentDate: Date; NewPostingDate: Date; NewVATDate: Date; NewOriginalDocumentVATDate: Date; NewCurrencyCode: Code[10]; NewCurrencyFactor: Decimal; NewExternalDocumentNo: Code[35]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     var
-        GeneralLedgerSetup: Record "General Ledger Setup";
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
     begin
         NoSeriesCode := NewNoSeriesCode;
         InitNoSeriesCode := NewNoSeriesCode;
@@ -165,6 +193,8 @@ page 31185 "VAT Document CZZ"
         ExternalDocumentNo := NewExternalDocumentNo;
         CurrencyCode := NewCurrencyCode;
         CurrencyFactor := NewCurrencyFactor;
+        if GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL() then
+            AddCurrencyFactor := CurrencyExchangeRate.ExchangeRate(PostingDate, GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL());
         VATDate := NewVATDate;
         if VATDate = 0D then
             VATDate := GeneralLedgerSetup.GetVATDate(PostingDate, DocumentDate);
@@ -172,7 +202,7 @@ page 31185 "VAT Document CZZ"
         if OriginalDocumentVATDate = 0D then
             OriginalDocumentVATDate :=
                 GeneralLedgerSetup.GetOriginalDocumentVATDateCZL(PostingDate, VATDate, DocumentDate);
-        CurrPage.Lines.Page.InitDocumentLines(NewCurrencyCode, NewCurrencyFactor, AdvancePostingBufferCZZ);
+        CurrPage.Lines.Page.InitDocumentLines(NewCurrencyCode, NewCurrencyFactor, AddCurrencyFactor, AdvancePostingBufferCZZ);
 
         DocumentNo := NewDocumentNo;
         DocumentNoEditable := NewDocumentNo = '';
@@ -213,5 +243,11 @@ page 31185 "VAT Document CZZ"
     begin
         CurrencyFactor := NewCurrencyFactor;
         CurrPage.Lines.Page.UpdateCurrencyFactor(CurrencyFactor);
+    end;
+
+    local procedure UpdateAddCurrencyFactor(NewAddCurrencyFactor: Decimal)
+    begin
+        AddCurrencyFactor := NewAddCurrencyFactor;
+        CurrPage.Lines.Page.UpdateAddCurrencyFactor(AddCurrencyFactor);
     end;
 }

@@ -4,8 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TaxEngine.JsonExchange;
 
+#if not CLEAN27
 using Microsoft.Finance.GST.Base;
-
+#endif
 codeunit 18005 "GST Tax Type Data"
 {
     procedure GetJObject(): JsonObject
@@ -48,6 +49,7 @@ codeunit 18005 "GST Tax Type Data"
             TaxJsonDeserialization.ImportUseCases(GetText(CaseId));
     end;
 
+#if not CLEAN27
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade GST Tax Config", 'OnUpgradeGSTUseCases', '', false, false)]
     local procedure OnUpgradeGSTUseCases(CaseID: Guid; var UseCaseConfig: Text; var IsHandled: Boolean)
     begin
@@ -58,7 +60,7 @@ codeunit 18005 "GST Tax Type Data"
         if UseCaseConfig <> '' then
             IsHandled := true;
     end;
-
+#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedUseCaseConfig', '', false, false)]
     local procedure OnGetGSTConfig(CaseID: Guid; var IsHandled: Boolean; var Configtext: Text)
     begin

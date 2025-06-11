@@ -100,7 +100,7 @@ codeunit 8069 "Sales Subscription Line Mgmt."
         end;
     end;
 
-    local procedure IsSalesLineWithSalesServiceCommitments(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean; ServiceCommitmentItemOnly: Boolean): Boolean
+    procedure IsSalesLineWithSalesServiceCommitments(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean; ServiceCommitmentItemOnly: Boolean): Boolean
     var
         SalesLine2: Record "Sales Line";
     begin
@@ -124,7 +124,7 @@ codeunit 8069 "Sales Subscription Line Mgmt."
         exit(true);
     end;
 
-    local procedure IsSalesLineWithSalesServiceCommitments(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean): Boolean
+    procedure IsSalesLineWithSalesServiceCommitments(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean): Boolean
     begin
         exit(IsSalesLineWithSalesServiceCommitments(SalesLine, SkipTemporaryCheck, false));
     end;
@@ -180,14 +180,14 @@ codeunit 8069 "Sales Subscription Line Mgmt."
         end;
     end;
 
-    local procedure CreateSalesServCommLineFromServCommPackageLine(var SalesLine: Record "Sales Line"; ServiceCommitmentPackageLine: Record "Subscription Package Line")
+    procedure CreateSalesServCommLineFromServCommPackageLine(var SalesLine: Record "Sales Line"; ServiceCommitmentPackageLine: Record "Subscription Package Line")
     var
         SalesServiceCommitment: Record "Sales Subscription Line";
     begin
         CreateSalesServCommLineFromServCommPackageLine(SalesLine, ServiceCommitmentPackageLine, SalesServiceCommitment);
     end;
 
-    local procedure CreateSalesServCommLineFromServCommPackageLine(var SalesLine: Record "Sales Line"; ServiceCommitmentPackageLine: Record "Subscription Package Line"; var SalesServiceCommitment: Record "Sales Subscription Line")
+    procedure CreateSalesServCommLineFromServCommPackageLine(var SalesLine: Record "Sales Line"; ServiceCommitmentPackageLine: Record "Subscription Package Line"; var SalesServiceCommitment: Record "Sales Subscription Line")
     var
         IsHandled: Boolean;
     begin

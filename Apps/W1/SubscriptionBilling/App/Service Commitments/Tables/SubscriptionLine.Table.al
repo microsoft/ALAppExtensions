@@ -619,7 +619,14 @@ table 8059 "Subscription Line"
     end;
 
     internal procedure CheckServiceDates(ServiceStartDate: Date; ServiceEndDate: Date; NextBillingDate: Date)
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCheckServiceDates(ServiceStartDate, ServiceEndDate, NextBillingDate, IsHandled);
+        if IsHandled then
+            exit;
+
         if (ServiceStartDate <> 0D) and (ServiceEndDate <> 0D) then
             if ServiceStartDate > ServiceEndDate then
                 Error(DateBeforeDateErr, Rec.FieldCaption("Subscription Line End Date"), Rec.FieldCaption("Subscription Line Start Date"));
@@ -1937,6 +1944,11 @@ table 8059 "Subscription Line"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromSalesSubscriptionLine(var SubscriptionLine: Record "Subscription Line"; SalesSubscriptionLine: Record "Sales Subscription Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckServiceDates(ServiceStartDate: Date; ServiceEndDate: Date; NextBillingDate: Date; var IsHandled: Boolean)
     begin
     end;
 }

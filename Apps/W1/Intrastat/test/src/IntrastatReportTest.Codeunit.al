@@ -3099,7 +3099,7 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Sell-to VAT";
         IntrastatReportSetup.Modify();
         // [WHEN] Suggest Intrastat Report Lines
-        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        CreateSalesIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
         IntrastatReportHeader.Get(IntrastatReportNo);
         // [THEN] Partner VAT ID  = 1 in Intrastat Report Line
         VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", SellToCustomer."VAT Registration No.");
@@ -3109,7 +3109,7 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::"Bill-to VAT";
         IntrastatReportSetup.Modify();
         // [WHEN] Suggest Intrastat Report Lines
-        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        CreateSalesIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
         IntrastatReportHeader.Get(IntrastatReportNo);
         // [THEN] Partner VAT ID  = 2 in Intrastat Report Line
         VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", BillToCustomer."VAT Registration No.");
@@ -3119,7 +3119,7 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
         IntrastatReportSetup.Modify();
         // [WHEN] Suggest Intrastat Report Lines
-        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        CreateSalesIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
         IntrastatReportHeader.Get(IntrastatReportNo);
         // [THEN] Partner VAT ID  = 3 in Intrastat Report Line
         VerifyPartnerID(IntrastatReportHeader, SalesLine."No.", DocumentVATNo);
@@ -3270,7 +3270,7 @@ codeunit 139550 "Intrastat Report Test"
 
         // [WHEN] Get Intrastat Report Lines for Sales Order
         // [THEN] Verify Intrastat Report Line
-        CreateAndVerifyIntrastatLine(DocumentNo, SalesLine."No.", SalesLine.Quantity, IntrastatReportLine.Type::Shipment);
+        CreateAndVerifySalesIntrastatLine(DocumentNo, SalesLine."No.", SalesLine.Quantity, IntrastatReportLine.Type::Shipment);
     end;
 
     [Test]
@@ -4778,6 +4778,17 @@ codeunit 139550 "Intrastat Report Test"
         VerifyIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLineType, LibraryIntrastat.GetCountryRegionCode(), ItemNo, Quantity);
     end;
 
+    procedure CreateAndVerifySalesIntrastatLine(DocumentNo: Code[20]; ItemNo: Code[20]; Quantity: Decimal; IntrastatReportLineType: Enum "Intrastat Report Line Type")
+    var
+        IntrastatReportNo: Code[20];
+    begin
+        // Exercise: Run Get Item Entries. Take Report Date as WORKDATE
+        CreateSalesIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+
+        // Verify.
+        VerifyIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLineType, LibraryIntrastat.GetCountryRegionCode(), ItemNo, Quantity);
+    end;
+
     procedure CreateAndVerifyIntrastatLine(DocumentNo: Code[20]; ItemNo: Code[20]; Quantity: Decimal; IntrastatReportLineType: Enum "Intrastat Report Line Type"; CountryRegionCode: Code[10]; LocationCode: Code[10])
     var
         IntrastatReportNo: Code[20];
@@ -5374,6 +5385,12 @@ codeunit 139550 "Intrastat Report Test"
     procedure CreateIntrastatReportAndSuggestLines(ReportDate: Date; var IntrastatReportNo: Code[20])
     begin
         LibraryIntrastat.CreateIntrastatReport(ReportDate, IntrastatReportNo);
+        InvokeSuggestLinesOnIntrastatReport(IntrastatReportNo);
+    end;
+
+    procedure CreateSalesIntrastatReportAndSuggestLines(ReportDate: Date; var IntrastatReportNo: Code[20])
+    begin
+        LibraryIntrastat.CreateSalesIntrastatReport(ReportDate, IntrastatReportNo);
         InvokeSuggestLinesOnIntrastatReport(IntrastatReportNo);
     end;
 

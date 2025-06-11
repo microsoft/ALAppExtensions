@@ -119,9 +119,17 @@ table 2632 "Statistical Account"
         }
     }
 
+    trigger OnRename()
+    var
+        DimensionManagement: Codeunit DimensionManagement;
+    begin
+        DimensionManagement.RenameDefaultDim(DATABASE::"Statistical Account", xRec."No.", Rec."No.");
+    end;
+
     trigger OnDelete()
     var
         StatisticalLedgerEntry: Record "Statistical Ledger Entry";
+        DimensionManagement: Codeunit DimensionManagement;
     begin
         StatisticalLedgerEntry.SetRange("Statistical Account No.", Rec."No.");
         if StatisticalLedgerEntry.IsEmpty() then
@@ -134,6 +142,7 @@ table 2632 "Statistical Account"
             Error('');
 
         StatisticalLedgerEntry.DeleteAll();
+        DimensionManagement.DeleteDefaultDim(DATABASE::"Statistical Account", Rec."No.");
     end;
 
     local procedure ValidateShortcutDimCode(FieldNumber: Integer; var ShortcutDimCode: Code[20])

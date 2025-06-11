@@ -390,6 +390,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
     local procedure WebhookSubscriptionUpgrade()
     var
         WebhookSubscription: Record "Webhook Subscription";
+        NewWebhookSubscription: Record "Webhook Subscription";
         UpgradeTag: Codeunit "Upgrade Tag";
         WebhookTopic: Enum "Shpfy Webhook Topic";
     begin
@@ -398,11 +399,23 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
         WebhookTopic := WebhookTopic::BULK_OPERATIONS_FINISH;
         WebhookSubscription.SetRange(Endpoint, WebhookTopic.Names.Get(WebhookTopic.Ordinals.IndexOf(WebhookTopic.AsInteger())));
-        WebhookSubscription.ModifyAll(Endpoint, Format(WebhookTopic));
+        if WebhookSubscription.FindSet() then
+            repeat
+                NewWebhookSubscription := WebhookSubscription;
+                NewWebhookSubscription.Endpoint := Format(WebhookTopic);
+                WebhookSubscription.Delete();
+                NewWebhookSubscription.Insert();
+            until WebhookSubscription.Next() = 0;
 
         WebhookTopic := WebhookTopic::ORDERS_CREATE;
         WebhookSubscription.SetRange(Endpoint, WebhookTopic.Names.Get(WebhookTopic.Ordinals.IndexOf(WebhookTopic.AsInteger())));
-        WebhookSubscription.ModifyAll(Endpoint, Format(WebhookTopic));
+        if WebhookSubscription.FindSet() then
+            repeat
+                NewWebhookSubscription := WebhookSubscription;
+                NewWebhookSubscription.Endpoint := Format(WebhookTopic);
+                WebhookSubscription.Delete();
+                NewWebhookSubscription.Insert();
+            until WebhookSubscription.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(GetWebhookSubscriptionUpgradeTag());
     end;

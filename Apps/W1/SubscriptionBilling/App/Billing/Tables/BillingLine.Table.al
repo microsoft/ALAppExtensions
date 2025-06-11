@@ -249,7 +249,7 @@ table 8061 "Billing Line"
         BillingLine2.FindFirst();
     end;
 
-    internal procedure ResetServiceCommitmentNextBillingDate()
+    procedure ResetServiceCommitmentNextBillingDate()
     var
         ServiceCommitment: Record "Subscription Line";
     begin
@@ -338,7 +338,7 @@ table 8061 "Billing Line"
             PurchaseDocumentType := PurchaseDocumentType::"Credit Memo";
     end;
 
-    internal procedure GetSalesDocumentTypeFromBillingDocumentType() SalesDocumentType: Enum "Sales Document Type"
+    procedure GetSalesDocumentTypeFromBillingDocumentType() SalesDocumentType: Enum "Sales Document Type"
     begin
         case "Document Type" of
             "Document Type"::Invoice:
@@ -348,7 +348,7 @@ table 8061 "Billing Line"
         end;
     end;
 
-    internal procedure GetPurchaseDocumentTypeFromBillingDocumentType() PurchaseDocumentType: Enum "Purchase Document Type"
+    procedure GetPurchaseDocumentTypeFromBillingDocumentType() PurchaseDocumentType: Enum "Purchase Document Type"
     begin
         case "Document Type" of
             "Document Type"::Invoice:
@@ -412,13 +412,13 @@ table 8061 "Billing Line"
         end;
     end;
 
-    internal procedure FilterBillingLineOnContract(ServicePartner: Enum "Service Partner"; ContractNo: Code[20])
+    procedure FilterBillingLineOnContract(ServicePartner: Enum "Service Partner"; ContractNo: Code[20])
     begin
         Rec.SetRange(Partner, ServicePartner);
         Rec.SetRange("Subscription Contract No.", ContractNo);
     end;
 
-    internal procedure FilterBillingLineOnContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; ContractLineNo: Integer)
+    procedure FilterBillingLineOnContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; ContractLineNo: Integer)
     begin
         Rec.FilterBillingLineOnContract(ServicePartner, ContractNo);
         Rec.SetRange("Subscription Contract Line No.", ContractLineNo);
@@ -434,7 +434,7 @@ table 8061 "Billing Line"
         CustomerContract.RecalculateHarmonizedBillingFieldsBasedOnNextBillingDate(0);
     end;
 
-    internal procedure IsPartnerVendor(): Boolean
+    procedure IsPartnerVendor(): Boolean
     begin
         exit(Rec.Partner = Rec.Partner::Vendor);
     end;

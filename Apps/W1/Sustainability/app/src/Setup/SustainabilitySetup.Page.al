@@ -1,8 +1,9 @@
-namespace Microsoft.Sustainability.Setup;
 
+namespace Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
+using System.Telemetry;
 
 page 6221 "Sustainability Setup"
 {
@@ -183,7 +184,11 @@ page 6221 "Sustainability Setup"
         }
     }
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
     begin
+        FeatureTelemetry.LogUptake('0000PH2', SustainabilityLbl, Enum::"Feature Uptake Status"::Discovered);
         Rec.InitRecord();
     end;
 }

@@ -23,6 +23,7 @@ codeunit 4770 "Create Mfg Item"
         ContosoUnitOfMeasure: Codeunit "Contoso Unit of Measure";
     begin
         ManufacturingDemoDataSetup.Get();
+        CreateInvPostingSetup();
 
         DefaultUOMCode := CommonUOM.Piece();
 
@@ -40,6 +41,23 @@ codeunit 4770 "Create Mfg Item"
         ContosoUnitOfMeasure.InsertItemUnitOfMeasure(SPBOM2005(), CommonUOM.ML(), 0.005, 0, 0, 0, 0);
 
         CalcStandardCost()
+    end;
+
+    local procedure CreateInvPostingSetup()
+    var
+        ManufacturingDemoDataSetup: Record "Manufacturing Module Setup";
+        CommonGLAccount: Codeunit "Create Common GL Account";
+        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
+        MfgPostingGroup: Codeunit "Create Mfg Posting Group";
+        MfgGLAccount: Codeunit "Create Mfg GL Account";
+        CommonPostingGroup: Codeunit "Create Common Posting Group";
+    begin
+        ManufacturingDemoDataSetup.Get();
+
+        ContosoPostingSetup.InsertInventoryPostingSetup(ManufacturingDemoDataSetup."Manufacturing Location", MfgPostingGroup.Finished(), MfgGLAccount.FinishedGoods(), '', MfgGLAccount.WIPAccountFinishedGoods(), MfgGLAccount.MaterialVariance(), MfgGLAccount.CapacityVariance(), MfgGLAccount.SubcontractedVariance(), MfgGLAccount.CapOverheadVariance(), MfgGLAccount.MfgOverheadVariance());
+        ContosoPostingSetup.InsertInventoryPostingSetup(ManufacturingDemoDataSetup."Manufacturing Location", CommonPostingGroup.RawMaterial(), CommonGLAccount.RawMaterials(), '', MfgGLAccount.WIPAccountFinishedGoods(), '', '', '', '', '');
+
+        ContosoPostingSetup.InsertInventoryPostingSetup(ManufacturingDemoDataSetup."Manufacturing Location", CommonPostingGroup.Resale(), CommonGLAccount.Resale(), CommonGLAccount.ResaleInterim());
     end;
 
     local procedure CreateBOMAndRoutingItems()

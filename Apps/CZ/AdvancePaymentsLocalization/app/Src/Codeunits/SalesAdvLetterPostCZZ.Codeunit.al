@@ -1366,8 +1366,8 @@ codeunit 31143 "Sales Adv. Letter-Post CZZ"
                     AdvancePostingParametersCZZ2."Currency Code" := '';
                     AdvancePostingParametersCZZ2."Currency Factor" := 0;
 
-                    CalcAmountLCY := Round(TempAdvancePostingBufferCZZ."Amount (ACY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
-                    CalcVATAmountLCY := Round(TempAdvancePostingBufferCZZ."VAT Amount (ACY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
+                    CalcAmountLCY := Round(TempAdvancePostingBufferCZZ."Amount (LCY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
+                    CalcVATAmountLCY := Round(TempAdvancePostingBufferCZZ."VAT Amount (LCY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
 
                     ExchRateAmount := -CalcAmountLCY - GenJournalLine."Amount (LCY)";
                     ExchRateVATAmount := -CalcVATAmountLCY - GenJournalLine."VAT Amount (LCY)";

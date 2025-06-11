@@ -274,6 +274,21 @@ page 6133 "E-Document Service"
         }
         area(Navigation)
         {
+            action(ConfigureAdditionalFields)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Configure additional fields';
+                Tooltip = 'Configure additional fields to consider when importing an E-Document.';
+                Image = AddContacts;
+
+                trigger OnAction()
+                var
+                    EDocAdditionalFieldsSetup: Page "EDoc Additional Fields Setup";
+                begin
+                    EDocAdditionalFieldsSetup.SetEDocumentService(Rec);
+                    EDocAdditionalFieldsSetup.RunModal();
+                end;
+            }
             action(OpenExportMapping)
             {
                 Caption = 'Export mapping setup';

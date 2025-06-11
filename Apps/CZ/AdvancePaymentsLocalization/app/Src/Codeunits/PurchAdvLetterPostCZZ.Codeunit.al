@@ -1530,8 +1530,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                     AdvancePostingParametersCZZ2."Currency Code" := '';
                     AdvancePostingParametersCZZ2."Currency Factor" := 0;
 
-                    CalcAmountLCY := Round(TempAdvancePostingBufferCZZ."Amount (ACY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
-                    CalcVATAmountLCY := Round(TempAdvancePostingBufferCZZ."VAT Amount (ACY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
+                    CalcAmountLCY := Round(TempAdvancePostingBufferCZZ."Amount (LCY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
+                    CalcVATAmountLCY := Round(TempAdvancePostingBufferCZZ."VAT Amount (LCY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
 
                     ExchRateAmount := CalcAmountLCY + GenJournalLine."Amount (LCY)";
                     ExchRateVATAmount := CalcVATAmountLCY + GenJournalLine."VAT Amount (LCY)";
@@ -1857,7 +1857,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         GenJournalLine.Correction := true;
         GenJournalLine.CopyFromAdvancePostingBufferCZZ(AdvancePostingBufferCZZ);
         if (AdvancePostingBufferCZZ."VAT Calculation Type" = AdvancePostingBufferCZZ."VAT Calculation Type"::"Reverse Charge VAT") and
-           (AdvancePostingBufferCZZ."VAT Amount (ACY)" <> 0)
+           (AdvancePostingBufferCZZ."VAT Amount (LCY)" <> 0)
         then
             GenJournalLine."VAT Posting" := GenJournalLine."VAT Posting"::"Manual VAT Entry";
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
@@ -1876,7 +1876,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         AdvancePostingBufferCZZ.ReverseAmounts();
         GenJournalLine.CopyFromAdvancePostingBufferCZZ(AdvancePostingBufferCZZ);
         if (AdvancePostingBufferCZZ."VAT Calculation Type" = AdvancePostingBufferCZZ."VAT Calculation Type"::"Reverse Charge VAT") and
-           (AdvancePostingBufferCZZ."VAT Amount (ACY)" <> 0)
+           (AdvancePostingBufferCZZ."VAT Amount (LCY)" <> 0)
         then begin
             NonDeductibleVATCZZ.Calculate(AdvancePostingBufferCZZ);
             NonDeductibleVATCZZ.Copy(GenJournalLine, AdvancePostingBufferCZZ);
@@ -1970,11 +1970,11 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
 
                     VATAmountRemainder += VATAmount;
                     TempAdvancePostingBufferCZZ."VAT Amount" := Round(VATAmountRemainder, CurrencyGlob."Amount Rounding Precision");
-                    TempAdvancePostingBufferCZZ."VAT Amount (ACY)" := TempAdvancePostingBufferCZZ."VAT Amount";
+                    TempAdvancePostingBufferCZZ."VAT Amount (LCY)" := TempAdvancePostingBufferCZZ."VAT Amount";
                     VATAmountRemainder -= TempAdvancePostingBufferCZZ."VAT Amount";
 
                     if CurrencyCode <> '' then
-                        TempAdvancePostingBufferCZZ."VAT Amount (ACY)" :=
+                        TempAdvancePostingBufferCZZ."VAT Amount (LCY)" :=
                             Round(
                                 CurrExchRate.ExchangeAmtFCYToLCY(
                                     PostingDate, CurrencyCode, TempAdvancePostingBufferCZZ."VAT Amount", CurrencyFactor));

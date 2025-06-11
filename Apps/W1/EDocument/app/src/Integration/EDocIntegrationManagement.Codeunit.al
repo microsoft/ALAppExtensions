@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ codeunit 6134 "E-Doc. Integration Management"
             exit;
 
         for Index := 1 to DocumentsMetadata.Count() do begin
-
+            Clear(EDocument);
             EDocument.Create(
                 Enum::"E-Document Direction"::Incoming,
                 Enum::"E-Document Type"::None,
@@ -187,8 +187,6 @@ codeunit 6134 "E-Doc. Integration Management"
             );
 
             EDocument."Index In Batch" := Index;
-            EDocument."Source Details" := CopyStr(ReceiveContext.GetSourceDetails(), 1, MaxStrLen(EDocument."Source Details"));
-            EDocument."Additional Source Details" := CopyStr(ReceiveContext.GetAdditionalSourceDetails(), 1, MaxStrLen(EDocument."Additional Source Details"));
             EDocument.Modify();
 
             EDocumentLog.SetFields(EDocument, EDocumentService);
@@ -196,7 +194,7 @@ codeunit 6134 "E-Doc. Integration Management"
             DocumentsMetadata.Get(Index, DocumentMetadata);
             if ReceiveSingleDocument(EDocument, EDocumentService, DocumentMetadata, IDocumentReceiver) then begin
                 // Insert shared data for all imported documents        
-                EDocumentLog.SetBlob(EDocument."File Name", EDocument."File Type", DocumentMetadata);
+                EDocumentLog.SetBlob(EDocument."File Name", "E-Doc. File Format"::Unspecified, DocumentMetadata);
                 EDocumentLog.InsertLog(Enum::"E-Document Service Status"::"Batch Imported");
                 EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, ReceiveContext.Http().GetHttpRequestMessage(), ReceiveContext.Http().GetHttpResponseMessage());
             end else
@@ -232,9 +230,9 @@ codeunit 6134 "E-Doc. Integration Management"
                 exit(false);
         end;
 
-        // Only after sucecssfully downloading and (optionally) marking as fetched, the document is considered imported
+        // Only after successfully downloading and (optionally) marking as fetched, the document is considered imported
         // Insert logs for downloading document
-        EDocumentLog.SetBlob(ReceiveContext.GetName(), ReceiveContext.GetType(), ReceiveContext.GetTempBlob());
+        EDocumentLog.SetBlob(ReceiveContext.GetName(), ReceiveContext.GetFileFormat(), ReceiveContext.GetTempBlob());
         EDocLog := EDocumentLog.InsertLog(ReceiveContext.Status().GetStatus());
 
         EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, ReceiveContext.Status().GetStatus());
@@ -243,7 +241,6 @@ codeunit 6134 "E-Doc. Integration Management"
 
         EDocument."Unstructured Data Entry No." := EDocLog."E-Doc. Data Storage Entry No.";
         EDocument."File Name" := ReceiveContext.GetName();
-        EDocument."File Type" := ReceiveContext.GetType();
         EDocument.Modify();
 
         // Insert logs for marking document as fetched
@@ -252,7 +249,6 @@ codeunit 6134 "E-Doc. Integration Management"
 
         exit(true);
     end;
-
 
     #endregion
 
@@ -461,8 +457,10 @@ codeunit 6134 "E-Doc. Integration Management"
         ReceiveDocs.SetService(EDocumentService);
         ReceiveDocs.SetContext(ReceiveContext);
         ReceiveDocs.SetDocuments(Documents);
-        if not ReceiveDocs.Run() then
+        if not ReceiveDocs.Run() then begin
+            Telemetry.LogMessage('0000PKE', 'Failed to receive documents from E-Document Service', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
             exit;
+        end;
 
         // After interface call, reread the EDocumentService for the latest values.
         EDocumentService.Get(EDocumentService.Code);

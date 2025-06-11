@@ -379,6 +379,10 @@ codeunit 30161 "Shpfy Import Order"
         CompanyName := JsonHelper.GetValueAsText(JOrder, 'displayAddress.company');
         FirstName := JsonHelper.GetValueAsText(JOrder, 'displayAddress.firstName');
         LastName := JsonHelper.GetValueAsText(JOrder, 'displayAddress.lastName');
+        if FirstName = '' then
+            FirstName := JsonHelper.GetValueAsText(JOrder, 'customer.firstName');
+        if LastName = '' then
+            LastName := JsonHelper.GetValueAsText(JOrder, 'customer.lastName');
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Sell-to First Name")).Value := CopyStr(FirstName, 1, MaxStrLen(OrderHeader."Sell-to First Name"));
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Sell-to Last Name")).Value := CopyStr(LastName, 1, MaxStrLen(OrderHeader."Sell-to Last Name"));
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Sell-to Customer Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Sell-to Customer Name"));
@@ -410,6 +414,10 @@ codeunit 30161 "Shpfy Import Order"
         CompanyName := JsonHelper.GetValueAsText(JOrder, 'shippingAddress.company');
         FirstName := JsonHelper.GetValueAsText(JOrder, 'shippingAddress.firstName');
         LastName := JsonHelper.GetValueAsText(JOrder, 'shippingAddress.lastName');
+        if FirstName = '' then
+            FirstName := JsonHelper.GetValueAsText(JOrder, 'customer.firstName');
+        if LastName = '' then
+            LastName := JsonHelper.GetValueAsText(JOrder, 'customer.lastName');
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Ship-to First Name")).Value := CopyStr(FirstName, 1, MaxStrLen(OrderHeader."Ship-to First Name"));
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Ship-to Last Name")).Value := CopyStr(LastName, 1, MaxStrLen(OrderHeader."Ship-to Last Name"));
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Ship-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Ship-to Name"));
@@ -434,6 +442,10 @@ codeunit 30161 "Shpfy Import Order"
         CompanyName := JsonHelper.GetValueAsText(JOrder, 'billingAddress.company');
         FirstName := JsonHelper.GetValueAsText(JOrder, 'billingAddress.firstName');
         LastName := JsonHelper.GetValueAsText(JOrder, 'billingAddress.lastName');
+        if FirstName = '' then
+            FirstName := JsonHelper.GetValueAsText(JOrder, 'customer.firstName');
+        if LastName = '' then
+            LastName := JsonHelper.GetValueAsText(JOrder, 'customer.lastName');
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Bill-to First Name")).Value := CopyStr(FirstName, 1, MaxStrLen(OrderHeader."Bill-to First Name"));
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Bill-to Lastname")).Value := CopyStr(LastName, 1, MaxStrLen(OrderHeader."Bill-to Lastname"));
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Bill-to Name")).Value := CopyStr(GetName(FirstName, LastName, CompanyName), 1, MaxStrLen(OrderHeader."Bill-to Name"));

@@ -6,6 +6,7 @@ using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
+using System.Telemetry;
 
 codeunit 6212 "Sustainability Post Mgt"
 {
@@ -17,8 +18,13 @@ codeunit 6212 "Sustainability Post Mgt"
     procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     var
         SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
+        SustainabilityLedgerEntryAddedLbl: Label 'Sustainability Ledger Entry Added', Locked = true;
     begin
         SustainabilityLedgerEntry.Init();
+        FeatureTelemetry.LogUsage('0000PH5', SustainabilityLbl, SustainabilityLedgerEntryAddedLbl);
+        FeatureTelemetry.LogUptake('0000PH3', SustainabilityLbl, Enum::"Feature Uptake Status"::"Used");
         // AutoIncrement requires the PK to be empty
         SustainabilityLedgerEntry."Entry No." := 0;
 
@@ -38,10 +44,16 @@ codeunit 6212 "Sustainability Post Mgt"
     procedure InsertValueEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; ValueEntry: Record "Value Entry"; ItemLedgerEntry: Record "Item Ledger Entry")
     var
         SustainabilityValueEntry: Record "Sustainability Value Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
+        SustainabilityValueEntryAddedLbl: Label 'Sustainability Value Entry Added', Locked = true;
         ShouldCalcExpectedCO2e: Boolean;
     begin
         SkipUpdateCarbonEmissionValue := ValueEntry."Item Ledger Entry Type" <> ValueEntry."Item Ledger Entry Type"::Purchase;
         SustainabilityValueEntry.Init();
+
+        FeatureTelemetry.LogUsage('0000PH6', SustainabilityLbl, SustainabilityValueEntryAddedLbl);
+        FeatureTelemetry.LogUptake('0000PH4', SustainabilityLbl, Enum::"Feature Uptake Status"::"Used");
 
         SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
         SustainabilityValueEntry.CopyFromValueEntry(ValueEntry);

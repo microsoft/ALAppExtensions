@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,7 +8,6 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Processing.Import;
-using Microsoft.eServices.EDocument.Format;
 
 table 6103 "E-Document Service"
 {
@@ -253,12 +252,17 @@ table 6103 "E-Document Service"
                 end;
             end;
         }
-        field(29; "E-Document Structured Format"; Enum "E-Document Structured Format")
+#if not CLEANSCHEMA26
+        field(29; "E-Document Structured Format"; Integer)
         {
             Caption = 'Structured Data Format';
             ToolTip = 'Specifies the format of the structured data.';
             DataClassification = SystemMetadata;
+            ObsoleteReason = 'Use the "Read into Draft Impl." field instead.';
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
         }
+#endif
         field(31; "Import Process"; Enum "E-Document Import Process")
         {
             Caption = 'Import Process';
@@ -269,6 +273,12 @@ table 6103 "E-Document Service"
         {
             Caption = 'Automatic processing';
             ToolTip = 'Specifies if the processing of a document should start automatically after it is imported.';
+            DataClassification = SystemMetadata;
+        }
+        field(33; "Read into Draft Impl."; Enum "E-Doc. Read into Draft")
+        {
+            Caption = 'Read into Draft';
+            ToolTip = 'Specifies how the inbound structured e-document should be read into a draft document.';
             DataClassification = SystemMetadata;
         }
         field(40; "Embed PDF in export"; Boolean)
@@ -302,6 +312,7 @@ table 6103 "E-Document Service"
         EDocBackgroundJobs.RemoveJob(Rec."Import Recurrent Job Id");
     end;
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"E-Document Service", 'I')]
     internal procedure GetPDFReaderService()
     begin
         if Rec.Get(AzureDocumentIntelligenceTok) then
@@ -312,7 +323,6 @@ table 6103 "E-Document Service"
         Rec."Import Process" := "Import Process"::"Version 2.0";
         Rec.Description := AzureDocumentIntelligenceServiceTxt;
         Rec."Automatic Import Processing" := "E-Doc. Automatic Processing"::No;
-        Rec."E-Document Structured Format" := "E-Document Structured Format"::"Azure Document Intelligence";
         Rec.Insert(true);
     end;
 

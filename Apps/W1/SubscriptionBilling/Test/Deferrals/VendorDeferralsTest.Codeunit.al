@@ -702,8 +702,8 @@ codeunit 139913 "Vendor Deferrals Test"
     [Test]
     procedure UT_CheckFunctionCreateContractDeferralsForPurchaseLine()
     var
-        PurchaseLine: Record "Purchase Line";
-        BillingLine: Record "Billing Line";
+        PurchaseLine2: Record "Purchase Line";
+        BillingLine2: Record "Billing Line";
         SubscriptionLine: Record "Subscription Line";
         VendorSubscriptionContract: Record "Vendor Subscription Contract";
         FunctionReturnedWrongResultErr: Label 'The function for calculating if contract deferrals should be created for a purchase line returned a wrong result.', Locked = true;
@@ -713,30 +713,30 @@ codeunit 139913 "Vendor Deferrals Test"
 
         // [GIVEN] Mock Contract, Sales Line, Subscription Line and Billing Line
         MockSubscriptionContract(VendorSubscriptionContract);
-        MockSalesLine(PurchaseLine);
+        MockSalesLine(PurchaseLine2);
         MockSubscriptionLineForContract(SubscriptionLine, VendorSubscriptionContract."No.");
-        MockBillingLineForPurchaseLineAndSubscriptionLine(BillingLine, PurchaseLine, SubscriptionLine);
+        MockBillingLineForPurchaseLineAndSubscriptionLine(BillingLine2, PurchaseLine2, SubscriptionLine);
 
         // [WHEN] "Create Contract Deferral" is set to true in Contract, "Create Contract Deferral" is set to "Contract-dependent" in Subscription Line
         SubscriptionLine."Create Contract Deferrals" := SubscriptionLine."Create Contract Deferrals"::"Contract-dependent";
         SubscriptionLine.Modify(false);
 
         // [THEN] Function should return correct result
-        Assert.IsTrue(PurchaseLine.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
+        Assert.IsTrue(PurchaseLine2.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
 
         // [WHEN] "Create Contract Deferral" is set to false in Contract, "Create Contract Deferral" is set to "Contract-dependent" in Subscription Line
         VendorSubscriptionContract."Create Contract Deferrals" := false;
         VendorSubscriptionContract.Modify(false);
 
         // [THEN] Function should return correct result
-        Assert.IsFalse(PurchaseLine.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
+        Assert.IsFalse(PurchaseLine2.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
 
         // [WHEN] "Create Contract Deferral" is set to false in Contract, "Create Contract Deferral" is set to Yes in Subscription Line
         SubscriptionLine."Create Contract Deferrals" := SubscriptionLine."Create Contract Deferrals"::Yes;
         SubscriptionLine.Modify(false);
 
         // [THEN] Function should return correct result
-        Assert.IsTrue(PurchaseLine.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
+        Assert.IsTrue(PurchaseLine2.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
 
         // [WHEN] "Create Contract Deferral" is set to true in Contract, "Create Contract Deferral" is set to No in Subscription Line
         VendorSubscriptionContract."Create Contract Deferrals" := true;
@@ -745,7 +745,7 @@ codeunit 139913 "Vendor Deferrals Test"
         SubscriptionLine.Modify(false);
 
         // [THEN] Function should return correct result
-        Assert.IsTrue(PurchaseLine.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
+        Assert.IsTrue(PurchaseLine2.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
     end;
 
     #endregion Tests
@@ -934,29 +934,29 @@ codeunit 139913 "Vendor Deferrals Test"
         GlEntryAmount := GLEntry.Amount;
     end;
 
-    local procedure MockBillingLineForPurchaseLineAndSubscriptionLine(var BillingLine: Record "Billing Line"; PurchaseLine: Record "Purchase Line"; SubscriptionLine: Record "Subscription Line")
+    local procedure MockBillingLineForPurchaseLineAndSubscriptionLine(var BillingLine2: Record "Billing Line"; PurchaseLine2: Record "Purchase Line"; SubscriptionLine: Record "Subscription Line")
     begin
-        BillingLine.InitNewBillingLine();
-        BillingLine."Document Type" := BillingLine.GetBillingDocumentTypeFromSalesDocumentType(PurchaseLine."Document Type");
-        BillingLine."Document No." := PurchaseLine."Document No.";
-        BillingLine."Document Line No." := PurchaseLine."Line No.";
-        BillingLine."Subscription Line Entry No." := SubscriptionLine."Entry No.";
-        BillingLine."Subscription Contract No." := SubscriptionLine."Subscription Contract No.";
-        BillingLine.Insert(false);
+        BillingLine2.InitNewBillingLine();
+        BillingLine2."Document Type" := BillingLine2.GetBillingDocumentTypeFromSalesDocumentType(PurchaseLine2."Document Type");
+        BillingLine2."Document No." := PurchaseLine2."Document No.";
+        BillingLine2."Document Line No." := PurchaseLine2."Line No.";
+        BillingLine2."Subscription Line Entry No." := SubscriptionLine."Entry No.";
+        BillingLine2."Subscription Contract No." := SubscriptionLine."Subscription Contract No.";
+        BillingLine2.Insert(false);
     end;
 
-    local procedure MockSalesLine(var PurchaseLine: Record "Purchase Line")
+    local procedure MockSalesLine(var PurchaseLine2: Record "Purchase Line")
     var
-        PurchaseHeader: Record "Purchase Header";
+        PurchaseHeader2: Record "Purchase Header";
     begin
-        PurchaseHeader.Init();
-        PurchaseHeader."Document Type" := PurchaseLine."Document Type"::Invoice;
-        PurchaseHeader.Insert(true);
-        PurchaseLine.Init();
-        PurchaseLine."Document Type" := PurchaseLine."Document Type"::Invoice;
-        PurchaseLine."Document No." := PurchaseHeader."No.";
-        PurchaseLine."Line No." := 10000;
-        PurchaseLine.Insert(false);
+        PurchaseHeader2.Init();
+        PurchaseHeader2."Document Type" := PurchaseLine2."Document Type"::Invoice;
+        PurchaseHeader2.Insert(true);
+        PurchaseLine2.Init();
+        PurchaseLine2."Document Type" := PurchaseLine2."Document Type"::Invoice;
+        PurchaseLine2."Document No." := PurchaseHeader2."No.";
+        PurchaseLine2."Line No." := 10000;
+        PurchaseLine2.Insert(false);
     end;
 
     local procedure MockSubscriptionContract(var VendorSubscriptionContract: Record "Vendor Subscription Contract")
@@ -967,12 +967,12 @@ codeunit 139913 "Vendor Deferrals Test"
 
     local procedure MockSubscriptionLineForContract(var SubscriptionLine: Record "Subscription Line"; ContractNo: Code[20])
     var
-        ServiceObject: Record "Subscription Header";
+        ServiceObject2: Record "Subscription Header";
     begin
-        ServiceObject.Init();
-        ServiceObject.Insert(true);
+        ServiceObject2.Init();
+        ServiceObject2.Insert(true);
         SubscriptionLine.Init();
-        SubscriptionLine."Subscription Header No." := ServiceObject."No.";
+        SubscriptionLine."Subscription Header No." := ServiceObject2."No.";
         SubscriptionLine."Entry No." := 0;
         SubscriptionLine.Partner := SubscriptionLine.Partner::Vendor;
         SubscriptionLine."Subscription Contract No." := ContractNo;

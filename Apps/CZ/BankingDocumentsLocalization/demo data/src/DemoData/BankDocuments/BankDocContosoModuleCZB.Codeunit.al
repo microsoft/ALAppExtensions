@@ -5,6 +5,7 @@
 
 namespace Microsoft.DemoData.BankDocuments;
 
+using Microsoft.DemoData.Bank;
 using Microsoft.DemoTool;
 
 codeunit 31428 "Bank. Doc. Contoso Module CZB" implements "Contoso Demo Data Module"
@@ -25,10 +26,12 @@ codeunit 31428 "Bank. Doc. Contoso Module CZB" implements "Contoso Demo Data Mod
 
     procedure CreateSetupData()
     begin
+        Codeunit.Run(Codeunit::"Create Search Rule CZB");
     end;
 
     procedure CreateMasterData()
     begin
+        Codeunit.Run(Codeunit::"Create Bank Account CZB");
     end;
 
     procedure CreateTransactionalData()

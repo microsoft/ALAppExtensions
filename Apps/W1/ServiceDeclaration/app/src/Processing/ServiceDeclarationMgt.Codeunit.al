@@ -222,11 +222,6 @@ codeunit 5012 "Service Declaration Mgt."
         exit(not (Vendor."Country/Region Code" in ['', CompanyInformation."Country/Region Code"]));
     end;
 
-    local procedure GetServiceDeclarationFeatureKeyId(): Text[50]
-    begin
-        exit('ServiceDeclaration');
-    end;
-
     internal procedure ReleaseIntrastatReport(var ServiceDeclHeader: Record "Service Declaration Header")
     var
         IsHandled: Boolean;

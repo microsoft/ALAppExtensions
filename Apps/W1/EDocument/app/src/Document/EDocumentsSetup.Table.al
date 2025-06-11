@@ -9,10 +9,8 @@ using System.Azure.Identity;
 table 6107 "E-Documents Setup"
 {
     Access = Internal;
-#pragma warning disable AS0034
     InherentEntitlements = RIX;
     InherentPermissions = RX;
-#pragma warning restore AS0034
     ReplicateData = false;
 
     fields

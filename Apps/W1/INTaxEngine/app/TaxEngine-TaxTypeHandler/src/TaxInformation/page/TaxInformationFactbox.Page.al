@@ -113,20 +113,6 @@ page 20240 "Tax Information Factbox"
         JObject.Add('TaxInformation', JArray);
     end;
 
-    local procedure RoundAmount(Amt: Decimal; Precision: Decimal; Direction: Enum "Rounding Direction"): Decimal
-    begin
-        case Direction of
-            Direction::Down:
-                Amt := ROUND(Amt, Precision, '<');
-            Direction::Up:
-                Amt := ROUND(Amt, Precision, '>');
-            Direction::Nearest:
-                Amt := ROUND(Amt, Precision, '=');
-        end;
-
-        exit(Amt);
-    end;
-
     var
         ScriptDatatypeMgmt: Codeunit "Script Data Type Mgmt.";
         Loaded: Boolean;

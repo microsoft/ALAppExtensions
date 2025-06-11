@@ -7,6 +7,7 @@ namespace Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Purchases.History;
 using System.Reflection;
 using Microsoft.Purchases.Document;
+using Microsoft.eServices.EDocument;
 
 table 6109 "EDoc. Purch. Line Field Setup"
 {
@@ -23,13 +24,22 @@ table 6109 "EDoc. Purch. Line Field Setup"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(2; "E-Document Service"; Code[20])
+        {
+            Caption = 'E-Document Service';
+            ToolTip = 'Specifies the E-Document Service that this field setup belongs to.';
+            DataClassification = SystemMetadata;
+            TableRelation = "E-Document Service";
+        }
     }
     keys
     {
-        key(PK; "Field No.")
+#pragma warning disable AS0009
+        key(PK; "Field No.", "E-Document Service")
         {
             Clustered = true;
         }
+#pragma warning restore AS0009
     }
 
     trigger OnDelete()
@@ -39,6 +49,8 @@ table 6109 "EDoc. Purch. Line Field Setup"
         if Rec."Field No." = 0 then
             exit;
         EDocPurchLineField.SetRange("Field No.", Rec."Field No.");
+        EDocPurchLineField.SetAutoCalcFields("E-Document Service");
+        EDocPurchLineField.SetRange("E-Document Service", Rec."E-Document Service");
         EDocPurchLineField.DeleteAll();
     end;
 
@@ -47,7 +59,7 @@ table 6109 "EDoc. Purch. Line Field Setup"
     /// The fields are loaded with the default configuration if the user has not set up any specific configuration.
     /// </summary>
     /// <param name="EDocPurchLineFieldSetup"></param>
-    procedure AllPurchaseLineFields(var EDocPurchLineFieldSetup: Record "EDoc. Purch. Line Field Setup" temporary)
+    procedure AllPurchaseLineFields(EDocumentService: Record "E-Document Service"; var EDocPurchLineFieldSetup: Record "EDoc. Purch. Line Field Setup" temporary)
     var
         PersistedEDocPurchLineFieldSetup: Record "EDoc. Purch. Line Field Setup";
         PurchaseInvoiceLineField: Record Field;
@@ -78,11 +90,13 @@ table 6109 "EDoc. Purch. Line Field Setup"
                     if FieldsToOmit().Contains(PurchaseInvoiceLineField."No.") then
                         continue;
                     // If there is a persisted setup for this field, it means the user has configured it, so we will copy it.
-                    if PersistedEDocPurchLineFieldSetup.Get(PurchaseInvoiceLineField."No.") then
+                    if PersistedEDocPurchLineFieldSetup.Get(PurchaseInvoiceLineField."No.", EDocumentService.Code) then
                         EDocPurchLineFieldSetup.Copy(PersistedEDocPurchLineFieldSetup)
                     // If not, we provide the default configuration.
-                    else
+                    else begin
                         EDocPurchLineFieldSetup."Field No." := PurchaseInvoiceLineField."No.";
+                        EDocPurchLineFieldSetup."E-Document Service" := EDocumentService.Code;
+                    end;
                     EDocPurchLineFieldSetup.Insert();
                 end;
         until PurchaseInvoiceLineField.Next() = 0;
@@ -98,7 +112,7 @@ table 6109 "EDoc. Purch. Line Field Setup"
         PersistedEDocPurchLineFieldSetup: Record "EDoc. Purch. Line Field Setup";
         RecordPreviouslyConfigured: Boolean;
     begin
-        RecordPreviouslyConfigured := PersistedEDocPurchLineFieldSetup.Get(EDocPurchLineFieldSetup."Field No.");
+        RecordPreviouslyConfigured := PersistedEDocPurchLineFieldSetup.Get(EDocPurchLineFieldSetup."Field No.", EDocPurchLineFieldSetup."E-Document Service");
         if not ConsiderField then begin
             if RecordPreviouslyConfigured then
                 PersistedEDocPurchLineFieldSetup.Delete(true);
@@ -107,6 +121,7 @@ table 6109 "EDoc. Purch. Line Field Setup"
         // If the user wants to copy this field, and the record didn't exist, we will create it.
         if not RecordPreviouslyConfigured then begin
             PersistedEDocPurchLineFieldSetup."Field No." := EDocPurchLineFieldSetup."Field No.";
+            PersistedEDocPurchLineFieldSetup."E-Document Service" := EDocPurchLineFieldSetup."E-Document Service";
             PersistedEDocPurchLineFieldSetup.Insert();
         end;
         PersistedEDocPurchLineFieldSetup.Modify();

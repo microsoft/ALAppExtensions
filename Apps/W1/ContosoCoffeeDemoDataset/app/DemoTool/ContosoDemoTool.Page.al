@@ -34,7 +34,7 @@ page 5194 "Contoso Demo Tool"
                 }
                 field("Data Level"; Rec."Data Level")
                 {
-                    ToolTip = 'Specifies the demo data module installation level';
+                    ToolTip = 'Specifies the demo data module installation level. It indicates which data was included and can vary between "Setup Data," meaning that only settings and configurations were installed, or "All," in which case setup, master data, transactions, and history were installed.';
                 }
             }
         }

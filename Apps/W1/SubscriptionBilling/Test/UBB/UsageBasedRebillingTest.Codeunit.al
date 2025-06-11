@@ -164,7 +164,7 @@ codeunit 139694 "Usage Based Rebilling Test"
         // [THEN] Verify setup
         UsageDataGenericImport.SetRange("Usage Data Import Entry No.", RebillingUsageDataImport."Entry No.");
         Assert.AreEqual(2, UsageDataGenericImport.Count(), 'Expected two lines to be imported in rebilling and follow-up import, but found a different count.');
-        UsageDataGenericImport.FindFirst(); // rebilling of initial import
+        UsageDataGenericImport.FindSet(); // rebilling of initial import
         TestAndCompareBillingPeriodStartAndEndDate(WorkDate(), CalcDate('<CY>', WorkDate())
                                             , UsageDataGenericImport."Billing Period Start Date", UsageDataGenericImport."Billing Period End Date");
         UsageDataGenericImport.Next(); // follow-up billing of next year
@@ -172,7 +172,7 @@ codeunit 139694 "Usage Based Rebilling Test"
                                     , UsageDataGenericImport."Billing Period Start Date", UsageDataGenericImport."Billing Period End Date");
 
         // [THEN] Check Subscription Line
-        ServiceCommitment.Find();
+        ServiceCommitment.Get(ServiceCommitment."Entry No.");
         Assert.AreEqual(WorkDate(), ServiceCommitment."Next Billing Date", 'Expected Service Commitment Next Billing Date to be reset to the rebilling date, but it was different.');
 
         // [WHEN] Create sales invoice
@@ -248,7 +248,7 @@ codeunit 139694 "Usage Based Rebilling Test"
         // [THEN] Verify setup
         UsageDataGenericImport.SetRange("Usage Data Import Entry No.", RebillingUsageDataImport."Entry No.");
         Assert.AreEqual(2, UsageDataGenericImport.Count(), 'Expected two lines to be imported in rebilling and follow-up import, but found a different count.');
-        UsageDataGenericImport.FindFirst(); // rebilling of initial import
+        UsageDataGenericImport.FindSet(); // rebilling of initial import
         TestAndCompareBillingPeriodStartAndEndDate(WorkDate(), CalcDate('<CY>', WorkDate())
                         , UsageDataGenericImport."Billing Period Start Date", UsageDataGenericImport."Billing Period End Date");
         UsageDataGenericImport.Next(); // follow-up billing of next year
@@ -591,9 +591,9 @@ codeunit 139694 "Usage Based Rebilling Test"
             UsageDataImportToProcess.ProcessUsageDataImport(UsageDataImportToProcess, "Processing Step"::"Process Usage Data Billing");
     end;
 
-    local procedure TestUsageDataBillingMetadataForRebilling(var UsageDataBillingMetadata: Record "Usage Data Billing Metadata"; UsageDataBilling: Record "Usage Data Billing"; TestTrue: Boolean)
+    local procedure TestUsageDataBillingMetadataForRebilling(var UsageDataBillingMetadata: Record "Usage Data Billing Metadata"; UsageDataBilling2: Record "Usage Data Billing"; TestTrue: Boolean)
     begin
-        UsageDataBillingMetadata.SetRange("Usage Data Billing Entry No.", UsageDataBilling."Entry No.");
+        UsageDataBillingMetadata.SetRange("Usage Data Billing Entry No.", UsageDataBilling2."Entry No.");
         UsageDataBillingMetadata.FindFirst(); // Find the first matching metadata record
         if not TestTrue then
             Assert.IsFalse(UsageDataBillingMetadata.Rebilling, 'Expected UsageDataBillingMetadata.Rebilling to be false for initial import, but it was true.') // Verify that the rebilling flag is false
@@ -601,12 +601,12 @@ codeunit 139694 "Usage Based Rebilling Test"
             Assert.IsTrue(UsageDataBillingMetadata.Rebilling, 'Expected UsageDataBillingMetadata.Rebilling to be true for rebilling import, but it was false.'); // Verify that the rebilling flag is true
     end;
 
-    local procedure TestUsageDataForRebilling(var UsageDataBilling: Record "Usage Data Billing"; UsageDataImportEntryNo: Integer; TestTrue: Boolean)
+    local procedure TestUsageDataForRebilling(var UsageDataBilling2: Record "Usage Data Billing"; UsageDataImportEntryNo: Integer; TestTrue: Boolean)
     begin
-        UsageDataBilling.SetRange("Usage Data Import Entry No.", UsageDataImportEntryNo);
-        UsageDataBilling.FindLast();
+        UsageDataBilling2.SetRange("Usage Data Import Entry No.", UsageDataImportEntryNo);
+        UsageDataBilling2.FindLast();
         if not TestTrue then
-            Assert.IsFalse(UsageDataBilling.Rebilling, 'Expected initial import to not be rebilling, but it was.'); // Verify that the initial import is not rebilling
+            Assert.IsFalse(UsageDataBilling2.Rebilling, 'Expected initial import to not be rebilling, but it was.'); // Verify that the initial import is not rebilling
     end;
 
     local procedure TestAndCompareBillingPeriodStartAndEndDate(ExpectedBillingPeriodStartDate: Date; ExpectedBillingPeriodEndDate: Date; BillingPeriodStartDate: Date; BillingPeriodEndDate: Date)

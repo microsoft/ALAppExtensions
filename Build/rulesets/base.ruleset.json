@@ -78,10 +78,6 @@
       "action": "Error"
     },
     {
-      "id": "AL0655",
-      "action": "Warning"
-    },
-    {
       "id": "AL0659",
       "action": "Warning",
       "justification": "The length of the enum identifier 'Acc. Schedule Line Totaling Type' should not exceed 30 characters as it may result in runtime issues in cases where there are other enums with the same first 30 characters."
@@ -112,11 +108,6 @@
       "id": "AL0729",
       "action": "Warning",
       "justification": "Bug 472138. The property 'Promoted' can only be set if the property 'PageType' is set with any of the values of: 'Card,Document,List,ListPlus,Worksheet' This warning will become an error in a future release."
-    },
-    {
-      "id": "AL0748",
-      "action": "Warning",
-      "justification": "The return type 'CRM Payment Terms' of the public method 'GetRec' has 'Internal' accessibility. The return value will not be usable outside of this module without an implicit conversion."
     },
     {
       "id": "AL0749",
@@ -346,10 +337,6 @@
       "id": "AA0225",
       "action": "Warning",
       "justification": ": The Caption property for must be filled in."
-    },
-    {
-      "id": "AA0228",
-      "action": "Warning"
     },
     {
       "id": "AA0231",

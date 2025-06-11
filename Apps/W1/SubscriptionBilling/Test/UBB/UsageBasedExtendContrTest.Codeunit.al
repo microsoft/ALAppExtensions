@@ -323,8 +323,8 @@ codeunit 148159 "Usage Based Extend Contr. Test"
     local procedure MockUsageDataGenericImport(var UsageDataGenericImport: Record "Usage Data Generic Import")
     begin
         UsageDataGenericImport.InitFromUsageDataImport(UsageDataImport);
-        UsageDataGenericImport."Product ID" := LibraryUtility.GenerateRandomText(80);
-        UsageDataGenericImport."Supp. Subscription ID" := LibraryUtility.GenerateRandomText(80);
+        UsageDataGenericImport."Product ID" := CopyStr(LibraryUtility.GenerateRandomText(80), 1, MaxStrLen(UsageDataGenericImport."Product ID"));
+        UsageDataGenericImport."Supp. Subscription ID" := CopyStr(LibraryUtility.GenerateRandomText(80), 1, MaxStrLen(UsageDataGenericImport."Supp. Subscription ID"));
         UsageDataGenericImport.Insert();
     end;
 

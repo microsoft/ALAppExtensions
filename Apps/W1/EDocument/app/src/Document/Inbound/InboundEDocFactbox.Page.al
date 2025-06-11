@@ -148,9 +148,11 @@ page 6108 "Inbound E-Doc. Factbox"
     trigger OnAfterGetRecord()
     var
         EDocument: Record "E-Document";
+        EDocumentDataStorage: Record "E-Doc. Data Storage";
     begin
         if EDocument.Get(Rec."E-Document Entry No") then;
-        IsPdf := EDocument."File Type" = EDocument."File Type"::PDF;
+        if EDocumentDataStorage.Get(EDocument."Unstructured Data Entry No.") then
+            IsPdf := EDocumentDataStorage."File Format" = "E-Doc. File Format"::PDF;
 
         // If new record is selected, then reload the PDF document
         if Rec."E-Document Entry No" <> xRec."E-Document Entry No" then

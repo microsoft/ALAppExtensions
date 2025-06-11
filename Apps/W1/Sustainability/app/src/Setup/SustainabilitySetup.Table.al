@@ -4,6 +4,7 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.UOM;
 using Microsoft.Utilities;
 using System.Utilities;
+using System.Telemetry;
 
 table 6217 "Sustainability Setup"
 {
@@ -105,6 +106,14 @@ table 6217 "Sustainability Setup"
         field(16; "Use Emissions In Purch. Doc."; Boolean)
         {
             Caption = 'Use Emissions In Purchase Documents';
+            trigger OnValidate()
+            var
+                FeatureTelemetry: Codeunit "Feature Telemetry";
+                SustainabilityLbl: Label 'Sustainability', Locked = true;
+            begin
+                if Rec."Use Emissions In Purch. Doc." then
+                    FeatureTelemetry.LogUptake('0000PGZ', SustainabilityLbl, Enum::"Feature Uptake Status"::"Set up");
+            end;
         }
         field(17; "Waste Unit of Measure Code"; Code[10])
         {
@@ -250,8 +259,16 @@ table 6217 "Sustainability Setup"
 
     [InherentPermissions(PermissionObjectType::TableData, Database::"Sustainability Setup", 'I')]
     internal procedure InitRecord()
+
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
+        SustainabilitySetupInitLbl: Label 'Sustainability initialized', Locked = true;
     begin
-        if not Get() then
-            Insert();
+        if not Get() then begin
+            Rec.Insert();
+            FeatureTelemetry.LogUptake('0000PH0', SustainabilityLbl, Enum::"Feature Uptake Status"::"Set up");
+            FeatureTelemetry.LogUsage('0000PH1', SustainabilityLbl, SustainabilitySetupInitLbl);
+        end;
     end;
 }

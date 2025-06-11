@@ -6,9 +6,7 @@ page 36993 "Aged Receivables (Back Dating)"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Aged Receivables (Back Dating)';
     AboutTitle = 'About Aged Receivables (Back Dating)';
     AboutText = 'The Aged Receivable Back Dating report categorizes customer balances into aging buckets. It offers flexibility with filters for different payment terms, aging dates, and custom aging bucket sizes.';
@@ -25,7 +23,7 @@ page 36993 "Aged Receivables (Back Dating)"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

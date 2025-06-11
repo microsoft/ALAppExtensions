@@ -30,6 +30,7 @@ codeunit 5193 "Contoso Demo Tool"
         EndGeneratingDemoDataMsg: Label 'Finishing demo data module %1, for level %2', Locked = true;
         SortedDependencyModulesMsg: Label 'Finish building sorted dependency for selected modules: %1', Locked = true;
         ContosoCoffeeDemoDatasetFeatureNameTok: Label 'ContosoCoffeeDemoDataset', Locked = true;
+        NoConfigurationMsg: Label 'This module does not require any additional configuration.';
 
     internal procedure CreateNewCompanyDemoData(var ContosoDemoDataModule: Record "Contoso Demo Data Module" temporary; IsSetup: Boolean)
     var
@@ -274,6 +275,15 @@ codeunit 5193 "Contoso Demo Tool"
 
         if ContosoDemoDataModule.FindSet() then
             CreateDemoData(ContosoDemoDataModule, Enum::"Contoso Demo Data Level"::"Setup Data");
+    end;
+
+    /// <summary>
+    /// Returns the message to be displayed when no configuration is required for the module.
+    /// </summary>
+    /// <returns>Message to be displayed when no configuration is required for the module.</returns>
+    procedure GetNoConfiguirationMsg(): Text
+    begin
+        exit(NoConfigurationMsg);
     end;
 
     [IntegrationEvent(false, false)]

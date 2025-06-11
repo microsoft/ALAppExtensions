@@ -43,7 +43,7 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO] All information from Journal Line/Account/Category is transferred to the ledger Entry
         LibrarySustainability.CleanUpBeforeTesting();
 
-        // [GIVEN] A Sustainability Journal Batch and An Account that's ready to Post 
+        // [GIVEN] A Sustainability Journal Batch and An Account that's ready to Post
         SustainabilityJnlBatch := SustainabilityJournalMgt.GetASustainabilityJournalBatch(false);
         SustainabilityAccount := LibrarySustainability.GetAReadyToPostAccount();
 
@@ -770,6 +770,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
     [Test]
     [HandlerFunctions('PurchaseOrderStatisticsPageHandler')]
@@ -844,6 +845,7 @@ codeunit 148184 "Sustainability Posting Test"
         OpenPurchaseOrderStatistics(PurchaseHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
 
     [Test]
@@ -921,6 +923,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
     [HandlerFunctions('PurchaseInvoiceStatisticsPageHandler')]
@@ -979,6 +982,7 @@ codeunit 148184 "Sustainability Posting Test"
         OpenPurchaseInvoiceStatistics(PurchaseHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
 
     [Test]
@@ -1098,6 +1102,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
     [HandlerFunctions('PurchaseInvoiceStatisticsPageHandler')]
@@ -1177,6 +1182,7 @@ codeunit 148184 "Sustainability Posting Test"
         VerifyPostedPurchaseCrMemoStatistics(PostedCrMemoNo);
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
 
     [Test]
@@ -1369,6 +1375,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
     [HandlerFunctions('PurchaseInvoiceStatisticsPageHandler')]
@@ -1459,6 +1466,7 @@ codeunit 148184 "Sustainability Posting Test"
         PostedPurchCrMemoSubformPage."Emission CO2".AssertEquals(EmissionCO2);
         PostedPurchCrMemoSubformPage."Emission N2O".AssertEquals(EmissionN2O);
     end;
+#pragma warning restore AL0432
 #endif
 
     [Test]
@@ -2331,7 +2339,7 @@ codeunit 148184 "Sustainability Posting Test"
         NoSeries.Validate("Manual Nos.", true);
         NoSeries.Modify(true);
 
-        // [GIVEN] Create a Sustainability Account that's ready to Post 
+        // [GIVEN] Create a Sustainability Account that's ready to Post
         SustainabilityAccount := GetAReadyToPostSustainabilityAccount(
             Enum::"Emission Scope"::"Scope 2",
             Enum::"Calculation Foundation"::"Fuel/Electricity",
@@ -2663,6 +2671,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandler')]
@@ -2772,6 +2781,7 @@ codeunit 148184 "Sustainability Posting Test"
         OpenSalesInvoiceStatistics(SalesHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandlerNM')]
@@ -2935,6 +2945,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
     [HandlerFunctions('SalesInvoiceStatisticsPageHandler')]
@@ -3005,6 +3016,7 @@ codeunit 148184 "Sustainability Posting Test"
         VerifyPostedSalesCrMemoStatistics(PostedCrMemoNo);
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
     [Test]
     [HandlerFunctions('SalesInvoiceSalesStatisticsPageHandler')]
@@ -3181,6 +3193,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
     [HandlerFunctions('SalesInvoiceStatisticsPageHandler')]
@@ -3257,6 +3270,7 @@ codeunit 148184 "Sustainability Posting Test"
         PostedSalesCrMemoSubformPage."Sust. Account No.".AssertEquals(AccountCode);
         PostedSalesCrMemoSubformPage."Total CO2e".AssertEquals(TotalCO2e);
     end;
+#pragma warning restore AL0432
 #endif
     [Test]
     [HandlerFunctions('SalesInvoiceSalesStatisticsPageHandler')]
@@ -4229,7 +4243,7 @@ codeunit 148184 "Sustainability Posting Test"
         PostedInvoiceNo: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry 
+        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry
         // is not created when Post Purchase Order if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -4296,7 +4310,7 @@ codeunit 148184 "Sustainability Posting Test"
         PostedCrMemoNo: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry 
+        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry
         // is not created when Post Purchase Cr. Memo if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -4386,7 +4400,7 @@ codeunit 148184 "Sustainability Posting Test"
         PostedCrMemoNo: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry 
+        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry
         // is not created when Post Purchase Return Order if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -4733,7 +4747,7 @@ codeunit 148184 "Sustainability Posting Test"
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 563478] Verify "Default CO2 Emission", "Default CH4 Emission", "Default N2O Emission" must not be updated in Resource 
+        // [SCENARIO 563478] Verify "Default CO2 Emission", "Default CH4 Emission", "Default N2O Emission" must not be updated in Resource
         // If "Default Sust. Account" is blank.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -5585,6 +5599,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     local procedure CreateCorrectiveCreditMemoAndOpenPurchaseCrMemoStatistics(PurchaseHeader: Record "Purchase Header"): Code[20]
     var
@@ -5605,6 +5620,7 @@ codeunit 148184 "Sustainability Posting Test"
 
         exit(PurchaseHeader."No.");
     end;
+#pragma warning restore AL0432
 #endif
 
     local procedure CreateCorrectiveCreditMemoAndOpenPurchCrMemoStatistics(PurchaseHeader: Record "Purchase Header"): Code[20]
@@ -5686,13 +5702,13 @@ codeunit 148184 "Sustainability Posting Test"
     var
         CategoryTok, SubcategoryTok, AccountTok : Code[20];
     begin
-        CategoryTok := LibraryRandom.RandText(20);
-        SubcategoryTok := LibraryRandom.RandText(20);
+        CategoryTok := CopyStr(LibraryRandom.RandText(20), 1, 20);
+        SubcategoryTok := CopyStr(LibraryRandom.RandText(20), 1, 20);
         AccountTok := Format(LibraryRandom.RandIntInRange(10000, 20000));
         LibrarySustainability.InsertAccountCategory(CategoryTok, '', Scope, CalcFoundation, CO2, CH4, N2O, CustomValue, CalcFromGL);
         LibrarySustainability.InsertAccountSubcategory(CategoryTok, SubcategoryTok, '', EFCO2, EFCH4, EFN2O, RenewableEnergy);
         Account := LibrarySustainability.InsertSustainabilityAccount(
-            AccountTok, LibraryRandom.RandText(20), CategoryTok, SubcategoryTok, Enum::"Sustainability Account Type"::Posting, '', true);
+            AccountTok, CopyStr(LibraryRandom.RandText(20), 1, 20), CategoryTok, SubcategoryTok, Enum::"Sustainability Account Type"::Posting, '', true);
     end;
 
     local procedure UpdateReasonCodeinSalesHeader(var SalesHeader: Record "Sales Header")
@@ -5816,6 +5832,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     local procedure CreateCorrectiveCreditMemoAndOpenSalesCrMemoStatistics(SalesHeader: Record "Sales Header"): Code[20]
     var
@@ -5834,6 +5851,7 @@ codeunit 148184 "Sustainability Posting Test"
 
         exit(SalesHeader."No.");
     end;
+#pragma warning restore AL0432
 #endif
     local procedure CreateCorrectiveCreditMemoAndOpenSalesCrMemoSalesStatistics(SalesHeader: Record "Sales Header"): Code[20]
     var
@@ -5907,7 +5925,7 @@ codeunit 148184 "Sustainability Posting Test"
         BOMComponent: Record "BOM Component";
     begin
         BOMComponent.SetRange("Parent Item No.", ParentItem."No.");
-        BOMComponent.FindSet();
+        BOMComponent.FindFirst();
 
         exit(BOMComponent."No.")
     end;
@@ -5948,19 +5966,6 @@ codeunit 148184 "Sustainability Posting Test"
             ItemJournalLine."Entry Type"::"Positive Adjmt.", Item."No.", Quantity);
 
         LibraryInventory.PostItemJournalLine(ItemJournalTemplate.Name, ItemJournalBatch.Name);
-    end;
-
-    local procedure VerifySustainabilityLedgerEntry(AccountCode: Code[20]; CO2eEmission: Decimal)
-    var
-        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
-    begin
-        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
-        SustainabilityLedgerEntry.FindFirst();
-
-        Assert.AreEqual(
-            CO2eEmission,
-            SustainabilityLedgerEntry."CO2e Emission",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), CO2eEmission, SustainabilityLedgerEntry.TableCaption()));
     end;
 
     local procedure VerifySustainabilityValueEntry(ItemNo: Code[20]; CO2eEmissionExpected: Decimal; CO2eEmissionActual: Decimal)

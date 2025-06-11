@@ -17,6 +17,16 @@
       "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8c",
       "name": "E-Document Core Tests",
       "publisher": "Microsoft"
+    },
+    {
+      "id": "14aa1237-2f69-4c25-9a68-fa7d54e08613",
+      "name": "Payables Agent",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "967eceac-106e-4102-b76a-fe5dc3d799e5",
+      "name": "Payables Agent Tests",
+      "publisher": "Microsoft"
     }
   ],
   "screenshots": [],
@@ -24,7 +34,7 @@
   "idRanges": [
     {
       "from": 6100,
-      "to": 6190
+      "to": 6195
     }
   ],
   "resourceExposurePolicy": {
@@ -33,5 +43,8 @@
     "includeSourceInSymbolFile": true
   },
   "application": "27.0.0.0",
-  "target": "OnPrem"
+  "target": "OnPrem",
+  "resourceFolders": [
+    ".resources"
+  ]
 }

@@ -7,7 +7,6 @@ codeunit 139628 "E-Doc. Receive Test"
     trigger OnRun()
     begin
         // [FEATURE] [E-Document]
-        IsInitialized := false;
     end;
 
     var
@@ -25,7 +24,6 @@ codeunit 139628 "E-Doc. Receive Test"
         EDocImplState: Codeunit "E-Doc. Impl. State";
         EDocReceiveFiles: Codeunit "E-Doc. Receive Files";
         Assert: Codeunit Assert;
-        IsInitialized: Boolean;
         NullGuid: Guid;
         GetBasicInfoErr: Label 'Test Get Basic Info From Received Document Error.', Locked = true;
         GetCompleteInfoErr: Label 'Test Get Complete Info From Received Document Error.', Locked = true;
@@ -134,7 +132,7 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
 
-        // Setup correct vendor VAT and Item Ref to process document 
+        // Setup correct vendor VAT and Item Ref to process document
         Vendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
         Vendor."VAT Registration No." := 'GB123456789';
         Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
@@ -230,7 +228,7 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"Service Integration"::"Mock");
         LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
 
-        // Setup correct vendor VAT and Item Ref to process document 
+        // Setup correct vendor VAT and Item Ref to process document
         Vendor."VAT Registration No." := 'GB123456789';
         Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
         Vendor.Modify();
@@ -334,7 +332,7 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
 
-        // Setup correct vendor VAT and Item Ref to process document 
+        // Setup correct vendor VAT and Item Ref to process document
         Vendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
         Vendor."VAT Registration No." := 'GB123456789';
         Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Order";
@@ -1344,6 +1342,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
+    [HandlerFunctions('MessageHandler')]
     procedure ReceiveEDocumentDuplicate()
     var
         EDocService: Record "E-Document Service";
@@ -1417,6 +1416,11 @@ codeunit 139628 "E-Doc. Receive Test"
 
     [StrMenuHandler]
     procedure MenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
     begin
     end;
 
@@ -1565,7 +1569,7 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
 #if not CLEAN26
-
+#pragma warning disable AL0432
     // Tests inside CLEAN26 are testing the interfaces that is to be removed when CLEAN26 tags are removed.
     // Until then, the tests are kept.
 
@@ -1671,7 +1675,7 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
 
-        // Setup correct vendor VAT and Item Ref to process document 
+        // Setup correct vendor VAT and Item Ref to process document
         Vendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
         Vendor."VAT Registration No." := 'GB123456789';
         Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
@@ -1767,7 +1771,7 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"E-Document Integration"::Mock);
         LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
 
-        // Setup correct vendor VAT and Item Ref to process document 
+        // Setup correct vendor VAT and Item Ref to process document
         Vendor."VAT Registration No." := 'GB123456789';
         Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
         Vendor.Modify();
@@ -1871,7 +1875,7 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
 
-        // Setup correct vendor VAT and Item Ref to process document 
+        // Setup correct vendor VAT and Item Ref to process document
         Vendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
         Vendor."VAT Registration No." := 'GB123456789';
         Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Order";
@@ -2881,8 +2885,6 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader."E-Document Link" := NullGuid;
         PurchaseHeader.Delete(true);
     end;
-
-
+#pragma warning restore AL0432
 #endif
-
 }

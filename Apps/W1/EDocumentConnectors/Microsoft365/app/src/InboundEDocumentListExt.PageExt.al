@@ -20,8 +20,8 @@ pageextension 6386 InboundEDocumentListExt extends "Inbound E-Documents"
                 var
                     OutlookIntegrationImpl: Codeunit "Outlook Integration Impl.";
                 begin
-                    if (Rec."Mail Message Id" <> '') then
-                        HyperLink(StrSubstNo(OutlookIntegrationImpl.WebLinkText(), Rec."Mail Message Id"))
+                    if (Rec."Outlook Mail Message Id" <> '') then
+                        HyperLink(StrSubstNo(OutlookIntegrationImpl.WebLinkText(), Rec."Outlook Mail Message Id"))
                 end;
             }
         }

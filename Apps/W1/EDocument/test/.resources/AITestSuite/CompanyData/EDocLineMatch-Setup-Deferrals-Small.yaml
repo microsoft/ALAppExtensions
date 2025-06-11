@@ -1,0 +1,11 @@
+test_setup:
+  deferralTemplatesToCreate:
+  - deferral_code: "12M"
+    number_of_periods: 12
+    description: Anual deferral
+  - deferral_code: "6M"
+    number_of_periods: 6
+    description: Bi-annually deferred
+  - deferral_code: "3M"
+    number_of_periods: 3
+    description: Quarterly deferred.

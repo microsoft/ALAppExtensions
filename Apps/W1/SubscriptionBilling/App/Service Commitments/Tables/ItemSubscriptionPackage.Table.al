@@ -83,7 +83,7 @@ table 8058 "Item Subscription Package"
             Error(DiscountCannotBeAssignedErr);
     end;
 
-    internal procedure GetPackageFilterForItem(ItemNo: Code[20]) PackageFilter: Text
+    procedure GetPackageFilterForItem(ItemNo: Code[20]) PackageFilter: Text
     begin
         PackageFilter := GetPackageFilterForItem(ItemNo, '');
     end;

@@ -64,6 +64,7 @@ page 8069 "Serv. Comm. WO Cust. Contract"
                     trigger OnValidate()
                     begin
                         UpdateShipToStyle();
+                        CurrPage.Update(false);
                     end;
                 }
                 field("Service Start Date"; Rec."Subscription Line Start Date")

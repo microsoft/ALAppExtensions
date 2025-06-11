@@ -22,7 +22,6 @@ using Microsoft.Purchases.Vendor;
 codeunit 18251 "GST Purchase Non Availment"
 {
     var
-        GSTBaseValidation: Codeunit "GST Base Validation";
         GSTNonAvailmentSessionMgt: Codeunit "GST Non Availment Session Mgt";
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostItemJnlLine', '', false, false)]
@@ -186,7 +185,7 @@ codeunit 18251 "GST Purchase Non Availment"
             TransactionCessAmount := GetTaxAmount(GSTSetup."Cess Tax Type", PurchaseLine.RecordId);
 
         if (TransactionGSTAmount + TransactionCessAmount) <> 0 then
-            GSTAmountToBeLoaded := GSTBaseValidation.RoundGSTPrecision((TransactionGSTAmount + TransactionCessAmount) * (PurchaseLine."Qty. to Invoice" / PurchaseLine.Quantity));
+            GSTAmountToBeLoaded := ((TransactionGSTAmount + TransactionCessAmount) * (PurchaseLine."Qty. to Invoice" / PurchaseLine.Quantity));
 
         if PurchaseLine."Document Type" in [PurchaseLine."Document Type"::Order,
             PurchaseLine."Document Type"::Invoice,

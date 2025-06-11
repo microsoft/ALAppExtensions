@@ -146,13 +146,13 @@
 		</cac:TaxSubtotal>
 	</cac:TaxTotal>
 	<cac:LegalMonetaryTotal>
-		<cbc:LineExtensionAmount currencyID="XYZ">4000</cbc:LineExtensionAmount>
-		<cbc:TaxExclusiveAmount currencyID="XYZ">4000</cbc:TaxExclusiveAmount>
-		<cbc:TaxInclusiveAmount currencyID="XYZ">5000</cbc:TaxInclusiveAmount>
+		<cbc:LineExtensionAmount currencyID="XYZ">14000</cbc:LineExtensionAmount>
+		<cbc:TaxExclusiveAmount currencyID="XYZ">14000</cbc:TaxExclusiveAmount>
+		<cbc:TaxInclusiveAmount currencyID="XYZ">14040</cbc:TaxInclusiveAmount>
 		<cbc:AllowanceTotalAmount currencyID="XYZ">0</cbc:AllowanceTotalAmount>
 		<cbc:PrepaidAmount currencyID="XYZ">0.00</cbc:PrepaidAmount>
 		<cbc:PayableRoundingAmount currencyID="XYZ">0</cbc:PayableRoundingAmount>
-		<cbc:PayableAmount currencyID="XYZ">5000</cbc:PayableAmount>
+		<cbc:PayableAmount currencyID="XYZ">14040</cbc:PayableAmount>
 	</cac:LegalMonetaryTotal>
 	<cac:InvoiceLine>
 		<cbc:ID>10000</cbc:ID>
