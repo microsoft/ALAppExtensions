@@ -99,14 +99,4 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
         GetVendorContractLines.SetPurchaseLine(Rec);
         GetVendorContractLines.RunModal();
     end;
-
-    internal procedure IsPurchaseInvoice(): Boolean
-    begin
-        exit(Rec."Document Type" = Enum::"Purchase Document Type"::Invoice);
-    end;
-
-    internal procedure IsPurchaseOrderLineAttachedToBillingLine(): Boolean
-    begin
-        exit((Rec."Document Type" = Enum::"Purchase Document Type"::Order) and Rec.IsLineAttachedToBillingLine());
-    end;
 }
