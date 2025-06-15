@@ -107,19 +107,6 @@ codeunit 139885 "Item Service Comm. Type Test"
     end;
 
     [Test]
-    procedure ExpectErrorUsingServiceCommitmentItemOnPurchaseQuote()
-    begin
-        ClearAll();
-        // [GIVEN] Create Purchase Invoice
-        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Quote, '');
-        // [WHEN] Try to enter Purchase Line with Item which is Subscription Item
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        asserterror LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, Enum::"Purchase Line Type"::Item, Item."No.", 1);
-        // [THEN] expect error is thrown
-        AssertThat.ExpectedError(ServiceCommitmentItemErr);
-    end;
-
-    [Test]
     procedure ExpectErrorUsingServiceCommitmentItemAndAllowInvoiceDiscountOnSalesLine()
     begin
         ClearAll();
@@ -155,16 +142,14 @@ codeunit 139885 "Item Service Comm. Type Test"
     end;
 
     [Test]
-    procedure ExpectErrorUsingServiceCommitmentItemAndBillingItemOnPurchaseReturnOrder()
+    procedure ExpectErrorUsingInvoicingItemOnPurchaseOrder()
     begin
         ClearAll();
-        // [GIVEN] Create Purchase Return Order
-        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Return Order", '');
+        // [GIVEN] Create Purchase Order
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, '');
         Commit(); // retain data after asserterror
-        // [WHEN] Try to enter Purchase Line with Item which is Subscription Item or Invoicing Item
+        // [WHEN] Try to enter Purchase Line with Item which Invoicing Item
         // [THEN] expect error is thrown
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        asserterror LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, Enum::"Purchase Line Type"::Item, Item."No.", 1);
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
         asserterror LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, Enum::"Purchase Line Type"::Item, Item."No.", 1);
     end;
