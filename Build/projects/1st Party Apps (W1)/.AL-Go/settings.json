@@ -1,15 +1,16 @@
 {
-    "projectName": "1st Party Apps (W1)",
-    "appFolders":  [
-        "..\\..\\..\\Apps\\W1\\*\\app",
-        "..\\..\\..\\Apps\\W1\\*\\*\\app",
-        "..\\..\\..\\Apps\\W1\\ClientAddIns",
-        "..\\..\\..\\Apps\\W1\\MicrosoftUniversalPrint",
-        "..\\..\\..\\Apps\\W1\\SendToEmailPrinter",
-        "..\\..\\..\\Apps\\W1\\SmartList",
-        "..\\..\\..\\Apps\\W1\\SyncBase"
-    ],
-    "doNotRunTests": true,
-    "useCompilerFolder": true,
-    "doNotPublishApps": true
+  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v7.2/settings.schema.json",
+  "projectName": "1st Party Apps (W1)",
+  "appFolders": [
+    "..\\..\\..\\Apps\\W1\\*\\app",
+    "..\\..\\..\\Apps\\W1\\*\\*\\app",
+    "..\\..\\..\\Apps\\W1\\ClientAddIns",
+    "..\\..\\..\\Apps\\W1\\MicrosoftUniversalPrint",
+    "..\\..\\..\\Apps\\W1\\SendToEmailPrinter",
+    "..\\..\\..\\Apps\\W1\\SmartList",
+    "..\\..\\..\\Apps\\W1\\SyncBase"
+  ],
+  "doNotRunTests": true,
+  "useCompilerFolder": true,
+  "doNotPublishApps": true
 }
