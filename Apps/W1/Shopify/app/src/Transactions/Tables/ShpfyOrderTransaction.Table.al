@@ -204,6 +204,11 @@ table 30133 "Shpfy Order Transaction"
             FieldClass = FlowField;
             CalcFormula = exist("Cust. Ledger Entry" where("Shpfy Transaction Id" = field("Shopify Transaction Id")));
         }
+        field(107; "Manual Payment Gateway"; Boolean)
+        {
+            Caption = 'Manual Payment Gateway';
+            Editable = false;
+        }
     }
 
     keys
