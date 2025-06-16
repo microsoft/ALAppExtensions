@@ -34,7 +34,7 @@ page 30171 "Shpfy Staff Mapping"
             }
         }
     }
-
+    
     actions
     {
         area(processing)
@@ -44,9 +44,6 @@ page 30171 "Shpfy Staff Mapping"
                 ApplicationArea = All;
                 Caption = 'Refresh';
                 Image = Refresh;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Refreshes the list of Shopify staff members.';
 
                 trigger OnAction()
@@ -55,6 +52,15 @@ page 30171 "Shpfy Staff Mapping"
                 begin
                     ShpfyStaffAPI.GetStaffMembers(CopyStr(Rec.GetFilter("Shop Code"), 1, 20));
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(Refresh_Promoted; Refresh) { }
             }
         }
     }

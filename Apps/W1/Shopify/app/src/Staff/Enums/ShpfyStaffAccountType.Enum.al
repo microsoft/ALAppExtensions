@@ -3,7 +3,7 @@
 /// </summary>
 enum 30168 "Shpfy Staff Account Type"
 {
-    Extensible = true;
+    Extensible = false;
 
     value(0; "Collaborator") { Caption = 'Collaborator'; }
     value(1; "Collaborator Team Member") { Caption = 'Collaborator Team Member'; }

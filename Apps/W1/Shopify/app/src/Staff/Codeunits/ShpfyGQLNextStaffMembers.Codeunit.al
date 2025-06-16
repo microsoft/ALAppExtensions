@@ -6,6 +6,8 @@ namespace Microsoft.Integration.Shopify;
 /// </summary>
 codeunit 30401 "Shpfy GQL NextStaffMembers" implements "Shpfy IGraphQL"
 {
+    Access = Internal;
+    
     /// <summary>
     /// Returns the GraphQL query for retrieving the next set of staff members.
     /// </summary>
