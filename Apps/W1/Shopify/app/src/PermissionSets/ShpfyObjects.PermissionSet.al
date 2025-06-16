@@ -257,6 +257,7 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL VariantIds" = X,
         codeunit "Shpfy GQL VariantImages" = X,
         codeunit "Shpfy GQL VariantMetafieldIds" = X,
+        codeunit "Shpfy GQL CreateCompLocation" = X,
         codeunit "Shpfy GraphQL Queries" = X,
         codeunit "Shpfy GraphQL Rate Limit" = X,
         codeunit "Shpfy Guided Experience" = X,
