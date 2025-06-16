@@ -8,6 +8,8 @@ table 30136 "Shpfy Staff Member"
 {
     Caption = 'Shopify Staff Member';
     DataClassification = CustomerContent;
+    LookupPageId = "Shpfy Staff Mapping";
+    DrillDownPageId = "Shpfy Staff Mapping";
 
     fields
     {
