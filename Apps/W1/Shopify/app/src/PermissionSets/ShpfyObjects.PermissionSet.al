@@ -68,6 +68,7 @@ permissionset 30104 "Shpfy - Objects"
         table "Shpfy Translation" = X,
         table "Shpfy Transaction Gateway" = X,
         table "Shpfy Variant" = X,
+        table "Shpfy Staff Member" = X,
         report "Shpfy Add Company to Shopify" = X,
         report "Shpfy Add Customer to Shopify" = X,
         report "Shpfy Add Item to Shopify" = X,
@@ -257,6 +258,9 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL VariantIds" = X,
         codeunit "Shpfy GQL VariantImages" = X,
         codeunit "Shpfy GQL VariantMetafieldIds" = X,
+        codeunit "Shpfy Staff Member API" = X,
+        codeunit "Shpfy GQL GetStaffMembers" = X,
+        codeunit "Shpfy GQL NextStaffMembers" = X,
         codeunit "Shpfy GraphQL Queries" = X,
         codeunit "Shpfy GraphQL Rate Limit" = X,
         codeunit "Shpfy Guided Experience" = X,
@@ -449,5 +453,6 @@ permissionset 30104 "Shpfy - Objects"
         page "Shpfy Transaction Gateways" = X,
         page "Shpfy Transactions" = X,
         page "Shpfy Variants" = X,
+        page "Shpfy Staff Mapping" = X,
         query "Shpfy Shipment Location" = X;
 }
