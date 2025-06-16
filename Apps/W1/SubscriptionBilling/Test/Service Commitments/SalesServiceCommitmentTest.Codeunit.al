@@ -11,6 +11,7 @@ using Microsoft.Inventory.Requisition;
 using Microsoft.Inventory.Setup;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Purchases.Document;
+using Microsoft.Sales.Setup;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Archive;
 using Microsoft.Sales.Customer;
@@ -620,25 +621,32 @@ codeunit 139915 "Sales Service Commitment Test"
     procedure CheckSalesLineQtyToInvoiceOnCreateSalesOrder()
     var
         Item2: Record Item;
+        SalesLine2: Record "Sales Line";
     begin
+        // [SCENARIO] Create two sales line , one for Subscription item and one for item with subscription
         Initialize();
+        LibrarySetupStorage.Save(DATABASE::"Sales & Receivables Setup");
+
+        // [GIVEN] "Default Item Quantity is set to Yes in Sales & Receivables Setup""
+        UpdateDefaultItemQuantityOnSalesSetup(true);
+
+        // [GIVEN] Create Subscription item and Item with subscriptions
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item2, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
+
+        // [WHEN] Create new Sales order with two sales line referencing Subscription item and Item with subscription
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, '');
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandInt(100));
-        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item2."No.", LibraryRandom.RandInt(100));
+        LibrarySales.CreateSalesLine(SalesLine2, SalesHeader, Enum::"Sales Line Type"::Item, Item2."No.", LibraryRandom.RandInt(100));
 
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-        SalesLine.SetRange(Type, SalesLine.Type::Item);
+        // [THEN] "Qty. to Invoice" must be 0 for Subscription Item
+        Assert.AreEqual(SalesLine."Qty. to Invoice", 0, '');
 
-        SalesLine.SetRange("No.", Item."No.");
-        SalesLine.SetRange("Qty. to Invoice", 0);
-        Assert.RecordIsNotEmpty(SalesLine);
+        // [THEN] "Qty. to Invoice" must be the same as Quantity for Item with subscription
+        Assert.AreEqual(SalesLine2."Qty. to Invoice", SalesLine2.Quantity, '');
 
-        SalesLine.SetRange("No.", Item2."No.");
-        SalesLine.SetRange("Qty. to Invoice", SalesLine.Quantity);
-        Assert.RecordIsNotEmpty(SalesLine);
+        LibrarySetupStorage.Restore();
+        Clear(LibrarySetupStorage);
     end;
 
     [Test]
@@ -1702,7 +1710,7 @@ codeunit 139915 "Sales Service Commitment Test"
     local procedure CreateComponentItemWithSalesServiceCommitments(Item2No: Code[20])
     begin
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", ServiceCommitmentPackage.Code);
-        ContractTestLibrary.CreateBOMComponentForItem(Item2No, Item."No.", 0, '');
+        ContractTestLibrary.CreateBOMComponentForItem(Item2No, Item."No.", 1, Item."Base Unit of Measure");
     end;
 
     local procedure CreateNoSeriesWithLine(): Code[20]
@@ -2106,6 +2114,15 @@ codeunit 139915 "Sales Service Commitment Test"
         ServiceObject.FilterOnItemNo(Item."No.");
         ServiceObject.SetFilter("Serial No.", '<>%1', '');
         Assert.RecordCount(ServiceObject, NoOfServiceObjects);
+    end;
+
+    local procedure UpdateDefaultItemQuantityOnSalesSetup(DefaultItemQuantity: Boolean)
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup.Validate("Default Item Quantity", DefaultItemQuantity);
+        SalesReceivablesSetup.Modify(true);
     end;
 
     local procedure VerifyServiceCommitmentUnitCostFromSalesServiceCommitment(ServiceCommitmentParam: Record "Subscription Line"; var TempSalesServiceCommitment: Record "Sales Subscription Line" temporary)

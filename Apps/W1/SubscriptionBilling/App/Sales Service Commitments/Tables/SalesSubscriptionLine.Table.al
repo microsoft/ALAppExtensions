@@ -422,6 +422,7 @@ table 8068 "Sales Subscription Line"
     begin
         Rec.Init();
         SetDocumentFields(SourceSalesLine."Document Type", SourceSalesLine."Document No.", SourceSalesLine."Line No.");
+        SalesLine := SourceSalesLine;
         Rec."Line No." := 0;
     end;
 
@@ -776,7 +777,7 @@ table 8068 "Sales Subscription Line"
         SalesHeader: Record "Sales Header";
         CurrencyDate: Date;
     begin
-        SalesLine.Get(Rec."Document Type", Rec."Document No.", Rec."Document Line No.");
+        GetSalesLine(SalesLine);
         case Rec.Partner of
             Partner::Customer:
                 Rec.Validate("Unit Cost (LCY)", SalesLine."Unit Cost (LCY)" * Rec."Calculation Base %" / 100);
@@ -808,8 +809,19 @@ table 8068 "Sales Subscription Line"
 
     local procedure GetSalesLine(SalesSubscriptionLine: Record "Sales Subscription Line"; var SalesLine2: Record "Sales Line")
     begin
-        SalesLine2.Get(SalesSubscriptionLine."Document Type", SalesSubscriptionLine."Document No.", SalesSubscriptionLine."Document Line No.");
+        if (SalesLine."Document Type" <> SalesSubscriptionLine."Document Type")
+            or (SalesLine."Document No." <> SalesSubscriptionLine."Document No.")
+            or (SalesLine."Line No." <> SalesSubscriptionLine."Document Line No.")
+        then
+            SalesLine2.Get(SalesSubscriptionLine."Document Type", SalesSubscriptionLine."Document No.", SalesSubscriptionLine."Document Line No.")
+        else
+            SalesLine2 := SalesLine;
         OnAfterGetSalesLine(Rec, SalesLine2);
+    end;
+
+    procedure SetSalesLine(var NewSalesLine: Record "Sales Line")
+    begin
+        SalesLine := NewSalesLine;
     end;
 
     [IntegrationEvent(false, false)]
