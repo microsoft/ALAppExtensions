@@ -31,15 +31,13 @@ pageextension 8013 "A/P Admin Activities" extends "A/P Admin Activities"
         }
     }
 
+    var
+        VendorContracts: Integer;
+
     trigger OnOpenPage()
     var
         VendorContract: Record "Vendor Subscription Contract";
     begin
         VendorContracts := VendorContract.Count();
     end;
-
-    var
-        VendorContracts: Integer;
-
-
 }
