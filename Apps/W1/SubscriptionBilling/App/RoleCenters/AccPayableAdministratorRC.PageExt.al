@@ -23,5 +23,4 @@ pageextension 8011 "Acc. Payable Administrator RC" extends "Acc. Payable Adminis
             }
         }
     }
-
 }

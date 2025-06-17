@@ -25,7 +25,6 @@ pageextension 8013 "A/P Admin Activities" extends "A/P Admin Activities"
                 begin
                     if VendorContract.FindSet() then
                         Page.Run(Page::"Vendor Contracts", VendorContract);
-
                 end;
             }
         }
