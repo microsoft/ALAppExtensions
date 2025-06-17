@@ -243,6 +243,7 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL POTran", 'POTran');
         UpdateOrInsertRecord(Database::"SL PurchOrd", 'PurchOrd');
         UpdateOrInsertRecord(Database::"SL PurOrdDet", 'PurOrdDet');
+        UpdateOrInsertRecord(Database::"SL VendClass", 'VendClass');
         UpdateOrInsertRecord(Database::"SL Vendor", 'Vendor');
         // Receivables
         UpdateOrInsertRecord(Database::"SL AR_Balances", 'AR_Balances');

@@ -156,8 +156,6 @@ page 47017 "SL Company Add. Settings List"
                 }
                 field("Migrate Vendor Classes"; Rec."Migrate Vendor Classes")
                 {
-                    Enabled = false;
-                    Visible = false;
                 }
                 field("Migrate Product Classes"; Rec."Migrate Item Classes")
                 {
