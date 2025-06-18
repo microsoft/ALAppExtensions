@@ -86,8 +86,6 @@ pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
 
     var
         EDocumentHelper: Codeunit "E-Document Processing";
-
         IncomingEDocumentInProgressCount, IncomingEDocumentProcessedCount, IncomingEDocumentErrorCount : Integer;
-
         MatchedPurchaseOrderCount, WaitingPurchaseEDocCount : Integer;
 }
