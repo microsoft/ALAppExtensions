@@ -12,7 +12,7 @@ pageextension 8013 "A/P Admin Activities" extends "A/P Admin Activities"
     {
         addafter("Purch. Invoices Due Next Week")
         {
-            field("Vendor Contracts"; VendorContracts)
+            field("Vendor Contracts"; this.VendorContracts)
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Vendor Contracts';
@@ -37,6 +37,6 @@ pageextension 8013 "A/P Admin Activities" extends "A/P Admin Activities"
     var
         VendorContract: Record "Vendor Subscription Contract";
     begin
-        VendorContracts := VendorContract.Count();
+        this.VendorContracts := VendorContract.Count();
     end;
 }
