@@ -75,6 +75,10 @@ pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
         }
     }
 
+    var
+        EDocumentHelper: Codeunit "E-Document Processing";
+        IncomingEDocumentInProgressCount, IncomingEDocumentProcessedCount, IncomingEDocumentErrorCount : Integer;
+        MatchedPurchaseOrderCount, WaitingPurchaseEDocCount : Integer;
     trigger OnOpenPage()
     begin
         IncomingEDocumentInProgressCount := EDocumentHelper.GetEDocumentCount(Enum::"E-Document Status"::"In Progress", Enum::"E-Document Direction"::Incoming);
@@ -83,11 +87,4 @@ pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
         MatchedPurchaseOrderCount := EDocumentHelper.MatchedPurchaseOrdersCount();
         WaitingPurchaseEDocCount := EDocumentHelper.WaitingPurchaseEDocCount();
     end;
-
-    var
-        EDocumentHelper: Codeunit "E-Document Processing";
-
-        IncomingEDocumentInProgressCount, IncomingEDocumentProcessedCount, IncomingEDocumentErrorCount : Integer;
-
-        MatchedPurchaseOrderCount, WaitingPurchaseEDocCount : Integer;
 }
