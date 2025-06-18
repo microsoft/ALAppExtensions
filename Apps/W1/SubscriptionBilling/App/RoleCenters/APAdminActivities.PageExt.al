@@ -16,7 +16,7 @@ pageextension 8013 "A/P Admin Activities" extends "A/P Admin Activities"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Vendor Contracts';
-                ToolTip = 'Shows the vendor contracts that are due next week.';
+                ToolTip = 'Shows the vendor contracts count.';
                 Visible = true;
 
                 trigger OnDrillDown()
