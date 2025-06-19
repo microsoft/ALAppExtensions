@@ -36,6 +36,14 @@ codeunit 5401 "Create Column Layout Name"
         ContosoAccountSchedule.InsertColumnLayoutName(CurrentMonthNetChangeVSameMonthPriorYear(), CurrentMonthNetChangeVSameMonthPriorYearLbl);
         ContosoAccountSchedule.InsertColumnLayoutName(CurrentMonthVPriorMonthCY(), CurrentMonthVPriorMonthCYLbl);
         ContosoAccountSchedule.InsertColumnLayoutName(CurrentMonthVBudgetYearToDate(), CurrentMonthVBudgetYearToDateLbl);
+
+        ContosoAccountSchedule.InsertColumnLayoutName(BalanceSheetMultiYearBalanceComparison(), BalanceSheetMultiYearBalanceComparisonLbl);
+        ContosoAccountSchedule.InsertColumnLayoutName(BalanceSheetCurrentYearBalanceByQuarter(), BalanceSheetCurrentYearBalanceByQuarterLbl);
+        ContosoAccountSchedule.InsertColumnLayoutName(IncomeStatementCurrentYearNetChangeByQuarter(), IncomeStatementCurrentYearNetChangeByQuarterLbl);
+        ContosoAccountSchedule.InsertColumnLayoutName(IncomeStatementMultiYearNetChangeComparison(), IncomeStatementMultiYearNetChangeComparisonLbl);
+        ContosoAccountSchedule.InsertColumnLayoutName(PeriodAndYearToDate(), PeriodAndYearToDateLbl);
+        ContosoAccountSchedule.InsertColumnLayoutName(PeriodAndYearToDateWithPercentTotalRevenue(), PeriodAndYearToDateWithPercentTotalRevenueLbl);
+        ContosoAccountSchedule.InsertColumnLayoutName(ThisYearToDatevsPriorYearToDate(), ThisYearToDatevsPriorYearToDateLbl);
     end;
 
     internal procedure CreateSetupColumnLayoutName()
@@ -140,6 +148,41 @@ codeunit 5401 "Create Column Layout Name"
         exit(CurrentMonthVBudgetYearToDateTok);
     end;
 
+    procedure BalanceSheetMultiYearBalanceComparison(): Code[10]
+    begin
+        exit(BalanceSheetMultiYearBalanceComparisonTok);
+    end;
+
+    procedure BalanceSheetCurrentYearBalanceByQuarter(): Code[10]
+    begin
+        exit(BalanceSheetCurrentYearBalanceByQuarterTok);
+    end;
+
+    procedure IncomeStatementCurrentYearNetChangeByQuarter(): Code[10]
+    begin
+        exit(IncomeStatementCurrentYearNetChangeByQuarterTok);
+    end;
+
+    procedure IncomeStatementMultiYearNetChangeComparison(): Code[10]
+    begin
+        exit(IncomeStatementMultiYearNetChangeComparisonTok);
+    end;
+
+    procedure PeriodAndYearToDate(): Code[10]
+    begin
+        exit(PeriodAndYearToDateTok);
+    end;
+
+    procedure PeriodAndYearToDateWithPercentTotalRevenue(): Code[10]
+    begin
+        exit(PeriodAndYearToDateWithPercentTotalRevenueTok);
+    end;
+
+    procedure ThisYearToDatevsPriorYearToDate(): Code[10]
+    begin
+        exit(ThisYearToDatevsPriorYearToDateTok);
+    end;
+
     var
         ActualBudgetComparisonTok: Label 'ACT/BUD', MaxLength = 10;
         BalanceOnlyTok: Label 'BAL ONLY', MaxLength = 10;
@@ -160,6 +203,13 @@ codeunit 5401 "Create Column Layout Name"
         CurrentMonthNetChangeVSameMonthPriorYearTok: Label 'CNC VSPYNC', Locked = true;
         CurrentMonthVPriorMonthCYTok: Label 'CNCVPNCYOY', Locked = true;
         CurrentMonthVBudgetYearToDateTok: Label 'CVC YTDBUD', Locked = true;
+        BalanceSheetMultiYearBalanceComparisonTok: Label 'BMULTIYR', MaxLength = 10;
+        BalanceSheetCurrentYearBalanceByQuarterTok: Label 'CY BQTR', MaxLength = 10;
+        IncomeStatementCurrentYearNetChangeByQuarterTok: Label 'CY NCQTR', MaxLength = 10;
+        IncomeStatementMultiYearNetChangeComparisonTok: Label 'NCMULTIYR', MaxLength = 10;
+        PeriodAndYearToDateTok: Label 'PTD+YTD', MaxLength = 10;
+        PeriodAndYearToDateWithPercentTotalRevenueTok: Label 'PTD+YTD+%', MaxLength = 10;
+        ThisYearToDatevsPriorYearToDateTok: Label 'YTDCOMPARE', MaxLength = 10;
         BalanceSheetLbl: Label 'BS 12 Months Balance Trending Current Fiscal Year', MaxLength = 80, Comment = 'BS - abbreviation of Balance Sheet';
         IncomeStatementLbl: Label 'IS 12 Months Net Change Trending Current Fiscal Year', MaxLength = 80, Comment = 'IS - abbreviation of Income Statement';
         TrialBalanceLbl: Label 'TB Beginning Balance Debits Credits Ending Balance', MaxLength = 80, Comment = 'TB - abbreviation of Trial Balance';
@@ -179,4 +229,11 @@ codeunit 5401 "Create Column Layout Name"
         DefaultLayoutLbl: Label 'Standard Column Layout', MaxLength = 80;
         KeyCashFlowRatioLbl: Label 'Key Cash Flow Ratio', MaxLength = 80;
         PeriodsDefinitionLbl: Label 'Periods Definition for Mini Charts', MaxLength = 80;
+        BalanceSheetMultiYearBalanceComparisonLbl: Label 'BS Multi-Year Balance Comparison', MaxLength = 80;
+        BalanceSheetCurrentYearBalanceByQuarterLbl: Label 'BS Current Year Balances by Quarter', MaxLength = 80;
+        IncomeStatementCurrentYearNetChangeByQuarterLbl: Label 'IS Current Year Net Change by Quarter', MaxLength = 80;
+        IncomeStatementMultiYearNetChangeComparisonLbl: Label 'IS Multi-Year Net Change Comparison', MaxLength = 80;
+        PeriodAndYearToDateLbl: Label 'Period and Year to Date', MaxLength = 80;
+        PeriodAndYearToDateWithPercentTotalRevenueLbl: Label 'Period and Year to Date with Percent of Total Revenue', MaxLength = 80;
+        ThisYearToDatevsPriorYearToDateLbl: Label 'This Year to Date vs. Prior Year to Date', MaxLength = 80;
 }
