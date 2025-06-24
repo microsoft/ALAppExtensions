@@ -329,7 +329,7 @@ codeunit 8063 "Sales Documents"
         IsHandled := IsHandled or SalesLineShouldSkipInvoicing(SalesLine);
         if (SalesLine.Type = SalesLine.Type::" ") and (SalesLine."Attached to Line No." <> 0) then
             if ParentSalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Attached to Line No.") then
-                IsHandled := IsHandled or SalesLineShouldSkipInvoicing(SalesLine);
+                IsHandled := IsHandled or SalesLineShouldSkipInvoicing(ParentSalesLine);
         OnAfterSkipInsertingSalesInvoiceLineIfServiceCommitmentItemsExist(SalesHeader, SalesLine, IsHandled);
     end;
 
