@@ -113,7 +113,7 @@ page 30156 "Shpfy Companies"
                 PromotedOnly = true;
                 PromotedCategory = Category4;
                 RunObject = Page "Shpfy Orders";
-                RunPageLink = "Customer Id" = field(Id);
+                RunPageLink = "Company Id" = field(Id);
                 ToolTip = 'View a list of Shopify orders for the company.';
             }
             action(ShopifyCatalogs)

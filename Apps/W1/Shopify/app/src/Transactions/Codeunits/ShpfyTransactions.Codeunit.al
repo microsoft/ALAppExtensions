@@ -79,6 +79,7 @@ codeunit 30194 "Shpfy Transactions"
         RecordRef.GetTable(OrderTransaction);
         JsonHelper.GetValueIntoField(JOrderTransaction, 'gateway', RecordRef, OrderTransaction.FieldNo(Gateway));
         JsonHelper.GetValueIntoField(JOrderTransaction, 'formattedGateway', RecordRef, OrderTransaction.FieldNo(Message));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'manualPaymentGateway', RecordRef, OrderTransaction.FieldNo("Manual Payment Gateway"));
         JsonHelper.GetValueIntoField(JOrderTransaction, 'createdAt', RecordRef, OrderTransaction.FieldNo("Created At"));
         JsonHelper.GetValueIntoField(JOrderTransaction, 'test', RecordRef, OrderTransaction.FieldNo(Test));
         JsonHelper.GetValueIntoField(JOrderTransaction, 'authorizationCode', RecordRef, OrderTransaction.FieldNo(Authorization));
@@ -125,6 +126,7 @@ codeunit 30194 "Shpfy Transactions"
             PaymentMethodMapping."Shop Code" := OrderHeader."Shop Code";
             PaymentMethodMapping.Gateway := OrderTransaction.Gateway;
             PaymentMethodMapping."Credit Card Company" := CopyStr(OrderTransaction."Credit Card Company", 1, MaxStrLen(PaymentMethodMapping."Credit Card Company"));
+            PaymentMethodMapping."Manual Payment Gateway" := OrderTransaction."Manual Payment Gateway";
             PaymentMethodMapping.Insert();
         end;
 
