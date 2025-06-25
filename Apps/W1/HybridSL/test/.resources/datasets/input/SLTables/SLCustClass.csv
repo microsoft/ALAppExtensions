@@ -1,0 +1,7 @@
+﻿ClassId,ARAcct,Descr
+COMM  ,1110      ,Commercial                    
+GOVERN,1110      ,Government                    
+HEALTH,1110      ,Healthcare                    
+INTER ,1160      ,Inter-Company                 
+RETAIL,1110      ,Retail                        
+WHOLE ,1110      ,Wholesale                     
