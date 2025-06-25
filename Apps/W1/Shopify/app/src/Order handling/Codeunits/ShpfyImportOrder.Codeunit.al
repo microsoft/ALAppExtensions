@@ -304,11 +304,12 @@ codeunit 30161 "Shpfy Import Order"
 
     local procedure RetrieveOrderHeaderJson(OrderId: BigInteger; var JOrder: JsonObject): Boolean
     var
-        Parameters: Dictionary of [Text, Text];
+        ShpfyOrdersAPI: Codeunit "Shpfy Orders API";
         JResponse: JsonToken;
+        GraphQuery: Text;
     begin
-        Parameters.Add('OrderId', Format(OrderId));
-        JResponse := CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::GetOrderHeader, Parameters);
+        GraphQuery := ShpfyOrdersAPI.CreateOrderGraphQLQuery(OrderId);
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
         exit(JsonHelper.GetJsonObject(JResponse, JOrder, 'data.order'));
     end;
 
@@ -467,7 +468,7 @@ codeunit 30161 "Shpfy Import Order"
                     JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.name', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to Customer Name"));
                 if Shop."B2B Enabled" then begin
                     StaffMemberId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrder, 'staffMember.id'));
-                    this.SetSalespersonOnOrderHeader(OrderHeader."Shop Code", StaffMemberId, OrderHeaderRecordRef);
+                    SetSalespersonOnOrderHeader(OrderHeader."Shop Code", StaffMemberId, OrderHeaderRecordRef);
                 end;
             end;
             if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity.location') then begin
@@ -743,11 +744,11 @@ codeunit 30161 "Shpfy Import Order"
     local procedure SetSalespersonOnOrderHeader(ShopCode: Code[20]; StaffMemberId: BigInteger; OrderHeaderRecordRef: RecordRef)
     var
         StaffMember: Record "Shpfy Staff Member";
-        ShpfyOrderHeader: Record "Shpfy Order Header";
+        OrderHeader: Record "Shpfy Order Header";
     begin
         if not StaffMember.Get(ShopCode, StaffMemberId) then
             exit;
-        OrderHeaderRecordRef.Field(ShpfyOrderHeader.FieldNo("Salesperson Code")).Value := StaffMember."Salesperson Code";
+        OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Salesperson Code")).Value := StaffMember."Salesperson Code";
     end;
 
     /// <summary> 

@@ -100,18 +100,18 @@ table 30136 "Shpfy Staff Member"
             trigger OnValidate()
             var
                 SalespersonPurchaser: Record "Salesperson/Purchaser";
-                ShpfyStaffMember: Record "Shpfy Staff Member";
-                SalespersonPurchaserMappingErr: Label '%1 = %2 already mapped for the Shopify Staff Member %3.', Comment = '%1 = Salesperson/Purchaser table caption, %2 = Salesperson/Purchaser code, %3 = Shopify Staff Member name';
+                StaffMember: Record "Shpfy Staff Member";
+                SalespersonPurchaserMappingErr: Label '%1 %2 already mapped to Shopify Staff Member %3.', Comment = '%1 = Salesperson/Purchaser table caption, %2 = Salesperson/Purchaser code, %3 = Shopify Staff Member name';
             begin
                 if "Salesperson Code" <> '' then begin
                     SalespersonPurchaser.Get("Salesperson Code");
                     if SalespersonPurchaser.VerifySalesPersonPurchaserPrivacyBlocked(SalespersonPurchaser) then
                         Error(ErrorInfo.Create(SalespersonPurchaser.GetPrivacyBlockedGenericText(SalespersonPurchaser, true), true, SalespersonPurchaser));
-                    ShpfyStaffMember.SetRange("Shop Code", "Shop Code");
-                    ShpfyStaffMember.SetFilter(Id, '<>%1', Id);
-                    ShpfyStaffMember.SetRange("Salesperson Code", "Salesperson Code");
-                    if ShpfyStaffMember.FindFirst() then
-                        Error(SalespersonPurchaserMappingErr, SalespersonPurchaser.TableCaption(), "Salesperson Code", ShpfyStaffMember.Name);
+                    StaffMember.SetRange("Shop Code", "Shop Code");
+                    StaffMember.SetFilter(Id, '<>%1', Id);
+                    StaffMember.SetRange("Salesperson Code", "Salesperson Code");
+                    if StaffMember.FindFirst() then
+                        Error(SalespersonPurchaserMappingErr, SalespersonPurchaser.TableCaption(), "Salesperson Code", StaffMember.Name);
                 end;
             end;
         }

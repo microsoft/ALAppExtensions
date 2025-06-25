@@ -807,7 +807,6 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Salesperson Code';
             DataClassification = CustomerContent;
-            TableRelation = "Salesperson/Purchaser" where(Blocked = const(false));
         }
     }
     keys
