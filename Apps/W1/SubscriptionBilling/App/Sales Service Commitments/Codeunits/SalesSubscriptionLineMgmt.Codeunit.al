@@ -34,6 +34,8 @@ codeunit 8069 "Sales Subscription Line Mgmt."
 
         if not IsSalesLineWithSalesServiceCommitments(SalesLine, false) then
             exit;
+        if SalesLine."Line No." = 0 then
+            exit;
 
         SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
         ItemServCommitmentPackage.SetRange("Item No.", SalesLine."No.");
@@ -101,19 +103,14 @@ codeunit 8069 "Sales Subscription Line Mgmt."
     end;
 
     local procedure IsSalesLineWithSalesServiceCommitments(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean; ServiceCommitmentItemOnly: Boolean): Boolean
-    var
-        SalesLine2: Record "Sales Line";
     begin
         if not SkipTemporaryCheck then
             if SalesLine.IsTemporary() then
                 exit(false);
         if (SalesLine.Type <> SalesLine.Type::Item) or
            (SalesLine."No." = '') or
-           (SalesLine."Line No." = 0) or
            not SalesLine.IsSalesDocumentTypeWithServiceCommitments()
         then
-            exit(false);
-        if not SalesLine2.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.") then
             exit(false);
         if ServiceCommitmentItemOnly then begin
             if not ItemManagement.IsServiceCommitmentItem(SalesLine."No.") then
@@ -172,7 +169,6 @@ codeunit 8069 "Sales Subscription Line Mgmt."
         if ServiceCommitmentPackage.Get(ServCommPackageCode) then begin
             ServiceCommitmentPackageLine.SetRange("Subscription Package Code", ServiceCommitmentPackage.Code);
             if ServiceCommitmentPackageLine.FindSet() then begin
-                SalesLine.Modify(false);
                 repeat
                     CreateSalesServCommLineFromServCommPackageLine(SalesLine, ServiceCommitmentPackageLine);
                 until ServiceCommitmentPackageLine.Next() = 0;
