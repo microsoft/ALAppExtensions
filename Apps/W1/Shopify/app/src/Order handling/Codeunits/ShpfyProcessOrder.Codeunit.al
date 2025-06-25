@@ -128,6 +128,8 @@ codeunit 30166 "Shpfy Process Order"
                 SalesHeader.Validate("Payment Method Code", ShopifyOrderHeader."Payment Method Code");
             if ShopifyOrderHeader."Payment Terms Type" <> '' then
                 UpdatePaymentTerms(SalesHeader, ShopifyOrderHeader."Payment Terms Type", ShopifyOrderHeader."Payment Terms Name");
+            if ShopifyOrderHeader."Salesperson Code" <> '' then
+                SalesHeader.Validate("Salesperson Code", ShopifyOrderHeader."Salesperson Code");
 
             SalesHeader.Modify(true);
 
