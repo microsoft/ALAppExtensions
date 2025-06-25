@@ -136,6 +136,11 @@ codeunit 47001 "SL Cloud Migration"
             Commit();
         end;
 
+        if SLCompanyAdditionalSettings.GetMigrateVendorClasses() then begin
+            SLHelperFunctions.DeleteExistingVendorPostingGroups();
+            Commit();
+        end;
+
         Flag := false;
         SLHelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
         if Flag then begin
