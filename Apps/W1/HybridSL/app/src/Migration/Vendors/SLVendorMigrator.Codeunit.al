@@ -102,6 +102,8 @@ codeunit 47021 "SL Vendor Migrator"
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLVendor.RecordID));
 
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLVendor.RecordID));
+
         if (SLVendor.Country.TrimEnd() <> '') then begin
             Country := CopyStr(SLVendor.Country.TrimEnd(), 1, MaxStrLen(Country));
             VendorDataMigrationFacade.CreateCountryIfNeeded(Country, Country, AddressFormatToSet::"Post Code+City", ContactAddressFormatToSet::"After Company Name");
