@@ -50,9 +50,9 @@ codeunit 30105 "Shpfy Staff Member API"
     /// <param name="JResponse">The JSON response object.</param>
     /// <param name="Cursor">The cursor for pagination.</param>
     /// <param name="ShopCode">The code of the Shopify shop.</param>
-    /// <param name="TempShpfyStaffMember">The temporary staff member record to populate.</param>
+    /// <param name="TempStaffMember">The temporary staff member record to populate.</param>
     /// <returns>True if extraction was successful; otherwise, false.</returns>
-    local procedure ExtractStaffMembers(JResponse: JsonObject; var Cursor: Text; ShopCode: Code[20]; var TempShpfyStaffMember: Record "Shpfy Staff Member" temporary): Boolean
+    local procedure ExtractStaffMembers(JResponse: JsonObject; var Cursor: Text; ShopCode: Code[20]; var TempStaffMember: Record "Shpfy Staff Member" temporary): Boolean
     var
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
@@ -65,22 +65,22 @@ codeunit 30105 "Shpfy Staff Member API"
         JsonHelper.GetJsonArray(JResponse, JStaffMembers, 'data.staffMembers.edges');
         foreach JStaffMember in JStaffMembers do
             if JsonHelper.GetJsonObject(JStaffMember.AsObject(), JStaffMemberInfo, 'node') then begin
-                Clear(TempShpfyStaffMember);
-                TempShpfyStaffMember.Init();
-                TempShpfyStaffMember."Shop Code" := ShopCode;
-                TempShpfyStaffMember.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JStaffMemberInfo, 'id'));
-                if Evaluate(TempShpfyStaffMember."Account Type", CommunicationMgt.ConvertToCleanOptionValue(JsonHelper.GetValueAsText(JStaffMemberInfo, 'accountType'))) then;
-                TempShpfyStaffMember.Active := JsonHelper.GetValueAsBoolean(JStaffMemberInfo, 'active');
-                TempShpfyStaffMember.Email := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'email'), 1, MaxStrLen(TempShpfyStaffMember.Email));
-                TempShpfyStaffMember.Exists := JsonHelper.GetValueAsBoolean(JStaffMemberInfo, 'exists');
-                TempShpfyStaffMember."First Name" := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'firstName'), 1, MaxStrLen(TempShpfyStaffMember."First Name"));
-                TempShpfyStaffMember.Initials := CopyStr(JsonHelper.GetArrayAsText(JStaffMemberInfo, 'initials'), 1, MaxStrLen(TempShpfyStaffMember.Initials));
-                TempShpfyStaffMember."Shop Owner" := JsonHelper.GetValueAsBoolean(JStaffMemberInfo, 'isShopOwner');
-                TempShpfyStaffMember."Last Name" := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'lastName'), 1, MaxStrLen(TempShpfyStaffMember."Last Name"));
-                TempShpfyStaffMember.Name := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'name'), 1, MaxStrLen(TempShpfyStaffMember.Name));
-                TempShpfyStaffMember."Locale" := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'locale'), 1, MaxStrLen(TempShpfyStaffMember."Locale"));
-                TempShpfyStaffMember.Phone := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'phone'), 1, MaxStrLen(TempShpfyStaffMember.Phone));
-                TempShpfyStaffMember.Insert(false);
+                Clear(TempStaffMember);
+                TempStaffMember.Init();
+                TempStaffMember."Shop Code" := ShopCode;
+                TempStaffMember.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JStaffMemberInfo, 'id'));
+                if Evaluate(TempStaffMember."Account Type", CommunicationMgt.ConvertToCleanOptionValue(JsonHelper.GetValueAsText(JStaffMemberInfo, 'accountType'))) then;
+                TempStaffMember.Active := JsonHelper.GetValueAsBoolean(JStaffMemberInfo, 'active');
+                TempStaffMember.Email := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'email'), 1, MaxStrLen(TempStaffMember.Email));
+                TempStaffMember.Exists := JsonHelper.GetValueAsBoolean(JStaffMemberInfo, 'exists');
+                TempStaffMember."First Name" := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'firstName'), 1, MaxStrLen(TempStaffMember."First Name"));
+                TempStaffMember.Initials := CopyStr(JsonHelper.GetArrayAsText(JStaffMemberInfo, 'initials'), 1, MaxStrLen(TempStaffMember.Initials));
+                TempStaffMember."Shop Owner" := JsonHelper.GetValueAsBoolean(JStaffMemberInfo, 'isShopOwner');
+                TempStaffMember."Last Name" := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'lastName'), 1, MaxStrLen(TempStaffMember."Last Name"));
+                TempStaffMember.Name := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'name'), 1, MaxStrLen(TempStaffMember.Name));
+                TempStaffMember."Locale" := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'locale'), 1, MaxStrLen(TempStaffMember."Locale"));
+                TempStaffMember.Phone := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'phone'), 1, MaxStrLen(TempStaffMember.Phone));
+                TempStaffMember.Insert(false);
             end;
         exit(true);
     end;
