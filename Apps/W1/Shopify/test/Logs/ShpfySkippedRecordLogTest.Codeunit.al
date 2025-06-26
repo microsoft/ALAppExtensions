@@ -715,7 +715,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
 
         // [GIVEN] Shopify company and catalog
         CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
-        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany);
+        Catalog := CatalogInitialize.CreateCatalog(ShopifyCompany, "Shpfy Catalog Type"::Company);
 
         // [WHEN] Invoke Extract Shopify Catalog Products
         CatalogAPI.ExtractShopifyCatalogProducts(ProductList, GetEmptyCatalogProductsResponse(), Catalog, Cursor);

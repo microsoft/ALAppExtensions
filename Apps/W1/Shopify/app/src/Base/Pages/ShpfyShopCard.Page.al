@@ -786,6 +786,20 @@ page 30101 "Shpfy Shop Card"
                 ToolTip = 'View a list of Shopify catalogs for the shop.';
                 Visible = Rec."B2B Enabled";
             }
+            action(MarketCatalogs)
+            {
+                ApplicationArea = All;
+                Caption = 'Market Catalogs';
+                Image = ItemGroup;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                RunObject = Page "Shpfy Market Catalogs";
+                RunPageLink = "Shop Code" = field(Code);
+                ToolTip = 'View a list of Shopify market catalogs for the shop.';
+                Visible = Rec."B2B Enabled";
+            }
             action(Languages)
             {
                 ApplicationArea = All;
@@ -1088,7 +1102,7 @@ page 30101 "Shpfy Shop Card"
                         BackgroundSyncs.ProductPricesSync(Rec);
                         if Rec."B2B Enabled" then begin
                             BackgroundSyncs.CompanySync(Rec);
-                            BackgroundSyncs.CatalogPricesSync(Rec, '');
+                            BackgroundSyncs.CatalogPricesSync(Rec, '', "Shpfy Catalog Type"::" ");
                         end;
                     end;
                 }
