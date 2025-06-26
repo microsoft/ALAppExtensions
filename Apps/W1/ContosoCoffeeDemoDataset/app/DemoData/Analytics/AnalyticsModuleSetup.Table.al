@@ -41,4 +41,12 @@ table 5687 "Analytics Module Setup"
         Rec.Init();
         Rec.Insert();
     end;
+
+    procedure GetOrDefaultStartingDate(): Date
+    begin
+        if Rec."Starting Date" <> 0D then
+            exit(Rec."Starting Date");
+
+        exit(Today());
+    end;
 }

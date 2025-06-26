@@ -19,6 +19,7 @@ codeunit 5688 "Create Extended Purch Document"
 
     trigger OnRun()
     var
+        AnalyticsModuleSetup: Record "Analytics Module Setup";
         PurchaseHeader: Record "Purchase Header";
         ContosoPurchase: Codeunit "Contoso Purchase";
         CreateVendor: Codeunit "Create Vendor";
@@ -28,8 +29,12 @@ codeunit 5688 "Create Extended Purch Document"
         CreatePaymentMethod: Codeunit "Create Payment Method";
         CreateLocation: Codeunit "Create Location";
         DocumentDate: Date;
+        StartingDate: Date;
     begin
-        DocumentDate := 20250103D; // 2025-01-03
+        AnalyticsModuleSetup.Get();
+        StartingDate := AnalyticsModuleSetup.GetOrDefaultStartingDate();
+
+        DocumentDate := CalcDate('<-6M>', StartingDate);
 
         PurchaseHeader := ContosoPurchase.InsertPurchaseHeader(Enum::"Purchase Document Type"::Order, CreateVendor.EUGraphicDesign(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), DocumentDate, ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCM(), '', '', '', DocumentDate, '');
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateItem.AthensDesk(), 60, '', 219.5);
