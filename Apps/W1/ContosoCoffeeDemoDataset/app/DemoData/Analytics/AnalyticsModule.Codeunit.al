@@ -14,7 +14,7 @@ codeunit 5687 "Analytics Module" implements "Contoso Demo Data Module"
 
     procedure RunConfigurationPage()
     begin
-        exit;
+        Page.Run(Page::"Analytics Module Setup");
     end;
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"]
@@ -29,7 +29,10 @@ codeunit 5687 "Analytics Module" implements "Contoso Demo Data Module"
     end;
 
     procedure CreateSetupData()
+    var
+        AnalyticsModuleSetup: Record "Analytics Module Setup";
     begin
+        AnalyticsModuleSetup.InitRecord();
     end;
 
     procedure CreateMasterData()
