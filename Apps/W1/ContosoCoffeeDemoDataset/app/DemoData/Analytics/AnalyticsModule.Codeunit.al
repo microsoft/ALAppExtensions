@@ -39,6 +39,7 @@ codeunit 5687 "Analytics Module" implements "Contoso Demo Data Module"
     procedure CreateTransactionalData()
     begin
         Codeunit.Run(Codeunit::"Create Extended Sales Document");
+        Codeunit.Run(Codeunit::"Create Extended Purch Document");
     end;
 
     procedure CreateHistoricalData()
