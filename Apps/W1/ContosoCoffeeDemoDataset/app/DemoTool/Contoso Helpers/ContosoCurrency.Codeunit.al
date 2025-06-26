@@ -29,6 +29,7 @@ codeunit 5587 "Contoso Currency"
         Currency: Record "Currency";
         GLSetup: Record "General Ledger Setup";
         CreateGLAccount: Codeunit "Create G/L Account";
+        CreateCurrency: Codeunit "Create Currency";
         Exists: Boolean;
     begin
         if Currency.Get(Code) then begin
@@ -57,7 +58,7 @@ codeunit 5587 "Contoso Currency"
         Currency.Validate("Unit-Amount Decimal Places", UnitAmountDecimalPlaces);
         Currency.Validate("EMU Currency", EMUCurrency);
 
-        if Currency.Code in ['EUR', 'GBP'] then begin
+        if Currency.Code in [CreateCurrency.EUR(), CreateCurrency.GBP()] then begin
             if GLSetup.Get() then begin
                 if GLSetup."Additional Reporting Currency" <> '' then begin
                     Currency.Validate("Residual Gains Account", CreateGLAccount.ResidualFXGains());
