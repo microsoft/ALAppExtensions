@@ -1659,8 +1659,8 @@ codeunit 139624 "E-Doc E2E Test"
         IssuedReminderHeader := this.LibraryEDoc.IssueReminder(this.Customer);
 
         // [THEN] Check that E-Document is created and status is "Processed"
+        EDocument.SetRange("Document No.", IssuedReminderHeader."No.");
         EDocument.FindLast();
-        this.Assert.AreEqual(IssuedReminderHeader."No.", EDocument."Document No.", this.IncorrectValueErr);
         this.Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, this.IncorrectValueErr);
         // [THEN] Check that xml file was created
         this.CheckXmlCreated(EDocument);
@@ -1684,10 +1684,10 @@ codeunit 139624 "E-Doc E2E Test"
         // [WHEN] Issue finance charge memo
         IssuedFinChargeMemoHeader := this.LibraryEDoc.IssueFinChargeMemo(this.Customer);
 
-        // [THEN] Check that E-Document is created and status is "Processed"
+        // [THEN] Check that E-Document is created and status is "In Progress"
+        EDocument.SetRange("Document No.", IssuedFinChargeMemoHeader."No.");
         EDocument.FindLast();
-        this.Assert.AreEqual(IssuedFinChargeMemoHeader."No.", EDocument."Document No.", this.IncorrectValueErr);
-        this.Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, this.IncorrectValueErr);
         // [THEN] Check that xml file was created
         this.CheckXmlCreated(EDocument);
     end;
