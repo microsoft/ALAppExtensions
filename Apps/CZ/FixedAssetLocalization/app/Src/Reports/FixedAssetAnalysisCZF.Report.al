@@ -35,7 +35,7 @@ report 31242 "Fixed Asset - Analysis CZF"
             column(DepreciationBookText; DeprBookText)
             {
             }
-            column(ReportFilter; GetFilters())
+            column(ReportFilter; ReportFilter)
             {
             }
             column(GroupCodeName; GroupCodeName)
@@ -217,6 +217,14 @@ report 31242 "Fixed Asset - Analysis CZF"
                 MakeAmountHeadLine(4, PostingType2, PostingTypeNo2, Period2.AsInteger());
                 MakeAmountHeadLine(5, PostingType3, PostingTypeNo3, Period3.AsInteger());
                 MakeAmountHeadLine(7, PostingType4, PostingTypeNo4, Period4.AsInteger());
+
+                ReportFilter := GetFilters();
+                if ReportFilter <> '' then
+                    ReportFilter += ', ';
+                ReportFilter += StrSubstNo(StartingDateFilterTxt, StartingDate);
+                if ReportFilter <> '' then
+                    ReportFilter += ', ';
+                ReportFilter += StrSubstNo(EndingDateFilterTxt, EndingDate);
             end;
         }
     }
@@ -397,7 +405,7 @@ report 31242 "Fixed Asset - Analysis CZF"
         FAGeneralReportCZF: Codeunit "FA General Report CZF";
         BudgetDepreciation: Codeunit "Budget Depreciation";
         DeprBookCode: Code[10];
-        MainHeadLineText, DeprBookText, GroupCodeName, GroupHeadLine, FANoCaption, FADescriptionCaption : Text;
+        MainHeadLineText, DeprBookText, GroupCodeName, GroupHeadLine, FANoCaption, FADescriptionCaption, ReportFilter : Text;
         HeadLineText: array[7] of Text;
         PostingType1, PostingType2, PostingType3, PostingType4, DateType1, DateType2, DateType3 : Text[30];
         Date: array[3] of Date;
@@ -423,6 +431,8 @@ report 31242 "Fixed Asset - Analysis CZF"
         PeriodsTxt: Label 'before Starting Date,Net Change,at Ending Date';
         GroupsTxt: Label ' ,FA Class,FA Subclass,FA Location,Main Asset,Global Dimension 1,Global Dimension 2,FA Posting Group,Tax Depreciation Group';
         TwoPlaceholdersTok: Label '%1 %2', Locked = true;
+        StartingDateFilterTxt: Label 'Starting Date: %1', Comment = '%1 = Starting Date';
+        EndingDateFilterTxt: Label 'Ending Date: %1', Comment = '%1 = Ending Date';
 
     local procedure SkipRecord(): Boolean
     begin

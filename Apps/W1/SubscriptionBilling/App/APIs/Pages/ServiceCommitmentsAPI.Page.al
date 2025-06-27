@@ -144,6 +144,9 @@ page 8018 "Service Commitments API"
                 field(discount; Rec.Discount)
                 {
                 }
+                field(createContractDeferrals; Rec."Create Contract Deferrals")
+                {
+                }
                 field(quantityDecimal; Rec.Quantity)
                 {
                 }

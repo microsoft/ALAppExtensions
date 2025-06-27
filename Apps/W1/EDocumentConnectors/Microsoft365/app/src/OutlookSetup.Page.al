@@ -19,7 +19,7 @@ page 6384 "Outlook Setup"
     LinksAllowed = false;
     ShowFilter = false;
     SourceTable = "Outlook Setup";
-    UsageCategory = Administration;
+    UsageCategory = None;
     InherentPermissions = X;
     InherentEntitlements = X;
 
@@ -52,20 +52,12 @@ page 6384 "Outlook Setup"
 
                     trigger OnAssistEdit()
                     var
-                        EmailAccounts: Page "Email Accounts";
+                        OutlookIntegrationImpl: Codeunit "Outlook Integration Impl.";
                     begin
                         if Rec.Enabled then
                             Error(DisableToConfigErr);
 
-                        if not CheckMailboxExists() then
-                            Page.RunModal(Page::"Email Account Wizard");
-
-                        if not CheckMailboxExists() then
-                            exit;
-                        EmailAccounts.EnableLookupMode();
-                        EmailAccounts.FilterConnectorV3Accounts(true);
-                        if EmailAccounts.RunModal() = Action::LookupOK then begin
-                            EmailAccounts.GetAccount(TempEmailAccount);
+                        if OutlookIntegrationImpl.SelectEmailAccountV3(TempEmailAccount) then begin
                             TempOutlookSetup."Email Account ID" := TempEmailAccount."Account Id";
                             TempOutlookSetup."Email Connector" := TempEmailAccount.Connector;
                             if Format(TempOutlookSetup."Email Connector") <> M365Lbl then
@@ -107,6 +99,10 @@ page 6384 "Outlook Setup"
     begin
         Rec.Reset();
         if not Rec.Get() then begin
+            if not Rec.WritePermission() then begin
+                UpdateBasedOnEnable();
+                exit;
+            end;
             Rec.Init();
             Rec.Insert(true);
             FeatureTelemetry.LogUptake('0000OGX', DriveProcessing.FeatureName(), Enum::"Feature Uptake Status"::Discovered);
@@ -129,23 +125,6 @@ page 6384 "Outlook Setup"
         if not Rec.Enabled then
             if not Confirm(StrSubstNo(EnableServiceQst, CurrPage.Caption), true) then
                 exit(false);
-    end;
-
-    local procedure CheckMailboxExists(): Boolean
-    var
-        EmailAccounts: Record "Email Account";
-        EmailAccount: Codeunit "Email Account";
-        IConnector: Interface "Email Connector";
-    begin
-        EmailAccount.GetAllAccounts(false, EmailAccounts);
-        if EmailAccounts.IsEmpty() then
-            exit(false);
-
-        repeat
-            IConnector := EmailAccounts.Connector;
-            if IConnector is "Email Connector v3" then
-                exit(true);
-        until EmailAccounts.Next() = 0;
     end;
 
     local procedure ConfigUpdated()

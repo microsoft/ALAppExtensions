@@ -222,18 +222,6 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Adjust Exchange Rates CZL" = X,
                   report "All Payments on Hold CZL" = X,
                   report "Balance Sheet CZL" = X,
-#if not CLEAN24
-#pragma warning disable AL0432
-                  report "Batch Post Purchase Inv. CZL" = X,
-                  report "Batch Post Purchase Orders CZL" = X,
-                  report "Batch Post Purch. Cr.Memos CZL" = X,
-                  report "Batch Post Purch. Ret.Ord. CZL" = X,
-                  report "Batch Post Sales Cr. Memos CZL" = X,
-                  report "Batch Post Sales Invoices CZL" = X,
-                  report "Batch Post Sales Orders CZL" = X,
-                  report "Batch Post Sales Ret. Ord. CZL" = X,
-#pragma warning restore AL0432
-#endif
                   report "Calc. and Post VAT Settl. CZL" = X,
                   report "Cash Flow Date List CZL" = X,
                   report "Close Balance Sheet CZL" = X,
@@ -301,11 +289,6 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "VAT Exceptions CZL" = X,
                   report "VAT Register CZL" = X,
                   report "VAT Report Request Page CZL" = X,
-#if not CLEAN24
-#pragma warning disable AL0432
-                  report "VAT Statement CZL" = X,
-#pragma warning restore AL0432
-#endif
                   report "Vendor-Bal. Reconciliation CZL" = X,
                   report "VIES Declaration CZL" = X,
                   report "VIES Declaration - Test CZL" = X,

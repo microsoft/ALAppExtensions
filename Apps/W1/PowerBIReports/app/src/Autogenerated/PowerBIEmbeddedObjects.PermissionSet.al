@@ -86,6 +86,21 @@ permissionset 36955 "Power BI Embedded - Objects"
         page "Manufacturing Report" = X,
         page "Inventory Report" = X,
         page "Inventory Valuation Report" = X,
-        page "Sales by Location" = X;
+        page "Sales by Location" = X,
+        page "Subscription Billing Report" = X,
+        page "Subscription Overview" = X,
+        page "Revenue YoY" = X,
+        page "Revenue Analysis" = X,
+        page "Revenue Development" = X,
+        page "Churn Analysis" = X,
+        page "Revenue by Item" = X,
+        page "Revenue by Customer" = X,
+        page "Revenue by Salesperson" = X,
+        page "Total Contract Value YoY" = X,
+        page "Total Contract Value Analysis" = X,
+        page "Customer Deferrals" = X,
+        page "Vendor Deferrals" = X,
+        page "Sales and Cost forecast" = X,
+        page "Billing Schedule" = X;
 }
 

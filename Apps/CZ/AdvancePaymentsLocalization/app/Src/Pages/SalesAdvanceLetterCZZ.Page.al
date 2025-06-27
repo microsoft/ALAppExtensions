@@ -190,6 +190,11 @@ page 31171 "Sales Advance Letter CZZ"
                     Importance = Additional;
                     ToolTip = 'Specifies the code of the responsibility center, such as a distribution hub, that is associated with the involved user, company, customer, or vendor.';
                 }
+                field("VAT Country/Region Code"; Rec."VAT Country/Region Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the country or region of VAT.';
+                }
                 field("Automatic Post VAT Document"; Rec."Automatic Post VAT Document")
                 {
                     ApplicationArea = Basic, Suite;

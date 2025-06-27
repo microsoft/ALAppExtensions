@@ -413,6 +413,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
             if not Confirm(PurchDocAlreadyQRImportedQst) then
                 exit;
 
+        OnBeforeQRBillImportDecodeToPurchase(PurchaseHeader);
         if SwissQRBillIncomingDoc.QRBillImportDecodeToPurchase(TempIncomingDocument, FromFile) then
             ImportToPurchaseDoc(PurchaseHeader, TempIncomingDocument);
     end;
@@ -539,6 +540,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                     if SwissQRBillCreateVendBank.RunModal() = Action::LookupOK then begin
                         SwissQRBillCreateVendBank.GetDetails(VendorBankAccount);
                         VendorBankAccount.Insert(true);
+                        IncomingDocument."Vendor Bank Account No." := VendorBankAccount.Code;
                         SwissQRBillIncomingDoc.UpdatePurchDocFromIncDoc(PurchaseHeader, IncomingDocument);
                         MessageResult := ImportSuccessMsg;
                     end else
@@ -572,7 +574,18 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                 ErrText := StrSubstNo(AmountErr, PurchHeader."Swiss QR-Bill Amount", Abs(TotalPurchLine."Amount Including VAT"));
                 Error(ErrText);
             end;
-            VoidPurchDocQRBill(PurchHeader);
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterUpdatePurchaseHeader', '', false, false)]
+    local procedure OnAfterUpdatePurchaseHeader(var PurchaseHeader: Record "Purchase Header")
+    begin
+        if PurchaseHeader."Swiss QR-Bill" and (PurchaseHeader."Prepayment %" = 0) and (PurchaseHeader."Swiss QR-Bill Amount" <> 0) then
+            VoidPurchDocQRBill(PurchaseHeader);
+    end;
+    
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeQRBillImportDecodeToPurchase(var PurchaseHeader: Record "Purchase Header")
+    begin
     end;
 }

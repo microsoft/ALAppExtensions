@@ -23,9 +23,6 @@ codeunit 1714 "Upgrade Bank Deposits"
         if UpgradeTag.HasUpgradeTag(UpgTagDefBankDeposits.GetNADepositsUpgradeTag()) then
             exit;
 
-#if not CLEAN24
-        SetDepositsPageMgtPages();
-#endif
         SetReportSelections();
         UpgradeTag.SetUpgradeTag(UpgTagDefBankDeposits.GetNADepositsUpgradeTag());
     end;
@@ -65,17 +62,4 @@ codeunit 1714 "Upgrade Bank Deposits"
         end;
     end;
 
-#if not CLEAN24
-    local procedure SetDepositsPageMgtPages()
-    var
-        DepositsPageMgt: Codeunit "Deposits Page Mgt.";
-    begin
-        DepositsPageMgt.SetSetupKey(Enum::"Deposits Page Setup Key"::DepositsPage, Page::"Bank Deposits");
-        DepositsPageMgt.SetSetupKey(Enum::"Deposits Page Setup Key"::DepositPage, Page::"Bank Deposit");
-        DepositsPageMgt.SetSetupKey(Enum::"Deposits Page Setup Key"::DepositListPage, Page::"Bank Deposit List");
-        DepositsPageMgt.SetSetupKey(Enum::"Deposits Page Setup Key"::DepositReport, Report::"Bank Deposit");
-        DepositsPageMgt.SetSetupKey(Enum::"Deposits Page Setup Key"::DepositTestReport, Report::"Bank Deposit Test Report");
-        DepositsPageMgt.SetSetupKey(Enum::"Deposits Page Setup Key"::PostedBankDepositListPage, Page::"Posted Bank Deposit List");
-    end;
-#endif
 }

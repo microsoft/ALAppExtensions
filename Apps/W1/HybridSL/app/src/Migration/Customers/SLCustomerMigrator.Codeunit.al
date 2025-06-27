@@ -6,7 +6,6 @@
 namespace Microsoft.DataMigration.SL;
 
 using System.Integration;
-using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 
 codeunit 47018 "SL Customer Migrator"
@@ -14,33 +13,23 @@ codeunit 47018 "SL Customer Migrator"
     Access = Internal;
 
     var
-        PostingGroupCodeTxt: Label 'SL', Locked = true;
+        ARSetupIDTxt: Label 'AR', Locked = true;
         CustomerBatchNameTxt: Label 'SLCUST', Locked = true;
+        PostingGroupCodeTxt: Label 'SL', Locked = true;
+        SLPrefixTxt: Label 'SL', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         StatusInactiveTxt: Label 'I', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", OnMigrateCustomer, '', true, true)]
     local procedure OnMigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
-    var
-        SLCustomer: Record "SL Customer";
-        SLARSetup: Record "SL ARSetup";
-        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
-        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
     begin
-        if RecordIdToMigrate.TableNo() <> Database::"SL Customer" then
-            exit;
+        MigrateCustomer(Sender, RecordIdToMigrate);
+    end;
 
-        SLCompanyAdditionalSettings.Get(CompanyName);
-        if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
-            exit;
-        if not SLCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
-            exit;
-
-        SLCustomer.Get(RecordIdToMigrate);
-        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
-        SLARSetup.Get('AR');
-        MigrateCustomerDetails(SLCustomer, Sender, SLARSetup);
-        MigrateCustomerAddresses(SLCustomer);
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", OnMigrateCustomerPostingGroups, '', true, true)]
+    local procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    begin
+        MigrateCustomerPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", OnMigrateCustomerTransactions, '', true, true)]
@@ -56,6 +45,17 @@ codeunit 47018 "SL Customer Migrator"
         BalancingAccount: Code[20];
         DocTypeToSet: Option " ",Payment,Invoice,"Credit Memo","Finance Charge Memo";
         GLDocNbr: Text[20];
+        ARDocTypeCashSaleTxt: Label 'CS', Locked = true;
+        ARDocTypeCreditMemoTxt: Label 'CM', Locked = true;
+        ARDocTypeDebitMemoTxt: Label 'DM', Locked = true;
+        ARDocTypeFinanceChargeTxt: Label 'FI', Locked = true;
+        ARDocTypeInvoiceTxt: Label 'IN', Locked = true;
+        ARDocTypeNSFCheckChargeTxt: Label 'NC', Locked = true;
+        ARDocTypeNSFReversalTxt: Label 'NS', Locked = true;
+        ARDocTypePaymentTxt: Label 'PA', Locked = true;
+        ARDocTypePaymentPrepaymentTxt: Label 'PP', Locked = true;
+        ARDocTypeSmallBalanceTxt: Label 'SB', Locked = true;
+        ARDocTypeSmallCreditTxt: Label 'SC', Locked = true;
     begin
         if not ChartOfAccountsMigrated then
             exit;
@@ -72,18 +72,18 @@ codeunit 47018 "SL Customer Migrator"
             exit;
 
         SLCustomer.Get(RecordIdToMigrate);
-        SLARSetup.Get('AR');
+        SLARSetup.Get(ARSetupIDTxt);
 
         Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)), '', '');
         SLARDoc.SetRange(CpnyID, CompanyName);
         SLARDoc.SetRange(CustId, SLCustomer.CustId);
-        SLARDoc.SetFilter(DocType, '%1|%2|%3|%4|%5', 'IN', 'CS', 'DM', 'SC', 'NC');  //Invoice
+        SLARDoc.SetFilter(DocType, '%1|%2|%3|%4|%5', ARDocTypeInvoiceTxt, ARDocTypeCashSaleTxt, ARDocTypeDebitMemoTxt, ARDocTypeSmallCreditTxt, ARDocTypeNSFCheckChargeTxt);  //Invoices
         SLARDoc.SetFilter(DocBal, '<>%1', 0);
         if SLARDoc.FindSet() then
             repeat
                 DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
 
-                GLDocNbr := 'SL' + SLARDoc.RefNbr;
+                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
                 BalancingAccount := SLARSetup.ArAcct;
 
                 Sender.CreateGeneralJournalLine(
@@ -116,13 +116,13 @@ codeunit 47018 "SL Customer Migrator"
         SLARDoc.Reset();
         SLARDoc.SetRange(CpnyID, CompanyName);
         SLARDoc.SetRange(CustId, SLCustomer.CustId);
-        SLARDoc.SetFilter(DocType, '%1|%2', 'PA', 'PP');  //Payment
+        SLARDoc.SetFilter(DocType, '%1|%2', ARDocTypePaymentTxt, ARDocTypePaymentPrepaymentTxt);  //Payments
         SLARDoc.SetFilter(DocBal, '<>%1', 0);
         if SLARDoc.FindSet() then
             repeat
                 DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
 
-                GLDocNbr := 'SL' + SLARDoc.RefNbr;
+                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
                 BalancingAccount := SLARSetup.ArAcct;
 
                 Sender.CreateGeneralJournalLine(
@@ -154,13 +154,13 @@ codeunit 47018 "SL Customer Migrator"
         SLARDoc.Reset();
         SLARDoc.SetRange(CpnyID, CompanyName);
         SLARDoc.SetRange(CustId, SLCustomer.CustId);
-        SLARDoc.SetFilter(DocType, '%1|%2|%3', 'CM', 'SB', 'NS');  //Credit Memo
+        SLARDoc.SetFilter(DocType, '%1|%2|%3', ARDocTypeCreditMemoTxt, ARDocTypeSmallBalanceTxt, ARDocTypeNSFReversalTxt);  //Credit Memos
         SLARDoc.SetFilter(DocBal, '<>%1', 0);
         if SLARDoc.FindSet() then
             repeat
                 DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
 
-                GLDocNbr := 'SL' + SLARDoc.RefNbr;
+                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
                 BalancingAccount := SLARSetup.ArAcct;
 
                 Sender.CreateGeneralJournalLine(
@@ -192,13 +192,13 @@ codeunit 47018 "SL Customer Migrator"
         SLARDoc.Reset();
         SLARDoc.SetRange(CpnyID, CompanyName);
         SLARDoc.SetRange(CustId, SLCustomer.CustId);
-        SLARDoc.SetRange(DocType, 'FI');  // Finance Charge
+        SLARDoc.SetRange(DocType, ARDocTypeFinanceChargeTxt);  // Finance Charge
         SLARDoc.SetFilter(DocBal, '<>%1', 0);
         if SLARDoc.FindSet() then
             repeat
                 DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
 
-                GLDocNbr := 'SL' + SLARDoc.RefNbr;
+                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
                 BalancingAccount := SLARSetup.ArAcct;
 
                 Sender.CreateGeneralJournalLine(
@@ -230,7 +230,6 @@ codeunit 47018 "SL Customer Migrator"
 
     internal procedure MigrateCustomerDetails(SLCustomer: Record "SL Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade"; SLARSetup: Record "SL ARSetup")
     var
-        CompanyInformation: Record "Company Information";
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
         SLSalesTax: Record "SL SalesTax";
         SLSOAddress: Record "SL SOAddress";
@@ -258,9 +257,6 @@ codeunit 47018 "SL Customer Migrator"
         if (SLCustomer.Country <> '') then begin
             Country := SLCustomer.Country;
             CustomerDataMigrationFacade.CreateCountryIfNeeded(Country, Country, AddressFormatToSet::"Post Code+City", ContactAddressFormatToSet::"After Company Name");
-        end else begin
-            CompanyInformation.Get();
-            Country := CompanyInformation."Country/Region Code";
         end;
 
         if (SLCustomer.Zip.TrimEnd() <> '') and (SLCustomer.City.TrimEnd() <> '') then
@@ -336,5 +332,59 @@ codeunit 47018 "SL Customer Migrator"
         DataMigrationStatusFacade: Codeunit "Data Migration Status Facade";
     begin
         DataMigrationStatusFacade.IncrementMigratedRecordCount(SLHelperFunctions.GetMigrationTypeTxt(), Database::Customer, -1);
+    end;
+
+    internal procedure MigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
+    var
+        SLCustomer: Record "SL Customer";
+        SLARSetup: Record "SL ARSetup";
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+    begin
+        if RecordIdToMigrate.TableNo() <> Database::"SL Customer" then
+            exit;
+
+        SLCompanyAdditionalSettings.Get(CompanyName);
+        if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
+            exit;
+        if not SLCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
+            exit;
+
+        SLCustomer.Get(RecordIdToMigrate);
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
+        SLARSetup.Get(ARSetupIDTxt);
+        MigrateCustomerDetails(SLCustomer, Sender, SLARSetup);
+        MigrateCustomerAddresses(SLCustomer);
+    end;
+
+    internal procedure MigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    var
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        SLCustClass: Record "SL CustClass";
+        SLCustomer: Record "SL Customer";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        ClassID: Text[6];
+    begin
+        if not ChartOfAccountsMigrated then
+            exit;
+        if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
+            exit;
+        if not SLCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+            exit;
+        if RecordIdToMigrate.TableNo() <> Database::"SL Customer" then
+            exit;
+
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
+
+        SLCustomer.Get(RecordIdToMigrate);
+        ClassID := SLCustomer.ClassId;
+
+        if ClassID = '' then
+            exit;
+        SLCustClass.Get(ClassID);
+
+        Sender.CreatePostingSetupIfNeeded(SLCustClass.ClassId, SLCustClass.Descr, SLCustClass.ARAcct);
+        Sender.SetCustomerPostingGroup(SLCustClass.ClassId);
+        Sender.ModifyCustomer(true);
     end;
 }

@@ -16,6 +16,7 @@ tableextension 5282 "Dimension SAF-T" extends Dimension
         }
         field(5281; "SAF-T Export"; Boolean)
         {
+            Caption = 'SAF-T Export';
             InitValue = true;
         }
     }

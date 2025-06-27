@@ -77,8 +77,6 @@ page 4512 "SMTP Account"
             field(ServerUrl; Rec.Server)
             {
                 ApplicationArea = All;
-                Caption = 'Server URL';
-                ToolTip = 'Specifies the URL of the SMTP server.';
                 ShowMandatory = true;
                 NotBlank = true;
 

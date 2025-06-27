@@ -1,5 +1,8 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 8116 "Create Sub. Bill. Serv. Obj."
 {
     InherentEntitlements = X;

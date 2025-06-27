@@ -331,6 +331,76 @@ codeunit 139758 "Master Data Mgt. Synch. Tests"
 
     [Test]
     [HandlerFunctions('SynchronizationEnabledMessageHandler')]
+    procedure SynchMediaField()
+    var
+        SourceCustomer: Record Customer;
+        DestinationCustomer: Record Customer;
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        TenantMedia: Record "Tenant Media";
+        MasterDataMgtSynchTests: Codeunit "Master Data Mgt. Synch. Tests";
+        DestinationCustomerRecordId: RecordId;
+        SourceCustomerRecRef, DestinationCustomerRecRef : RecordRef;
+        MediaOutStream: OutStream;
+        MediaInStream: InStream;
+        IsHandled: Boolean;
+        InStreamText: Text;
+        DestinationImageMediaId: Guid;
+    begin
+        // [SCENARIO 572457] Synchronizing media fields
+        Initialize();
+
+        // [GIVEN] a customer
+        LibrarySales.CreateCustomer(SourceCustomer);
+
+        // [WHEN] No. field synch is disabled, because in the test we mock integration record as a local record and want to avoid primary key constraint violation
+        // [WHEN] Synch. Only Coupled records is false because we want the synch to create a new customer based on SourceCustomer
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Table ID", Database::Customer);
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::Customer);
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.FindFirst();
+        IntegrationTableMapping."Synch. Only Coupled Records" := false;
+        IntegrationTableMapping.Modify();
+        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
+        IntegrationFieldMapping.SetRange("Field No.", SourceCustomer.FieldNo("No."));
+        IntegrationFieldMapping.FindFirst();
+        IntegrationFieldMapping.Status := IntegrationFieldMapping.Status::Disabled;
+        IntegrationFieldMapping.Modify();
+
+        // [WHEN] Source record changed since last synch and gotten an image for the first time
+        Sleep(100);
+        TenantMedia."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(TenantMedia."Company Name"));
+        TenantMedia.Content.CreateOutStream(MediaOutStream);
+        MediaOutStream.WriteText('1');
+        TenantMedia.ID := CreateGuid();
+        TenantMedia.Insert();
+        SourceCustomer.Name := CopyStr(LibraryRandom.RandText(20), 1, MaxStrlen(SourceCustomer.Name));
+        SourceCustomer.Modify();
+        SourceCustomerRecRef.GetTable(SourceCustomer);
+        SourceCustomerRecRef.Field(SourceCustomer.FieldNo(Image)).Value(TenantMedia.ID);
+        SourceCustomerRecRef.Modify();
+        SourceCustomer.GetBySystemId(SourceCustomer.SystemId);
+
+        // [WHEN] The subscriber that synchronizes the record based on SystemId is called
+        BindSubscription(MasterDataMgtSynchTests);
+        LibraryMasterDataMgt.HandleOnFindAndSynchRecordIDFromIntegrationSystemId(SourceCustomer.SystemId, Database::Customer, DestinationCustomerRecordId, IsHandled);
+        UnbindSubscription(MasterDataMgtSynchTests);
+
+        // [THEN] Synch engine should modify the destination record accordingly, including the image field as well
+        DestinationCustomer.Get(DestinationCustomerRecordId);
+        DestinationCustomerRecRef.GetTable(DestinationCustomer);
+        Assert.AreEqual(SourceCustomer.Name, DestinationCustomer.Name, '');
+        DestinationImageMediaId := DestinationCustomerRecRef.Field(DestinationCustomer.FieldNo(Image)).Value();
+        TenantMedia.Get(DestinationImageMediaId);
+        TenantMedia.CalcFields(Content);
+        TenantMedia.Content.CreateInStream(MediaInStream);
+        MediaInStream.ReadText(InStreamText);
+        Assert.AreEqual('1', InStreamText, '');
+    end;
+
+    [Test]
+    [HandlerFunctions('SynchronizationEnabledMessageHandler')]
     procedure FindingIfJobNeedsToBeRun()
     var
         SourceCustomer: Record Customer;

@@ -35,6 +35,7 @@ report 5260 "Copy G/L Account Mapping"
             {
                 group(General)
                 {
+                    Caption = 'General';
                     field(MappingCode; FromMappingCode)
                     {
                         ApplicationArea = Basic, Suite;

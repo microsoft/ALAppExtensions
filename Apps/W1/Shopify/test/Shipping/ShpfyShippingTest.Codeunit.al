@@ -12,22 +12,19 @@ codeunit 139606 "Shpfy Shipping Test"
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
         SalesShipmentLine: Record "Sales Shipment Line";
+        OrderLine: Record "Shpfy Order Line";
         Shop: Record "Shpfy Shop";
         ExportShipments: Codeunit "Shpfy Export Shipments";
-        JsonHelper: Codeunit "Shpfy Json Helper";
         ShippingHelper: Codeunit "Shpfy Shipping Helper";
         DeliveryMethodType: Enum "Shpfy Delivery Method Type";
         FulfillmentRequest: Text;
-        JFulfillment: JsonObject;
-        JLineItems: JsonArray;
-        JLineItem: JsonToken;
+        FulfillmentRequests: List of [Text];
         ShopifyOrderId: BigInteger;
         ShopifyFulfillmentOrderId: BigInteger;
         LocationId: BigInteger;
     begin
         // [SCENARIO] Export a Sales Shipment record into a Json token that contains the shipping info
         // [GIVEN] A random Sales Shipment, a random LocationId, a random Shop
-        Shop.Init();
         LocationId := Any.IntegerInRange(10000, 99999);
         DeliveryMethodType := DeliveryMethodType::Shipping;
         ShopifyOrderId := ShippingHelper.CreateRandomShopifyOrder(LocationId, DeliveryMethodType);
@@ -35,18 +32,53 @@ codeunit 139606 "Shpfy Shipping Test"
         ShippingHelper.CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId);
 
         // [WHEN] Invoke the function CreateFulfillmentRequest()
-        FulfillmentRequest := ExportShipments.CreateFulfillmentOrderRequest(SalesShipmentHeader, Shop, LocationId, DeliveryMethodType);
+        FulfillmentRequests := ExportShipments.CreateFulfillmentOrderRequest(SalesShipmentHeader, Shop, LocationId, DeliveryMethodType);
 
         // [THEN] We must find the correct fulfilment data in the json token
+        LibraryAssert.AreEqual(1, FulfillmentRequests.Count, 'FulfillmentRequest count check');
+        FulfillmentRequests.Get(1, FulfillmentRequest);
         LibraryAssert.IsTrue(FulfillmentRequest.Contains(Format(ShopifyFulfillmentOrderId)), 'Fulfillmentorder Id Check');
-        LibraryAssert.IsTrue(FulFillmentRequest.Contains(SalesShipmentHeader."Package Tracking No."), 'tracking number check');
+        LibraryAssert.IsTrue(FulfillmentRequest.Contains(SalesShipmentHeader."Package Tracking No."), 'tracking number check');
 
         // [THEN] We must find the fulfilment lines in the json token
-        JsonHelper.GetJsonArray(JFulfillment, JLineItems, 'line_items');
-        foreach JLineItem in JLineItems do begin
-            SalesShipmentLine.SetRange("Shpfy Order Line Id", JsonHelper.GetValueAsBigInteger(JLineItem, 'id'));
-            SalesShipmentLine.FindFirst();
-            LibraryAssert.AreEqual(SalesShipmentLine.Quantity, JsonHelper.GetValueAsDecimal(JLineItem, 'quantity'), 'quanity check');
+        OrderLine.SetRange("Shopify Order Id", ShopifyOrderId);
+        OrderLine.FindFirst();
+        SalesShipmentLine.SetRange("Shpfy Order Line Id", OrderLine."Line Id");
+        SalesShipmentLine.FindFirst();
+        LibraryAssert.IsTrue(FulfillmentRequest.Contains(StrSubstNo('quantity: %1', SalesShipmentLine.Quantity)), 'quantity check');
+    end;
+
+    [Test]
+    procedure UnitTestExportShipment250Lines()
+    var
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        Shop: Record "Shpfy Shop";
+        ExportShipments: Codeunit "Shpfy Export Shipments";
+        ShippingHelper: Codeunit "Shpfy Shipping Helper";
+        DeliveryMethodType: Enum "Shpfy Delivery Method Type";
+        FulfillmentRequest: Text;
+        FulfillmentRequests: List of [Text];
+        ShopifyOrderId: BigInteger;
+        ShopifyFulfillmentOrderId: BigInteger;
+        LocationId: BigInteger;
+    begin
+        // [SCENARIO] Export a Sales Shipment with more than 250 lines creates two fulfillment requests
+        // [GIVEN] A random Sales Shipment, a random LocationId, a random Shop
+        LocationId := Any.IntegerInRange(10000, 99999);
+        DeliveryMethodType := DeliveryMethodType::Shipping;
+        ShopifyOrderId := ShippingHelper.CreateRandomShopifyOrder(LocationId, DeliveryMethodType);
+        ShippingHelper.CreateOrderLines(ShopifyOrderId, LocationId, DeliveryMethodType, 300);
+        ShopifyFulfillmentOrderId := ShippingHelper.CreateShopifyFulfillmentOrder(ShopifyOrderId, DeliveryMethodType);
+        ShippingHelper.CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId);
+
+        // [WHEN] Invoke the function CreateFulfillmentRequest()
+        FulfillmentRequests := ExportShipments.CreateFulfillmentOrderRequest(SalesShipmentHeader, Shop, LocationId, DeliveryMethodType);
+
+        // [THEN] We must find the correct fulfilment data in the json token
+        LibraryAssert.AreEqual(2, FulfillmentRequests.Count(), 'FulfillmentRequest count check');
+        foreach FulfillmentRequest in FulfillmentRequests do begin
+            LibraryAssert.IsTrue(FulfillmentRequest.Contains(Format(ShopifyFulfillmentOrderId)), 'Fulfillmentorder Id Check');
+            LibraryAssert.IsTrue(FulfillmentRequest.Contains(SalesShipmentHeader."Package Tracking No."), 'tracking number check');
         end;
     end;
 }

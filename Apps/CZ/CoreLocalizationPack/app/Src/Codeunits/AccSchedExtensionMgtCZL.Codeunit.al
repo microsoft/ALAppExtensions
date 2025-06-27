@@ -505,6 +505,7 @@ codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
 
     local procedure AccPeriodStartEnd(ColumnLayout: Record "Column Layout"; Date: Date; var StartDate: Date; var EndDate: Date)
     var
+        PeriodFormulaParser: Codeunit "Period Formula Parser";
         Steps: Integer;
         Type: Option " ",Period,"Fiscal Year";
         RangeFromType: Option Int,CP,LP;
@@ -515,8 +516,8 @@ codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
         if ColumnLayout."Comparison Period Formula" = '' then
             exit;
 
-        ColumnLayout.ParsePeriodFormula(
-          ColumnLayout."Comparison Period Formula", Steps, Type, RangeFromType, RangeToType, RangeFromInt, RangeToInt);
+        PeriodFormulaParser.ParsePeriodFormula(
+          ColumnLayout."Comparison Period Formula", Steps, Type, RangeFromType, RangeToType, RangeFromInt, RangeToInt, ColumnLayout."Comparison Period Formula LCID");
 
         AccountingPeriodMgt.AccPeriodStartEnd(
           Date, StartDate, EndDate, PeriodError, Steps, Type, RangeFromType, RangeToType, RangeFromInt, RangeToInt);

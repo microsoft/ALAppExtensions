@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -268,11 +268,6 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Direct Trans. Line", DirectTransLine.FieldNo("Tariff No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Finance Charge Memo Header", FinanceChargeMemoHeader.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Finance Charge Memo Header", FinanceChargeMemoHeader.FieldNo("Tax Registration No. CZL"));
-#if not CLEAN24
-#pragma warning disable AL0432
-        DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Allow VAT Posting From CZL"));
-        DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Allow VAT Posting To CZL"));
-#endif
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Do Not Check Dimensions CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Check Posting Debit/Credit CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Mark Neg. Qty as Correct. CZL"));
@@ -315,12 +310,6 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Def.Tmpl. for Phys.Neg.Adj CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Post Exp.Cost Conv.As Corr.CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Post Neg.Transf. As Corr.CZL"));
-#if not CLEAN24
-#pragma warning disable AL0432
-        DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("Ext. Amount CZL"));
-        DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("Ext. Amount Incl. VAT CZL"));
-#pragma warning restore AL0432
-#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("Correction CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Invoice Posting Buffer", InvoicePostingBuffer.FieldNo("Original Doc. VAT Date CZL"));
@@ -372,12 +361,6 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header Archive", PurchaseHeaderArchive.FieldNo("EU 3-Party Intermed. Role CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header Archive", PurchaseHeaderArchive.FieldNo("EU 3-Party Trade CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Negative CZL"));
-#if not CLEAN24
-#pragma warning disable AL0432
-        DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Ext. Amount CZL"));
-        DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Ext. Amount Incl. VAT CZL"));
-#pragma warning restore AL0432
-#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Tariff No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("VAT Currency Factor CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("VAT Currency Code CZL"));
@@ -481,12 +464,6 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Receipt Line", TransferReceiptLine.FieldNo("Tariff No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Line", TransferShipmentLine.FieldNo("Tariff No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Unit of Measure", UnitofMeasure.FieldNo("Tariff Number UOM Code CZL"));
-#if not CLEAN24
-#pragma warning disable AL0432
-        DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow VAT Posting From CZL"));
-        DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow VAT Posting To CZL"));
-#pragma warning restore AL0432
-#endif
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Doc. Date(work date) CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Doc. Date(sys. date) CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Post.Date(work date) CZL"));

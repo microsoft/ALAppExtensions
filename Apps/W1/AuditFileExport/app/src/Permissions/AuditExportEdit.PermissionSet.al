@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AuditFileExport;
 
 permissionset 5261 "Audit Export - Edit"
 {
+    Caption = 'Audit Export - Edit', MaxLength = 30;
     Access = Public;
     Assignable = true;
 

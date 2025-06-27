@@ -224,7 +224,7 @@ codeunit 8060 "Create Billing Documents"
         ServiceObject.Get(TempBillingLine."Subscription Header No.");
         ServiceCommitment.Get(TempBillingLine."Subscription Line Entry No.");
         CustomerContractLine.Get(TempBillingLine."Subscription Contract No.", TempBillingLine."Subscription Contract Line No.");
-        OnAfterCustomerContractLineGetInInsertSalesLineFromTempBillingLine(CustomerContractLine);
+        OnAfterCustomerContractLineGetInInsertSalesLineFromTempBillingLine(CustomerContractLine, SalesHeader, TempBillingLine);
 
         SalesLine.InitFromSalesHeader(SalesHeader);
         SessionStore.SetBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo', true);
@@ -816,7 +816,7 @@ codeunit 8060 "Create Billing Documents"
         BillingLine.SetRange("Update Required");
     end;
 
-    internal procedure ProcessingFinishedMessage()
+    local procedure ProcessingFinishedMessage()
     begin
         if DocumentsCreatedCount = 0 then
             Message(NoDocumentsCreatedMsg)
@@ -887,12 +887,12 @@ codeunit 8060 "Create Billing Documents"
             Error(TotalInvoiceAmountIsLessThanZeroErr, PreviousContractNo);
     end;
 
-    internal procedure SetSkipRequestPageSelection(NewSkipRequestPageSelection: Boolean)
+    procedure SetSkipRequestPageSelection(NewSkipRequestPageSelection: Boolean)
     begin
         SkipRequestPageSelection := NewSkipRequestPageSelection;
     end;
 
-    internal procedure SetDocumentDataFromRequestPage(DocumentDateValue: Date; PostingDateValue: Date; PostDocumentValue: Boolean; CreateContractInvoiceValue: Boolean)
+    procedure SetDocumentDataFromRequestPage(DocumentDateValue: Date; PostingDateValue: Date; PostDocumentValue: Boolean; CreateContractInvoiceValue: Boolean)
     begin
         DocumentDate := DocumentDateValue;
         PostingDate := PostingDateValue;
@@ -900,7 +900,7 @@ codeunit 8060 "Create Billing Documents"
         CreateContractInvoice := CreateContractInvoiceValue;
     end;
 
-    internal procedure SetBillingGroupingPerContract(ServicePartner: Enum "Service Partner")
+    procedure SetBillingGroupingPerContract(ServicePartner: Enum "Service Partner")
     begin
         if ServicePartner = "Service Partner"::Vendor then
             VendorRecurringBillingGrouping := "Vendor Rec. Billing Grouping"::Contract
@@ -908,19 +908,19 @@ codeunit 8060 "Create Billing Documents"
             CustomerRecurringBillingGrouping := "Customer Rec. Billing Grouping"::Contract;
     end;
 
-    internal procedure GetBillingPeriodDescriptionTxt() DescriptionText: Text
+    local procedure GetBillingPeriodDescriptionTxt() DescriptionText: Text
     begin
         DescriptionText := ServicePeriodDescriptionTxt;
     end;
 
-    internal procedure GetBillingPeriodDescriptionTxt(LanguageCode: Code[10]) DescriptionText: Text
+    local procedure GetBillingPeriodDescriptionTxt(LanguageCode: Code[10]) DescriptionText: Text
     begin
         TranslationHelper.SetGlobalLanguageByCode(LanguageCode);
         DescriptionText := GetBillingPeriodDescriptionTxt();
         TranslationHelper.RestoreGlobalLanguage();
     end;
 
-    internal procedure CreateAdditionalInvoiceLine(ServiceContractSetupFieldNo: Integer; SalesHeader2: Record "Sales Header"; ParentSalesLine: Record "Sales Line"; ServiceObject: Record "Subscription Header"; ServiceCommitment: Record "Subscription Line")
+    local procedure CreateAdditionalInvoiceLine(ServiceContractSetupFieldNo: Integer; SalesHeader2: Record "Sales Header"; ParentSalesLine: Record "Sales Line"; ServiceObject: Record "Subscription Header"; ServiceCommitment: Record "Subscription Line")
     var
         SalesLine: Record "Sales Line";
         DescriptionText: Text;
@@ -929,6 +929,7 @@ codeunit 8060 "Create Billing Documents"
         if DescriptionText = '' then
             exit;
         SalesLine.InsertDescriptionSalesLine(SalesHeader2, DescriptionText, ParentSalesLine."Line No.");
+        OnAfterCreateAdditionalInvoiceLine(SalesLine, ParentSalesLine);
     end;
 
     local procedure GetAdditionalLineText(ServiceContractSetupFieldNo: Integer; ParentSalesLine: Record "Sales Line"; ServiceObject: Record "Subscription Header"; ServiceCommitment: Record "Subscription Line") DescriptionText: Text
@@ -948,25 +949,24 @@ codeunit 8060 "Create Billing Documents"
 
         case ContractInvoiceTextType of
             ContractInvoiceTextType::" ":
-                exit('');
+                DescriptionText := '';
             ContractInvoiceTextType::"Service Object":
-                exit(ServiceObject.Description);
+                DescriptionText := ServiceObject.Description;
             ContractInvoiceTextType::"Service Commitment":
-                exit(ServiceCommitment.Description);
+                DescriptionText := ServiceCommitment.Description;
             ContractInvoiceTextType::"Customer Reference":
                 if ServiceObject."Customer Reference" <> '' then
-                    exit(StrSubstNo(ReferenceNoLbl, ServiceObject."Customer Reference"));
+                    DescriptionText := StrSubstNo(ReferenceNoLbl, ServiceObject."Customer Reference");
             ContractInvoiceTextType::"Serial No.":
                 if ServiceObject."Serial No." <> '' then
-                    exit(ServiceObject.GetSerialNoDescription());
+                    DescriptionText := ServiceObject.GetSerialNoDescription();
             ContractInvoiceTextType::"Billing Period":
-                exit(
-                    StrSubstNo(
-                        GetBillingPeriodDescriptionTxt(),
-                        ParentSalesLine."Recurring Billing from",
-                        ParentSalesLine."Recurring Billing to"));
+                DescriptionText := StrSubstNo(
+                                                GetBillingPeriodDescriptionTxt(),
+                                                ParentSalesLine."Recurring Billing from",
+                                                ParentSalesLine."Recurring Billing to");
             ContractInvoiceTextType::"Primary attribute":
-                exit(ServiceObject.GetPrimaryAttributeValue());
+                DescriptionText := ServiceObject.GetPrimaryAttributeValue();
             else begin
                 DescriptionText := '';
                 IsHandled := false;
@@ -978,6 +978,8 @@ codeunit 8060 "Create Billing Documents"
                 end;
             end;
         end;
+
+        OnAfterGetAdditionalLineText(ServiceContractSetupFieldNo, ParentSalesLine, ServiceObject, ServiceCommitment, DescriptionText);
     end;
 
     local procedure GetServiceContractSetup()
@@ -1036,12 +1038,12 @@ codeunit 8060 "Create Billing Documents"
             Error(ItemUOMDoesNotExistErr, ServiceObject."No.", ServiceObject."Unit of Measure", ItemNo);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateSalesHeaderFromContract(CustomerSubscriptionContract: Record "Customer Subscription Contract"; var SalesHeader: Record "Sales Header")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateSalesHeaderForCustomerNo(var SalesHeader: Record "Sales Header"; ContractNo: Code[20])
     begin
     end;
@@ -1051,88 +1053,88 @@ codeunit 8060 "Create Billing Documents"
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertContractDescriptionSalesLines(SalesHeader: Record "Sales Header"; BillingLine: Record "Billing Line"; var FirstContractDescriptionLineInserted: Boolean; CustomerRecurringBillingGrouping: Enum "Customer Rec. Billing Grouping"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInsertContractDescriptionSalesLines(SalesHeader: Record "Sales Header"; BillingLine: Record "Billing Line"; var FirstContractDescriptionLineInserted: Boolean; CustomerRecurringBillingGrouping: Enum "Customer Rec. Billing Grouping")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInsertSalesLineFromBillingLine(CustomerContractLine: Record "Cust. Sub. Contract Line"; SalesLine: Record "Sales Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInsertPurchaseLineFromBillingLine(SubscriptionLine: Record "Subscription Line"; PurchaseLine: Record "Purchase Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertPurchaseLineFromContractLine(var PurchLine: Record "Purchase Line"; var TempBillingLine: Record "Billing Line" temporary)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateAdditionalInvoiceLines(SalesHeader: Record "Sales Header"; ParentSalesLine: Record "Sales Line"; ServiceObject: Record "Subscription Header"; SubscriptionLine: Record "Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnGetAdditionalLineTextElseCase(ContractInvoiceTextType: Enum "Contract Invoice Text Type"; SubscriptionHeader: Record "Subscription Header"; SubscriptionLine: Record "Subscription Line"; var DescriptionText: Text; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertAddressInfoForCollectiveInvoice(BillingLine: Record "Billing Line"; CustomerRecurringBillingGrouping: Enum "Customer Rec. Billing Grouping"; SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInsertAddressInfoForCollectiveInvoice(BillingLine: Record "Billing Line"; CustomerRecurringBillingGrouping: Enum "Customer Rec. Billing Grouping"; SalesHeader: Record "Sales Header")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnCreateTempBillingLinesBeforeSaveTempBillingLine(var TempBillingLine: Record "Billing Line" temporary; var BillingLine: Record "Billing Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertTempBillingLine(var TempBillingLine: Record "Billing Line" temporary; var BillingLine: Record "Billing Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeProcessBillingLines(var BillingLine: Record "Billing Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterProcessBillingLines(var BillingLine: Record "Billing Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateBillingDocuments(var BillingLine: Record "Billing Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterIsNewSalesHeaderNeeded(var CreateNewSalesHeader: Boolean; TempBillingLine: Record "Billing Line" temporary; PreviousCustomerNo: Code[20]; LastDetailOverview: Enum "Contract Detail Overview"; PreviousCurrencyCode: Code[20]; PreviousContractNo: Code[20])
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeTestPreviousDocumentTotalInvoiceAmount(Sales: Boolean; DiscountLineExists: Boolean; PreviousContractNo: Code[20]; SalesHeader: Record "Sales Header"; PurchaseHeader: Record "Purchase Header")
     begin
     end;
 
-    [InternalEvent(false, false)]
-    local procedure OnAfterCustomerContractLineGetInInsertSalesLineFromTempBillingLine(CustomerContractLine: Record "Cust. Sub. Contract Line")
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCustomerContractLineGetInInsertSalesLineFromTempBillingLine(CustomerContractLine: Record "Cust. Sub. Contract Line"; SalesHeader: Record "Sales Header"; var TempBillingLine: Record "Billing Line" temporary)
     begin
     end;
 
@@ -1153,6 +1155,16 @@ codeunit 8060 "Create Billing Documents"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreatePurchaseDocumentsPerVendorBeforeTempBillingLineFindSet(var TempBillingLine: Record "Billing Line" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateAdditionalInvoiceLine(var SalesLine: Record "Sales Line"; ParentSalesLine: Record "Sales Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetAdditionalLineText(SubscriptionContractSetupFieldNo: Integer; ParentSalesLine: Record "Sales Line"; SubscriptionHeader: Record "Subscription Header"; ServiceCommitment: Record "Subscription Line"; var DescriptionText: Text)
     begin
     end;
 

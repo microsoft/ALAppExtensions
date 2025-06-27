@@ -36,9 +36,9 @@
   ],
   "target": "OnPrem",
   "resourceExposurePolicy": {
-    "allowDebugging": false,
-    "allowDownloadingSource": false,
-    "includeSourceInSymbolFile": false
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
   },
   "features": [
     "TranslationFile"

@@ -33,6 +33,7 @@ query 37018 "Opportunity Entries - PBI API"
             column(opportunityEntrySalesCycleCode; "Sales Cycle Code") { }
             column(opportunityEntrySalesCycleStage; "Sales Cycle Stage") { }
             column(opportunityEntrySalesCycleStageDescription; "Sales Cycle Stage Description") { }
+            column(opportunityEntryCloseOpportunityCode; "Close Opportunity Code") { }
             column(opportunityContactNo; "Contact No.") { }
 
         }

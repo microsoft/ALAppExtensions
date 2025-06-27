@@ -38,6 +38,9 @@ codeunit 30178 "Shpfy Product Export"
     begin
         ShopifyProduct.SetFilter("Item SystemId", '<>%1', NullGuid);
         ShopifyProduct.SetFilter("Shop Code", Rec.GetFilter(Code));
+
+        ProductEvents.OnAfterProductsToSynchronizeFiltersSet(ShopifyProduct, Shop, OnlyUpdatePrice);
+
         RecordCount := ShopifyProduct.Count();
         if ShopifyProduct.FindSet(false) then
             repeat

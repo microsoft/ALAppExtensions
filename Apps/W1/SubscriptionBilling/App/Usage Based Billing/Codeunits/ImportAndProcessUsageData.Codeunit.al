@@ -4,7 +4,6 @@ using Microsoft.Inventory.Item.Catalog;
 
 codeunit 8025 "Import And Process Usage Data"
 {
-    Access = Internal;
     TableNo = "Usage Data Import";
     SingleInstance = true;
 
@@ -39,7 +38,7 @@ codeunit 8025 "Import And Process Usage Data"
         UsageDataProcessing.ProcessUsageData(UsageDataImport);
     end;
 
-    internal procedure CreateUsageDataCustomer(CustomerId: Text[80]; UsageDataSupplierReference: Record "Usage Data Supplier Reference"; SupplierNo: Code[20])
+    procedure CreateUsageDataCustomer(CustomerId: Text[80]; UsageDataSupplierReference: Record "Usage Data Supplier Reference"; SupplierNo: Code[20])
     var
         UsageDataCustomer: Record "Usage Data Supp. Customer";
     begin
@@ -56,7 +55,7 @@ codeunit 8025 "Import And Process Usage Data"
         end;
     end;
 
-    internal procedure CreateUsageDataSubscription(SubscriptionID: Text[80]; CustomerID: Text[80]; ProductID: Text[80]; ProductName: Text[100]; Unit: Text[80];
+    procedure CreateUsageDataSubscription(SubscriptionID: Text[80]; CustomerID: Text[80]; ProductID: Text[80]; ProductName: Text[100]; Unit: Text[80];
                                                     Quantity: Decimal; SubscriptionStartDate: Date; SubscriptionEndDate: Date;
                                                     UsageDataSupplierReference: Record "Usage Data Supplier Reference"; SupplierNo: Code[20])
     var
@@ -90,7 +89,7 @@ codeunit 8025 "Import And Process Usage Data"
         end;
     end;
 
-    internal procedure GetServiceCommitmentForSubscription(SupplierNo: Code[20]; SubscriptionReference: Text[80]; var ServiceCommitment: Record "Subscription Line"): Boolean
+    procedure GetServiceCommitmentForSubscription(SupplierNo: Code[20]; SubscriptionReference: Text[80]; var ServiceCommitment: Record "Subscription Line"): Boolean
     var
         UsageDataSupplierReference: Record "Usage Data Supplier Reference";
     begin

@@ -1,4 +1,15 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.VAT.Clause;
+using Microsoft.Inventory.Item;
+using Microsoft.Foundation.Enums;
+
 codeunit 5136 "Contoso Posting Setup"
 {
     InherentEntitlements = X;

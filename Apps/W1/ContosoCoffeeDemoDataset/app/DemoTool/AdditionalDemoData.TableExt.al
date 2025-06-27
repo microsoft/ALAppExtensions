@@ -1,5 +1,14 @@
 #pragma warning disable AA0247
 #if not CLEANSCHEMA25
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
+using Microsoft.Utilities;
+
 tableextension 4762 "Additional Demo Data" extends "Assisted Company Setup Status"
 {
 #pragma warning disable AS0072, AS0115

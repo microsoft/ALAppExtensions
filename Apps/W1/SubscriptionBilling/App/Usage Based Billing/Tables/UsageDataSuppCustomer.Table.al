@@ -9,7 +9,6 @@ table 8012 "Usage Data Supp. Customer"
     DataClassification = CustomerContent;
     LookupPageId = "Usage Data Customers";
     DrillDownPageId = "Usage Data Customers";
-    Access = Internal;
 
     fields
     {

@@ -24,12 +24,33 @@ codeunit 139559 "Shpfy Shipping Helper"
         exit(OrderHeader."Shopify Order Id");
     end;
 
+    internal procedure CreateOrderLines(ShopifyOrderId: BigInteger; LocationId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type"; NumberOfLines: Integer): BigInteger
+    var
+        OrderLine: Record "Shpfy Order Line";
+        Any: Codeunit Any;
+        i: Integer;
+    begin
+        Any.SetDefaultSeed();
+        for i := 1 to NumberOfLines do begin
+            Clear(OrderLine);
+            OrderLine."Shopify Order Id" := ShopifyOrderId;
+            OrderLine."Shopify Product Id" := Any.IntegerInRange(10000, 99999);
+            OrderLine."Shopify Variant Id" := Any.IntegerInRange(10000, 99999);
+            OrderLine."Line Id" := 100 + i;
+            OrderLine.Quantity := Any.IntegerInRange(1, 10);
+            OrderLine."Location Id" := LocationId;
+            OrderLine."Delivery Method Type" := DeliveryMethodType;
+            OrderLine.Insert();
+        end;
+    end;
+
     internal procedure CreateShopifyFulfillmentOrder(ShopifyOrderId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
     var
         OrderLine: Record "Shpfy Order Line";
         FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
         FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
         Any: Codeunit Any;
+        OrderLineCountLineCount: Integer;
     begin
         Any.SetDefaultSeed();
         Clear(FulfillmentOrderHeader);
@@ -42,9 +63,10 @@ codeunit 139559 "Shpfy Shipping Helper"
         OrderLine.SetRange("Shopify Order Id", ShopifyOrderId);
         if OrderLine.FindSet() then
             repeat
+                OrderLineCountLineCount += 1;
                 Clear(FulfillmentOrderLine);
                 FulfillmentOrderLine."Shopify Fulfillment Order Id" := FulfillmentOrderHeader."Shopify Fulfillment Order Id";
-                FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id" := Any.IntegerInRange(10000, 99999);
+                FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id" := 100 + OrderLineCountLineCount;
                 FulfillmentOrderLine."Shopify Order Id" := FulfillmentOrderHeader."Shopify Order Id";
                 FulfillmentOrderLine."Shopify Product Id" := OrderLine."Shopify Product Id";
                 FulfillmentOrderLine."Shopify Variant Id" := OrderLine."Shopify Variant Id";
@@ -76,6 +98,7 @@ codeunit 139559 "Shpfy Shipping Helper"
             repeat
                 Clear(SalesShipmentLine);
                 SalesShipmentLine."Document No." := SalesShipmentHeader."No.";
+                SalesShipmentLine."Line No." := OrderLine."Line Id";
                 SalesShipmentLine.Type := SalesShipmentLine.type::Item;
                 SalesShipmentLine."No." := Any.AlphanumericText(MaxStrLen(SalesShipmentLine."No."));
                 SalesShipmentLine."Shpfy Order Line Id" := OrderLine."Line Id";

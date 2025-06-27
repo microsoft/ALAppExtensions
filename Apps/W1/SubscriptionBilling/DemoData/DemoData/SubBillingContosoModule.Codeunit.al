@@ -1,5 +1,7 @@
 namespace Microsoft.SubscriptionBilling;
 
+using Microsoft.DemoTool;
+
 codeunit 8102 "Sub. Billing Contoso Module" implements "Contoso Demo Data Module"
 {
 

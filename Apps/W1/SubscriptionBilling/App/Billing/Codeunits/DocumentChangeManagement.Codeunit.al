@@ -8,7 +8,6 @@ using Microsoft.Utilities;
 
 codeunit 8074 "Document Change Management"
 {
-    Access = Internal;
     SingleInstance = true;
 
     var
@@ -642,7 +641,7 @@ codeunit 8074 "Document Change Management"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeValidateEvent, "Buy-from Vendor No.", false, false)]
-    local procedure PreventChangePurchHdrSelltoVendorNo(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
+    local procedure PreventChangePurchHdrBuyFromVendorNo(var Rec: Record "Purchase Header"; CurrFieldNo: Integer)
     begin
         if Rec.IsTemporary() then
             exit;
@@ -1105,7 +1104,7 @@ codeunit 8074 "Document Change Management"
             Error(LineCannotBeChangedErr, BillingLine."Subscription Contract No.");
     end;
 
-    procedure PreventChangeOnDocumentHeaderOrLine(RecVariant: Variant; CurrFieldNo: Integer)
+    internal procedure PreventChangeOnDocumentHeaderOrLine(RecVariant: Variant; CurrFieldNo: Integer)
     var
         BillingLine: Record "Billing Line";
         ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
@@ -1119,7 +1118,13 @@ codeunit 8074 "Document Change Management"
         DocumentTypeInteger: Integer;
         DocumentNo: Code[20];
         LineNo: Integer;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforePreventChangeOnDocumentHeaderOrLine(RecVariant, CurrFieldNo, IsHandled);
+        if IsHandled then
+            exit;
+
         if CurrFieldNo = 0 then
             exit;
         RRef.GetTable(RecVariant);
@@ -1197,5 +1202,10 @@ codeunit 8074 "Document Change Management"
                         RecurringBilling := SalesHeader."Recurring Billing";
                 end;
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePreventChangeOnDocumentHeaderOrLine(RecVariant: Variant; CurrFieldNo: Integer; var IsHandled: Boolean)
+    begin
     end;
 }

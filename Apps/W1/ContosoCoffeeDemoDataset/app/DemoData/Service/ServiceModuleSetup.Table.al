@@ -1,4 +1,16 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Service;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Item;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Inventory.Location;
+using Microsoft.DemoData.Common;
+
 table 4765 "Service Module Setup"
 {
     DataClassification = CustomerContent;
