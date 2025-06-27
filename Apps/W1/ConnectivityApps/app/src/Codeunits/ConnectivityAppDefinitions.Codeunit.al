@@ -29,6 +29,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterSofteraBankfeed();
         RegisterSUManGOAutoBank();
         RegisterYavrioOpenBanking();
+        RegisterEOSOpenBanking();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -353,6 +354,36 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor := 'GB,US';
         AppWorksOn := 'GB,US';
 
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+
+    local procedure RegisterEOSOpenBanking()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Open Banking' to IT
+        ***************************************************/
+
+        AppId := 'f1d1f2b1-cdd0-42c7-834e-19fb56af6cec';
+        AppName := 'Open Banking';
+        AppPublisher := 'EOS Solutions';
+        AppDescription := 'Connect to bank accounts through open banking standard, get bank statements and balances, reconcile bank transactions through a permanent connection between ERP and bank databases.';
+        AppProviderSupportURL := 'https://docs.eos-solutions.it/en/docs/apps-func/ex016-open-banking.html';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.eos_solutions%7CAID.ex016_openbanking%7CPAPPID.f1d1f2b1-cdd0-42c7-834e-19fb56af6cec?tab=Overview';
+        AppApprovedFor := 'IT';
+        AppWorksOn := 'IT';
+
+        AddDescriptionTranslation(AppId, 'Collega i conti bancari tramite lo standard open banking, ottieni estratti conto e saldi, riconcilia le transazioni bancarie tramite una connessione permanente tra ERP e database bancari.', 1040);
+        AddDescriptionTranslation(AppId, 'Stellen Sie über den Open-Banking-Standard eine Verbindung zu Bankkonten her, erhalten Sie Kontoauszüge und Kontostände und gleichen Sie Banktransaktionen über eine permanente Verbindung zwischen ERP- und Bankdatenbanken ab.', 1031);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 

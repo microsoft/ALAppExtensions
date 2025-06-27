@@ -104,7 +104,6 @@ page 47017 "SL Company Add. Settings List"
                 }
                 field("Project Master Only"; Rec."Project Master Only")
                 {
-
                     trigger OnValidate()
                     begin
                         if PrepSettingsForFieldUpdate() then
@@ -120,7 +119,6 @@ page 47017 "SL Company Add. Settings List"
                 }
                 field("Include Plan Status Projects"; Rec."Include Plan Status Projects")
                 {
-
                     trigger OnValidate()
                     begin
                         if PrepSettingsForFieldUpdate() then
@@ -155,15 +153,14 @@ page 47017 "SL Company Add. Settings List"
                 }
                 field("Migrate Customer Classes"; Rec."Migrate Customer Classes")
                 {
-                    Enabled = false;
                 }
                 field("Migrate Vendor Classes"; Rec."Migrate Vendor Classes")
                 {
-                    Enabled = false;
                 }
                 field("Migrate Product Classes"; Rec."Migrate Item Classes")
                 {
                     Enabled = false;
+                    Visible = false;
                 }
                 field("Oldest Hist. Year to Migrate"; Rec."Oldest Hist. Year to Migrate")
                 {
