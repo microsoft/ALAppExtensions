@@ -214,7 +214,7 @@ codeunit 5239 "Contoso Account Schedule"
 
     procedure InsertColumnLayout(ColumnLayoutName: Code[10]; LineNo: Integer; ColumnNo: Code[10]; ColumnHeader: Text[30]; ColumnType: Enum "Column Layout Type"; LedgerEntryType: Enum "Column Layout Entry Type"; AmountType: Enum "Account Schedule Amount Type"; Formula: Code[80]; ShowOppositeSign: Boolean; Show: Enum "Column Layout Show"; ComparisonPeriodFormula: Code[20]; HideCurrencySymbol: Boolean; FormulaLCID: Integer)
     begin
-        InsertColumnLayout(ColumnLayoutName, LineNo, ColumnNo, ColumnHeader, ColumnType, LedgerEntryType, Enum::"Account Schedule Amount Type"::"Net Amount", Formula, ShowOppositeSign, Show, ComparisonPeriodFormula, HideCurrencySymbol, FormulaLCID, Enum::"Analysis Rounding Factor"::None);
+        InsertColumnLayout(ColumnLayoutName, LineNo, ColumnNo, ColumnHeader, ColumnType, LedgerEntryType, AmountType, Formula, ShowOppositeSign, Show, ComparisonPeriodFormula, HideCurrencySymbol, FormulaLCID, Enum::"Analysis Rounding Factor"::None);
     end;
 
     procedure InsertColumnLayout(ColumnLayoutName: Code[10]; LineNo: Integer; ColumnNo: Code[10]; ColumnHeader: Text[30]; ColumnType: Enum "Column Layout Type"; LedgerEntryType: Enum "Column Layout Entry Type"; AmountType: Enum "Account Schedule Amount Type"; Formula: Code[80]; ShowOppositeSign: Boolean; Show: Enum "Column Layout Show"; ComparisonPeriodFormula: Code[20]; HideCurrencySymbol: Boolean; FormulaLCID: Integer; ReoundingFactor: Enum "Analysis Rounding Factor")
