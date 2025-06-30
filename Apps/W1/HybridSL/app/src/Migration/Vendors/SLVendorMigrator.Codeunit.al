@@ -90,8 +90,7 @@ codeunit 47021 "SL Vendor Migrator"
                 if not SLCompanyAdditionalSettings."Migrate Inactive Vendors" then begin
                     DecrementMigratedCount();
                     exit;
-                end
-                else
+                end else
                     VendorBlocked := true;
 
         if not VendorDataMigrationFacade.CreateVendorIfNeeded(SLVendor.VendId, CopyStr(SLHelperFunctions.NameFlip(SLVendor.Name), 1, MaxStrLen(VendorName))) then
