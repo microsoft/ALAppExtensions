@@ -270,6 +270,7 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL ItemSite", 'ItemSite');
         UpdateOrInsertRecord(Database::"SL LotSerMst", 'LotSerMst');
         UpdateOrInsertRecord(Database::"SL LotSerT", 'LotSerT');
+        UpdateOrInsertRecord(Database::"SL ProductClass", 'ProductClass');
         UpdateOrInsertRecord(Database::"SL Site", 'Site');
         // Misc
         UpdateOrInsertRecord(Database::"SL FlexDef", 'FlexDef');
