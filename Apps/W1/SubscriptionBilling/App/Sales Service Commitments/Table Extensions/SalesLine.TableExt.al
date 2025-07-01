@@ -217,8 +217,8 @@ tableextension 8054 "Sales Line" extends "Sales Line"
             exit;
 
         if SalesServiceCommitment.FindSet() then begin
-            SalesLine.Modify(false);
             repeat
+                SalesServiceCommitment.SetSalesLine(Rec);
                 SalesServiceCommitment.CalculateCalculationBaseAmount();
             until SalesServiceCommitment.Next() = 0;
         end;
