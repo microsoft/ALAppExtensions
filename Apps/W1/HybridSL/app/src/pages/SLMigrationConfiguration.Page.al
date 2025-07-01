@@ -472,9 +472,7 @@ page 47018 "SL Migration Configuration"
                 field("Migrate Vendor Classes"; Rec."Migrate Vendor Classes")
                 {
                     Caption = 'Vendor Classes';
-                    Enabled = false;
                     ToolTip = 'Specifies whether to migrate vendor classes.';
-                    Visible = false;
 
                     trigger OnValidate()
                     begin
