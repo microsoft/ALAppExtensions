@@ -116,7 +116,8 @@ codeunit 6108 "E-Document Processing"
     begin
         case RecRef.Number of
             Database::"Sales Header", Database::"Sales Invoice Header", Database::"Sales Cr.Memo Header",
-            Database::"Service Header", Database::"Service Invoice Header", Database::"Service Cr.Memo Header":
+            Database::"Service Header", Database::"Service Invoice Header", Database::"Service Cr.Memo Header",
+            Database::"Sales Shipment Header":
                 exit(GetDocSendingProfileForCustVend(RecRef.Field(SalesHeader.FieldNo("Bill-to Customer No.")).Value, ''));
 
             Database::"Finance Charge Memo Header", Database::"Issued Fin. Charge Memo Header",
@@ -170,6 +171,11 @@ codeunit 6108 "E-Document Processing"
                 begin
                     SourceDocumentLines.Open(Database::"Issued Reminder Line");
                     SourceDocumentLines.Field(1).SetRange(EDocument."Document No.");
+                end;
+            EDocument."Document Type"::"Sales Shipment":
+                begin
+                    SourceDocumentLines.Open(Database::"Sales Shipment Line");
+                    SourceDocumentLines.Field(3).SetRange(EDocument."Document No.");
                 end;
         end;
     end;

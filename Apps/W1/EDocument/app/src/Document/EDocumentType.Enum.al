@@ -93,4 +93,7 @@ enum 6121 "E-Document Type" implements IEDocumentFinishDraft
     {
         Caption = 'G/L Entry';
     }
+    value(20; "Sales Shipment")
+    {
+    }
 }

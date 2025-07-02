@@ -184,6 +184,14 @@ codeunit 139629 "Library - E-Document"
         PostSalesDocument(SalesHeader, SalesInvHeader);
     end;
 
+    procedure PostSalesShipment(var Customer: Record Customer) SalesShipmentHeader: Record "Sales Shipment Header";
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        this.CreateSalesHeaderWithItem(Customer, SalesHeader, Enum::"Sales Document Type"::Order);
+        SalesShipmentHeader.Get(this.LibrarySales.PostSalesDocument(SalesHeader, true, false));
+    end;
+
     procedure RunEDocumentJobQueue(var EDocument: Record "E-Document")
     begin
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
@@ -787,6 +795,9 @@ codeunit 139629 "Library - E-Document"
 
         EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Issued Reminder";
         EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Sales Shipment";
+        EDocServiceSupportedType.Insert(false);
     end;
 
     procedure CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration")
