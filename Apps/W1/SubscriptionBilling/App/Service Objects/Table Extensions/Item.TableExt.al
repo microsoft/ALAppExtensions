@@ -120,7 +120,9 @@ tableextension 8052 Item extends Item
     local procedure UpdateItemPriceList()
     var
 #if not CLEAN25
+#pragma warning disable AL0432
         SalesPrice: Record "Sales Price";
+#pragma warning restore AL0432
 #endif
         PriceListLine: Record "Price List Line";
 #if not CLEAN25

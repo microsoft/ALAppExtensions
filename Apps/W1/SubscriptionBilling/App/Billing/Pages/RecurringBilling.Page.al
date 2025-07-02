@@ -160,12 +160,12 @@ page 8067 "Recurring Billing"
                 }
                 field("Document Type"; Rec."Document Type")
                 {
-                    ToolTip = 'Shows the document type of the document created for posting.';
+                    ToolTip = 'Specifies the document type of the document created for posting.';
                     StyleExpr = LineStyleExpr;
                 }
                 field("Document No."; Rec."Document No.")
                 {
-                    ToolTip = 'Shows the document number of the document created for posting.';
+                    ToolTip = 'Specifies the document number of the document created for posting.';
                     StyleExpr = LineStyleExpr;
 
                     trigger OnDrillDown()
@@ -212,7 +212,7 @@ page 8067 "Recurring Billing"
                 }
                 field("User ID"; Rec."User ID")
                 {
-                    ToolTip = 'Shows the user who created the line.';
+                    ToolTip = 'Specifies the user who created the line.';
                     StyleExpr = LineStyleExpr;
                     Visible = false;
                 }

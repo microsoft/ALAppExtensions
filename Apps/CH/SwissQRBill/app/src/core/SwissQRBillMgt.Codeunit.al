@@ -191,6 +191,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
 
         with Currency do begin
             SetFilter("ISO Code", '%1|%2', 'CHF', 'EUR');
+            OnGetAllowedCurrencyCodeFilterOnAfterSetFilter(Currency);
             if FindSet() then
                 repeat
                     if Result <> '' then
@@ -494,6 +495,11 @@ codeunit 11518 "Swiss QR-Bill Mgt."
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeReportPrintToStream(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer"; var PDFFileTempBlob: Codeunit "Temp Blob"; var Result: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetAllowedCurrencyCodeFilterOnAfterSetFilter(var Currency: Record "Currency")
     begin
     end;
 }

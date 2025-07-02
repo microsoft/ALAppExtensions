@@ -25,12 +25,12 @@ page 8026 "Price Update Templates"
                 }
                 field(Partner; Rec.Partner)
                 {
-                    ToolTip = 'Determines whether the template applies to customer or Vendor Subscription Contracts.';
+                    ToolTip = 'Specifies whether the template applies to customer or Vendor Subscription Contracts.';
                 }
                 field("Contract Filter"; Rec."Subscription Contract Filter".HasValue())
                 {
                     Caption = 'Contract Filter';
-                    ToolTip = 'Shows if a filters has been defined for the template.';
+                    ToolTip = 'Specifies if a filter has been defined for the template.';
 
                     trigger OnDrillDown()
                     begin
@@ -40,7 +40,7 @@ page 8026 "Price Update Templates"
                 field("Service Commitment Filter"; Rec."Subscription Line Filter".HasValue())
                 {
                     Caption = 'Subscription Line Filter';
-                    ToolTip = 'Shows if a filters has been defined for the template.';
+                    ToolTip = 'Specifies if a filter has been defined for the template.';
                     trigger OnDrillDown()
                     begin
                         Rec.EditFilter(Rec.FieldNo("Subscription Line Filter"));
@@ -49,7 +49,7 @@ page 8026 "Price Update Templates"
                 field("Service Object Filter"; Rec."Subscription Filter".HasValue())
                 {
                     Caption = 'Subscription Filter';
-                    ToolTip = 'Shows if a filters has been defined for the template.';
+                    ToolTip = 'Specifies if a filter has been defined for the template.';
                     trigger OnDrillDown()
                     begin
                         Rec.EditFilter(Rec.FieldNo("Subscription Filter"));

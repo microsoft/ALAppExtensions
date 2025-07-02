@@ -161,6 +161,7 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
 
     procedure CopyFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     begin
+        "Source Currency Code" := SalesAdvLetterHeaderCZZ."Currency Code";
         "Bill-to/Pay-to No." := SalesAdvLetterHeaderCZZ."Bill-to Customer No.";
         "Country/Region Code" := SalesAdvLetterHeaderCZZ."Bill-to Country/Region Code";
         "VAT Registration No." := SalesAdvLetterHeaderCZZ."VAT Registration No.";
@@ -191,6 +192,7 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
 
     procedure CopyFromPurchAdvLetterHeaderCZZ(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
     begin
+        "Source Currency Code" := PurchAdvLetterHeaderCZZ."Currency Code";
         "Bill-to/Pay-to No." := PurchAdvLetterHeaderCZZ."Pay-to Vendor No.";
         "Country/Region Code" := PurchAdvLetterHeaderCZZ."Pay-to Country/Region Code";
         "VAT Registration No." := PurchAdvLetterHeaderCZZ."VAT Registration No.";
@@ -227,12 +229,17 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         "VAT Base Amount" := AdvancePostingBufferCZZ."VAT Base Amount";
         "VAT Difference" := "VAT Amount" -
             Round(Amount * "VAT %" / (100 + "VAT %"), Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
-        "Amount (LCY)" := AdvancePostingBufferCZZ."Amount (ACY)";
-        "VAT Amount (LCY)" := AdvancePostingBufferCZZ."VAT Amount (ACY)";
-        "VAT Base Amount (LCY)" := AdvancePostingBufferCZZ."VAT Base Amount (ACY)";
+        "Amount (LCY)" := AdvancePostingBufferCZZ."Amount (LCY)";
+        "VAT Amount (LCY)" := AdvancePostingBufferCZZ."VAT Amount (LCY)";
+        "VAT Base Amount (LCY)" := AdvancePostingBufferCZZ."VAT Base Amount (LCY)";
         "Currency Factor" := 1;
         if "Amount (LCY)" <> 0 then
             "Currency Factor" := Amount / "Amount (LCY)";
+        if AdvancePostingBufferCZZ."Amount (ACY)" <> 0 then
+            "Additional Currency Factor CZL" := AdvancePostingBufferCZZ."Amount (ACY)" / "Amount (LCY)";
+        "Source Currency Amount" := Amount;
+        "Source Curr. VAT Base Amount" := "VAT Base Amount";
+        "Source Curr. VAT Amount" := "VAT Amount";
         OnAfterCopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ, Rec);
     end;
 

@@ -406,7 +406,7 @@ table 8068 "Sales Subscription Line"
             Error(ReleasedSalesOrderExistsErr);
     end;
 
-    internal procedure FilterOnSalesLine(SourceSalesLine: Record "Sales Line")
+    procedure FilterOnSalesLine(SourceSalesLine: Record "Sales Line")
     begin
         Rec.FilterOnDocument(SourceSalesLine."Document Type", SourceSalesLine."Document No.");
         Rec.SetRange("Document Line No.", SourceSalesLine."Line No.");
@@ -462,7 +462,7 @@ table 8068 "Sales Subscription Line"
         end;
     end;
 
-    internal procedure CalculateCalculationBaseAmount()
+    procedure CalculateCalculationBaseAmount()
     var
         IsHandled: Boolean;
     begin
@@ -773,7 +773,6 @@ table 8068 "Sales Subscription Line"
 
     internal procedure CalculateUnitCost()
     var
-        SalesLine: Record "Sales Line";
         SalesHeader: Record "Sales Header";
         CurrencyDate: Date;
     begin

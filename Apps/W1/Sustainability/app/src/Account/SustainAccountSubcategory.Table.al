@@ -1,5 +1,6 @@
 namespace Microsoft.Sustainability.Account;
 
+using Microsoft.Sustainability.Energy;
 using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Ledger;
 
@@ -32,6 +33,7 @@ table 6212 "Sustain. Account Subcategory"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission Factor CO2';
+            CaptionClass = '102,5,1';
 
             trigger OnValidate()
             begin
@@ -46,6 +48,7 @@ table 6212 "Sustain. Account Subcategory"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission Factor CH4';
+            CaptionClass = '102,5,2';
 
             trigger OnValidate()
             begin
@@ -60,6 +63,7 @@ table 6212 "Sustain. Account Subcategory"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission Factor N2O';
+            CaptionClass = '102,5,3';
 
             trigger OnValidate()
             begin
@@ -131,6 +135,21 @@ table 6212 "Sustain. Account Subcategory"
 
                 CheckIfChangeAllowedAndRecalculateJournalLines(FieldCaption("Waste Intensity Factor"));
             end;
+        }
+        field(13; "Energy Source Code"; Code[20])
+        {
+            Caption = 'Energy Source Code';
+            TableRelation = "Sustainability Energy Source";
+            ToolTip = 'Specifies the code assigned to the energy source you want to add.';
+        }
+        field(14; "Energy Value Required"; Boolean)
+        {
+            Caption = 'Energy Value Required';
+        }
+        field(15; "Energy Onsite"; Boolean)
+        {
+            Caption = 'Energy Onsite';
+            ToolTip = 'Specifies the energy source used for generation is onsite or not.';
         }
     }
 

@@ -11,14 +11,7 @@
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
   "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "ExtensionLogo.png",
-  "dependencies": [
-    {
-      "id": "10cb69d9-bc8a-4d27-970a-9e110e9db2a5",
-      "name": "_Exclude_APIV2_",
-      "publisher": "Microsoft",
-      "version": "27.0.0.0"
-    }
-  ],
+  "dependencies": [],
   "internalsVisibleTo": [
     {
       "id": "41b3ab6e-3f20-47c7-a67f-feccc4d58a55",

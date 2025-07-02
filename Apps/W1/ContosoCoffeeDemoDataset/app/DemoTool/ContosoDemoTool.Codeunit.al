@@ -30,6 +30,7 @@ codeunit 5193 "Contoso Demo Tool"
         EndGeneratingDemoDataMsg: Label 'Finishing demo data module %1, for level %2', Locked = true;
         SortedDependencyModulesMsg: Label 'Finish building sorted dependency for selected modules: %1', Locked = true;
         ContosoCoffeeDemoDatasetFeatureNameTok: Label 'ContosoCoffeeDemoDataset', Locked = true;
+        NoConfigurationMsg: Label 'This module does not require any additional configuration.';
 
     internal procedure CreateNewCompanyDemoData(var ContosoDemoDataModule: Record "Contoso Demo Data Module" temporary; IsSetup: Boolean)
     var
@@ -276,6 +277,15 @@ codeunit 5193 "Contoso Demo Tool"
             CreateDemoData(ContosoDemoDataModule, Enum::"Contoso Demo Data Level"::"Setup Data");
     end;
 
+    /// <summary>
+    /// Returns the message to be displayed when no configuration is required for the module.
+    /// </summary>
+    /// <returns>Message to be displayed when no configuration is required for the module.</returns>
+    procedure GetNoConfiguirationMsg(): Text
+    begin
+        exit(NoConfigurationMsg);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     begin
@@ -324,9 +334,9 @@ codeunit 5193 "Contoso Demo Tool"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assisted Company Setup", 'OnSetupNewCompanyWithDemoData', '', false, false)]
     local procedure OnSetupNewCompanyWithDemoData(NewCompanyName: Text[30]; NewCompanyData: Enum "Company Demo Data Type")
     var
-        ContosoDemoDataModule: Record "Contoso Demo Data Module" temporary;
+        TempContosoDemoDataModule: Record "Contoso Demo Data Module" temporary;
         CompanyCreationContoso: Codeunit "Company Creation Contoso";
     begin
-        CompanyCreationContoso.CreateContosoDemodataInCompany(ContosoDemoDataModule, NewCompanyName, NewCompanyData);
+        CompanyCreationContoso.CreateContosoDemodataInCompany(TempContosoDemoDataModule, NewCompanyName, NewCompanyData);
     end;
 }

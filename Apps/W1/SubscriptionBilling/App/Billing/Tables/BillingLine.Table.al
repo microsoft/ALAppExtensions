@@ -218,6 +218,15 @@ table 8061 "Billing Line"
         key(SK3; "Subscription Contract No.", "Subscription Contract Line No.", "Billing from")
         {
         }
+        key(SK4; "Billing Template Code", "Subscription Contract No.")
+        {
+        }
+        key(SK5; "Document Type", "Document No.")
+        {
+        }
+        key(SK6; "Billing Template Code", Partner)
+        {
+        }
     }
 
     trigger OnDelete()
@@ -237,7 +246,7 @@ table 8061 "Billing Line"
     var
         PageManagement: Codeunit "Page Management";
         DocumentExistsErr: Label 'There is an unposted invoice or credit memo for the Subscription Line. Please delete this document before updating the data.';
-        OnlyLastServiceLineCanBeDeletedErr: Label 'Only last Billing Line for Subscription Line can be deleted or all Billing Lines. Please make your selection accordingly or use the "Clear Billing Proposal" action. (%1)';
+        OnlyLastServiceLineCanBeDeletedErr: Label 'Only last Billing Line for Subscription Line can be deleted or all Billing Lines. Please make your selection accordingly or use the "Clear Billing Proposal" action. (%1)', Comment = '%1=Subscription Header No.';
         CannotDeleteBillingLinesWithDocumentNoErr: Label 'Billing line connected with a sales/purchase document cannot be deleted.';
 
     internal procedure FindFirstBillingLineForServiceCommitment(var BillingLine2: Record "Billing Line")
@@ -249,7 +258,7 @@ table 8061 "Billing Line"
         BillingLine2.FindFirst();
     end;
 
-    internal procedure ResetServiceCommitmentNextBillingDate()
+    procedure ResetServiceCommitmentNextBillingDate()
     var
         ServiceCommitment: Record "Subscription Line";
     begin
@@ -322,23 +331,23 @@ table 8061 "Billing Line"
         exit(BillingLine.Amount);
     end;
 
-    local procedure GetSalesDocumentTypeForAmount(Amount: Decimal) SalesDocumentType: Enum "Sales Document Type"
+    local procedure GetSalesDocumentTypeForAmount(InputAmount: Decimal) SalesDocumentType: Enum "Sales Document Type"
     begin
-        if Amount >= 0 then
+        if InputAmount >= 0 then
             SalesDocumentType := SalesDocumentType::Invoice
         else
             SalesDocumentType := SalesDocumentType::"Credit Memo";
     end;
 
-    local procedure GetPurchaseDocumentTypeForAmount(Amount: Decimal) PurchaseDocumentType: Enum "Purchase Document Type"
+    local procedure GetPurchaseDocumentTypeForAmount(InputAmount: Decimal) PurchaseDocumentType: Enum "Purchase Document Type"
     begin
-        if Amount >= 0 then
+        if InputAmount >= 0 then
             PurchaseDocumentType := PurchaseDocumentType::Invoice
         else
             PurchaseDocumentType := PurchaseDocumentType::"Credit Memo";
     end;
 
-    internal procedure GetSalesDocumentTypeFromBillingDocumentType() SalesDocumentType: Enum "Sales Document Type"
+    procedure GetSalesDocumentTypeFromBillingDocumentType() SalesDocumentType: Enum "Sales Document Type"
     begin
         case "Document Type" of
             "Document Type"::Invoice:
@@ -348,7 +357,7 @@ table 8061 "Billing Line"
         end;
     end;
 
-    internal procedure GetPurchaseDocumentTypeFromBillingDocumentType() PurchaseDocumentType: Enum "Purchase Document Type"
+    procedure GetPurchaseDocumentTypeFromBillingDocumentType() PurchaseDocumentType: Enum "Purchase Document Type"
     begin
         case "Document Type" of
             "Document Type"::Invoice:
@@ -388,7 +397,13 @@ table 8061 "Billing Line"
     local procedure OpenSalesDocumentCard()
     var
         SalesHeader: Record "Sales Header";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeOpenSalesDocumentCard(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
         if SalesHeader.Get(GetSalesDocumentTypeFromBillingDocumentType(), "Document No.") then
             PageManagement.PageRunModal(SalesHeader);
     end;
@@ -412,13 +427,13 @@ table 8061 "Billing Line"
         end;
     end;
 
-    internal procedure FilterBillingLineOnContract(ServicePartner: Enum "Service Partner"; ContractNo: Code[20])
+    procedure FilterBillingLineOnContract(ServicePartner: Enum "Service Partner"; ContractNo: Code[20])
     begin
         Rec.SetRange(Partner, ServicePartner);
         Rec.SetRange("Subscription Contract No.", ContractNo);
     end;
 
-    internal procedure FilterBillingLineOnContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; ContractLineNo: Integer)
+    procedure FilterBillingLineOnContractLine(ServicePartner: Enum "Service Partner"; ContractNo: Code[20]; ContractLineNo: Integer)
     begin
         Rec.FilterBillingLineOnContract(ServicePartner, ContractNo);
         Rec.SetRange("Subscription Contract Line No.", ContractLineNo);
@@ -434,7 +449,7 @@ table 8061 "Billing Line"
         CustomerContract.RecalculateHarmonizedBillingFieldsBasedOnNextBillingDate(0);
     end;
 
-    internal procedure IsPartnerVendor(): Boolean
+    procedure IsPartnerVendor(): Boolean
     begin
         exit(Rec.Partner = Rec.Partner::Vendor);
     end;
@@ -502,5 +517,10 @@ table 8061 "Billing Line"
         UsageDataBilling.SetRange("Document Type", "Usage Based Billing Doc. Type"::None);
         UsageDataBilling.SetRange(Rebilling, true);
         exit(not UsageDataBilling.IsEmpty());
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOpenSalesDocumentCard(BillingLine: Record "Billing Line"; var IsHandled: Boolean)
+    begin
     end;
 }

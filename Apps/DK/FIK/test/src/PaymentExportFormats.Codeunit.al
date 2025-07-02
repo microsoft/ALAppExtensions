@@ -1510,6 +1510,51 @@ codeunit 148020 "Payment Export Formats"
           PADSTR('', 8));
     end;
 
+    [Test]
+    [HandlerFunctions('IBANConfirmHandler')]
+    procedure CheckBankDataWithIBANForPmtJournalLine();
+    var
+        BankAccount: Record "Bank Account";
+        GenJnlBatch: Record "Gen. Journal Batch";
+        GenJnlLine: Record "Gen. Journal Line";
+        PaymentExportData: Record "Payment Export Data";
+        DataExch: Record "Data Exch.";
+        DataExchDef: Record "Data Exch. Def";
+        DataExchLineDef: Record "Data Exch. Line Def";
+        PaymentMethod: Record "Payment Method";
+        PaymentExportMgt: Codeunit "Payment Export Mgt";
+        PmtExportMgtGenJnlLine: Codeunit "Pmt Export Mgt Gen. Jnl Line";
+    begin
+        // [SCENARIO 574200] Discrepancy in IBAN/GL Account Code Handling for Domestic Transfers in the Danish version.
+        Initialize();
+
+        // [GIVEN] Setup for Payment Export Formats
+        DataExchDef.SETFILTER(Code, '*BankData*');
+        LibraryPaymentExport.CreatePaymentExportBatch(GenJnlBatch, DataExchDef, XMLPORT::"Export Generic Fixed Width");
+        LibraryPaymentExport.CreateVendorPmtJnlLineWithPaymentTypeInfo(
+          GenJnlLine, GenJnlBatch, PaymentMethod.PaymentTypeValidation::Domestic, 'BTD');
+
+        // [GIVEN] Updating the IBAN On Bank Account
+        BankAccount.Get(GenJnlBatch."Bal. Account No.");
+        BankAccount.Validate(IBAN, '542265452412345554');
+        BankAccount.Modify(true);
+
+        // [GIVEN] Create Data Exchange
+        PaymentExportMgt.CreateDataExch(DataExch, GenJnlLine."Bal. Account No.");
+
+        // [GIVEN] Creating General Journal Line for Export
+        PmtExportMgtGenJnlLine.PreparePaymentExportDataJnl(PaymentExportData, GenJnlLine, DataExch."Entry No.", 1);
+        PaymentExportMgt.CreatePaymentLines(PaymentExportData);
+
+        // [WHEN] Finding the Payment Journal Line and Export the data
+        FindPaymentJournalLines(GenJnlLine, GenJnlBatch."Journal Template Name", GenJnlBatch.Name);
+        BankAccount.GET(GenJnlBatch."Bal. Account No.");
+        DataExchLineDef.GET(DataExch."Data Exch. Def Code", 'BTD');
+
+        // [THEN] While Exporting no Discrepancy in IBAN/GL Account Code Handling for Domestic Transfers
+        VerifyFormatBankDataTransfer(BankAccount."Payment Export Format", PaymentExportData, DataExchLineDef."Column Count");
+    end;
+
     local procedure CheckColumnValue(DataExchEntryNo: Integer; LineNo: Integer; ColumnNo: Integer; ExpectedValue: Text);
     var
         DataExchField: Record "Data Exch. Field";
@@ -1975,6 +2020,12 @@ codeunit 148020 "Payment Export Formats"
         DataExch.TESTFIELD("Data Exch. Def Code", DataExchDefCode);
         DataExchField.SETRANGE("Data Exch. No.", DataExch."Entry No.");
         Assert.AreEqual(ColumnCount, DataExchField.COUNT(), STRSUBSTNO(UnexpectedNoOfRecordsErr, DataExchField.TABLECAPTION()));
+    end;
+
+    [ConfirmHandler]
+    procedure IBANConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
     end;
 }
 

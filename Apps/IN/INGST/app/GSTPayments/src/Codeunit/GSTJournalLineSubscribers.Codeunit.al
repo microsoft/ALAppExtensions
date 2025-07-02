@@ -210,6 +210,24 @@ codeunit 18243 "GST Journal Line Subscribers"
         GSTJournalLineValidations.VendAccount(GenJournalLine, Vendor)
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Journal Voucher", 'OnAfterValidateEvent', 'GST Credit', false, false)]
+    local procedure OnValidateGSTCredit(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line")
+    begin
+        TaxEngineCallingHandler(Rec, xRec);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Journal Voucher", 'OnAfterValidateEvent', 'HSN/SAC Code', false, false)]
+    local procedure OnValidateHSNSACCode(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line")
+    begin
+        TaxEngineCallingHandler(Rec, xRec);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Journal Voucher", 'OnAfterValidateEvent', 'Amount', false, false)]
+    local procedure OnValidateAmount(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line")
+    begin
+        TaxEngineCallingHandler(Rec, xRec);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterAccountNoOnValidateGetFAAccount', '', false, false)]
     local procedure ValidateFAAccount(
         var GenJournalLine: Record "Gen. Journal Line";

@@ -6,6 +6,7 @@ using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
 
+#pragma warning disable AA0210
 codeunit 148159 "Usage Based Extend Contr. Test"
 {
     Subtype = Test;
@@ -44,6 +45,7 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
         RecordRef: RecordRef;
         i: Integer;
         ColumnSeparator: Option " ",Tab,Semicolon,Comma,Space,Custom;
@@ -205,6 +207,7 @@ codeunit 148159 "Usage Based Extend Contr. Test"
 
     local procedure Initialize()
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Usage Based Extend Contr. Test");
         ClearAll();
         ImportedServiceObject.Reset();
         ImportedServiceObject.DeleteAll(false);
@@ -236,7 +239,8 @@ codeunit 148159 "Usage Based Extend Contr. Test"
         UsageDataGenericImport.SetRange("Supp. Subscription ID", UsageDataSupplierReference."Supplier Reference");
         UsageDataGenericImport.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
         UsageDataGenericImport.SetRange("Service Object Availability", UsageDataGenericImport."Service Object Availability"::Connected);
-        UsageDataGenericImport.FindFirst();
+        if UsageDataGenericImport.IsEmpty() then
+            Error('Usage Data Generic Import is empty. It should contain records with Subscription Header No. %1 and Supp. Subscription ID %2.', ServiceCommitment."Subscription Header No.", UsageDataSupplierReference."Supplier Reference");
     end;
 
     local procedure InvokeExtendContractFromSubscription()
@@ -323,8 +327,8 @@ codeunit 148159 "Usage Based Extend Contr. Test"
     local procedure MockUsageDataGenericImport(var UsageDataGenericImport: Record "Usage Data Generic Import")
     begin
         UsageDataGenericImport.InitFromUsageDataImport(UsageDataImport);
-        UsageDataGenericImport."Product ID" := LibraryUtility.GenerateRandomText(80);
-        UsageDataGenericImport."Supp. Subscription ID" := LibraryUtility.GenerateRandomText(80);
+        UsageDataGenericImport."Product ID" := CopyStr(LibraryUtility.GenerateRandomText(80), 1, MaxStrLen(UsageDataGenericImport."Product ID"));
+        UsageDataGenericImport."Supp. Subscription ID" := CopyStr(LibraryUtility.GenerateRandomText(80), 1, MaxStrLen(UsageDataGenericImport."Supp. Subscription ID"));
         UsageDataGenericImport.Insert();
     end;
 
@@ -475,3 +479,4 @@ codeunit 148159 "Usage Based Extend Contr. Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

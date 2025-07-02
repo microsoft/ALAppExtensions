@@ -135,7 +135,7 @@ table 11511 "Swiss QR-Bill Billing Info"
         if "Payment Terms" then
             AddDetailsIfNotBlanked(
                 TempSwissQRBillBillingDetail,
-                TempSwissQRBillBillingDetail."Tag Type"::"Payment Terms", SwissQRBillBillingInfo.GetDocumentPaymentTerms(PaymentTermsCode));
+                TempSwissQRBillBillingDetail."Tag Type"::"Payment Terms", SwissQRBillBillingInfo.GetDocumentPaymentTerms(PaymentTermsCode, DocumentDate));
 
         exit(SwissQRBillBillingInfo.CreateBillingInfoString(TempSwissQRBillBillingDetail, 'S1'));
     end;

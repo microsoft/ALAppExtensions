@@ -1,12 +1,72 @@
 {
 	"folders": [
 		{
-		        "name": "core",
+			"name": "core",
 			"path": "app"
 		},
-		{		        
+		{
 			"name": "test",
 			"path": "test"
+		},
+		{
+			"name": "demo data",
+			"path": "demo data"
+		},
+		{
+			"name": "Avalara App",
+			"path": "../EDocumentConnectors/Avalara/app"
+		},
+		{
+			"name": "Avalara Test",
+			"path": "../EDocumentConnectors/Avalara/test"
+		},
+		{
+			"name": "B2Brouter App",
+			"path": "../EDocumentConnectors/B2Brouter/app"
+		},
+		{
+			"name": "B2Brouter Test",
+			"path": "../EDocumentConnectors/B2Brouter/test"
+		},
+		{
+			"name": "Continia App",
+			"path": "../EDocumentConnectors/Continia/app"
+		},
+		{
+			"name": "Continia Test",
+			"path": "../EDocumentConnectors/Continia/test"
+		},
+		{
+			"name": "Logiq App",
+			"path": "../EDocumentConnectors/Logiq/app"
+		},
+		{
+			"name": "Logiq Test",
+			"path": "../EDocumentConnectors/Logiq/test"
+		},
+		{
+			"name": "Microsoft365 App",
+			"path": "../EDocumentConnectors/Microsoft365/app"
+		},
+		{
+			"name": "Microsoft365 Test",
+			"path": "../EDocumentConnectors/Microsoft365/test"
+		},
+		{
+			"name": "Pagero App",
+			"path": "../EDocumentConnectors/Pagero/app"
+		},
+		{
+			"name": "Pagero Test",
+			"path": "../EDocumentConnectors/Pagero/test"
+		},
+		{
+			"name": "SignUp App",
+			"path": "../EDocumentConnectors/SignUp/app"
+		},
+		{
+			"name": "SignUp Test",
+			"path": "../EDocumentConnectors/SignUp/test"
 		}
 	]
 }

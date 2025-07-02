@@ -19,6 +19,7 @@ using Microsoft.Sales.Receivables;
 using System.Globalization;
 using System.TestLibraries.Utilities;
 
+#pragma warning disable AA0210
 codeunit 139687 "Recurring Billing Docs Test"
 {
     Subtype = Test;
@@ -2824,3 +2825,4 @@ codeunit 139687 "Recurring Billing Docs Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

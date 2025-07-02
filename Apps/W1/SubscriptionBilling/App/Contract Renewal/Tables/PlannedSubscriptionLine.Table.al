@@ -429,6 +429,6 @@ table 8002 "Planned Subscription Line"
         Currency: Record Currency;
         CurrExchRate: Record "Currency Exchange Rate";
         DateFormulaManagement: Codeunit "Date Formula Management";
-        DateBeforeDateErr: Label '%1 cannot be before %2.';
-        DateAfterDateErr: Label '%1 cannot be after %2.';
+        DateBeforeDateErr: Label '%1 cannot be before %2.', Comment = '%1=Field Caption, %2=Field Caption';
+        DateAfterDateErr: Label '%1 cannot be after %2.', Comment = '%1=Field Caption, %2=Field Caption';
 }

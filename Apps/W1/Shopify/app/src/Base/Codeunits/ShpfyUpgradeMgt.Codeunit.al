@@ -398,13 +398,32 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
         WebhookTopic := WebhookTopic::BULK_OPERATIONS_FINISH;
         WebhookSubscription.SetRange(Endpoint, WebhookTopic.Names.Get(WebhookTopic.Ordinals.IndexOf(WebhookTopic.AsInteger())));
-        WebhookSubscription.ModifyAll(Endpoint, Format(WebhookTopic));
+        if WebhookSubscription.FindSet() then
+            repeat
+                UpdateWebhookSubscriptionTopic(WebhookSubscription, WebhookTopic);
+            until WebhookSubscription.Next() = 0;
 
         WebhookTopic := WebhookTopic::ORDERS_CREATE;
         WebhookSubscription.SetRange(Endpoint, WebhookTopic.Names.Get(WebhookTopic.Ordinals.IndexOf(WebhookTopic.AsInteger())));
-        WebhookSubscription.ModifyAll(Endpoint, Format(WebhookTopic));
+        if WebhookSubscription.FindSet() then
+            repeat
+                UpdateWebhookSubscriptionTopic(WebhookSubscription, WebhookTopic);
+            until WebhookSubscription.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(GetWebhookSubscriptionUpgradeTag());
+    end;
+
+    local procedure UpdateWebhookSubscriptionTopic(var WebhookSubscription: Record "Webhook Subscription"; WebhookTopic: Enum "Shpfy Webhook Topic")
+    var
+        NewWebhookSubscription: Record "Webhook Subscription";
+    begin
+        if NewWebhookSubscription.Get(WebhookSubscription."Subscription ID", Format(WebhookTopic)) then
+            NewWebhookSubscription.Delete();
+
+        NewWebhookSubscription := WebhookSubscription;
+        NewWebhookSubscription."Endpoint" := Format(WebhookTopic);
+        NewWebhookSubscription.Insert();
+        WebhookSubscription.Delete();
     end;
 
     internal procedure GetAllowOutgoingRequestseUpgradeTag(): Code[250]

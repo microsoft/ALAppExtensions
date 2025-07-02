@@ -91,9 +91,9 @@ table 8053 "Subscription Contract Type"
 
     var
         ConfirmManagement: Codeunit "Confirm Management";
-        CannotDeleteErr: Label 'You cannot delete %1 %2 because one or more contract are associated with this %1.';
-        CustomerContractWithContractTypeExistsQst: Label 'The Customer Subscription Contracts with contract type %1 may be set so that all contract elements are billed on the same key date. If you deselect this checkbox, Subscription Lines that are added will not be automatically harmonized with regard to billing and the information on harmonized billing will be removed from the contracts. Do you want to continue?';
-        CurrentContractsNotAffectedMsg: Label 'The changed default for the creation of contract deferrals only applies to new contracts. For existing contracts the setting must be changed manually, if required. Contract Type = %1 %2', Comment = 'Code = %1, Description = %2';
+        CannotDeleteErr: Label 'You cannot delete %1 %2 because one or more contract are associated with this %1.', Comment = '%1 = Table, %2 = Table Caption';
+        CustomerContractWithContractTypeExistsQst: Label 'The Customer Subscription Contracts with contract type %1 may be set so that all contract elements are billed on the same key date. If you deselect this checkbox, Subscription Lines that are added will not be automatically harmonized with regard to billing and the information on harmonized billing will be removed from the contracts. Do you want to continue?', Comment = 'Code = %1';
+        CurrentContractsNotAffectedMsg: Label 'The changed default for the creation of contract deferrals only applies to new contracts. For existing contracts the setting must be changed manually, if required. Contract Type = %1 %2', Comment = '%1= Code, %2 = Description';
 
     procedure CustomerContractsExist(): Boolean
     var

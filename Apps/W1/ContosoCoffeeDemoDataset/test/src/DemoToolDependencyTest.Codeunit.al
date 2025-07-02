@@ -1,3 +1,7 @@
+namespace Microsoft.Test.DemoTool;
+
+using Microsoft.DemoTool;
+
 codeunit 148048 "DemoTool Dependency Test"
 {
     Subtype = Test;

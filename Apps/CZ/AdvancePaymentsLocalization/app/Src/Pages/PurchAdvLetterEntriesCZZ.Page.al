@@ -11,11 +11,12 @@ using Microsoft.Purchases.Payables;
 #pragma warning disable AL0604
 page 31183 "Purch. Adv. Letter Entries CZZ"
 {
-    Caption = 'Purchase Adv. Letter Entries';
+    Caption = 'Purchase Advance Letter Entries';
     PageType = List;
     SourceTable = "Purch. Adv. Letter Entry CZZ";
     Editable = false;
-    UsageCategory = None;
+    UsageCategory = Lists;
+    ApplicationArea = Basic, Suite;
 
     layout
     {
@@ -27,7 +28,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies purchase advance letter no.';
-                    Visible = false;
+                    Visible = not IsAdvLetterNoFiltered;
                 }
                 field("Entry Type"; Rec."Entry Type")
                 {
@@ -179,6 +180,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies entry no.';
+                    Visible = not IsAdvLetterNoFiltered;
                 }
             }
         }
@@ -191,6 +193,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
             {
                 Caption = 'Posting';
                 Image = PostingEntries;
+                Visible = IsAdvLetterNoFiltered;
 
                 action(PostPaymentVAT)
                 {
@@ -337,6 +340,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
             {
                 Caption = 'Payment';
                 Image = Payment;
+                Visible = IsAdvLetterNoFiltered;
 
                 action(UnlinkAdvancePayment)
                 {
@@ -408,18 +412,52 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                 end;
             }
         }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(AdvancedCardPromoted; AdvanceCard)
+                {
+                }
+                actionref(NavigatePromoted; Navigate)
+                {
+                }
+            }
+        }
+    }
+    views
+    {
+        view(BalanceEntries)
+        {
+            Caption = 'Balance Entries';
+            Filters = where("Entry Type" = filter('Payment|Usage|Closed'));
+            Visible = not IsAdvLetterNoFiltered;
+        }
+        view(VATEntries)
+        {
+            Caption = 'VAT Entries';
+            Filters = where("Entry Type" = filter('VAT Payment|VAT Usage|VAT Close|VAT Rate|VAT Adjustment'));
+            Visible = not IsAdvLetterNoFiltered;
+        }
     }
 
-    var
-        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
-        PurchPostAdvanceLetterCZZ: Codeunit "Purch. Post Advance Letter CZZ";
-        IsClosed: Boolean;
+    trigger OnOpenPage()
+    begin
+        IsAdvLetterNoFiltered := Rec.GetFilter("Purch. Adv. Letter No.") <> '';
+    end;
 
     trigger OnAfterGetRecord()
     begin
         GetAdvanceLetter();
         IsClosed := PurchAdvLetterHeaderCZZ.Status = PurchAdvLetterHeaderCZZ.Status::Closed;
     end;
+
+    var
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchPostAdvanceLetterCZZ: Codeunit "Purch. Post Advance Letter CZZ";
+        IsClosed, IsAdvLetterNoFiltered : Boolean;
 
     local procedure GetAdvanceLetter()
     begin

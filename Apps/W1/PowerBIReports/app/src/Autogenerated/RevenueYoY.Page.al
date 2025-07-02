@@ -6,9 +6,7 @@ page 37069 "Revenue YoY"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Revenue YoY';
     AboutTitle = 'About Revenue YoY';
     AboutText = 'The Revenue YoY report compares Monthly Recurring Revenue performance across a year-over-year period.';
@@ -25,7 +23,7 @@ page 37069 "Revenue YoY"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

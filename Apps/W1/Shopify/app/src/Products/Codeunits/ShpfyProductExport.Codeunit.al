@@ -71,11 +71,13 @@ codeunit 30178 "Shpfy Product Export"
         BulkOperationInput: TextBuilder;
         GraphQueryList: Dictionary of [BigInteger, TextBuilder];
         JRequestData: JsonArray;
-        VariantPriceCalcSkippedLbl: Label 'Variant price is not synchronized because the item is blocked or sales blocked.';
+        VariantPriceCalcSkippedLbl: Label 'Variant price is not synchronized because the %1 is blocked or sales blocked.', Comment = '%1 - item or item variant.';
         ItemIsBlockedLbl: Label 'Item is blocked.';
         ItemIsDraftLbl: Label 'Shopify product is in draft status.';
         ItemIsArchivedLbl: Label 'Shopify product is archived.';
         ItemVariantIsBlockedLbl: Label 'Item variant is blocked or sales blocked.';
+        ItemLbl: Label 'item';
+        ItemVariantLbl: Label 'item variant';
 
     /// <summary> 
     /// Creates html body for a product from extended text, marketing text and attributes.
@@ -338,7 +340,7 @@ codeunit 30178 "Shpfy Product Export"
             if (not Item.Blocked) and (not Item."Sales Blocked") then
                 ProductPriceCalc.CalcPrice(Item, '', ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price")
             else
-                SkippedRecord.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, VariantPriceCalcSkippedLbl, Shop);
+                SkippedRecord.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, StrSubstNo(VariantPriceCalcSkippedLbl, ItemLbl), Shop);
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
@@ -375,10 +377,13 @@ codeunit 30178 "Shpfy Product Export"
         ItemAsVariant: Boolean;
     begin
         if Shop."Sync Prices" or OnlyUpdatePrice then
-            if (not Item.Blocked) and (not Item."Sales Blocked") then
-                ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price")
+            if Item.Blocked or Item."Sales Blocked" then
+                SkippedRecord.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, StrSubstNo(VariantPriceCalcSkippedLbl, ItemLbl), Shop)
             else
-                SkippedRecord.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, VariantPriceCalcSkippedLbl, Shop);
+                if ItemVariant.Blocked or ItemVariant."Sales Blocked" then
+                    SkippedRecord.LogSkippedRecord(ShopifyVariant.Id, ItemVariant.RecordId, StrSubstNo(VariantPriceCalcSkippedLbl, ItemVariantLbl), Shop)
+                else
+                    ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price");
         if not OnlyUpdatePrice then begin
             if Product.Get(ShopifyVariant."Product Id") then
                 if Product."Has Variants" then
@@ -432,10 +437,13 @@ codeunit 30178 "Shpfy Product Export"
     internal procedure FillInProductVariantData(var ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant"; ItemUnitofMeasure: Record "Item Unit of Measure")
     begin
         if Shop."Sync Prices" or OnlyUpdatePrice then
-            if (not Item.Blocked) and (not Item."Sales Blocked") then
-                ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price")
+            if Item.Blocked or Item."Sales Blocked" then
+                SkippedRecord.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, StrSubstNo(VariantPriceCalcSkippedLbl, ItemLbl), Shop)
             else
-                SkippedRecord.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, VariantPriceCalcSkippedLbl, Shop);
+                if ItemVariant.Blocked or ItemVariant."Sales Blocked" then
+                    SkippedRecord.LogSkippedRecord(ShopifyVariant.Id, ItemVariant.RecordId, StrSubstNo(VariantPriceCalcSkippedLbl, ItemVariantLbl), Shop)
+                else
+                    ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price");
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
@@ -580,6 +588,7 @@ codeunit 30178 "Shpfy Product Export"
         ShopifyProduct: Record "Shpfy Product";
         TempShopifyProduct: Record "Shpfy Product" temporary;
         ShopifyVariant: Record "Shpfy Variant";
+        TempCurrVariant: Record "Shpfy Variant" temporary;
         RecordRef1: RecordRef;
         RecordRef2: RecordRef;
         VariantAction: Option " ",Create,Update;
@@ -632,9 +641,9 @@ codeunit 30178 "Shpfy Product Export"
                                         if ItemUnitofMeasure.Get(Item."No.", ShopifyVariant."Option 3 Value") then
                                             ;
                                 end;
-                                UpdateProductVariant(ShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);
+                                UpdateProductVariant(ShopifyVariant, Item, ItemVariant, ItemUnitofMeasure, TempCurrVariant);
                             end else
-                                UpdateProductVariant(ShopifyVariant, Item, ItemVariant);
+                                UpdateProductVariant(ShopifyVariant, Item, ItemVariant, TempCurrVariant);
                         end;
                 until ShopifyVariant.Next() = 0;
             ItemVariant.SetRange("Item No.", Item."No.");
@@ -683,12 +692,12 @@ codeunit 30178 "Shpfy Product Export"
                                     VariantAction::Create:
                                         CreateProductVariant(ProductId, Item, ItemVariant, ItemUnitofMeasure);
                                     VariantAction::Update:
-                                        UpdateProductVariant(ShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);
+                                        UpdateProductVariant(ShopifyVariant, Item, ItemVariant, ItemUnitofMeasure, TempCurrVariant);
                                 end;
                             until ItemUnitofMeasure.Next() = 0;
                     end else
                         if ShopifyVariant.FindFirst() then
-                            UpdateProductVariant(ShopifyVariant, Item, ItemVariant)
+                            UpdateProductVariant(ShopifyVariant, Item, ItemVariant, TempCurrVariant)
                         else
                             CreateProductVariant(ProductId, Item, ItemVariant);
                 until ItemVariant.Next() = 0
@@ -734,10 +743,13 @@ codeunit 30178 "Shpfy Product Export"
                                 VariantAction::Create:
                                     CreateProductVariant(ProductId, Item, ItemUnitofMeasure);
                                 VariantAction::Update:
-                                    UpdateProductVariant(ShopifyVariant, Item, ItemUnitofMeasure);
+                                    UpdateProductVariant(ShopifyVariant, Item, ItemUnitofMeasure, TempCurrVariant);
                             end;
                         until ItemUnitofMeasure.Next() = 0;
             end;
+
+            if not TempCurrVariant.IsEmpty() then
+                VariantApi.UpdateProductVariants(TempCurrVariant);
 
             if Shop."Product Metafields To Shopify" then
                 UpdateMetafields(ShopifyProduct.Id);
@@ -768,7 +780,7 @@ codeunit 30178 "Shpfy Product Export"
     /// <param name="ShopifyVariant">Shopify variant to update.</param>
     /// <param name="Item">Item where information is taken from.</param>
     /// <param name="ItemUnitofMeasure">Item unit of measure where information is taken from.</param>
-    local procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemUnitofMeasure: Record "Item Unit of Measure")
+    local procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemUnitofMeasure: Record "Item Unit of Measure"; var TempCurrVariant: Record "Shpfy Variant" temporary)
     var
         TempShopifyVariant: Record "Shpfy Variant" temporary;
     begin
@@ -778,7 +790,13 @@ codeunit 30178 "Shpfy Product Export"
         if OnlyUpdatePrice then
             VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount, JRequestData)
         else
-            VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
+            if TempCurrVariant.Get(ShopifyVariant.Id) then begin
+                TempCurrVariant := ShopifyVariant;
+                TempCurrVariant.Modify();
+            end else begin
+                TempCurrVariant := ShopifyVariant;
+                TempCurrVariant.Insert();
+            end;
     end;
 
     /// <summary> 
@@ -787,7 +805,7 @@ codeunit 30178 "Shpfy Product Export"
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
     /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
-    local procedure UpdateProductVariant(var ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant")
+    local procedure UpdateProductVariant(var ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant"; var TempCurrVariant: Record "Shpfy Variant" temporary)
     var
         TempShopifyVariant: Record "Shpfy Variant" temporary;
     begin
@@ -797,7 +815,13 @@ codeunit 30178 "Shpfy Product Export"
         if OnlyUpdatePrice then
             VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount, JRequestData)
         else
-            VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
+            if TempCurrVariant.Get(ShopifyVariant.Id) then begin
+                TempCurrVariant := ShopifyVariant;
+                TempCurrVariant.Modify();
+            end else begin
+                TempCurrVariant := ShopifyVariant;
+                TempCurrVariant.Insert();
+            end;
     end;
 
     /// <summary> 
@@ -807,7 +831,7 @@ codeunit 30178 "Shpfy Product Export"
     /// <param name="Item">Parameter of type Record Item.</param>
     /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
     /// <param name="ItemUnitofMeasure">Parameter of type Record "Item Unit of Measure".</param>
-    local procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant"; ItemUnitofMeasure: Record "Item Unit of Measure")
+    local procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant"; ItemUnitofMeasure: Record "Item Unit of Measure"; var TempCurrVariant: Record "Shpfy Variant" temporary)
     var
         TempShopifyVariant: Record "Shpfy Variant" temporary;
     begin
@@ -817,7 +841,13 @@ codeunit 30178 "Shpfy Product Export"
         if OnlyUpdatePrice then
             VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount, JRequestData)
         else
-            VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
+            if TempCurrVariant.Get(ShopifyVariant.Id) then begin
+                TempCurrVariant := ShopifyVariant;
+                TempCurrVariant.Modify();
+            end else begin
+                TempCurrVariant := ShopifyVariant;
+                TempCurrVariant.Insert();
+            end;
     end;
 
     local procedure RevertVariantChanges(VariantId: BigInteger)

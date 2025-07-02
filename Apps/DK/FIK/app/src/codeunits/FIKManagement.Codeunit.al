@@ -92,7 +92,7 @@ Codeunit 13650 FIKManagement
             else begin
                 OnEvaluateFIKCasePaymentTypeValidationElse(PaymentReference, PaymentMethod, Result, IsHandled);
                 if not IsHandled then
-                    if PaymentMethod.PaymentTypeValidation = PaymentMethod.PaymentTypeValidation::Domestic then
+                    if PaymentMethod.PaymentTypeValidation in [PaymentMethod.PaymentTypeValidation::" ", PaymentMethod.PaymentTypeValidation::Domestic, PaymentMethod.PaymentTypeValidation::International] then
                         Result := true
                     else
                         ERROR(FIKPmtErr);

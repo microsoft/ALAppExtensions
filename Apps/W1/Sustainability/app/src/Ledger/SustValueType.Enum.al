@@ -14,4 +14,5 @@ enum 6219 "Sust. Value Type"
     value(2; "Machine Center") { Caption = 'Machine Center'; }
     value(3; "Resource") { Caption = 'Resource'; }
     value(4; "Item") { Caption = 'Item'; }
+    value(6; "Charge (Item)") { Caption = 'Charge (Item)'; }
 }

@@ -11,7 +11,7 @@ codeunit 8029 "Usage Based Billing Mgmt."
         NoMatchingServiceCommitmentFoundErr: Label 'No %1 was found that matches the following criteria: %2', Comment = '%1 = Subscription Line, %2 = Subscription Line Filters';
         NoContractFoundErr: Label 'No %1 was found for Subscription: %2.', Comment = '%1 = Customer/Vendor Contract, %2 = Subscription No.';
         FieldMustBeFilledErr: Label 'The Field "%1" must contain a value.', Comment = '%1 = Field name';
-        ProgressLbl: Label '#1###################################### \Progress @2@@@@@@@@@@@@@@@@@@';
+        ProgressLbl: Label '#1###################################### \Progress @2@@@@@@@@@@@@@@@@@@', Comment = '%1 = Progress, %2 = Table Name';
         ProcessingInterruptedTxt: Label 'Processing interrupted.';
         ItemBlockedErr: Label 'You cannot connect Supplier Subscription to Subscription %1 because Item %2 from Subscription is blocked.', Comment = '%1 = Subscription No., %2 = Item No.';
         MultipleServiceObjectsQst: Label 'Subscription %1 is to be connected with the entry %2 and other subscriptions. Continue?', Comment = '%1 = Subscription No., %2 = Usage Data Subscription Entry No.';

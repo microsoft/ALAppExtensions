@@ -40,7 +40,7 @@ table 8000 "Field Translation"
             trigger OnValidate()
             var
                 tblField: Record Field;
-                TranslationTooLongErr: Label 'The length of the translation must not exceed %1 characters (current length: %2).';
+                TranslationTooLongErr: Label 'The length of the translation must not exceed %1 characters (current length: %2).', Comment = '%1=Field Length, %2=Current Length';
             begin
                 if Translation <> '' then begin
                     Rec.TestField("Table ID");
