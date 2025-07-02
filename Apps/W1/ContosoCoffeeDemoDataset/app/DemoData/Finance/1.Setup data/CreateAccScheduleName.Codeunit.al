@@ -19,20 +19,12 @@ codeunit 5223 "Create Acc. Schedule Name"
     begin
         ContosoAccountSchedule.InsertAccScheduleName(AccountCategoriesOverview(), AccountCategoriesOverviewLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(CapitalStructure(), CapitalStructureLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(BalanceSheet(), BalanceSheetLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(BalanceSheetAudit(), BalanceSheetAuditLbl, '');
+        ContosoAccountSchedule.InsertAccScheduleName(CashFlowCalculation(), CashFlowCalculationLbl, '');
+        ContosoAccountSchedule.InsertAccScheduleName(Revenues(), RevenuesLbl, CreateAnalysisView.SalesRevenue());
         ContosoAccountSchedule.InsertAccScheduleName(BalanceSheetDetailed(), BalanceSheetDetailedLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(BalanceSheetSummarized(), BalanceSheetSummarizedLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(CashFlowCalculation(), CashFlowCalculationLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(CashCycle(), CashCycleDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(CashFlow(), CashFlowDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(IncomeExpense(), IncomeExpenseDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(ReducedTrialBalance(), ReducedTrialBalanceDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(IncomeStatement(), IncomeStatementLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(IncomeStatementAudit(), IncomeStatementAuditLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(IncomeStatementDetailed(), IncomeStatementDetailedLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(IncomeStatementSummarized(), IncomeStatementSummarizedLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(Revenues(), RevenuesLbl, '');
         ContosoAccountSchedule.InsertAccScheduleName(TrialBalance(), TrialBalanceLbl, '');
     end;
 
@@ -86,16 +78,6 @@ codeunit 5223 "Create Acc. Schedule Name"
         exit(RevenuesTok);
     end;
 
-    procedure BalanceSheet(): Code[10]
-    begin
-        exit(BalanceSheetTok);
-    end;
-
-    procedure BalanceSheetAudit(): Code[10]
-    begin
-        exit(BalanceSheetAuditTok);
-    end;
-
     procedure BalanceSheetDetailed(): Code[10]
     begin
         exit(BalanceSheetDetailedTok);
@@ -104,16 +86,6 @@ codeunit 5223 "Create Acc. Schedule Name"
     procedure BalanceSheetSummarized(): Code[10]
     begin
         exit(BalanceSheetSummarizedTok);
-    end;
-
-    procedure IncomeStatement(): Code[10]
-    begin
-        exit(IncomeStatementTok);
-    end;
-
-    procedure IncomeStatementAudit(): Code[10]
-    begin
-        exit(IncomeStatementAuditTok);
     end;
 
     procedure IncomeStatementDetailed(): Code[10]
@@ -140,21 +112,13 @@ codeunit 5223 "Create Acc. Schedule Name"
         IncomeExpenseDataTok: Label 'I_INCEXP', MaxLength = 10;
         ReducedTrialBalanceDataTok: Label 'I_MINTRIAL', MaxLength = 10;
         RevenuesTok: Label 'REVENUE', MaxLength = 10;
-        BalanceSheetTok: Label 'BS', MaxLength = 10, Comment = 'Balance Sheet';
-        BalanceSheetAuditTok: Label 'BS AUDIT', MaxLength = 10, Comment = 'Balance Sheet';
-        BalanceSheetDetailedTok: Label 'BS DET', MaxLength = 10, Comment = 'Balance Sheet Audit Lead Schedule';
+        BalanceSheetDetailedTok: Label 'BS DET', MaxLength = 10, Comment = 'Balance Sheet Detailed';
         BalanceSheetSummarizedTok: Label 'BS SUM', MaxLength = 10, Comment = 'Balance Sheet Summarized';
-        IncomeStatementTok: Label 'IS', MaxLength = 10, Comment = 'Income Statement';
-        IncomeStatementAuditTok: Label 'IS AUDIT', MaxLength = 10, Comment = 'Income Statement Audit Lead Schedule';
         IncomeStatementDetailedTok: Label 'IS DET', MaxLength = 10, Comment = 'Income Statement Detailed';
         IncomeStatementSummerizedTok: Label 'IS SUM', MaxLength = 10, Comment = 'Income Statement Summarized';
         TrialBalanceTok: Label 'TB', MaxLength = 10, Comment = 'Trial Balance';
-        BalanceSheetLbl: Label 'Balance Sheet', MaxLength = 80;
-        BalanceSheetAuditLbl: Label 'Balance Sheet Audit Lead Schedule', MaxLength = 80;
         BalanceSheetDetailedLbl: Label 'Balance Sheet Detailed', MaxLength = 80;
         BalanceSheetSummarizedLbl: Label 'Balance Sheet Summarized', MaxLength = 80;
-        IncomeStatementLbl: Label 'Income Statement', MaxLength = 80;
-        IncomeStatementAuditLbl: Label 'Income Statement Audit Lead Schedule', MaxLength = 80;
         IncomeStatementDetailedLbl: Label 'Income Statement Detailed', MaxLength = 80;
         IncomeStatementSummarizedLbl: Label 'Income Statement Summarized', MaxLength = 80;
         TrialBalanceLbl: Label 'Trial Balance', MaxLength = 80;
@@ -166,5 +130,4 @@ codeunit 5223 "Create Acc. Schedule Name"
         IncomeExpenseDataLbl: Label 'Data for Income & Expense Chart', MaxLength = 80;
         ReducedTrialBalanceDataLbl: Label 'Data for Reduced Trial Balance Info Part', MaxLength = 80;
         RevenuesLbl: Label 'Revenues', MaxLength = 80;
-        DefaultLbl: Label 'Default Schedule', MaxLength = 80;
 }
