@@ -1,0 +1,28 @@
+﻿CustId,ShipToId,Addr1,Addr2,Attn,City,Country,EMailAddr,Fax,Phone,State,Zip
+C300           ,DEFAULT   ,222 Ridge Trail                                             ,,,Chicago                       ,US ,,5555550120                    ,5555550120                    ,IL ,12345     
+C315           ,DEFAULT   ,P.O. Box 17866                                              ,,,WHEELING                      ,US ,,5555550130                    ,5555550129                    ,WV ,00011     
+C331           ,DEFAULT   ,141 Yale Avenue                                             ,,,Cleveland                     ,US ,,,5555550129                    ,OH ,23456     
+C376           ,DEFAULT   ,108 Main                                                    ,,,Cuyahoga Falls                ,US ,,,5555550130                    ,OH ,55555     
+C389           ,DEFAULT   ,Main Street                                                 ,,Tom                           ,Pittsburgh                    ,US ,,,5555550131                    ,PA ,33222     
+C404           ,DEFAULT   ,1202 Lexington Avenue                                       ,,Jay                           ,Birmingham                    ,US ,,,5555550132                    ,AL ,01234     
+C407           ,DEFAULT   ,330 Bartlett Road                                           ,,Arlene                        ,Glastonbury                   ,US ,,,5555550143                    ,CT ,90000     
+C419           ,DEFAULT   ,,,,San Diego                     ,US ,,,,CA ,45789     
+C420           ,DEFAULT   ,,,,Findlay                       ,US ,,,,OH ,01234     
+C421           ,DEFAULT   ,,,,Las Vegas                     ,US ,,,,NV ,45844     
+C422           ,DEFAULT   ,,,,Honolulu                      ,US ,,,,HI ,45666     
+CT0100         ,010       ,,Suite 435                                                   ,400 West Main St.             ,Chicago                       ,US ,,5555550191                    ,5555550190                    ,IL ,12345     
+CT0100         ,020       ,,Suite 435                                                   ,100 N. State St.              ,Chicago                       ,US ,,5555550176                    ,5555550166                    ,IL ,52222     
+CT0100         ,DEFAULT   ,400 West Main St.                                           ,Suite 435                                                   ,Denise                        ,Chicago                       ,US ,,5555550151                    ,5555550150                    ,IL ,45474     
+CT0110         ,010       ,,Suite 400                                                   ,400 West Madison St.          ,Chicago                       ,US ,,5555550196                    ,5555550185                    ,IL ,12345     
+CT0110         ,DEFAULT   ,100 N. State St.                                            ,,Kim                           ,Chicago                       ,US ,,5555550160                    ,5555550160                    ,IL ,23939     
+CT0120         ,010       ,,Suite 500                                                   ,1200 Divison St.              ,Sioux City                    ,US ,,5555550182                    ,5555550181                    ,IA ,12346     
+CT0120         ,DEFAULT   ,400 West St.                                                ,Suite 400                                                   ,,Chicago                       ,US ,,5555550167                    ,5555550167                    ,IL ,45850     
+CT0130         ,010       ,,Suite150                                                    ,200 E. Main St.               ,Chicago                       ,US ,,5555550177                    ,5555550176                    ,IL ,12346     
+CT0130         ,DEFAULT   ,1200 Divison St.                                            ,Suite 500                                                   ,Jeff                          ,Chicago                       ,US ,,5555550170                    ,5555550170                    ,IL ,44444     
+CT0131         ,010       ,,Suite150                                                    ,110 Aurora Ave.               ,Chicago                       ,US ,,5555550166                    ,5555550165                    ,IL ,12346     
+CT0131         ,DEFAULT   ,200 E. Main St.                                             ,Suite150                                                    ,Mr. Gary                      ,Chicago                       ,US ,,5555550175                    ,5555550175                    ,IL ,44444     
+CT0132         ,010       ,,,215 West St.                  ,Chicago                       ,US ,,5555550155                    ,5555550154                    ,IL ,12345     
+CT0132         ,DEFAULT   ,123 Avenue St                                               ,,Dear Eric                     ,Chicago                       ,US ,,5555550136                    ,5555550135                    ,IL ,33333     
+CT0133         ,010       ,,Suite 400                                                   ,400 West Madison St.          ,Chicago                       ,US ,,5555550136                    ,5555550134                    ,IL ,12345     
+CT0133         ,DEFAULT   ,215 West St.                                                ,,,Chicago                       ,US ,,5555550151                    ,5555550150                    ,IL ,22222     
+RED            ,DEFAULT   ,,,,,,,,,,
