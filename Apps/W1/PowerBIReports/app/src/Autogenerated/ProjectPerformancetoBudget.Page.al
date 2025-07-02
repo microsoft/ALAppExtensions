@@ -6,9 +6,7 @@ page 37037 "Project Performance to Budget"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Project Performance to Budget';
     AboutTitle = 'About Project Performance to Budget';
     AboutText = 'The Project Performance to Budget report highlights key metrics, including Budget Total Cost, Actual Total Cost, and the variance and percentage variance from the budget. It features a table that details these metrics by project, offering a clear view of cost performance and deviations from budgeted targets.';
@@ -25,7 +23,7 @@ page 37037 "Project Performance to Budget"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

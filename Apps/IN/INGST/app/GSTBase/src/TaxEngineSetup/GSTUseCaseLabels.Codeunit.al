@@ -4,8 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TaxEngine.JsonExchange;
 
+#if not CLEAN27
 using Microsoft.Finance.GST.Base;
-
+#endif
 codeunit 18019 "GST Use Case Labels"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnGetUseCaseConfig', '', false, false)]
@@ -35,6 +36,7 @@ codeunit 18019 "GST Use Case Labels"
             TaxJsonDeserialization.ImportUseCases(GetText(CaseId));
     end;
 
+#if not CLEAN27
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade GST Tax Config", 'OnUpgradeGSTUseCases', '', false, false)]
     local procedure OnUpgradeGSTUseCases(CaseID: Guid; var UseCaseConfig: Text; var IsHandled: Boolean)
     begin
@@ -45,7 +47,7 @@ codeunit 18019 "GST Use Case Labels"
         if UseCaseConfig <> '' then
             IsHandled := true;
     end;
-
+#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Upgrade Subscribers", 'OnGetUpgradedUseCaseConfig', '', false, false)]
     local procedure OnGetGSTConfig(CaseID: Guid; var IsHandled: Boolean; var Configtext: Text)
     begin
@@ -207,6 +209,10 @@ codeunit 18019 "GST Use Case Labels"
         CaseList.Add('{874048a6-575b-456f-a2e7-26532da3f1ca}');
         CaseList.Add('{9304251b-68e9-41d1-a6fd-00424ab38ee6}');
         CaseList.Add('{7d71fa6f-572e-4c61-b3cb-297e4521e1a9}');
+        CaseList.Add('{E587BDAC-2C08-42CA-9657-B3EA423F30E7}');
+        CaseList.Add('{F0AB5767-48C9-4F01-A346-D6CAA74EFCED}');
+        CaseList.Add('{7C76E97A-E248-4CFE-82A9-18EB754ED886}');
+        CaseList.Add('{A5676558-7FDC-4CEC-B562-37829B285BE3}');
     end;
 
     procedure GetConfig(CaseID: Guid; var Handled: Boolean): Text
@@ -357,6 +363,10 @@ codeunit 18019 "GST Use Case Labels"
         "{874048a6-575b-456f-a2e7-26532da3f1ca}Lbl": Label 'GST Use Cases';
         "{9304251b-68e9-41d1-a6fd-00424ab38ee6}Lbl": Label 'GST Use Cases';
         "{7d71fa6f-572e-4c61-b3cb-297e4521e1a9}Lbl": Label 'GST Use Cases';
+        "{E587BDAC-2C08-42CA-9657-B3EA423F30E7}Lbl": Label 'GST Use Cases';
+        "{F0AB5767-48C9-4F01-A346-D6CAA74EFCED}Lbl": Label 'GST Use Cases';
+        "{7C76E97A-E248-4CFE-82A9-18EB754ED886}Lbl": Label 'GST Use Cases';
+        "{A5676558-7FDC-4CEC-B562-37829B285BE3}Lbl": Label 'GST Use Cases';
     begin
         Handled := true;
 
@@ -673,6 +683,9 @@ codeunit 18019 "GST Use Case Labels"
                 exit("{0ebd8b25-3c27-46ae-8cd7-4e870db1315b}Lbl");
             '{97437c0c-3e99-4d15-9378-34ac4b8fd002}':
                 exit("{97437c0c-3e99-4d15-9378-34ac4b8fd002}Lbl");
+        end;
+
+        case CaseID of
             '{9CF523A9-24DB-4928-A3CB-8DC5FCA4AF69}':
                 exit("{9CF523A9-24DB-4928-A3CB-8DC5FCA4AF69}Lbl");
             '{e8b90257-9f0d-42f4-a340-13a648d11829}':
@@ -683,6 +696,14 @@ codeunit 18019 "GST Use Case Labels"
                 exit("{9304251b-68e9-41d1-a6fd-00424ab38ee6}Lbl");
             '{7d71fa6f-572e-4c61-b3cb-297e4521e1a9}':
                 exit("{7d71fa6f-572e-4c61-b3cb-297e4521e1a9}Lbl");
+            '{E587BDAC-2C08-42CA-9657-B3EA423F30E7}':
+                exit("{E587BDAC-2C08-42CA-9657-B3EA423F30E7}Lbl");
+            '{F0AB5767-48C9-4F01-A346-D6CAA74EFCED}':
+                exit("{F0AB5767-48C9-4F01-A346-D6CAA74EFCED}Lbl");
+            '{7C76E97A-E248-4CFE-82A9-18EB754ED886}':
+                exit("{7C76E97A-E248-4CFE-82A9-18EB754ED886}Lbl");
+            '{A5676558-7FDC-4CEC-B562-37829B285BE3}':
+                exit("{A5676558-7FDC-4CEC-B562-37829B285BE3}Lbl");
         end;
 
         Handled := false;

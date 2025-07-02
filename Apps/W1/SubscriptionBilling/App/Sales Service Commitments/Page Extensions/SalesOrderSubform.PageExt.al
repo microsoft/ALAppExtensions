@@ -11,7 +11,7 @@ pageextension 8076 "Sales Order Subform" extends "Sales Order Subform"
             field("Service Commitments"; Rec."Subscription Lines")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of Subscription Lines for the sales line.';
+                ToolTip = 'Specifies the number of Subscription Lines for the sales line.';
             }
             field("Customer Contract No."; CustomerContractNo)
             {

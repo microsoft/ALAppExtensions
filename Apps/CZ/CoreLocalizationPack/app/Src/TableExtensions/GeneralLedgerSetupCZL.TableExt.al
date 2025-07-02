@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.GeneralLedger.Setup;
 
 using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.VAT.Calculation;
@@ -12,6 +13,7 @@ using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Ledger;
 using Microsoft.Purchases.Archive;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
@@ -196,15 +198,32 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
         exit(PostingDate);
     end;
 
-    internal procedure GetAdditionalCurrencyCode(): Code[10]
+    procedure GetAdditionalCurrencyCodeCZL(): Code[10]
     begin
         GetRecordOnce();
         exit("Additional Reporting Currency");
     end;
 
-    internal procedure IsAdditionalCurrencyEnabled(): Boolean
+    procedure IsAdditionalCurrencyEnabledCZL(): Boolean
     begin
-        exit(GetAdditionalCurrencyCode() <> '');
+        exit((GetAdditionalCurrencyCodeCZL() <> '') and not IsManufacturingUsed());
+    end;
+
+    procedure GetAdditionalCurrencyFactorCZL(Date: Date): Decimal
+    var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+    begin
+        if IsAdditionalCurrencyEnabledCZL() then
+            exit(CurrencyExchangeRate.ExchangeRate(Date, GetAdditionalCurrencyCodeCZL()));
+        exit(0);
+    end;
+
+    local procedure IsManufacturingUsed(): Boolean
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        ItemLedgerEntry.SetRange("Entry Type", ItemLedgerEntry."Entry Type"::"Output");
+        exit(not ItemLedgerEntry.IsEmpty());
     end;
 
     [IntegrationEvent(false, false)]

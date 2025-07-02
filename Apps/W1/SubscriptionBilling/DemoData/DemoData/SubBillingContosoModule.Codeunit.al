@@ -16,6 +16,7 @@ codeunit 8102 "Sub. Billing Contoso Module" implements "Contoso Demo Data Module
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"]
     begin
         Dependencies.Add(Enum::"Contoso Demo Data Module"::"Common Module");
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::"Job Module");
     end;
 
     procedure CreateSetupData()

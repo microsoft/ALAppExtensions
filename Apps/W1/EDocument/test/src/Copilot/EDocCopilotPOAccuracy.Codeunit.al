@@ -39,7 +39,7 @@ codeunit 133502 EDocCopilotPOAccuracy
         Input, Line, Item, K, V, Output : Text;
         LineNo: Integer;
     begin
-        // [FEATURE] [E-Document] [Copilot Accuracy] 
+        // [FEATURE] [E-Document] [Copilot Accuracy]
         // [SCENARIO] Match exact LLM output to datai in accuracy.jsonl
 
         PurchaseLine.DeleteAll();
@@ -158,18 +158,4 @@ codeunit 133502 EDocCopilotPOAccuracy
 
 
     end;
-
-    local procedure SetupKeyVault()
-    var
-        LibraryAzureKVMockMgmt: Codeunit "Library - Azure KV Mock Mgmt.";
-    begin
-        LibraryAzureKVMockMgmt.InitMockAzureKeyvaultSecretProvider();
-
-        // Always enter prompts when running tests locally.
-        // TODO: Fix when there exits solution to load prompts at runtime
-        LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('EDocumentMappingToolStruct', '');
-        LibraryAzureKVMockMgmt.AddMockAzureKeyvaultSecretProviderMapping('EDocumentMappingPrompt', '');
-        LibraryAzureKVMockMgmt.UseAzureKeyvaultSecretProvider();
-    end;
-
 }

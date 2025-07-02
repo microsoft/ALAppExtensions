@@ -188,7 +188,9 @@ table 6227 "Sustainability Value Entry"
             else
             if (Type = const(Resource)) Resource
             else
-            if (Type = const(Item)) Item;
+            if (Type = const(Item)) Item
+            else
+            if (Type = const("Charge (Item)")) "Item Charge";
         }
         field(5818; Adjustment; Boolean)
         {
@@ -244,6 +246,9 @@ table 6227 "Sustainability Value Entry"
         {
             Clustered = true;
         }
+        key(Key2; "Document Type", "Document No.", "Item No.")
+        {
+        }
     }
 
     var
@@ -296,10 +301,14 @@ table 6227 "Sustainability Value Entry"
 
         if ValueEntry."No." <> '' then
             "No." := ValueEntry."No."
-        else begin
-            Type := Type::Item;
-            "No." := ValueEntry."Item No.";
-        end;
+        else
+            if ValueEntry."Item Charge No." <> '' then begin
+                Type := Type::"Charge (Item)";
+                "No." := ValueEntry."Item Charge No.";
+            end else begin
+                Type := Type::Item;
+                "No." := ValueEntry."Item No.";
+            end;
     end;
 
     procedure CopyFromSustainabilityJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")

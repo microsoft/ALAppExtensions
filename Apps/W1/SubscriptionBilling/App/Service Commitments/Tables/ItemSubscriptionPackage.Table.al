@@ -66,7 +66,7 @@ table 8058 "Item Subscription Package"
 
     var
         DiscountCannotBeAssignedErr: Label 'Subscription Package Lines, which are discounts can only be assigned to Subscription Items.';
-        EmptyInvoicingItemNoInPackageLineErr: Label 'The %1 %2 can not be used with Item %3, because at least one of the Service Commitment Package lines is missing an %4.';
+        EmptyInvoicingItemNoInPackageLineErr: Label 'The %1 %2 can not be used with Item %3, because at least one of the Service Commitment Package lines is missing an %4.', Comment = '%1 = Table Caption, %2 = Code, %3 = Item No., %4 = Invoicing Item No.';
 
     internal procedure ErrorIfInvoicingItemIsNotServiceCommitmentItemForDiscount(ServiceCommitmentPackageCode: Code[20])
     var
@@ -83,7 +83,7 @@ table 8058 "Item Subscription Package"
             Error(DiscountCannotBeAssignedErr);
     end;
 
-    internal procedure GetPackageFilterForItem(ItemNo: Code[20]) PackageFilter: Text
+    procedure GetPackageFilterForItem(ItemNo: Code[20]) PackageFilter: Text
     begin
         PackageFilter := GetPackageFilterForItem(ItemNo, '');
     end;
@@ -193,7 +193,7 @@ table 8058 "Item Subscription Package"
         SubscriptionPackage: Record "Subscription Package";
         SubscriptionPackageLine: Record "Subscription Package Line";
         ErrorInfo: ErrorInfo;
-        OpenSubscriptionPackageTxt: Label 'Open %1';
+        OpenSubscriptionPackageTxt: Label 'Open %1', Comment = '%1 = Table Caption';
     begin
         if Rec.Code = '' then
             exit;

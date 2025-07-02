@@ -201,7 +201,7 @@ codeunit 8073 "Sales Report Printout Mgmt."
         SalesLine: Record "Sales Line";
         DataTypeManagement: Codeunit "Data Type Management";
         RecRef: RecordRef;
-        SourceRecordNotDefinedForProcessingErr: Label 'Table %1 %2 has not been defined for processing.';
+        SourceRecordNotDefinedForProcessingErr: Label 'Table %1 %2 has not been defined for processing.', Comment = '%1 = Table ID, %2 = Table Name';
     begin
         DataTypeManagement.GetRecordRef(SourceRecord, RecRef);
         case RecRef.Number of

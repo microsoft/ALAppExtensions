@@ -15,7 +15,9 @@ tableextension 6255 "Sust. Transfer Shipment Header" extends "Transfer Shipment 
             FieldClass = FlowField;
             CalcFormula = exist("Transfer Shipment Line" where("Sust. Account No." = filter('<>'''''), "Document No." = field("No.")));
         }
+#pragma warning disable AA0232
         field(6211; "Total CO2e"; Decimal)
+#pragma warning restore AA0232
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));

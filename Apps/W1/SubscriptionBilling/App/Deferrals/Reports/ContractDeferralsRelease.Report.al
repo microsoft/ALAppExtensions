@@ -96,8 +96,8 @@ report 8051 "Contract Deferrals Release"
         PostUntilDateIsEmptyErr: Label 'You must fill in the Post Until Date field.';
         PostUntilDateMustBeBeforePostingDateErr: Label 'Posting until Date must be before then Posting Date.';
         ContractDeferralsReleaseTxt: Label 'Contract Deferrals Release...\';
-        ContractProgressTxt: Label 'Contract: #1###############\\@2@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@';
-        ReleasingOfContractNoTxt: Label 'Release Contract Deferral of %1.';
+        ContractProgressTxt: Label 'Contract: #1###############\\@2@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', Comment = '%1=Contract No., %2=Progress';
+        ReleasingOfContractNoTxt: Label 'Release Contract Deferral of %1.', Comment = '%1 = Posting Date in format <Month Text> <Year4>';
         AllowGUI: Boolean;
         LineNo: Integer;
 
@@ -355,22 +355,22 @@ report 8051 "Contract Deferrals Release"
         end;
     end;
 
-    procedure PostGenJnlLine(var TempGenJournalLine: Record "Gen. Journal Line" temporary; PostingDate: Date; SourceCodeSetupContractDeferralsRelease: Code[10])
+    procedure PostGenJnlLine(var InputTempGenJournalLine: Record "Gen. Journal Line" temporary; InputPostingDate: Date; SourceCodeSetupContractDeferralsRelease: Code[10])
     var
         GenJnlLine: Record "Gen. Journal Line";
     begin
         GenJnlLine.Init();
         GenJnlLine."Journal Template Name" := ServiceContractSetup."Def. Rel. Jnl. Template Name";
         GenJnlLine."Journal Batch Name" := ServiceContractSetup."Def. Rel. Jnl. Batch Name";
-        GenJnlLine."Document No." := TempGenJournalLine."Document No.";
+        GenJnlLine."Document No." := InputTempGenJournalLine."Document No.";
         GenJnlLine."Account Type" := GenJnlLine."Account Type"::"G/L Account";
         GenJnlLine."VAT Posting" := GenJnlLine."VAT Posting"::"Manual VAT Entry";
-        GenJnlLine.Validate("Account No.", TempGenJournalLine."Account No.");
-        GenJnlLine."Posting Date" := PostingDate;
+        GenJnlLine.Validate("Account No.", InputTempGenJournalLine."Account No.");
+        GenJnlLine."Posting Date" := InputPostingDate;
         GenJnlLine.Description := StrSubstNo(ReleasingOfContractNoTxt, Format(GenJnlLine."Posting Date", 0, '<Month Text> <Year4>'));
-        GenJnlLine."Subscription Contract No." := TempGenJournalLine."Subscription Contract No.";
-        GenJnlLine.Validate(Amount, TempGenJournalLine.Amount);
-        GenJnlLine.Validate("Dimension Set ID", TempGenJournalLine."Dimension Set ID");
+        GenJnlLine."Subscription Contract No." := InputTempGenJournalLine."Subscription Contract No.";
+        GenJnlLine.Validate(Amount, InputTempGenJournalLine.Amount);
+        GenJnlLine.Validate("Dimension Set ID", InputTempGenJournalLine."Dimension Set ID");
         GenJnlLine."Source Code" := SourceCodeSetupContractDeferralsRelease;
         GenJnlLine."System-Created Entry" := true;
         GenJnlLine."Gen. Posting Type" := GenJnlLine."Gen. Posting Type"::" ";
@@ -380,9 +380,9 @@ report 8051 "Contract Deferrals Release"
         GenJnlLine."VAT Prod. Posting Group" := '';
         GenJnlPostLine.RunWithCheck(GenJnlLine);
 
-        GenJnlLine.Validate("Account No.", TempGenJournalLine."Bal. Account No.");
-        GenJnlLine.Validate("Dimension Set ID", TempGenJournalLine."Dimension Set ID");
-        GenJnlLine.Validate(Amount, -TempGenJournalLine.Amount);
+        GenJnlLine.Validate("Account No.", InputTempGenJournalLine."Bal. Account No.");
+        GenJnlLine.Validate("Dimension Set ID", InputTempGenJournalLine."Dimension Set ID");
+        GenJnlLine.Validate(Amount, -InputTempGenJournalLine.Amount);
         GenJnlLine."Gen. Posting Type" := GenJnlLine."Gen. Posting Type"::" ";
         GenJnlLine."Gen. Bus. Posting Group" := '';
         GenJnlLine."Gen. Prod. Posting Group" := '';

@@ -20,6 +20,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
 
     #region Tests
 
@@ -69,6 +70,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
     procedure ExpectErrorOnCreateUsageBasedSalesServiceCommitmentWithRecurringDiscount()
     begin
         // Subscription Package Lines, which are discounts can only be assigned to Subscription Items.
+        Initialize();
         SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
         asserterror ServiceCommitmentTemplate.Validate(Discount, true);
     end;
@@ -101,6 +103,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
     [Test]
     procedure ErrorOnInsertUsageBasedFieldsToSalesServiceCommitmentWhenInvoicingViaSales()
     begin
+        Initialize();
         SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
         UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
         ServiceCommitmentPackageLine.Validate(Template);
@@ -133,6 +136,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
     [Test]
     procedure TestTransferUsageBasedFieldsFromSalesServiceCommitmentToServiceCommitment()
     begin
+        Initialize();
         SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
         UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
         ServiceCommitmentPackageLine.Validate(Template);
@@ -151,6 +155,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
     [Test]
     procedure TestTransferUsageBasedFieldsFromServiceCommitmentPackageToSalesServiceCommitment()
     begin
+        Initialize();
         SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
         UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
         ServiceCommitmentPackageLine.Validate(Template);
@@ -170,7 +175,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
     [Test]
     procedure TestUsageBasedFieldsInServiceCommitmentTemplate()
     begin
-        ClearAll();
+        Initialize();
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
         ServiceCommitmentTemplate."Calculation Base %" := LibraryRandom.RandDecInRange(0, 100, 2);
@@ -198,6 +203,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
     [Test]
     procedure TestUsageBasedFieldsInServiceCommitmentPackageLine()
     begin
+        Initialize();
         SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
         UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
         ServiceCommitmentPackageLine.Validate(Template);
@@ -226,6 +232,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
     [Test]
     procedure TestUsageBasedFieldsInSalesServiceCommitments()
     begin
+        Initialize();
         SetupServiceCommitmentTemplateAndServiceCommitmentPackageWithLine();
         UpdateServiceCommitmentTemplateWithUsageBasedFields(ServiceCommitmentTemplate, Enum::"Usage Based Pricing"::"Unit Cost Surcharge", LibraryRandom.RandDec(100, 2));
         ServiceCommitmentPackageLine.Validate(Template);
@@ -262,6 +269,7 @@ codeunit 139895 "Usage Based Service Comm. Test"
 
     local procedure Initialize()
     begin
+        LibraryTestInitialize.OnTestInitialize(CODEUNIT::"Usage Based Service Comm. Test");
         ClearAll();
     end;
 

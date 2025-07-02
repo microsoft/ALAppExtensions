@@ -3,6 +3,7 @@ namespace Microsoft.Bank.Reconciliation;
 using Microsoft.Bank.Statement;
 using System.Security.User;
 using Microsoft.Finance.GeneralLedger.Journal;
+using System.Telemetry;
 
 page 7252 "Trans. To GL Acc. AI Proposal"
 {
@@ -246,6 +247,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         LocalBankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankAccountStatement: Record "Bank Account Statement";
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         TelemetryDimensions.Add('Category', BankRecAIMatchingImpl.FeatureName());
@@ -283,6 +285,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             if LocalBankAccReconciliation.Get(LocalBankAccReconciliation."Statement Type"::"Bank Reconciliation", BankAccNo, StatementNo) then
                 TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
             Session.LogMessage('0000LFB', TelemetryUserNotAcceptedProposalsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+            FeatureTelemetry.LogUsage('0000PGX', BankRecAIMatchingImpl.FeatureName(), TelemetryUserNotAcceptedProposalsTxt);
         end;
     end;
 
@@ -343,6 +346,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         LocalBankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankAccRecTransToAcc: Codeunit "Bank Acc. Rec. Trans. to Acc.";
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if not TransToGLAccJnlBatch.FindFirst() then begin
@@ -363,6 +367,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         if LocalBankAccReconciliation.Get(LocalBankAccReconciliation."Statement Type"::"Bank Reconciliation", BankAccNo, StatementNo) then
             TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
         Session.LogMessage('0000LFD', TelemetryUserAcceptedProposalsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        FeatureTelemetry.LogUsage('0000PGY', BankRecAIMatchingImpl.FeatureName(), TelemetryUserAcceptedProposalsTxt)
     end;
 
     internal procedure SetBankAccReconciliationLines(var InputBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line");

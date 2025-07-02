@@ -443,16 +443,23 @@ table 18350 "Service Transfer Header"
         if "No." = '' then begin
             InventorySetup.TestField("Service Transfer Order Nos.");
             NoSeriesCode := GetNoSeriesCode();
-                "No. Series" := NoSeriesCode;
-                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                    "No. Series" := xRec."No. Series";
-                "No." := NoSeries.GetNextNo("No. Series", "Shipment Date");
+            "No. Series" := NoSeriesCode;
+            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                "No. Series" := xRec."No. Series";
+            "No." := NoSeries.GetNextNo("No. Series", "Shipment Date");
         end;
         InitRecord();
     end;
 
     trigger OnRename()
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeOnRename(Rec, xRec, IsHandled);
+        if IsHandled then
+            exit;
+
         Error(RenameErr, TableCaption());
     end;
 
@@ -511,8 +518,8 @@ table 18350 "Service Transfer Header"
         ServiceTransferHeader := Rec;
         GetInventorySetup();
         InventorySetup.TestField("Service Transfer Order Nos.");
-        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldServiceTransferHeader."No. Series", "No. Series") then begin
-            "No." := NoSeries.GetNextNo("No. Series");
+        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldServiceTransferHeader."No. Series", ServiceTransferHeader."No. Series") then begin
+            ServiceTransferHeader."No." := NoSeries.GetNextNo(ServiceTransferHeader."No. Series");
             Rec := ServiceTransferHeader;
             exit(true);
         end;
@@ -642,5 +649,10 @@ table 18350 "Service Transfer Header"
         if ("Shipment Date" <> 0D) and ("Receipt Date" <> 0D) then
             if "Shipment Date" > "Receipt Date" then
                 Error(ReceiptDateErr, FieldCaption("Receipt Date"), FieldCaption("Shipment Date"));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnRename(var ServiceTransferHeader: Record "Service Transfer Header"; xServiceTransferHeader: Record "Service Transfer Header"; var IsHandled: Boolean)
+    begin
     end;
 }

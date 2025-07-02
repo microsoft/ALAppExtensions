@@ -189,6 +189,7 @@ table 6210 "Sustainability Account"
                                                         "Posting Date" = field("Date Filter"),
                                                         "Dimension Set ID" = field("Dimension Set ID Filter")));
             Caption = 'Net Change (CO2)';
+            CaptionClass = '102,1,1';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -204,6 +205,7 @@ table 6210 "Sustainability Account"
                                                         "Posting Date" = field(upperlimit("Date Filter")),
                                                         "Dimension Set ID" = field("Dimension Set ID Filter")));
             Caption = 'Balance at Date (CO2)';
+            CaptionClass = '102,2,1';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -218,6 +220,7 @@ table 6210 "Sustainability Account"
                                                         "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
                                                         "Dimension Set ID" = field("Dimension Set ID Filter")));
             Caption = 'Balance (CO2)';
+            CaptionClass = '102,3,1';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -233,6 +236,7 @@ table 6210 "Sustainability Account"
                                                         "Posting Date" = field("Date Filter"),
                                                         "Dimension Set ID" = field("Dimension Set ID Filter")));
             Caption = 'Net Change (CH4)';
+            CaptionClass = '102,1,2';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -248,6 +252,7 @@ table 6210 "Sustainability Account"
                                                         "Posting Date" = field(upperlimit("Date Filter")),
                                                         "Dimension Set ID" = field("Dimension Set ID Filter")));
             Caption = 'Balance at Date (CH4)';
+            CaptionClass = '102,2,2';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -262,6 +267,7 @@ table 6210 "Sustainability Account"
                                                         "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
                                                         "Dimension Set ID" = field("Dimension Set ID Filter")));
             Caption = 'Balance (CH4)';
+            CaptionClass = '102,3,2';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -277,6 +283,7 @@ table 6210 "Sustainability Account"
                                                         "Posting Date" = field("Date Filter"),
                                                         "Dimension Set ID" = field("Dimension Set ID Filter")));
             Caption = 'Net Change (N2O)';
+            CaptionClass = '102,1,3';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -292,6 +299,7 @@ table 6210 "Sustainability Account"
                                                         "Posting Date" = field(upperlimit("Date Filter")),
                                                         "Dimension Set ID" = field("Dimension Set ID Filter")));
             Caption = 'Balance at Date (N2O)';
+            CaptionClass = '102,2,3';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -306,6 +314,7 @@ table 6210 "Sustainability Account"
                                                         "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
                                                         "Dimension Set ID" = field("Dimension Set ID Filter")));
             Caption = 'Balance (N2O)';
+            CaptionClass = '102,3,3';
             Editable = false;
             FieldClass = FlowField;
         }

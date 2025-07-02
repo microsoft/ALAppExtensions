@@ -62,12 +62,12 @@ report 6217 "Sust. Resource Calculate CO2e"
         Window.Update(1, Round(Counter / RecordCount * 10000, 1));
     end;
 
-    local procedure OpenDialog(var Resource: Record Resource; var RecordCount: Integer)
+    local procedure OpenDialog(var Resource: Record Resource; var RecCount: Integer)
     begin
         if not GuiAllowed() then
             exit;
 
-        RecordCount := Resource.Count();
+        RecCount := Resource.Count();
         Window.Open(ProcessBarMsg);
     end;
 
@@ -79,12 +79,12 @@ report 6217 "Sust. Resource Calculate CO2e"
         Window.Close();
     end;
 
-    local procedure ShowCompletionMsg(RecordCount: Integer; Counter: Integer; TableCaption: Text)
+    local procedure ShowCompletionMsg(RecCount: Integer; Counter: Integer; TableCaption: Text)
     begin
         if not GuiAllowed() then
             exit;
 
-        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecordCount, TableCaption));
+        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecCount, TableCaption));
     end;
 
     local procedure UpdateCO2ePerUnit(var NewResource: Record Resource)

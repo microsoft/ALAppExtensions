@@ -578,11 +578,13 @@ page 31161 "Cash Document Subform CZP"
         DimVisible7: Boolean;
         DimVisible8: Boolean;
         UseAllocationAccountNumber: Boolean;
-
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the CashDocumentStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
     procedure ShowStatistics()
     begin
         Rec.ExtStatistics();
     end;
+#endif
 
     procedure UpdatePage(SetSaveRecord: Boolean)
     begin

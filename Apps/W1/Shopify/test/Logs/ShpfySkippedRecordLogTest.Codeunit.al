@@ -135,9 +135,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         Initialize();
 
         // [GIVEN] An item record and variant that is blocked
-        CreateBlockedItem(Item);
-        Item.Blocked := false;
-        Item.Modify();
+        CreateItem(Item);
         CreateBlockedItemVariant(Item, ItemVariant);
 
         // [WHEN] Invoke Create Product
@@ -332,6 +330,69 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord.SetRange("Shopify Id", ShopifyVariant.Id);
         LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
         LibraryAssert.AreEqual('Variant price is not synchronized because the item is blocked or sales blocked.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+    end;
+
+    [Test]
+    procedure UnitTestSkipShopifyVariantPriceCalcWithItemVariantForVariantWithBlockedItemVariant()
+    var
+        Item: Record Item;
+        ShopifyProduct: Record "Shpfy Product";
+        ShopifyVariant: Record "Shpfy Variant";
+        ItemVariant: Record "Item Variant";
+        SkippedRecord: Record "Shpfy Skipped Record";
+        ProductExport: Codeunit "Shpfy Product Export";
+    begin
+        // [SCENARIO] Skip shopify variant price calculation using item variant for variant with blocked item variant.
+        Initialize();
+
+        // [GIVEN] Blocked or sales blocked item variant
+        CreateItem(Item);
+        CreateBlockedItemVariant(Item, ItemVariant);
+        // [GIVEN] Shopify Product
+        CreateShpfyProduct(ShopifyProduct, Item.SystemId, Shop.Code, ShopifyVariant);
+
+        // [WHEN] Invoke FillInProductVariantData
+        ProductExport.SetShop(Shop);
+        ProductExport.SetOnlyUpdatePriceOn();
+        ProductExport.FillInProductVariantData(ShopifyVariant, Item, ItemVariant);
+
+        // [THEN] Related log record is created in shopify skipped record table.
+        SkippedRecord.SetRange("Record ID", ItemVariant.RecordId);
+        SkippedRecord.SetRange("Shopify Id", ShopifyVariant.Id);
+        LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
+        LibraryAssert.AreEqual('Variant price is not synchronized because the item variant is blocked or sales blocked.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+    end;
+
+    [Test]
+    procedure UnitTestSkipShopifyVariantPriceCalcWithItemUnitOfMeasureAndItemVariantForVariantWithBlockedItemVariant()
+    var
+        Item: Record Item;
+        ShopifyProduct: Record "Shpfy Product";
+        ShopifyVariant: Record "Shpfy Variant";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        ItemVariant: Record "Item Variant";
+        SkippedRecord: Record "Shpfy Skipped Record";
+        ProductExport: Codeunit "Shpfy Product Export";
+    begin
+        // [SCENARIO] Skip shopify variant price calculation using item unit of measure and item variant for variant with blocked item variant.
+        Initialize();
+
+        // [GIVEN] Blocked or sales blockec item variant
+        CreateItem(Item);
+        CreateBlockedItemVariant(Item, ItemVariant);
+        // [GIVEN] Shopify Product
+        CreateShpfyProduct(ShopifyProduct, Item.SystemId, Shop.Code, ShopifyVariant);
+
+        // [WHEN] Invoke FillInProductVariantData
+        ProductExport.SetShop(Shop);
+        ProductExport.SetOnlyUpdatePriceOn();
+        ProductExport.FillInProductVariantData(ShopifyVariant, Item, ItemVariant, ItemUnitOfMeasure);
+
+        // [THEN] Related log record is created in shopify skipped record table.
+        SkippedRecord.SetRange("Record ID", ItemVariant.RecordId);
+        SkippedRecord.SetRange("Shopify Id", ShopifyVariant.Id);
+        LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
+        LibraryAssert.AreEqual('Variant price is not synchronized because the item variant is blocked or sales blocked.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]

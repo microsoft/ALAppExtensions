@@ -1,4 +1,3 @@
-#pragma warning disable AS0049
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,15 +5,17 @@
 namespace Microsoft.EServices.EDocument.Processing.Import.Purchase;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.OrderMatch.Copilot;
+using System.Telemetry;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
 
 table 6100 "E-Document Purchase Header"
 {
     Access = Internal;
     ReplicateData = false;
-#pragma warning disable AS0034
     InherentEntitlements = RIMDX;
     InherentPermissions = RIMDX;
-#pragma warning restore AS0034
 
     fields
     {
@@ -25,6 +26,7 @@ table 6100 "E-Document Purchase Header"
             DataClassification = SystemMetadata;
             ValidateTableRelation = true;
         }
+        #region External data - Purchase fields [2-100]
         field(2; "Customer Company Name"; Text[250])
         {
             Caption = 'Customer Company Name';
@@ -205,6 +207,22 @@ table 6100 "E-Document Purchase Header"
             Caption = 'Vendor Contact Name';
             DataClassification = CustomerContent;
         }
+        #endregion Purchase fields
+
+        #region Business Central Data - Validated fields [101-200]
+        field(101; "[BC] Vendor No."; Code[20])
+        {
+            Caption = 'Vendor No.';
+            DataClassification = CustomerContent;
+            TableRelation = Vendor."No.";
+        }
+        field(102; "[BC] Purchase Order No."; Code[20])
+        {
+            Caption = 'Purchase Order No.';
+            DataClassification = CustomerContent;
+            TableRelation = "Purchase Header"."No." where("Document Type" = const(Order));
+        }
+        #endregion Business Central Data
     }
     keys
     {
@@ -214,6 +232,12 @@ table 6100 "E-Document Purchase Header"
         }
     }
 
+    trigger OnDelete()
+    begin
+        Session.LogMessage('0000PCQ', DeleteDraftPerformedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocPOCopilotMatching.FeatureName());
+        FeatureTelemetry.LogUsage('0000PCV', EDocPOCopilotMatching.FeatureName(), 'Discard draft');
+    end;
+
     procedure GetFromEDocument(EDocument: Record "E-Document")
     begin
         Clear(Rec);
@@ -222,13 +246,15 @@ table 6100 "E-Document Purchase Header"
 
     procedure InsertForEDocument(EDocument: Record "E-Document")
     begin
-        Rec."E-Document Entry No." := EDocument."Entry No";
-        if not Rec.Insert() then begin
-            Clear(Rec);
+        if not Rec.Get(EDocument."Entry No") then begin
             Rec."E-Document Entry No." := EDocument."Entry No";
-            Rec.Modify();
+            Rec.Insert();
         end;
     end;
 
+    var
+        EDocPOCopilotMatching: Codeunit "E-Doc. PO Copilot Matching";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        DeleteDraftPerformedTxt: Label 'User deleted the draft.';
+
 }
-#pragma warning restore AS0049

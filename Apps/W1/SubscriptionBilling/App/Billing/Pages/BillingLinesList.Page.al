@@ -20,15 +20,15 @@ page 8016 "Billing Lines List"
             {
                 field("Document Type"; Rec."Document Type")
                 {
-                    ToolTip = 'Shows the document type of the document created for posting.';
+                    ToolTip = 'Specifies the document type of the document created for posting.';
                 }
                 field("Document No."; Rec."Document No.")
                 {
-                    ToolTip = 'Shows the document number of the document created for posting.';
+                    ToolTip = 'Specifies the document number of the document created for posting.';
                 }
                 field("Document Line No."; Rec."Document Line No.")
                 {
-                    ToolTip = 'Shows the document line number of the document created for posting.';
+                    ToolTip = 'Specifies the document line number of the document created for posting.';
                 }
                 field(Partner; Rec.Partner)
                 {
@@ -177,7 +177,7 @@ page 8016 "Billing Lines List"
                 }
                 field("User ID"; Rec."User ID")
                 {
-                    ToolTip = 'Shows the user who created the line.';
+                    ToolTip = 'Specifies the user who created the line.';
                     Visible = false;
                 }
             }

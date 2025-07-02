@@ -237,6 +237,21 @@ page 31165 "Posted Cash Document CZP"
     {
         area(navigation)
         {
+            action(PostedCashDocumentStatistics)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Statistics';
+                Image = Statistics;
+                ShortCutKey = 'F7';
+                ToolTip = 'View the statistics on the selected cash document.';
+#if CLEAN27
+                Visible = true;
+#else
+                Visible = false;
+#endif
+                RunObject = Page "Posted Cash Doc. Stat. CZP";
+                RunPageLink = "Cash Desk No." = field("Cash Desk No."), "No." = field("No.");
+            }
             action(Dimensions)
             {
                 ApplicationArea = Basic, Suite;

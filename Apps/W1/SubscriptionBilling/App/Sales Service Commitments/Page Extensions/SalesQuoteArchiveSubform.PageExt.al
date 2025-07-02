@@ -11,7 +11,7 @@ pageextension 8078 "Sales Quote Archive Subform" extends "Sales Quote Archive Su
             field("Service Commitments"; Rec."Subscription Lines")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of Subscription Lines for the archived sales line.';
+                ToolTip = 'Specifies the number of Subscription Lines for the archived sales line.';
             }
         }
     }

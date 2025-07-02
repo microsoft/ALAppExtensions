@@ -48,19 +48,21 @@ codeunit 6186 ReceiveContext
     end;
 
     /// <summary>
-    /// Sets the type of the E-Document content.
+    /// Retrieves the file format of the E-Document content.
     /// </summary>
-    procedure SetType(Type: Enum "E-Doc. Data Storage Blob Type")
+    /// <returns></returns>
+    internal procedure GetFileFormat(): Enum "E-Doc. File Format"
     begin
-        this.Type := Type;
+        exit(this.FileFormat);
     end;
 
     /// <summary>
-    /// Get the type of the E-Document content.
+    /// Sets the file format for the E-Document content.
     /// </summary>
-    internal procedure GetType(): Enum "E-Doc. Data Storage Blob Type"
+    /// <param name="FileFormat"></param>
+    procedure SetFileFormat(FileFormat: Enum "E-Doc. File Format")
     begin
-        exit(this.Type);
+        this.FileFormat := FileFormat;
     end;
 
     /// <summary>
@@ -79,44 +81,11 @@ codeunit 6186 ReceiveContext
         exit(this.IntegrationActionStatus);
     end;
 
-    /// <summary>
-    /// Sets the source details.
-    /// </summary>
-    procedure SetSourceDetails(Dtls: Text)
-    begin
-        this.Details := Dtls;
-    end;
-
-    /// <summary>
-    /// Retrieves the source details.
-    /// </summary>
-    procedure GetSourceDetails(): Text
-    begin
-        exit(this.Details);
-    end;
-
-    /// <summary>
-    /// Sets additional source details
-    /// </summary>
-    procedure SetAdditionalSourceDetails(AddDetail: Text)
-    begin
-        this.AdditionalSourceDetails := AddDetail;
-    end;
-
-    /// <summary>
-    /// Retrieves additional source details.
-    /// </summary>
-    procedure GetAdditionalSourceDetails(): Text
-    begin
-        exit(this.AdditionalSourceDetails);
-    end;
-
     var
         TempBlob: Codeunit "Temp Blob";
         HttpMessageState: Codeunit "Http Message State";
         IntegrationActionStatus: Codeunit "Integration Action Status";
+        FileFormat: Enum "E-Doc. File Format";
         Name: Text[256];
-        Type: Enum "E-Doc. Data Storage Blob Type";
-        Details, AdditionalSourceDetails : Text;
 
 }

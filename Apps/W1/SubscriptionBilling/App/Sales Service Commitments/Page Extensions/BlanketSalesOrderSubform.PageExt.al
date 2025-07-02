@@ -11,7 +11,7 @@ pageextension 8009 "Blanket Sales Order Subform" extends "Blanket Sales Order Su
             field("Service Commitments"; Rec."Subscription Lines")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of Subscription Lines for the sales line.';
+                ToolTip = 'Specifies the number of Subscription Lines for the sales line.';
             }
         }
     }

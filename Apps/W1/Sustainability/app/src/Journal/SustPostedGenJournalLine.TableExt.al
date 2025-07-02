@@ -38,6 +38,7 @@ tableextension 6225 "Sust. Posted Gen. Journal Line" extends "Posted Gen. Journa
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Total Emission CO2';
+            CaptionClass = '102,12,1';
             DataClassification = CustomerContent;
         }
         field(6219; "Total Emission CH4"; Decimal)
@@ -45,6 +46,7 @@ tableextension 6225 "Sust. Posted Gen. Journal Line" extends "Posted Gen. Journa
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Total Emission CH4';
+            CaptionClass = '102,12,2';
             DataClassification = CustomerContent;
         }
         field(6220; "Total Emission N2O"; Decimal)
@@ -52,6 +54,7 @@ tableextension 6225 "Sust. Posted Gen. Journal Line" extends "Posted Gen. Journa
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Total Emission N2O';
+            CaptionClass = '102,12,3';
             DataClassification = CustomerContent;
         }
     }

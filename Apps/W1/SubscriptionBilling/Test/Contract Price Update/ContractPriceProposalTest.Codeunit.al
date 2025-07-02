@@ -10,6 +10,7 @@ using Microsoft.Purchases.History;
 using Microsoft.Finance.Currency;
 using System.TestLibraries.Utilities;
 
+#pragma warning disable AA0210
 codeunit 139690 "Contract Price Proposal Test"
 {
     Subtype = Test;
@@ -564,6 +565,40 @@ codeunit 139690 "Contract Price Proposal Test"
     end;
 
     [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestPriceUpdateProposalWithClosedServiceCommitment()
+    var
+        CustomerContract: Record "Customer Subscription Contract";
+    begin
+        //[SCENARIO]: Test if the service commitment is included in the price update proposal even if the contract line is closed
+
+        //[GIVEN]: Create a price update template with Calculation Base by %; Create a customer contract with a service commitment
+        Initialize();
+        ContractTestLibrary.CreatePriceUpdateTemplate(PriceUpdateTemplateCustomer, "Service Partner"::Customer, Enum::"Price Update Method"::"Calculation Base by %", LibraryRandom.RandDec(100, 2), '<12M>', '<12M>', '<12M>');
+        ContractTestLibrary.CreateMultipleServiceObjectsWithItemSetup(Customer, ServiceObject, Item, 2);
+        ContractTestLibrary.CreateServiceCommitmentTemplateSetup(ServiceCommitmentTemplate, '<12M>', Enum::"Invoicing Via"::Contract);
+        ContractTestLibrary.CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine, Item, '<12M>');
+        ContractTestLibrary.InsertServiceCommitmentFromServiceCommPackageSetup(ServiceCommitmentPackage, ServiceObject);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, ServiceObject."End-User Customer No.");
+
+        //[GIVEN]: Force Close the contract line
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.FindSet();
+        ServiceCommitment.Closed := true;
+        ServiceCommitment.Modify(false);
+
+        //[WHEN]: Create a price update proposal
+        PriceUpdateManagement.CreatePriceUpdateProposal(PriceUpdateTemplateCustomer.Code, CalcDate(PriceUpdateTemplateCustomer.InclContrLinesUpToDateFormula, WorkDate()), WorkDate());
+
+        //[THEN]: Expect that the service commitment is not included in the price update proposal
+        ContractPriceUpdateLine.Reset();
+        ContractPriceUpdateLine.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+        ContractPriceUpdateLine.SetRange("Subscription Line Entry No.", ServiceCommitment."Entry No.");
+        Assert.RecordIsEmpty(ContractPriceUpdateLine);
+    end;
+
+    [Test]
     [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
     procedure TestServiceCommitmentAfterPerformPriceUpdate()
     var
@@ -863,3 +898,4 @@ codeunit 139690 "Contract Price Proposal Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

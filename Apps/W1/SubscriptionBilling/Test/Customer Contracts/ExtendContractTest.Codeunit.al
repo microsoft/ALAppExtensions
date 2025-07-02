@@ -6,6 +6,7 @@ using Microsoft.Sales.Customer;
 using Microsoft.Sales.Pricing;
 using Microsoft.Purchases.Vendor;
 
+#pragma warning disable AA0210
 codeunit 148152 "Extend Contract Test"
 {
     Subtype = Test;
@@ -28,6 +29,7 @@ codeunit 148152 "Extend Contract Test"
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
         SkipAssignAdditionalServiceCommitments: Boolean;
         ServiceObjectQty: Decimal;
         CustomerContractCard: TestPage "Customer Contract";
@@ -38,7 +40,7 @@ codeunit 148152 "Extend Contract Test"
     [HandlerFunctions('ExtendContractModalPageHandler')]
     procedure ExpectErrorIfItemNoIsEmpty()
     begin
-        ResetGlobals();
+        Initialize();
         ContractTestLibrary.InitContractsApp();
         CreateCustomerAndVendorContracts();
         asserterror InvokeExtendContractFromCustContractCard();
@@ -52,7 +54,7 @@ codeunit 148152 "Extend Contract Test"
         // Create Subscription Line without standard package, only additional one
         // Extend contract without selecting any additional packages
         // Contract should not have any new lines
-        ResetGlobals();
+        Initialize();
         SkipAssignAdditionalServiceCommitments := true;
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
@@ -87,7 +89,7 @@ codeunit 148152 "Extend Contract Test"
     begin
         // [SCENARIO] Create Customer Subscription Contract with different Bill to Customer No. and Ship-to Code
         // [SCENARIO] Run Extend Contract action and expect that the data from the Customer Subscription Contract will be transferred to newly Subscription
-        ResetGlobals();
+        Initialize();
         ContractTestLibrary.InitContractsApp();
 
         // [GIVEN] Create two customers, additional Ship to Address and assign it to a Customer Subscription Contract
@@ -128,6 +130,7 @@ codeunit 148152 "Extend Contract Test"
     begin
         // [SCENARIO] Check if currency factor is updated in Subscription Line, when Customer Subscription Contract Line with Different Currency Code is Created from serv. Subscription Line
         // [GIVEN] Create Dummy Subscription, Customer Subscription Contract (Currency2), Subscription Line (LCY)
+        Initialize();
         LibraryERM.CreateCurrency(Currency);
         ExchangeRateAmount := LibraryRandom.RandDec(1000, 2);
         ProvisionStartDate := LibraryRandom.RandDateFrom(WorkDate(), 12);
@@ -160,7 +163,7 @@ codeunit 148152 "Extend Contract Test"
     [HandlerFunctions('TestExtendContractModalPageHandler')]
     procedure TestContractFieldsOnOpenExtendContractFromCard()
     begin
-        ResetGlobals();
+        Initialize();
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         Item."Unit Cost" := LibraryRandom.RandDec(100, 2);
@@ -176,7 +179,7 @@ codeunit 148152 "Extend Contract Test"
     [HandlerFunctions('ExtendContractModalPageHandler,AssignServiceCommPackagesModalPageHandler,MessageHandler')]
     procedure TestExtendCustomerContract()
     begin
-        ResetGlobals();
+        Initialize();
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         CreateCustomerAndVendorContracts();
@@ -214,7 +217,7 @@ codeunit 148152 "Extend Contract Test"
     [HandlerFunctions('ExtendContractModalPageHandler,AssignServiceCommPackagesModalPageHandler,MessageHandler')]
     procedure TestServiceObjectOnAfterExtendContractStandardAllPackages()
     begin
-        ResetGlobals();
+        Initialize();
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         CreateCustomerAndVendorContracts();
@@ -237,7 +240,7 @@ codeunit 148152 "Extend Contract Test"
     [Test]
     procedure TestServiceObjectOnAfterExtendContractStandardPackage()
     begin
-        ResetGlobals();
+        Initialize();
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         CreateCustomerAndVendorContracts();
@@ -266,7 +269,7 @@ codeunit 148152 "Extend Contract Test"
         // [SCENARIO] When Extend Contract action is run for Item with translation defined that match Customer Language Code, Item Description in Subscription should be translated
 
         // [GIVEN] Create: Language, Subscription Item with translation defined, Customer with Language Code, Customer Subscription Contract
-        ClearAll();
+        Initialize();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         ContractTestLibrary.CreateItemTranslation(ItemTranslation, Item."No.", '');
         CreateCustomerWithLanguageCode(ItemTranslation."Language Code");
@@ -288,7 +291,7 @@ codeunit 148152 "Extend Contract Test"
         // [SCENARIO] GetItemTranslation function returns blank value whenever the Item No. is blank
 
         // [GIVEN]
-        ResetGlobals();
+        Initialize();
 
         // [WHEN] GetItemTranslation function is called with blank Item No
         Result := ContractsItemManagement.GetItemTranslation('', '', '');
@@ -306,7 +309,7 @@ codeunit 148152 "Extend Contract Test"
         // [SCENARIO] When set Customer on Extend Contract with existing Item, Item Description is updated based on Customer Language Code
 
         // [GIVEN] Create: Language, Subscription Item with translation defined, Customer with Language Code, Customer Subscription Contract, Set Item on Extend Contract page
-        ResetGlobals();
+        Initialize();
 
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
@@ -334,6 +337,12 @@ codeunit 148152 "Extend Contract Test"
     #endregion Tests
 
     #region Procedures
+
+    local procedure Initialize()
+    begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Extend Contract Test");
+        ResetGlobals();
+    end;
 
     local procedure SetupItemWithMultipleServiceCommitmentPackages()
     begin
@@ -513,3 +522,4 @@ codeunit 148152 "Extend Contract Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

@@ -15,10 +15,10 @@ pageextension 31066 "Blanket Sales Order CZL" extends "Blanket Sales Order"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
             }
-            field("Registration No. CZL"; Rec."Registration No. CZL")
+            field("Registration No. CZL"; Rec."Registration Number")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of customer.';
+                ToolTip = 'Specifies the customer''s registration number.';
             }
             field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
             {

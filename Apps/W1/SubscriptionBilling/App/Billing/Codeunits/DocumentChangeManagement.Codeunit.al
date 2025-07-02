@@ -11,6 +11,8 @@ codeunit 8074 "Document Change Management"
     SingleInstance = true;
 
     var
+        SkipContractSalesHeaderModifyCheck: Boolean;
+        SkipContractPurchaseHeaderModifyCheck: Boolean;
         HeaderCannotBeChangedErr: Label 'You cannot make this change because the document is linked to a contract. If you still want to change the field, first delete this document and then make the change to the contract.';
         HeaderDimCannotBeChangedErr: Label 'You cannot change the dimensions because the document %1 %2 is linked to a contract. If you still want to change the dimensions, first delete this document and then change the dimensions on the contract.', Comment = '%1 = Document Type, %2 = Document No.';
         LineCannotBeChangedErr: Label 'You cannot make this change because the line is linked to contract %1. If you still want to change the field, first delete this document or document line and then make the change to the corresponding contract line.', Comment = '%1 = Contract No.';
@@ -308,28 +310,24 @@ codeunit 8074 "Document Change Management"
     local procedure SetSkipContractSalesHeaderCheckOnBeforeCopySalesDocument(FromDocumentType: Option; FromDocumentNo: Code[20])
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        SessionStore: Codeunit "Session Store";
     begin
         if FromDocumentType = "Sales Document Type From"::"Posted Invoice".AsInteger() then
             if SalesInvoiceHeader.Get(FromDocumentNo) then
                 if SalesInvoiceHeader."Recurring Billing" then
-                    SessionStore.SetBooleanKey('SkipContractSalesHeaderModifyCheck', true);
+                    SkipContractSalesHeaderModifyCheck := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", OnAfterCopySalesDocument, '', false, false)]
     local procedure RemoveSkipContractSalesHeaderCheckOnBeforeCopySalesDocument(var ToSalesHeader: Record "Sales Header")
-    var
-        SessionStore: Codeunit "Session Store";
     begin
         if ToSalesHeader."Recurring Billing" then
-            SessionStore.RemoveBooleanKey('SkipContractSalesHeaderModifyCheck');
+            SkipContractSalesHeaderModifyCheck := false;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", OnBeforeModifyEvent, '', false, false)]
     local procedure PreventChangeSalesHeader(var Rec: Record "Sales Header")
     var
         xSalesHeader: Record "Sales Header";
-        SessionStore: Codeunit "Session Store";
         ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
     begin
         if Rec.IsTemporary() then
@@ -339,7 +337,7 @@ codeunit 8074 "Document Change Management"
             if not ContractRenewalMgt.IsContractRenewal(Rec) then
                 exit;
 
-        if SessionStore.GetBooleanKey('SkipContractSalesHeaderModifyCheck') then
+        if SkipContractSalesHeaderModifyCheck then
             exit;
 
         xSalesHeader.Get(Rec."Document Type", Rec."No.");
@@ -882,46 +880,40 @@ codeunit 8074 "Document Change Management"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Correct Posted Purch. Invoice", OnAfterCreateCopyDocument, '', false, false)]
     local procedure RemoveBooleanKeyOnAfterCreateCopyPurchaseDocument(var PurchaseHeader: Record "Purchase Header")
-    var
-        SessionStore: Codeunit "Session Store";
     begin
         if PurchaseHeader."Recurring Billing" then
-            SessionStore.RemoveBooleanKey('SkipContractPurchaseHeaderModifyCheck');
+            SkipContractPurchaseHeaderModifyCheck := false;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", OnBeforeCopyPurchaseDocument, '', false, false)]
     local procedure SetBooleanKeyOnBeforeCopyPurchaseDocument(FromDocumentType: Option; FromDocumentNo: Code[20])
     var
         PurchInvHeader: Record "Purch. Inv. Header";
-        SessionStore: Codeunit "Session Store";
     begin
         if FromDocumentType = "Purchase Document Type From"::"Posted Invoice".AsInteger() then
             if PurchInvHeader.Get(FromDocumentNo) then
                 if PurchInvHeader."Recurring Billing" then
-                    SessionStore.SetBooleanKey('SkipContractPurchaseHeaderModifyCheck', true);
+                    SkipContractPurchaseHeaderModifyCheck := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", OnAfterCopyPurchaseDocument, '', false, false)]
     local procedure RemoveBooleanKeyOnAfterCopyPurchaseDocument(var ToPurchaseHeader: Record "Purchase Header")
-    var
-        SessionStore: Codeunit "Session Store";
     begin
         if ToPurchaseHeader."Recurring Billing" then
-            SessionStore.RemoveBooleanKey('SkipContractPurchaseHeaderModifyCheck');
+            SkipContractPurchaseHeaderModifyCheck := false;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", OnBeforeModifyEvent, '', false, false)]
     local procedure PreventChangePurchaseHeader(var Rec: Record "Purchase Header")
     var
         xPurchaseHeader: Record "Purchase Header";
-        SessionStore: Codeunit "Session Store";
     begin
         if Rec.IsTemporary() then
             exit;
 
         if not Rec."Recurring Billing" then
             exit;
-        if SessionStore.GetBooleanKey('SkipContractPurchaseHeaderModifyCheck') then
+        if SkipContractPurchaseHeaderModifyCheck then
             exit;
         xPurchaseHeader.Get(Rec."Document Type", Rec."No.");
         if ((Rec."Shortcut Dimension 1 Code" <> xPurchaseHeader."Shortcut Dimension 1 Code") or
@@ -1202,6 +1194,16 @@ codeunit 8074 "Document Change Management"
                         RecurringBilling := SalesHeader."Recurring Billing";
                 end;
         end;
+    end;
+
+    procedure SetSkipContractSalesHeaderModifyCheck(NewSkipContractSalesHeaderModifyCheck: Boolean)
+    begin
+        SkipContractSalesHeaderModifyCheck := NewSkipContractSalesHeaderModifyCheck;
+    end;
+
+    procedure SetSkipContractPurchaseHeaderModifyCheck(NewSkipContractPurchaseHeaderModifyCheck: Boolean)
+    begin
+        SkipContractPurchaseHeaderModifyCheck := NewSkipContractPurchaseHeaderModifyCheck;
     end;
 
     [IntegrationEvent(false, false)]

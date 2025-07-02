@@ -161,7 +161,6 @@ page 2629 "Stat. Acc. Reverse Entries"
 
     var
         ReversalEntry: Record "Reversal Entry";
-        [InDataSet]
         DescriptionEditable: Boolean;
         ReverseTransactionEntriesLbl: Label 'Reverse Transaction Entries';
         ReverseRegisterEntriesLbl: Label 'Reverse Register Entries';
