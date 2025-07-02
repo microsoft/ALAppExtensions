@@ -6,7 +6,6 @@
 namespace Microsoft.DataMigration.SL;
 
 using System.Integration;
-using Microsoft.Foundation.Company;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Purchases.Vendor;
 using System.EMail;
@@ -88,7 +87,7 @@ codeunit 47021 "SL Vendor Migrator"
             exit;
 
         if SLVendor.Status = StatusInactiveTxt then
-            if SLCompanyAdditionalSettings.Get(CompanyName()) then
+            if SLCompanyAdditionalSettings.Get(CompanyName) then
                 if not SLCompanyAdditionalSettings."Migrate Inactive Vendors" then begin
                     DecrementMigratedCount();
                     exit;

@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Avalara;
 
 using Microsoft.EServices.EDocumentConnector;
 using Microsoft.EServices.EDocumentConnector.Avalara.Models;
+using System.Reflection;
 
 
 /// <summary>
@@ -180,12 +181,19 @@ codeunit 6376 Requests
     [NonDebuggable]
     procedure CreateAuthenticateRequest(ClientId: SecretText; ClientSecret: SecretText): Codeunit Requests;
     var
+        TypeHelper: Codeunit "Type Helper";
         HttpContentHeaders: HttpHeaders;
+        UrlEncodedClientId, UrlEncodedClientSecret : Text;
     begin
         Clear(this.HttpRequestMessage);
         this.HttpRequestMessage.SetRequestUri(this.AuthUrl + '/connect/token');
         this.HttpRequestMessage.Method := 'POST';
-        this.HttpRequestMessage.Content.WriteFrom('grant_type=client_credentials&client_id=' + ClientId.Unwrap() + '&client_secret=' + ClientSecret.Unwrap());
+
+        UrlEncodedClientId := ClientId.Unwrap();
+        UrlEncodedClientId := TypeHelper.UrlEncodeSecret(UrlEncodedClientId);
+        UrlEncodedClientSecret := ClientSecret.Unwrap();
+        UrlEncodedClientSecret := TypeHelper.UrlEncodeSecret(UrlEncodedClientSecret);
+        this.HttpRequestMessage.Content.WriteFrom('grant_type=client_credentials&client_id=' + UrlEncodedClientId + '&client_secret=' + UrlEncodedClientSecret);
 
         this.HttpRequestMessage.Content.GetHeaders(HttpContentHeaders);
         if HttpContentHeaders.Contains('Content-Type') then

@@ -1660,7 +1660,7 @@ table 8052 "Customer Subscription Contract"
 
     local procedure ShouldReplaceCurrencyCode(BillToCustomer: Record Customer): Boolean
     var
-        CurrencyCodeWillBeChangedQst: Label 'The Currency Code for the selected customer is different from the current Currency Code in Customer Contract %1. If the customer is changed the currency and exchange rate needs to be updated.';
+        CurrencyCodeWillBeChangedQst: Label 'The Currency Code for the selected customer is different from the current Currency Code in Customer Contract %1. If the customer is changed the currency and exchange rate needs to be updated.', Comment = '%1 = Contract number';
     begin
         if "Currency Code" = '' then
             exit(true);
@@ -2030,7 +2030,7 @@ table 8052 "Customer Subscription Contract"
         NotifyIfShipToAddressDiffers();
     end;
 
-    internal procedure CreateCustomerContractLineFromServiceCommitment(TempServiceCommitment: Record "Subscription Line" temporary; ContractNo: Code[20])
+    procedure CreateCustomerContractLineFromServiceCommitment(TempServiceCommitment: Record "Subscription Line" temporary; ContractNo: Code[20])
     var
         CustomerContractLine: Record "Cust. Sub. Contract Line";
         ServiceCommitment2: Record "Subscription Line";
@@ -2044,7 +2044,7 @@ table 8052 "Customer Subscription Contract"
         CreateCustomerContractLineFromServiceCommitment(ServiceCommitment2, ContractNo, CustomerContractLine);
     end;
 
-    internal procedure CreateCustomerContractLineFromServiceCommitment(var ServiceCommitment: Record "Subscription Line"; ContractNo: Code[20]; var CustomerContractLine: Record "Cust. Sub. Contract Line")
+    procedure CreateCustomerContractLineFromServiceCommitment(var ServiceCommitment: Record "Subscription Line"; ContractNo: Code[20]; var CustomerContractLine: Record "Cust. Sub. Contract Line")
     var
         ServiceObject: Record "Subscription Header";
         CustomerContract: Record "Customer Subscription Contract";
@@ -2147,9 +2147,11 @@ table 8052 "Customer Subscription Contract"
         if CustomerContractLine.FindSet() then
             repeat
                 if not TempServiceObject.Get(CustomerContractLine."Subscription Header No.") then begin
+#pragma warning disable AA0214
                     ServiceObject.Get(CustomerContractLine."Subscription Header No.");
                     ServiceObject.UpdateServicesDates();
                     ServiceObject.Modify(false);
+#pragma warning restore AA0214
                     TempServiceObject := ServiceObject;
                     TempServiceObject.Insert(false);
                 end;
@@ -2551,7 +2553,7 @@ table 8052 "Customer Subscription Contract"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeUpdateServicesDates(CustomerSubscriptionContract: Record "Customer Subscription Contract"; CustSubContractLine: Record "Cust. Sub. Contract Line")
+    local procedure OnBeforeUpdateServicesDates(CustomerSubscriptionContract: Record "Customer Subscription Contract"; var CustSubContractLine: Record "Cust. Sub. Contract Line")
     begin
     end;
 }

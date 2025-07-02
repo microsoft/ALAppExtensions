@@ -60,7 +60,7 @@ report 8052 "Cust. Contr. Def. Analysis"
                     {
                         ApplicationArea = All;
                         Caption = 'Evaluation Period';
-                        ToolTip = 'Document Posting Date filter in the form of ''Date1..Date2''.';
+                        ToolTip = 'Specifies the Document Posting Date filter in the form of ''Date1..Date2''.';
                         ShowMandatory = true;
 
                         trigger OnValidate()

@@ -7,6 +7,7 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Purchases.Vendor;
 
+#pragma warning disable AA0210
 codeunit 139692 "Contract Renewal Test"
 {
     Subtype = Test;
@@ -22,6 +23,7 @@ codeunit 139692 "Contract Renewal Test"
         ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
         ContractTestLibrary: Codeunit "Contract Test Library";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
         AddVendorServices: Boolean;
         ConfirmOption: Boolean;
         BaseCalculationPercentage: Decimal;
@@ -676,9 +678,44 @@ codeunit 139692 "Contract Renewal Test"
 
     local procedure Initialize()
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Contract Renewal Test");
+        if PaymentLinesTableExists() then
+            DeletePaymentLines();
         ClearAll();
         ContractTestLibrary.InitContractsApp();
     end;
+
+    [TryFunction]
+    local procedure PaymentLinesTableExists()
+    var
+        RecordRef: RecordRef;
+    begin
+        RecordRef.Open(12170); // Open table "Payment Lines"
+        RecordRef.Close();
+        RecordRef.Open(12171); // Open table "Posted Payment Lines"
+        RecordRef.Close();
+    end;
+
+    local procedure DeletePaymentLines()
+    var
+        FieldRef: FieldRef;
+        RecordRef: RecordRef;
+    begin
+        // Delete lines of type "General Journal" and "Quote"
+        RecordRef.Open(12170); // Open table "Payment Lines"
+        FieldRef := RecordRef.Field(1); // Field "Type"
+        FieldRef.SetRange(5); // Field "General Journal"
+        RecordRef.DeleteAll();
+        FieldRef.SetRange(0); // Field "Quote"
+        RecordRef.DeleteAll();
+        RecordRef.Close();
+
+        // Delete all lines in "Posted Payment Lines"
+        RecordRef.Open(12171); //Open table "Posted Payment Lines"
+        RecordRef.DeleteAll();
+        RecordRef.Close();
+    end;
+
 
     local procedure ApplyDiscountToSalesServiceCommitments(var SalesHeader: Record "Sales Header")
     var
@@ -1066,3 +1103,4 @@ codeunit 139692 "Contract Renewal Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

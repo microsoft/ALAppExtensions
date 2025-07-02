@@ -213,8 +213,17 @@ report 4810 "Intrastat Report Get Lines"
                 OnBeforeFilterFALedgerEntry(IntrastatReportHeader, "FA Ledger Entry", StartDate, EndDate, IsHandled);
                 if not IsHandled then begin
                     SetRange("FA Posting Date", StartDate, EndDate);
-                    SetFilter("FA Posting Type", '%1|%2', "FA Posting Type"::"Proceeds on Disposal", "FA Posting Type"::"Acquisition Cost");
-                    SetFilter("Document Type", '%1|%2', "Document Type"::Invoice, "Document Type"::"Credit Memo");
+
+                    if IntrastatReportHeader.Type = IntrastatReportHeader.Type::Sales then
+                        SetRange("FA Posting Type", "FA Posting Type"::"Proceeds on Disposal");
+                    if IntrastatReportHeader.Type = IntrastatReportHeader.Type::Purchases then
+                        SetRange("FA Posting Type", "FA Posting Type"::"Acquisition Cost");
+
+                    if IntrastatReportHeader."Corrective Entry" then
+                        SetRange("Document Type", "Document Type"::"Credit Memo")
+                    else
+                        SetRange("Document Type", "Document Type"::Invoice);
+
                     SetRange("FA Posting Category", "FA Posting Category"::" ");
                 end;
 

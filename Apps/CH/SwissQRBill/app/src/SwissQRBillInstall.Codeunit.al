@@ -166,36 +166,4 @@ codeunit 11517 "Swiss QR-Bill Install"
     begin
         UpgradeTag.SetAllUpgradeTags();
     end;
-
-    local procedure MapAddressType(AddressType: Option Structured,Combined) SwissQRBillAddressType: Enum "Swiss QR-Bill Address Type"
-    begin
-        case AddressType of
-            AddressType::Structured:
-                exit(SwissQRBillAddressType::Structured);
-            AddressType::Combined:
-                exit(SwissQRBillAddressType::Combined);
-        end;
-    end;
-
-    local procedure MapIBANType(IBANType: Option IBAN,"QR-IBAN") SwissQRBillIBANType: Enum "Swiss QR-Bill IBAN Type"
-    begin
-        case IBANType of
-            IBANType::IBAN:
-                exit(SwissQRBillIBANType::IBAN);
-            IBANType::"QR-IBAN":
-                exit(SwissQRBillIBANType::"QR-IBAN");
-        end;
-    end;
-
-    local procedure MapPaymentReferenceType(PaymentReferenceType: Option "Without Reference","Creditor Reference (ISO 11649)","QR Reference") SwissQRBillPaymentReferenceType: Enum "Swiss QR-Bill Payment Reference Type"
-    begin
-        case PaymentReferenceType of
-            PaymentReferenceType::"Without Reference":
-                exit(SwissQRBillPaymentReferenceType::"Without Reference");
-            PaymentReferenceType::"Creditor Reference (ISO 11649)":
-                exit(SwissQRBillPaymentReferenceType::"Creditor Reference (ISO 11649)");
-            PaymentReferenceType::"QR Reference":
-                exit(SwissQRBillPaymentReferenceType::"QR Reference");
-        end;
-    end;
 }

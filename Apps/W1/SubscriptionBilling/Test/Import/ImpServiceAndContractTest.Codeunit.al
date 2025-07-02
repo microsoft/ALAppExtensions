@@ -5,6 +5,7 @@ using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
 
+#pragma warning disable AA0210
 codeunit 139914 "Imp. Service And Contract Test"
 {
     Subtype = Test;
@@ -551,3 +552,4 @@ codeunit 139914 "Imp. Service And Contract Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

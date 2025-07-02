@@ -398,6 +398,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
         LocalBankAccReconciliation: Record "Bank Acc. Reconciliation";
         TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary;
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
         Pct: Decimal;
     begin
@@ -435,6 +436,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
         end;
         CurrPage.Update();
         Session.LogMessage('0000LEN', TelemetryCopilotProposedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        FeatureTelemetry.LogUsage('0000PGU', BankRecAIMatchingImpl.FeatureName(), TelemetryCopilotProposedTxt);
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -443,6 +445,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
         LocalBankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankAccountStatement: Record "Bank Account Statement";
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
         OpenCardQuestion: Text;
     begin
@@ -487,6 +490,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
             if LocalBankAccReconciliation.Get(LocalBankAccReconciliation."Statement Type"::"Bank Reconciliation", BankAccNo, StatementNo) then
                 TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
             Session.LogMessage('0000LER', TelemetryUserNotAcceptedProposalsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+            FeatureTelemetry.LogUsage('0000PGV', BankRecAIMatchingImpl.FeatureName(), TelemetryUserAcceptedProposalsTxt);
             if ShouldDeleteBankRecOnCancel then
                 if LocalBankAccReconciliation.Delete(true) then;
         end;
@@ -497,6 +501,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
         TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary;
         LocalBankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         CurrPage.ProposalDetails.Page.GetTempRecord(TempBankAccRecAIProposal);
@@ -510,6 +515,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
         if LocalBankAccReconciliation.Get(LocalBankAccReconciliation."Statement Type"::"Bank Reconciliation", BankAccNo, StatementNo) then
             TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
         Session.LogMessage('0000LES', TelemetryUserAcceptedProposalsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        FeatureTelemetry.LogUsage('0000PGW', BankRecAIMatchingImpl.FeatureName(), TelemetryUserAcceptedProposalsTxt);
     end;
 
     internal procedure SetBankAccReconciliationLines(var InputBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line");

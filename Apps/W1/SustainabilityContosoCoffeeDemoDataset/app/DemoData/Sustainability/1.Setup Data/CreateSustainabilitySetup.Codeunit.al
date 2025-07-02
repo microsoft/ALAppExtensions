@@ -14,6 +14,7 @@ codeunit 5212 "Create Sustainability Setup"
     var
         SustainabilitySetup: Record "Sustainability Setup";
         CreateUnitofMeasure: Codeunit "Create Unit of Measure";
+        CreateNoSeries: Codeunit "Create Sustain. No Series";
     begin
         SustainabilitySetup.Get();
 
@@ -24,6 +25,7 @@ codeunit 5212 "Create Sustainability Setup"
         SustainabilitySetup.Validate("Distance Decimal Places", '2:05');
         SustainabilitySetup.Validate("Custom Amt. Decimal Places", '2:05');
         SustainabilitySetup.Validate("Use Emissions In Purch. Doc.", true);
+        SustainabilitySetup.Validate("Posted ESG Reporting Nos.", CreateNoSeries.PostedESGReportingNoSeries());
 
         SustainabilitySetup.Modify(true);
     end;

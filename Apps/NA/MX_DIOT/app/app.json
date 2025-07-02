@@ -14,6 +14,16 @@
   "dependencies": [],
   "screenshots": [],
   "platform": "27.0.0.0",
+  "idRanges": [
+    {
+      "from": 27020,
+      "to": 27022
+    },
+    {
+      "from": 27030,
+      "to": 27039
+    }
+  ],
   "resourceExposurePolicy": {
     "allowDebugging": true,
     "allowDownloadingSource": true,

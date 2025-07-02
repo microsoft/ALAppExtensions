@@ -8,7 +8,7 @@ codeunit 8024 "Usage Based Doc. Type Conv."
     Access = Internal;
 
     var
-        ConversionNotAllowedErr: Label 'Conversion of option %1 to %2 is not possible.';
+        ConversionNotAllowedErr: Label 'Conversion of option %1 to %2 is not possible.', Comment = '%1=Source Option, %2=Target Option';
 
     internal procedure ConvertSalesDocTypeToUsageBasedBillingDocType(SalesDocumentType: Enum "Sales Document Type") UsageBasedBillingDocType: Enum "Usage Based Billing Doc. Type"
     begin

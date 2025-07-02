@@ -1,7 +1,21 @@
+namespace Microsoft.Test.Sustainability;
+
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Scorecard;
+using Microsoft.Sustainability.Certificate;
+using Microsoft.Inventory.Location;
+using Microsoft.Sustainability.Setup;
+using Microsoft.Sustainability.Energy;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.ESGReporting;
+
 codeunit 148182 "Library - Sustainability"
 {
     var
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryERM: Codeunit "Library - ERM";
 
     procedure InsertAccountCategory(Code: Code[20]; Description: Text[100]; Scope: Enum "Emission Scope"; CalcFoundation: Enum "Calculation Foundation"; CO2: Boolean; CH4: Boolean; N2O: Boolean; CustomValue: Text[100]; CalcFromGL: Boolean): Record "Sustain. Account Category"
     var
@@ -157,6 +171,79 @@ codeunit 148182 "Library - Sustainability"
         SustainabilitySetup.Modify();
     end;
 
+    procedure InsertSustainabilityEnergySource(var EnergySource: Record "Sustainability Energy Source")
+    begin
+        EnergySource.Init();
+        EnergySource.Validate("No.", LibraryUtility.GenerateRandomCode(EnergySource.FieldNo("No."), Database::"Sustainability Energy Source"));
+        EnergySource.Validate(Description, LibraryUtility.GenerateGUID());
+        EnergySource.Insert(true);
+    end;
+
+    procedure CreateESGReportingTemplate(var ESGReportingTemplate: Record "Sust. ESG Reporting Template")
+    begin
+        ESGReportingTemplate.Init();
+        ESGReportingTemplate.Validate(Name, LibraryUtility.GenerateRandomCode(ESGReportingTemplate.FieldNo(Name), Database::"Sust. ESG Reporting Template"));
+        ESGReportingTemplate.Validate(Description, LibraryUtility.GenerateGUID());
+        ESGReportingTemplate.Validate("Page ID");
+        ESGReportingTemplate.Insert();
+    end;
+
+    procedure CreateESGReportingName(var ESGReportingName: Record "Sust. ESG Reporting Name"; ESGReportingTemplate: Record "Sust. ESG Reporting Template")
+    begin
+        ESGReportingName.Init();
+        ESGReportingName.Validate("ESG Reporting Template Name", ESGReportingTemplate.Name);
+        ESGReportingName.Validate(Name, LibraryUtility.GenerateRandomCode(ESGReportingName.FieldNo(Name), Database::"Sust. ESG Reporting Name"));
+        ESGReportingName.Validate(Description, LibraryUtility.GenerateGUID());
+        ESGReportingName.Insert();
+    end;
+
+    procedure CreateESGReportingLine(
+        var ESGReportingLines: Record "Sust. ESG Reporting Line";
+        ESGReportingName: Record "Sust. ESG Reporting Name";
+        LineNo: Integer;
+        Grouping: Code[10];
+        RowNo: Code[10];
+        FieldType: Enum "Sust. ESG Reporting Field Type";
+        TableNo: Integer;
+        FieldNo: Integer;
+        ValueSettings: Enum "Sust. ESG Value Settings";
+        AccountFilter: Text[250];
+        RowType: Option "Net Change","Balance at Date","Year to Date","Beginning Balance";
+        RowTotaling: Text[50];
+        CalculateWith: Option Sign,"Opposite Sign";
+        Show: Boolean;
+        ShowWith: Option Sign,"Opposite Sign")
+    begin
+        ESGReportingLines.Init();
+        ESGReportingLines.Validate("ESG Reporting Template Name", ESGReportingName."ESG Reporting Template Name");
+        ESGReportingLines.Validate("ESG Reporting Name", ESGReportingName.Name);
+        ESGReportingLines.Validate("Line No.", LineNo);
+        ESGReportingLines.Validate(Grouping, Grouping);
+        ESGReportingLines.Validate("Row No.", RowNo);
+        ESGReportingLines.Insert();
+
+        ESGReportingLines.Validate("Field Type", FieldType);
+        ESGReportingLines.Validate("Table No.", TableNo);
+        ESGReportingLines.Validate("Field No.", FieldNo);
+        ESGReportingLines.Validate("Value Settings", ValueSettings);
+        ESGReportingLines.Validate("Account Filter", AccountFilter);
+        ESGReportingLines.Validate("Row Type", RowType);
+        ESGReportingLines.Validate("Row Totaling", RowTotaling);
+        ESGReportingLines.Validate("Calculate With", CalculateWith);
+        ESGReportingLines.Validate(Show, Show);
+        ESGReportingLines.Validate("Show With", ShowWith);
+        ESGReportingLines.Modify();
+    end;
+
+    procedure UpdatePostedESGReportingNoInSustainabilitySetup()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Posted ESG Reporting Nos.", LibraryERM.CreateNoSeriesCode());
+        SustainabilitySetup.Modify();
+    end;
+
     procedure CleanUpBeforeTesting()
     var
         SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
@@ -170,6 +257,7 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityGoal: Record "Sustainability Goal";
         SustainabilityScorecard: Record "Sustainability Scorecard";
         EmissionFee: Record "Emission Fee";
+        EnergySource: Record "Sustainability Energy Source";
     begin
         SustainabilityJnlTemplate.DeleteAll();
         SustainabilityJnlBatch.DeleteAll();
@@ -182,5 +270,6 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityGoal.DeleteAll();
         SustainabilityScorecard.DeleteAll();
         EmissionFee.DeleteAll();
+        EnergySource.DeleteAll();
     end;
 }

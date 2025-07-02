@@ -8,7 +8,6 @@ page 6122 "E-Documents"
 {
     ApplicationArea = Basic, Suite;
     SourceTable = "E-Document";
-    CardPageId = "E-Document";
     PageType = List;
     UsageCategory = Lists;
     AdditionalSearchTerms = 'Edoc,Electronic Document,EDocuments,E Documents,E invoices,Einvoices,Electronic';
@@ -28,6 +27,13 @@ page 6122 "E-Documents"
                 field("Entry No"; Rec."Entry No")
                 {
                     ToolTip = 'Specifies the entry number.';
+
+                    trigger OnDrillDown()
+                    var
+                        EDocumentHelper: Codeunit "E-Document Helper";
+                    begin
+                        EDocumentHelper.OpenDraftPage(Rec);
+                    end;
                 }
                 field("Bill-to/Pay-to No."; Rec."Bill-to/Pay-to No.")
                 {
@@ -107,6 +113,7 @@ page 6122 "E-Documents"
                 ToolTip = 'View inbound electronic documents.';
                 Visible = NewEDocumentExperienceActive;
                 RunObject = Page "Inbound E-Documents";
+                RunPageMode = View;
                 Image = InwardEntry;
             }
             action(OutboundEDocuments)

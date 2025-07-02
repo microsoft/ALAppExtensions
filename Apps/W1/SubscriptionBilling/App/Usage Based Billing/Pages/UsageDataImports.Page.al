@@ -62,24 +62,24 @@ page 8041 "Usage Data Imports"
                 }
                 field("No. of Usage Data Blobs"; Rec."No. of Usage Data Blobs")
                 {
-                    ToolTip = 'Shows the number of files of the raw data.';
+                    ToolTip = 'Specifies the number of files of the raw data.';
                 }
                 field("No. of Imported Lines"; Rec."No. of Imported Lines")
                 {
-                    ToolTip = 'Displays the number of Imported Lines.';
+                    ToolTip = 'Specifies the number of Imported Lines.';
                 }
                 field("No. of Imported Line Errors"; Rec."No. of Imported Line Errors")
                 {
-                    ToolTip = 'Displays the number of errors during the creation and processing of Imported Lines.';
+                    ToolTip = 'Specifies the number of errors during the creation and processing of Imported Lines.';
                     StyleExpr = LineErrorNumberStyleExpr;
                 }
                 field("No. of Usage Data Billing"; Rec."No. of Usage Data Billing")
                 {
-                    ToolTip = 'Displays the number of errors during the creation and processing of Usage Data Billing.';
+                    ToolTip = 'Specifies the number of errors during the creation and processing of Usage Data Billing.';
                 }
                 field("No. of UD Billing Errors"; Rec."No. of UD Billing Errors")
                 {
-                    ToolTip = 'Shows the number of usage data billing errors.';
+                    ToolTip = 'Specifies the number of usage data billing errors.';
                     StyleExpr = BillingErrorNumberStyleExpr;
                 }
             }

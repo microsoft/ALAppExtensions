@@ -796,13 +796,13 @@ table 8063 "Vendor Subscription Contract"
         Confirmed: Boolean;
         SkipPayToContact: Boolean;
         SkipBuyFromContact: Boolean;
-        RenameErr: Label 'You cannot rename a %1.';
+        RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = Table Caption';
         ConfirmChangeQst: Label 'Do you want to change %1?', Comment = '%1 = a Field Caption like Currency Code';
-        ContactNotRelatedToVendorErr: Label 'Contact %1 %2 is not related to vendor %3.';
-        ContactIsNotRelatedToAnyVendorErr: Label 'Contact %1 %2 is not related to a vendor.';
+        ContactNotRelatedToVendorErr: Label 'Contact %1 %2 is not related to vendor %3.', Comment = '%1=Contact No., %2=Contact Name, %3=Vendor No.';
+        ContactIsNotRelatedToAnyVendorErr: Label 'Contact %1 %2 is not related to a vendor.', Comment = '%1=Contact No., %2=Contact Name';
         BuyFromVendorTxt: Label 'Buy-from Vendor';
         PayToVendorTxt: Label 'Pay-to Vendor';
-        ContactRelatedToDifferentCompanyErr: Label 'Contact %1 %2 is related to a different company than vendor %3.';
+        ContactRelatedToDifferentCompanyErr: Label 'Contact %1 %2 is related to a different company than vendor %3.', Comment = '%1=Contact No., %2=Contact Name, %3=Vendor No.';
         DontShowAgainActionLbl: Label 'Don''t show again';
         ModifyBuyFromVendorAddressNotificationNameTxt: Label 'Update Buy-from Vendor Address';
         ModifyBuyFromVendorAddressNotificationDescriptionTxt: Label 'Warn if the Buy-from address on Vendor Subscription Contract is different from the Vendor''s existing address.';
@@ -812,7 +812,7 @@ table 8063 "Vendor Subscription Contract"
         ModifyVendorAddressNotificationMsg: Label 'The address you entered for %1 is different from the Vendor''s existing address.', Comment = '%1=Vendor name';
         UpdateDimensionsOnLinesQst: Label 'You may have changed a dimension.\\Do you want to update the lines?';
         AssignServicePricesMustBeRecalculatedMsg: Label 'You add Subscription Lines to a contract in which a different currency is stored than in the Subscription Lines. The prices for the Subscription Lines must therefore be recalculated.';
-        UpdatedDeferralsMsg: Label 'The dimensions in %1 deferrals have been updated.';
+        UpdatedDeferralsMsg: Label 'The dimensions in %1 deferrals have been updated.', Comment = '%1 = Count of updated deferrals';
 
     protected var
         HideValidationDialog: Boolean;
@@ -1581,9 +1581,11 @@ table 8063 "Vendor Subscription Contract"
         if VendorContractLine.FindSet() then
             repeat
                 if not TempServiceObject.Get(VendorContractLine."Subscription Header No.") then begin
+#pragma warning disable AA0214                    
                     ServiceObject.Get(VendorContractLine."Subscription Header No.");
                     ServiceObject.UpdateServicesDates();
                     ServiceObject.Modify(false);
+#pragma warning restore AA0214
                     TempServiceObject := ServiceObject;
                     TempServiceObject.Insert(false);
                 end;

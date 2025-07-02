@@ -136,37 +136,40 @@ codeunit 30116 "Shpfy Customer Export"
         if (Customer."Country/Region Code" = '') and CompanyInformation.Get() then
             Customer."Country/Region Code" := CompanyInformation."Country/Region Code";
 
-        if Customer.County <> '' then
-            case Shop."County Source" of
-                Shop."County Source"::Code:
-                    begin
-                        if StrLen(Customer.County) > MaxStrLen(TaxArea."County Code") then begin
-                            CountyCodeTooLongErr := StrSubstNo(CountyCodeTooLongLbl, Customer."No.", Customer.Name, StrLen(Customer.County), MaxStrLen(TaxArea."County Code"), Customer.County, Customer.FieldCaption(County));
-                            Error(CountyCodeTooLongErr);
-                        end;
-                        TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
-                        TaxArea.SetRange("County Code", Customer.County);
-                        if TaxArea.FindFirst() then begin
-                            CustomerAddress."Province Code" := TaxArea."County Code";
-                            CustomerAddress."Province Name" := TaxArea.County;
-                        end;
-                    end;
-                Shop."County Source"::Name:
-                    begin
-                        TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
-                        TaxArea.SetRange(County, Customer.County);
-                        if TaxArea.FindFirst() then begin
-                            CustomerAddress."Province Code" := TaxArea."County Code";
-                            CustomerAddress."Province Name" := TaxArea.County;
-                        end else begin
-                            TaxArea.SetFilter(County, Customer.County + '*');
+        if Customer.County <> '' then begin
+            TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
+            if not TaxArea.IsEmpty() then
+                case Shop."County Source" of
+                    Shop."County Source"::Code:
+                        begin
+                            if StrLen(Customer.County) > MaxStrLen(TaxArea."County Code") then begin
+                                CountyCodeTooLongErr := StrSubstNo(CountyCodeTooLongLbl, Customer."No.", Customer.Name, StrLen(Customer.County), MaxStrLen(TaxArea."County Code"), Customer.County, Customer.FieldCaption(County));
+                                Error(CountyCodeTooLongErr);
+                            end;
+                            TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
+                            TaxArea.SetRange("County Code", Customer.County);
                             if TaxArea.FindFirst() then begin
                                 CustomerAddress."Province Code" := TaxArea."County Code";
                                 CustomerAddress."Province Name" := TaxArea.County;
                             end;
                         end;
-                    end;
-            end;
+                    Shop."County Source"::Name:
+                        begin
+                            TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
+                            TaxArea.SetRange(County, Customer.County);
+                            if TaxArea.FindFirst() then begin
+                                CustomerAddress."Province Code" := TaxArea."County Code";
+                                CustomerAddress."Province Name" := TaxArea.County;
+                            end else begin
+                                TaxArea.SetFilter(County, Customer.County + '*');
+                                if TaxArea.FindFirst() then begin
+                                    CustomerAddress."Province Code" := TaxArea."County Code";
+                                    CustomerAddress."Province Name" := TaxArea.County;
+                                end;
+                            end;
+                        end;
+                end;
+        end;
 
         if CountryRegion.Get(Customer."Country/Region Code") then begin
             CountryRegion.TestField("ISO Code");

@@ -3,34 +3,34 @@ codeunit 139625 "E-Doc. Test Buffer"
     SingleInstance = true;
 
     var
-        TmpPurchHeader: Record "Purchase Header" temporary;
-        TmpPurchLine: Record "Purchase Line" temporary;
+        TempPurchHeader: Record "Purchase Header" temporary;
+        TempPurchLine: Record "Purchase Line" temporary;
         EDocOrderNo: Code[20];
 
     procedure ClearTempVariables()
     begin
-        TmpPurchHeader.Reset();
-        TmpPurchHeader.DeleteAll();
+        TempPurchHeader.Reset();
+        TempPurchHeader.DeleteAll();
 
-        TmpPurchLine.Reset();
-        TmpPurchLine.DeleteAll();
+        TempPurchLine.Reset();
+        TempPurchLine.DeleteAll();
     end;
 
     procedure AddPurchaseDocToTemp(PurchHeader: Record "Purchase Header")
     var
         PurchLine: Record "Purchase Line";
     begin
-        TmpPurchHeader.Init();
-        TmpPurchHeader.TransferFields(PurchHeader);
-        TmpPurchHeader.Insert();
+        TempPurchHeader.Init();
+        TempPurchHeader.TransferFields(PurchHeader);
+        TempPurchHeader.Insert();
 
         PurchLine.SetRange("Document Type", PurchHeader."Document Type");
         PurchLine.SetRange("Document No.", PurchHeader."No.");
         if PurchLine.FindSet() then
             repeat
-                TmpPurchLine.Init();
-                TmpPurchLine.TransferFields(PurchLine);
-                TmpPurchLine.Insert();
+                TempPurchLine.Init();
+                TempPurchLine.TransferFields(PurchLine);
+                TempPurchLine.Insert();
             until PurchLine.Next() = 0;
     end;
 
@@ -41,8 +41,8 @@ codeunit 139625 "E-Doc. Test Buffer"
 
     procedure GetPurchaseDocToTempVariables(var TmpPurchHeader2: Record "Purchase Header" temporary; var TmpPurchLine2: Record "Purchase Line" temporary)
     begin
-        TmpPurchHeader2.Copy(TmpPurchHeader, true);
-        TmpPurchLine2.Copy(TmpPurchLine, true);
+        TmpPurchHeader2.Copy(TempPurchHeader, true);
+        TmpPurchLine2.Copy(TempPurchLine, true);
     end;
 
     procedure GetEDocOrderNo(): Code[20]

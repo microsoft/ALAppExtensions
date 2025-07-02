@@ -16,6 +16,7 @@ using Microsoft.Pricing.Source;
 using Microsoft.Pricing.Asset;
 using Microsoft.Pricing.PriceList;
 
+#pragma warning disable AA0210
 codeunit 148157 "Service Object Test"
 {
     Subtype = Test;
@@ -35,6 +36,78 @@ codeunit 148157 "Service Object Test"
         IsInitialized: Boolean;
 
     #region Tests
+    [Test]
+    procedure BillToCustomerPriceGroupIsTakenIntoAccountWhenChangingEndUserCustomer()
+    var
+        Item: Record Item;
+        SubscriptionHeader: Record "Subscription Header";
+        ServiceCommitmentTemplate: Record "Sub. Package Line Template";
+        SubscriptionPackage: Record "Subscription Package";
+        SubscriptionPackageLine: Record "Subscription Package Line";
+        ItemSubscriptionPackage: Record "Item Subscription Package";
+        BillToCustomers: array[2] of Record Customer;
+        Customers: array[2] of Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        PriceGroups: array[3] of Record "Customer Price Group";
+        Index: Integer;
+    begin
+        // [SCENARIO] When changing End-User Customer, the Customer Price Group from new Customer "Bill-to Customer No." should be taken into account
+        ClearAll();
+
+        // [GIVEN] Two CustomerPriceGroups and two BillToCustomers, each has assigned specific CustomerPriceGroup
+        for Index := 1 to ArrayLen(BillToCustomers) do begin
+            LibrarySales.CreateCustomer(BillToCustomers[Index]);
+            LibrarySales.CreateCustomerPriceGroup(PriceGroups[Index]);
+            BillToCustomers[Index].Validate("Customer Price Group", PriceGroups[Index].Code);
+            BillToCustomers[Index].Modify(false);
+        end;
+
+        // [GIVEN] Customer1 and Customer2 with changed "Billing-to Customer No." to BillToCustomer1 and BillToCustomer2 respectively
+        for Index := 1 to ArrayLen(Customers) do begin
+            LibrarySales.CreateCustomer(Customers[Index]);
+            Customers[Index].Validate("Bill-to Customer No.", BillToCustomers[Index]."No.");
+            Customers[Index].Modify(false);
+        end;
+
+        // [GIVEN] Item with "Sales with Service Commitment" option, assigned to Service Commitment Package with CustomerPriceGroup3 and set as Standard
+        ContractTestLibrary.CreateServiceCommitmentTemplateSetup(ServiceCommitmentTemplate, '<12M>', Enum::"Invoicing Via"::Sales);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, SubscriptionPackage, SubscriptionPackageLine);
+        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", SubscriptionPackage.Code);
+        LibrarySales.CreateCustomerPriceGroup(PriceGroups[3]);
+        SubscriptionPackage.Validate("Price Group", PriceGroups[3].Code);
+        SubscriptionPackage.Modify(false);
+
+        ItemSubscriptionPackage.Get(Item."No.", SubscriptionPackage.Code);
+        ItemSubscriptionPackage.Validate(Standard, true);
+        ItemSubscriptionPackage.Modify(false);
+
+        // [GIVEN] SalesOrder created and posted for Customer1 and Item
+        LibrarySales.CreateSalesHeader(SalesHeader, Enum::"Sales Document Type"::Order, Customers[1]."No.");
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", 1);
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [WHEN] Find Service Object created from posting SalesOrder
+        SubscriptionHeader.SetRange("End-User Customer No.", Customers[1]."No.");
+        SubscriptionHeader.SetRange(Type, Enum::"Service Object Type"::Item);
+        SubscriptionHeader.SetRange("Source No.", Item."No.");
+        SubscriptionHeader.FindFirst();
+        SubscriptionHeader.SetRange("End-User Customer No.");
+        SubscriptionHeader.SetRange(Type, Enum::"Service Object Type"::Item);
+        SubscriptionHeader.SetRange("Source No.", Item."No.");
+        SubscriptionHeader.SetRecFilter();
+        SubscriptionHeader.SetHideValidationDialog(true);
+
+        // [THEN] Make sure Customer Price Group = PriceGroup1 for both Service Object and Service Commitment
+        VerifyPriceGroupInServiceObjectAndServiceCommitment(SubscriptionHeader."No.", SubscriptionHeader."Customer Price Group", PriceGroups[1].Code, PriceGroups[1].Code);
+
+        // [WHEN] Change End-User Customer to Customer2
+        SubscriptionHeader.Validate("End-User Customer No.", Customers[2]."No.");
+        SubscriptionHeader.Modify(true);
+
+        // [THEN] Make sure Customer Price Group = PriceGroup2 for Service Object and PriceGroup3 for Service Commitment (taken from standard Service Commitment Package)
+        VerifyPriceGroupInServiceObjectAndServiceCommitment(SubscriptionHeader."No.", SubscriptionHeader."Customer Price Group", PriceGroups[2].Code, PriceGroups[3].Code);
+    end;
 
     [Test]
     procedure CheckArchivedServCommAmounts()
@@ -1561,6 +1634,44 @@ codeunit 148157 "Service Object Test"
         Assert.AreEqual(ItemTranslation.Description, ServiceObject.Description, 'Item description should be translated in Service Object');
     end;
 
+    [Test]
+    procedure UT_UpdateServiceDatesDoesNotCalculateCancellationPossibleUntilAndTermUntilWhenNoticePeriodIsEmpty()
+    var
+        Item: Record Item;
+        SubscriptionHeader: Record "Subscription Header";
+        SubscriptionLine: Record "Subscription Line";
+    begin
+        // [SCENARIO] When "Notice Period" is empty, the action "Update Service Dates" does not calculate "Cancellation possible until" and "Term until"
+
+        // [GIVEN] Create Service Object with Service Commitment. Make sure that the "Notice Period" is empty.
+        ClearAll();
+        SetupServiceObjectWithServiceCommitment(Item, SubscriptionHeader, false, false);
+        SubscriptionLine.SetRange("Subscription Header No.", SubscriptionHeader."No.");
+        SubscriptionLine.FindFirst();
+        SubscriptionLine.Validate("Subscription Line Start Date", CalcDate('<-CY>', Today()));
+        SubscriptionLine.Validate("Cancellation possible until", CalcDate('<+1D>', SubscriptionLine."Subscription Line Start Date"));
+        Evaluate(SubscriptionLine."Extension Term", '<1Y>');
+        SubscriptionLine.Modify(false);
+
+        // [WHEN] Run action Update Services Dates from Service Object when "Notice Period" is empty
+        SubscriptionHeader.UpdateServicesDates();
+
+        // [THEN] "Cancellation possible until" and "Term until" are not recalculated
+        Assert.AreEqual(SubscriptionLine."Cancellation possible until", SubscriptionLine."Cancellation possible until", 'Cancellation possible until should not be recalculated.');
+        Assert.AreEqual(SubscriptionLine."Term until", SubscriptionLine."Term until", 'Term until should not be recalculated.');
+
+        // [WHEN] Run action Update Service Dates from Service Object when "Notice Period" is not empty
+        Evaluate(SubscriptionLine."Notice Period", '<1M>');
+        SubscriptionLine.Validate(SubscriptionLine."Notice Period");
+        SubscriptionLine.Modify(false);
+        SubscriptionHeader.UpdateServicesDates();
+        SubscriptionLine.Get(SubscriptionLine."Entry No.");
+
+        // [THEN] "Cancellation possible until" and "Term until" are recalculated
+        Assert.AreEqual(CalcDate('-' + Format(SubscriptionLine."Notice Period"), SubscriptionLine."Term until"), SubscriptionLine."Cancellation possible until", 'Cancellation possible until should be recalculated.');
+        Assert.AreEqual(CalcDate(SubscriptionLine."Extension Term", SubscriptionLine."Subscription Line Start Date"), SubscriptionLine."Term until", 'Term until should be recalculated.');
+    end;
+
     #endregion Tests
 
     #region Procedures
@@ -1824,6 +1935,15 @@ codeunit 148157 "Service Object Test"
         ServiceCommitment.Validate("Subscription Line End Date");
     end;
 
+    local procedure VerifyPriceGroupInServiceObjectAndServiceCommitment(ServiceObjectCode: Code[20]; ServiceObjectPriceGroup: Code[10]; ExpectedPriceGroupServiceObject: Code[10]; ExpectedPriceGroupServiceCommitment: Code[10])
+    var
+        SubscriptionLine: Record "Subscription Line";
+    begin
+        Assert.AreEqual(ExpectedPriceGroupServiceObject, ServiceObjectPriceGroup, 'Unexpected Customer Price Group in Service Object');
+        FindServiceCommitment(SubscriptionLine, ServiceObjectCode);
+        Assert.AreEqual(ExpectedPriceGroupServiceCommitment, SubscriptionLine."Customer Price Group", 'Unexpected Customer Price Group in Service Commitment');
+    end;
+
     #endregion Procedures
 
     #region Handlers
@@ -1866,3 +1986,4 @@ codeunit 148157 "Service Object Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

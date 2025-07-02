@@ -134,24 +134,24 @@ page 8082 "Sales Service Commitments"
                 {
                     Visible = false;
                     Editable = false;
-                    ToolTip = 'Document Type.';
+                    ToolTip = 'Specifies the Document Type.';
                 }
                 field("Document No."; Rec."Document No.")
                 {
                     Visible = false;
                     Editable = false;
-                    ToolTip = 'Document No.';
+                    ToolTip = 'Specifies the Document No.';
                 }
                 field("Document Line No."; Rec."Document Line No.")
                 {
                     Visible = false;
                     Editable = false;
-                    ToolTip = 'Document Line No.';
+                    ToolTip = 'Specifies the Document Line No.';
                 }
                 field("Period Calculation"; Rec."Period Calculation")
                 {
                     Visible = false;
-                    ToolTip = 'The Period Calculation controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
+                    ToolTip = 'Specifies the Period Calculation, which controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
                 }
                 field("Price Binding Period"; Rec."Price Binding Period")
                 {

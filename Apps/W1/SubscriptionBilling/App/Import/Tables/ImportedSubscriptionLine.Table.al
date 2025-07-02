@@ -273,7 +273,7 @@ table 8009 "Imported Subscription Line"
         }
     }
 
-    internal procedure IsContractCommentLine(): Boolean
+    procedure IsContractCommentLine(): Boolean
     begin
         exit(Rec."Sub. Contract Line Type" = Rec."Sub. Contract Line Type"::Comment)
     end;

@@ -561,7 +561,14 @@ table 8059 "Subscription Line"
         {
             Clustered = true;
         }
-        key(Contract; "Subscription Contract No.", "Subscription Contract Line No.") { }
+        key(Contract; "Subscription Contract No.", "Subscription Contract Line No.")
+        {
+
+        }
+        key(Key3; "Subscription Header No.", Partner)
+        {
+
+        }
     }
 
     trigger OnInsert()
@@ -600,10 +607,10 @@ table 8059 "Subscription Line"
         NegativeDateFormula: DateFormula;
         SkipArchiving: Boolean;
         SkipTestPackageCode: Boolean;
-        DateBeforeDateErr: Label '%1 cannot be before %2.';
+        DateBeforeDateErr: Label '%1 cannot be before %2.', Comment = '%1 = Next Billing Date; %2 = Subscription Line Start Date';
         OnlyOneDayBeforeErr: Label 'The %1 is only allowed to be 1 day before the %2.', Comment = '%1 = Subscription Line End Date; %2 = Next Billing Date';
-        CannotBeGreaterThanErr: Label '%1 cannot be greater than %2.';
-        CannotBeLessThanErr: Label '%1 cannot be less than %2.';
+        CannotBeGreaterThanErr: Label '%1 cannot be greater than %2.', Comment = '%1 = Amount; %2 = Max Service Amount';
+        CannotBeLessThanErr: Label '%1 cannot be less than %2.', Comment = '%1 = Amount; %2 = 0';
         OpenContractLinesExistErr: Label 'The Subscription Line cannot be deleted because it is linked to a contract line which is not yet marked as "Closed".';
         ClosedContractLineExistErr: Label 'Subscription Lines for closed contract lines may not be edited. Remove the "Finished" indicator in the contract to be able to edit the Subscription Lines.';
         DifferentCurrenciesInSerCommitmentErr: Label 'The selected Subscription Lines must be converted into different currencies. Please select only Subscription Lines with the same currency.';
@@ -619,7 +626,14 @@ table 8059 "Subscription Line"
     end;
 
     internal procedure CheckServiceDates(ServiceStartDate: Date; ServiceEndDate: Date; NextBillingDate: Date)
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCheckServiceDates(ServiceStartDate, ServiceEndDate, NextBillingDate, IsHandled);
+        if IsHandled then
+            exit;
+
         if (ServiceStartDate <> 0D) and (ServiceEndDate <> 0D) then
             if ServiceStartDate > ServiceEndDate then
                 Error(DateBeforeDateErr, Rec.FieldCaption("Subscription Line End Date"), Rec.FieldCaption("Subscription Line Start Date"));
@@ -759,10 +773,8 @@ table 8059 "Subscription Line"
 
     internal procedure UpdateCancellationPossibleUntil(): Boolean
     begin
-        if IsNoticePeriodEmpty() then
+        if IsNoticePeriodEmpty() or ("Term until" = 0D) then
             exit(false);
-        if "Term Until" = 0D then
-            exit;
         CalendarManagement.ReverseDateFormula(NegativeDateFormula, "Notice Period");
         "Cancellation Possible Until" := CalcDate(NegativeDateFormula, "Term Until");
         if DateTimeManagement.IsLastDayOfMonth("Term until") then
@@ -867,12 +879,12 @@ table 8059 "Subscription Line"
 
     internal procedure RecalculateAmountsFromCurrencyData()
     var
-        Currency: Record Currency;
+        Currency2: Record Currency;
     begin
         if ((Rec."Currency Factor" = 0) and (Rec."Currency Code" = '')) then
             exit;
-        Currency.Initialize("Currency Code");
-        Rec.Validate("Calculation Base Amount", Round(CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Calculation Base Amount (LCY)", "Currency Factor"), Currency."Unit-Amount Rounding Precision"));
+        Currency2.Initialize("Currency Code");
+        Rec.Validate("Calculation Base Amount", Round(CurrExchRate.ExchangeAmtLCYToFCY("Currency Factor Date", "Currency Code", "Calculation Base Amount (LCY)", "Currency Factor"), Currency2."Unit-Amount Rounding Precision"));
     end;
 
     internal procedure ResetAmountsAndCurrencyFromLCY()
@@ -1272,8 +1284,10 @@ table 8059 "Subscription Line"
         ServiceCommitment.FilterOnContract(PartnerType, ContractNo);
         if ServiceCommitment.FindSet() then
             repeat
+#pragma warning disable AA0214
                 ServiceCommitment.ResetAmountsAndCurrencyFromLCY();
                 ServiceCommitment.Modify(true);
+#pragma warning restore AA0214
             until ServiceCommitment.Next() = 0;
     end;
 
@@ -1308,13 +1322,13 @@ table 8059 "Subscription Line"
 
     local procedure InitCurrencyData()
     var
-        Currency: Record Currency;
+        Currency2: Record Currency;
     begin
         if Rec."Currency Code" = '' then begin
             "Currency Factor" := 0;
             "Currency Factor Date" := 0D;
         end else begin
-            Currency.Get("Currency Code");
+            Currency2.Get("Currency Code");
             if "Currency Factor Date" = 0D then
                 "Currency Factor Date" := WorkDate();
             if (Rec."Currency Factor Date" <> xRec."Currency Factor Date") or (Rec."Currency Code" <> xRec."Currency Code") then
@@ -1937,6 +1951,11 @@ table 8059 "Subscription Line"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromSalesSubscriptionLine(var SubscriptionLine: Record "Subscription Line"; SalesSubscriptionLine: Record "Sales Subscription Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckServiceDates(ServiceStartDate: Date; ServiceEndDate: Date; NextBillingDate: Date; var IsHandled: Boolean)
     begin
     end;
 }

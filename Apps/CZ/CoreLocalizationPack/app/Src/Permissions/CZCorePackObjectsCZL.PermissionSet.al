@@ -102,6 +102,9 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "SOAP WS Request Management CZL" = X,
                   codeunit "Source Code Setup Handler CZL" = X,
                   codeunit "Substitute Report Handler CZL" = X,
+#if not CLEAN27
+                  codeunit "Sync.Dep.Fld-SalesHeader CZL" = X,
+#endif
                   codeunit "Transfer Line Handler CZL" = X,
                   codeunit "Transformation Rule Mgt. CZL" = X,
                   codeunit "Unreliable Payer Mgt. CZL" = X,

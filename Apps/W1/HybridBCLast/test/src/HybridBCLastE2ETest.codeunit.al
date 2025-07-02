@@ -67,8 +67,9 @@ codeunit 139673 "Hybrid BC Last E2E Test"
         LibraryVariableStorage.Enqueue(true);
         CloudMigrationManagement.RunReplicationNow.Invoke();
         CloudMigrationManagement.Close();
-
+#pragma warning disable AA0210
         HybridCompany.SetRange(Replicate, true);
+#pragma warning restore AA0210
         HybridCompany.FindSet();
         repeat
             HybridReplicationDetail."Company Name" := HybridCompany.Name;
@@ -112,7 +113,9 @@ codeunit 139673 "Hybrid BC Last E2E Test"
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         Assert: Codeunit Assert;
     begin
+#pragma warning disable AA0210
         HybridReplicationSummary.SetCurrentKey("End Time");
+#pragma warning restore AA0210
         HybridReplicationSummary.Ascending(false);
         HybridReplicationSummary.FindFirst();
 
@@ -124,7 +127,9 @@ codeunit 139673 "Hybrid BC Last E2E Test"
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         Assert: Codeunit Assert;
     begin
+#pragma warning disable AA0210
         HybridReplicationSummary.SetCurrentKey("End Time");
+#pragma warning restore AA0210
         HybridReplicationSummary.Ascending(false);
         HybridReplicationSummary.FindFirst();
 
@@ -137,7 +142,9 @@ codeunit 139673 "Hybrid BC Last E2E Test"
         HybridCompanyStatus: Record "Hybrid Company Status";
         Assert: Codeunit Assert;
     begin
+#pragma warning disable AA0210
         HybridCompany.SetRange(Replicate, true);
+#pragma warning restore AA0210
         HybridCompany.FindSet();
 
         repeat

@@ -99,6 +99,7 @@ codeunit 11487 "GB Contoso Localization"
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     Codeunit.Run(Codeunit::"Create GB Column Layout");
+                    Codeunit.Run(Codeunit::"Create Allocation Account GB");
                     CreateGBGeneralLedgerSetup.UpdateMaxVATDifferenceAllowedOnGeneralLedgerSetup();
                 end;
         end;
