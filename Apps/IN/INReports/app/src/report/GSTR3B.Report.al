@@ -867,7 +867,6 @@ report 18042 "GSTR-3B"
         TDSSGSTAmount: Decimal;
         TDSIGSTAmount: Decimal;
         Sign: Integer;
-        DocNoForOutWard: Text;
         i: Integer;
         PeriodDateErr: Label 'Period Date can not be Blank.', Locked = true;
         AuthErr: Label 'Provide a name for the Authorised Person.', Locked = true;
@@ -985,39 +984,6 @@ report 18042 "GSTR-3B"
             exit(BaseAmount / 2)
         else
             exit(BaseAmount);
-    end;
-
-    local procedure GetOutwardBaseAmount(EntryNo: Integer; DocumentNo: Text): Decimal
-    var
-        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
-        BaseAmount: Decimal;
-    begin
-        if not DetailedGSTLedgerEntry.Get(EntryNo) then
-            exit;
-
-        if DetailedGSTLedgerEntry."GST Component Code" = CESSCompLbl then
-            exit;
-
-        case DetailedGSTLedgerEntry."Entry Type" of
-            DetailedGSTLedgerEntry."Entry Type"::"Initial Entry":
-                if (DocumentNo <> DocNoForOutWard) and (DetailedGSTLedgerEntry."Document Type" = DetailedGSTLedgerEntry."Document Type"::Invoice)
-                then
-                    BaseAmount := DetailedGSTLedgerEntry."GST Base Amount"
-                else
-                    if (DocumentNo <> DocNoForOutWard) and (DetailedGSTLedgerEntry."Document Type" = DetailedGSTLedgerEntry."Document Type"::"Credit Memo")
-                    then
-                        BaseAmount := DetailedGSTLedgerEntry."GST Base Amount"
-                    else
-                        if DetailedGSTLedgerEntry."Document Type" = DetailedGSTLedgerEntry."Document Type"::Payment then
-                            BaseAmount := DetailedGSTLedgerEntry."GST Base Amount";
-            DetailedGSTLedgerEntry."Entry Type"::Application:
-                BaseAmount := DetailedGSTLedgerEntry."GST Base Amount";
-        end;
-
-        if DetailedGSTLedgerEntry."GST Jurisdiction Type" = DetailedGSTLedgerEntry."GST Jurisdiction Type"::Intrastate then begin
-            DocNoForOutWard := DocumentNo;
-            exit(BaseAmount);
-        end
     end;
 
     local procedure GetSupplyGSTAmountLine(DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; ComponentCode: Code[20]): Decimal

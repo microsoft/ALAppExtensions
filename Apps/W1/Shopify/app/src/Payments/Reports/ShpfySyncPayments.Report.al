@@ -6,7 +6,7 @@ namespace Microsoft.Integration.Shopify;
 report 30105 "Shpfy Sync Payments"
 {
     ApplicationArea = All;
-    Caption = 'Shopify Sync Payments';
+    Caption = 'Shopify Sync Payouts';
     ProcessingOnly = true;
     UsageCategory = Tasks;
 

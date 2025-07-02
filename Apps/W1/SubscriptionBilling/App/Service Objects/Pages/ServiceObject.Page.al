@@ -123,7 +123,7 @@ page 8060 "Service Object"
                 field(PrimaryAttributeValueField; PrimaryAttributeValue)
                 {
                     CaptionClass = PrimaryAttributeValueCaption;
-                    ToolTip = 'Displays the primary attribute value.';
+                    ToolTip = 'Specifies the primary attribute value.';
                     Importance = Additional;
                     Editable = false;
                 }

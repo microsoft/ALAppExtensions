@@ -67,7 +67,7 @@ page 8075 "Customer Contract Lines"
                     Caption = 'Primary Attribute';
                     Editable = false;
                     Visible = false;
-                    ToolTip = 'Displays the primary attribute of the related Subscription.';
+                    ToolTip = 'Specifies the primary attribute of the related Subscription.';
                 }
                 field("Service Commitment Description"; Rec."Subscription Line Description")
                 {

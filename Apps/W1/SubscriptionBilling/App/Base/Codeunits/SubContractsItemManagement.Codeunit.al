@@ -46,12 +46,9 @@ codeunit 8055 "Sub. Contracts Item Management"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnBeforeValidateEvent, "No.", false, false)]
     local procedure PurchaseLineOnBeforeValidateEvent(var Rec: Record "Purchase Line")
     begin
-        if Rec.Type = Rec.Type::Item then begin
+        if Rec.Type = Rec.Type::Item then
             if not Rec.IsLineAttachedToBillingLine() then
                 PreventBillingItem(Rec."No.");
-            if not Rec.IsPurchaseInvoice() and not Rec.IsPurchaseOrderLineAttachedToBillingLine() then
-                PreventServiceCommitmentItem(Rec."No.");
-        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnBeforePostPurchLine, '', false, false)]
@@ -81,7 +78,7 @@ codeunit 8055 "Sub. Contracts Item Management"
 
     local procedure PreventServiceCommitmentItem(ItemNo: Code[20])
     begin
-        if SessionStore.GetBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo') then
+        if AllowInsertOfInvoicingItem then
             exit;
         if IsServiceCommitmentItem(ItemNo) then
             Error(ServiceCommitmentItemErr);
@@ -93,7 +90,7 @@ codeunit 8055 "Sub. Contracts Item Management"
     begin
         if not GetItem(ItemNo, Item) then
             exit;
-        if SessionStore.GetBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo') then
+        if AllowInsertOfInvoicingItem then
             exit;
         if Item."Subscription Option" = Enum::"Item Service Commitment Type"::"Invoicing Item" then
             Error(InvoicingItemErr);
@@ -314,9 +311,14 @@ codeunit 8055 "Sub. Contracts Item Management"
         exit(Item.Description);
     end;
 
+    procedure SetAllowInsertOfInvoicingItem(NewAllowInsertOfInvoicingItem: Boolean)
+    begin
+        AllowInsertOfInvoicingItem := NewAllowInsertOfInvoicingItem;
+    end;
+
     var
-        SessionStore: Codeunit "Session Store";
-        NonInventoryTypeErr: Label 'The value "%1" can only be set if either "%2" or "%3" is selected in the field "%4".';
+        AllowInsertOfInvoicingItem: Boolean;
+        NonInventoryTypeErr: Label 'The value "%1" can only be set if either "%2" or "%3" is selected in the field "%4".', Comment = '%1=Item Type, %2=Sales without Service Commitment, %3=Sales with Service Commitment, %4=Subscription Option';
         InvoicingItemErr: Label 'Items that are marked as Invoicing Item may not be used here. Please choose another item.';
         ServiceCommitmentItemErr: Label 'Items that are marked as Subscription Item may not be used here. Please choose another item.';
 }

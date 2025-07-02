@@ -157,8 +157,10 @@ codeunit 8009 "Price Update Management"
         TempServiceCommitment.DeleteAll(false);
         if ServiceCommitment.FindSet() then
             repeat
-                TempServiceCommitment := ServiceCommitment;
-                TempServiceCommitment.Insert(false);
+                if not ServiceCommitment.Closed then begin
+                    TempServiceCommitment := ServiceCommitment;
+                    TempServiceCommitment.Insert(false);
+                end;
             until ServiceCommitment.Next() = 0;
     end;
 

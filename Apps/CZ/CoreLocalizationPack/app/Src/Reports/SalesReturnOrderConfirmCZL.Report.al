@@ -146,10 +146,10 @@ report 31188 "Sales Return Order Confirm CZL"
             column(VATRegistrationNo_SalesHeader; "VAT Registration No.")
             {
             }
-            column(RegistrationNo_SalesHeaderCaption; FieldCaption("Registration No. CZL"))
+            column(RegistrationNo_SalesHeaderCaption; FieldCaption("Registration Number"))
             {
             }
-            column(RegistrationNo_SalesHeader; "Registration No. CZL")
+            column(RegistrationNo_SalesHeader; "Registration Number")
             {
             }
             column(BankAccountNo_SalesHeaderCaption; FieldCaption("Bank Account No. CZL"))

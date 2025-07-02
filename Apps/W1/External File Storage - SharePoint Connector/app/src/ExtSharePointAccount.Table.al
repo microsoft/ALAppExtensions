@@ -99,12 +99,8 @@ table 4580 "Ext. SharePoint Account"
         TryDeleteIsolatedStorageValue(Rec."Certificate Password Key");
     end;
 
-#if CLEAN28
+#pragma warning disable AS0022
     internal procedure SetClientSecret(ClientSecret: SecretText)
-#else
-    [Obsolete('Should not be external visible. Will be set to internal.', '26.0')]
-    procedure SetClientSecret(ClientSecret: SecretText)
-#endif
     begin
         if IsNullGuid(Rec."Client Secret Key") then
             Rec."Client Secret Key" := CreateGuid();
@@ -128,12 +124,7 @@ table 4580 "Ext. SharePoint Account"
         end;
     end;
 
-#if CLEAN28
     internal procedure GetClientSecret(ClientSecretKey: Guid): SecretText
-#else
-    [Obsolete('Should not be external visible. Will be set to internal.', '26.0')]
-    procedure GetClientSecret(ClientSecretKey: Guid): SecretText
-#endif
     begin
         exit(GetIsolatedStorageValue(ClientSecretKey, UnableToGetClientMsg));
     end;
@@ -149,6 +140,7 @@ table 4580 "Ext. SharePoint Account"
         // as only one authentication method can be active
         ClearClientSecretAuthentication();
     end;
+#pragma warning restore AS0022
 
     local procedure ClearClientSecretAuthentication()
     begin

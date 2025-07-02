@@ -1,3 +1,18 @@
+namespace Microsoft.Test.Sustainability;
+
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Setup;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Document;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Foundation.UOM;
+
 codeunit 148189 "Sust. Water/Waste Int. Test"
 {
     Subtype = Test;

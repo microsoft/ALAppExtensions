@@ -5,6 +5,8 @@ using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Calculation;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.Energy;
+using Microsoft.Sustainability.ESGReporting;
 using Microsoft.Sustainability.FinancialReporting;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
@@ -39,6 +41,12 @@ permissionset 6210 "Sustainability - Objects"
         table "Sustainability Goal" = X,
         table "Sustainability Goal Cue" = X,
         table "Sustainability Scorecard" = X,
+        table "Sustainability Energy Source" = X,
+        table "Sust. ESG Reporting Template" = X,
+        table "Sust. ESG Reporting Name" = X,
+        table "Sust. ESG Reporting Line" = X,
+        table "Sust. Posted ESG Report Header" = X,
+        table "Sust. Posted ESG Report Line" = X,
         page "Chart of Sustain. Accounts" = X,
         page "Collect Amount from G/L Entry" = X,
         page "G/L Accounts Subform" = X,
@@ -76,6 +84,16 @@ permissionset 6210 "Sustainability - Objects"
         page "Sustainability Manager RC" = X,
         page "Sustainability Scorecard" = X,
         page "Sustainability Scorecards" = X,
+        page "Sustainability Energy Sources" = X,
+        page "Sust. ESG Report. Aggregation" = X,
+        page "Sust. ESG Reporting Names" = X,
+        page "Sust. ESG Reporting Prev. Line" = X,
+        page "Sust. ESG Reporting Preview" = X,
+        page "Sust. ESG Reporting Templates" = X,
+        page "Sust. ESG Reporting Tmpl. List" = X,
+        page "Sust. Posted ESG Report" = X,
+        page "Sust. Posted ESG Reports" = X,
+        page "Sust. Posted ESG Report Sub." = X,
         codeunit "Sustainability Account Mgt." = X,
         codeunit "Sustainability Journal Mgt." = X,
         codeunit "Sustainability Jnl.-Post" = X,
@@ -99,6 +117,10 @@ permissionset 6210 "Sustainability - Objects"
         codeunit "Sust. Preview Post. Subscriber" = X,
         codeunit "Sust. Preview Posting Handler" = X,
         codeunit "Sustainability Chart Mgmt." = X,
+        codeunit "Sust. CaptionClass Mgt" = X,
+        codeunit "Sust. ESG Reporting Helper Mgt" = X,
+        codeunit "Sust. ESG Reporting Post. Mgt" = X,
+        codeunit "Sust. ESG Reporting Management" = X,
         report "Emission By Category" = X,
         report "Emission Per Facility" = X,
         report "Total Emissions" = X,

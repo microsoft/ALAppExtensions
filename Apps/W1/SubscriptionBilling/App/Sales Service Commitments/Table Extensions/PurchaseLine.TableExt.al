@@ -45,6 +45,13 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
         "Dimension Set ID" := DimMgt.GetCombinedDimensionSetID(DimSetIDArr, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
     end;
 
+    internal procedure GetPurchaseDocumentSign(): Integer
+    begin
+        if Rec."Document Type" = "Purchase Document Type"::"Credit Memo" then
+            exit(-1);
+        exit(1);
+    end;
+
     internal procedure IsLineAttachedToBillingLine(): Boolean
     var
         BillingLine: Record "Billing Line";
@@ -98,15 +105,5 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
         GetVendorContractLines.LookupMode(true);
         GetVendorContractLines.SetPurchaseLine(Rec);
         GetVendorContractLines.RunModal();
-    end;
-
-    internal procedure IsPurchaseInvoice(): Boolean
-    begin
-        exit(Rec."Document Type" = Enum::"Purchase Document Type"::Invoice);
-    end;
-
-    internal procedure IsPurchaseOrderLineAttachedToBillingLine(): Boolean
-    begin
-        exit((Rec."Document Type" = Enum::"Purchase Document Type"::Order) and Rec.IsLineAttachedToBillingLine());
     end;
 }

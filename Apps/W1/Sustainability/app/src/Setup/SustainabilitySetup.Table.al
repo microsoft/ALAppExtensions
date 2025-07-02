@@ -1,9 +1,12 @@
 namespace Microsoft.Sustainability.Setup;
 
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.NoSeries;
 using Microsoft.Foundation.UOM;
+using Microsoft.Sustainability.Emission;
 using Microsoft.Utilities;
 using System.Utilities;
+using System.Telemetry;
 
 table 6217 "Sustainability Setup"
 {
@@ -105,6 +108,14 @@ table 6217 "Sustainability Setup"
         field(16; "Use Emissions In Purch. Doc."; Boolean)
         {
             Caption = 'Use Emissions In Purchase Documents';
+            trigger OnValidate()
+            var
+                FeatureTelemetry: Codeunit "Feature Telemetry";
+                SustainabilityLbl: Label 'Sustainability', Locked = true;
+            begin
+                if Rec."Use Emissions In Purch. Doc." then
+                    FeatureTelemetry.LogUptake('0000PGZ', SustainabilityLbl, Enum::"Feature Uptake Status"::"Set up");
+            end;
         }
         field(17; "Waste Unit of Measure Code"; Code[10])
         {
@@ -132,7 +143,6 @@ table 6217 "Sustainability Setup"
         field(22; "Item Charge Emissions"; Boolean)
         {
             Caption = 'Item Charge Emissions';
-            Editable = false;
         }
         field(23; "Resource Emissions"; Boolean)
         {
@@ -154,6 +164,39 @@ table 6217 "Sustainability Setup"
 
                 EnableEmissionsWhenValueChainTrackingIsEnabled();
             end;
+        }
+        field(26; "Energy Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Energy Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
+        field(27; "Energy Reporting UOM Code"; Code[10])
+        {
+            Caption = 'Energy Reporting Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
+        field(28; "Energy Reporting UOM Factor"; Decimal)
+        {
+            InitValue = 1;
+            Caption = 'Energy Reporting UOM Factor';
+            DecimalPlaces = 0 : 10;
+        }
+        field(29; "Use All Gases As CO2e"; Boolean)
+        {
+            Caption = 'Use All Gases As CO2e';
+            ToolTip = 'Specifies that you want to enable recording all gases as CO2 equivalent values. When this field is selected, the captions for gases will change from their names to their CO2e equivalents. The values you are expected to enter will correspond to their carbon equivalent values, not the original gas values. Additionally, the Carbon Equivalent Factor in the Emission Fees will be set to 1 for all three gases.';
+
+            trigger OnValidate()
+            begin
+                if Rec."Use All Gases As CO2e" then
+                    UpdateCarbonEquivalentFactorInEmissionFee();
+            end;
+        }
+        field(30; "Posted ESG Reporting Nos."; Code[20])
+        {
+            Caption = 'Posted ESG Reporting Nos.';
+            TableRelation = "No. Series";
+            ToolTip = 'Specifies the code for the number series that will be used to assign numbers to posted ESG Reporting nos.';
         }
     }
 
@@ -248,10 +291,25 @@ table 6217 "Sustainability Setup"
         end;
     end;
 
+    local procedure UpdateCarbonEquivalentFactorInEmissionFee()
+    var
+        EmissionFee: Record "Emission Fee";
+    begin
+        EmissionFee.SetFilter("Emission Type", '<>%1', EmissionFee."Emission Type"::" ");
+        EmissionFee.ModifyAll("Carbon Equivalent Factor", 1);
+    end;
+
     [InherentPermissions(PermissionObjectType::TableData, Database::"Sustainability Setup", 'I')]
     internal procedure InitRecord()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
+        SustainabilitySetupInitLbl: Label 'Sustainability initialized', Locked = true;
     begin
-        if not Get() then
-            Insert();
+        if not Get() then begin
+            Rec.Insert();
+            FeatureTelemetry.LogUptake('0000PH0', SustainabilityLbl, Enum::"Feature Uptake Status"::"Set up");
+            FeatureTelemetry.LogUsage('0000PH1', SustainabilityLbl, SustainabilitySetupInitLbl);
+        end;
     end;
 }

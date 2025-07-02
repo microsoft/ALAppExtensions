@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -21,6 +21,10 @@ codeunit 6132 "E-Document Log"
     var
         TempDataStorageEntry: Record "E-Doc. Data Storage" temporary;
         EDocLog: Record "E-Document Log";
+        EDocumentServiceStatusToInsert: Enum "E-Document Service Status";
+        EDocumentProcStatusToInsert: Enum "Import E-Doc. Proc. Status";
+        ConfiguredLogToInsert: Boolean;
+        UndoStepToInsert: Boolean;
         EDocDataStorageAlreadySetErr: Label 'E-Doc. Data Storage can not be overwritten with new entry';
         EDocTelemetryGetLogFailureLbl: Label 'E-Document Blog Log Failure', Locked = true;
 
@@ -48,49 +52,73 @@ codeunit 6132 "E-Document Log"
         this.EDocLog.Validate("Document Format", EDocumentService."Document Format");
     end;
 
-    local procedure FillTempDataStorageEntry(Name: Text[256]; Type: Enum "E-Doc. Data Storage Blob Type"; var OutStream: OutStream)
+    local procedure FillTempDataStorageEntry(Name: Text[256]; var OutStream: OutStream)
     begin
         Clear(this.TempDataStorageEntry);
         this.TempDataStorageEntry.Name := Name;
-        this.TempDataStorageEntry."Data Type" := Type;
         this.TempDataStorageEntry."Data Storage".CreateOutStream(OutStream, TextEncoding::UTF8);
     end;
 
-    internal procedure SetBlob(Name: Text[256]; Type: Enum "E-Doc. Data Storage Blob Type"; Content: Text)
+    internal procedure SetBlob(Name: Text[256]; EDocFileFormat: Enum "E-Doc. File Format"; Content: Text)
     var
         OutStream: OutStream;
     begin
-        FillTempDataStorageEntry(Name, Type, OutStream);
+        FillTempDataStorageEntry(Name, OutStream);
         this.TempDataStorageEntry."Data Storage Size" := StrLen(Content);
+        this.TempDataStorageEntry."File Format" := EDocFileFormat;
         OutStream.WriteText(Content);
     end;
 
-    internal procedure SetBlob(Name: Text[256]; Type: Enum "E-Doc. Data Storage Blob Type"; TempBlob: Codeunit "Temp Blob")
+    internal procedure SetBlob(Name: Text[256]; EDocFileFormat: Enum "E-Doc. File Format"; TempBlob: Codeunit "Temp Blob")
     var
         OutStream: OutStream;
         InStream: InStream;
     begin
-        FillTempDataStorageEntry(Name, Type, OutStream);
+        FillTempDataStorageEntry(Name, OutStream);
         this.TempDataStorageEntry."Data Storage Size" := TempBlob.Length();
+        this.TempDataStorageEntry."File Format" := EDocFileFormat;
         TempBlob.CreateInStream(InStream, TextEncoding::UTF8);
         CopyStream(OutStream, InStream);
     end;
 
-    internal procedure SetBlob(Name: Text[256]; Type: Enum "E-Doc. Data Storage Blob Type"; InStream: InStream)
+    internal procedure SetBlob(Name: Text[256]; EDocFileFormat: Enum "E-Doc. File Format"; InStream: InStream)
     var
         OutStream: OutStream;
     begin
-        FillTempDataStorageEntry(Name, Type, OutStream);
+        FillTempDataStorageEntry(Name, OutStream);
         this.TempDataStorageEntry."Data Storage Size" := InStream.Length();
+        this.TempDataStorageEntry."File Format" := EDocFileFormat;
         CopyStream(OutStream, InStream);
+    end;
+
+    internal procedure ConfigureLogToInsert(EDocumentServiceStatus: Enum "E-Document Service Status"; EDocumentProcStatus: Enum "Import E-Doc. Proc. Status"; UndoStep: Boolean)
+    begin
+        ConfiguredLogToInsert := true;
+        this.EDocumentServiceStatusToInsert := EDocumentServiceStatus;
+        this.EDocumentProcStatusToInsert := EDocumentProcStatus;
+        this.UndoStepToInsert := UndoStep;
+    end;
+
+    internal procedure InsertLog(): Record "E-Document Log";
+    var
+        DeveloperErr: Label 'E-Document InsertLog called without parameters without being previously configured', Locked = true;
+    begin
+        if not ConfiguredLogToInsert then
+            Error(DeveloperErr);
+        exit(this.InsertLog(this.EDocumentServiceStatusToInsert, this.EDocumentProcStatusToInsert, this.UndoStepToInsert));
     end;
 
     internal procedure InsertLog(EDocumentServiceStatus: Enum "E-Document Service Status"): Record "E-Document Log";
     begin
-        exit(this.InsertLog(EDocumentServiceStatus, Enum::"Import E-Doc. Proc. Status"::Unprocessed));
+        exit(this.InsertLog(EDocumentServiceStatus, Enum::"Import E-Doc. Proc. Status"::Unprocessed, false));
     end;
 
     internal procedure InsertLog(EDocumentServiceStatus: Enum "E-Document Service Status"; EDocumentProcStatus: Enum "Import E-Doc. Proc. Status"): Record "E-Document Log";
+    begin
+        exit(this.InsertLog(EDocumentServiceStatus, EDocumentProcStatus, false));
+    end;
+
+    internal procedure InsertLog(EDocumentServiceStatus: Enum "E-Document Service Status"; EDocumentProcStatus: Enum "Import E-Doc. Proc. Status"; UndoStep: Boolean): Record "E-Document Log";
     begin
         // Reset these fields
         this.EDocLog."E-Doc. Data Storage Entry No." := 0;
@@ -101,7 +129,14 @@ codeunit 6132 "E-Document Log"
 
         this.EDocLog.Validate(Status, EDocumentServiceStatus);
         this.EDocLog.Validate("Processing Status", EDocumentProcStatus);
+        this.EDocLog.Validate("Step Undone", UndoStep);
         this.EDocLog.Insert();
+        ConfiguredLogToInsert := false;
+        exit(this.EDocLog);
+    end;
+
+    internal procedure GetLog(): Record "E-Document Log";
+    begin
         exit(this.EDocLog);
     end;
 
@@ -215,8 +250,6 @@ codeunit 6132 "E-Document Log"
 
         EDocDataStorage.Init();
         EDocDataStorage.Insert();
-        EDocDataStorage."Data Type" := Enum::"E-Doc. Data Storage Blob Type"::Unspecified;
-        EDocDataStorage."Is Structured" := true;
         EDocDataStorage.Name := '';
         EDocDataStorage."Data Storage Size" := TempBlob.Length();
         EDocRecRef.GetTable(EDocDataStorage);

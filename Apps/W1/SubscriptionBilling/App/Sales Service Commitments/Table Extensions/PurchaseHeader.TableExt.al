@@ -29,9 +29,13 @@ tableextension 8061 "Purchase Header" extends "Purchase Header"
     end;
 
     internal procedure SetRecurringBilling()
+    var
+        DocumentChangeManagement: Codeunit "Document Change Management";
     begin
+        DocumentChangeManagement.SetSkipContractPurchaseHeaderModifyCheck(true);
         Rec.Validate("Recurring Billing", true);
         Rec.Modify(false);
+        DocumentChangeManagement.SetSkipContractPurchaseHeaderModifyCheck(false);
     end;
 
     internal procedure RunGetVendorContractLines()

@@ -25,12 +25,12 @@ page 8066 "Billing Templates"
                 }
                 field(Partner; Rec.Partner)
                 {
-                    ToolTip = 'Determines whether the template applies to customer or Vendor Subscription Contracts.';
+                    ToolTip = 'Specifies whether the template applies to customer or Vendor Subscription Contracts.';
                 }
                 field(HasContractFilterField; Rec.Filter.HasValue)
                 {
                     Caption = 'Contract Filter';
-                    ToolTip = 'Shows if the filters of the template are defined.';
+                    ToolTip = 'Specifies if the filters of the template are defined.';
                 }
                 field("Billing Date Formula"; Rec."Billing Date Formula")
                 {

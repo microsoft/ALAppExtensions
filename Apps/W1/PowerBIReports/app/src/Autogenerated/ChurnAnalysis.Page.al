@@ -6,9 +6,7 @@ page 37072 "Churn Analysis"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Churn Analysis';
     AboutTitle = 'About Churn Analysis';
     AboutText = 'The Churn Analysis report breaks down churn by various dimensions such as contract term, contract type or product.';
@@ -25,7 +23,7 @@ page 37072 "Churn Analysis"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

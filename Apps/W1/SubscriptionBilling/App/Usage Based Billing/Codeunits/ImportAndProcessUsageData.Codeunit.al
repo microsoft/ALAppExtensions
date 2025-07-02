@@ -123,6 +123,8 @@ codeunit 8025 "Import And Process Usage Data"
         UsageDataSupplier: Record "Usage Data Supplier";
         UsageDataSupplierReference: Record "Usage Data Supplier Reference";
         ItemReference: Record "Item Reference";
+        SubscriptionLineWithoutReference: Record "Subscription Line";
+        SubscriptionLineWithReference: Record "Subscription Line";
     begin
         if not UsageDataSupplier.Get(UsageDataImport."Supplier No.") then
             exit(false);
@@ -136,6 +138,12 @@ codeunit 8025 "Import And Process Usage Data"
         if not ItemReference.FindForVendorAndSupplierReference(UsageDataSupplier."Vendor No.", UsageDataSupplierReference."Entry No.") then
             exit(false);
 
-        exit(true);
+        SubscriptionLineWithoutReference.SetRange("Source Type", Enum::"Service Object Type"::Item);
+        SubscriptionLineWithoutReference.SetRange("Source No.", ItemReference."Item No.");
+        SubscriptionLineWithoutReference.SetRange("Supplier Reference Entry No.", 0);
+        SubscriptionLineWithReference.SetRange("Source Type", Enum::"Service Object Type"::Item);
+        SubscriptionLineWithReference.SetRange("Source No.", ItemReference."Item No.");
+        SubscriptionLineWithReference.SetFilter("Supplier Reference Entry No.", '<>0');
+        exit(not SubscriptionLineWithoutReference.IsEmpty() and SubscriptionLineWithReference.IsEmpty());
     end;
 }

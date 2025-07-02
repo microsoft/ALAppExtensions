@@ -64,6 +64,11 @@ page 18213 "Detailed GST Dist. Entries"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the posting date of the GST distribution ledger entry.';
                 }
+                field("Location ISD document No."; Rec."Location ISD document No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the location wise ISD document number of the transaction that created the input service distribution entry.';
+                }
                 field("Vendor No."; Rec."Vendor No.")
                 {
                     ApplicationArea = Basic, Suite;

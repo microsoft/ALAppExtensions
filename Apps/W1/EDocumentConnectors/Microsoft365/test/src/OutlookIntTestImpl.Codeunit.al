@@ -33,7 +33,7 @@ codeunit 148197 "Outlook Int. Test Impl." implements IDocumentReceiver, IDocumen
     var
         Assert: Codeunit Assert;
     begin
-        Assert.AreNotEqual(EDocument."Mail Message Id", '', 'Mail Message Id must have a value when MarkFetched is called');
+        Assert.AreNotEqual(EDocument."Outlook Mail Message Id", '', 'Mail Message Id must have a value when MarkFetched is called');
     end;
 
     var

@@ -29,7 +29,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             var
                 NeedUpdateAddCurrencyFactor: Boolean;
             begin
-                NeedUpdateAddCurrencyFactor := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+                NeedUpdateAddCurrencyFactor := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
                 OnValidatePostingDateOnBeforeCheckNeedUpdateAddCurrencyFactor(Rec, xRec, IsConfirmedCZL, NeedUpdateAddCurrencyFactor);
                 if NeedUpdateAddCurrencyFactor then begin
                     UpdateAddCurrencyFactorCZL();
@@ -302,7 +302,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             trigger OnValidate()
             begin
                 if "EU 3-Party Intermed. Role CZL" then
-                        "EU 3 Party Trade" := true;
+                    "EU 3 Party Trade" := true;
             end;
         }
 #if not CLEANSCHEMA27
@@ -415,13 +415,13 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         if IsHandled then
             exit;
 
-        if GeneralLedgerSetup.IsAdditionalCurrencyEnabled() then begin
+        if GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL() then begin
             if "Posting Date" <> 0D then
                 CurrencyDate := "Posting Date"
             else
                 CurrencyDate := WorkDate();
 
-            "Additional Currency Factor CZL" := CurrencyExchangeRate.ExchangeRate(CurrencyDate, GeneralLedgerSetup.GetAdditionalCurrencyCode());
+            "Additional Currency Factor CZL" := CurrencyExchangeRate.ExchangeRate(CurrencyDate, GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL());
         end else
             "Additional Currency Factor CZL" := 0;
 

@@ -437,7 +437,11 @@ codeunit 148070 "Cash Desk Documents CZP"
         // [WHEN] Open Cash Document Statistics
         CashDocumentCZP.OpenEdit();
         CashDocumentCZP.GoToRecord(CashDocumentHeaderCZP);
+#if not CLEAN27
         CashDocumentCZP.Statistics.Invoke();
+#else
+        CashDocumentCZP.CashDocumentStatistics.Invoke();
+#endif
 
         // [THEN] Rounding line must be created and rounding amount must be calculated
         RoundingCashDocumentLineCZP.Reset();
@@ -456,14 +460,22 @@ codeunit 148070 "Cash Desk Documents CZP"
         CashDocumentLineCZP.Modify();
 
         // [WHEN] Open Cash Document Statistics
+#if not CLEAN27
         CashDocumentCZP.Statistics.Invoke();
+#else
+        CashDocumentCZP.CashDocumentStatistics.Invoke();
+#endif
 
         // [THEN] Amount in rounding line must be recalculated
         RoundingCashDocumentLineCZP.FindFirst();
         Assert.AreEqual(0.30, RoundingCashDocumentLineCZP.Amount, AmountNotMatchErr);
 
         // [WHEN] Open Cash Document Statistics again
+#if not CLEAN27
         CashDocumentCZP.Statistics.Invoke();
+#else
+        CashDocumentCZP.CashDocumentStatistics.Invoke();
+#endif
 
         // [THEN] Amount in rounding line mustn't be recalculated but the amount must be the same as before
         RoundingCashDocumentLineCZP.FindFirst();
@@ -585,9 +597,15 @@ codeunit 148070 "Cash Desk Documents CZP"
     begin
         Reply := true;
     end;
-
+#if not CLEAN27
     [ModalPageHandler]
     procedure CashDocumentStatisticsCZPModalPageHandler(var CashDocumentStatisticsCZP: TestPage "Cash Document Statistics CZP")
     begin
     end;
+#else
+    [ModalPageHandler]
+    procedure CashDocumentStatisticsCZPModalPageHandler(var CashDocStatisticsCZP: TestPage "Cash Doc. Statistics CZP")
+    begin
+    end;
+#endif
 }

@@ -53,7 +53,7 @@ report 8000 "Select Contract Renewal"
                     {
                         ApplicationArea = All;
                         Caption = 'Subscription Line End Date Period';
-                        ToolTip = 'This Date Filter is used to select then Contract Lines based on the Subscription Line End Date of the Subscription Lines.';
+                        ToolTip = 'Specifies the Date Filter used to select then Contract Lines based on the Subscription Line End Date of the Subscription Lines.';
 
                         trigger OnValidate()
                         var
@@ -66,7 +66,9 @@ report 8000 "Select Contract Renewal"
                     {
                         ApplicationArea = All;
                         Caption = 'Add Vendor Subscription Contract Lines';
+#pragma warning disable AA0219                    
                         ToolTip = 'Selecting this Option will also select and add the related Vendor Subscription Contract Lines.';
+#pragma warning disable AA0219                    
                     }
                 }
             }
@@ -93,7 +95,6 @@ report 8000 "Select Contract Renewal"
                         InsertFromCustContrLine(CustomerContractLineFilter);
                     until CustomerContractLineFilter.Next() = 0;
             until CustomerContractFilter.Next() = 0;
-        Processed := true;
     end;
 
     internal procedure InsertFromCustContrLine(var CustomerContractLine: Record "Cust. Sub. Contract Line")
@@ -150,5 +151,4 @@ report 8000 "Select Contract Renewal"
     var
         ServiceEndDatePeriodFilter: Text;
         AddVendorServices: Boolean;
-        Processed: Boolean;
 }

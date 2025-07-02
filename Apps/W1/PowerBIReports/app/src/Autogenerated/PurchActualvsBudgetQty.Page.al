@@ -6,9 +6,7 @@ page 37020 "Purch. Actual vs. Budget Qty."
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Purchase Actual vs. Budget Quantity';
     AboutTitle = 'About Purchase Actual vs. Budget Quantity';
     AboutText = 'The Purchases Actual vs. Budget Quantity report offers a comparative analysis of purchase quantities against budgeted quantities. It includes variance and variance percentage metrics to clearly show how actual purchases align with budgeted targets.';
@@ -25,7 +23,7 @@ page 37020 "Purch. Actual vs. Budget Qty."
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

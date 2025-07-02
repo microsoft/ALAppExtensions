@@ -96,11 +96,11 @@ page 8005 "Contract Renewal"
                 }
                 field(Partner; Rec.Partner)
                 {
-                    ToolTip = 'Determines whether the template applies to customer or Vendor Subscription Contracts.';
+                    ToolTip = 'Specifies whether the template applies to customer or Vendor Subscription Contracts.';
                 }
                 field("Error Message"; Rec."Error Message")
                 {
-                    ToolTip = 'Shows the last error that occured when processing the line.';
+                    ToolTip = 'Specifies the last error that occured when processing the line.';
 
                     trigger OnAssistEdit()
                     begin
@@ -141,7 +141,7 @@ page 8005 "Contract Renewal"
                     SelectionTxt: Text;
                     Selection: Integer;
                     Counter: array[2] of Integer;
-                    SelectionLbl: Label 'All Lines (%1),Selected Lines (%2)';
+                    SelectionLbl: Label 'All Lines (%1),Selected Lines (%2)', Comment = '%1=All Lines Count, %2=Selected Lines Count';
                 begin
                     ContractRenewalLine.Reset();
                     ContractRenewalLine.CopyFilters(Rec);

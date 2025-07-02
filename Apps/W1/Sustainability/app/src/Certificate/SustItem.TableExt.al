@@ -77,6 +77,7 @@ tableextension 6220 "Sust. Item" extends Item
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Default CO2 Emission';
+            CaptionClass = '102,10,1';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -90,6 +91,7 @@ tableextension 6220 "Sust. Item" extends Item
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Default CH4 Emission';
+            CaptionClass = '102,10,2';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -103,6 +105,7 @@ tableextension 6220 "Sust. Item" extends Item
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Default N2O Emission';
+            CaptionClass = '102,10,3';
             DataClassification = CustomerContent;
 
             trigger OnValidate()

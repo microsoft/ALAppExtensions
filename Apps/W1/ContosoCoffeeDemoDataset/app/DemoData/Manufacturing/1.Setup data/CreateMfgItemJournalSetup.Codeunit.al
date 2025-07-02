@@ -7,7 +7,6 @@ namespace Microsoft.DemoData.Manufacturing;
 
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Common;
 using Microsoft.Inventory.Journal;
 
 codeunit 4765 "Create Mfg Item Journal Setup"
@@ -22,9 +21,7 @@ codeunit 4765 "Create Mfg Item Journal Setup"
         ManufacturingDemoDataSetup: Record "Manufacturing Module Setup";
         ContosoItem: Codeunit "Contoso Item";
         ContosoUtilities: Codeunit "Contoso Utilities";
-        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
-        CommonGLAccount: Codeunit "Create Common GL Account";
-        CommonPostingGroup: Codeunit "Create Common Posting Group";
+
     begin
         SourceCodeSetup.Get();
         ManufacturingDemoDataSetup.Get();
@@ -35,7 +32,6 @@ codeunit 4765 "Create Mfg Item Journal Setup"
         ContosoItem.InsertItemJournalTemplate(CapacityTemplateName(), CapacityJournalLbl, "Item Journal Template Type"::Capacity, false, SourceCodeSetup."Capacity Journal");
 
         ContosoItem.InsertItemJournalBatch(ItemTemplateName(), ContosoUtilities.GetDefaultBatchNameLbl(), '');
-        ContosoPostingSetup.InsertInventoryPostingSetup(ManufacturingDemoDataSetup."Manufacturing Location", CommonPostingGroup.Resale(), CommonGLAccount.Resale(), CommonGLAccount.ResaleInterim());
     end;
 
     var

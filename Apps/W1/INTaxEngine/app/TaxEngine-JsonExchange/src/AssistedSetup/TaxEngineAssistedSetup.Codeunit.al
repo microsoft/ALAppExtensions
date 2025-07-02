@@ -16,7 +16,6 @@ codeunit 20366 "Tax Engine Assisted Setup"
     Permissions = tabledata "Tax Engine Notification" = rmi;
 
     var
-        Info: ModuleInfo;
         SetupWizardTxt: Label 'Set up Tax Engine';
         TaxEngineNotificationMsg: Label 'You don''t have Tax Configurations due to which transactions will not calculate tax. but you can import it manually or from Assisted Setup.';
         TaxConfigUpgradeMsg: Label 'We have upgraded tax configurations; this includes bug fix''s or regulatory changes. we reconmmend you to upgrade it now or else it will be imported when you create documents.';
@@ -338,16 +337,6 @@ codeunit 20366 "Tax Engine Assisted Setup"
         TaxEngineNotification.Hide := true;
         TaxEngineNotification.Modify();
         TaxConfigNotification.Recall();
-    end;
-
-
-    local procedure GetAppId(): Guid
-    var
-        EmptyGuid: Guid;
-    begin
-        if Info.Id() = EmptyGuid then
-            NavApp.GetCurrentModuleInfo(Info);
-        exit(Info.Id());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnImportTaxTypeFromLibrary', '', false, false)]

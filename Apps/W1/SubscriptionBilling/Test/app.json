@@ -65,6 +65,9 @@
         }
     ],
     "target": "OnPrem",
+    "features": [
+        "TranslationFile"
+    ],
     "resourceExposurePolicy": {
         "allowDebugging": true,
         "allowDownloadingSource": true,

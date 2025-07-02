@@ -15,7 +15,10 @@ codeunit 31321 "Requisition Line Handler CZL"
         UserSetupLineTypeCZL: Enum "User Setup Line Type CZL";
         JournalTemplateName: Code[10];
     begin
-        JournalTemplateName := ReqLine.GetRangeMax("Worksheet Template Name");
+        if (ReqLine."Worksheet Template Name" <> '') and (ReqLine.GetFilter("Journal Batch Name") = '') then
+            JournalTemplateName := ReqLine."Worksheet Template Name"
+        else
+            JournalTemplateName := ReqLine.GetRangeMax("Worksheet Template Name");
         UserSetupLineTypeCZL := UserSetupLineTypeCZL::"Req. Worksheet";
         UserSetupAdvManagementCZL.CheckJournalTemplate(UserSetupLineTypeCZL, JournalTemplateName);
     end;
