@@ -64,6 +64,7 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL POReceipt" = IMD,
                   tabledata "SL POSetup" = IMD,
                   tabledata "SL POTran" = IMD,
+                  tabledata "SL ProductClass" = IMD,
                   tabledata "SL PurchOrd" = IMD,
                   tabledata "SL PurOrdDet" = IMD,
                   tabledata "SL SalesTax" = IMD,

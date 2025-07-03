@@ -61,6 +61,7 @@ permissionsetextension 47003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBE
                   tabledata "SL POReceipt" = RIMD,
                   tabledata "SL POSetup" = RIMD,
                   tabledata "SL POTran" = RIMD,
+                  tabledata "SL ProductClass" = RIMD,
                   tabledata "SL PurchOrd" = RIMD,
                   tabledata "SL PurOrdDet" = RIMD,
                   tabledata "SL SalesTax" = RIMD,

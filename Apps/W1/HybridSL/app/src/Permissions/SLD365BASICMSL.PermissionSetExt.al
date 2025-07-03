@@ -61,6 +61,7 @@ permissionsetextension 47001 "SLD365 BASIC - MSL" extends "D365 BASIC"
                   tabledata "SL POReceipt" = RIMD,
                   tabledata "SL POSetup" = RIMD,
                   tabledata "SL POTran" = RIMD,
+                  tabledata "SL ProductClass" = RIMD,
                   tabledata "SL PurchOrd" = RIMD,
                   tabledata "SL PurOrdDet" = RIMD,
                   tabledata "SL SalesTax" = RIMD,

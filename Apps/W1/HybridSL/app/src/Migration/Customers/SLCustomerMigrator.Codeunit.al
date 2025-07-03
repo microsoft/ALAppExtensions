@@ -238,19 +238,24 @@ codeunit 47018 "SL Customer Migrator"
         PaymentTermsFormula: DateFormula;
         Country: Code[10];
         ShipViaID: Code[10];
+        CustomerBlocked: Boolean;
         ContactAddressFormatToSet: Option First,"After Company Name",Last;
         AddressFormatToSet: Option "Post Code+City","City+Post Code","City+County+Post Code","Blank Line+Post Code+City";
         SLTaxTypeGroupTxt: Label 'G', Locked = true;
     begin
-        if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(SLCustomer.CustId, CopyStr(SLHelperFunctions.NameFlip(SLCustomer.Name), 1, 50)) then
-            exit;
-
         if SLCustomer.Status = StatusInactiveTxt then
             if SLCompanyAdditionalSettings.Get(CompanyName()) then
                 if not SLCompanyAdditionalSettings."Migrate Inactive Customers" then begin
                     DecrementMigratedCount();
                     exit;
-                end;
+                end else
+                    CustomerBlocked := true;
+
+        if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(SLCustomer.CustId, CopyStr(SLHelperFunctions.NameFlip(SLCustomer.Name), 1, 50)) then
+            exit;
+
+        if CustomerBlocked then
+            CustomerDataMigrationFacade.SetBlocked("Customer Blocked"::All);
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLCustomer.RecordId));
 
@@ -313,6 +318,8 @@ codeunit 47018 "SL Customer Migrator"
             end;
 
         CustomerDataMigrationFacade.ModifyCustomer(true);
+
+        MigrateCustomerAddresses(SLCustomer);
     end;
 
     internal procedure MigrateCustomerAddresses(SLCustomer: Record "SL Customer")
@@ -354,7 +361,6 @@ codeunit 47018 "SL Customer Migrator"
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
         SLARSetup.Get(ARSetupIDTxt);
         MigrateCustomerDetails(SLCustomer, Sender, SLARSetup);
-        MigrateCustomerAddresses(SLCustomer);
     end;
 
     internal procedure MigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
@@ -374,11 +380,13 @@ codeunit 47018 "SL Customer Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"SL Customer" then
             exit;
 
-        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
-
         SLCustomer.Get(RecordIdToMigrate);
-        ClassID := SLCustomer.ClassId;
+        if SLcustomer.Status = StatusInactiveTxt then
+            if not SLCompanyAdditionalSettings."Migrate Inactive Customers" then
+                exit;
 
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
+        ClassID := SLCustomer.ClassId;
         if ClassID = '' then
             exit;
         SLCustClass.Get(ClassID);
