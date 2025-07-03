@@ -1,0 +1,50 @@
+{
+	"id": "0addc017-80c4-40ad-bac6-5852f4fc4c55",
+	"name": "E-Document Connector - FORNAV",
+	"publisher": "Microsoft",
+	"brief": "E-Document Connector - FORNAV",
+	"description": "E-Document Connector - FORNAV",
+	"version": "27.0.0.0",
+	"privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+	"EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+	"help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+	"url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+	"logo": "ExtensionLogo.png",
+	"contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206603",
+	"screenshots": [],
+	"resourceExposurePolicy": {
+		"allowDebugging": true,
+		"allowDownloadingSource": false,
+		"includeSourceInSymbolFile": false
+	},
+	"applicationInsightsConnectionString": "InstrumentationKey=fc504ced-39ce-4473-b5e4-a7142ef614ac;IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/",
+	"dependencies": [
+		{
+			"id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+			"name": "E-Document Core",
+			"publisher": "Microsoft",
+			"version": "26.0.0.0"
+		}
+	],
+	"internalsVisibleTo": [
+		{
+			"id": "c848de8f-5f8b-4adf-8a7a-8de832b204dd",
+			"name": "E-Document Connector - FORNAV Tests",
+			"publisher": "Microsoft"
+		}
+	],
+	"target": "Cloud",
+	"application": "27.0.0.0",
+	"platform": "27.0.0.0",
+	"idRanges": [
+		{
+			"from": 6410,
+			"to": 6430
+		}
+	],
+	"preprocessorSymbols": [],
+	"features": [
+		"TranslationFile",
+		"NoImplicitWith"
+	]
+}
