@@ -396,12 +396,6 @@ codeunit 5208 "Create G/L Account"
         SubCategory := Format(GLAccountCategory."Account Category"::Expense, 80);
         ContosoGLAccount.InsertGLAccount(RealizedFXLosses(), RealizedFXLossesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
 
-        SubCategory := Format(GLAccountCategory."Account Category"::Income, 80);
-        ContosoGLAccount.InsertGLAccount(ResidualFXGains(), ResidualFXGainsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Income, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
-
-        SubCategory := Format(GLAccountCategory."Account Category"::Expense, 80);
-        ContosoGLAccount.InsertGLAccount(ResidualFXLosses(), ResidualFXLossesName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
-
         ContosoGLAccount.InsertGLAccount(NIBEFOREEXTRITEMSTAXES(), NIBEFOREEXTRITEMSTAXESName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::" ", Enum::"G/L Account Type"::Total, '', '', 1, IncomeStatement() + '..' + NIBEFOREEXTRITEMSTAXES(), Enum::"General Posting Type"::" ", '', '', false, false, false);
 
         SubCategory := Format(GLAccountCategory."Account Category"::Income, 80);
@@ -683,8 +677,6 @@ codeunit 5208 "Create G/L Account"
         ContosoGLAccount.AddAccountForLocalization(UnrealizedFXLossesName(), '9320');
         ContosoGLAccount.AddAccountForLocalization(RealizedFXGainsName(), '9330');
         ContosoGLAccount.AddAccountForLocalization(RealizedFXLossesName(), '9340');
-        ContosoGLAccount.AddAccountForLocalization(ResidualFXGainsName(), '9350');
-        ContosoGLAccount.AddAccountForLocalization(ResidualFXLossesName(), '9360');
         ContosoGLAccount.AddAccountForLocalization(NIBEFOREEXTRITEMSTAXESName(), '9395');
         ContosoGLAccount.AddAccountForLocalization(ExtraordinaryIncomeName(), '9410');
         ContosoGLAccount.AddAccountForLocalization(ExtraordinaryExpensesName(), '9420');
@@ -3306,26 +3298,6 @@ codeunit 5208 "Create G/L Account"
         exit(RealizedFXLossesLbl);
     end;
 
-    procedure ResidualFXGains(): Code[20]
-    begin
-        exit(ContosoGLAccount.GetAccountNo(ResidualFXGainsName()));
-    end;
-
-    procedure ResidualFXGainsName(): Text[100]
-    begin
-        exit(ResidualFXGainsLbl);
-    end;
-
-    procedure ResidualFXLosses(): Code[20]
-    begin
-        exit(ContosoGLAccount.GetAccountNo(ResidualFXLossesName()));
-    end;
-
-    procedure ResidualFXLossesName(): Text[100]
-    begin
-        exit(ResidualFXLossesLbl);
-    end;
-
     procedure NIBEFOREEXTRITEMSTAXES(): Code[20]
     begin
         exit(ContosoGLAccount.GetAccountNo(NIBEFOREEXTRITEMSTAXESName()));
@@ -3656,8 +3628,6 @@ codeunit 5208 "Create G/L Account"
         UnrealizedFXLossesLbl: Label 'Unrealized FX Losses', MaxLength = 100;
         RealizedFXGainsLbl: Label 'Realized FX Gains', MaxLength = 100;
         RealizedFXLossesLbl: Label 'Realized FX Losses', MaxLength = 100;
-        ResidualFXGainsLbl: Label 'Residual FX Gains', MaxLength = 100;
-        ResidualFXLossesLbl: Label 'Residual FX Losses', MaxLength = 100;
         NIBEFOREEXTRITEMSTAXESLbl: Label 'NI BEFORE EXTR. ITEMS & TAXES', MaxLength = 100;
         ExtraordinaryIncomeLbl: Label 'Extraordinary Income', MaxLength = 100;
         ExtraordinaryExpensesLbl: Label 'Extraordinary Expenses', MaxLength = 100;

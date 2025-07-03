@@ -25,8 +25,6 @@ codeunit 5230 "Create General Ledger Setup"
     procedure InsertData(JobQueueCategoryCode: Code[10]; InvoiceRoundingPrecisionLCY: Decimal; LocalContAddrFormat: Integer; BankAccountNo: Code[20]; LCYCode: Code[10]; DataCheck: Boolean; AccReceivablesCategory: Integer)
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
-        CreateCurrency: Codeunit "Create Currency";
-        ACYCode: Code[10];
     begin
         if not GeneralLedgerSetup.Get() then
             GeneralLedgerSetup.Insert();
@@ -38,8 +36,6 @@ codeunit 5230 "Create General Ledger Setup"
         GeneralLedgerSetup.Validate("LCY Code", LCYCode);
         GeneralLedgerSetup.Validate("Enable Data Check", DataCheck);
         GeneralLedgerSetup.Validate("Acc. Receivables Category", AccReceivablesCategory);
-        ACYCode := LCYCode = CreateCurrency.EUR() ? CreateCurrency.USD() : CreateCurrency.EUR();
-        GeneralLedgerSetup."Additional Reporting Currency" := ACYCode;
         GeneralLedgerSetup.Modify(true);
     end;
 }
