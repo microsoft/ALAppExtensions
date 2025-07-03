@@ -330,10 +330,10 @@ codeunit 8063 "Sales Documents"
         //The function skips inserting Sales Invoice Lines in two cases:
         //When a SalesLine is a Subscription Item
         //When a SalesLine is attached to a Subscription Item (Extended Text)
-        IsHandled := SalesLineShouldSkipInvoicing(SalesLine);
+        IsHandled := IsHandled or SalesLineShouldSkipInvoicing(SalesLine);
         if (SalesLine.Type = SalesLine.Type::" ") and (SalesLine."Attached to Line No." <> 0) then
             if ParentSalesLine.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Attached to Line No.") then
-                IsHandled := SalesLineShouldSkipInvoicing(ParentSalesLine);
+                IsHandled := IsHandled or SalesLineShouldSkipInvoicing(ParentSalesLine);
         OnAfterSkipInsertingSalesInvoiceLineIfServiceCommitmentItemsExist(SalesHeader, SalesLine, IsHandled);
     end;
 
