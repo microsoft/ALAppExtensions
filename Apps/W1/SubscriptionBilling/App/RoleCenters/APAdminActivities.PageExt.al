@@ -17,6 +17,7 @@ pageextension 8013 "A/P Admin Activities" extends "A/P Admin Activities"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Vendor Contracts';
                 DrillDownPageID = "Vendor Contracts";
+                Editable = false;
                 Tooltip = 'Specifies the number of vendor contracts.';
             }
         }
