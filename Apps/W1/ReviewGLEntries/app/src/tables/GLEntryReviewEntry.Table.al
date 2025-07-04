@@ -5,7 +5,6 @@ table 22216 "G/L Entry Review Entry"
     ObsoleteState = Pending;
     ObsoleteReason = 'Use "G/L Entry Review Log" instead.';
     ObsoleteTag = '27.0';
-    //TODO: Create data conversion codeunit to convert existing entries to the new table
     fields
     {
         field(1; "G/L Entry No."; Integer)
@@ -34,4 +33,27 @@ table 22216 "G/L Entry Review Entry"
             Clustered = true;
         }
     }
+
+    trigger OnInsert()
+    var
+        GLEntryReviewLog: Record "G/L Entry Review Log";
+    begin
+        GLEntryReviewLog.Init();
+        GLEntryReviewLog."G/L Entry No." := "G/L Entry No.";
+        GLEntryReviewLog."Reviewed Identifier" := "Reviewed Identifier";
+        GLEntryReviewLog."Reviewed By" := "Reviewed By";
+        GLEntryReviewLog."Reviewed Amount" := "Reviewed Amount";
+        GLEntryReviewLog.Insert(true);
+    end;
+
+    trigger OnDelete()
+    var
+        GLEntryReviewLog: Record "G/L Entry Review Log";
+    begin
+        GLEntryReviewLog.SetRange("G/L Entry No.", "G/L Entry No.");
+        if GLEntryReviewLog.FindSet() then
+            repeat
+                GLEntryReviewLog.Delete(true);
+            until GLEntryReviewLog.Next() = 0;
+    end;
 }
