@@ -123,7 +123,6 @@ report 4409 "EXR Customer Top List"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
-        TimezoneLabel = 'UTC';
     }
 
     var

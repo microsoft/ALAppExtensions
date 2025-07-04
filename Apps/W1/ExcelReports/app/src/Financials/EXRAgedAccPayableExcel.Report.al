@@ -276,7 +276,6 @@ report 4403 "EXR Aged Acc Payable Excel"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
-        TimezoneLabel = 'UTC';
     }
 
     var

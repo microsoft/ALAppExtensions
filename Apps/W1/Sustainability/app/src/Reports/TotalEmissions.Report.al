@@ -88,7 +88,7 @@ report 6212 "Total Emissions"
     requestpage
     {
         AboutText = 'This report provides information on the cumulative greenhouse gas (GHG) emissions across the chosen Sustainability Accounts and periods.';
-        AboutTitle = 'Total Emissions';
+        AboutTitle = 'About Total Emissions';
         SaveValues = true;
 
         layout

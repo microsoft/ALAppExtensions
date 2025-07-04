@@ -276,7 +276,6 @@ report 4402 "EXR Aged Accounts Rec Excel"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
-        TimezoneLabel = 'UTC';
     }
 
     var
