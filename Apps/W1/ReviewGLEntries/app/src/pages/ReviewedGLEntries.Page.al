@@ -1,7 +1,7 @@
 namespace Microsoft.Finance.GeneralLedger.Review;
 
-using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
 page 22208 "Reviewed G/L Entries"
 {
     Caption = 'Reviewed G/L Entries';
