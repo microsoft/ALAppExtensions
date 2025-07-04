@@ -1,10 +1,12 @@
 namespace Microsoft.Finance.GeneralLedger.Review;
 
 using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Account;
 page 22208 "Reviewed G/L Entries"
 {
     Caption = 'Reviewed G/L Entries';
     PageType = List;
+    DataCaptionExpression = GetCaption();
     ApplicationArea = Basic, Suite;
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -34,9 +36,20 @@ page 22208 "Reviewed G/L Entries"
 
     var
         GLEntry: Record "G/L Entry";
+        CaptionLbl: Label '%1 %2', Comment = '%1 is the G/L Account No. and %2 is the G/L Account Name';
 
     trigger OnAfterGetRecord()
     begin
         GLEntry.Get(Rec."G/L Entry No.");
+    end;
+
+    local procedure GetCaption(): Text[250]
+    var
+        GLAccount: record "G/L Account";
+    begin
+        if not GLAccount.Get(Rec."G/L Account No.") then
+            if Rec.GetFilter(Rec."G/L Account No.") <> '' then
+                GLAccount.Get(Rec.GetRangeMin(Rec."G/L Account No."));
+        exit(StrSubstNo(CaptionLbl, GLAccount."No.", GLAccount.Name));
     end;
 }
