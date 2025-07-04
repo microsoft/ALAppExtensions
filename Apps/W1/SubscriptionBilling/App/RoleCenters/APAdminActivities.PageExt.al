@@ -16,16 +16,8 @@ pageextension 8013 "A/P Admin Activities" extends "A/P Admin Activities"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Vendor Contracts';
-                ToolTip = 'Shows the vendor contracts count.';
-                Visible = true;
-
-                trigger OnDrillDown()
-                var
-                    VendorContract: Record "Vendor Subscription Contract";
-                begin
-                    if VendorContract.FindSet() then
-                        Page.Run(Page::"Vendor Contracts", VendorContract);
-                end;
+                DrillDownPageID = "Vendor Contracts";
+                Tooltip = 'Specifies the number of vendor contracts.';
             }
         }
     }
