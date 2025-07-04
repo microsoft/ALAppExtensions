@@ -343,7 +343,7 @@ page 22207 "Review G/L Entries"
 
     trigger OnModifyRecord(): Boolean
     begin
-        Balance := Balance + Rec."Amount to Review";
+        Balance := Balance + Rec."Amount to Review" - xRec."Amount to Review";
     end;
 
     local procedure SetSelectedRecordsAsReviewed()
