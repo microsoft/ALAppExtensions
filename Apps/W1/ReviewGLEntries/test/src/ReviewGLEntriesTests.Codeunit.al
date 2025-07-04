@@ -83,6 +83,52 @@ codeunit 139759 "Review G/L Entries Tests"
         Assert.ExpectedError(StrSubstNo('Selected G/L Entries for G/L Account %1 %2 were not marked as reviewed because credit and debit do not match and the review policy on the account enforces that', GLAccount."No.", GLAccount.Name));
     end;
 
+    [Test]
+    procedure ReviewEntriesWithAllowReviewAndMatchBalanceAndAmount()
+    var
+        GLAccount: record "G/L Account";
+        GLEntry: record "G/L Entry";
+    begin
+        CreateGeneralLedgerEntriesForGLAccount(GLAccount, "Review Policy Type"::"Allow Review and Match Balance", false);
+        GLEntry.SetRange("G/L Account No.", GLAccount."No.");
+        InsertAmountToReview(GLAccount."No.", false);
+        ReviewGLEntry.ReviewEntries(GLEntry);
+    end;
+
+    [Test]
+    procedure ReviewEntriesWithAllowReviewAndMatchBalanceAndAmountNotMatch()
+    var
+        GLAccount: record "G/L Account";
+        GLEntry: record "G/L Entry";
+    begin
+        CreateGeneralLedgerEntriesForGLAccount(GLAccount, "Review Policy Type"::"Allow Review and Match Balance", false);
+        GLEntry.SetRange("G/L Account No.", GLAccount."No.");
+        InsertAmountToReview(GLAccount."No.", true);
+        asserterror ReviewGLEntry.ReviewEntries(GLEntry);
+
+        Assert.ExpectedError(StrSubstNo('Selected G/L Entries for G/L Account %1 %2 were not marked as reviewed because credit and debit do not match and the review policy on the account enforces that', GLAccount."No.", GLAccount.Name));
+    end;
+
+    [Test]
+    procedure ReviewEntriesWithAllowReviewAndMatchBalanceAndAmountErrorOnInput()
+    var
+        GLAccount: record "G/L Account";
+        GLEntry: record "G/L Entry";
+        ReviewGLEntries: TestPage "Review G/L Entries";
+    begin
+        CreateGeneralLedgerEntriesForGLAccount(GLAccount, "Review Policy Type"::"Allow Review and Match Balance", false);
+        GLEntry.SetRange("G/L Account No.", GLAccount."No.");
+        GLEntry.FindFirst();
+        ReviewGLEntries.OpenEdit();
+        ReviewGLEntries.GoToRecord(GLEntry);
+        if GLEntry."Credit Amount" <> 0 then
+            asserterror ReviewGLEntries."Amount to Review".SetValue(GLEntry."Credit Amount" * 0.1)
+        else
+            asserterror ReviewGLEntries."Amount to Review".SetValue(GLEntry."Debit Amount" * -0.1);
+
+        Assert.ExpectedError('Amount to Review must not be larger than Remaining Amount');
+    end;
+
     local procedure CreateGeneralLedgerEntriesForGLAccount(var GLAccount: record "G/L Account"; ReviewPolicy: enum "Review Policy Type"; RandomAmount: boolean)
     var
         Count: Integer;
@@ -114,5 +160,28 @@ codeunit 139759 "Review G/L Entries Tests"
         GLEntry."Credit Amount" := CreditAmount;
         GLEntry.Insert();
         exit(GLEntry."Entry No.");
+    end;
+
+    local procedure InsertAmountToReview(GLAccNo: Code[20]; NotMatch: Boolean)
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.SetRange("G/L Account No.", GLAccNo);
+        if GLEntry.FindSet() then
+            repeat
+                if NotMatch then begin
+                    if GLEntry."Debit Amount" <> 0 then
+                        GLEntry."Amount to Review" := GLEntry."Debit Amount" * 0.1
+                    else
+                        GLEntry."Amount to Review" := GLEntry."Credit Amount" * -0.2;
+                end else begin
+                    if GLEntry."Debit Amount" <> 0 then
+                        GLEntry."Amount to Review" := GLEntry."Debit Amount" * 0.1
+                    else
+                        GLEntry."Amount to Review" := GLEntry."Credit Amount" * -0.1;
+                end;
+
+                GLEntry.Modify();
+            until GLEntry.Next() = 0;
     end;
 }
