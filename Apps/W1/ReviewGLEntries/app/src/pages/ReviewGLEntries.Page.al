@@ -219,18 +219,18 @@ page 22207 "Review G/L Entries"
                 {
                     ApplicationArea = Dimensions;
                     Image = Filter;
-                    ToolTip = 'Show reviewed entries, hides all the unreviewed entries on the page';
+                    ToolTip = 'Shows all the reviewed entries on the page';
                     Caption = 'Show reviewed entries';
                     ShortCutKey = 'Ctrl+Alt+E';
 
                     trigger OnAction()
                     var
-                        GLEntry: Record "G/L Entry";
+                        GLEntryReviewLog: Record "G/L Entry Review Log";
+                        ReviewedGLEntries: Page "Reviewed G/L Entries";
                     begin
-                        GLEntry.Reset();
-                        GLEntry.SetView(InitialRecordsLoaded);
-                        GLEntry.SetRange(Reviewed, true);
-                        CurrPage.SetTableView(GLEntry);
+                        GLEntryReviewLog.SetRange("G/L Account No.", Rec."G/L Account No.");
+                        ReviewedGLEntries.SetTableView(GLEntryReviewLog);
+                        ReviewedGLEntries.RunModal();
                     end;
                 }
                 action("Hide Reviewed Entries")

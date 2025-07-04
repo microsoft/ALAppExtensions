@@ -1,5 +1,7 @@
 namespace Microsoft.Finance.GeneralLedger.Review;
+
 using System.Upgrade;
+using Microsoft.Finance.GeneralLedger.Ledger;
 codeunit 22201 "Upgrade"
 {
     Access = Internal;
@@ -14,6 +16,7 @@ codeunit 22201 "Upgrade"
     var
         GLEntryReviewEntry: Record "G/L Entry Review Entry";
         GLEntryReviewLog: Record "G/L Entry Review Log";
+        GlEntry: Record "G/L Entry";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeReviewGLEntryTag) then exit;
@@ -25,6 +28,8 @@ codeunit 22201 "Upgrade"
                 GLEntryReviewLog."Reviewed Identifier" := GLEntryReviewEntry."Reviewed Identifier";
                 GLEntryReviewLog."Reviewed By" := GLEntryReviewEntry."Reviewed By";
                 GLEntryReviewLog."Reviewed Amount" := GLEntryReviewEntry."Reviewed Amount";
+                if GlEntry.Get(GLEntryReviewEntry."G/L Entry No.") then
+                    GLEntryReviewLog."G/L Account No." := GlEntry."G/L Account No.";
                 GLEntryReviewLog.Insert(true);
             until GLEntryReviewEntry.Next() = 0;
 

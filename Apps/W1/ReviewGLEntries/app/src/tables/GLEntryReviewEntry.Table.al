@@ -1,5 +1,7 @@
 namespace Microsoft.Finance.GeneralLedger.Review;
 
+using Microsoft.Finance.GeneralLedger.Ledger;
+
 table 22216 "G/L Entry Review Entry"
 {
     ObsoleteState = Pending;
@@ -37,12 +39,15 @@ table 22216 "G/L Entry Review Entry"
     trigger OnInsert()
     var
         GLEntryReviewLog: Record "G/L Entry Review Log";
+        GlEntry: Record "G/L Entry";
     begin
         GLEntryReviewLog.Init();
         GLEntryReviewLog."G/L Entry No." := "G/L Entry No.";
         GLEntryReviewLog."Reviewed Identifier" := "Reviewed Identifier";
         GLEntryReviewLog."Reviewed By" := "Reviewed By";
         GLEntryReviewLog."Reviewed Amount" := "Reviewed Amount";
+        if GlEntry.Get("G/L Entry No.") then
+            GLEntryReviewLog."G/L Account No." := GlEntry."G/L Account No.";
         GLEntryReviewLog.Insert(true);
     end;
 

@@ -25,6 +25,11 @@ table 22218 "G/L Entry Review Log"
         {
             DataClassification = EndUserIdentifiableInformation;
         }
+        field(6; "G/L Account No."; Code[20])
+        {
+            Caption = 'G/L Account No.';
+            DataClassification = EndUserIdentifiableInformation;
+        }
     }
 
     keys

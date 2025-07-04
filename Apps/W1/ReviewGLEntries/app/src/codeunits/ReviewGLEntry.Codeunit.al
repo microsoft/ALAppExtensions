@@ -37,6 +37,7 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
             GLEntryReviewLog."Reviewed Identifier" := Identifier;
             GLEntryReviewLog."Reviewed By" := UserName;
             GLEntryReviewLog."Reviewed Amount" := GLEntry."Amount to Review";
+            GLEntryReviewLog."G/L Account No." := GLEntry."G/L Account No.";
             GLEntryReviewLog.Insert(true);
 
             GLEntry."Amount to Review" := 0;
