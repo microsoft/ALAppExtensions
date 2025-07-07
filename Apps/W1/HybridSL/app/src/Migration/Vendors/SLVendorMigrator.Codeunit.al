@@ -81,17 +81,24 @@ codeunit 47021 "SL Vendor Migrator"
         VendorName2: Text[50];
         Address1: Text[50];
         Address2: Text[50];
+        VendorBlocked: Boolean;
         SLTaxTypeGroupTxt: Label 'G', Locked = true;
     begin
-        if not VendorDataMigrationFacade.CreateVendorIfNeeded(SLVendor.VendId, CopyStr(SLHelperFunctions.NameFlip(SLVendor.Name), 1, MaxStrLen(VendorName))) then
-            exit;
-
         if SLVendor.Status = StatusInactiveTxt then
             if SLCompanyAdditionalSettings.Get(CompanyName) then
                 if not SLCompanyAdditionalSettings."Migrate Inactive Vendors" then begin
                     DecrementMigratedCount();
                     exit;
-                end;
+                end else
+                    VendorBlocked := true;
+
+        if not VendorDataMigrationFacade.CreateVendorIfNeeded(SLVendor.VendId, CopyStr(SLHelperFunctions.NameFlip(SLVendor.Name), 1, MaxStrLen(VendorName))) then
+            exit;
+
+        if VendorBlocked then
+            VendorDataMigrationFacade.SetBlocked("Vendor Blocked"::All);
+
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLVendor.RecordID));
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLVendor.RecordID));
 
@@ -351,10 +358,13 @@ codeunit 47021 "SL Vendor Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"SL Vendor" then
             exit;
 
-        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
         SLVendor.Get(RecordIdToMigrate);
-        ClassID := SLVendor.ClassID;
+        if SLVendor.Status = StatusInactiveTxt then
+            if not SLCompanyAdditionalSettings."Migrate Inactive Vendors" then
+                exit;
 
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
+        ClassID := SLVendor.ClassID;
         if ClassID = '' then
             exit;
         SLVendClass.Get(ClassID);
