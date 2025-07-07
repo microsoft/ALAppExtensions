@@ -45,7 +45,7 @@ codeunit 13919 "Import ZUGFeRD Document"
         TempBlob.CreateInStream(PdfInStream);
         Clear(TempBlob);
         if not PDFDocument.GetDocumentAttachmentStream(PdfInStream, TempBlob) then
-            Message(NoXMLFileErr);
+            Error(NoXMLFileErr);
 
         TempBlob.CreateInStream(PdfAttachmentStream);
         TempXMLBuffer.LoadFromStream(PdfAttachmentStream);
