@@ -26,12 +26,12 @@ table 22218 "G/L Entry Review Log"
         }
         field(5; "Reviewed Amount"; Decimal)
         {
-            DataClassification = EndUserIdentifiableInformation;
+            DataClassification = CustomerContent;
         }
         field(6; "G/L Account No."; Code[20])
         {
             Caption = 'G/L Account No.';
-            DataClassification = EndUserIdentifiableInformation;
+            DataClassification = CustomerContent;
         }
     }
 
