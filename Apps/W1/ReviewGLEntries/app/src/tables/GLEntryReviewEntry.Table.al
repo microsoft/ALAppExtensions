@@ -1,12 +1,19 @@
+#if not CLEANSCHEMA27
 namespace Microsoft.Finance.GeneralLedger.Review;
 
 using Microsoft.Finance.GeneralLedger.Ledger;
 
 table 22216 "G/L Entry Review Entry"
 {
-    ObsoleteState = Pending;
     ObsoleteReason = 'Use "G/L Entry Review Log" instead.';
+#if not CLEAN27
+    ObsoleteState = Pending;
     ObsoleteTag = '27.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '30.0';
+#endif
+
     fields
     {
         field(1; "G/L Entry No."; Integer)
@@ -62,3 +69,4 @@ table 22216 "G/L Entry Review Entry"
             until GLEntryReviewLog.Next() = 0;
     end;
 }
+#endif
