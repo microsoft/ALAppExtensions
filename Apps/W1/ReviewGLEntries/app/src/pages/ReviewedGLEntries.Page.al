@@ -12,8 +12,7 @@ page 22208 "Reviewed G/L Entries"
     InsertAllowed = false;
     ModifyAllowed = false;
     Editable = false;
-    Permissions = tabledata "G/L Entry" = rimd,
-                  tabledata "G/L Entry Review Setup" = ri;
+    Permissions = tabledata "G/L Entry" = r;
     SourceTable = "G/L Entry Review Log";
 
     layout
