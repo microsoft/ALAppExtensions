@@ -2,6 +2,9 @@ namespace Microsoft.Finance.GeneralLedger.Review;
 
 table 22218 "G/L Entry Review Log"
 {
+    Caption = 'G/L Entry Review Log';
+    DrillDownPageId = "Reviewed G/L Entries";
+
     fields
     {
         field(1; "Line No."; Integer)
