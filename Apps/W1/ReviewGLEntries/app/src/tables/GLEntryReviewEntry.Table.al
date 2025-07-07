@@ -48,9 +48,10 @@ table 22216 "G/L Entry Review Entry"
         GLEntryReviewLog."G/L Entry No." := "G/L Entry No.";
         GLEntryReviewLog."Reviewed Identifier" := "Reviewed Identifier";
         GLEntryReviewLog."Reviewed By" := "Reviewed By";
-        GLEntryReviewLog."Reviewed Amount" := "Reviewed Amount";
-        if GlEntry.Get("G/L Entry No.") then
+        if GlEntry.Get("G/L Entry No.") then begin
             GLEntryReviewLog."G/L Account No." := GlEntry."G/L Account No.";
+            GLEntryReviewLog."Reviewed Amount" := GlEntry.Amount;
+        end;
         GLEntryReviewLog.Insert(true);
     end;
 

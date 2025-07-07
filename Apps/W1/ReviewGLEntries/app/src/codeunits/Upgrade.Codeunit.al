@@ -27,9 +27,10 @@ codeunit 22201 "Upgrade"
                 GLEntryReviewLog."G/L Entry No." := GLEntryReviewEntry."G/L Entry No.";
                 GLEntryReviewLog."Reviewed Identifier" := GLEntryReviewEntry."Reviewed Identifier";
                 GLEntryReviewLog."Reviewed By" := GLEntryReviewEntry."Reviewed By";
-                GLEntryReviewLog."Reviewed Amount" := GLEntryReviewEntry."Reviewed Amount";
-                if GlEntry.Get(GLEntryReviewEntry."G/L Entry No.") then
+                if GlEntry.Get(GLEntryReviewEntry."G/L Entry No.") then begin
                     GLEntryReviewLog."G/L Account No." := GlEntry."G/L Account No.";
+                    GLEntryReviewLog."Reviewed Amount" := GlEntry.Amount;
+                end;
                 GLEntryReviewLog.Insert(true);
             until GLEntryReviewEntry.Next() = 0;
 
