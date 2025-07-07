@@ -28,10 +28,6 @@ table 22216 "G/L Entry Review Entry"
         {
             DataClassification = EndUserIdentifiableInformation;
         }
-        field(4; "Reviewed Amount"; Decimal)
-        {
-            DataClassification = EndUserIdentifiableInformation;
-        }
     }
 
     keys
