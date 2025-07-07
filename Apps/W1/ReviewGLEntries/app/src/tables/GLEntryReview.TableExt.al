@@ -34,8 +34,7 @@ tableextension 22211 "G/L Entry Review" extends "G/L Entry"
         field(22217; "Reviewed Amount"; Decimal)
         {
             FieldClass = FlowField;
-            CalcFormula =
-                Sum("G/L Entry Review Log"."Reviewed Amount" WHERE("G/L Entry No." = FIELD("Entry No.")));
+            CalcFormula = sum("G/L Entry Review Log"."Reviewed Amount" where("G/L Entry No." = field("Entry No.")));
             Caption = 'Reviewed Amount';
         }
         field(22218; "Amount to Review"; Decimal)
