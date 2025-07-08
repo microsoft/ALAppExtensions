@@ -148,11 +148,10 @@ codeunit 30163 "Shpfy Order Mapping"
             OrderEvents.OnBeforeMapCompany(OrderHeader, IsHandled);
             if not IsHandled then begin
                 if OrderHeader."Company Location Id" <> 0 then
-                    MapSellToBillToCustomersFromCompanyLocation(OrderHeader)
-                else begin
-                    OrderHeader."Sell-to Customer No." := CompanyMapping.DoMapping(OrderHeader."Company Id", CustomerTemplateCode, AllowCreateCompany);
-                    OrderHeader."Bill-to Customer No." := OrderHeader."Sell-to Customer No.";
-                end;
+                    if not MapSellToBillToCustomersFromCompanyLocation(OrderHeader) then begin
+                        OrderHeader."Sell-to Customer No." := CompanyMapping.DoMapping(OrderHeader."Company Id", CustomerTemplateCode, AllowCreateCompany);
+                        OrderHeader."Bill-to Customer No." := OrderHeader."Sell-to Customer No.";
+                    end;
 
                 if (OrderHeader."Bill-to Customer No." = '') and (not Shop."Auto Create Unknown Customers") and (Shop."Default Company No." <> '') then
                     OrderHeader."Bill-to Customer No." := Shop."Default Company No.";
@@ -304,36 +303,36 @@ codeunit 30163 "Shpfy Order Mapping"
         end;
     end;
 
-    local procedure MapSellToBillToCustomersFromCompanyLocation(var OrderHeader: Record "Shpfy Order Header")
+    local procedure MapSellToBillToCustomersFromCompanyLocation(var OrderHeader: Record "Shpfy Order Header"): Boolean
     var
         Company: Record "Shpfy Company";
         Customer: Record Customer;
         CompanyLocation: Record "Shpfy Company Location";
     begin
+        if not Company.Get(OrderHeader."Company Id") then
+            exit(false);
+
+        Company.CalcFields("Customer No.");
+
+        if not CompanyLocation.Get(OrderHeader."Company Location Id") then
+            exit(false);
+
         ClearSellToFields(OrderHeader);
         ClearBillToFields(OrderHeader);
 
-        Company.Get(OrderHeader."Company Id");
-        Company.CalcFields("Customer No.");
-        CompanyLocation.Get(OrderHeader."Company Location Id");
-
-        case true of
-            (Company."Customer No." <> '') and (CompanyLocation."Sell-to Customer No." = '') and (CompanyLocation."Bill-to Customer No." = ''):
-                begin
-                    OrderHeader."Sell-to Customer No." := Company."Customer No.";
-                    OrderHeader."Bill-to Customer No." := Company."Customer No.";
-                end;
-            (Company."Customer No." <> '') and (CompanyLocation."Sell-to Customer No." <> '') and (CompanyLocation."Bill-to Customer No." = ''):
-                begin
-                    OrderHeader."Sell-to Customer No." := CompanyLocation."Sell-to Customer No.";
-                    OrderHeader."Bill-to Customer No." := CompanyLocation."Sell-to Customer No.";
-                end;
-            (Company."Customer No." <> '') and (CompanyLocation."Sell-to Customer No." <> '') and (CompanyLocation."Bill-to Customer No." <> ''):
-                begin
-                    OrderHeader."Sell-to Customer No." := CompanyLocation."Sell-to Customer No.";
-                    OrderHeader."Bill-to Customer No." := CompanyLocation."Bill-to Customer No.";
-                end;
+        if (Company."Customer No." <> '') and (CompanyLocation."Sell-to Customer No." = '') and (CompanyLocation."Bill-to Customer No." = '') then begin
+            OrderHeader."Sell-to Customer No." := Company."Customer No.";
+            OrderHeader."Bill-to Customer No." := Company."Customer No.";
         end;
+        if (Company."Customer No." <> '') and (CompanyLocation."Sell-to Customer No." <> '') and (CompanyLocation."Bill-to Customer No." = '') then begin
+            OrderHeader."Sell-to Customer No." := CompanyLocation."Sell-to Customer No.";
+            OrderHeader."Bill-to Customer No." := CompanyLocation."Sell-to Customer No.";
+        end;
+        if (Company."Customer No." <> '') and (CompanyLocation."Sell-to Customer No." <> '') and (CompanyLocation."Bill-to Customer No." <> '') then begin
+            OrderHeader."Sell-to Customer No." := CompanyLocation."Sell-to Customer No.";
+            OrderHeader."Bill-to Customer No." := CompanyLocation."Bill-to Customer No.";
+        end;
+
 
         if OrderHeader."Sell-to Customer No." <> '' then begin
             Customer.Get(OrderHeader."Sell-to Customer No.");

@@ -12,6 +12,7 @@ codeunit 30286 "Shpfy Company API"
 
     var
         Shop: Record "Shpfy Shop";
+        ShpfyCompany: Record "Shpfy Company";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
         MetafieldAPI: Codeunit "Shpfy Metafield API";
@@ -75,9 +76,9 @@ codeunit 30286 "Shpfy Company API"
         UpdateCompanyLocationPaymentTerms(CompanyLocation)
     end;
 
-    internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
+    internal procedure SetShop(Shop: Record "Shpfy Shop")
     begin
-        Shop := ShopifyShop;
+        this.Shop := Shop;
         CommunicationMgt.SetShop(Shop);
         MetafieldAPI.SetShop(Shop);
     end;
@@ -399,16 +400,16 @@ codeunit 30286 "Shpfy Company API"
     /// Creates a new company location in Shopify from a Business Central customer.
     /// This is the main entry point for exporting customers as company locations.
     /// </summary>
-    /// <param name="ShpfyCompanyLocation">The Shopify company location record to be created.</param>
     /// <param name="Customer">The Business Central customer to export as a company location.</param>
     /// <remarks>
     /// This procedure performs validation to ensure the customer is not already exported as either a company or location.
     /// If the customer is already exported, the record is skipped and logged.
     /// The procedure retrieves the parent company and calls CreateCustomerAsCompanyLocation to perform the actual creation.
     /// </remarks>
-    internal procedure CreateCompanyLocation(ShpfyCompanyLocation: Record "Shpfy Company Location"; Customer: Record Customer)
+    internal procedure CreateCompanyLocation(Customer: Record Customer)
     var
         ShpfyCompany: Record "Shpfy Company";
+        CompanyLocation: Record "Shpfy Company Location";
         SkippedRecord: Codeunit "Shpfy Skipped Record";
         CustomerAlreadyExportedCompanyLbl: Label 'Customer %1 is already exported as a company', Comment = '%1 = Customer No.';
         CustomerAlreadyExportedLocationLbl: Label 'Customer %1 is already exported as a location', Comment = '%1 = Customer No.';
@@ -420,22 +421,26 @@ codeunit 30286 "Shpfy Company API"
             SkippedRecord.LogSkippedRecord(Customer.RecordId, StrSubstNo(CustomerAlreadyExportedCompanyLbl, Customer."No."), Shop);
             exit;
         end;
-        ShpfyCompanyLocation.SetRange("Customer Id", Customer.SystemId);
-        if not ShpfyCompanyLocation.IsEmpty() then begin
+        CompanyLocation.SetRange("Customer Id", Customer.SystemId);
+        if not CompanyLocation.IsEmpty() then begin
             SkippedRecord.LogSkippedRecord(Customer.RecordId, StrSubstNo(CustomerAlreadyExportedLocationLbl, Customer."No."), Shop);
             exit;
         end;
-        ShpfyCompany.GetBySystemId(ShpfyCompanyLocation."Company SystemId");
-        this.Shop.Get(ShpfyCompany."Shop Code");
-        this.SetShop(Shop);
-        this.CreateCustomerAsCompanyLocation(ShpfyCompanyLocation, Customer);
+        this.Shop.Get(this.ShpfyCompany."Shop Code");
+        SetShop(this.Shop);
+        CreateCustomerAsCompanyLocation(Customer, this.ShpfyCompany);
+    end;
+
+    internal procedure SetCompany(ShpfyCompany: Record "Shpfy Company")
+    begin
+        this.ShpfyCompany := ShpfyCompany;
     end;
 
     /// <summary>
     /// Creates a customer as a company location in Shopify using GraphQL API.
     /// This procedure handles the API communication and error processing.
     /// </summary>
-    /// <param name="ShpfyCompanyLocation">The Shopify company location record containing the data to be sent to Shopify.</param>
+    /// <param name="CompanyLocation">The Shopify company location record containing the data to be sent to Shopify.</param>
     /// <param name="Customer">The Business Central customer record used to populate additional fields.</param>
     /// <remarks>
     /// This procedure:
@@ -448,10 +453,10 @@ codeunit 30286 "Shpfy Company API"
     /// The procedure supports both billing and shipping addresses, with billing address used for both when billingSameAsShipping is true.
     /// Error handling includes field-specific error messages from Shopify API.
     /// </remarks>
-    local procedure CreateCustomerAsCompanyLocation(ShpfyCompanyLocation: Record "Shpfy Company Location"; Customer: Record Customer)
+    local procedure CreateCustomerAsCompanyLocation(Customer: Record Customer; ShpfyCompany: Record "Shpfy Company")
     var
-        ShpfyCompany: Record "Shpfy Company";
-        ShpfyCompanyExport: Codeunit "Shpfy Company Export";
+        CompanyLocation: Record "Shpfy Company Location";
+        CompanyExport: Codeunit "Shpfy Company Export";
         FieldErrorMessageLbl: Label 'Shopify API Error in field %1: %2', Comment = '%1 = Field path, %2 = Error message';
         ShopifyApiErrorLbl: Label 'Shopify API Error: %1', Comment = '%1 = Error message';
         GraphQLType: Enum "Shpfy GraphQL Type";
@@ -466,9 +471,8 @@ codeunit 30286 "Shpfy Company API"
         FieldPath: Text;
         i: Integer;
     begin
-        ShpfyCompany.GetBySystemId(ShpfyCompanyLocation."Company SystemId");
-        ShpfyCompanyExport.SetShop(this.Shop);
-        ShpfyCompanyExport.FillInShopifyCompany(Customer, ShpfyCompany, ShpfyCompanyLocation);
+        CompanyExport.SetShop(this.Shop);
+        CompanyExport.FillInShopifyCompany(Customer, ShpfyCompany, CompanyLocation);
 
         GraphQLType := "Shpfy GraphQL Type"::CreateCompanyLocation;
 
@@ -478,62 +482,43 @@ codeunit 30286 "Shpfy Company API"
         Parameters.Add('BillingSameAsShipping', Format(false, 0, 9));
         Parameters.Add('ExternalId', Format(ShpfyCompany."External Id"));
         // Locale
-        Parameters.Add('Name', Format(ShpfyCompanyLocation.Name));
-        Parameters.Add('Phone', Format(ShpfyCompanyLocation."Phone No."));
+        Parameters.Add('Name', Format(CompanyLocation.Name));
+        Parameters.Add('Phone', Format(CompanyLocation."Phone No."));
         // Note
         Parameters.Add('TaxExempt', Format(false, 0, 9));
         // taxExemptions
-        Parameters.Add('TaxRegistrationId', Format(ShpfyCompanyLocation."Tax Registration Id"));
+        Parameters.Add('TaxRegistrationId', Format(CompanyLocation."Tax Registration Id"));
 
         // Billing address parameters
-        Parameters.Add('BillingAddress1', Format(ShpfyCompanyLocation.Address));
-        Parameters.Add('BillingAddress2', Format(ShpfyCompanyLocation."Address 2"));
-        Parameters.Add('BillingCity', Format(ShpfyCompanyLocation.City));
-        Parameters.Add('BillingCountryCode', Format(ShpfyCompanyLocation."Country/Region Code"));
+        Parameters.Add('BillingAddress1', Format(CompanyLocation.Address));
+        Parameters.Add('BillingAddress2', Format(CompanyLocation."Address 2"));
+        Parameters.Add('BillingCity', Format(CompanyLocation.City));
+        Parameters.Add('BillingCountryCode', Format(CompanyLocation."Country/Region Code"));
         Parameters.Add('BillingFirstName', Format(Customer.Name));
-        Parameters.Add('BillingLastName', Format(''));
-        Parameters.Add('BillingPhone', Format(ShpfyCompanyLocation."Phone No."));
-        Parameters.Add('BillingZoneCode', Format(ShpfyCompanyLocation."Province Code"));
-        Parameters.Add('BillingZip', Format(ShpfyCompanyLocation.Zip));
+        Parameters.Add('BillingPhone', Format(CompanyLocation."Phone No."));
+        Parameters.Add('BillingZoneCode', Format(CompanyLocation."Province Code"));
+        Parameters.Add('BillingZip', Format(CompanyLocation.Zip));
 
         // Shipping address parameters (same as billing when billingSameAsShipping is true)
-        Parameters.Add('ShippingAddress1', Format(ShpfyCompanyLocation.Address));
-        Parameters.Add('ShippingAddress2', Format(ShpfyCompanyLocation."Address 2"));
-        Parameters.Add('ShippingCity', Format(ShpfyCompanyLocation.City));
-        Parameters.Add('ShippingCountryCode', Format(ShpfyCompanyLocation."Country/Region Code"));
+        Parameters.Add('ShippingAddress1', Format(CompanyLocation.Address));
+        Parameters.Add('ShippingAddress2', Format(CompanyLocation."Address 2"));
+        Parameters.Add('ShippingCity', Format(CompanyLocation.City));
+        Parameters.Add('ShippingCountryCode', Format(CompanyLocation."Country/Region Code"));
         Parameters.Add('ShippingFirstName', Format(Customer.Name));
-        Parameters.Add('ShippingLastName', Format(''));
-        Parameters.Add('ShippingPhone', Format(ShpfyCompanyLocation."Phone No."));
-        Parameters.Add('ShippingZoneCode', Format(ShpfyCompanyLocation."Province Code"));
-        Parameters.Add('ShippingZip', Format(ShpfyCompanyLocation.Zip));
+        Parameters.Add('ShippingPhone', Format(CompanyLocation."Phone No."));
+        Parameters.Add('ShippingZoneCode', Format(CompanyLocation."Province Code"));
+        Parameters.Add('ShippingZip', Format(CompanyLocation.Zip));
 
         // Buyer experience configuration
         Parameters.Add('CheckoutToDraft', Format(false, 0, 9));
         // Percentage
         Parameters.Add('EditableShippingAddress', Format(false, 0, 9));
-        Parameters.Add('PaymentTermsTemplateId', Format(ShpfyCompanyLocation."Shpfy Payment Terms Id"));
+        Parameters.Add('PaymentTermsTemplateId', Format(CompanyLocation."Shpfy Payment Terms Id"));
 
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
         if JResponse.SelectToken('$.data.companyLocationCreate.companyLocation', JCompanyLocation) then
             if not JsonHelper.IsTokenNull(JCompanyLocation) then
-                this.CreateCustomerLocation(JCompanyLocation.AsObject(), ShpfyCompany, Customer.SystemId)
-            else
-                if JsonHelper.GetJsonArray(JResponse, JUserErrors, 'data.companyLocationCreate.userErrors') then
-                    foreach JUserError in JUserErrors do begin
-                        ErrorMsg := JsonHelper.GetValueAsText(JUserError, 'message');
-                        FieldPath := '';
-                        if JsonHelper.GetJsonArray(JUserError.AsObject(), JFieldArray, 'field') then
-                            for i := 0 to JFieldArray.Count - 1 do begin
-                                JFieldArray.Get(i, JField);
-                                if FieldPath <> '' then
-                                    FieldPath += '.';
-                                FieldPath += JField.AsValue().AsText();
-                            end;
-                        if FieldPath <> '' then
-                            Error(FieldErrorMessageLbl, FieldPath, ErrorMsg)
-                        else
-                            Error(ShopifyApiErrorLbl, ErrorMsg);
-                    end;
+                CreateCustomerLocation(JCompanyLocation.AsObject(), ShpfyCompany, Customer.SystemId);
     end;
 
     /// <summary>

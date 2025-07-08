@@ -56,21 +56,22 @@ page 30165 "Shpfy Comp. Locations"
     {
         area(processing)
         {
-            action(AddCustomerAsLocation)
+            action(AddCustomersAsLocations)
             {
                 ApplicationArea = All;
-                Caption = 'Add customer as Shopify Location';
-                ToolTip = 'Create a new Shopify location from a customer record.';
+                Caption = 'Add Customers as Shopify Locations';
+                ToolTip = 'Add existing customers as new Shopify locations for the selected parent company.';
                 Image = NewCustomer;
 
                 trigger OnAction()
                 var
-                    Customer: Record Customer;
-                    ShpfyCompanyAPI: Codeunit "Shpfy Company API";
+                    AddCustomerAsLocation: Report "Shpfy Add Cust. as Locations";
+                    ParentCompanySystemId: Guid;
                 begin
-                    if Page.RunModal(Page::"Customer List", Customer) = Action::LookupOK then
-                        ShpfyCompanyAPI.CreateCompanyLocation(Rec, Customer);
-                    CurrPage.Update(false);
+                    Evaluate(ParentCompanySystemId, Rec.GetFilter("Company SystemId"));
+
+                    AddCustomerAsLocation.SetParentCompany(ParentCompanySystemId);
+                    AddCustomerAsLocation.Run();
                 end;
             }
         }
