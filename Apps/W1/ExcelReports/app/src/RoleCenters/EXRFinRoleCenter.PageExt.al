@@ -76,7 +76,7 @@ pageextension 4406 EXRFinRoleCenter extends "Finance Manager Role Center"
         }
         addafter("Vendor - Summary Aging")
         {
-            action(EXRVendorTopListExcel)
+            action(EXRVendorTopList)
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Vendor - Top List (Excel)';
