@@ -58,10 +58,11 @@ page 6612 "FS Connection Setup"
                     var
                         FeatureTelemetry: Codeunit "Feature Telemetry";
                         CDSIntegrationImpl: Codeunit "CDS Integration Impl.";
+                        FSIntegrationMgt: Codeunit "FS Integration Mgt.";
                     begin
                         CurrPage.Update(true);
                         if Rec."Is Enabled" then begin
-                            FeatureTelemetry.LogUptake('0000MB9', 'Dynamics 365 Field Service', Enum::"Feature Uptake Status"::"Set up");
+                            FeatureTelemetry.LogUptake('0000MB9', FSIntegrationMgt.ReturnIntegrationTypeLabel(Rec), Enum::"Feature Uptake Status"::"Set up");
                             Session.LogMessage('0000MBC', CRMConnEnabledOnPageTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
 
                             if (Rec."Server Address" <> '') and (Rec."Server Address" <> TestServerAddressTok) then
@@ -392,11 +393,12 @@ page 6612 "FS Connection Setup"
         CDSConnectionSetup: Record "CDS Connection Setup";
         CRMIntegrationManagement: Codeunit "CRM Integration Management";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        FSIntegrationMgt: Codeunit "FS Integration Mgt.";
         CDSIntegrationImpl: Codeunit "CDS Integration Impl.";
         MultipleCompaniesDetected: Boolean;
     begin
         FeatureTelemetry.LogUptake('0000MBA', 'Dataverse', Enum::"Feature Uptake Status"::Discovered);
-        FeatureTelemetry.LogUptake('0000MBB', 'Dynamics 365 Field Service', Enum::"Feature Uptake Status"::Discovered);
+        FeatureTelemetry.LogUptake('0000MBB', FSIntegrationMgt.ReturnIntegrationTypeLabel(Rec), Enum::"Feature Uptake Status"::Discovered);
         Rec.EnsureCDSConnectionIsEnabled();
         Rec.EnsureCRMConnectionIsEnabled();
 

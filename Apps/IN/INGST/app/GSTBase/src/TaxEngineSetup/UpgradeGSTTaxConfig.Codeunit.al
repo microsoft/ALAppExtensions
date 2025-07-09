@@ -34,11 +34,13 @@ codeunit 18016 "Upgrade GST Tax Config"
         TaxBaseTaxEngineSetup.UpgradeUseCaseTree();
     end;
 
+#if not CLEAN27
+    [Obsolete('The event is never raised.', '27.0')]
     [IntegrationEvent(false, false)]
     local procedure OnUpgradeGSTUseCases(CaseID: Guid; var UseCaseConfig: Text; var IsHandled: Boolean)
     begin
     end;
-
+#endif
     var
         GSTTaxConfiguration: Codeunit "GST Tax Configuration";
 }

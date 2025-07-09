@@ -1,4 +1,12 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Jobs;
+
+using Microsoft.DemoTool;
+
 codeunit 5187 "Job Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;
@@ -25,11 +33,11 @@ codeunit 5187 "Job Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Job Setup");
         Codeunit.Run(Codeunit::"Create Job Journal Setup");
         Codeunit.Run(Codeunit::"Create Job Item Journal");
-        Codeunit.Run(Codeunit::"Create Job Location");
     end;
 
     procedure CreateMasterData();
     begin
+        Codeunit.Run(Codeunit::"Create Job Location");
         Codeunit.Run(Codeunit::"Create Job Item");
         Codeunit.Run(Codeunit::"Create Job Resource");
     end;

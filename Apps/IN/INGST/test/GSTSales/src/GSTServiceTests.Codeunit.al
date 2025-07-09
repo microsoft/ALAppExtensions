@@ -2189,26 +2189,13 @@ codeunit 18198 "GST Service Tests"
         ServiceContractAccountGroup: Record "Service Contract Account Group";
         ServiceMgtSetup: Record "Service Mgt. Setup";
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
     begin
         ServiceContractHeader.Init();
         ServiceMgtSetup.Get();
         if ServiceContractHeader."Contract No." = '' then begin
             ServiceMgtSetup.TestField("Service Contract Nos.");
-#if not CLEAN24
-            IsHandled := false;
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(ServiceMgtSetup."Service Contract Nos.", ServiceContractHeader."No. Series", 0D, ServiceContractHeader."Contract No.", ServiceContractHeader."No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 ServiceContractHeader."No. Series" := ServiceMgtSetup."Service Contract Nos.";
                 ServiceContractHeader."Contract No." := NoSeries.GetNextNo(ServiceContractHeader."No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries(ServiceContractHeader."No. Series", ServiceMgtSetup."Service Contract Nos.", 0D, ServiceContractHeader."Contract No.");
-            end;
-#endif
         end;
 
         ServiceContractHeader."Starting Date" := WorkDate();

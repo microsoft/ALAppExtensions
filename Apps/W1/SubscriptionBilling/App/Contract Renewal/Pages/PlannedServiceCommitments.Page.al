@@ -19,7 +19,7 @@ page 8004 "Planned Service Commitments"
             {
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
 
                     trigger OnDrillDown()
                     var

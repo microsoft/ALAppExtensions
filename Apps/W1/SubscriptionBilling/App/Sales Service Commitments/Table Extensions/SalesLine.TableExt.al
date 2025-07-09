@@ -57,7 +57,7 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         }
         modify("No.")
         {
-            TableRelation = if (Type = const("Service Object")) "Subscription Header";
+            TableRelation = if (Type = const("Service Object")) "Subscription Header" where("End-User Customer No." = field("Sell-to Customer No."));
 
             trigger OnAfterValidate()
             var
@@ -102,6 +102,17 @@ tableextension 8054 "Sales Line" extends "Sales Line"
                     SalesServiceCommitmentMgmt.NotifyIfDiscountIsNotTransferredFromSalesLine(Rec);
             end;
         }
+        modify("Line Discount Amount")
+        {
+            trigger OnAfterValidate()
+            var
+                SalesServiceCommitmentMgmt: Codeunit "Sales Subscription Line Mgmt.";
+            begin
+                UpdateSalesServiceCommitmentCalculationBaseAmount(Rec, xRec);
+                if Rec."Line Discount Amount" <> xRec."Line Discount Amount" then
+                    SalesServiceCommitmentMgmt.NotifyIfDiscountIsNotTransferredFromSalesLine(Rec);
+            end;
+        }
         modify("Customer Price Group")
         {
             trigger OnAfterValidate()
@@ -134,7 +145,7 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         }
     }
     var
-        BillingLineexist, IsBillingLineCached : Boolean;
+        BillingLineExist, IsBillingLineCached : Boolean;
     trigger OnDelete()
     begin
         DeleteSalesServiceCommitment();
@@ -158,12 +169,13 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         DimMgt: Codeunit DimensionManagement;
         TypeCannotBeSelectedManuallyErr: Label 'Type "%1" cannot be selected manually.', Comment = '%1 = Sales Line Type';
 
-    internal procedure InitFromSalesHeader(SourceSalesHeader: Record "Sales Header")
+    procedure InitFromSalesHeader(SourceSalesHeader: Record "Sales Header")
     begin
         Rec.Init();
         Rec."Document Type" := SourceSalesHeader."Document Type";
         Rec."Document No." := SourceSalesHeader."No.";
         Rec."Line No." := SourceSalesHeader.GetNextLineNo();
+        Rec."Sell-to Customer No." := SourceSalesHeader."Sell-to Customer No.";
     end;
 
     internal procedure DeleteSalesServiceCommitment()
@@ -207,6 +219,7 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         if (xSalesLine.Quantity = SalesLine.Quantity) and
             (xSalesLine."Unit Price" = SalesLine."Unit Price") and
             (xSalesLine."Line Discount %" = SalesLine."Line Discount %") and
+            (xSalesLine."Line Discount Amount" = SalesLine."Line Discount Amount") and
             (xSalesLine."Unit Cost" = SalesLine."Unit Cost") and
             (xSalesLine."Unit Cost (LCY)" = SalesLine."Unit Cost (LCY)")
         then
@@ -216,12 +229,12 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         if SalesServiceCommitment.IsEmpty() then
             exit;
 
-        if SalesServiceCommitment.FindSet() then begin
-            SalesLine.Modify(false);
+        if SalesServiceCommitment.FindSet() then
             repeat
+                SalesServiceCommitment.SetSalesLine(Rec);
                 SalesServiceCommitment.CalculateCalculationBaseAmount();
             until SalesServiceCommitment.Next() = 0;
-        end;
+        OnAfterUpdateSalesSubscriptionLineCalculationBaseAmount(SalesLine, xSalesLine);
     end;
 
     internal procedure IsServiceCommitmentItem(): Boolean
@@ -234,11 +247,18 @@ tableextension 8054 "Sales Line" extends "Sales Line"
     end;
 
     local procedure ErrorIfServiceObjectTypeCannotBeSelectedManually()
+    var
+        IsHandled: Boolean;
     begin
-        if CurrFieldNo = 0 then
+        IsHandled := false;
+        OnBeforeErrorIfServiceObjectTypeCannotBeSelectedManually(Rec, CurrFieldNo, IsHandled);
+        if IsHandled then
             exit;
-        if Rec.Type = Enum::"Sales Line Type"::"Service Object" then
-            Error(TypeCannotBeSelectedManuallyErr, Rec.Type);
+
+        if (CurrFieldNo = 0) or (not Rec.IsTypeServiceObject()) then
+            exit;
+
+        Error(TypeCannotBeSelectedManuallyErr, Rec.Type);
     end;
 
     internal procedure SetExcludeFromDocTotal()
@@ -253,11 +273,12 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         IsContractRenewalLocal := Rec.IsContractRenewal();
 
         if IsContractRenewalLocal then begin
-            if Rec.Type = Rec.Type::"Service Object" then
+            if Rec.IsTypeServiceObject() then
                 Rec.Validate("Exclude from Doc. Total", IsContractRenewalLocal);
         end else
-            if (Rec.Type = Rec.Type::Item) and (Rec."No." <> '') and (not Rec.IsLineAttachedToBillingLine()) then
-                Rec.Validate("Exclude from Doc. Total", ItemManagement.IsServiceCommitmentItem(Rec."No."));
+            if Rec.IsSalesDocumentTypeWithServiceCommitments() then
+                if ((Rec.Type = Rec.Type::Item) and (Rec."No." <> '')) then
+                    Rec.Validate("Exclude from Doc. Total", ItemManagement.IsServiceCommitmentItem(Rec."No."));
     end;
 
     internal procedure IsLineWithServiceObject(): Boolean
@@ -265,7 +286,12 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         exit((Rec.Type = "Sales Line Type"::"Service Object") and (Rec."No." <> ''));
     end;
 
-    internal procedure InsertDescriptionSalesLine(SourceSalesHeader: Record "Sales Header"; NewDescription: Text; AttachedToLineNo: Integer)
+    internal procedure IsTypeServiceObject(): Boolean
+    begin
+        exit(Rec.Type = "Sales Line Type"::"Service Object");
+    end;
+
+    procedure InsertDescriptionSalesLine(SourceSalesHeader: Record "Sales Header"; NewDescription: Text; AttachedToLineNo: Integer)
     var
         SalesLine: Record "Sales Line";
     begin
@@ -295,11 +321,37 @@ tableextension 8054 "Sales Line" extends "Sales Line"
     begin
         if not IsBillingLineCached then begin
             BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
-            BillingLineexist := not BillingLine.IsEmpty();
+            BillingLineExist := not BillingLine.IsEmpty();
             IsBillingLineCached := true;
         end;
 
-        exit(BillingLineexist);
+        exit(BillingLineExist);
+    end;
+
+    internal procedure CreateContractDeferrals(): Boolean
+    var
+        CustomerSubscriptionContract: Record "Customer Subscription Contract";
+        SubscriptionLine: Record "Subscription Line";
+        BillingLine: Record "Billing Line";
+    begin
+        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
+        if not BillingLine.FindFirst() then
+            exit;
+
+        if not SubscriptionLine.Get(BillingLine."Subscription Line Entry No.") then
+            exit;
+
+        case SubscriptionLine."Create Contract Deferrals" of
+            Enum::"Create Contract Deferrals"::"Contract-dependent":
+                begin
+                    CustomerSubscriptionContract.Get(BillingLine."Subscription Contract No.");
+                    exit(CustomerSubscriptionContract."Create Contract Deferrals");
+                end;
+            Enum::"Create Contract Deferrals"::Yes:
+                exit(true);
+            Enum::"Create Contract Deferrals"::No:
+                exit(false);
+        end;
     end;
 
     internal procedure IsContractRenewalQuote(): Boolean
@@ -318,8 +370,25 @@ tableextension 8054 "Sales Line" extends "Sales Line"
         exit(not SalesServiceCommitment.IsEmpty());
     end;
 
-    [InternalEvent(false, false)]
+    internal procedure GetSalesDocumentSign(): Integer
+    begin
+        if Rec."Document Type" = "Sales Document Type"::"Credit Memo" then
+            exit(-1);
+        exit(1);
+    end;
+
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeSetExcludeFromDocTotal(var SalesLine: Record "Sales Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateSalesSubscriptionLineCalculationBaseAmount(var SalesLine: Record "Sales Line"; xSalesLine: Record "Sales Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeErrorIfServiceObjectTypeCannotBeSelectedManually(var SalesLine: Record "Sales Line"; FieldNo: Integer; var IsHandled: Boolean)
     begin
     end;
 }

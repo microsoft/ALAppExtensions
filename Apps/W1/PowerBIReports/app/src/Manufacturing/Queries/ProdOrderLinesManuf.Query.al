@@ -6,7 +6,7 @@ using Microsoft.Inventory.Location;
 query 36989 "Prod. Order Lines - Manuf."
 {
     Access = Internal;
-    Caption = 'Power BI Prod. Order Lines';
+    Caption = 'Power BI Production Order Lines';
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
@@ -41,6 +41,7 @@ query 36989 "Prod. Order Lines - Manuf."
             column(scrapPrc; "Scrap %") { }
             column(overheadRate; "Overhead Rate") { }
             column(planningLevelCode; "Planning Level Code") { }
+            column(indirectCostPercent; "Indirect Cost %") { }
             dataitem(Location; Location)
             {
                 DataItemLink = Code = ProdOrderLine."Location Code";

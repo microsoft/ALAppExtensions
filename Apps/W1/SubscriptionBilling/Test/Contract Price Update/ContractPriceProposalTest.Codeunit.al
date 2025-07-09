@@ -10,6 +10,7 @@ using Microsoft.Purchases.History;
 using Microsoft.Finance.Currency;
 using System.TestLibraries.Utilities;
 
+#pragma warning disable AA0210
 codeunit 139690 "Contract Price Proposal Test"
 {
     Subtype = Test;
@@ -74,7 +75,8 @@ codeunit 139690 "Contract Price Proposal Test"
             ContractPriceUpdateLine.TestField("Additional Amount", ContractPriceUpdateLine."New Amount" - ContractPriceUpdateLine."Old Amount");
 
             // The rounding was applied in the test for stability, as the calculations were performed at different locations
-            NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity / 100, Currency."Amount Rounding Precision");
+            NewServiceAmount := Round(ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity, Currency."Amount Rounding Precision");
+            NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * NewServiceAmount / 100, Currency."Amount Rounding Precision");
             CalcDiscountAmount := Round(ContractPriceUpdateLine."Discount Amount", Currency."Amount Rounding Precision");
             Assert.AreEqual(CalcDiscountAmount, NewDiscountAmount, 'Discount Amount was not calculated properly');
 
@@ -145,7 +147,8 @@ codeunit 139690 "Contract Price Proposal Test"
             ContractPriceUpdateLine.TestField("Additional Amount", ContractPriceUpdateLine."New Amount" - ContractPriceUpdateLine."Old Amount");
 
             // The rounding was applied in the test for stability, as the calculations were performed at different locations
-            NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity / 100, Currency."Amount Rounding Precision");
+            NewServiceAmount := Round(ContractPriceUpdateLine."New Price" * ContractPriceUpdateLine.Quantity, Currency."Amount Rounding Precision");
+            NewDiscountAmount := Round(ContractPriceUpdateLine."Discount %" * NewServiceAmount / 100, Currency."Amount Rounding Precision");
             CalcDiscountAmount := Round(ContractPriceUpdateLine."Discount Amount", Currency."Amount Rounding Precision");
             Assert.AreEqual(CalcDiscountAmount, NewDiscountAmount, 'Discount Amount was not calculated properly');
 
@@ -442,6 +445,7 @@ codeunit 139690 "Contract Price Proposal Test"
         ContractTestLibrary.CreateMultipleServiceObjectsWithItemSetup(Customer, ServiceObject, Item, 2);
         ContractTestLibrary.CreateServiceCommitmentTemplateSetup(ServiceCommitmentTemplate, '<12M>', Enum::"Invoicing Via"::Contract);
         ContractTestLibrary.CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine, Item, '<12M>');
+        ContractTestLibrary.UpdateServiceCommitmentPackageLineWithInvoicingItem(ServiceCommPackageLine, '');
         ContractTestLibrary.InsertServiceCommitmentFromServiceCommPackageSetup(ServiceCommitmentPackage, ServiceObject);
 
         // Force Next Price Update Date to empty
@@ -558,6 +562,40 @@ codeunit 139690 "Contract Price Proposal Test"
             TestPlannedServiceCommitment(PlannedServiceCommitment, TempContractPriceUpdateLine2."New Price", TempContractPriceUpdateLine2."New Calculation Base %", TempContractPriceUpdateLine2."New Calculation Base",
                                          TempContractPriceUpdateLine2."New Amount", TempContractPriceUpdateLine2."Discount %", TempContractPriceUpdateLine2."Discount Amount", CalcDate(PriceUpdateTemplateCustomer."Price Binding Period", ContractPriceUpdateLine."Perform Update On"));
         until TempContractPriceUpdateLine2.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestPriceUpdateProposalWithClosedServiceCommitment()
+    var
+        CustomerContract: Record "Customer Subscription Contract";
+    begin
+        //[SCENARIO]: Test if the service commitment is included in the price update proposal even if the contract line is closed
+
+        //[GIVEN]: Create a price update template with Calculation Base by %; Create a customer contract with a service commitment
+        Initialize();
+        ContractTestLibrary.CreatePriceUpdateTemplate(PriceUpdateTemplateCustomer, "Service Partner"::Customer, Enum::"Price Update Method"::"Calculation Base by %", LibraryRandom.RandDec(100, 2), '<12M>', '<12M>', '<12M>');
+        ContractTestLibrary.CreateMultipleServiceObjectsWithItemSetup(Customer, ServiceObject, Item, 2);
+        ContractTestLibrary.CreateServiceCommitmentTemplateSetup(ServiceCommitmentTemplate, '<12M>', Enum::"Invoicing Via"::Contract);
+        ContractTestLibrary.CreateServiceCommPackageAndAssignItemToServiceCommitmentSetup(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine, Item, '<12M>');
+        ContractTestLibrary.InsertServiceCommitmentFromServiceCommPackageSetup(ServiceCommitmentPackage, ServiceObject);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerContract, ServiceObject, ServiceObject."End-User Customer No.");
+
+        //[GIVEN]: Force Close the contract line
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Subscription Header No.", ServiceObject."No.");
+        ServiceCommitment.FindSet();
+        ServiceCommitment.Closed := true;
+        ServiceCommitment.Modify(false);
+
+        //[WHEN]: Create a price update proposal
+        PriceUpdateManagement.CreatePriceUpdateProposal(PriceUpdateTemplateCustomer.Code, CalcDate(PriceUpdateTemplateCustomer.InclContrLinesUpToDateFormula, WorkDate()), WorkDate());
+
+        //[THEN]: Expect that the service commitment is not included in the price update proposal
+        ContractPriceUpdateLine.Reset();
+        ContractPriceUpdateLine.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
+        ContractPriceUpdateLine.SetRange("Subscription Line Entry No.", ServiceCommitment."Entry No.");
+        Assert.RecordIsEmpty(ContractPriceUpdateLine);
     end;
 
     [Test]
@@ -860,3 +898,4 @@ codeunit 139690 "Contract Price Proposal Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

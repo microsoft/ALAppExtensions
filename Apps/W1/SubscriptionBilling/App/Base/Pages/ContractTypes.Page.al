@@ -28,7 +28,17 @@ page 8054 "Contract Types"
                 {
                     ToolTip = 'Specifies that the contract elements of the Customer Subscription Contracts with this Subscription Contract Type are billed on a common key date.';
                 }
+#if not CLEAN27
                 field(DefaultWithoutContractDeferrals; Rec."Def. Without Contr. Deferrals")
+                {
+                    ObsoleteReason = 'Removed in favor of Create Contract Deferrals.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
+                    Visible = false;
+                    ToolTip = 'Specifies the default value for the associated field in the contract.';
+                }
+#endif
+                field(ContractDeferrals; Rec."Create Contract Deferrals")
                 {
                     ToolTip = 'Specifies the default value for the associated field in the contract.';
                 }
@@ -36,7 +46,7 @@ page 8054 "Contract Types"
                 {
                     BlankZero = true;
                     Caption = 'No. of Translations';
-                    ToolTip = 'Shows the number of translations.';
+                    ToolTip = 'Specifies the number of translations.';
                     Editable = false;
 
                     trigger OnDrillDown()

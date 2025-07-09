@@ -9,7 +9,6 @@ table 8000 "Field Translation"
     DataClassification = CustomerContent;
     DrillDownPageId = "Field Translations";
     LookupPageId = "Field Translations";
-    Access = Internal;
 
     fields
     {
@@ -41,7 +40,7 @@ table 8000 "Field Translation"
             trigger OnValidate()
             var
                 tblField: Record Field;
-                TranslationTooLongErr: Label 'The length of the translation must not exceed %1 characters (current length: %2).';
+                TranslationTooLongErr: Label 'The length of the translation must not exceed %1 characters (current length: %2).', Comment = '%1=Field Length, %2=Current Length';
             begin
                 if Translation <> '' then begin
                     Rec.TestField("Table ID");
@@ -76,7 +75,7 @@ table 8000 "Field Translation"
         Rec.TestField("Source SystemId");
     end;
 
-    procedure GetSourceText() SourceText: Text
+    internal procedure GetSourceText() SourceText: Text
     var
         RecRef: RecordRef;
         FRef: FieldRef;
@@ -92,21 +91,21 @@ table 8000 "Field Translation"
         end;
     end;
 
-    procedure GetNumberOfTranslations(SourceRecord: Variant; TargetFieldID: Integer): Integer
+    internal procedure GetNumberOfTranslations(SourceRecord: Variant; TargetFieldID: Integer): Integer
     begin
         if not FilterTranslationsForField(SourceRecord, TargetFieldID) then
             exit(0);
         exit(Rec.Count());
     end;
 
-    procedure OpenTranslationsForField(SourceRecord: Variant; TargetFieldID: Integer)
+    internal procedure OpenTranslationsForField(SourceRecord: Variant; TargetFieldID: Integer)
     begin
         if not FilterTranslationsForField(SourceRecord, TargetFieldID) then
             exit;
         Page.RunModal(0, Rec);
     end;
 
-    procedure DeleteRelatedTranslations(SourceRecord: Variant; TargetFieldID: Integer)
+    internal procedure DeleteRelatedTranslations(SourceRecord: Variant; TargetFieldID: Integer)
     begin
         if not FilterTranslationsForField(SourceRecord, TargetFieldID) then
             exit;
@@ -132,7 +131,7 @@ table 8000 "Field Translation"
         exit(true);
     end;
 
-    procedure FindTranslation(SourceRecord: Variant; TargetFieldID: Integer; LanguageCode: Code[10]): Text
+    internal procedure FindTranslation(SourceRecord: Variant; TargetFieldID: Integer; LanguageCode: Code[10]): Text
     var
         WindowsLanguage: Record "Windows Language";
         DataTypeMgt: Codeunit "Data Type Management";

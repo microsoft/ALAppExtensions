@@ -5,6 +5,7 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.Pricing;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.SalesTax;
+
 table 8068 "Sales Subscription Line"
 {
     DataClassification = CustomerContent;
@@ -261,6 +262,10 @@ table 8068 "Sales Subscription Line"
             Caption = 'Discount';
             Editable = false;
         }
+        field(40; "Create Contract Deferrals"; Enum "Create Contract Deferrals")
+        {
+            Caption = 'Create Contract Deferrals';
+        }
         field(50; "Subscription Header No."; Code[20])
         {
             Caption = 'Subscription No.';
@@ -401,21 +406,28 @@ table 8068 "Sales Subscription Line"
             Error(ReleasedSalesOrderExistsErr);
     end;
 
-    internal procedure FilterOnSalesLine(SourceSalesLine: Record "Sales Line")
+    procedure FilterOnSalesLine(SourceSalesLine: Record "Sales Line")
     begin
-        Rec.SetRange("Document Type", SourceSalesLine."Document Type");
-        Rec.SetRange("Document No.", SourceSalesLine."Document No.");
+        Rec.FilterOnDocument(SourceSalesLine."Document Type", SourceSalesLine."Document No.");
         Rec.SetRange("Document Line No.", SourceSalesLine."Line No.");
+    end;
+
+    internal procedure FilterOnDocument(SalesDocumentType: Enum "Sales Document Type"; DocumentNo: Code[20])
+    begin
+        Rec.SetRange("Document Type", SalesDocumentType);
+        Rec.SetRange("Document No.", DocumentNo);
     end;
 
     internal procedure InitRecord(SourceSalesLine: Record "Sales Line")
     begin
         Rec.Init();
         SetDocumentFields(SourceSalesLine."Document Type", SourceSalesLine."Document No.", SourceSalesLine."Line No.");
+        SalesLine := SourceSalesLine;
         Rec."Line No." := 0;
     end;
 
-    internal procedure SetDocumentFields(DocType: Enum "Sales Document Type"; DocNo: Code[20]; DocLineNo: Integer)
+    internal procedure SetDocumentFields(DocType: Enum "Sales Document Type"; DocNo: Code[20];
+                                                      DocLineNo: Integer)
     begin
         Rec."Document Type" := DocType;
         Rec."Document No." := DocNo;
@@ -429,7 +441,7 @@ table 8068 "Sales Subscription Line"
     begin
         TestIfSalesOrderIsReleased();
         GetSalesHeader(SalesHeader);
-        SalesLine.Get("Document Type", "Document No.", "Document Line No.");
+        GetSalesLine(SalesLine);
 
         MaxServiceAmount := Round((Price * SalesLine.Quantity), Currency."Amount Rounding Precision");
         if CalledByFieldNo = FieldNo(Amount) then begin
@@ -450,11 +462,11 @@ table 8068 "Sales Subscription Line"
         end;
     end;
 
-    internal procedure CalculateCalculationBaseAmount()
+    procedure CalculateCalculationBaseAmount()
     var
         IsHandled: Boolean;
     begin
-        SalesLine.Get("Document Type", "Document No.", "Document Line No.");
+        GetSalesLine(SalesLine);
         OnBeforeCalculateCalculationBaseAmount(SalesLine, Rec, IsHandled);
         if IsHandled then
             exit;
@@ -546,7 +558,7 @@ table 8068 "Sales Subscription Line"
     begin
         if "Calculation Base Amount" <> 0 then begin
             if Discount then
-                "Calculation Base Amount" := "Calculation Base Amount" * -1;
+                "Calculation Base Amount" := Abs("Calculation Base Amount") * -1;
             Validate(Price, "Calculation Base Amount" * "Calculation Base %" / 100);
         end else
             Validate(Price, 0);
@@ -554,7 +566,7 @@ table 8068 "Sales Subscription Line"
             CalculateUnitCost();
     end;
 
-    internal procedure GetSalesHeader(var OutSalesHeader: Record "Sales Header")
+    local procedure GetSalesHeader(var OutSalesHeader: Record "Sales Header")
     var
         SalesHeader: Record "Sales Header";
     begin
@@ -592,8 +604,7 @@ table 8068 "Sales Subscription Line"
 
         TempSalesServiceCommitmentBuff.DeleteAll(false);
 
-        SalesServiceCommitment.SetRange("Document Type", SalesHeader."Document Type");
-        SalesServiceCommitment.SetRange("Document No.", SalesHeader."No.");
+        SalesServiceCommitment.FilterOnDocument(SalesHeader."Document Type", SalesHeader."No.");
         SalesServiceCommitment.SetRange(Partner, Enum::"Service Partner"::Customer);
         SalesServiceCommitment.SetRange("Invoicing via", SalesServiceCommitment."Invoicing via"::Contract);
         if SalesServiceCommitment.FindSet() then
@@ -681,7 +692,7 @@ table 8068 "Sales Subscription Line"
         if IsHandled then
             exit;
 
-        SalesLineVAT.Get(SalesServiceCommitment."Document Type", SalesServiceCommitment."Document No.", SalesServiceCommitment."Document Line No.");
+        GetSalesLine(SalesServiceCommitment, SalesLineVAT);
         // Get Rhythm and Base period count
         if SalesLineVAT.IsContractRenewal() then begin
             ContractRenewalPriceCalculationRatio := DateFormulaManagement.CalculateRenewalTermRatioByBillingRhythm(SalesServiceCommitment."Agreed Sub. Line Start Date", SalesServiceCommitment."Initial Term", SalesServiceCommitment."Billing Rhythm");
@@ -718,7 +729,7 @@ table 8068 "Sales Subscription Line"
             TempSalesServiceCommitmentBuff.SetRange("VAT Calculation Type", SalesLineVAT."VAT Calculation Type");
             TempSalesServiceCommitmentBuff.SetRange("VAT %", VatPercent);
             TempSalesServiceCommitmentBuff.SetRange("Tax Group Code", SalesLineVAT."Tax Group Code");
-            if TempSalesServiceCommitmentBuff.IsEmpty() then begin
+            if not TempSalesServiceCommitmentBuff.FindLast() then begin
                 TempSalesServiceCommitmentBuff."Entry No." := TempSalesServiceCommitmentBuff.GetNextEntryNo();
                 TempSalesServiceCommitmentBuff.Init();
                 TempSalesServiceCommitmentBuff."Rhythm Identifier" := RhythmIdentifier;
@@ -762,11 +773,10 @@ table 8068 "Sales Subscription Line"
 
     internal procedure CalculateUnitCost()
     var
-        SalesLine: Record "Sales Line";
         SalesHeader: Record "Sales Header";
         CurrencyDate: Date;
     begin
-        SalesLine.Get(Rec."Document Type", Rec."Document No.", Rec."Document Line No.");
+        GetSalesLine(SalesLine);
         case Rec.Partner of
             Partner::Customer:
                 Rec.Validate("Unit Cost (LCY)", SalesLine."Unit Cost (LCY)" * Rec."Calculation Base %" / 100);
@@ -785,24 +795,51 @@ table 8068 "Sales Subscription Line"
         end;
     end;
 
-    internal procedure GetDate(): Date
+    local procedure GetDate(): Date
     begin
         SalesLine.Get(Rec."Document Type", Rec."Document No.", Rec."Document Line No.");
         exit(SalesLine.GetDate());
     end;
 
-    [InternalEvent(false, false)]
+    local procedure GetSalesLine(var SalesLine2: Record "Sales Line")
+    begin
+        GetSalesLine(Rec, SalesLine2);
+    end;
+
+    local procedure GetSalesLine(SalesSubscriptionLine: Record "Sales Subscription Line"; var SalesLine2: Record "Sales Line")
+    begin
+        if (SalesLine."Document Type" <> SalesSubscriptionLine."Document Type")
+            or (SalesLine."Document No." <> SalesSubscriptionLine."Document No.")
+            or (SalesLine."Line No." <> SalesSubscriptionLine."Document Line No.")
+        then
+            SalesLine2.Get(SalesSubscriptionLine."Document Type", SalesSubscriptionLine."Document No.", SalesSubscriptionLine."Document Line No.")
+        else
+            SalesLine2 := SalesLine;
+        OnAfterGetSalesLine(Rec, SalesLine2);
+    end;
+
+    procedure SetSalesLine(var NewSalesLine: Record "Sales Line")
+    begin
+        SalesLine := NewSalesLine;
+    end;
+
+    [IntegrationEvent(false, false)]
     local procedure OnCalculateBaseTypeElseCaseOnCalculateCalculationBaseAmountCustomer(SalesSubscriptionLine: Record "Sales Subscription Line"; SalesLine: Record "Sales Line"; var CalculatedBaseAmount: Decimal; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnCalculateBaseTypeElseCaseOnCalculateCalculationBaseAmountVendor(SalesSubscriptionLine: Record "Sales Subscription Line"; SalesLine: Record "Sales Line"; var CalculatedBaseAmount: Decimal; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateVATAmountLineForSalesSubscriptionLine(SalesSubscriptionLine: Record "Sales Subscription Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetSalesLine(var SalesSubscriptionLine: Record "Sales Subscription Line"; var SalesLine: Record "Sales Line")
     begin
     end;
 

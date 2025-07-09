@@ -6,16 +6,24 @@ using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
+using System.Telemetry;
 
 codeunit 6212 "Sustainability Post Mgt"
 {
-    Access = Internal;
+    Permissions =
+        tabledata "Sustainability Ledger Entry" = i,
+        tabledata "Sustainability Value Entry" = i;
 
     procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     var
         SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
+        SustainabilityLedgerEntryAddedLbl: Label 'Sustainability Ledger Entry Added', Locked = true;
     begin
         SustainabilityLedgerEntry.Init();
+        FeatureTelemetry.LogUsage('0000PH5', SustainabilityLbl, SustainabilityLedgerEntryAddedLbl);
+        FeatureTelemetry.LogUptake('0000PH3', SustainabilityLbl, Enum::"Feature Uptake Status"::"Used");
         // AutoIncrement requires the PK to be empty
         SustainabilityLedgerEntry."Entry No." := 0;
 
@@ -35,10 +43,18 @@ codeunit 6212 "Sustainability Post Mgt"
     procedure InsertValueEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; ValueEntry: Record "Value Entry"; ItemLedgerEntry: Record "Item Ledger Entry")
     var
         SustainabilityValueEntry: Record "Sustainability Value Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
+        SustainabilityValueEntryAddedLbl: Label 'Sustainability Value Entry Added', Locked = true;
         ShouldCalcExpectedCO2e: Boolean;
     begin
-        SkipUpdateCarbonEmissionValue := ValueEntry."Item Ledger Entry Type" <> ValueEntry."Item Ledger Entry Type"::Purchase;
+        SkipUpdateCarbonEmissionValue :=
+            (ValueEntry."Item Ledger Entry Type" <> ValueEntry."Item Ledger Entry Type"::Purchase) or
+            ((ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Purchase) and (ValueEntry."Item Charge No." <> ''));
         SustainabilityValueEntry.Init();
+
+        FeatureTelemetry.LogUsage('0000PH6', SustainabilityLbl, SustainabilityValueEntryAddedLbl);
+        FeatureTelemetry.LogUptake('0000PH4', SustainabilityLbl, Enum::"Feature Uptake Status"::"Used");
 
         SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
         SustainabilityValueEntry.CopyFromValueEntry(ValueEntry);
@@ -235,7 +251,6 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityLedgerEntry.Validate("Emission Factor CO2", SustainAccountSubCategory."Emission Factor CO2");
         SustainabilityLedgerEntry.Validate("Emission Factor CH4", SustainAccountSubCategory."Emission Factor CH4");
         SustainabilityLedgerEntry.Validate("Emission Factor N2O", SustainAccountSubCategory."Emission Factor N2O");
-        SustainabilityLedgerEntry.Validate("Renewable Energy", SustainAccountSubCategory."Renewable Energy");
     end;
 
     local procedure CalcCO2ePerUnit(CO2e: Decimal; Quantity: Decimal): Decimal

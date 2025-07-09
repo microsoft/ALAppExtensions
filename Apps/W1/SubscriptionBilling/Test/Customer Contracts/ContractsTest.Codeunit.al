@@ -12,6 +12,7 @@ using Microsoft.Utilities;
 using System.Globalization;
 using System.TestLibraries.Utilities;
 
+#pragma warning disable AA0210
 codeunit 148155 "Contracts Test"
 {
     Subtype = Test;
@@ -631,6 +632,53 @@ codeunit 148155 "Contracts Test"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure CurrencyCodeRemainsSameWhenBillToCustomerChanges()
+    var
+        Customer: Record Customer;
+        Customer2: Record Customer;
+        Item: Record Item;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SubscriptionHeader: Record "Subscription Header";
+        CustomerSubscriptionContract: Record "Customer Subscription Contract";
+        CurrencyCode: Code[10];
+    begin
+        //[SCENARIO]: Create Subscription Header from Sales Document
+        //[SCENARIO]: Create two customers with same Currency Code; When Bill-to Customer is changed in Customer contract
+        //[SCENARIO]: Currency code should remain the same
+
+        //[GIVEN]: Create item with sales subscription lines
+        Initialize();
+        CreateItemWithSubscriptionLines(Item);
+        //[GIVEN]: Create two customers with same Currency Code
+        CurrencyCode := LibraryERM.CreateCurrencyWithRandomExchRates();
+        ContractTestLibrary.CreateCustomer(Customer, CurrencyCode);
+        ContractTestLibrary.CreateCustomer(Customer2, CurrencyCode);
+        //[GIVEN]: Create Sales Document
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandInt(100));
+        //[GIVEN]: Post Sales Document in order to create service object
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        SubscriptionHeader.SetRange(Type, Enum::"Service Object Type"::Item);
+        SubscriptionHeader.SetRange("Source No.", Item."No.");
+        SubscriptionHeader.FindFirst();
+
+        //[GIVEN]: Create Customer Contract with Service Object
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLinesForItems(CustomerSubscriptionContract, SubscriptionHeader, Customer."No.");
+        //[THEN]: Check that Currency Code is the same as in Customer
+        CustomerSubscriptionContract.TestField("Currency Code", CurrencyCode);
+
+        //[WHEN]: Change Bill-to Customer in Customer Contract
+        CustomerSubscriptionContract.Validate("Bill-to Customer No.", Customer2."No.");
+        CustomerSubscriptionContract.Modify(true);
+
+        //[THEN]: Check that Currency Code is the same as in Customer - no change has been made
+        CustomerSubscriptionContract.Get(CustomerSubscriptionContract."No.");
+        CustomerSubscriptionContract.TestField("Currency Code", CurrencyCode);
+    end;
+
+    [Test]
     procedure ExpectCustomerContractDocumentAttachmentsAreDeleted()
     var
         CustomerContract: Record "Customer Subscription Contract";
@@ -1069,9 +1117,10 @@ codeunit 148155 "Contracts Test"
         SalesLine: Record "Sales Line";
         SalesQuote: TestPage "Sales Quote";
     begin
+        // [SCENARIO] Sales Quote containing Items with "Subscription Option" = "Subscription Item" excludes such items from document totals
         Initialize();
 
-        // [GIVEN] Sales Document with Sales Line and Item with "Subscription Option" = "Subscription Item"
+        // [GIVEN] Sales Quote with Sales Line and Item with "Subscription Option" = "Subscription Item"
         LibrarySales.CreateSalesHeader(SalesHeader, Enum::"Sales Document Type"::Quote, '');
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         ContractTestLibrary.UpdateItemUnitCostAndPrice(Item, LibraryRandom.RandDec(1000, 2), LibraryRandom.RandDec(1000, 2), true);
@@ -1087,6 +1136,38 @@ codeunit 148155 "Contracts Test"
         SalesQuote.GoToRecord(SalesHeader);
         SalesQuote.SalesLines."Total Amount Excl. VAT".AssertEquals(0);
         SalesQuote.Close();
+    end;
+
+    [Test]
+    procedure SalesInvoiceShowsSubtotalForServCommItem()
+    var
+        Item: Record Item;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SubContractsItemManagement: Codeunit "Sub. Contracts Item Management";
+        SalesInvoice: TestPage "Sales Invoice";
+    begin
+        // [SCENARIO] Sales Invoice containing Items with "Subscription Option" = "Subscription Item" excludes such items from document totals
+        Initialize();
+
+        // [GIVEN] Sales Invoice with Sales Line and Item with "Subscription Option" = "Subscription Item"
+        LibrarySales.CreateSalesHeader(SalesHeader, Enum::"Sales Document Type"::Invoice, '');
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.UpdateItemUnitCostAndPrice(Item, LibraryRandom.RandDec(1000, 2), LibraryRandom.RandDec(1000, 2), true);
+
+        SubContractsItemManagement.SetAllowInsertOfInvoicingItem(true);
+
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, Item."No.", LibraryRandom.RandDec(10, 2));
+
+        // [THEN] Total Amount should be filled in Sales Invoice page
+        SalesLine.TestField("Line Amount");
+        SalesLine.TestField("Exclude from Doc. Total", false);
+
+        // Sales Line Total in Sales Quote should not have a value
+        SalesInvoice.OpenView();
+        SalesInvoice.GoToRecord(SalesHeader);
+        SalesInvoice.SalesLines."Total Amount Excl. VAT".AssertEquals(Item."Unit Price" * SalesLine.Quantity);
+        SalesInvoice.Close();
     end;
 
     [Test]
@@ -1282,17 +1363,17 @@ codeunit 148155 "Contracts Test"
         ContractAnalysisEntry.FindSet();
         for i := 1 to 4 do begin
             RoundedResult := Round(ContractAnalysisEntry."Monthly Recurr. Revenue (LCY)", Currency."Amount Rounding Precision");
-            RoundedExpectedResult := Round(ExpectedResultAmountArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM-1D>', ContractAnalysisEntry."Analysis Date")), Currency."Amount Rounding Precision");
+            RoundedExpectedResult := Round(ExpectedResultAmountArray[i] * Date2DMY(CalcDate('<CM>', ContractAnalysisEntry."Analysis Date"), 1), Currency."Amount Rounding Precision");
             Assert.AreEqual(RoundedExpectedResult, RoundedResult, 'Monthly Recurr. Revenue (LCY) was not calculated correctly');
 
             RoundedResult := Round(ContractAnalysisEntry."Monthly Recurring Cost (LCY)", Currency."Amount Rounding Precision");
-            RoundedExpectedResult := Round(ExpectedUnitCostLCYArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM-1D>', ContractAnalysisEntry."Analysis Date")), Currency."Amount Rounding Precision");
+            RoundedExpectedResult := Round(ExpectedUnitCostLCYArray[i] * Date2DMY(CalcDate('<CM>', ContractAnalysisEntry."Analysis Date"), 1), Currency."Amount Rounding Precision");
             Assert.AreEqual(RoundedExpectedResult, RoundedResult, 'Monthly Recurring Cost (LCY) was not calculated correctly');
             ContractAnalysisEntry.Next();
         end;
         //[THEN]: Test Vendor Subscription Contract Analysis Entry for Expected values
         ContractAnalysisEntry.TestField("Monthly Recurr. Revenue (LCY)", 0);
-        ContractAnalysisEntry.TestField("Monthly Recurring Cost (LCY)", ExpectedResultAmountArray[i] * (CalcDate('<CM>', ContractAnalysisEntry."Analysis Date") - CalcDate('<-CM-1D>', ContractAnalysisEntry."Analysis Date")));
+        ContractAnalysisEntry.TestField("Monthly Recurring Cost (LCY)", ExpectedResultAmountArray[i] * Date2DMY(CalcDate('<CM>', ContractAnalysisEntry."Analysis Date"), 1));
     end;
 
     [Test]
@@ -1547,7 +1628,7 @@ codeunit 148155 "Contracts Test"
     end;
 
     [Test]
-    procedure TestTransferOfDefaultWithoutContractDeferralsFromContractType()
+    procedure TransferCreateContractDeferralsFromContractType()
     var
         ContractType: Record "Subscription Contract Type";
         CustomerContract: Record "Customer Subscription Contract";
@@ -1558,16 +1639,17 @@ codeunit 148155 "Contracts Test"
         Initialize();
 
         ContractTestLibrary.CreateCustomerContractWithContractType(CustomerContract, ContractType);
-        CustomerContract.TestField("Without Contract Deferrals", ContractType."Def. Without Contr. Deferrals");
+        ContractType.TestField("Create Contract Deferrals", true);
+        CustomerContract.TestField("Create Contract Deferrals", true);
         ContractTestLibrary.CreateContractType(ContractType);
-        ContractType."Def. Without Contr. Deferrals" := true;
+        ContractType."Create Contract Deferrals" := false;
         ContractType.Modify(false);
         CustomerContract.Validate("Contract Type", ContractType.Code);
         CustomerContract.Modify(false);
-        CustomerContract.TestField("Without Contract Deferrals", ContractType."Def. Without Contr. Deferrals");
+        CustomerContract.TestField("Create Contract Deferrals", false);
 
         // allow manually changing the value of the field
-        CustomerContract.Validate("Without Contract Deferrals", false);
+        CustomerContract.Validate("Create Contract Deferrals", true);
         CustomerContract.Modify(false);
         CustomerContract.TestField("Contract Type", ContractType.Code);
     end;
@@ -1806,6 +1888,25 @@ codeunit 148155 "Contracts Test"
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Contracts Test");
 
         IsInitialized := true;
+    end;
+
+    procedure CreateItemWithSubscriptionLines(var Item: Record Item)
+    var
+        SubscriptionPackage: Record "Subscription Package";
+        SubscriptionPackageLine: Record "Subscription Package Line";
+        SubPackageLineTemplate: Record "Sub. Package Line Template";
+    begin
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
+        ContractTestLibrary.CreateServiceCommitmentTemplate(SubPackageLineTemplate);
+        SubPackageLineTemplate."Invoicing Item No." := Item."No.";
+        SubPackageLineTemplate."Calculation Base %" := LibraryRandom.RandDecInRange(0, 100, 2);
+        Evaluate(SubPackageLineTemplate."Billing Base Period", '<12M>');
+        SubPackageLineTemplate.Modify(false);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(SubPackageLineTemplate.Code, SubscriptionPackage, SubscriptionPackageLine);
+        ContractTestLibrary.InitServiceCommitmentPackageLineFields(SubscriptionPackageLine);
+        ContractTestLibrary.CreateServiceCommitmentPackageLine(SubscriptionPackage.Code, SubPackageLineTemplate.Code, SubscriptionPackageLine);
+        ContractTestLibrary.InitServiceCommitmentPackageLineFields(SubscriptionPackageLine);
+        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", SubscriptionPackage.Code);
     end;
 
     local procedure CalculateDatesFromDateFormula(ReferenceDate: Date; DateFilterFrom: Text; DateFilterTo: Text; var MonthStartDate: Date; var MonthEndDate: Date)
@@ -2268,3 +2369,4 @@ codeunit 148155 "Contracts Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

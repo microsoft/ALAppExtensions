@@ -171,7 +171,6 @@ page 6167 "E-Doc. Order Line Matching"
                 ToolTip = 'Match e-document lines with the assistance of Copilot';
                 ApplicationArea = All;
                 Image = SparkleFilled;
-                Visible = CopilotActionVisible;
 
                 trigger OnAction()
                 begin
@@ -222,17 +221,10 @@ page 6167 "E-Doc. Order Line Matching"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocMatchOrderLines: Codeunit "E-Doc. Line Matching";
         CostNotification: Notification;
-        CopilotActionVisible, AutoRunCopilot : Boolean;
+        AutoRunCopilot: Boolean;
         LineCostVaryMatchMsg: Label 'Matched e-document lines (%1) has cost different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
         NoMatchesFoundMsg: Label 'Copilot could not find any line matches. Please review manually';
         GlobalDataCaptionExpressionTxt: Label 'Purchase Order %1', Comment = '%1 - Purchase order number';
-
-    trigger OnOpenPage()
-    var
-        EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
-    begin
-        CopilotActionVisible := EDocPOMatching.IsCopilotVisible();
-    end;
 
     trigger OnAfterGetRecord()
     var
@@ -244,7 +236,7 @@ page 6167 "E-Doc. Order Line Matching"
 
         OpenPurchaseHeader();
 
-        if CopilotActionVisible and AutoRunCopilot then begin
+        if AutoRunCopilot then begin
             AutoRunCopilot := false;
             EDocOrderMatch.SetRange("E-Document Entry No.", Rec."Entry No");
             if EDocOrderMatch.IsEmpty() then

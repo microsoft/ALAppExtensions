@@ -4,7 +4,6 @@ using Microsoft.Finance.Dimension;
 
 codeunit 8022 "Dimension Mgt."
 {
-    Access = Internal;
     procedure CreateDimValue(DimCode: Code[20]; DimValueCode: Code[20]; DimValueName: Text)
     var
         DimValue: Record "Dimension Value";

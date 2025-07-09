@@ -100,12 +100,18 @@ page 8058 "Service Comm. Package Lines"
                     StyleExpr = Bold;
                     ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
                 }
+                field("Create Contract Deferrals"; Rec."Create Contract Deferrals")
+                {
+                    Style = Strong;
+                    StyleExpr = Bold;
+                    ToolTip = 'Specifies whether deferrals are created for new Subscription lines.';
+                }
                 field("Period Calculation"; Rec."Period Calculation")
                 {
                     Style = Strong;
                     StyleExpr = Bold;
                     Visible = false;
-                    ToolTip = 'The Period Calculation controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
+                    ToolTip = 'Specifies the Period Calculation, which controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
                 }
                 field("Price Binding Period"; Rec."Price Binding Period")
                 {
@@ -158,6 +164,7 @@ page 8058 "Service Comm. Package Lines"
         Rec."Period Calculation" := ServiceContractSetup."Default Period Calculation";
         Rec."Billing Base Period" := ServiceContractSetup."Default Billing Base Period";
         Rec."Billing Rhythm" := ServiceContractSetup."Default Billing Rhythm";
+        Rec."Create Contract Deferrals" := ServiceContractSetup."Create Contract Deferrals";
     end;
 
     var

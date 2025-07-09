@@ -83,7 +83,7 @@ page 8067 "Recurring Billing"
                 }
                 field("Contract No."; Rec."Subscription Contract No.")
                 {
-                    ToolTip = 'Specifies the number of the Contract No.';
+                    ToolTip = 'Specifies the number of the Subscription Contract.';
                     StyleExpr = LineStyleExpr;
 
                     trigger OnDrillDown()
@@ -95,7 +95,7 @@ page 8067 "Recurring Billing"
                 field(ContractDescriptionField; ContractDescriptionTxt)
                 {
                     Caption = 'Subscription Contract Description';
-                    ToolTip = 'Specifies the subscriptions being offered.';
+                    ToolTip = 'Specifies the description of the Subscription Contract.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
 
@@ -134,7 +134,7 @@ page 8067 "Recurring Billing"
                 }
                 field("Service Object Quantity"; Rec."Service Object Quantity")
                 {
-                    ToolTip = 'Quantity from Subscription.';
+                    ToolTip = 'Specifies the quantity from the Subscription.';
                     StyleExpr = LineStyleExpr;
                     BlankZero = true;
                 }
@@ -160,12 +160,12 @@ page 8067 "Recurring Billing"
                 }
                 field("Document Type"; Rec."Document Type")
                 {
-                    ToolTip = 'Shows the document type of the document created for posting.';
+                    ToolTip = 'Specifies the document type of the document created for posting.';
                     StyleExpr = LineStyleExpr;
                 }
                 field("Document No."; Rec."Document No.")
                 {
-                    ToolTip = 'Shows the document number of the document created for posting.';
+                    ToolTip = 'Specifies the document number of the document created for posting.';
                     StyleExpr = LineStyleExpr;
 
                     trigger OnDrillDown()
@@ -186,7 +186,7 @@ page 8067 "Recurring Billing"
                 }
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     StyleExpr = LineStyleExpr;
 
                     trigger OnDrillDown()
@@ -212,7 +212,7 @@ page 8067 "Recurring Billing"
                 }
                 field("User ID"; Rec."User ID")
                 {
-                    ToolTip = 'Shows the user who created the line.';
+                    ToolTip = 'Specifies the user who created the line.';
                     StyleExpr = LineStyleExpr;
                     Visible = false;
                 }
@@ -551,7 +551,7 @@ page 8067 "Recurring Billing"
         CurrPage.Update();
     end;
 
-    [InternalEvent(true, false)]
+    [IntegrationEvent(true, false)]
     local procedure OnAfterApplyBillingTemplateFilter(var SelectedBillingTemplate: Record "Billing Template")
     begin
     end;

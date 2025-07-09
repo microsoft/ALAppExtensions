@@ -4,7 +4,6 @@ using System.Utilities;
 
 codeunit 8023 "Create Usage Data Billing"
 {
-    Access = Internal;
     TableNo = "Usage Data Import";
 
     var
@@ -55,6 +54,7 @@ codeunit 8023 "Create Usage Data Billing"
     internal procedure CollectServiceCommitments(var TempServiceCommitment: Record "Subscription Line" temporary; ServiceObjectNo: Code[20]; SubscriptionEndDate: Date)
     begin
         FillTempServiceCommitment(TempServiceCommitment, ServiceObjectNo, SubscriptionEndDate);
+        OnAfterCollectServiceCommitments(TempServiceCommitment, ServiceObjectNo, SubscriptionEndDate);
     end;
 
     internal procedure CreateUsageDataBillingFromTempServiceCommitments(var TempServiceCommitment: Record "Subscription Line"; SupplierNo: Code[20]; UsageDataImportEntryNo: Integer; ServiceObjectNo: Code[20]; BillingPeriodStartDate: Date;
@@ -134,19 +134,24 @@ codeunit 8023 "Create Usage Data Billing"
         exit(RetryFailedUsageDataImport);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateUsageDataBillingFromTempSubscriptionLine(var TempSubscriptionLine: Record "Subscription Line"; var UsageDataBilling: Record "Usage Data Billing")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateUsageDataBillingFromTempSubscriptionLines(var TempSubscriptionLine: Record "Subscription Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCollectServiceCommitments(var TempSubscriptionLine: Record "Subscription Line" temporary; SubscriptionHeaderNo: Code[20]; SubscriptionLineEndDate: Date)
     begin
     end;
 
     var
         UsageDataImport: Record "Usage Data Import";
         ConfirmManagement: Codeunit "Confirm Management";
-        RetryFailedUsageDataImportTxt: Label 'Usage Data Billing for Import %1 already exist. Do you want to try to create new entries for the failed Usage Data Generic Import only?';
+        RetryFailedUsageDataImportTxt: Label 'Usage Data Billing for Import %1 already exist. Do you want to try to create new entries for the failed Usage Data Generic Import only?', Comment = '%1=Usage Data Import Entry No.';
         RetryFailedUsageDataImport: Boolean;
 }

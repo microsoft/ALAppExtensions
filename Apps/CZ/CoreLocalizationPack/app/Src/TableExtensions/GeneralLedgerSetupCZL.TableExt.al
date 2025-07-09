@@ -1,10 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Setup;
 
 using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.VAT.Calculation;
@@ -12,6 +13,7 @@ using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Ledger;
 using Microsoft.Purchases.Archive;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
@@ -54,19 +56,9 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
                     GLEntry.SetFilter("VAT Reporting Date", '>%1', 0D);
                     if not GLEntry.IsEmpty() then
                         Error(CannotChangeFieldErr, FieldCaption("VAT Reporting Date Usage"));
-#if not CLEAN24
-                    if ConfirmManagement.GetResponseOrDefault(DisableVATDateQst, false) then begin
-                        "VAT Reporting Date" := "VAT Reporting Date"::"Posting Date";
-#pragma warning disable AL0432
-                        "Allow VAT Posting From CZL" := 0D;
-                        "Allow VAT Posting To CZL" := 0D;
-#pragma warning restore AL0432
-                    end else
-#else
                     if ConfirmManagement.GetResponseOrDefault(DisableVATDateQst, false) then
                         "VAT Reporting Date" := "VAT Reporting Date"::"Posting Date"
                     else
-#endif
                         "VAT Reporting Date Usage" := xRec."VAT Reporting Date Usage";
                 end;
             end;
@@ -76,41 +68,17 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
         {
             Caption = 'Allow VAT Posting From';
             DataClassification = CustomerContent;
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#endif
             ObsoleteReason = 'Replaced by "Allow VAT Date From" field from "VAT Setup" table.';
-#if not CLEAN24
-
-            trigger OnValidate()
-            begin
-                TestIsVATDateEnabledCZL();
-            end;
-#endif
         }
         field(11779; "Allow VAT Posting To CZL"; Date)
         {
             Caption = 'Allow VAT Posting To';
             DataClassification = CustomerContent;
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#endif
             ObsoleteReason = 'Replaced by "Allow VAT Date To" field from "VAT Setup" table.';
-#if not CLEAN24
-
-            trigger OnValidate()
-            begin
-                TestIsVATDateEnabledCZL();
-            end;
-#endif
         }
 #endif
 #if not CLEANSCHEMA25
@@ -230,15 +198,32 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
         exit(PostingDate);
     end;
 
-    internal procedure GetAdditionalCurrencyCode(): Code[10]
+    procedure GetAdditionalCurrencyCodeCZL(): Code[10]
     begin
         GetRecordOnce();
         exit("Additional Reporting Currency");
     end;
 
-    internal procedure IsAdditionalCurrencyEnabled(): Boolean
+    procedure IsAdditionalCurrencyEnabledCZL(): Boolean
     begin
-        exit(GetAdditionalCurrencyCode() <> '');
+        exit((GetAdditionalCurrencyCodeCZL() <> '') and not IsManufacturingUsed());
+    end;
+
+    procedure GetAdditionalCurrencyFactorCZL(Date: Date): Decimal
+    var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+    begin
+        if IsAdditionalCurrencyEnabledCZL() then
+            exit(CurrencyExchangeRate.ExchangeRate(Date, GetAdditionalCurrencyCodeCZL()));
+        exit(0);
+    end;
+
+    local procedure IsManufacturingUsed(): Boolean
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        ItemLedgerEntry.SetRange("Entry Type", ItemLedgerEntry."Entry Type"::"Output");
+        exit(not ItemLedgerEntry.IsEmpty());
     end;
 
     [IntegrationEvent(false, false)]

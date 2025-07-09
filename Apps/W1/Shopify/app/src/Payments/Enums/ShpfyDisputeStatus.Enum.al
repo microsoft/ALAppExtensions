@@ -18,15 +18,11 @@ enum 30154 "Shpfy Dispute Status"
     {
         Caption = 'Under Review';
     }
-#if not CLEAN26
+    /// <summary>This value is no longer supported by Shopify but kept to support old transactions with this status.</summary>
     value(3; "Charge Refunded")
     {
         Caption = 'Charge Refunded';
-        ObsoleteReason = 'Charge Refunded is no longer supported by Shopify.';
-        ObsoleteState = Pending;
-        ObsoleteTag = '26.0';
     }
-#endif
     value(4; "Accepted")
     {
         Caption = 'Accepted';

@@ -38,6 +38,10 @@ page 5579 "Digital Voucher Entry Setup"
                 {
                     ToolTip = 'Specifies if the automatically generated digital voucher do not to be added to the document even if the manual attachment has already been added.';
                 }
+                field("Consider Blank Doc. Type"; Rec."Consider Blank Doc. Type")
+                {
+                    ToolTip = 'Specifies if the blank document type is considered for the entry type. This option is only available for the General Journal, Sales Journal and Purchase Journal.';
+                }
             }
             group(VoucherEntryTypeDescription)
             {

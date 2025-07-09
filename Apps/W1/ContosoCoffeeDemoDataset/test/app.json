@@ -38,5 +38,8 @@
     "allowDownloadingSource": false,
     "includeSourceInSymbolFile": false
   },
+  "features": [
+    "TranslationFile"
+  ],
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/contoso-coffee/contoso-coffee-intro"
 }

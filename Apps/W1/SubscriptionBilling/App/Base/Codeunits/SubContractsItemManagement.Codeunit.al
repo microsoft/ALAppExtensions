@@ -13,7 +13,6 @@ using Microsoft.Inventory.BOM;
 
 codeunit 8055 "Sub. Contracts Item Management"
 {
-    Access = Internal;
     SingleInstance = true;
 
     [EventSubscriber(ObjectType::Table, Database::Item, OnAfterValidateEvent, Type, false, false)]
@@ -47,12 +46,9 @@ codeunit 8055 "Sub. Contracts Item Management"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnBeforeValidateEvent, "No.", false, false)]
     local procedure PurchaseLineOnBeforeValidateEvent(var Rec: Record "Purchase Line")
     begin
-        if Rec.Type = Rec.Type::Item then begin
+        if Rec.Type = Rec.Type::Item then
             if not Rec.IsLineAttachedToBillingLine() then
                 PreventBillingItem(Rec."No.");
-            if not Rec.IsPurchaseInvoice() and not Rec.IsPurchaseOrderLineAttachedToBillingLine() then
-                PreventServiceCommitmentItem(Rec."No.");
-        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnBeforePostPurchLine, '', false, false)]
@@ -82,7 +78,7 @@ codeunit 8055 "Sub. Contracts Item Management"
 
     local procedure PreventServiceCommitmentItem(ItemNo: Code[20])
     begin
-        if SessionStore.GetBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo') then
+        if AllowInsertOfInvoicingItem then
             exit;
         if IsServiceCommitmentItem(ItemNo) then
             Error(ServiceCommitmentItemErr);
@@ -94,7 +90,7 @@ codeunit 8055 "Sub. Contracts Item Management"
     begin
         if not GetItem(ItemNo, Item) then
             exit;
-        if SessionStore.GetBooleanKey('CreateBillingDocumentsAllowInsertOfInvoicingItemNo') then
+        if AllowInsertOfInvoicingItem then
             exit;
         if Item."Subscription Option" = Enum::"Item Service Commitment Type"::"Invoicing Item" then
             Error(InvoicingItemErr);
@@ -119,7 +115,7 @@ codeunit 8055 "Sub. Contracts Item Management"
         exit(Item."Subscription Option" = "Item Service Commitment Type"::"Service Commitment Item");
     end;
 
-    procedure IsItemWithServiceCommitments(ItemNo: Code[20]): Boolean
+    internal procedure IsItemWithServiceCommitments(ItemNo: Code[20]): Boolean
     var
         Item: Record Item;
     begin
@@ -132,7 +128,7 @@ codeunit 8055 "Sub. Contracts Item Management"
               "Item Service Commitment Type"::"Service Commitment Item"]));
     end;
 
-    internal procedure GetSalesPriceForItem(var UnitPrice: Decimal; ItemNo: Code[20]; Quantity: Decimal; CurrencyCode: Code[10]; SellToCustomerNo: Code[20]; BillToCustomerNo: Code[20])
+    procedure GetSalesPriceForItem(var UnitPrice: Decimal; ItemNo: Code[20]; Quantity: Decimal; CurrencyCode: Code[10]; SellToCustomerNo: Code[20]; BillToCustomerNo: Code[20])
     var
         TempSalesLine: Record "Sales Line" temporary;
         TempSalesHeader: Record "Sales Header" temporary;
@@ -166,7 +162,7 @@ codeunit 8055 "Sub. Contracts Item Management"
         CreateTempSalesLine(TempSalesLine, TempSalesHeader, ServiceObject.Type, ServiceObject."Source No.", ServiceObject.Quantity, OrderDate);
     end;
 
-    internal procedure CreateTempSalesLine(var TempSalesLine: Record "Sales Line" temporary; var TempSalesHeader: Record "Sales Header" temporary; ServiceObjectType: enum "Service Object Type"; SourceNo: Code[20]; Quantity: Decimal; OrderDate: Date)
+    local procedure CreateTempSalesLine(var TempSalesLine: Record "Sales Line" temporary; var TempSalesHeader: Record "Sales Header" temporary; ServiceObjectType: enum "Service Object Type"; SourceNo: Code[20]; Quantity: Decimal; OrderDate: Date)
     begin
         CreateTempSalesLine(TempSalesLine, TempSalesHeader, ServiceObjectType, SourceNo, Quantity, OrderDate, '');
     end;
@@ -197,7 +193,7 @@ codeunit 8055 "Sub. Contracts Item Management"
             TempSalesLine."Posting Date" := OrderDate; //Field is empty in the temp table and affects whether the correct sales price will be picked. Field has to be forced either it will use WorkDate
     end;
 
-    internal procedure CalculateUnitPrice(var TempSalesHeader: Record "Sales Header" temporary; var TempSalesLine: Record "Sales Line" temporary): Decimal
+    procedure CalculateUnitPrice(var TempSalesHeader: Record "Sales Header" temporary; var TempSalesLine: Record "Sales Line" temporary): Decimal
     var
         PriceCalculation: Interface "Price Calculation";
     begin
@@ -207,7 +203,7 @@ codeunit 8055 "Sub. Contracts Item Management"
         exit(TempSalesLine."Unit Price");
     end;
 
-    internal procedure CalculateUnitCost(ItemNo: Code[20]): Decimal
+    procedure CalculateUnitCost(ItemNo: Code[20]): Decimal
     var
         Item: Record Item;
     begin
@@ -286,7 +282,7 @@ codeunit 8055 "Sub. Contracts Item Management"
             ItemServCommitmentPackage.Standard := Standard;
             ItemServCommitmentPackage.ErrorIfInvoicingItemIsNotServiceCommitmentItemForDiscount(PackageCode);
             ItemServCommitmentPackage.Validate("Price Group", ServiceCommitmentPackage."Price Group");
-            ItemServCommitmentPackage.Insert(false);
+            ItemServCommitmentPackage.Insert(true);
         end
     end;
 
@@ -299,7 +295,7 @@ codeunit 8055 "Sub. Contracts Item Management"
                 PriceListLine."Allow Invoice Disc." := Item."Allow Invoice Disc.";
     end;
 
-    internal procedure GetItemTranslation(ItemNo: Code[20]; VariantCode: Code[10]; CustomerNo: Code[20]): Text[100]
+    procedure GetItemTranslation(ItemNo: Code[20]; VariantCode: Code[10]; CustomerNo: Code[20]): Text[100]
     var
         Item: Record Item;
         ItemTranslation: Record "Item Translation";
@@ -315,9 +311,14 @@ codeunit 8055 "Sub. Contracts Item Management"
         exit(Item.Description);
     end;
 
+    procedure SetAllowInsertOfInvoicingItem(NewAllowInsertOfInvoicingItem: Boolean)
+    begin
+        AllowInsertOfInvoicingItem := NewAllowInsertOfInvoicingItem;
+    end;
+
     var
-        SessionStore: Codeunit "Session Store";
-        NonInventoryTypeErr: Label 'The value "%1" can only be set if either "%2" or "%3" is selected in the field "%4".';
+        AllowInsertOfInvoicingItem: Boolean;
+        NonInventoryTypeErr: Label 'The value "%1" can only be set if either "%2" or "%3" is selected in the field "%4".', Comment = '%1=Item Type, %2=Sales without Service Commitment, %3=Sales with Service Commitment, %4=Subscription Option';
         InvoicingItemErr: Label 'Items that are marked as Invoicing Item may not be used here. Please choose another item.';
         ServiceCommitmentItemErr: Label 'Items that are marked as Subscription Item may not be used here. Please choose another item.';
 }

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -73,6 +73,16 @@ page 6133 "E-Document Service"
                 {
                     ToolTip = 'Specifies the version of the import process to use for incoming e-documents.';
                     Visible = false;
+                }
+                group(PurchaseDraft)
+                {
+                    Caption = 'Purchase Draft';
+                    Visible = Rec."Import Process" = Enum::"E-Document Import Process"::"Version 2.0";
+                    field("Verify Totals When Posting"; Rec."Verify Purch. Total Amounts")
+                    {
+                        Caption = 'Verify totals when posting invoice.';
+                        ToolTip = 'Specifies if document totals are checked when posting document.';
+                    }
                 }
                 group(ImportParamenters)
                 {
@@ -223,17 +233,6 @@ page 6133 "E-Document Service"
                     ObsoleteReason = 'Replaced with field "Service Integration V2"';
                 }
 #endif
-#if not CLEAN24
-                field("Update Order"; Rec."Update Order")
-                {
-                    ToolTip = 'Specifies if corresponding purchase order must be updated.';
-                    Visible = false;
-                    Enabled = false;
-                    ObsoleteTag = '24.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
-                }
-#endif
             }
         }
     }
@@ -285,6 +284,21 @@ page 6133 "E-Document Service"
         }
         area(Navigation)
         {
+            action(ConfigureAdditionalFields)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Configure additional fields';
+                Tooltip = 'Configure additional fields to consider when importing an E-Document.';
+                Image = AddContacts;
+
+                trigger OnAction()
+                var
+                    EDocAdditionalFieldsSetup: Page "EDoc Additional Fields Setup";
+                begin
+                    EDocAdditionalFieldsSetup.SetEDocumentService(Rec);
+                    EDocAdditionalFieldsSetup.RunModal();
+                end;
+            }
             action(OpenExportMapping)
             {
                 Caption = 'Export mapping setup';

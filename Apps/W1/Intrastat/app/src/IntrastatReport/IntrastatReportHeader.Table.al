@@ -206,9 +206,6 @@ table 4811 "Intrastat Report Header"
     var
         IntrastatReportLine: Record "Intrastat Report Line";
         IntrastatReportSetup: Record "Intrastat Report Setup";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
         Month: Integer;
         StatistiscPeriodFormatErr: Label '%1 must be 4 characters, for example, 9410 for October, 1994.', Comment = '%1 - Statistics Period';
         MonthNrErr: Label 'Please check the month number.';
@@ -260,19 +257,10 @@ table 4811 "Intrastat Report Header"
 
         if "No." = '' then begin
             IntrastatReportSetup.TestField("Intrastat Nos.");
-#if not CLEAN24
-            IsHandled := false;
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(IntrastatReportSetup."Intrastat Nos.", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := IntrastatReportSetup."Intrastat Nos.";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
                 "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", IntrastatReportSetup."Intrastat Nos.", 0D, "No.");
-            end;
-#endif
         end;
     end;
 

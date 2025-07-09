@@ -1,6 +1,9 @@
 namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Inventory.Item;
+using Microsoft.DemoData.Common;
+using Microsoft.DemoData.Purchases;
+using Microsoft.DemoTool;
 
 codeunit 8110 "Create Sub. Bill. Item"
 {

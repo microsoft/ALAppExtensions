@@ -2,8 +2,6 @@ namespace Microsoft.SubscriptionBilling;
 
 codeunit 8009 "Price Update Management"
 {
-    Access = Internal;
-
     var
         LastGroupByValue: Code[20];
         LastGroupEntryNo: Integer;
@@ -159,8 +157,10 @@ codeunit 8009 "Price Update Management"
         TempServiceCommitment.DeleteAll(false);
         if ServiceCommitment.FindSet() then
             repeat
-                TempServiceCommitment := ServiceCommitment;
-                TempServiceCommitment.Insert(false);
+                if not ServiceCommitment.Closed then begin
+                    TempServiceCommitment := ServiceCommitment;
+                    TempServiceCommitment.Insert(false);
+                end;
             until ServiceCommitment.Next() = 0;
     end;
 
@@ -293,7 +293,7 @@ codeunit 8009 "Price Update Management"
             until ContractPriceUpdateLine.Next() = 0;
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterFilterSubscriptionLineOnAfterGetAndApplyFiltersOnSubscriptionLine(var SubscriptionLine: Record "Subscription Line")
     begin
     end;

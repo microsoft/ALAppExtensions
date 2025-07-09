@@ -1,12 +1,23 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.DemoTool;
+using Microsoft.Finance.FinancialReports;
+
 codeunit 5415 "Finance Module" implements "Contoso Demo Data Module"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
 
     procedure RunConfigurationPage()
+    var
+        ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
-        exit;
+        Message(ContosoDemoTool.GetNoConfiguirationMsg());
     end;
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"]
@@ -47,6 +58,7 @@ codeunit 5415 "Finance Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create VAT Setup Posting Grp.");
         Codeunit.Run(Codeunit::"Create VAT Report Setup");
         Codeunit.Run(Codeunit::"Create VAT Statement");
+        Codeunit.Run(Codeunit::"Create Deferral Template");
         CreateFinancialReport.CreateSetupFinancialReport();
     end;
 

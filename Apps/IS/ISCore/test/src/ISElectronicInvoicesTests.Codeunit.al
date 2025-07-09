@@ -15,9 +15,6 @@ codeunit 139642 "IS Electronic Invoices - Tests"
         Initialized: Boolean;
 
     local procedure Initialize()
-#if not CLEAN24
-        ISCoreAppSetup: Record "IS Core App Setup";
-#endif
     begin
         if Initialized then
             exit;
@@ -26,14 +23,6 @@ codeunit 139642 "IS Electronic Invoices - Tests"
         LibrarySales.SetStockoutWarning(false);
         LibrarySales.SetCreditWarningsToNoWarnings();
 
-#if not CLEAN24
-        if not ISCoreAppSetup.Get() then begin
-            ISCoreAppSetup.Init();
-            ISCoreAppSetup.Insert();
-        end;
-        ISCoreAppSetup.Enabled := true;
-        ISCoreAppSetup.Modify(false);
-#endif
         Commit();
     end;
 
@@ -132,4 +121,3 @@ codeunit 139642 "IS Electronic Invoices - Tests"
         Reply := false;
     end;
 }
-

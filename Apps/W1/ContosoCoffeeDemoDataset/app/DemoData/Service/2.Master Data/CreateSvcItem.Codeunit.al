@@ -1,4 +1,16 @@
-#pragma warning disable AA0247
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Service;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.Common;
+using Microsoft.Inventory.Item;
+using Microsoft.Service.Resources;
+using Microsoft.Service.Document;
+
 codeunit 5104 "Create Svc Item"
 {
     InherentEntitlements = X;
@@ -19,11 +31,25 @@ codeunit 5104 "Create Svc Item"
     begin
         SvcDemoDataSetup.Get();
 
+        CreateInventoryPostingSetup();
+
         CreateItems();
 
         CreateResourceSkills();
 
         CreateServiceCodes();
+    end;
+
+    local procedure CreateInventoryPostingSetup()
+    var
+        ServiceModuleSetup: Record "Service Module Setup";
+        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
+        CommonPostingGroup: Codeunit "Create Common Posting Group";
+        CommonGLAccount: Codeunit "Create Common GL Account";
+    begin
+        ServiceModuleSetup.Get();
+
+        ContosoPostingSetup.InsertInventoryPostingSetup(ServiceModuleSetup."Service Location", CommonPostingGroup.Resale(), CommonGLAccount.Resale(), CommonGLAccount.ResaleInterim());
     end;
 
     local procedure CreateItems()

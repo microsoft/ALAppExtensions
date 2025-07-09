@@ -101,14 +101,14 @@ page 8095 "Get Vendor Contract Lines"
                     trigger OnValidate()
                     begin
                         Rec.Selected := true;
-                        Evaluate(Rec."Billing Base Period", Format(BillingToDate - Rec."Next Billing Date" + 1) + 'D');
+                        Evaluate(Rec."Billing Base Period", '<' + Format(BillingToDate - Rec."Next Billing Date" + 1) + 'D>');
                         Rec."Billing Rhythm" := Rec."Billing Base Period";
                     end;
                 }
                 field("Vendor Invoice Amount"; VendorInvoiceAmount)
                 {
                     Caption = 'Vendor Invoice Amount ';
-                    ToolTip = ' Specifies the amount to be charged.';
+                    ToolTip = 'Specifies the amount to be charged.';
                     StyleExpr = LineStyleExpr;
                     Editable = IsContractLine and VendorInvoiceAmountEditable;
 
@@ -121,7 +121,7 @@ page 8095 "Get Vendor Contract Lines"
                 }
                 field("Service Object Quantity"; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                     Editable = false;
                     StyleExpr = LineStyleExpr;
                 }
@@ -216,12 +216,12 @@ page 8095 "Get Vendor Contract Lines"
 
     local procedure LoadVendorServiceCommitmentIfRelevant(ServiceCommitment: Record "Subscription Line")
     var
-        VendorContract: Record "Vendor Subscription Contract";
+        VendorContract2: Record "Vendor Subscription Contract";
     begin
         if ServiceCommitment.BillingLineExists() then
             exit;
-        VendorContract.Get(ServiceCommitment."Subscription Contract No.");
-        if VendorContract."Buy-from Vendor No." = PurchaseHeader."Buy-from Vendor No." then
+        VendorContract2.Get(ServiceCommitment."Subscription Contract No.");
+        if VendorContract2."Buy-from Vendor No." = PurchaseHeader."Buy-from Vendor No." then
             if not Rec.Get(ServiceCommitment."Entry No.") then begin
                 CreateGroupingLine(ServiceCommitment);
                 Rec.Init();
@@ -341,10 +341,10 @@ page 8095 "Get Vendor Contract Lines"
         Rec.Validate(Amount, VendorInvoiceAmount);
     end;
 
-    internal procedure TestPurchaseDocument(PurchaseHeader: Record "Purchase Header")
+    local procedure TestPurchaseDocument(PurchaseHeaderForTest: Record "Purchase Header")
     begin
-        PurchaseHeader.TestField("Document Type", PurchaseHeader."Document Type"::Invoice);
-        PurchaseHeader.TestField(Status, PurchaseHeader.Status::Open);
+        PurchaseHeaderForTest.TestField("Document Type", PurchaseHeaderForTest."Document Type"::Invoice);
+        PurchaseHeaderForTest.TestField(Status, PurchaseHeaderForTest.Status::Open);
     end;
 
     internal procedure SetPurchaseHeader(NewPurchaseHeader: Record "Purchase Header")

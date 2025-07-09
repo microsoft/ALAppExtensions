@@ -2,30 +2,28 @@ namespace Microsoft.SubscriptionBilling;
 
 codeunit 8057 "Date Formula Management"
 {
-    Access = Internal;
-
     var
         DateFormulaNegativeErr: Label 'The date formula cannot be negative.';
-        DateFormulaEmptyErr: Label 'The %1 must be filled out. Please enter a date formula.';
-        DateEmptyErr: Label 'The %1 must be filled out. Please enter a date.';
+        DateFormulaEmptyErr: Label 'The %1 must be filled out. Please enter a date formula.', Comment = '%1=Field Caption';
+        DateEmptyErr: Label 'The %1 must be filled out. Please enter a date.', Comment = '%1=Field Caption';
         CurrentPeriodErr: Label 'Current Period cannot be used for The Date Formula.';
         EmptyFormulaErr: Label 'The Date Formula cannot be empty.';
         ComplexFormulaErr: Label 'The Date Formula cannot be complex.';
-        NaturalNumberRatioErr: Label 'The ratio of ''%1'' and ''%2'' or vice versa must give a natural number.';
+        NaturalNumberRatioErr: Label 'The ratio of ''%1'' and ''%2'' or vice versa must give a natural number.', Comment = '%1=Field Caption, %2=Field Caption';
 
-    procedure ErrorIfDateFormulaEmpty(DateFormula: DateFormula; FieldCaption: Text)
+    internal procedure ErrorIfDateFormulaEmpty(DateFormula: DateFormula; FieldCaption: Text)
     begin
         if Format(DateFormula) = '' then
             Error(DateFormulaEmptyErr, FieldCaption);
     end;
 
-    procedure ErrorIfDateFormulaNegative(DateFormula: DateFormula)
+    internal procedure ErrorIfDateFormulaNegative(DateFormula: DateFormula)
     begin
         if StrPos(Format(DateFormula), '-') <> 0 then
             Error(DateFormulaNegativeErr);
     end;
 
-    procedure ErrorIfDateEmpty(Date: Date; FieldCaption: Text)
+    internal procedure ErrorIfDateEmpty(Date: Date; FieldCaption: Text)
     begin
         if Date = 0D then
             Error(DateEmptyErr, FieldCaption);
@@ -120,7 +118,7 @@ codeunit 8057 "Date Formula Management"
         Evaluate(Letter, CopyStr(InputDateText, LetterPosition, 1));
     end;
 
-    procedure FindDateFormulaType(InputDateFormula: DateFormula; var PeriodCount: Integer) DateFormulaType: Enum "Date Formula Type"
+    local procedure FindDateFormulaType(InputDateFormula: DateFormula; var PeriodCount: Integer) DateFormulaType: Enum "Date Formula Type"
     var
         Letter: Char;
     begin
@@ -139,7 +137,7 @@ codeunit 8057 "Date Formula Management"
         end;
     end;
 
-    internal procedure CalculateRenewalTermRatioByBillingRhythm(StartDate: Date; RenewalTermDateFormula: DateFormula; BillingRhythmFormula: DateFormula) RenewalRatio: Decimal
+    procedure CalculateRenewalTermRatioByBillingRhythm(StartDate: Date; RenewalTermDateFormula: DateFormula; BillingRhythmFormula: DateFormula) RenewalRatio: Decimal
     var
         RenewalTermEndDate: Date;
         NextBillingDate: Date;

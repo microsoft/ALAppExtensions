@@ -13,6 +13,7 @@ enum 5280 "SAF-T Modification" implements XmlDataHandlingSAFT, CreateStandardDat
 
     value(0; None)
     {
+        Caption = 'None';
         Implementation = XmlDataHandlingSAFT = "Xml Data Handling SAF-T",
                          CreateStandardDataSAFT = "Create Standard Data SAF-T";
     }

@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AuditFileExport;
 
 permissionset 5280 "SAF-T - Edit"
 {
+    Caption = 'SAF-T - Edit', MaxLength = 30;
     Access = Public;
     Assignable = true;
     IncludedPermissionSets = "SAF-T - Read";

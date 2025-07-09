@@ -74,7 +74,7 @@ page 8076 "Serv. Comm. WO Vend. Contract"
                 }
                 field(Quantity; ServiceObject.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                     Editable = false;
                     BlankZero = true;
                     Caption = 'Quantity';
@@ -103,7 +103,7 @@ page 8076 "Serv. Comm. WO Vend. Contract"
                 {
                     Visible = false;
                     Editable = false;
-                    ToolTip = 'The Period Calculation controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
+                    ToolTip = 'Specifies the Period Calculation, which controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
                 }
                 field(ServiceObjectContact; ServiceObject."End-User Contact")
                 {

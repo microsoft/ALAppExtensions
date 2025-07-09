@@ -9,6 +9,7 @@ using Microsoft.Projects.Project.Job;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.Dimension;
 
+#pragma warning disable AA0210
 codeunit 148160 "Service Comm. Dimensions"
 {
     Subtype = Test;
@@ -1036,3 +1037,4 @@ codeunit 148160 "Service Comm. Dimensions"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

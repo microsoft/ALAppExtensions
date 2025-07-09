@@ -209,13 +209,16 @@ page 8064 "Service Commitments"
                 field("Notice Period"; Rec."Notice Period")
                 {
                     Visible = false;
-                    Editable = false;
                     ToolTip = 'Specifies a date formula for the lead time that a notice must have before the Subscription Line ends. The rhythm of the update of "Notice possible to" and "Term Until" is determined using the extension term. For example, with an extension period of 1M, the notice period is repeatedly postponed by one month.';
                 }
                 field(Discount; Rec.Discount)
                 {
                     Editable = false;
                     ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
+                }
+                field("Create Contract Deferrals"; Rec."Create Contract Deferrals")
+                {
+                    ToolTip = 'Specifies whether this Subscription Line should generate contract deferrals. If it is set to No, no deferrals are generated and the invoices are posted directly to profit or loss.';
                 }
                 field("Next Price Update"; Rec."Next Price Update")
                 {
@@ -231,7 +234,7 @@ page 8064 "Service Commitments"
                 field("Period Calculation"; Rec."Period Calculation")
                 {
                     Visible = false;
-                    ToolTip = 'The Period Calculation controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
+                    ToolTip = 'Specifies the Period Calculation, which controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
                 }
                 field("Price Binding Period"; Rec."Price Binding Period")
                 {
@@ -318,7 +321,7 @@ page 8064 "Service Commitments"
             {
                 ApplicationArea = All;
                 Caption = 'Disconnect from Subscription';
-                ToolTip = 'Disconnects the Subscription Line from the subscription.';
+                ToolTip = 'Disconnects the Subscription Line from the Supplier Subscription.';
                 Enabled = Rec."Supplier Reference Entry No." <> 0;
                 Image = DeleteQtyToHandle;
                 Scope = Repeater;

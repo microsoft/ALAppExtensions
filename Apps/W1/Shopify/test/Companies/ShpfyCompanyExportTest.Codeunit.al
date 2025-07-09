@@ -27,6 +27,8 @@ codeunit 139636 "Shpfy Company Export Test"
         ShopifyPaymentTermsId: BigInteger;
     begin
         // [SCENARIO] Convert an existing company record to a "Shpfy Company" and "Shpfy Company Location" record.
+
+        // [GIVEN] Customer record
         Customer.FindFirst();
         ShopifyShop := InitializeTest.CreateShop();
         ShopifyShop."Name Source" := Enum::"Shpfy Name Source"::CompanyName;
@@ -41,7 +43,6 @@ codeunit 139636 "Shpfy Company Export Test"
         // [GIVEN] Shop
         CompanyExport.SetShop(ShopifyShop);
 
-        // [GIVEN] Customer record
         // [WHEN] Invoke ShpfyCustomerExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation)
         Result := CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation);
 
@@ -87,6 +88,64 @@ codeunit 139636 "Shpfy Company Export Test"
         // [THEN] The payment terms id is set in the company location record.
         LibraryAssert.AreEqual(ShopifyPaymentTermsId, CompanyLocation."Shpfy Payment Terms Id", 'Payment Terms Id');
     end;
+
+    [Test]
+    procedure UnitTestFillInShopifyCustomerDataCounty()
+    var
+        Customer: Record Customer;
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyLocation: Record "Shpfy Company Location";
+        ShopifyShop: Record "Shpfy Shop";
+        TaxArea: Record "Shpfy Tax Area";
+        Result: Boolean;
+    begin
+        // [SCENARIO] County information is only sent to Shopify if the country has any provinces
+
+        // [GIVEN] Customer record
+        Customer.FindFirst();
+        Customer."Country/Region Code" := 'US';
+        Customer."County" := 'CA';
+        Customer.Modify();
+
+        TaxArea."Country/Region Code" := 'US';
+        TaxArea.County := 'CA';
+        TaxArea."County Code" := 'CA';
+        TaxArea.Insert();
+
+        ShopifyShop := InitializeTest.CreateShop();
+        ShopifyShop."Name Source" := Enum::"Shpfy Name Source"::CompanyName;
+        ShopifyShop."Name 2 Source" := Enum::"Shpfy Name Source"::None;
+        ShopifyShop."Contact Source" := Enum::"Shpfy Name Source"::None;
+        ShopifyShop."County Source" := Enum::"Shpfy County Source"::Name;
+        ShopifyShop."B2B Enabled" := true;
+        ShopifyCompany.Init();
+        CompanyLocation.Init();
+
+        // [GIVEN] Shop
+        CompanyExport.SetShop(ShopifyShop);
+
+        // [GIVEN] Customer record
+        // [WHEN] Invoke ShpfyCustomerExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation)
+        Result := CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation);
+
+        // [THEN] The result is true and the content of address fields can be found in the shpfy records.
+        LibraryAssert.IsTrue(Result, 'Result');
+        LibraryAssert.IsTrue(CompanyLocation."Province Code" <> '', 'Province Code');
+        LibraryAssert.IsTrue(CompanyLocation."Province Name" <> '', 'Province Name');
+
+        // [WHEN] Change the county to a country without provinces
+        Customer."Country/Region Code" := 'DE';
+        Customer.Modify();
+        Clear(CompanyLocation);
+        Clear(ShopifyCompany);
+        Result := CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation);
+
+        // [THEN] The result is true and the province fields are empty.
+        LibraryAssert.IsTrue(Result, 'Result');
+        LibraryAssert.IsTrue(CompanyLocation."Province Code" = '', 'Province Code');
+        LibraryAssert.IsTrue(CompanyLocation."Province Name" = '', 'Province Name');
+    end;
+
 
     local procedure Initialize()
     begin

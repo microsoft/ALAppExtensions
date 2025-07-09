@@ -1,0 +1,126 @@
+{
+  "invoice": {
+    "id": 4053100,
+    "number": "3",
+    "file_reference": "PID33",
+    "date": "2020-11-12",
+    "due_date": "2021-01-04",
+    "project": {
+      "id": 742,
+      "name": "Invinet Sistemes 2003, S.L"
+    },
+    "state": "refused",
+    "created_at": "2020-07-06T09:36:18Z",
+    "updated_at": "2020-07-06T09:36:18Z",
+    "state_updated_at": "2020-07-06T09:36:18Z",
+    "to_net_id": "123",
+    "ack_at": "2020-07-06T09:36:18Z",
+    "adjustment_in_cents": 2,
+    "type": "IssuedInvoice",
+    "company": {
+      "id": 742,
+      "name": "Company Trading Name",
+      "taxcode": "SE8765456787",
+      "address": "Main Street 1",
+      "address2": "Po Box 351",
+      "postalcode": 34567,
+      "city": "Stockholm",
+      "province": "Region A",
+      "country": "se"
+    },
+    "description": "Invoice 1",
+    "tax_report_description": "Tax report for Invoice 1",
+    "charge_amount": 363.5,
+    "charge_percent": 20,
+    "charge_reason": "Charge",
+    "discount_amount": 20,
+    "discount_percent": 20,
+    "discount_text": "Discount",
+    "subtotal": 363.5,
+    "taxes": [
+      {
+        "name": "IVA",
+        "base": 100,
+        "amount": 21,
+        "percent": 21,
+        "comment": "IVA 21%"
+      }
+    ],
+    "total": 363.5,
+    "currency": "EUR",
+    "amounts_withheld": 36.35,
+    "amounts_withheld_reason": "Withheld",
+    "withheld_percent": 10,
+    "payable_amount": 327.15,
+    "buyer_accounting_reference": "string",
+    "contact_iban": "ES6000000000000000000000",
+    "contact_bic": "123",
+    "download_legal_url": "http://example.com",
+    "type_document": "TD01",
+    "public_url": "http://example.com",
+    "extra_info": "Some extra info",
+    "payment_terms": "Payment terms",
+    "terms": "1m1",
+    "lines": [
+      {
+        "id": 435453,
+        "quantity": 1,
+        "price": 10,
+        "description": "Item 1",
+        "total_cost": 10,
+        "extension_amount": 10,
+        "unit": 1,
+        "discount_amount": 100,
+        "discount_percent": 20,
+        "charge_amount": 4,
+        "charge_percent": 20,
+        "charge_reason": "Charge",
+        "gross_amount": 100,
+        "taxes": [
+          {
+            "name": "IVA",
+            "base": 100,
+            "amount": 21,
+            "percent": 21,
+            "comment": "IVA 21%"
+          }
+        ],
+        "article_code": "9873242",
+        "article_code2": "10986700",
+        "article_code_buyer": "9873242",
+        "classification_code": "9873242",
+        "classification_code_scheme": "0160",
+        "buyer_accounting_reference": "1287:65464",
+        "delivery_note_date": "2024-09-12",
+        "delivery_note_number": "123",
+        "file_date": "2024-09-12",
+        "invoicing_period_start": "2017-10-10",
+        "invoicing_period_end": "2017-10-15",
+        "issuer_transaction_reference": "123",
+        "issuer_transaction_date": "2024-09-12",
+        "notes": "Long description of the item on the invoice line",
+        "ponumber": "PO123",
+        "receiver_transaction_date": "2024-09-12",
+        "receiver_contract_reference": "reference_123",
+        "receiver_contract_date": "2024-09-12",
+        "sequence_number": "3",
+        "receipt_reference": {
+          "identifier": "123456",
+          "number": 123,
+          "date": "2024-09-12"
+        }
+      }
+    ],
+    "payment_dues": [
+      {
+        "due_date": "2024-09-12",
+        "amount": 10
+      }
+    ],
+    "amended_invoicing_period_start": "2024-01-01",
+    "amended_invoicing_period_end": "2024-01-30",
+    "amend_reason": "01",
+    "correction_method": "01",
+    "refuse_reason": "Incorrect invoice amount"
+  }
+}

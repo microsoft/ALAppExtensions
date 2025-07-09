@@ -11,7 +11,7 @@ pageextension 8077 "Sales Line FactBox" extends "Sales Line FactBox"
             field("Service Commitments"; Rec."Subscription Lines")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of Subscription Lines for the sales line.';
+                ToolTip = 'Specifies the number of Subscription Lines for the sales line.';
             }
         }
     }

@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 
+#pragma warning disable AA0210
 codeunit 148158 "Link Subscription To SO Test"
 {
     Subtype = Test;
@@ -37,6 +38,7 @@ codeunit 148158 "Link Subscription To SO Test"
         LibraryRandom: Codeunit "Library - Random";
         UsageBasedBTestLibrary: Codeunit "Usage Based B. Test Library";
         UsageBasedBillingMgmt: Codeunit "Usage Based Billing Mgmt.";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
         RecordRef: RecordRef;
         ColumnSeparator: Option " ",Tab,Semicolon,Comma,Space,Custom;
         FileEncoding: Option "MS-DOS","UTF-8","UTF-16",WINDOWS;
@@ -243,6 +245,7 @@ codeunit 148158 "Link Subscription To SO Test"
 
     local procedure Initialize()
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Link Subscription To SO Test");
         ClearAll();
         ServiceCommitmentTemplate.Reset();
         ServiceCommitmentTemplate.DeleteAll(false);
@@ -294,7 +297,8 @@ codeunit 148158 "Link Subscription To SO Test"
         UsageDataGenericImport.SetRange("Supp. Subscription ID", UsageDataSubscription."Supplier Reference");
         UsageDataGenericImport.SetRange("Subscription Header No.", ServiceCommitment."Subscription Header No.");
         UsageDataGenericImport.SetRange("Service Object Availability", UsageDataGenericImport."Service Object Availability"::Connected);
-        UsageDataGenericImport.FindFirst();
+        if UsageDataGenericImport.IsEmpty() then
+            Error('Usage Data Generic Import is empty. It should contain records with Subscription Header No. %1 and Supp. Subscription ID %2.', ServiceCommitment."Subscription Header No.", UsageDataSubscription."Supplier Reference");
     end;
 
     local procedure GetNumberOfCustomerContractLines(FilterClosed: Boolean): Integer
@@ -446,3 +450,4 @@ codeunit 148158 "Link Subscription To SO Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

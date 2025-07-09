@@ -13,7 +13,7 @@ page 8028 "Change Date"
             field(Date; ChangedDate)
             {
                 Caption = 'New Date';
-                ToolTip = 'Enter the new Date.';
+                ToolTip = 'Specifies the new Date.';
             }
         }
     }
@@ -35,12 +35,12 @@ page 8028 "Change Date"
         ChangedDate: Date;
         NoDateErr: Label 'You must enter the Date.';
 
-    internal procedure GetDate(): Date
+    procedure GetDate(): Date
     begin
         exit(ChangedDate);
     end;
 
-    internal procedure SetDate(NewDate: Date)
+    procedure SetDate(NewDate: Date)
     begin
         ChangedDate := NewDate;
     end;

@@ -107,6 +107,10 @@ codeunit 42004 "GP Cloud Migration US"
         if IsIRSFormsFeatureEnabled() then
             exit;
 
+        // Clear the table to ensure all available IRS 1099 Form-Box records are created
+        if not IRS1099FormBox.IsEmpty() then
+            IRS1099FormBox.DeleteAll();
+
         IRS1099FormBox.InitIRS1099FormBoxes();
     end;
 #endif

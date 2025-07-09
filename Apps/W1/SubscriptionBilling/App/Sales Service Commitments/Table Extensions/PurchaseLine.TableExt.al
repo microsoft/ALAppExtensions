@@ -45,12 +45,45 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
         "Dimension Set ID" := DimMgt.GetCombinedDimensionSetID(DimSetIDArr, "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
     end;
 
+    internal procedure GetPurchaseDocumentSign(): Integer
+    begin
+        if Rec."Document Type" = "Purchase Document Type"::"Credit Memo" then
+            exit(-1);
+        exit(1);
+    end;
+
     internal procedure IsLineAttachedToBillingLine(): Boolean
     var
         BillingLine: Record "Billing Line";
     begin
         BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
         exit(not BillingLine.IsEmpty());
+    end;
+
+    internal procedure CreateContractDeferrals(): Boolean
+    var
+        VendorSubscriptionContract: Record "Vendor Subscription Contract";
+        SubscriptionLine: Record "Subscription Line";
+        BillingLine: Record "Billing Line";
+    begin
+        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(Rec."Document Type"), Rec."Document No.", Rec."Line No.");
+        if not BillingLine.FindFirst() then
+            exit;
+
+        if not SubscriptionLine.Get(BillingLine."Subscription Line Entry No.") then
+            exit;
+
+        case SubscriptionLine."Create Contract Deferrals" of
+            Enum::"Create Contract Deferrals"::"Contract-dependent":
+                begin
+                    VendorSubscriptionContract.Get(BillingLine."Subscription Contract No.");
+                    exit(VendorSubscriptionContract."Create Contract Deferrals");
+                end;
+            Enum::"Create Contract Deferrals"::Yes:
+                exit(true);
+            Enum::"Create Contract Deferrals"::No:
+                exit(false);
+        end;
     end;
 
     internal procedure IsContractLineAssignable(): Boolean
@@ -72,15 +105,5 @@ tableextension 8065 "Purchase Line" extends "Purchase Line"
         GetVendorContractLines.LookupMode(true);
         GetVendorContractLines.SetPurchaseLine(Rec);
         GetVendorContractLines.RunModal();
-    end;
-
-    internal procedure IsPurchaseInvoice(): Boolean
-    begin
-        exit(Rec."Document Type" = Enum::"Purchase Document Type"::Invoice);
-    end;
-
-    internal procedure IsPurchaseOrderLineAttachedToBillingLine(): Boolean
-    begin
-        exit((Rec."Document Type" = Enum::"Purchase Document Type"::Order) and Rec.IsLineAttachedToBillingLine());
     end;
 }

@@ -12,16 +12,25 @@ using Microsoft.Foundation.Reporting;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
+using Microsoft.eServices.EDocument.OrderMatch;
+using Microsoft.eServices.EDocument.Service.Participant;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
 using Microsoft.Sales.Receivables;
+using Microsoft.Utilities;
 using Microsoft.Sales.Reminder;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using Microsoft.Service.Posting;
 using System.Automation;
+using Microsoft.EServices.EDocument.Processing;
+using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.IO.Peppol;
+using Microsoft.Purchases.Setup;
+using System.Utilities;
 
 codeunit 6103 "E-Document Subscription"
 {
@@ -119,14 +128,28 @@ codeunit 6103 "E-Document Subscription"
                 PointEDocumentToPostedDocument(PurchaseHeader, PurchCrMemoHdr, PurchCrMemoHdrNo, Enum::"E-Document Type"::"Purchase Credit Memo");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnRunOnAfterPostInvoice', '', false, false)]
-    local procedure OnRunOnAfterPostInvoice(var PurchaseHeader: Record "Purchase Header"; var PurchRcptHeader: Record "Purch. Rcpt. Header"; var ReturnShipmentHeader: Record "Return Shipment Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var PreviewMode: Boolean; var Window: Dialog; SrcCode: Code[10]; GenJnlLineDocType: Enum "Gen. Journal Document Type"; GenJnlLineDocNo: Code[20]; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    [EventSubscriber(ObjectType::Table, Database::"Purchases & Payables Setup", OnAfterShouldDocumentTotalAmountsBeChecked, '', false, false)]
+    local procedure OnShouldDocumentTotalAmountsBeChecked(PurchaseHeader: Record "Purchase Header"; var ShouldDocumentTotalAmountsBeChecked: Boolean)
     var
         EDocument: Record "E-Document";
     begin
-        if PurchInvHeader."No." <> '' then
-            if IsEDocumentLinkedToPurchaseDocument(EDocument, PurchaseHeader) then
-                ValidateDocumentTotalAgainstEDocument(EDocument, PurchInvHeader);
+        if ShouldDocumentTotalAmountsBeChecked then
+            exit;
+        EDocument.SetRange(SystemId, PurchaseHeader."E-Document Link");
+        if EDocument.FindFirst() then
+            ShouldDocumentTotalAmountsBeChecked := EDocument.GetEDocumentService()."Verify Purch. Total Amounts";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchases & Payables Setup", OnCanDocumentTotalAmountsBeEditable, '', false, false)]
+    local procedure OnCanDocumentTotalAmountsBeEditable(PurchaseHeader: Record "Purchase Header"; var CanDocumentTotalAmountsBeEdited: Boolean)
+    var
+        EDocument: Record "E-Document";
+    begin
+        if not CanDocumentTotalAmountsBeEdited then
+            exit;
+        if not EDocument.GetBySystemId(PurchaseHeader."E-Document Link") then
+            exit;
+        CanDocumentTotalAmountsBeEdited := not EDocument.IsSourceDocumentStructured();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post", 'OnAfterPostServiceDoc', '', false, false)]
@@ -217,9 +240,56 @@ codeunit 6103 "E-Document Subscription"
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeOnDelete', '', false, false)]
     local procedure OnBeforeOnDeletePurchaseHeader(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
+    var
+        EDocument: Record "E-Document";
+        EDocImportParameters: Record "E-Doc. Import Parameters";
+        EDocImport: Codeunit "E-Doc. Import";
+        ConfirmDialogMgt: Codeunit "Confirm Management";
     begin
-        if not IsNullGuid(PurchaseHeader."E-Document Link") then
-            Error(DeleteNotAllowedErr);
+        if IsNullGuid(PurchaseHeader."E-Document Link") then
+            exit;
+
+        if not EDocument.GetBySystemId(PurchaseHeader."E-Document Link") then
+            exit;
+        if not ConfirmDialogMgt.GetResponseOrDefault(StrSubstNo(DeleteDocumentQst, EDocument."Entry No")) then
+            Error('');
+
+        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Prepare draft";
+        EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Classification Eval. Data", 'OnCreateEvaluationDataOnAfterClassifyTablesToNormal', '', false, false)]
+    local procedure ClassifyDataSensitivity()
+    var
+        DataClassificationEvalData: Codeunit "Data Classification Eval. Data";
+    begin
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Service Data Exch. Def.");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Documents Setup");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Data Storage");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Integration Log");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Log");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Mapping");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Mapping Log");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Header Mapping");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Line Mapping");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Purchase Header");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Purchase Line");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Imported Line");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Order Match");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Service Supported Type");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Service");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Service Status");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"Service Participant");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Purchase Line History");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Line - Field");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"ED Purchase Line Field Setup");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Vendor Assign. History");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Record Link");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Notification");
+#if not CLEAN26
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"EDoc. Purch. Line Field Setup");
+#endif
     end;
 
     local procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
@@ -263,26 +333,6 @@ codeunit 6103 "E-Document Subscription"
         if not PurchaseHeader.IsEmpty() then begin
             PurchaseHeader.Validate("E-Document Link", NullGuid);
             PurchaseHeader.Modify();
-        end;
-    end;
-
-    local procedure ValidateDocumentTotalAgainstEDocument(var EDocument: Record "E-Document"; PostedRecord: Variant)
-    var
-        PurchInvHeader: Record "Purch. Inv. Header";
-        PostedSourceDocumentHeader: RecordRef;
-    begin
-        if EDocument.Direction <> Enum::"E-Document Direction"::Incoming then
-            exit;
-
-        PostedSourceDocumentHeader.GetTable(PostedRecord);
-        case PostedSourceDocumentHeader.Number() of
-            Database::"Purch. Inv. Header":
-                begin
-                    PostedSourceDocumentHeader.SetTable(PurchInvHeader);
-                    PurchInvHeader.CalcFields("Amount Including VAT");
-                    if EDocument.GetTotalAmountIncludingVAT() <> PurchInvHeader."Amount Including VAT" then
-                        Error(WrongAmountErr, PurchInvHeader."Amount Including VAT", EDocument.GetTotalAmountIncludingVAT());
-                end;
         end;
     end;
 
@@ -336,7 +386,6 @@ codeunit 6103 "E-Document Subscription"
         EDocExport: Codeunit "E-Doc. Export";
         EDocumentHelper: Codeunit "E-Document Helper";
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
-        WrongAmountErr: Label 'Purchase Document cannot be released as Amount Incl. VAT: %1, is different from E-Document Amount Incl. VAT: %2', Comment = '%1 - Purchase document amount, %2 - E-document amount';
-        DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
+        DeleteDocumentQst: Label 'This document is linked to E-Document %1. Do you want to continue?', Comment = '%1 - E-Document Entry No.';
         DocumentSendingProfileWithWorkflowErr: Label 'Workflow %1 defined for %2 in Document Sending Profile %3 is not found.', Comment = '%1 - The workflow code, %2 - Enum value set in Electronic Document, %3 - Document Sending Profile Code';
 }

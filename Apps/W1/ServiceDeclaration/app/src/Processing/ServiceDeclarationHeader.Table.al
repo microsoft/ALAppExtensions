@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ table 5023 "Service Declaration Header"
         field(2; "Config. Code"; Code[20])
         {
             Caption = 'Config. Code';
-            TableRelation = "VAT Reports Configuration"."VAT Report Version" WHERE("VAT Report Type" = CONST("Service Declaration"));
+            TableRelation = "VAT Reports Configuration"."VAT Report Version" where("VAT Report Type" = const("Service Declaration"));
         }
         field(50; "Starting Date"; Date)
         {
@@ -89,33 +89,18 @@ table 5023 "Service Declaration Header"
 
     var
         ServiceDeclarationSetup: Record "Service Declaration Setup";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
         ServDeclAlreadyExistErr: Label 'The service declaration %1 already exists.', Comment = '%1 = service declaration number.';
 
     trigger OnInsert()
     var
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        IsHandled: Boolean;
-#endif
     begin
         if "No." = '' then begin
             TestNoSeries();
-#if not CLEAN24
-            IsHandled := false;
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(ServiceDeclarationSetup."Declaration No. Series", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
-                "No. Series" := ServiceDeclarationSetup."Declaration No. Series";
-                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                    "No. Series" := xRec."No. Series";
-                "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", ServiceDeclarationSetup."Declaration No. Series", 0D, "No.");
-            end;
-#endif
+            "No. Series" := ServiceDeclarationSetup."Declaration No. Series";
+            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                "No. Series" := xRec."No. Series";
+            "No." := NoSeries.GetNextNo("No. Series");
         end;
     end;
 
@@ -127,6 +112,14 @@ table 5023 "Service Declaration Header"
     trigger OnRename()
     begin
         CheckStatusOpen();
+    end;
+
+    trigger OnDelete()
+    var
+        ServiceDeclarationLine: Record "Service Declaration Line";
+    begin
+        ServiceDeclarationLine.SetRange("Service Declaration No.", "No.");
+        ServiceDeclarationLine.DeleteAll();
     end;
 
     procedure SuggestLines()

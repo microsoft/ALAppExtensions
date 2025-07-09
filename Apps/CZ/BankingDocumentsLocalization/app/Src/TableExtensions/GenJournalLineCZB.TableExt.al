@@ -123,4 +123,25 @@ tableextension 31285 "Gen. Journal Line CZB" extends "Gen. Journal Line"
             exit(false);
         exit(BankAccount."Dimension from Apply Entry CZB");
     end;
+
+    internal procedure InitDocumentTypeCZB()
+    begin
+        InitDocumentTypeCZB(Amount);
+    end;
+
+    internal procedure InitDocumentTypeCZB(Amount: Decimal)
+    begin
+        "Document Type" := "Document Type"::Payment;
+        case "Account Type" of
+            "Account Type"::Customer:
+                if Amount > 0 then
+                    "Document Type" := "Document Type"::Refund;
+            "Account Type"::Vendor:
+                if Amount < 0 then
+                    "Document Type" := "Document Type"::Refund;
+            "Account Type"::Employee:
+                if Amount < 0 then
+                    "Document Type" := "Document Type"::" ";
+        end;
+    end;
 }

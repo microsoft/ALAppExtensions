@@ -64,6 +64,7 @@ page 8069 "Serv. Comm. WO Cust. Contract"
                     trigger OnValidate()
                     begin
                         UpdateShipToStyle();
+                        CurrPage.Update(false);
                     end;
                 }
                 field("Service Start Date"; Rec."Subscription Line Start Date")
@@ -73,7 +74,7 @@ page 8069 "Serv. Comm. WO Cust. Contract"
                 }
                 field(Quantity; ServiceObject.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                     Editable = false;
                     BlankZero = true;
                     Caption = 'Quantity';
@@ -102,7 +103,7 @@ page 8069 "Serv. Comm. WO Cust. Contract"
                 {
                     Visible = false;
                     Editable = false;
-                    ToolTip = 'The Period Calculation controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
+                    ToolTip = 'Specifies the Period Calculation, which controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
                 }
                 field(ServiceObjectContact; ServiceObject."End-User Contact")
                 {
@@ -209,6 +210,7 @@ page 8069 "Serv. Comm. WO Cust. Contract"
             CustomerContract2.Get(CustomerContractNo);
             ServiceCommitment.SetRange("Sub. Header Customer No.", CustomerContract2."Sell-to Customer No.");
         end;
+        OnRefreshServiceCommitmentsOnAfterServiceCommitmentSetFilters(ServiceCommitment, CustomerContract2);
         if ServiceCommitment.FindSet() then
             repeat
                 if not Rec.Get(ServiceCommitment."Entry No.") then begin
@@ -242,5 +244,10 @@ page 8069 "Serv. Comm. WO Cust. Contract"
         if CustomerContract."No." <> Rec."Subscription Contract No." then
             CustomerContract.Get(Rec."Subscription Contract No.");
         exit(true);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnRefreshServiceCommitmentsOnAfterServiceCommitmentSetFilters(var SubscriptionLine: Record "Subscription Line"; CustomerSubscriptionContract: Record "Customer Subscription Contract")
+    begin
     end;
 }

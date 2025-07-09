@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -122,9 +122,6 @@ table 10018 "IRS 1096 Form Header"
 
     var
         PurchPayablesSetup: Record "Purchases & Payables Setup";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
 
     trigger OnInsert()
     var
@@ -138,19 +135,10 @@ table 10018 "IRS 1096 Form Header"
 
         if "No." = '' then begin
             GetPurchSetupWithIRS1096NoSeries();
-#if not CLEAN24
-            IsHandled := false;
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(PurchPayablesSetup."IRS 1096 Form No. Series", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
                 "No. Series" := PurchPayablesSetup."IRS 1096 Form No. Series";
                 if NoSeries.AreRelated("No. Series", xRec."No. Series") then
                     "No. Series" := xRec."No. Series";
                 "No." := NoSeries.GetNextNo("No. Series");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", PurchPayablesSetup."IRS 1096 Form No. Series", 0D, "No.");
-            end;
-#endif
         end;
     end;
 

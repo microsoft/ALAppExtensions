@@ -4,7 +4,6 @@ using Microsoft.Inventory.Item.Catalog;
 
 codeunit 8025 "Import And Process Usage Data"
 {
-    Access = Internal;
     TableNo = "Usage Data Import";
     SingleInstance = true;
 
@@ -39,7 +38,7 @@ codeunit 8025 "Import And Process Usage Data"
         UsageDataProcessing.ProcessUsageData(UsageDataImport);
     end;
 
-    internal procedure CreateUsageDataCustomer(CustomerId: Text[80]; UsageDataSupplierReference: Record "Usage Data Supplier Reference"; SupplierNo: Code[20])
+    procedure CreateUsageDataCustomer(CustomerId: Text[80]; UsageDataSupplierReference: Record "Usage Data Supplier Reference"; SupplierNo: Code[20])
     var
         UsageDataCustomer: Record "Usage Data Supp. Customer";
     begin
@@ -56,7 +55,7 @@ codeunit 8025 "Import And Process Usage Data"
         end;
     end;
 
-    internal procedure CreateUsageDataSubscription(SubscriptionID: Text[80]; CustomerID: Text[80]; ProductID: Text[80]; ProductName: Text[100]; Unit: Text[80];
+    procedure CreateUsageDataSubscription(SubscriptionID: Text[80]; CustomerID: Text[80]; ProductID: Text[80]; ProductName: Text[100]; Unit: Text[80];
                                                     Quantity: Decimal; SubscriptionStartDate: Date; SubscriptionEndDate: Date;
                                                     UsageDataSupplierReference: Record "Usage Data Supplier Reference"; SupplierNo: Code[20])
     var
@@ -90,7 +89,7 @@ codeunit 8025 "Import And Process Usage Data"
         end;
     end;
 
-    internal procedure GetServiceCommitmentForSubscription(SupplierNo: Code[20]; SubscriptionReference: Text[80]; var ServiceCommitment: Record "Subscription Line"): Boolean
+    procedure GetServiceCommitmentForSubscription(SupplierNo: Code[20]; SubscriptionReference: Text[80]; var ServiceCommitment: Record "Subscription Line"): Boolean
     var
         UsageDataSupplierReference: Record "Usage Data Supplier Reference";
     begin
@@ -124,6 +123,8 @@ codeunit 8025 "Import And Process Usage Data"
         UsageDataSupplier: Record "Usage Data Supplier";
         UsageDataSupplierReference: Record "Usage Data Supplier Reference";
         ItemReference: Record "Item Reference";
+        SubscriptionLineWithoutReference: Record "Subscription Line";
+        SubscriptionLineWithReference: Record "Subscription Line";
     begin
         if not UsageDataSupplier.Get(UsageDataImport."Supplier No.") then
             exit(false);
@@ -137,6 +138,12 @@ codeunit 8025 "Import And Process Usage Data"
         if not ItemReference.FindForVendorAndSupplierReference(UsageDataSupplier."Vendor No.", UsageDataSupplierReference."Entry No.") then
             exit(false);
 
-        exit(true);
+        SubscriptionLineWithoutReference.SetRange("Source Type", Enum::"Service Object Type"::Item);
+        SubscriptionLineWithoutReference.SetRange("Source No.", ItemReference."Item No.");
+        SubscriptionLineWithoutReference.SetRange("Supplier Reference Entry No.", 0);
+        SubscriptionLineWithReference.SetRange("Source Type", Enum::"Service Object Type"::Item);
+        SubscriptionLineWithReference.SetRange("Source No.", ItemReference."Item No.");
+        SubscriptionLineWithReference.SetFilter("Supplier Reference Entry No.", '<>0');
+        exit(not SubscriptionLineWithoutReference.IsEmpty() and SubscriptionLineWithReference.IsEmpty());
     end;
 }

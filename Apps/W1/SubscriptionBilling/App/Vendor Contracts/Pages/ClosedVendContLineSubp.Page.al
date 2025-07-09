@@ -55,7 +55,7 @@ page 8089 "Closed Vend. Cont. Line Subp."
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
                     Visible = false;
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     Editable = false;
                     trigger OnAssistEdit()
                     begin
@@ -93,7 +93,7 @@ page 8089 "Closed Vend. Cont. Line Subp."
                 field("Service Object Quantity"; Rec."Service Object Quantity")
                 {
                     Editable = false;
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
 
                     trigger OnDrillDown()
                     begin
@@ -235,11 +235,16 @@ page 8089 "Closed Vend. Cont. Line Subp."
                     Editable = false;
                     ToolTip = 'Specifies whether the Subscription Line is used as a basis for periodic invoicing or discounts.';
                 }
+                field("Create Contract Deferrals"; ServiceCommitment."Create Contract Deferrals")
+                {
+                    Editable = false;
+                    ToolTip = 'Specifies whether this Subscription Line should generate contract deferrals. If it is set to No, no deferrals are generated and the invoices are posted directly to profit or loss.';
+                }
                 field("Period Calculation"; ServiceCommitment."Period Calculation")
                 {
                     Visible = false;
                     Editable = false;
-                    ToolTip = 'The Period Calculation controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
+                    ToolTip = 'Specifies the Period Calculation, which controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
                 }
                 field("Currency Code"; ServiceCommitment."Currency Code")
                 {

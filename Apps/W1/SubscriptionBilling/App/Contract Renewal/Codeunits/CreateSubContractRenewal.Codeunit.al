@@ -34,7 +34,7 @@ codeunit 8002 "Create Sub. Contract Renewal"
     var
         ServiceCommitment: Record "Subscription Line";
         ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
-        ContractRenewalLineIsInSalesQuoteErr: Label 'A Sales Quote already exists for %1 %2, %3 %4.';
+        ContractRenewalLineIsInSalesQuoteErr: Label 'A Sales Quote already exists for %1 %2, %3 %4.', Comment = '%1=Table Caption, %2=Subscription Header No., %3=Field Caption, %4=Entry No.';
     begin
         ContractRenewalLine.TestField("Subscription Header No.");
         ContractRenewalLine.TestField("Subscription Line Entry No.");
@@ -115,8 +115,8 @@ codeunit 8002 "Create Sub. Contract Renewal"
     var
         SalesHeader: Record "Sales Header";
         NothingCreatedMsg: Label 'No Documents have been created.';
-        OpenSingleQst: Label '%1 %2 has been created.\\Do you want to open the document?';
-        OpenMultipleQst: Label '%1 Sales Quotes have been created. Do you want to open a list of the documents?';
+        OpenSingleQst: Label '%1 %2 has been created.\\Do you want to open the document?', Comment = '%1=Document Type, %2=No.';
+        OpenMultipleQst: Label '%1 Sales Quotes have been created. Do you want to open a list of the documents?', Comment = '%1=Count of Sales Quotes';
     begin
         CurrentSalesHeader.MarkedOnly(true);
         if not CurrentSalesHeader.FindFirst() then begin
@@ -214,7 +214,6 @@ codeunit 8002 "Create Sub. Contract Renewal"
         CurrentSalesHeader."Shipping No." := OldSalesHeader."Shipping No.";
         CurrentSalesHeader."Shipping No. Series" := OldSalesHeader."Shipping No. Series";
         CurrentSalesHeader."No. Printed" := 0;
-        CurrentSalesHeader.Validate("Posting Date", WorkDate());
         CurrentSalesHeader.Validate("Document Date", WorkDate());
         CurrentSalesHeader.Validate("Currency Code");
         CurrentSalesHeader."Assigned User ID" := CopyStr(UserId(), 1, MaxStrLen(CurrentSalesHeader."Assigned User ID"));
@@ -360,7 +359,7 @@ codeunit 8002 "Create Sub. Contract Renewal"
         TranslationHelper: Codeunit "Translation Helper";
         ServiceStartDate: Date;
         ServiceEndDate: Date;
-        TermDurationTxt: Label '%1 to %2';
+        TermDurationTxt: Label '%1 to %2', Comment = '%1=Start Date, %2=End Date';
         LineText: Text;
     begin
         ContractRenewalLine.TestField("Subscription Header No.");
@@ -380,6 +379,7 @@ codeunit 8002 "Create Sub. Contract Renewal"
             PreviousServiceStartDate := ServiceStartDate;
             PreviousServiceEndDate := ServiceEndDate;
         end;
+        OnAfterInsertTermInfoLine(CurrentSalesHeader, ContractRenewalLine);
     end;
 
     local procedure CreateDescriptionLines(var CustomerContract: Record "Customer Subscription Contract")
@@ -393,7 +393,7 @@ codeunit 8002 "Create Sub. Contract Renewal"
         IsHandled: Boolean;
         ServicePartner: Enum "Service Partner";
         ContractRenewalTxt: Label 'Contract Renewal';
-        ContractNoTxt: Label 'Contract No. %1';
+        ContractNoTxt: Label 'Contract No. %1', Comment = '%1=Contract No.';
     begin
         IsHandled := false;
         OnBeforeInsertSubscriptionContractDescriptionSalesLines(CustomerContract, CurrentSalesHeader, IsHandled);
@@ -411,7 +411,7 @@ codeunit 8002 "Create Sub. Contract Renewal"
         OnAfterInsertSubscriptionContractDescriptionSalesLines(CustomerContract, CurrentSalesHeader);
     end;
 
-    internal procedure GetSalesQuoteNo(): Code[20]
+    procedure GetSalesQuoteNo(): Code[20]
     begin
         exit(CurrentSalesHeader."No.");
     end;
@@ -421,17 +421,17 @@ codeunit 8002 "Create Sub. Contract Renewal"
         Clear(CurrentSalesHeader);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateSalesHeaderFromSubscriptionContract(CustomerSubscriptionContract: Record "Customer Subscription Contract"; var SalesHeader: Record "Sales Header")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertSubscriptionContractDescriptionSalesLines(CustomerSubscriptionContract: Record "Customer Subscription Contract"; SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInsertSubscriptionContractDescriptionSalesLines(CustomerSubscriptionContract: Record "Customer Subscription Contract"; SalesHeader: Record "Sales Header")
     begin
     end;
@@ -441,37 +441,42 @@ codeunit 8002 "Create Sub. Contract Renewal"
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInsertTermInfoLine(CurrentSalesHeader: Record "Sales Header"; var SubContractRenewalLine: Record "Sub. Contract Renewal Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertSubscriptionLine(var SalesLine: Record "Sales Line"; var SubContractRenewalLine: Record "Sub. Contract Renewal Line"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInsertSubscriptionLine(var SalesLine: Record "Sales Line"; var SubContractRenewalLine: Record "Sub. Contract Renewal Line"; var SalesSubscriptionLine: Record "Sales Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterAddSubscriptionLinesToSalesLine(var SalesLine: Record "Sales Line"; var SubContractRenewalLine: Record "Sub. Contract Renewal Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCheckSubContractRenewalLine(var ContractRenewalLine: Record "Sub. Contract Renewal Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateSingleContractRenewal(SalesQuoteHeader: Record "Sales Header"; CustomerSubscriptionContract: Record "Customer Subscription Contract")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterRunCheck(var SubContractRenewalLine: Record "Sub. Contract Renewal Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateSalesQuoteLineFromSubContractRenewalLine(var SubContractRenewalLine: Record "Sub. Contract Renewal Line")
     begin
     end;

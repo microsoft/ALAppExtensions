@@ -10,6 +10,7 @@ using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.GeneralLedger.Ledger;
 
+#pragma warning disable AA0210
 codeunit 139912 "Customer Deferrals Test"
 {
     Subtype = Test;
@@ -42,6 +43,8 @@ codeunit 139912 "Customer Deferrals Test"
         Assert: Codeunit Assert;
         ContractTestLibrary: Codeunit "Contract Test Library";
         CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibraryRandom: Codeunit "Library - Random";
         LibrarySales: Codeunit "Library - Sales";
         CorrectedDocumentNo: Code[20];
         PostedDocumentNo: Code[20];
@@ -53,6 +56,8 @@ codeunit 139912 "Customer Deferrals Test"
         CustomerDeferralsCount: Integer;
         PrevGLEntry: Integer;
         TotalNumberOfMonths: Integer;
+        IsInitialized: Boolean;
+        ConfirmQuestionLbl: Label 'If you change Quantity, only the Amount for existing service commitments will be recalculated.\\Do you want to continue?', Comment = '%1= Changed Field Name.';
 
     #region Tests
 
@@ -655,14 +660,103 @@ codeunit 139912 "Customer Deferrals Test"
         until SalesInvoiceDeferral.Next() = 0;
     end;
 
+    [Test]
+    procedure UT_CheckFunctionCreateContractDeferralsForSalesLine()
+    var
+        SalesLine2: Record "Sales Line";
+        BillingLine2: Record "Billing Line";
+        SubscriptionLine: Record "Subscription Line";
+        CustomerSubscriptionContract: Record "Customer Subscription Contract";
+        FunctionReturnedWrongResultErr: Label 'The function for calculating if contract deferrals should be created for a sales line returned a wrong result.', Locked = true;
+    begin
+        // [SCENARIO] Testing that the function CreateContractDeferrals always returns the correct result
+        Initialize();
+
+        // [GIVEN] Mock Contract, Sales Line, Subscription Line and Billing Line
+        MockSubscriptionContract(CustomerSubscriptionContract);
+        MockSalesLine(SalesLine2);
+        MockSubscriptionLineForContract(SubscriptionLine, CustomerSubscriptionContract."No.");
+        MockBillingLineForSalesLineAndSubscriptionLine(BillingLine2, SalesLine2, SubscriptionLine);
+
+        // [WHEN] "Create Contract Deferral" is set to true in Contract, "Create Contract Deferral" is set to "Contract-dependent" in Subscription Line
+        SubscriptionLine."Create Contract Deferrals" := SubscriptionLine."Create Contract Deferrals"::"Contract-dependent";
+        SubscriptionLine.Modify(false);
+
+        // [THEN] Function should return correct result
+        Assert.IsTrue(SalesLine2.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
+
+        // [WHEN] "Create Contract Deferral" is set to false in Contract, "Create Contract Deferral" is set to "Contract-dependent" in Subscription Line
+        CustomerSubscriptionContract."Create Contract Deferrals" := false;
+        CustomerSubscriptionContract.Modify(false);
+
+        // [THEN] Function should return correct result
+        Assert.IsFalse(SalesLine2.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
+
+        // [WHEN] "Create Contract Deferral" is set to false in Contract, "Create Contract Deferral" is set to Yes in Subscription Line
+        SubscriptionLine."Create Contract Deferrals" := SubscriptionLine."Create Contract Deferrals"::Yes;
+        SubscriptionLine.Modify(false);
+
+        // [THEN] Function should return correct result
+        Assert.IsTrue(SalesLine2.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
+
+        // [WHEN] "Create Contract Deferral" is set to true in Contract, "Create Contract Deferral" is set to No in Subscription Line
+        CustomerSubscriptionContract."Create Contract Deferrals" := true;
+        CustomerSubscriptionContract.Modify(false);
+        SubscriptionLine."Create Contract Deferrals" := SubscriptionLine."Create Contract Deferrals"::Yes;
+        SubscriptionLine.Modify(false);
+
+        // [THEN] Function should return correct result
+        Assert.IsTrue(SalesLine2.CreateContractDeferrals(), FunctionReturnedWrongResultErr);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure ConfirmQuestionPriceListsServiceQuantityChanged()
+    var
+        SalesLine2: Record "Sales Line";
+        BillingLine2: Record "Billing Line";
+        SubscriptionHeader: Record "Subscription Header";
+        SubscriptionLine: Record "Subscription Line";
+        CustomerSubscriptionContract: Record "Customer Subscription Contract";
+    begin
+        // [SCENARIO 572340] Confirm Question on Price Lists in Service Objects when Quantity is Changed.
+        Initialize();
+
+        // [GIVEN] Mock Subscription Contract.
+        MockSubscriptionContract(CustomerSubscriptionContract);
+
+        // [GIVEN] Mock Sales Line.
+        MockSalesLine(SalesLine2);
+
+        // [GIVEN] Mock Subscription Line for Contract.
+        MockSubscriptionLineForContract(SubscriptionLine, CustomerSubscriptionContract."No.");
+
+        // [GIVEN] Mock Billing Line for Sales and Subscription Line.
+        MockBillingLineForSalesLineAndSubscriptionLine(BillingLine2, SalesLine2, SubscriptionLine);
+
+        // [WHEN] Find and Validate Quantity on Subscription Header.
+        SubscriptionHeader.Get(SubscriptionLine."Subscription Header No.");
+        SubscriptionHeader.Validate(Quantity, SubscriptionHeader.Quantity + LibraryRandom.RandInt(2));
+        SubscriptionHeader.Modify(true);
+    end;
+
     #endregion Tests
 
     #region Procedures
 
     local procedure Initialize()
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Customer Deferrals Test");
         ClearAll();
         GLSetup.Get();
+        ContractTestLibrary.InitContractsApp();
+
+        if IsInitialized then
+            exit;
+
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Customer Deferrals Test");
+        IsInitialized := true;
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Customer Deferrals Test");
     end;
 
     local procedure CalculateNumberOfBillingMonths()
@@ -695,11 +789,6 @@ codeunit 139912 "Customer Deferrals Test"
     local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean)
     begin
         CreateCustomerContractWithDeferrals(BillingDateFormula, IsCustomerContractLCY, 1, false);
-    end;
-
-    local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean; UseInvoicingItem: Boolean)
-    begin
-        CreateCustomerContractWithDeferrals(BillingDateFormula, IsCustomerContractLCY, 1, UseInvoicingItem);
     end;
 
     local procedure CreateCustomerContractWithDeferrals(BillingDateFormula: Text; IsCustomerContractLCY: Boolean; ServiceCommitmentCount: Integer; UseInvoicingItem: Boolean)
@@ -739,12 +828,18 @@ codeunit 139912 "Customer Deferrals Test"
     end;
 
     local procedure CreateSalesDocumentsFromCustomerContractWODeferrals()
+    var
+        SubscriptionLine: Record "Subscription Line";
     begin
         CreateCustomerContractWithDeferrals('<2M-CM>', true);
         CreateBillingProposalAndCreateBillingDocuments('<2M-CM>', '<8M+CM>');
 
-        CustomerContract."Without Contract Deferrals" := true;
+        CustomerContract."Create Contract Deferrals" := false;
         CustomerContract.Modify(false);
+
+        SubscriptionLine.SetRange(Partner, SubscriptionLine.Partner::Customer);
+        SubscriptionLine.SetRange("Subscription Contract No.", CustomerContract."No.");
+        SubscriptionLine.ModifyAll("Create Contract Deferrals", Enum::"Create Contract Deferrals"::No);
     end;
 
     local procedure FetchAndTestUpdatedCustomerContractDeferral(CustomerDeferrals: Record "Cust. Sub. Contract Deferral")
@@ -797,6 +892,51 @@ codeunit 139912 "Customer Deferrals Test"
         GLEntry.SetRange("G/L Account No.", GLAccountNo);
         GLEntry.CalcSums(Amount);
         GlEntryAmount := GLEntry.Amount;
+    end;
+
+    local procedure MockBillingLineForSalesLineAndSubscriptionLine(var BillingLine2: Record "Billing Line"; SalesLine2: Record "Sales Line"; SubscriptionLine: Record "Subscription Line")
+    begin
+        BillingLine2.InitNewBillingLine();
+        BillingLine2."Document Type" := BillingLine2.GetBillingDocumentTypeFromSalesDocumentType(SalesLine2."Document Type");
+        BillingLine2."Document No." := SalesLine2."Document No.";
+        BillingLine2."Document Line No." := SalesLine2."Line No.";
+        BillingLine2."Subscription Line Entry No." := SubscriptionLine."Entry No.";
+        BillingLine2."Subscription Contract No." := SubscriptionLine."Subscription Contract No.";
+        BillingLine2.Insert(false);
+    end;
+
+    local procedure MockSalesLine(var SalesLine2: Record "Sales Line")
+    var
+        SalesHeader2: Record "Sales Header";
+    begin
+        SalesHeader2.Init();
+        SalesHeader2."Document Type" := SalesLine2."Document Type"::Invoice;
+        SalesHeader2.Insert(true);
+        SalesLine2.Init();
+        SalesLine2."Document Type" := SalesLine2."Document Type"::Invoice;
+        SalesLine2."Document No." := SalesHeader2."No.";
+        SalesLine2."Line No." := 10000;
+        SalesLine2.Insert(false);
+    end;
+
+    local procedure MockSubscriptionContract(var CustomerSubscriptionContract: Record "Customer Subscription Contract")
+    begin
+        CustomerSubscriptionContract.Init();
+        CustomerSubscriptionContract.Insert(true);
+    end;
+
+    local procedure MockSubscriptionLineForContract(var SubscriptionLine: Record "Subscription Line"; ContractNo: Code[20])
+    var
+        ServiceObject2: Record "Subscription Header";
+    begin
+        ServiceObject2.Init();
+        ServiceObject2.Insert(true);
+        SubscriptionLine.Init();
+        SubscriptionLine."Subscription Header No." := ServiceObject2."No.";
+        SubscriptionLine."Entry No." := 0;
+        SubscriptionLine.Partner := SubscriptionLine.Partner::Customer;
+        SubscriptionLine."Subscription Contract No." := ContractNo;
+        SubscriptionLine.Insert(false);
     end;
 
     local procedure PostSalesCreditMemo()
@@ -904,5 +1044,13 @@ codeunit 139912 "Customer Deferrals Test"
         ContractDeferralsRelease.OK().Invoke();
     end;
 
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Assert.ExpectedConfirm(ConfirmQuestionLbl, Question);
+        Reply := true;
+    end;
+
     #endregion Handlers
 }
+#pragma warning restore AA0210

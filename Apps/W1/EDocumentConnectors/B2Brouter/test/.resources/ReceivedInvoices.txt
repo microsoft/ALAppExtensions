@@ -1,0 +1,31 @@
+{
+  "invoices": [
+    {
+      "id": 4053100,
+      "number": "3",
+      "series_code": "S01",
+      "file_reference": "PID33",
+      "date": "2020-11-12",
+      "due_date": "2021-01-04",
+      "project": {
+        "id": 742,
+        "name": "Invinet Sistemes 2003, S.L"
+      },
+      "state": "refused",
+      "created_at": "2020-07-06T09:36:18Z",
+      "updated_at": "2020-07-06T09:36:18Z",
+      "state_updated_at": "2020-07-06T09:36:18Z",
+      "to_net_id": "123",
+      "ack_at": "2020-07-06T09:36:18Z",
+      "adjustment_in_cents": 2,
+      "client": {
+        "id": 326116,
+        "name": "Client 2",
+        "taxcode": "ES12345678"
+      }
+    }
+  ],
+  "total_count": 1,
+  "offset": 0,
+  "limit": 25
+}

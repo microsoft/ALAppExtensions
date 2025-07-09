@@ -104,8 +104,9 @@ codeunit 47001 "SL Cloud Migration"
 
     internal procedure InitiateSLMigration()
     var
-        SLCompanyMigrationSettings: Record "SL Company Migration Settings";
         DataMigrationEntity: Record "Data Migration Entity";
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        SLCompanyMigrationSettings: Record "SL Company Migration Settings";
         SLMigrationConfig: Record "SL Migration Config";
         DataMigrationFacade: Codeunit "Data Migration Facade";
         SLDimensions: Codeunit "SL Dimensions";
@@ -129,6 +130,16 @@ codeunit 47001 "SL Cloud Migration"
         SLPopulateAccounts.PopulateSLAccounts();
         SLPopulateAccountHistory.Run();
         Commit();
+
+        if SLCompanyAdditionalSettings.GetMigrateCustomerClasses() then begin
+            SLHelperFunctions.DeleteExistingCustomerPostingGroups();
+            Commit();
+        end;
+
+        if SLCompanyAdditionalSettings.GetMigrateVendorClasses() then begin
+            SLHelperFunctions.DeleteExistingVendorPostingGroups();
+            Commit();
+        end;
 
         Flag := false;
         SLHelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);

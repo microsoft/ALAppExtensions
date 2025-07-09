@@ -10,7 +10,6 @@ table 8062 "Cust. Sub. Contract Line"
     DataClassification = CustomerContent;
     DrillDownPageId = "Customer Contract Lines";
     LookupPageId = "Customer Contract Lines";
-    Access = Internal;
 
     fields
     {
@@ -227,7 +226,7 @@ table 8062 "Cust. Sub. Contract Line"
         ServiceObject.OpenServiceObjectCard("Subscription Header No.");
     end;
 
-    internal procedure GetNextLineNo(CustomerContractNo: Code[20]) LineNo: Integer
+    procedure GetNextLineNo(CustomerContractNo: Code[20]) LineNo: Integer
     var
         CustomerContractLine: Record "Cust. Sub. Contract Line";
     begin
@@ -269,7 +268,7 @@ table 8062 "Cust. Sub. Contract Line"
         OnAfterUpdateSubscriptionLineDescription(Rec);
     end;
 
-    internal procedure LoadServiceCommitmentForContractLine(var ServiceCommitment: Record "Subscription Line")
+    procedure LoadServiceCommitmentForContractLine(var ServiceCommitment: Record "Subscription Line")
     var
         LocalServiceCommitment: Record "Subscription Line"; //in case the parameter is passed as temporary table
     begin
@@ -284,7 +283,7 @@ table 8062 "Cust. Sub. Contract Line"
                     ServiceCommitment.TransferFields(LocalServiceCommitment);
                 end;
         end;
-        OnAfterLoadAmountsForContractLine(Rec);
+        OnAfterLoadAmountsForContractLine(Rec, ServiceCommitment);
     end;
 
     procedure GetServiceCommitment(var ServiceCommitment: Record "Subscription Line"): Boolean
@@ -294,7 +293,7 @@ table 8062 "Cust. Sub. Contract Line"
         exit(ServiceCommitment.Get(Rec."Subscription Line Entry No."));
     end;
 
-    procedure GetServiceObject(var ServiceObject: Record "Subscription Header"): Boolean
+    internal procedure GetServiceObject(var ServiceObject: Record "Subscription Header"): Boolean
     begin
         ServiceObject.Init();
         exit(ServiceObject.Get(Rec."Subscription Header No."));
@@ -310,8 +309,10 @@ table 8062 "Cust. Sub. Contract Line"
         if not ServiceCommitment.Get(Rec."Subscription Line Entry No.") then
             exit;
 
+#pragma warning disable AA0214
         ServiceCommitment.SetDefaultDimensions(true);
         ServiceCommitment.Modify(false);
+#pragma warning restore AA0214
         DeleteRelatedVendorServiceCommDimensions(ServiceCommitment);
     end;
 
@@ -425,7 +426,7 @@ table 8062 "Cust. Sub. Contract Line"
         SetRange("Contract Line Type", "Contract Line Type"::Item, "Contract Line Type"::"G/L Account");
     end;
 
-    internal procedure MergeContractLines(var CustomerContractLine: Record "Cust. Sub. Contract Line")
+    procedure MergeContractLines(var CustomerContractLine: Record "Cust. Sub. Contract Line")
     var
         RefCustomerContractLine: Record "Cust. Sub. Contract Line";
         SelectCustContractLines: Page "Select Cust. Contract Lines";
@@ -518,9 +519,11 @@ table 8062 "Cust. Sub. Contract Line"
             repeat
                 CustomerContractLine.GetServiceCommitment(ServiceCommitment);
                 UpdateServiceCommitmentAndCloseCustomerContractLine(ServiceCommitment, CustomerContractLine);
+#pragma warning disable AA0214
                 ServiceObject.Get(CustomerContractLine."Subscription Header No.");
                 ServiceObject.UpdateServicesDates();
                 ServiceObject.Modify(false);
+#pragma warning restore AA0214
             until CustomerContractLine.Next() = 0;
     end;
 
@@ -536,17 +539,7 @@ table 8062 "Cust. Sub. Contract Line"
         CustomerContractLine.Modify(false);
     end;
 
-    procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)
-    begin
-        HideValidationDialog := NewHideValidationDialog;
-    end;
-
-    procedure GetHideValidationDialog(): Boolean
-    begin
-        exit(HideValidationDialog);
-    end;
-
-    local procedure GetConfirmResponse(ConfirmQuestion: Text; DefaultButton: Boolean): Boolean
+    procedure GetConfirmResponse(ConfirmQuestion: Text; DefaultButton: Boolean): Boolean
     begin
         if HideValidationDialog then
             exit(true);
@@ -558,32 +551,32 @@ table 8062 "Cust. Sub. Contract Line"
         exit("Contract Line Type" = "Contract Line Type"::Comment);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCheckSelectedContractLinesOnMergeContractLines(var SelectedCustSubContractLine: Record "Cust. Sub. Contract Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCheckAndDisconnectContractLine(var CustSubContractLine: Record "Cust. Sub. Contract Line"; xCustSubContractLine: Record "Cust. Sub. Contract Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateSubscriptionDescription(var CustSubContractLine: Record "Cust. Sub. Contract Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateSubscriptionLineDescription(var CustSubContractLine: Record "Cust. Sub. Contract Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
-    local procedure OnAfterLoadAmountsForContractLine(var CustSubContractLine: Record "Cust. Sub. Contract Line")
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterLoadAmountsForContractLine(var CustSubContractLine: Record "Cust. Sub. Contract Line"; var SubscriptionLine: Record "Subscription Line")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterInitFromSubscriptionLine(var CustSubContractLine: Record "Cust. Sub. Contract Line"; SubscriptionLine: Record "Subscription Line"; SubscriptionHeader: Record "Subscription Header")
     begin
     end;

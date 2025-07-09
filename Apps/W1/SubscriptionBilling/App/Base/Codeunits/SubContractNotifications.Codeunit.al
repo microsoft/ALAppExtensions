@@ -6,13 +6,11 @@ using Microsoft.Purchases.Vendor;
 
 codeunit 8053 "Sub. Contract Notifications"
 {
-    Access = Internal;
-
     trigger OnRun()
     begin
     end;
 
-    procedure CopyEndUserCustomerAddressFieldsFromCustomerContract(var ModifyCustomerAddressNotification: Notification)
+    internal procedure CopyEndUserCustomerAddressFieldsFromCustomerContract(var ModifyCustomerAddressNotification: Notification)
     var
         Customer: Record Customer;
         CustomerContract: Record "Customer Subscription Contract";
@@ -38,7 +36,7 @@ codeunit 8053 "Sub. Contract Notifications"
         end;
     end;
 
-    procedure CopyBillToCustomerAddressFieldsFromCustomerContract(ModifyCustomerAddressNotification: Notification)
+    internal procedure CopyBillToCustomerAddressFieldsFromCustomerContract(ModifyCustomerAddressNotification: Notification)
     var
         Customer: Record Customer;
         CustomerContract: Record "Customer Subscription Contract";
@@ -124,21 +122,21 @@ codeunit 8053 "Sub. Contract Notifications"
         exit(FullAddress);
     end;
 
-    procedure CustomerContractHideNotificationForCurrentUser(Notification: Notification)
+    internal procedure CustomerContractHideNotificationForCurrentUser(Notification: Notification)
     var
         CustomerContract: Record "Customer Subscription Contract";
     begin
         CustomerContract.DontNotifyCurrentUserAgain(Notification.Id);
     end;
 
-    procedure VendorContractHideNotificationForCurrentUser(Notification: Notification)
+    internal procedure VendorContractHideNotificationForCurrentUser(Notification: Notification)
     var
         VendorContract: Record "Vendor Subscription Contract";
     begin
         VendorContract.DontNotifyCurrentUserAgain(Notification.Id);
     end;
 
-    procedure CopyBuyFromVendorAddressFieldsFromVendorContract(var ModifyVendorAddressNotification: Notification)
+    internal procedure CopyBuyFromVendorAddressFieldsFromVendorContract(var ModifyVendorAddressNotification: Notification)
     var
         Vendor: Record Vendor;
         VendorContract: Record "Vendor Subscription Contract";
@@ -164,7 +162,7 @@ codeunit 8053 "Sub. Contract Notifications"
         end;
     end;
 
-    procedure CopyPayToVendorAddressFieldsFromVendorContract(ModifyVendorAddressNotification: Notification)
+    internal procedure CopyPayToVendorAddressFieldsFromVendorContract(ModifyVendorAddressNotification: Notification)
     var
         Vendor: Record Vendor;
         VendorContract: Record "Vendor Subscription Contract";
@@ -236,7 +234,7 @@ codeunit 8053 "Sub. Contract Notifications"
         exit(FormatAddress(AddressArray));
     end;
 
-    procedure ShowServiceObjects(var ShowServiceObjectsNotification: Notification)
+    internal procedure ShowServiceObjects(var ShowServiceObjectsNotification: Notification)
     var
         ServiceObject: Record "Subscription Header";
     begin
@@ -255,27 +253,27 @@ codeunit 8053 "Sub. Contract Notifications"
         end;
     end;
 
-    procedure GetDataNameServiceObjectNoFilter(): Text
+    internal procedure GetDataNameServiceObjectNoFilter(): Text
     begin
         exit('ServiceObjectNoFilter');
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCopyBillToCustomerAddressFieldsFromCustomerSubscriptionContract(var ModifyCustomerAddressNotification: Notification; var CustomerSubscriptionContract: Record "Customer Subscription Contract")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCopyEndUserCustomerAddressFieldsFromCustomerSubscriptionContract(var ModifyCustomerAddressNotification: Notification; var CustomerSubscriptionContract: Record "Customer Subscription Contract")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCopyBuyFromVendorAddressFieldsFromVendorSubscriptionContract(var ModifyVendorAddressNotification: Notification; var VendorSubscriptionContract: Record "Vendor Subscription Contract")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCopyPayToVendorAddressFieldsFromVendorSubscriptionContract(var ModifyVendorAddressNotification: Notification; var VendorSubscriptionContract: Record "Vendor Subscription Contract")
     begin
     end;

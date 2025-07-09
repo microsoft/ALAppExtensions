@@ -9,7 +9,6 @@ table 8012 "Usage Data Supp. Customer"
     DataClassification = CustomerContent;
     LookupPageId = "Usage Data Customers";
     DrillDownPageId = "Usage Data Customers";
-    Access = Internal;
 
     fields
     {
@@ -139,5 +138,5 @@ table 8012 "Usage Data Supp. Customer"
         }
     }
     var
-        UpdateUsageDataSubscriptionQst: Label 'Do you want to update %1 in %2?';
+        UpdateUsageDataSubscriptionQst: Label 'Do you want to update %1 in %2?', Comment = '%1 = Customer No., %2 = Table Caption';
 }

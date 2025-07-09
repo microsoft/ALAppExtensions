@@ -68,7 +68,7 @@ page 8009 "Imported Service Commitments"
                 }
                 field(Quantity; Rec.Quantity)
                 {
-                    ToolTip = 'Number of units of Subscription.';
+                    ToolTip = 'Specifies the number of units of Subscription.';
                 }
                 field("Calculation Base Amount"; Rec."Calculation Base Amount")
                 {
@@ -212,6 +212,10 @@ page 8009 "Imported Service Commitments"
                     begin
                         CurrPage.Update();
                     end;
+                }
+                field("Create Contract Deferrals"; Rec."Create Contract Deferrals")
+                {
+                    ToolTip = 'Specifies whether this Subscription Line should generate contract deferrals. If it is set to No, no deferrals are generated and the invoices are posted directly to profit or loss.';
                 }
             }
         }

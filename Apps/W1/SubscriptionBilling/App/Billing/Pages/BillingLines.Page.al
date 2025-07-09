@@ -44,7 +44,7 @@ page 8074 "Billing Lines"
                 }
                 field("Contract No."; Rec."Subscription Contract No.")
                 {
-                    ToolTip = 'Specifies the number of the Contract No.';
+                    ToolTip = 'Specifies the number of the Subscription Contract.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
                     Visible = false;
@@ -57,7 +57,7 @@ page 8074 "Billing Lines"
                 field(ContractDescriptionField; ContractDescriptionTxt)
                 {
                     Caption = 'Subscription Contract Description';
-                    ToolTip = 'Specifies the subscriptions being offered.';
+                    ToolTip = 'Specifies the description of the Subscription Contract.';
                     Editable = false;
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
@@ -69,7 +69,7 @@ page 8074 "Billing Lines"
                 }
                 field("Service Object No."; Rec."Subscription Header No.")
                 {
-                    ToolTip = 'Specifies the number of the Subscription No.';
+                    ToolTip = 'Specifies the number of the Subscription.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
 
@@ -116,7 +116,7 @@ page 8074 "Billing Lines"
                 }
                 field("Service Object Quantity"; Rec."Service Object Quantity")
                 {
-                    ToolTip = 'Quantity from Subscription.';
+                    ToolTip = 'Specifies the quantity from the Subscription.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
                 }
@@ -164,13 +164,13 @@ page 8074 "Billing Lines"
                 }
                 field("Document Type"; Rec."Document Type")
                 {
-                    ToolTip = 'Shows the document type of the document created for posting.';
+                    ToolTip = 'Specifies the document type of the document created for posting.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
                 }
                 field("Document No."; Rec."Document No.")
                 {
-                    ToolTip = 'Shows the document number of the document created for posting.';
+                    ToolTip = 'Specifies the document number of the document created for posting.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
 
@@ -181,11 +181,11 @@ page 8074 "Billing Lines"
                 }
                 field("Document Line No."; Rec."Document Line No.")
                 {
-                    ToolTip = 'Shows the document line number of the document created for posting.';
+                    ToolTip = 'Specifies the document line number of the document created for posting.';
                 }
                 field("User ID"; Rec."User ID")
                 {
-                    ToolTip = 'Shows the user who created the line.';
+                    ToolTip = 'Specifies the user who created the line.';
                     Style = StrongAccent;
                     StyleExpr = UpdateRequiredStyleExpr;
                     Visible = false;

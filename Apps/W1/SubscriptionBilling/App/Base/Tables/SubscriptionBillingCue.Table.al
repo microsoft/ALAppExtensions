@@ -8,7 +8,7 @@ using Microsoft.Projects.Project.Job;
 table 8070 "Subscription Billing Cue"
 {
     Caption = 'Subscription Billing Activities Cue';
-    Access = Internal;
+
     fields
     {
         field(1; "Primary Key"; Code[10])
@@ -105,6 +105,7 @@ table 8070 "Subscription Billing Cue"
         {
             Caption = 'Last Updated On';
             Editable = false;
+            DataClassification = SystemMetadata;
         }
         field(20; "Date Filter"; Date)
         {
@@ -140,7 +141,7 @@ table 8070 "Subscription Billing Cue"
         }
     }
 
-    procedure GetAmountFormat(): Text
+    local procedure GetAmountFormat(): Text
     var
         TypeHelper: Codeunit "Type Helper";
     begin

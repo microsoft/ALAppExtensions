@@ -13,7 +13,7 @@ report 4404 "EXR Vendor Top List"
     ApplicationArea = All;
     Caption = 'Vendor - Top List (Excel)';
     DataAccessIntent = ReadOnly;
-    DefaultRenderingLayout = VendorTopTrendExcel;
+    DefaultRenderingLayout = VendorTopListExcel;
     ExcelLayoutMultipleDataSheets = true;
     UsageCategory = ReportsAndAnalysis;
     MaximumDatasetSize = 1000000;
@@ -100,12 +100,12 @@ report 4404 "EXR Vendor Top List"
     }
     rendering
     {
-        layout(VendorTopTrendExcel)
+        layout(VendorTopListExcel)
         {
             Type = Excel;
-            Caption = 'Vendor - Top Trends Excel';
+            Caption = 'Vendor - Top List (Excel)';
             LayoutFile = './ReportLayouts/Excel/Vendor/VendorTopListExcel.xlsx';
-            Summary = 'Built in layout for the Vendor - Top Trends excel report. This report contains aggregated purchase (LCY) and balance (LCY) data for the top number of vendors selected. Report uses Query connections.';
+            Summary = 'Built in layout for the Vendor - Top List (Excel) report. This report contains aggregated purchase (LCY) and balance (LCY) data for the top number of vendors selected. Report uses Query connections.';
         }
     }
     labels
@@ -124,6 +124,7 @@ report 4404 "EXR Vendor Top List"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
 
     var
@@ -234,7 +235,7 @@ report 4404 "EXR Vendor Top List"
         EXTTopVendorBalance.Open();
         if EXTTopVendorBalance.Read() then
             repeat
-                TopVendorData.SetFilter(TopVendorData."Vendor No.", EXTTopVendorBalance.Vendor_No);
+                TopVendorData.SetFilter(TopVendorData."Vendor No.", EscapeVendorNoFilter(EXTTopVendorBalance.Vendor_No)); //Neelesh
                 if TopVendorData.FindFirst() then begin
                     TopVendorData."Amount 2 (LCY)" := EXTTopVendorBalance.Balance_LCY;
                     if Vendor.Get(TopVendorData."Vendor No.") then

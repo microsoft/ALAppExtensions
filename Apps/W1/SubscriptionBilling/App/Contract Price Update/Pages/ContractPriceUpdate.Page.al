@@ -125,7 +125,7 @@ page 8025 "Contract Price Update"
                 field(Quantity; Rec.Quantity)
                 {
                     StyleExpr = LineStyleExpr;
-                    ToolTip = 'Quantity from Subscription.';
+                    ToolTip = 'Specifies the quantity from the Subscription.';
                     Visible = false;
                 }
                 field("Service Object Description"; Rec."Subscription Description")

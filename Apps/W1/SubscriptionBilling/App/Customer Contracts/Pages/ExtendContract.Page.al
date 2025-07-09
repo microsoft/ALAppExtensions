@@ -138,7 +138,7 @@ page 8002 "Extend Contract"
                 field("Contract Type"; CustomerContract."Contract Type")
                 {
                     Caption = 'Contract Type';
-                    ToolTip = 'Shows the Subscription Contract Type of the selected Customer Subscription Contract.';
+                    ToolTip = 'Specifies the Subscription Contract Type of the selected Customer Subscription Contract.';
                     Editable = false;
                     Enabled = false;
                     Visible = false;
@@ -284,6 +284,7 @@ page 8002 "Extend Contract"
         ServiceObject: Record "Subscription Header";
         ServiceCommitment: Record "Subscription Line";
     begin
+        OnBeforeExtendContract();
         if SupplierReferenceEntryNo <> 0 then begin
             ServiceCommitment.SetRange("Supplier Reference Entry No.", SupplierReferenceEntryNo);
             if ServiceCommitment.FindFirst() then
@@ -306,7 +307,7 @@ page 8002 "Extend Contract"
         ServiceObject.ResetCalledFromExtendContract();
     end;
 
-    internal procedure ValidateSellToCustomerNo()
+    local procedure ValidateSellToCustomerNo()
     begin
         if (SellToCustomerNo = '') or (CustomerContractNo = '') then
             exit;
@@ -317,7 +318,7 @@ page 8002 "Extend Contract"
         end;
     end;
 
-    internal procedure ValidateExtendVendorContract()
+    local procedure ValidateExtendVendorContract()
     begin
         if not ExtendVendorContract then
             VendorContractNo := '';
@@ -374,7 +375,7 @@ page 8002 "Extend Contract"
         GetItemCost();
     end;
 
-    internal procedure ValidateItemNo()
+    local procedure ValidateItemNo()
     begin
         if ItemNo = '' then begin
             UnitPrice := 0;
@@ -394,6 +395,62 @@ page 8002 "Extend Contract"
         GetItemCost();
         ContractItemMgt.GetSalesPriceForItem(UnitPrice, ItemNo, QuantityDecimal, CustomerContract."Currency Code", CustomerContract."Sell-to Customer No.", CustomerContract."Bill-to Customer No.");
         CountTotalServiceCommitmentPackage();
+        ShowNotificationIfStandardSubscriptionPackageDoesNotContainUBBLine(ItemNo);
+        OnAfterValidateItemNo(ItemNo);
+    end;
+
+    local procedure ShowNotificationIfStandardSubscriptionPackageDoesNotContainUBBLine(InputItemNo: Code[20])
+    var
+        SubscriptionPackage: Record "Subscription Package";
+        ItemSubscriptionPackage: Record "Item Subscription Package";
+        NoUBBServiceCommitmentPackFoundMsg: Label 'No standard Subscription Package for usage-based billing is assigned to the item %1.', Comment = '%1 = Item No.';
+    begin
+        if UsageDataSupplierNo = '' then
+            exit;
+        SubscriptionPackage.FilterCodeOnPackageFilter(ItemSubscriptionPackage.GetAllStandardPackageFilterForItem(InputItemNo, ''));
+        ShowNoStandardSubscriptionPackageNotification(SubscriptionPackage, StrSubstNo(NoUBBServiceCommitmentPackFoundMsg, InputItemNo), GetNoUBBSubscriptionPackageFound2NotificationId());
+    end;
+
+    local procedure ShowNotificationIfNoUBBSubscriptionPackageIsSelected(var TempSubscriptionPackage: Record "Subscription Package" temporary; InputItemNo: Code[20])
+    var
+        NoUBBServiceCommitmentPackFoundMsg: Label 'None of the selected Subscription Package are intended for usage-based billing.';
+    begin
+        if UsageDataSupplierNo = '' then
+            exit;
+        TempSubscriptionPackage.SetRange(Selected, true);
+        if TempSubscriptionPackage.IsEmpty() then begin
+            ShowNotificationIfStandardSubscriptionPackageDoesNotContainUBBLine(InputItemNo);
+            exit;
+        end;
+        ShowNoStandardSubscriptionPackageNotification(TempSubscriptionPackage, NoUBBServiceCommitmentPackFoundMsg, GetNoUBBSubscriptionPackageFoundNotificationId());
+        TempSubscriptionPackage.SetRange(Selected);
+    end;
+
+    local procedure ShowNoStandardSubscriptionPackageNotification(var TempSubscriptionPackage: Record "Subscription Package"; NotificationMsg: Text; NotificationId: Guid)
+    var
+        Notification: Notification;
+    begin
+        if TempSubscriptionPackage.FindSet() then
+            repeat
+                if TempSubscriptionPackage.ServCommPackageLineExists() then
+                    exit; // Found a valid package, no need to show notification
+            until TempSubscriptionPackage.Next() = 0;
+
+        Notification.Id := NotificationId;
+        Notification.Recall(); //Make sure that notification is not shown multiple times
+        Notification.Message := NotificationMsg;
+        Notification.Scope := NotificationScope::LocalScope;
+        Notification.Send();
+    end;
+
+    local procedure GetNoUBBSubscriptionPackageFoundNotificationId(): Guid
+    begin
+        exit('e42bd3b9-12a0-47aa-b577-feaa442897b3');
+    end;
+
+    local procedure GetNoUBBSubscriptionPackageFound2NotificationId(): Guid
+    begin
+        exit('0301564b-e9d8-490a-99e4-fc88c5cec48d');
     end;
 
     local procedure ErrorIfItemServCommPackageMissingForItem()
@@ -430,7 +487,7 @@ page 8002 "Extend Contract"
         UsageDataCustomer: Record "Usage Data Supp. Customer";
         ItemVendor: Record "Item Vendor";
         ServiceCommitment: Record "Subscription Line";
-        SubscriptionAlreadyConnectedErr: Label 'This Subscription is already connected to Subscription %1 Subscription Line %2. Contract extension is not possible.', Comment = '%1 = SubscriptionLine."Subscription No.",  %2 = SubscriptionLine."Line No."';
+        SubscriptionAlreadyConnectedErr: Label 'This Supplier Subscription is already connected to Subscription %1 Line %2. Contract extension is not possible.', Comment = '%1 = SubscriptionLine."Subscription No.",  %2 = SubscriptionLine."Line No."';
     begin
         SubscriptionDescription := '';
         if SubscriptionEntryNo <> 0 then begin
@@ -478,6 +535,8 @@ page 8002 "Extend Contract"
             Page.RunModal(Page::"Assign Service Comm. Packages", TempServiceCommitmentPackage);
 
         CountSelectedServiceCommitmentPackages();
+        ShowNotificationIfNoUBBSubscriptionPackageIsSelected(TempServiceCommitmentPackage, ItemNo);
+        OnAfterGetAdditionalServiceCommitments(TempServiceCommitmentPackage, ItemNo);
     end;
 
     local procedure FilterNonStandardServiceCommitmentPackage(var ServiceCommitmentPackage: Record "Subscription Package")
@@ -557,8 +616,18 @@ page 8002 "Extend Contract"
         SubscriptionEntryNoParam := NewSubscriptionEntryNo;
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeExtendContract()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetAdditionalServiceCommitments(var TempServiceCommitmentPackage: Record "Subscription Package" temporary; ItemNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterValidateItemNo(ItemNo: Code[20])
     begin
     end;
 
@@ -577,7 +646,7 @@ page 8002 "Extend Contract"
         UnitCostLCY: Decimal;
         ProvisionStartDate: Date;
         ProvisionStartDateEmptyErr: Label 'Provision Start Date cannot be empty.';
-        NoOfSelectedPackagesLbl: Label '%1 of %2';
+        NoOfSelectedPackagesLbl: Label '%1 of %2', Comment = '%1 = No. of selected service commitment packages, %2 = Total service commitment packages';
         SelectedServiceCommitmentPackages: Integer;
         IsLookupMode: Boolean;
         TotalServiceCommitmentPackage: Integer;
@@ -591,7 +660,7 @@ page 8002 "Extend Contract"
         SubscriptionEntryNo: Integer;
         SubscriptionEntryNoParam: Integer;
         SupplierReferenceEntryNo: Integer;
-        SubscriptionIsLinkedToServiceCommitmentErr: Label 'The action can only be called for Subscriptions that are not yet linked to a Subscription Line. The Subscription is already connected to Subscription %1. If necessary, detach the Subscription(s) from the Subscription Line(s).';
+        SubscriptionIsLinkedToServiceCommitmentErr: Label 'The action can only be called for Supplier Subscriptions that are not yet linked to a Subscription Line. The Supplier Subscription is already connected to Subscription %1. If necessary, detach the Subscription(s) from the Subscription Line(s).', Comment = '%1 = Subscription No.';
         OpenItemCardTxt: Label 'Open Item Card.';
         ItemMissingServCommPackageTxt: Label 'No Subscription Package is available for this item.';
         AssignServCommPackageToItemTxt: Label 'In order to extend the contract properly, please make sure that at least one package is assigned.';

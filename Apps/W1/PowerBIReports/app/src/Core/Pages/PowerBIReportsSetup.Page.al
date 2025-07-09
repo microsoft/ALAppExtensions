@@ -209,18 +209,18 @@ page 36951 "PowerBI Reports Setup"
                 }
                 group(IncomeStatementFilters)
                 {
-                    Caption = 'Income Statement & G/L Budget Entry Filters';
+                    Caption = 'Income Statement & G/L Account Filters';
                     field("Finance Start Date"; Rec."Finance Start Date")
                     {
                         Caption = 'Start Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the start date for Income Statement and G/L Budget Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the start date for the Income Statement and G/L Accounts filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
                     }
                     field("Finance End Date"; Rec."Finance End Date")
                     {
                         Caption = 'End Date';
                         ApplicationArea = All;
-                        ToolTip = 'Specifies the end date for Income Statement and G/L Budget Entries filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
+                        ToolTip = 'Specifies the end date for the Income Statement and G/L Accounts filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI).';
                     }
                 }
                 group(CustomerLedgerFilters)
@@ -488,6 +488,26 @@ page 36951 "PowerBI Reports Setup"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the date formula for Sustainability report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                }
+            }
+            group(SubscriptionBillingReport)
+            {
+                Caption = 'Subscription Billing Report';
+                group(SubscriptionBillingGeneral)
+                {
+                    ShowCaption = false;
+                    field("Subscription Billing Report Name"; Format(Rec."Subs. Billing Report Name"))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Power BI Subscription Billing App';
+                        ToolTip = 'Specifies where you have installed the Power BI Subscription Billing App.';
+
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Subscription Billing Report ID", Rec."Subs. Billing Report Name");
+                        end;
+                    }
                 }
             }
 

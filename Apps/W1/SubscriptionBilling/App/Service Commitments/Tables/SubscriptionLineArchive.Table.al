@@ -11,7 +11,6 @@ table 8073 "Subscription Line Archive"
     DataClassification = CustomerContent;
     DrillDownPageId = "Service Commitment Archive";
     LookupPageId = "Service Commitment Archive";
-    Access = Internal;
 
     fields
     {
@@ -350,7 +349,7 @@ table 8073 "Subscription Line Archive"
         Rec.SetRange("Original Entry No.", OriginalEntryNo);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromSubscriptionLine(var SubscriptionLineArchive: Record "Subscription Line Archive"; SubscriptionLine: Record "Subscription Line")
     begin
     end;

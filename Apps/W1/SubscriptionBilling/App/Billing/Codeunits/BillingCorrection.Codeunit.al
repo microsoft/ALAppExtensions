@@ -7,11 +7,10 @@ using Microsoft.Purchases.Document;
 codeunit 8061 "Billing Correction"
 {
     SingleInstance = true;
-    Access = Internal;
 
     var
-        NewerInvoiceExistErr: Label 'The Subscription Line has already been invoiced until %1. In order to cancel the invoice, please cancel the newer invoices first.';
-        RelatedDocumentLineExistErr: Label 'The %1 %2 already exists for the Subscription Line. Please post or delete this %1 first.';
+        NewerInvoiceExistErr: Label 'The Subscription Line has already been invoiced until %1. In order to cancel the invoice, please cancel the newer invoices first.', Comment = '%1=Next Billing Date';
+        RelatedDocumentLineExistErr: Label 'The %1 %2 already exists for the Subscription Line. Please post or delete this %1 first.', Comment = '%1=Document Type, %2=Document No.';
         CopyingErr: Label 'Copying documents with a link to a contract is not allowed. To create contract invoices, please use the "Recurring Billing" page. For cancelling a contract invoice, please use the "Create Corrective Credit Memo" function in the posted invoice.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", OnBeforeUpdateSalesLine, '', false, false)]
@@ -219,17 +218,17 @@ codeunit 8061 "Billing Correction"
         CreateBillingLineFromBillingLineArchive(ToPurchLine, ServiceCommitment, FromPurchaseHeader."No.", DocLineNo);
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnAfterCreateBillingLineFromBillingLineArchive(var RRef: RecordRef; BillingLineArchive: Record "Billing Line Archive")
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateBillingLineFromBillingLineArchiveAfterInsertToSalesLine(var ToSalesLine: Record "Sales Line"; var IsHandled: Boolean)
     begin
     end;
 
-    [InternalEvent(false, false)]
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateNextBillingDateInCreateBillingLineFromBillingLineArchive(var SubscriptionLine: Record "Subscription Line")
     begin
     end;

@@ -7,7 +7,8 @@ using Microsoft.Finance.Currency;
 codeunit 8064 "Sub. Contract Billing Printout"
 {
     Access = Internal;
-    procedure FillContractBillingDetailsBufferFromSalesInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempJobLedgerEntryBuffer: Record "Job Ledger Entry"; var ColumnHeaders: array[5] of Text)
+
+    internal procedure FillContractBillingDetailsBufferFromSalesInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempJobLedgerEntryBuffer: Record "Job Ledger Entry"; var ColumnHeaders: array[5] of Text)
     var
         BillingLineArchive: Record "Billing Line Archive";
         SalesInvoiceLine: Record "Sales Invoice Line";
@@ -107,7 +108,7 @@ codeunit 8064 "Sub. Contract Billing Printout"
         TempJobLedgerEntryBuffer.Reset();
     end;
 
-    procedure FormatContractBillingDetails(var TempContractBillingDetailsBuffer: Record "Job Ledger Entry"; var SalesInvoiceLine: Record "Sales Invoice Line")
+    internal procedure FormatContractBillingDetails(var TempContractBillingDetailsBuffer: Record "Job Ledger Entry"; var SalesInvoiceLine: Record "Sales Invoice Line")
     begin
         if not SalesInvoiceLine.Get(TempContractBillingDetailsBuffer."Document No.", TempContractBillingDetailsBuffer."Ledger Entry No.") then
             SalesInvoiceLine.Init();

@@ -22,6 +22,7 @@ query 36991 "Work Centers"
             column(name; Name) { }
             column(workCenterGroupCode; "Work Center Group Code") { }
             column(subcontractorNo; "Subcontractor No.") { }
+            column(unitOfMeasureCode; "Unit of Measure Code") { }
             dataitem(WorkCenterGroup; "Work Center Group")
             {
                 DataItemLink = Code = WorkCenter."Work Center Group Code";

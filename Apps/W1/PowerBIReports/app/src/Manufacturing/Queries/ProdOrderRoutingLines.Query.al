@@ -6,7 +6,7 @@ using Microsoft.Inventory.Location;
 query 36990 "Prod. Order Routing Lines"
 {
     Access = Internal;
-    Caption = 'Power BI Prod. Order Routing Lines';
+    Caption = 'Power BI Production Order Routing Lines';
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
@@ -50,6 +50,8 @@ query 36990 "Prod. Order Routing Lines"
             column(runTime; "Run Time") { }
             column(waitTime; "Wait Time") { }
             column(moveTime; "Move Time") { }
+            column(startingDateTime; "Starting Date-Time") { }
+            column(endingDateTime; "Ending Date-Time") { }
             dataitem(Location; Location)
             {
                 DataItemLink = Code = ProdOrderRoutingLine."Location Code";
