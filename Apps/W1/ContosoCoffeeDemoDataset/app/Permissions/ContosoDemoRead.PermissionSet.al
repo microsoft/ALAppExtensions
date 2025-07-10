@@ -20,6 +20,7 @@ permissionset 4766 "Contoso Demo - Read"
                   tabledata "Manufacturing Module Setup" = R,
                   tabledata "Service Module Setup" = R,
                   tabledata "Warehouse Module Setup" = R,
+                  tabledata "Analytics Module Setup" = R,
                   tabledata "Contoso Coffee Demo Data Setup" = R,
                   tabledata "Contoso Demo Data Module" = R,
                   tabledata "Contoso Module Dependency" = R;
