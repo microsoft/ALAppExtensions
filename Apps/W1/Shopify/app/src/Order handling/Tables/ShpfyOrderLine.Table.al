@@ -126,6 +126,13 @@ table 30119 "Shpfy Order Line"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(21; Weight; Decimal)
+        {
+            Caption = 'Weight';
+            DataClassification = SystemMetadata;
+            DecimalPlaces = 0 : 5;
+            Editable = false;
+        }
         field(1000; "Item No."; Code[20])
         {
             Caption = 'Item No.';

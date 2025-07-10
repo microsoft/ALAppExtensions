@@ -18,7 +18,7 @@ codeunit 6385 "Outlook Processing"
     Permissions = tabledata "E-Document" = m,
                   tabledata "E-Document Service Status" = m,
                   tabledata "Email Inbox" = r,
-                  tabledata "Outlook Setup" = r;
+                  tabledata "Outlook Setup" = rim;
     InherentPermissions = X;
     InherentEntitlements = X;
 

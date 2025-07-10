@@ -9,6 +9,7 @@ reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Me
 {
     trigger OnPreReport()
     begin
+        OnPreReportOnBeforeInitializePDF(Header, CreateZUGFeRDXML);
         Clear(PDFDocument);
         PDFDocument.Initialize();
     end;
@@ -32,6 +33,8 @@ reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Me
         if CurrReport.TargetFormat <> ReportFormat::PDF then
             exit;
 
+        if not CreateZUGFeRDXML then
+            exit;
         Name := 'factur-x.xml';
         FileName := CreateXmlFile(Name);
         DataType := "PDF Attach. Data Relationship"::Alternative;
@@ -58,6 +61,13 @@ reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Me
         FileObject.Close();
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnPreReportOnBeforeInitializePDF(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var CreateZUGFeRDXML: Boolean)
+    begin
+    end;
+
     var
         PDFDocument: Codeunit "PDF Document";
+        CreateZUGFeRDXML: Boolean;
+
 }

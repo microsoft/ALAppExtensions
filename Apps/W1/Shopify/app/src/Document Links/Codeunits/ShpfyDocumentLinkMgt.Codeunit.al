@@ -101,7 +101,7 @@ codeunit 30262 "Shpfy Document Link Mgt."
                             DocLinkToBCDoc.SetRange("Document Type", DocLinkToBCDoc."Document Type"::"Posted Sales Shipment");
                             DocLinkToBCDoc.SetRange("Document No.", SalesShipmentHeader."No.");
                             if DocLinkToBCDoc.FindFirst() then
-                                CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Invoice", SalesHeader."No.");
+                                CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Invoice", SalesInvHdrNo);
                         end;
                 until SalesInvoiceLine.Next() = 0;
         end;

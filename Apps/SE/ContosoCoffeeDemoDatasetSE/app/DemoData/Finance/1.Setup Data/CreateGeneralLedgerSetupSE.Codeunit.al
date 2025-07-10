@@ -5,7 +5,6 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 11210 "Create General Ledger Setup SE"
@@ -20,11 +19,9 @@ codeunit 11210 "Create General Ledger Setup SE"
 
     local procedure UpdateGeneralLedgerSetup()
     var
-        Currency: Record Currency;
         CreateCurrency: Codeunit "Create Currency";
     begin
-        Currency.Get(CreateCurrency.SEK());
-        ValidateRecordFields(CreateCurrency.SEK(), LocalCurrencySymbolLbl, Currency.Description, 0.001);
+        ValidateRecordFields(CreateCurrency.SEK(), LocalCurrencySymbolLbl, SwedishkronaLbl, 0.001);
     end;
 
     local procedure ValidateRecordFields(LCYCode: Code[10]; LocalCurrencySymbol: Text[10]; LocalCurrencyDescription: Text[60]; UnitAmountRoundingPrecision: Decimal)
@@ -41,4 +38,5 @@ codeunit 11210 "Create General Ledger Setup SE"
 
     var
         LocalCurrencySymbolLbl: Label 'kr', Locked = true;
+        SwedishkronaLbl: Label 'Swedish krona', MaxLength = 30;
 }

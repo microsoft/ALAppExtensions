@@ -36,5 +36,33 @@ pageextension 13915 "E-Document Service DE" extends "E-Document Service"
             }
 #pragma warning restore AS0125
         }
+        modify("Export Format")
+        {
+            trigger OnBeforeValidate()
+            var
+                PeppolFormatErr: Label 'For Germany, please use format %1, as the selected format isn''t applicable.', Comment = '%1 = "PEPPOL BIS 3.0 DE"';
+            begin
+                if Rec."Document Format" = Rec."Document Format"::"PEPPOL BIS 3.0" then
+                    Message(PeppolFormatErr, Format(Rec."Document Format"::"PEPPOL BIS 3.0 DE"));
+            end;
+
+            trigger OnAfterValidate()
+            begin
+                IsParameterVisible := Rec."Document Format" in [Rec."Document Format"::"PEPPOL BIS 3.0 DE", Rec."Document Format"::XRechnung, Rec."Document Format"::ZUGFeRD]
+            end;
+        }
+
+        modify(Parameters)
+        {
+            Visible = IsParameterVisible;
+        }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        IsParameterVisible := Rec."Document Format" in [Rec."Document Format"::"PEPPOL BIS 3.0 DE", Rec."Document Format"::XRechnung, Rec."Document Format"::ZUGFeRD];
+    end;
+
+    var
+        IsParameterVisible: Boolean;
 }

@@ -23,6 +23,7 @@ using System.Reflection;
 codeunit 13917 "Export ZUGFeRD Document"
 {
     TableNo = "Record Export Buffer";
+    EventSubscriberInstance = Manual;
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
@@ -32,6 +33,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         GeneralLedgerSetup: Record "General Ledger Setup";
         EDocumentService: Record "E-Document Service";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
         FeatureNameTok: Label 'E-document ZUGFeRD Format', Locked = true;
         StartEventNameTok: Label 'E-document ZUGFeRD export started', Locked = true;
         EndEventNameTok: Label 'E-document ZUGFeRD export completed', Locked = true;
@@ -41,7 +43,9 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     trigger OnRun();
     begin
+        BindSubscription(ExportZUGFeRDDocument);
         ExportSalesDocument(Rec);
+        UnbindSubscription(ExportZUGFeRDDocument);
     end;
 
     procedure ExportSalesDocument(var RecordExportBuffer: Record "Record Export Buffer")
@@ -951,5 +955,17 @@ codeunit 13917 "Export ZUGFeRD Document"
     [IntegrationEvent(false, false)]
     local procedure OnAfterCalculateCrMemoLineAmounts(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
     begin
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Standard Sales - Invoice", 'OnPreReportOnBeforeInitializePDF', '', false, false)]
+    local procedure OnBeforeInitializePDFSalesInvoice(SalesInvHeader: Record "Sales Invoice Header"; var CreateZUGFeRDXML: Boolean)
+    begin
+        CreateZUGFeRDXML := true;
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Standard Sales - Credit Memo", 'OnPreReportOnBeforeInitializePDF', '', false, false)]
+    local procedure OnBeforeInitializePDFSalesCrMemo(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var CreateZUGFeRDXML: Boolean)
+    begin
+        CreateZUGFeRDXML := true;
     end;
 }

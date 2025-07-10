@@ -5,6 +5,7 @@
 namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
+using Microsoft.Integration.Dataverse;
 
 #pragma warning disable AS0130
 #pragma warning disable PTE0025
@@ -283,6 +284,7 @@ table 6611 "FS Bookable Resource Booking"
             Description = 'Exchange rate for the currency associated with the bookableresourcebooking with respect to the base currency.';
             Caption = 'ExchangeRate';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(46; TransactionCurrencyId; GUID)
         {
@@ -367,6 +369,7 @@ table 6611 "FS Bookable Resource Booking"
             Description = 'Capacity that needs to take from resource capacity';
             Caption = 'Capacity';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(64; EstimatedArrivalTime; Datetime)
         {
@@ -400,6 +403,7 @@ table 6611 "FS Bookable Resource Booking"
             Description = '';
             Caption = 'Latitude';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(68; Longitude; Decimal)
         {
@@ -408,6 +412,7 @@ table 6611 "FS Bookable Resource Booking"
             Description = '';
             Caption = 'Longitude';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(69; MilesTraveled; Decimal)
         {
@@ -416,6 +421,7 @@ table 6611 "FS Bookable Resource Booking"
             Description = 'In this field you can enter the total miles the resource drove to the job site';
             Caption = 'Miles Traveled';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(71; ResourceGroup; GUID)
         {
@@ -538,6 +544,8 @@ table 6611 "FS Bookable Resource Booking"
             Description = 'Shows the total cost for this booking.';
             Caption = 'Total Cost';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(96; totalcost_Base; Decimal)
         {
@@ -547,6 +555,8 @@ table 6611 "FS Bookable Resource Booking"
             Description = 'Value of the Total Cost in base currency.';
             Caption = 'Total Cost (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(97; TotalDurationInProgress; Integer)
         {
@@ -663,4 +673,20 @@ table 6611 "FS Bookable Resource Booking"
         {
         }
     }
+
+    local procedure GetCurrencyCode(): Code[10]
+    var
+        CRMSyncHelper: Codeunit "CRM Synch. Helper";
+    begin
+        exit(CRMSyncHelper.GetNavCurrencyCode(Rec.TransactionCurrencyId));
+    end;
+
+    local procedure GetBaseCurrencyCode(): Code[10]
+    var
+        CRMConnectionSetup: Record "CRM Connection Setup";
+        CRMSyncHelper: Codeunit "CRM Synch. Helper";
+    begin
+        CRMConnectionSetup.Get();
+        exit(CRMSyncHelper.GetNavCurrencyCode(CRMConnectionSetup.BaseCurrencyId));
+    end;
 }

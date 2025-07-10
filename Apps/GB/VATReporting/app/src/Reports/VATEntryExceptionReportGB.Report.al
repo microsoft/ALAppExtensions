@@ -258,12 +258,15 @@ report 10545 "VAT Entry Exception Report GB"
                             MaxValue = 100;
                             MinValue = 0;
                             ToolTip = 'Specifies a percentage discount value that you enter in this field, if you have placed a checkmark in the VAT Base Discount checkbox.';
+                            AutoFormatType = 0;
                         }
                         field("Max Manual VAT Difference "; MaxManualVATDifference)
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Manual VAT Difference';
                             ToolTip = 'Specifies that you want to print the manual VAT difference over the maximum amount in the VAT Difference (LCY) field, by placing a check mark in the check box.';
+                            AutoFormatType = 1;
+                            AutoFormatExpression = '';
                         }
                         field("Max VAT Rate Difference "; MaxVATRateDifference)
                         {
@@ -273,6 +276,7 @@ report 10545 "VAT Entry Exception Report GB"
                             MaxValue = 100;
                             MinValue = 0;
                             ToolTip = 'Specifies that you want to check the maximum VAT rate difference, by placing a check mark in the check box.';
+                            AutoFormatType = 0;
                         }
                     }
                 }

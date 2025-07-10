@@ -30,6 +30,10 @@ using Microsoft.Foundation.AuditCodes;
 using Microsoft.Purchases.History;
 using Microsoft.Inventory.BOM;
 using Microsoft.Assembly.Setup;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Project.Journal;
+using Microsoft.Projects.Project.Planning;
 
 codeunit 148187 "Sust. Certificate Test"
 {
@@ -50,6 +54,7 @@ codeunit 148187 "Sust. Certificate Test"
         LibraryAssembly: Codeunit "Library - Assembly";
         LibrarySales: Codeunit "Library - Sales";
         LibraryWarehouse: Codeunit "Library - Warehouse";
+        LibraryJob: Codeunit "Library - Job";
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
@@ -5689,6 +5694,608 @@ codeunit 148187 "Sust. Certificate Test"
            StrSubstNo(CalculateTotalCO2eActionShouldBeVisibleErr, WorkCenterList.Caption()));
     end;
 
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnJobIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        JobCard: TestPage "Job Card";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Card and Lines
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [WHEN] Open "Job Card".
+        JobCard.OpenEdit();
+        JobCard.FILTER.SetFilter("No.", JobTask."Job No.");
+
+        // [THEN] "Total CO2e" is Visible on "Job Card".
+        Assert.IsTrue(
+            JobCard."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobCard."Total CO2e".Caption(),
+                JobCard.Caption()));
+
+        // [THEN] Total CO2e is Visible on Lines of Job.
+        Assert.IsTrue(
+            JobCard.JobTaskLines."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobCard.JobTaskLines."Total CO2e".Caption(),
+                JobCard.JobTaskLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnJobIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        JobCard: TestPage "Job Card";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are not Visible on Job Card and Lines
+        // if Enable Value Chain Tracking is False in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [WHEN] Open "Job Card".
+        JobCard.OpenEdit();
+        JobCard.FILTER.SetFilter("No.", JobTask."Job No.");
+
+        // [THEN] "Total CO2e" is not Visible on "Job Card".
+        Assert.IsFalse(
+            JobCard."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobCard."Total CO2e".Caption(),
+                JobCard.Caption()));
+
+        // [THEN] Total CO2e is not Visible on Lines of Job.
+        Assert.IsFalse(
+            JobCard.JobTaskLines."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobCard.JobTaskLines."Total CO2e".Caption(),
+                JobCard.JobTaskLines.Caption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('JobJournalTemplateModalPageHandler')]
+    procedure VerifySustFieldsAreVisibleOnJobJournalIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        JobJournalLine: Record "Job Journal Line";
+        JobJournal: TestPage "Job Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ResourceNo: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Journal
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create a Resource.
+        ResourceNo := LibraryJob.CreateConsumable("Job Planning Line Type"::Resource);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobJournalLine(JobJournalLine, JobTask, JobJournalLine.Type::Resource, ResourceNo, AccountCode, Quantity, TotalCO2e);
+
+        // [WHEN] Open "Job Journal".
+        JobJournal.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Job Journal".
+        Assert.IsTrue(
+            JobJournal."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobJournal."Total CO2e".Caption(),
+                JobJournal.Caption()));
+
+        Assert.IsTrue(
+            JobJournal."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobJournal."Sust. Account No.".Caption(),
+                JobJournal.Caption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('JobJournalTemplateModalPageHandler')]
+    procedure VerifySustFieldsAreNotVisibleOnJobJournalIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        JobJournalLine: Record "Job Journal Line";
+        JobJournal: TestPage "Job Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ResourceNo: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are not Visible on Job Journal
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create a Resource.
+        ResourceNo := LibraryJob.CreateConsumable("Job Planning Line Type"::Resource);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobJournalLine(JobJournalLine, JobTask, JobJournalLine.Type::Resource, ResourceNo, AccountCode, Quantity, TotalCO2e);
+
+        // [WHEN] Open "Job Journal".
+        JobJournal.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is not Visible on "Job Journal".
+        Assert.IsFalse(
+            JobJournal."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobJournal."Total CO2e".Caption(),
+                JobJournal.Caption()));
+
+        Assert.IsFalse(
+            JobJournal."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobJournal."Sust. Account No.".Caption(),
+                JobJournal.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnJobGLJournalIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        JobGLJournal: TestPage "Job G/L Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job GL Journal
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create and Update Job Journal Batch.
+        CreateAndUpdateJobJournalBatch(GenJournalBatch);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobGLJournalLine(
+            GenJournalLine,
+            GenJournalBatch,
+            GenJournalLine."Bal. Account Type"::"G/L Account",
+            LibraryERM.CreateGLAccountNo(),
+            LibraryERM.CreateGLAccountNo(),
+            JobTask."Job No.",
+            JobTask."Job Task No.",
+            '',
+            Quantity);
+
+        GenJournalLine.Validate("Sust. Account No.", AccountCode);
+        GenJournalLine.Validate("Total CO2e", TotalCO2e);
+        GenJournalLine.Modify();
+
+        // [WHEN] Open "Job G/L Journal".
+        JobGLJournal.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Job G/L Journal".
+        Assert.IsTrue(
+            JobGLJournal."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobGLJournal."Total CO2e".Caption(),
+                JobGLJournal.Caption()));
+
+        Assert.IsTrue(
+            JobGLJournal."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobGLJournal."Sust. Account No.".Caption(),
+                JobGLJournal.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnJobGLJournalIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        JobGLJournal: TestPage "Job G/L Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are not Visible on Job GL Journal
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create and Update Job Journal Batch.
+        CreateAndUpdateJobJournalBatch(GenJournalBatch);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobGLJournalLine(
+            GenJournalLine,
+            GenJournalBatch,
+            GenJournalLine."Bal. Account Type"::"G/L Account",
+            LibraryERM.CreateGLAccountNo(),
+            LibraryERM.CreateGLAccountNo(),
+            JobTask."Job No.",
+            JobTask."Job Task No.",
+            '',
+            Quantity);
+
+        GenJournalLine.Validate("Sust. Account No.", AccountCode);
+        GenJournalLine.Validate("Total CO2e", TotalCO2e);
+        GenJournalLine.Modify();
+
+        // [WHEN] Open "Job G/L Journal".
+        JobGLJournal.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is not Visible on "Job G/L Journal".
+        Assert.IsFalse(
+            JobGLJournal."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobGLJournal."Total CO2e".Caption(),
+                JobGLJournal.Caption()));
+
+        Assert.IsFalse(
+            JobGLJournal."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobGLJournal."Sust. Account No.".Caption(),
+                JobGLJournal.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnJobStatisticsIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        JobCard: TestPage "Job Card";
+        JobStatistics: TestPage "Job Statistics";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Statistics
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Open "Job Card".
+        JobCard.OpenEdit();
+        JobCard.FILTER.SetFilter("No.", JobTask."Job No.");
+        JobStatistics.Trap();
+
+        // [WHEN] Invoke "Job Statistics".
+        JobCard."&Statistics".Invoke();
+
+        // [THEN] "G/L Account (Total CO2e)", "Resource (Total CO2e)", "Item (Total CO2e)", "Total CO2e" are Visible on "Job Statistics".
+        Assert.IsTrue(
+            JobStatistics."G/L Account (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobStatistics."G/L Account (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsTrue(
+            JobStatistics."Resource (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobStatistics."Resource (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsTrue(
+            JobStatistics."Item (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobStatistics."Item (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsTrue(
+            JobStatistics."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobStatistics."Total CO2e".Caption(),
+                JobStatistics.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnJobStatisticsIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        JobCard: TestPage "Job Card";
+        JobStatistics: TestPage "Job Statistics";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are not Visible on Job Statistics
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Open "Job Card".
+        JobCard.OpenEdit();
+        JobCard.FILTER.SetFilter("No.", JobTask."Job No.");
+        JobStatistics.Trap();
+
+        // [WHEN] Invoke "Job Statistics".
+        JobCard."&Statistics".Invoke();
+
+        // [THEN] "G/L Account (Total CO2e)", "Resource (Total CO2e)", "Item (Total CO2e)", "Total CO2e" are not Visible on "Job Statistics".
+        Assert.IsFalse(
+            JobStatistics."G/L Account (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobStatistics."G/L Account (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsFalse(
+            JobStatistics."Resource (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobStatistics."Resource (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsFalse(
+            JobStatistics."Item (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobStatistics."Item (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsFalse(
+            JobStatistics."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobStatistics."Total CO2e".Caption(),
+                JobStatistics.Caption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure VerifySustFieldsAreVisibleOnJobTaskStatisticsIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        GLAccount: Record "G/L Account";
+        JobJournalLine: Record "Job Journal Line";
+        JobTaskLines: TestPage "Job Task Lines";
+        JobTaskStatistics: TestPage "Job Task Statistics";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Task Statistics
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create an "G/L Account".
+        LibraryERM.CreateGLAccount(GLAccount);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobJournalLine(JobJournalLine, JobTask, JobJournalLine.Type::"G/L Account", GLAccount."No.", AccountCode, Quantity, -TotalCO2e);
+
+        // [GIVEN] Posting the Job Journal Line.
+        LibraryJob.PostJobJournal(JobJournalLine);
+
+        // [GIVEN] Open Job Task Lines.
+        JobTaskLines.OpenEdit();
+        JobTaskLines.FILTER.SetFilter("Job No.", JobTask."Job No.");
+        JobTaskStatistics.Trap();
+
+        // [WHEN] Invoke "Job Task Statistics".
+        JobTaskLines.JobTaskStatistics.Invoke();
+
+        // [THEN] "G/L Account (Total CO2e)", "Resource (Total CO2e)", "Item (Total CO2e)", "Total CO2e" are Visible on "Job Task Statistics".
+        Assert.IsTrue(
+            JobTaskStatistics."G/L Account (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobTaskStatistics."G/L Account (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsTrue(
+            JobTaskStatistics."Resource (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobTaskStatistics."Resource (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsTrue(
+            JobTaskStatistics."Item (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobTaskStatistics."Item (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsTrue(
+            JobTaskStatistics."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobTaskStatistics."Total CO2e".Caption(),
+                JobTaskStatistics.Caption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure VerifySustFieldsAreNotVisibleOnJobTaskStatisticsIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        GLAccount: Record "G/L Account";
+        JobJournalLine: Record "Job Journal Line";
+        JobTaskLines: TestPage "Job Task Lines";
+        JobTaskStatistics: TestPage "Job Task Statistics";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Task Statistics
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create an "G/L Account".
+        LibraryERM.CreateGLAccount(GLAccount);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobJournalLine(JobJournalLine, JobTask, JobJournalLine.Type::"G/L Account", GLAccount."No.", AccountCode, Quantity, -TotalCO2e);
+
+        // [GIVEN] Posting the Job Journal Line.
+        LibraryJob.PostJobJournal(JobJournalLine);
+
+        // [GIVEN] Open Job Task Lines.
+        JobTaskLines.OpenEdit();
+        JobTaskLines.FILTER.SetFilter("Job No.", JobTask."Job No.");
+        JobTaskStatistics.Trap();
+
+        // [WHEN] Invoke "Job Task Statistics".
+        JobTaskLines.JobTaskStatistics.Invoke();
+
+        // [THEN] "G/L Account (Total CO2e)", "Resource (Total CO2e)", "Item (Total CO2e)", "Total CO2e" are not Visible on "Job Task Statistics".
+        Assert.IsFalse(
+            JobTaskStatistics."G/L Account (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobTaskStatistics."G/L Account (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsFalse(
+            JobTaskStatistics."Resource (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobTaskStatistics."Resource (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsFalse(
+            JobTaskStatistics."Item (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobTaskStatistics."Item (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsFalse(
+            JobTaskStatistics."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobTaskStatistics."Total CO2e".Caption(),
+                JobTaskStatistics.Caption()));
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);
@@ -5967,6 +6574,56 @@ codeunit 148187 "Sust. Certificate Test"
         LibraryInventory.ClearItemJournal(ItemJournalTemplate, ItemJournalBatch);
     end;
 
+    local procedure CreateJobWithJobTask(var JobTask: Record "Job Task")
+    var
+        Job: Record Job;
+    begin
+        LibraryJob.CreateJob(Job);
+        LibraryJob.CreateJobTask(Job, JobTask);
+    end;
+
+    local procedure CreateJobJournalLine(var JobJournalLine: Record "Job Journal Line"; JobTask: Record "Job Task"; JobJournalLineType: Enum "Job Journal Line Type"; No: Code[20]; AccountCode: Code[20]; Quantity: Decimal; TotalCO2e: Decimal)
+    begin
+        LibraryJob.CreateJobJournalLineForType("Job Line Type"::" ", JobJournalLineType, JobTask, JobJournalLine);
+        JobJournalLine.Validate("No.", No);
+        JobJournalLine.Validate(Quantity, Quantity);
+        JobJournalLine.Validate("Sust. Account No.", AccountCode);
+        JobJournalLine.Validate("Total CO2e", TotalCO2e);
+        JobJournalLine.Modify(true);
+    end;
+
+    local procedure CreateAndUpdateJobJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
+    begin
+        CreateJobJournalBatch(GenJournalBatch);
+        GenJournalBatch.Validate("Copy VAT Setup to Jnl. Lines", false);
+        GenJournalBatch.Modify(true);
+    end;
+
+    local procedure CreateJobJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        GenJournalTemplate.SetRange(Type, GenJournalTemplate.Type::Jobs);
+        LibraryERM.FindGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+    end;
+
+    local procedure CreateJobGLJournalLine(var GenJournalLine: Record "Gen. Journal Line"; GenJournalBatch: Record "Gen. Journal Batch"; BalAccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20]; BalAccountNo: Code[20]; JobNo: Code[20]; JobTaskNo: Code[20]; CurrencyCode: Code[10]; Quantity: Decimal)
+    begin
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::Invoice,
+          GenJournalLine."Account Type"::"G/L Account", AccountNo, LibraryRandom.RandDec(100, 2));
+
+        GenJournalLine.Validate("Bal. Account Type", BalAccountType);
+        GenJournalLine.Validate("Bal. Account No.", BalAccountNo);
+        GenJournalLine.Validate("Currency Code", CurrencyCode);
+        GenJournalLine.Validate("Job Line Type", GenJournalLine."Job Line Type"::"Both Budget and Billable");
+        GenJournalLine.Validate("Job No.", JobNo);
+        GenJournalLine.Validate("Job Task No.", JobTaskNo);
+        GenJournalLine.Validate("Job Quantity", Quantity);
+        GenJournalLine.Modify(true);
+    end;
+
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
     begin
@@ -6037,5 +6694,11 @@ codeunit 148187 "Sust. Certificate Test"
     [MessageHandler]
     procedure MessageHandler(Message: Text[1024])
     begin
+    end;
+
+    [ModalPageHandler]
+    procedure JobJournalTemplateModalPageHandler(var JobJournalTemplateList: TestPage "Job Journal Template List")
+    begin
+        JobJournalTemplateList.OK().Invoke();
     end;
 }

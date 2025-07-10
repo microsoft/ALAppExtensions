@@ -7,6 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Navigate;
 #if not CLEAN25
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
 #endif
@@ -520,6 +521,8 @@ page 10032 "IRS Forms Guide"
 #pragma warning restore AL0432
         PurchaseHeader: Record "Purchase Header";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
     begin
         TempDocumentEntry.Reset();
         TempDocumentEntry.DeleteAll();
@@ -535,6 +538,12 @@ page 10032 "IRS Forms Guide"
         PurchaseHeader.SetRange("Posting Date", DMY2Date(1, 1, Rec."Init Reporting Year"), DMY2Date(31, 12, Rec."Init Reporting Year"));
         PurchaseHeader.SetFilter("IRS 1099 Code", '<>%1', '');
         InsertDocumentEntry(Database::"Purchase Header", PurchaseHeader.TableCaption(), PurchaseHeader.Count);
+        PurchInvHeader.SetRange("Posting Date", DMY2Date(1, 1, Rec."Init Reporting Year"), DMY2Date(31, 12, Rec."Init Reporting Year"));
+        PurchInvHeader.SetFilter("IRS 1099 Code", '<>%1', '');
+        InsertDocumentEntry(Database::"Purch. Inv. Header", PurchInvHeader.TableCaption(), PurchInvHeader.Count);
+        PurchCrMemoHdr.SetRange("Posting Date", DMY2Date(1, 1, Rec."Init Reporting Year"), DMY2Date(31, 12, Rec."Init Reporting Year"));
+        PurchCrMemoHdr.SetFilter("IRS 1099 Code", '<>%1', '');
+        InsertDocumentEntry(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.TableCaption(), PurchCrMemoHdr.Count);
 #pragma warning restore AL0432
     end;
 

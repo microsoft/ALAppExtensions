@@ -75,6 +75,11 @@ table 30142 "Shpfy Refund Header"
             Caption = 'Last Error Description';
             DataClassification = SystemMetadata;
         }
+        field(52; "Last Error Call Stack"; Blob)
+        {
+            Caption = 'Last Error Call Stack';
+            DataClassification = SystemMetadata;
+        }
         field(101; "Sell-to Customer No."; Code[20])
         {
             Caption = 'Sell-to Customer No.';
@@ -184,6 +189,16 @@ table 30142 "Shpfy Refund Header"
         exit(TypeHelper.ReadAsTextWithSeparator(InStream, TypeHelper.LFSeparator()));
     end;
 
+    internal procedure GetLastErrorCallStack(): Text
+    var
+        TypeHelper: Codeunit "Type Helper";
+        InStream: InStream;
+    begin
+        CalcFields("Last Error Call Stack");
+        "Last Error Call Stack".CreateInStream(InStream, TextEncoding::UTF8);
+        exit(TypeHelper.ReadAsTextWithSeparator(InStream, TypeHelper.LFSeparator()));
+    end;
+
     internal procedure SetLastErrorDescription(NewLastErrorDescription: Text)
     var
         OutStream: OutStream;
@@ -192,6 +207,16 @@ table 30142 "Shpfy Refund Header"
         "Last Error Description".CreateOutStream(OutStream, TextEncoding::UTF8);
         OutStream.WriteText(NewLastErrorDescription);
         "Has Processing Error" := NewLastErrorDescription <> '';
+        Modify();
+    end;
+
+    internal procedure SetLastErrorCallStack(NewLastErrorCallStack: Text)
+    var
+        OutStream: OutStream;
+    begin
+        Clear("Last Error Call Stack");
+        "Last Error Call Stack".CreateOutStream(OutStream, TextEncoding::UTF8);
+        OutStream.WriteText(NewLastErrorCallStack);
         Modify();
     end;
 

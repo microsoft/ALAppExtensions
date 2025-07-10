@@ -2,6 +2,7 @@ namespace Microsoft.Sustainability.Posting;
 
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
+using Microsoft.Projects.Project.Ledger;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
@@ -18,7 +19,6 @@ codeunit 6212 "Sustainability Post Mgt"
     var
         SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        SustainabilityLbl: Label 'Sustainability', Locked = true;
         SustainabilityLedgerEntryAddedLbl: Label 'Sustainability Ledger Entry Added', Locked = true;
     begin
         SustainabilityLedgerEntry.Init();
@@ -44,8 +44,6 @@ codeunit 6212 "Sustainability Post Mgt"
     var
         SustainabilityValueEntry: Record "Sustainability Value Entry";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        SustainabilityLbl: Label 'Sustainability', Locked = true;
-        SustainabilityValueEntryAddedLbl: Label 'Sustainability Value Entry Added', Locked = true;
         ShouldCalcExpectedCO2e: Boolean;
     begin
         SkipUpdateCarbonEmissionValue :=
@@ -86,6 +84,27 @@ codeunit 6212 "Sustainability Post Mgt"
                 SustainabilityValueEntry."CO2e Amount (Expected)",
                 ItemLedgerEntry.Quantity = ItemLedgerEntry."Invoiced Quantity");
 
+        SustainabilityValueEntry.Insert(true);
+
+        UpdateCO2ePerUnit(SustainabilityValueEntry);
+    end;
+
+    procedure InsertValueEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; JobLedgerEntry: Record "Job Ledger Entry")
+    var
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        SustainabilityValueEntry.Init();
+        FeatureTelemetry.LogUsage('0000PKW', SustainabilityLbl, SustainabilityValueEntryAddedLbl);
+        FeatureTelemetry.LogUptake('0000PKV', SustainabilityLbl, Enum::"Feature Uptake Status"::"Used");
+
+        SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
+        SustainabilityValueEntry.CopyFromJobLedgerEntry(JobLedgerEntry);
+        SustainabilityValueEntry.CopyFromSustainabilityJnlLine(SustainabilityJnlLine);
+        SustainabilityValueEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
+
+        SkipUpdateCarbonEmissionValue := true;
+        UpdateCarbonFeeEmissionForValueEntry(SustainabilityValueEntry, SustainabilityJnlLine);
         SustainabilityValueEntry.Insert(true);
 
         UpdateCO2ePerUnit(SustainabilityValueEntry);
@@ -301,4 +320,6 @@ codeunit 6212 "Sustainability Post Mgt"
         ProcessingLineLbl: Label 'Processing Line: %1', Comment = '%1 = Line No.';
         JnlLinesPostedLbl: Label 'The journal lines were successfully posted.';
         PostConfirmLbl: Label 'Do you want to post the journal lines?';
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
+        SustainabilityValueEntryAddedLbl: Label 'Sustainability Value Entry Added', Locked = true;
 }

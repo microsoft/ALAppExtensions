@@ -61,9 +61,6 @@ codeunit 11522 "Create Currency Ex. Rate NL"
         if Rec."Currency Code" = Currency.DZD() then
             if Rec."Starting Date" = CurrentDate then
                 ValidateCurrencyExchRate(Rec, 100, 100, 1.7373, 1.7373);
-        if Rec."Currency Code" = Currency.EUR() then
-            if Rec."Starting Date" = CurrentDate then
-                ValidateCurrencyExchRate(Rec, 1, 1, 64.8936, 64.8936);
         if Rec."Currency Code" = Currency.FJD() then
             if Rec."Starting Date" = CurrentDate then
                 ValidateCurrencyExchRate(Rec, 100, 100, 46.6812, 46.6812);

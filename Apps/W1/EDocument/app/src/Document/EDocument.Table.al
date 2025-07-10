@@ -25,6 +25,11 @@ table 6121 "E-Document"
     DrillDownPageId = "E-Documents";
     DataClassification = CustomerContent;
 
+    Permissions =
+        tabledata "E-Document" = i,
+        tabledata "E-Document Service Status" = d;
+
+
     fields
     {
         field(1; "Entry No"; Integer)
@@ -310,11 +315,8 @@ table 6121 "E-Document"
     /// <summary>
     /// Inserts a new E-Document record with the specified parameters.
     /// </summary>
-    internal procedure Create(
-        EDocumentDirection: Enum "E-Document Direction";
-                                EDocumentType: Enum "E-Document Type";
-                                EDocumentService: Record "E-Document Service"
-    )
+    [InherentPermissions(PermissionObjectType::TableData, Database::"E-Document", 'i')]
+    internal procedure Create(EDocumentDirection: Enum "E-Document Direction"; EDocumentType: Enum "E-Document Type"; EDocumentService: Record "E-Document Service")
     begin
         Rec."Entry No" := 0;
         Rec.Direction := EDocumentDirection;
@@ -327,7 +329,6 @@ table 6121 "E-Document"
     internal procedure IsDuplicate(ShowMessage: Boolean): Boolean
     var
         EDocument: Record "E-Document";
-
     begin
         EDocument.ReadIsolation := EDocument.ReadIsolation::ReadUncommitted;
         EDocument.SetRange("Incoming E-Document No.", Rec."Incoming E-Document No.");

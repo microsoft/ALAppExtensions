@@ -162,6 +162,8 @@ page 7250 "Bank Acc. Rec. AI Proposal"
                     Caption = 'Statement Ending Balance';
                     Editable = true;
                     ToolTip = 'Specifies the ending balance shown on the bank''s statement that you want to reconcile with the bank account.';
+                    AutoFormatType = 1;
+                    AutoFormatExpression = GetBankAccountCurrencyCode();
 
                     trigger OnValidate()
                     var
@@ -587,6 +589,16 @@ page 7250 "Bank Acc. Rec. AI Proposal"
     internal procedure SetPageCaption(InputPageCaption: Text);
     begin
         PageCaptionLbl := InputPageCaption;
+    end;
+
+    local procedure GetBankAccountCurrencyCode(): Code[10]
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        if BankAccNo <> '' then
+            if BankAccount.Get(BankAccNo) then
+                exit(BankAccount."Currency Code");
+        exit('')
     end;
 
     var

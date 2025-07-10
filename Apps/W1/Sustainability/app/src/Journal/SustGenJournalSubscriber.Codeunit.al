@@ -3,6 +3,7 @@ namespace Microsoft.Sustainability.Journal;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Setup;
@@ -30,10 +31,26 @@ codeunit 6251 "Sust. Gen. Journal Subscriber"
             GenJournalLine.Validate("Sust. Account No.", GLAccount."Default Sust. Account");
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCleanLine', '', false, false)]
+    local procedure OnAfterCleanLine(var GenJournalLine: Record "Gen. Journal Line")
+    begin
+        GenJournalLine.Validate("Sust. Account No.", '');
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterValidateEvent', "Job Quantity", false, false)]
+    local procedure OnAfterValidateEvent(var Rec: Record "Gen. Journal Line")
+    begin
+        Rec.UpdateSustainabilityEmission(Rec);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnCodeOnAfterStartOrContinuePosting', '', false, false)]
     local procedure OnAfterPostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
+    var
+        SourceCodeSetup: Record "Source Code Setup";
     begin
-        PostSustainabilityLine(GenJournalLine);
+        SourceCodeSetup.Get();
+        if (GenJournalLine."Job No." = '') and (SourceCodeSetup."General Journal" = GenJournalLine."Source Code") then
+            PostSustainabilityLine(GenJournalLine);
     end;
 
     local procedure PostSustainabilityLine(var GenJournalLine: Record "Gen. Journal Line")

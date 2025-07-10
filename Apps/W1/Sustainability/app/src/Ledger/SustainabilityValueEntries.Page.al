@@ -122,6 +122,16 @@ page 6248 "Sustainability Value Entries"
                 {
                     ToolTip = 'Specifies the value of the Capacity Ledger Entry No. field.';
                 }
+                field("Job No."; Rec."Job No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the project that the value entry relates to.';
+                }
+                field("Job Task No."; Rec."Job Task No.")
+                {
+                    ApplicationArea = Jobs;
+                    ToolTip = 'Specifies the number of the related project task.';
+                }
                 field(Adjustment; Rec.Adjustment)
                 {
                     ToolTip = 'Specifies the value of the Adjustment field.';

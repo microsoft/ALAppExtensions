@@ -331,6 +331,12 @@ page 30113 "Shpfy Order"
                     Editable = false;
                     ToolTip = 'Specifies the sum of all discount amount on all lines in the document.';
                 }
+                field(RoundingAmount; Rec."Payment Rounding Amount")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    ToolTip = 'Specifies the amount of rounding applied to the total amount of the document.';
+                }
                 field(VATIncluded; Rec."VAT Included")
                 {
                     ApplicationArea = All;

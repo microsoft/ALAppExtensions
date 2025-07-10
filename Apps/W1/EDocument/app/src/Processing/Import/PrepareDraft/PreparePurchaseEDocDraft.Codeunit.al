@@ -113,6 +113,7 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
     var
         EDocumentPurchaseDraft: Page "E-Document Purchase Draft";
     begin
+        EDocumentPurchaseDraft.Editable(true);
         EDocumentPurchaseDraft.SetRecord(EDocument);
         EDocumentPurchaseDraft.Run();
     end;
