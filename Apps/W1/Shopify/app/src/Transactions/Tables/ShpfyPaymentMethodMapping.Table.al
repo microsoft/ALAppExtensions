@@ -53,6 +53,12 @@ table 30134 "Shpfy Payment Method Mapping"
 #endif
         }
 #endif
+        field(6; "Manual Payment Gateway"; Boolean)
+        {
+            Caption = 'Manual Payment Gateway';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
     keys
     {
