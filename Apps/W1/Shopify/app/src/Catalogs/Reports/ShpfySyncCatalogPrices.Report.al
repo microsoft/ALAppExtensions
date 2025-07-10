@@ -24,9 +24,9 @@ report 30116 "Shpfy Sync Catalog Prices"
 
             trigger OnAfterGetRecord()
             begin
-                if CompanyId <> '' then
-                    SyncCatalogPrices.SetCompanyId(CompanyId);
-                SyncCatalogPrices.Run(Shop);
+                this.SetCatalogType(this.CatalogType);
+                this.SyncCatalogPrices.SetCompanyId(this.CompanyId);
+                this.SyncCatalogPrices.Run(Shop);
             end;
         }
     }
@@ -43,6 +43,13 @@ report 30116 "Shpfy Sync Catalog Prices"
                     ApplicationArea = All;
                     Visible = false;
                 }
+                field(ShopifyCatalogType; CatalogType)
+                {
+                    Caption = 'Catalog Type';
+                    Tooltip = 'Specifies the catalog type to sync prices for.';
+                    ApplicationArea = All;
+                    Visible = false;
+                }
             }
         }
     }
@@ -51,4 +58,11 @@ report 30116 "Shpfy Sync Catalog Prices"
         SyncCatalogPrices: Codeunit "Shpfy Sync Catalog Prices";
         CompanyId: Text;
         NoShopSelectedErr: Label 'You must select a shop to sync prices for.';
+        CatalogType: Enum "Shpfy Catalog Type";
+
+    internal procedure SetCatalogType(ShpfyCatalogType: Enum "Shpfy Catalog Type")
+    begin
+        this.CatalogType := ShpfyCatalogType;
+        this.SyncCatalogPrices.SetCatalogType(ShpfyCatalogType);
+    end;
 }
