@@ -20,11 +20,12 @@ report 30121 "Shpfy Add Cust. as Locations"
             RequestFilterFields = "No.";
             trigger OnPreDataItem()
             begin
-                if IsNullGuid(this.ShpfyCompany.SystemId) then
+                if IsNullGuid(ShopifyCompany.SystemId) then
                     Error(MissingCompanyErr);
 
                 Clear(CompanyAPI);
-                CompanyAPI.SetCompany(ShpfyCompany);
+                CompanyAPI.SetCompany(ShopifyCompany);
+                CompanyAPI.SetShop(Shop);
 
                 if GuiAllowed then begin
                     CurrCustomerNo := Customer."No.";
@@ -61,7 +62,7 @@ report 30121 "Shpfy Add Cust. as Locations"
                 group(CompanyFilter)
                 {
                     Caption = 'Options';
-                    field(Shop; ShopCode)
+                    field(Shop; Shop.Code)
                     {
                         ApplicationArea = All;
                         Caption = 'Shop Code';
@@ -83,9 +84,9 @@ report 30121 "Shpfy Add Cust. as Locations"
     }
 
     var
-        ShpfyCompany: Record "Shpfy Company";
+        ShopifyCompany: Record "Shpfy Company";
+        Shop: Record "Shpfy Shop";
         CompanyAPI: Codeunit "Shpfy Company API";
-        ShopCode: Code[20];
         CompanyName: Text[100];
         CurrCustomerNo: Code[20];
         ProcessDialog: Dialog;
@@ -98,8 +99,8 @@ report 30121 "Shpfy Add Cust. as Locations"
     /// <param name="CompanySystemId">The parent company system ID.</param>
     internal procedure SetParentCompany(CompanySystemId: Guid)
     begin
-        this.ShpfyCompany.GetBySystemId(CompanySystemId);
-        this.ShopCode := ShpfyCompany."Shop Code";
-        this.CompanyName := ShpfyCompany.Name;
+        this.ShopifyCompany.GetBySystemId(CompanySystemId);
+        this.Shop.Get(ShopifyCompany."Shop Code");
+        this.CompanyName := ShopifyCompany.Name;
     end;
 }

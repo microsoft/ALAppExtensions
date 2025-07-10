@@ -343,6 +343,7 @@ codeunit 30163 "Shpfy Order Mapping"
             Customer.Get(OrderHeader."Bill-to Customer No.");
             CopyCustomerAddressFieldsFromCustomer(OrderHeader, Customer);
         end;
+        exit(true);
     end;
 
     local procedure CopyCustomerAddressFieldsFromCustomer(var OrderHeader: Record "Shpfy Order Header"; Customer: Record Customer)
