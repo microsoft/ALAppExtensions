@@ -358,7 +358,11 @@ codeunit 6103 "E-Document Subscription"
     var
         WorkFlow: Record Workflow;
         PostedSourceDocumentHeader: RecordRef;
+        IsHandled: Boolean;
     begin
+        OnBeforeCreateEDocumentFromPostedDocument(PostedRecord, IsHandled);
+        if IsHandled then
+            exit;
         PostedSourceDocumentHeader.GetTable(PostedRecord);
         if (DocumentSendingProfile."Electronic Document" <> DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow") then
             exit;
@@ -388,4 +392,9 @@ codeunit 6103 "E-Document Subscription"
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
         DeleteDocumentQst: Label 'This document is linked to E-Document %1. Do you want to continue?', Comment = '%1 - E-Document Entry No.';
         DocumentSendingProfileWithWorkflowErr: Label 'Workflow %1 defined for %2 in Document Sending Profile %3 is not found.', Comment = '%1 - The workflow code, %2 - Enum value set in Electronic Document, %3 - Document Sending Profile Code';
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateEDocumentFromPostedDocument(PostedRecord: Variant; var IsHandled: Boolean)
+    begin
+    end;
 }
