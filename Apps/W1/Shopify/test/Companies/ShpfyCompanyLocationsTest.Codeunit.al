@@ -1,4 +1,4 @@
-codeunit 139542 "Shpfy Company Locations Test"
+codeunit 139539 "Shpfy Company Locations Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
