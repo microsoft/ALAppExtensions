@@ -13,8 +13,8 @@ codeunit 30105 "Shpfy Staff Member API"
     /// <param name="ShopCode">The code of the Shopify shop.</param>
     internal procedure GetStaffMembers(ShopCode: Code[20])
     var
-        ShpfyShop: Record "Shpfy Shop";
-        TempShpfyStaffMember: Record "Shpfy Staff Member" temporary;
+        Shop: Record "Shpfy Shop";
+        TempStaffMember: Record "Shpfy Staff Member" temporary;
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
         GraphQLType: Enum "Shpfy GraphQL Type";
@@ -22,26 +22,25 @@ codeunit 30105 "Shpfy Staff Member API"
         Parameters: Dictionary of [Text, Text];
         Cursor: Text;
     begin
-        ShpfyShop.Get(ShopCode);
-        if not ShpfyShop."B2B Enabled" then
+        Shop.Get(ShopCode);
+        if not Shop."B2B Enabled" then
             exit;
 
-        CommunicationMgt.SetShop(ShpfyShop.Code);
+        CommunicationMgt.SetShop(Shop.Code);
 
         GraphQLType := GraphQLType::GetStaffMembers;
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
-            if JResponse.IsObject() then
-                if this.ExtractStaffMembers(JResponse.AsObject(), Cursor, ShpfyShop.Code, TempShpfyStaffMember) then begin
-                    if Parameters.ContainsKey('After') then
-                        Parameters.Set('After', Cursor)
-                    else
-                        Parameters.Add('After', Cursor);
-                    GraphQLType := GraphQLType::GetNextStaffMembers;
-                end else
-                    break;
+            if JResponse.IsObject() then begin
+                ExtractStaffMembers(JResponse.AsObject(), Cursor, Shop.Code, TempStaffMember);
+                if Parameters.ContainsKey('After') then
+                    Parameters.Set('After', Cursor)
+                else
+                    Parameters.Add('After', Cursor);
+                GraphQLType := GraphQLType::GetNextStaffMembers;
+            end;
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.staffMembers.pageInfo.hasNextPage');
-        this.CreateUpdateStaffMembers(ShopCode, TempShpfyStaffMember);
+        CreateUpdateStaffMembers(ShopCode, TempStaffMember);
     end;
 
     /// <summary>
@@ -51,8 +50,7 @@ codeunit 30105 "Shpfy Staff Member API"
     /// <param name="Cursor">The cursor for pagination.</param>
     /// <param name="ShopCode">The code of the Shopify shop.</param>
     /// <param name="TempStaffMember">The temporary staff member record to populate.</param>
-    /// <returns>True if extraction was successful; otherwise, false.</returns>
-    local procedure ExtractStaffMembers(JResponse: JsonObject; var Cursor: Text; ShopCode: Code[20]; var TempStaffMember: Record "Shpfy Staff Member" temporary): Boolean
+    local procedure ExtractStaffMembers(JResponse: JsonObject; var Cursor: Text; ShopCode: Code[20]; var TempStaffMember: Record "Shpfy Staff Member" temporary)
     var
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
@@ -69,6 +67,7 @@ codeunit 30105 "Shpfy Staff Member API"
                 TempStaffMember.Init();
                 TempStaffMember."Shop Code" := ShopCode;
                 TempStaffMember.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JStaffMemberInfo, 'id'));
+                TempStaffMember."Account Type" := ConvertToAccountType(JsonHelper.GetValueAsText(JStaffMemberInfo, 'accountType'));
                 if Evaluate(TempStaffMember."Account Type", CommunicationMgt.ConvertToCleanOptionValue(JsonHelper.GetValueAsText(JStaffMemberInfo, 'accountType'))) then;
                 TempStaffMember.Active := JsonHelper.GetValueAsBoolean(JStaffMemberInfo, 'active');
                 TempStaffMember.Email := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'email'), 1, MaxStrLen(TempStaffMember.Email));
@@ -82,79 +81,77 @@ codeunit 30105 "Shpfy Staff Member API"
                 TempStaffMember.Phone := CopyStr(JsonHelper.GetValueAsText(JStaffMemberInfo, 'phone'), 1, MaxStrLen(TempStaffMember.Phone));
                 TempStaffMember.Insert(false);
             end;
-        exit(true);
     end;
 
     /// <summary>
     /// Creates or updates staff members in the database based on the temporary staff member record.
     /// </summary>
     /// <param name="ShopCode">The code of the Shopify shop.</param>
-    /// <param name="TempShpfyStaffMember">The temporary staff member record.</param>
-    local procedure CreateUpdateStaffMembers(ShopCode: Code[20]; var TempShpfyStaffMember: Record "Shpfy Staff Member" temporary)
+    /// <param name="TempStaffMember">The temporary staff member record.</param>
+    local procedure CreateUpdateStaffMembers(ShopCode: Code[20]; var TempStaffMember: Record "Shpfy Staff Member" temporary)
     var
         StaffMember: Record "Shpfy Staff Member";
         Modified: Boolean;
         ProcessedStaffMembers: List of [BigInteger];
     begin
-        TempShpfyStaffMember.SetRange("Shop Code", ShopCode);
-        if TempShpfyStaffMember.FindSet() then
+        if TempStaffMember.FindSet() then
             repeat
-                if not ProcessedStaffMembers.Contains(TempShpfyStaffMember.Id) then
-                    ProcessedStaffMembers.Add(TempShpfyStaffMember.Id);
-                if not StaffMember.Get(ShopCode, TempShpfyStaffMember.Id) then begin
+                if not ProcessedStaffMembers.Contains(TempStaffMember.Id) then
+                    ProcessedStaffMembers.Add(TempStaffMember.Id);
+                if not StaffMember.Get(ShopCode, TempStaffMember.Id) then begin
                     StaffMember.Init();
-                    StaffMember.TransferFields(TempShpfyStaffMember);
+                    StaffMember.TransferFields(TempStaffMember);
                     StaffMember.Insert(false);
                 end else begin
                     Modified := false;
-                    if StaffMember."Account Type" <> TempShpfyStaffMember."Account Type" then begin
-                        StaffMember."Account Type" := TempShpfyStaffMember."Account Type";
+                    if StaffMember."Account Type" <> TempStaffMember."Account Type" then begin
+                        StaffMember."Account Type" := TempStaffMember."Account Type";
                         Modified := true;
                     end;
-                    if StaffMember.Active <> TempShpfyStaffMember.Active then begin
-                        StaffMember.Active := TempShpfyStaffMember.Active;
+                    if StaffMember.Active <> TempStaffMember.Active then begin
+                        StaffMember.Active := TempStaffMember.Active;
                         Modified := true;
                     end;
-                    if StaffMember.Email <> TempShpfyStaffMember.Email then begin
-                        StaffMember.Email := TempShpfyStaffMember.Email;
+                    if StaffMember.Email <> TempStaffMember.Email then begin
+                        StaffMember.Email := TempStaffMember.Email;
                         Modified := true;
                     end;
-                    if StaffMember.Exists <> TempShpfyStaffMember.Exists then begin
-                        StaffMember.Exists := TempShpfyStaffMember.Exists;
+                    if StaffMember.Exists <> TempStaffMember.Exists then begin
+                        StaffMember.Exists := TempStaffMember.Exists;
                         Modified := true;
                     end;
-                    if StaffMember."First Name" <> TempShpfyStaffMember."First Name" then begin
-                        StaffMember."First Name" := TempShpfyStaffMember."First Name";
+                    if StaffMember."First Name" <> TempStaffMember."First Name" then begin
+                        StaffMember."First Name" := TempStaffMember."First Name";
                         Modified := true;
                     end;
-                    if StaffMember.Initials <> TempShpfyStaffMember.Initials then begin
-                        StaffMember.Initials := TempShpfyStaffMember.Initials;
+                    if StaffMember.Initials <> TempStaffMember.Initials then begin
+                        StaffMember.Initials := TempStaffMember.Initials;
                         Modified := true;
                     end;
-                    if StaffMember."Shop Owner" <> TempShpfyStaffMember."Shop Owner" then begin
-                        StaffMember."Shop Owner" := TempShpfyStaffMember."Shop Owner";
+                    if StaffMember."Shop Owner" <> TempStaffMember."Shop Owner" then begin
+                        StaffMember."Shop Owner" := TempStaffMember."Shop Owner";
                         Modified := true;
                     end;
-                    if StaffMember."Last Name" <> TempShpfyStaffMember."Last Name" then begin
-                        StaffMember."Last Name" := TempShpfyStaffMember."Last Name";
+                    if StaffMember."Last Name" <> TempStaffMember."Last Name" then begin
+                        StaffMember."Last Name" := TempStaffMember."Last Name";
                         Modified := true;
                     end;
-                    if StaffMember."Locale" <> TempShpfyStaffMember."Locale" then begin
-                        StaffMember."Locale" := TempShpfyStaffMember."Locale";
+                    if StaffMember."Locale" <> TempStaffMember."Locale" then begin
+                        StaffMember."Locale" := TempStaffMember."Locale";
                         Modified := true;
                     end;
-                    if StaffMember.Name <> TempShpfyStaffMember.Name then begin
-                        StaffMember.Name := TempShpfyStaffMember.Name;
+                    if StaffMember.Name <> TempStaffMember.Name then begin
+                        StaffMember.Name := TempStaffMember.Name;
                         Modified := true;
                     end;
-                    if StaffMember.Phone <> TempShpfyStaffMember.Phone then begin
-                        StaffMember.Phone := TempShpfyStaffMember.Phone;
+                    if StaffMember.Phone <> TempStaffMember.Phone then begin
+                        StaffMember.Phone := TempStaffMember.Phone;
                         Modified := true;
                     end;
                     if Modified then
                         StaffMember.Modify(false);
                 end;
-            until TempShpfyStaffMember.Next() = 0;
+            until TempStaffMember.Next() = 0;
         StaffMember.Reset();
         StaffMember.SetRange("Shop Code", ShopCode);
         if StaffMember.FindSet() then
@@ -162,5 +159,16 @@ codeunit 30105 "Shpfy Staff Member API"
                 if not ProcessedStaffMembers.Contains(StaffMember.Id) then
                     StaffMember.Delete(false);
             until StaffMember.Next() = 0;
+    end;
+
+    local procedure ConvertToAccountType(Value: Text): Enum "Shpfy Staff Account Type"
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+    begin
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
+        if Enum::"Shpfy Staff Account Type".Names().Contains(Value) then
+            exit(Enum::"Shpfy Staff Account Type".FromInteger(Enum::"Shpfy Staff Account Type".Ordinals().Get(Enum::"Shpfy Staff Account Type".Names().IndexOf(Value))))
+        else
+            exit(Enum::"Shpfy Staff Account Type"::" ");
     end;
 }

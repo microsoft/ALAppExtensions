@@ -14,7 +14,7 @@ codeunit 30401 "Shpfy GQL NextStaffMembers" implements "Shpfy IGraphQL"
     /// <returns>The GraphQL query as a text string.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{ staffMembers (first: 20, after:\"{{After}}\") { edges { node { accountType active email exists firstName id initials isShopOwner lastName locale name phone } } pageInfo { hasPreviousPage hasNextPage startCursor endCursor } } }"}');
+        exit('{"query":"{ staffMembers (first: 20, after:\"{{After}}\") { edges { node { accountType active email exists firstName id initials isShopOwner lastName locale name phone } } pageInfo { hasNextPage endCursor } } }"}');
     end;
 
     /// <summary>

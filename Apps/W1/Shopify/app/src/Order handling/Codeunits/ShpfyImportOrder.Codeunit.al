@@ -304,12 +304,16 @@ codeunit 30161 "Shpfy Import Order"
 
     local procedure RetrieveOrderHeaderJson(OrderId: BigInteger; var JOrder: JsonObject): Boolean
     var
-        ShpfyOrdersAPI: Codeunit "Shpfy Orders API";
+        Parameters: Dictionary of [Text, Text];
         JResponse: JsonToken;
         GraphQuery: Text;
     begin
-        GraphQuery := ShpfyOrdersAPI.CreateOrderGraphQLQuery(OrderId);
-        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
+        Parameters.Add('OrderId', Format(OrderId));
+        if Shop."B2B Enabled" then
+            Parameters.Add('StaffMember', 'staffMember { id }')
+        else
+            Parameters.Add('StaffMember', '');
+        JResponse := CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::GetOrderHeader, Parameters);
         exit(JsonHelper.GetJsonObject(JResponse, JOrder, 'data.order'));
     end;
 

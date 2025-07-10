@@ -6,7 +6,7 @@ namespace Microsoft.Integration.Shopify;
 page 30171 "Shpfy Staff Mapping"
 {
     ApplicationArea = All;
-    Caption = 'Shopify Staff Mapping';
+    Caption = 'Shopify Staff Member Mapping';
     DeleteAllowed = false;
     InsertAllowed = false;
     PageType = List;
@@ -48,9 +48,9 @@ page 30171 "Shpfy Staff Mapping"
 
                 trigger OnAction()
                 var
-                    ShpfyStaffAPI: Codeunit "Shpfy Staff Member API";
+                    StaffMemberAPI: Codeunit "Shpfy Staff Member API";
                 begin
-                    ShpfyStaffAPI.GetStaffMembers(CopyStr(Rec.GetFilter("Shop Code"), 1, 20));
+                    StaffMemberAPI.GetStaffMembers(CopyStr(Rec.GetFilter("Shop Code"), 1, 20));
                 end;
             }
         }
