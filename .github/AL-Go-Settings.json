@@ -39,9 +39,6 @@
   "excludeEnvironments": [
     "Official-Build"
   ],
-  "buildModes": [
-    "Translated"
-  ],
   "CICDPushBranches": [],
   "CICDSchedule": "0 2 * * *",
   "CICDPullRequestBranches": [
