@@ -58,9 +58,13 @@ codeunit 6126 "Line To Account LLM Matching" implements "AOAI Function"
             exit(Result);
 
         // Build prompt
+        EDocumentPurchaseLinesTxt := BuildEDocumentPurchaseLines(EDocumentPurchaseLine, LineDictionary);
+        if LineDictionary.Keys().Count() = 0 then begin
+            Session.LogMessage('0000POF', 'No invoice lines are being sent to Copilot. There are either none, or they all have an account number.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
+            exit(Result);
+        end;
         FindGLAccountsPromptSecTxt := BuildMostAppropriateGLAccountPromptTask();
         GLAccountsTxt := BuildGLAccounts();
-        EDocumentPurchaseLinesTxt := BuildEDocumentPurchaseLines(EDocumentPurchaseLine, LineDictionary);
         EstimateGLAccInstrTokenCount := AOAIToken.GetGPT4TokenCount(FindGLAccountsPromptSecTxt) + AOAIToken.GetGPT4TokenCount(GLAccountsTxt);
 
         // if GL Account list and instructional part of the prompt are too big, over token limit, we log a warning
@@ -258,10 +262,6 @@ codeunit 6126 "Line To Account LLM Matching" implements "AOAI Function"
                     LineDictionary.Add(EDocumentPurchaseLine."Line No.", EDocumentPurchaseLine.Description);
                 end;
             until EDocumentPurchaseLine.Next() = 0;
-
-        if LineDictionary.Keys().Count() = 0 then
-            Session.LogMessage('0000POF', 'No invoice lines are being sent to Copilot. There are either none, or they all have an account number.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
-
         exit(LocalStatementLines);
     end;
 

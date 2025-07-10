@@ -216,7 +216,7 @@ report 30118 "Shpfy Suggest Payments"
         AmountToApply: Decimal;
         Applied: Boolean;
     begin
-        AmountToApply := OrderTransaction.Amount;
+        AmountToApply := OrderTransaction.Amount + OrderTransaction."Rounding Amount";
 
         case OrderTransaction.Type of
             OrderTransaction.Type::Capture, OrderTransaction.Type::Sale:

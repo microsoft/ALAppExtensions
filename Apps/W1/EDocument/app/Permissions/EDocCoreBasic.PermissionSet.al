@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN27
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -12,7 +13,10 @@ permissionset 6103 "E-Doc. Core - Basic"
 {
     Access = Public;
     Assignable = true;
-    Caption = 'E-Document Core - Basic';
+    Caption = 'E-Document - Basic';
+    ObsoleteReason = 'Replaced by "E-Doc. Core - User" and "E-Doc. Core - Admin"';
+    ObsoleteState = Pending;
+    ObsoleteTag = '27.0';
 
     IncludedPermissionSets = "E-Doc. Core - Read";
 
@@ -31,3 +35,4 @@ permissionset 6103 "E-Doc. Core - Basic"
         tabledata "E-Doc. Order Match" = imd,
         tabledata "Service Participant" = imd;
 }
+#endif

@@ -95,6 +95,8 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JCompany: JsonObject;
         JMainContact: JsonObject;
         JCustomer: JsonObject;
+        JDefaultEmailAddress: JsonObject;
+        JDefaultPhoneNumber: JsonObject;
         JArray: JsonArray;
         Price: Decimal;
         ItemPrice: Decimal;
@@ -134,8 +136,8 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('closedAt', JNull);
         JOrder.Add('test', true);
         JOrder.Add('email', Customer."E-Mail");
-        JOrder.Add('phone', Customer."Phone No.");
         JOrder.Add('customer', CreateCustomer(Customer, ShopifyCustomer));
+        JOrder.Add('phone', Customer."Phone No.");
         JOrder.Add('displayAddress', CreateAddress(Customer, AddressId, false, false));
         JOrder.Add('shippingAddress', CreateAddress(Customer, AddressId, true, true));
         JOrder.Add('billingAddressMatchesShippingAddress', true);
@@ -183,8 +185,10 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('totalTipReceivedSet', AddPriceSet(0));
         if B2B then begin
             JCustomer.Add('legacyResourceId', ShopifyCustomer.Id);
-            JCustomer.Add('email', ShopifyCustomer.Email);
-            JCustomer.Add('phone', ShopifyCustomer."Phone No.");
+            JDefaultEmailAddress.Add('emailAddress', ShopifyCustomer.Email);
+            JCustomer.Add('defaultEmailAddress', JDefaultEmailAddress);
+            JDefaultPhoneNumber.Add('phoneNumber', ShopifyCustomer."Phone No.");
+            JCustomer.Add('defaultPhoneNumber', JDefaultPhoneNumber);
             JMainContact.Add('id', 'gid://shopify/CompanyContact/1234567890');
             JMainContact.Add('customer', JCustomer);
             JCompany.Add('id', CreateCompany(Customer, ShopifyCustomer));
@@ -401,14 +405,18 @@ codeunit 139607 "Shpfy Order Handling Helper"
     var
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
         JNull: JsonValue;
+        JDefaultEmailAddress: JsonObject;
+        JDefaultPhoneNumber: JsonObject;
     begin
         CustomerInitTest.CreateShopifyCustomer(ShopifyCustomer);
         ShopifyCustomer."Customer SystemId" := Customer.SystemId;
         ShopifyCustomer.Modify();
         JNull.SetValueToNull();
         JCustomer.Add('legacyResourceId', ShopifyCustomer.Id);
-        JCustomer.Add('email', Customer."E-Mail");
-        JCustomer.Add('phone', Customer."Phone No.");
+        JDefaultEmailAddress.Add('emailAddress', Customer."E-Mail");
+        JCustomer.Add('defaultEmailAddress', JDefaultEmailAddress);
+        JDefaultPhoneNumber.Add('phoneNumber', Customer."Phone No.");
+        JCustomer.Add('defaultPhoneNumber', JDefaultPhoneNumber);
         JCustomer.Add('defaultAddress', CreateCustomerAddress(Customer));
     end;
 

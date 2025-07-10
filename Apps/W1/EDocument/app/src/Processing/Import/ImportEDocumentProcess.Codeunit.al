@@ -20,6 +20,9 @@ codeunit 6104 "Import E-Document Process"
     InherentEntitlements = X;
     InherentPermissions = X;
 
+    Permissions =
+        tabledata "E-Document" = m;
+
     trigger OnRun()
     var
         EDocumentLog: Codeunit "E-Document Log";

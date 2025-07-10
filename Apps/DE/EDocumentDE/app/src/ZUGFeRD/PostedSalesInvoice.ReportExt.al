@@ -9,6 +9,7 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
 {
     trigger OnPreReport()
     begin
+        OnPreReportOnBeforeInitializePDF(Header, CreateZUGFeRDXML);
         Clear(PDFDocument);
         PDFDocument.Initialize();
     end;
@@ -30,6 +31,9 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
         DataType: Enum "PDF Attach. Data Relationship";
     begin
         if CurrReport.TargetFormat <> ReportFormat::PDF then
+            exit;
+
+        if not CreateZUGFeRDXML then
             exit;
         Name := 'factur-x.xml';
         FileName := CreateXmlFile(Name);
@@ -57,6 +61,12 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
         FileObject.Close();
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnPreReportOnBeforeInitializePDF(SalesInvHeader: Record "Sales Invoice Header"; var CreateZUGFeRDXML: Boolean)
+    begin
+    end;
+
     var
         PDFDocument: Codeunit "PDF Document";
+        CreateZUGFeRDXML: Boolean;
 }

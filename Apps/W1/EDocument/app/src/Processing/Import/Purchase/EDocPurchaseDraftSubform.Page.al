@@ -58,11 +58,36 @@ page 6183 "E-Doc. Purchase Draft Subform"
                 {
                     ApplicationArea = All;
                     Editable = true;
+                    trigger OnValidate()
+                    begin
+                        CalcLineAmount();
+                    end;
                 }
                 field("Direct Unit Cost"; Rec."Unit Price")
                 {
                     ApplicationArea = All;
                     Editable = true;
+                    trigger OnValidate()
+                    begin
+                        CalcLineAmount();
+                    end;
+                }
+                field("Total Discount"; Rec."Total Discount")
+                {
+                    Caption = 'Line Discount';
+                    ApplicationArea = All;
+                    Editable = true;
+                    trigger OnValidate()
+                    begin
+                        CalcLineAmount();
+                    end;
+                }
+                field("Line Amount"; LineAmount)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Line Amount';
+                    ToolTip = 'Specifies the line amount.';
+                    Editable = false;
                 }
                 field("Deferral Code"; Rec."[BC] Deferral Code")
                 {
@@ -141,6 +166,7 @@ page 6183 "E-Doc. Purchase Draft Subform"
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
         EDocPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
         AdditionalColumns: Text;
+        LineAmount: Decimal;
         DimVisible1, DimVisible2, HasAdditionalColumns : Boolean;
         HistoryCantBeRetrievedErr: Label 'The purchase invoice that matched historically with this line can''t be opened.';
 
@@ -155,6 +181,7 @@ page 6183 "E-Doc. Purchase Draft Subform"
         AdditionalColumns := Rec.AdditionalColumnsDisplayText();
 
         SetHasAdditionalColumns();
+        CalcLineAmount();
     end;
 
     local procedure SetDimensionsVisibility()
@@ -167,6 +194,11 @@ page 6183 "E-Doc. Purchase Draft Subform"
 
         DimMgt.UseShortcutDims(
           DimVisible1, DimVisible2, DimOther, DimOther, DimOther, DimOther, DimOther, DimOther);
+    end;
+
+    local procedure CalcLineAmount()
+    begin
+        LineAmount := (Rec.Quantity * Rec."Unit Price") - Rec."Total Discount";
     end;
 
     local procedure SetHasAdditionalColumns()

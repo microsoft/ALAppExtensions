@@ -1,10 +1,8 @@
 namespace Microsoft.Integration.Shopify;
 
-// https://shopify.dev/docs/admin-api/rest/reference/shipping-and-fulfillment/fulfillment
-
-
 /// <summary>
 /// Enum Shpfy Tracking Companies (ID 30122).
+/// Represented by shopify.dev/docs/admin-api/rest/reference/shipping-and-fulfillment/fulfillment
 /// </summary>
 enum 30122 "Shpfy Tracking Companies"
 {

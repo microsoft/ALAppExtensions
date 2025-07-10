@@ -6,11 +6,11 @@ namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using Microsoft.EServices.EDocument;
 using System.Text;
-using Microsoft.eServices.EDocument.Integration;
 using System.Utilities;
 using System.Integration;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using System.Telemetry;
+using Microsoft.eServices.EDocument.Integration;
 
 codeunit 6381 "Drive Processing"
 {
@@ -355,6 +355,7 @@ codeunit 6381 "Drive Processing"
         end;
         exit(ImportedDocumentsFolderId);
     end;
+
 
     local procedure CheckSetupEnabled(var OneDriveSetup: Record "OneDrive Setup")
     begin

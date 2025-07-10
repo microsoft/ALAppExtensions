@@ -103,6 +103,13 @@ page 30145 "Shpfy Refund"
                     MultiLine = true;
                     Style = Attention;
                 }
+                field(CallStack; Rec.GetLastErrorCallStack())
+                {
+                    Caption = 'Error Call Stack';
+                    ApplicationArea = All;
+                    MultiLine = true;
+                    ToolTip = 'Specifies the processing error callstack.';
+                }
             }
         }
         area(FactBoxes)

@@ -1628,7 +1628,7 @@ codeunit 18479 "GST Subcontracting"
         ProdOrderLine.FindFirst();
         for i := 1 to ProdOrderLine.Quantity do begin
             SlNo := NoSeries.GetNextNo(MainItem."Serial Nos.");
-            LibraryItemTracking.CreateProdOrderItemTracking(ReservationEntry, ProdOrderLine, SlNo, '', 1);
+            LibraryMfg.CreateProdOrderItemTracking(ReservationEntry, ProdOrderLine, SlNo, '', 1);
         end;
     end;
 

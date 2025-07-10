@@ -363,7 +363,7 @@ codeunit 30189 "Shpfy Variant API"
         if ShopifyVariant.Barcode = '' then
             exit(false);
 
-        Parameters.Add('Barcode', ShopifyVariant.Barcode);
+        Parameters.Add('Barcode', ShopifyVariant.Barcode.Replace('.', '\\\\.'));
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::FindVariantByBarcode, Parameters);
         if JsonHelper.GetJsonArray(JResponse, JArray, 'data.productVariants.edges') then
             if JArray.Count = 1 then

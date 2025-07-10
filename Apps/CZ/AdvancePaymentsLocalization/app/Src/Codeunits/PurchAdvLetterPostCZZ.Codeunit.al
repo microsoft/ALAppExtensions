@@ -332,6 +332,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 InitGenJournalLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
                 GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
                 AdvancePostingBufferCZZ.ReverseAmounts();
+                AdvancePostingBufferCZZ."VAT Amount" := 0;
+                AdvancePostingBufferCZZ."VAT Base Amount" := 0;
                 GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
                 if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
                     OnPostAdvancePaymentVATOnBeforePostBalance(
@@ -652,6 +654,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 PurchAdvLetterEntryCZZ2."Entry Type"::"VAT Usage":
                     begin
                         AdvancePostingParametersCZZ2.InitNew(AdvancePostingParametersCZZ);
+                        AdvancePostingParametersCZZ2."External Document No." := PurchAdvLetterEntryCZZ2."External Document No.";
                         AdvancePostingParametersCZZ2."Currency Code" := PurchAdvLetterEntryCZZ2."Currency Code";
                         AdvancePostingParametersCZZ2."Currency Factor" := PurchAdvLetterEntryCZZ2."Currency Factor";
 
@@ -1561,6 +1564,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             AdvancePostingParametersCZZ2."Document Type" := "Gen. Journal Document Type"::" ";
             InitGenJournalLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
             GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
+            AdvancePostingBufferCZZ."VAT Amount" := 0;
+            AdvancePostingBufferCZZ."VAT Base Amount" := 0;
             GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
             if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
                 OnReverseAdvancePaymentVATOnBeforePostBalance(
