@@ -12,6 +12,7 @@ permissionset 4768 "Contoso Demo - Objects"
                   table "Manufacturing Module Setup" = X,
                   table "Service Module Setup" = X,
                   table "Warehouse Module Setup" = X,
+                  table "Analytics Module Setup" = X,
                   table "Contoso Coffee Demo Data Setup" = X,
                   table "Contoso Demo Data Module" = X,
                   table "Contoso Module Dependency" = X,
