@@ -104,7 +104,7 @@ report 6210 "Emission By Category"
     requestpage
     {
         AboutText = 'This report presents information on greenhouse gas (GHG) emissions categorized by Sustainability Categories.';
-        AboutTitle = 'Emission By Category';
+        AboutTitle = 'About Emission By Category';
     }
     rendering
     {
@@ -158,7 +158,6 @@ report 6210 "Emission By Category"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
-        TimezoneLabel = 'UTC';
     }
     trigger OnPreReport()
     var

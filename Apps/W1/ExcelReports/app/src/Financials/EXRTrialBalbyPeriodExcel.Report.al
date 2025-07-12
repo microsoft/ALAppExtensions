@@ -140,7 +140,6 @@ report 4408 "EXR Trial Bal by Period Excel"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
-        TimezoneLabel = 'UTC';
     }
     trigger OnPreReport()
     var
