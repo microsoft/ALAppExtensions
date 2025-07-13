@@ -99,6 +99,36 @@ table 4402 "EXR Trial Balance Buffer"
             AutoFormatType = 1;
             AutoFormatExpression = '';
         }
+        field(16; "Starting Balance"; Decimal)
+        {
+            Caption = 'Starting Balance';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
+
+            trigger OnValidate()
+            begin
+                if ("Starting Balance" > 0) then begin
+                    Validate("Starting Balance (Debit)", "Starting Balance");
+                    Validate("Starting Balance (Credit)", 0);
+                end
+                else begin
+                    Validate("Starting Balance (Credit)", -"Starting Balance");
+                    Validate("Starting Balance (Debit)", 0);
+                end;
+            end;
+        }
+        field(17; "Starting Balance (Debit)"; Decimal)
+        {
+            Caption = 'Starting Balance (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
+        }
+        field(18; "Starting Balance (Credit)"; Decimal)
+        {
+            Caption = 'Starting Balance (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
+        }
         field(20; "Budget (Net)"; Decimal)
         {
             Caption = 'Budget';
@@ -211,7 +241,7 @@ table 4402 "EXR Trial Balance Buffer"
 
             trigger OnValidate()
             begin
-                if ("Net Change" > 0) then begin
+                if ("Net Change (ACY)" > 0) then begin
                     Validate("Net Change (Debit) (ACY)", "Net Change (ACY)");
                     Validate("Net Change (Credit) (ACY)", 0);
                 end
@@ -241,7 +271,7 @@ table 4402 "EXR Trial Balance Buffer"
 
             trigger OnValidate()
             begin
-                if ("Balance" > 0) then begin
+                if ("Balance (ACY)" > 0) then begin
                     Validate("Balance (Debit) (ACY)", "Balance (ACY)");
                     Validate("Balance (Credit) (ACY)", 0);
                 end
@@ -263,6 +293,36 @@ table 4402 "EXR Trial Balance Buffer"
             AutoFormatType = 1;
             AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
+        field(116; "Starting Balance (ACY)"; Decimal)
+        {
+            Caption = 'Starting Balance';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
+
+            trigger OnValidate()
+            begin
+                if ("Starting Balance (ACY)" > 0) then begin
+                    Validate("Starting Balance (Debit) (ACY)", "Starting Balance (ACY)");
+                    Validate("Starting Balance (Credit)(ACY)", 0);
+                end
+                else begin
+                    Validate("Starting Balance (Credit)(ACY)", -"Starting Balance (ACY)");
+                    Validate("Starting Balance (Debit) (ACY)", 0);
+                end;
+            end;
+        }
+        field(117; "Starting Balance (Debit) (ACY)"; Decimal)
+        {
+            Caption = 'Starting Balance (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
+        }
+        field(118; "Starting Balance (Credit)(ACY)"; Decimal)
+        {
+            Caption = 'Starting Balance (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
+        }
         field(150; "Last Period Net (ACY)"; Decimal)
         {
             Caption = 'Last Period Net';
@@ -271,7 +331,7 @@ table 4402 "EXR Trial Balance Buffer"
 
             trigger OnValidate()
             begin
-                if ("Last Period Net" > 0) then begin
+                if ("Last Period Net (ACY)" > 0) then begin
                     Validate("Last Period Net (Debit) (ACY)", "Last Period Net (ACY)");
                     Validate("Last Period Net (Credit) (ACY)", 0);
                 end
@@ -301,7 +361,7 @@ table 4402 "EXR Trial Balance Buffer"
 
             trigger OnValidate()
             begin
-                if ("Last Period Bal." > 0) then begin
+                if ("Last Period Bal. (ACY)" > 0) then begin
                     Validate("Last Period Bal. (Debit) (ACY)", "Last Period Bal. (ACY)");
                     Validate("Last Period Bal. (Cred.) (ACY)", 0);
                 end
