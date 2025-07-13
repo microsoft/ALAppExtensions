@@ -2,6 +2,7 @@ namespace Microsoft.Finance.ExcelReports;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.Consolidation;
 using Microsoft.Finance.Dimension;
+using System.Utilities;
 
 codeunit 4410 "Trial Balance"
 {
@@ -124,8 +125,23 @@ codeunit 4410 "Trial Balance"
     end;
 
     local procedure InsertTrialBalanceDataForGLAccountWithFilters(var GLAccount: Record "G/L Account"; Dimension1ValueCode: Code[20]; Dimension2ValueCode: Code[20]; BusinessUnitCode: Code[20]; var TrialBalanceData: Record "EXR Trial Balance Buffer"; var Dimension1Values: Record "Dimension Value" temporary; var Dimension2Values: Record "Dimension Value" temporary)
+    var
+        GLAccount2: Record "G/L Account";
+        DateRec: Record Date;
     begin
         Clear(TrialBalanceData);
+        if GLAccount.GetFilter("Date Filter") <> '' then begin
+            DateRec.SetRange("Period Type", DateRec."Period Type"::Date);
+            DateRec.SetFilter("Period Start", GLAccount.GetFilter("Date Filter"));
+            DateRec.SetFilter("Period End", '%1..', 17530101D);
+            if DateRec.FindFirst() then begin
+                GLAccount2.Copy(GLAccount);
+                GLAccount2.SetFilter("Date Filter", '..%1', DateRec."Period Start" - 1);
+                GLAccount2.CalcFields("Balance at Date", "Add.-Currency Balance at Date");
+                TrialBalanceData.Validate("Starting Balance", GLAccount2."Balance at Date");
+                TrialBalanceData.Validate("Starting Balance (ACY)", GLAccount2."Add.-Currency Balance at Date");
+            end;
+        end;
         GlAccount.CalcFields("Net Change", "Balance at Date", "Additional-Currency Net Change", "Add.-Currency Balance at Date", "Budgeted Amount", "Budget at Date");
         TrialBalanceData."G/L Account No." := GlAccount."No.";
         TrialBalanceData."Dimension 1 Code" := Dimension1ValueCode;
