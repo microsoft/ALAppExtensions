@@ -2,7 +2,7 @@
   "id": "f4a198ad-cd8c-44bb-aff1-814e0e28ab79",
   "name": "E-Document Connector - Logiq",
   "publisher": "Microsoft",
-  "version": "$(app_currentVersion)",
+  "version": "27.0.0.0",
   "brief": "E-Document Connector - Logiq",
   "description": "E-Document Connector - Logiq",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,7 +16,7 @@
       "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
       "name": "E-Document Core",
       "publisher": "Microsoft",
-      "version": "$(app_minimumVersion)"
+      "version": "27.0.0.0"
     }
   ],
   "internalsVisibleTo": [
@@ -27,8 +27,8 @@
     }
   ],
   "screenshots": [],
-  "platform": "$(app_platformVersion)",
-  "application": "$(app_minimumVersion)",
+  "platform": "27.0.0.0",
+  "application": "27.0.0.0",
   "idRanges": [
     {
       "from": 6430,
