@@ -319,6 +319,11 @@ codeunit 5143 "Contoso Item"
     end;
 
     procedure InsertItemJournalLine(TemplateName: Code[10]; BatchName: Code[10]; ItemNo: Code[20]; DocumentNo: Code[20]; EntryType: Enum "Item Ledger Entry Type"; Quantity: Decimal; LocationCode: Code[10]; PostingDate: Date)
+    begin
+        InsertItemJournalLine(TemplateName, BatchName, ItemNo, DocumentNo, EntryType, Quantity, LocationCode, PostingDate, true);
+    end;
+
+    procedure InsertItemJournalLine(TemplateName: Code[10]; BatchName: Code[10]; ItemNo: Code[20]; DocumentNo: Code[20]; EntryType: Enum "Item Ledger Entry Type"; Quantity: Decimal; LocationCode: Code[10]; PostingDate: Date; WithLineNoGap: Boolean)
     var
         ItemJournalLine: Record "Item Journal Line";
         ItemJnlBatch: Record "Item Journal Batch";
@@ -326,7 +331,7 @@ codeunit 5143 "Contoso Item"
     begin
         ItemJournalLine.Validate("Journal Template Name", TemplateName);
         ItemJournalLine.Validate("Journal Batch Name", BatchName);
-        ItemJournalLine.Validate("Line No.", GetNextItemJournalLineNo(TemplateName, BatchName));
+        ItemJournalLine.Validate("Line No.", GetNextItemJournalLineNo(TemplateName, BatchName, WithLineNoGap));
         ItemJournalLine.Validate("Item No.", ItemNo);
         ItemJournalLine.Validate("Entry Type", EntryType);
         if DocumentNo = '' then begin
@@ -343,7 +348,7 @@ codeunit 5143 "Contoso Item"
         ItemJournalLine.Insert(true);
     end;
 
-    local procedure GetNextItemJournalLineNo(TemplateName: Code[10]; BatchName: Code[10]): Integer
+    local procedure GetNextItemJournalLineNo(TemplateName: Code[10]; BatchName: Code[10]; WithGap: Boolean): Integer
     var
         ItemJournalLine: Record "Item Journal Line";
     begin
@@ -352,7 +357,10 @@ codeunit 5143 "Contoso Item"
         ItemJournalLine.SetCurrentKey("Line No.");
 
         if ItemJournalLine.FindLast() then
-            exit(ItemJournalLine."Line No." + 10000)
+            if WithGap then
+                exit(ItemJournalLine."Line No." + 10000)
+            else
+                exit(ItemJournalLine."Line No." + 1)
         else
             exit(10000);
     end;

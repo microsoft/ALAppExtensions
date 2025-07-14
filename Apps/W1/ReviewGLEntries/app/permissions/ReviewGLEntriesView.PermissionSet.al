@@ -13,5 +13,8 @@ permissionset 22220 "Review G/L Entries - View"
     IncludedPermissionSets = "Review G/L Entries - Read";
 
     Permissions = tabledata "G/L Entry Review Log" = imd,
+#if not CLEAN27
+                  tabledata "G/L Entry Review Entry" = imd,
+#endif
                   tabledata "G/L Entry Review Setup" = imd;
 }

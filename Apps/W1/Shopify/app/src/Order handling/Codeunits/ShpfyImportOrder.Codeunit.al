@@ -396,7 +396,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Sell-to County")).Value := ICountyFromJson.County(JsonHelper.GetJsonObject(JOrder, 'displayAddress'));
         JsonHelper.GetValueIntoField(JOrder, 'displayAddress.zip', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to Post Code"));
         if EMail = '' then begin
-            EMail := JsonHelper.GetValueAsText(JOrder, 'customer.defaultEmailAddress.email');
+            EMail := JsonHelper.GetValueAsText(JOrder, 'customer.defaultEmailAddress.emailAddress');
             if EMail <> '' then
                 OrderHeaderRecordRef.Field(OrderHeader.FieldNo(Email)).Value := CopyStr(EMail, 1, MaxStrLen(OrderHeader.Email));
         end;
@@ -472,7 +472,7 @@ codeunit 30161 "Shpfy Import Order"
                 MainContactId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrder, 'purchasingEntity.company.mainContact.id'));
                 OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Company Main Contact Id")).Value := MainContactId;
                 JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.mainContact.customer.legacyResourceId', OrderHeaderRecordRef, OrderHeader.FieldNo("Company Main Contact Cust. Id"));
-                JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.mainContact.customer.defaultEmailAddress.email', OrderHeaderRecordRef, OrderHeader.FieldNo("Company Main Contact Email"));
+                JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.mainContact.customer.defaultEmailAddress.emailAddress', OrderHeaderRecordRef, OrderHeader.FieldNo("Company Main Contact Email"));
                 JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.mainContact.customer.defaultPhoneNumber.phoneNumber', OrderHeaderRecordRef, OrderHeader.FieldNo("Company Main Contact Phone No."));
                 if Format(OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Sell-to Customer Name")).Value) = '' then
                     JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.name', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to Customer Name"));

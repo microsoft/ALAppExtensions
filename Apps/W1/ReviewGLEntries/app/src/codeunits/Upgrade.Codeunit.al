@@ -19,7 +19,7 @@ codeunit 22201 "Upgrade"
         GlEntry: Record "G/L Entry";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeReviewGLEntryTag) then exit;
+        if UpgradeTag.HasUpgradeTag(UpgradeReviewGLEntryTag()) then exit;
 
         if GLEntryReviewEntry.FindSet() then
             repeat
@@ -34,7 +34,7 @@ codeunit 22201 "Upgrade"
                 GLEntryReviewLog.Insert(true);
             until GLEntryReviewEntry.Next() = 0;
 
-        UpgradeTag.SetUpgradeTag(UpgradeReviewGLEntryTag);
+        UpgradeTag.SetUpgradeTag(UpgradeReviewGLEntryTag());
     end;
 
 
