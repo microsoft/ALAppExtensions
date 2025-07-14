@@ -1,0 +1,194 @@
+﻿InvtID,ClassID,Descr,DfltPOUnit,LastCost,LotSerIssMthd,LotSerTrack,SerAssign,StdCost,StkBasePrc,StkItem,StkUnit,TranStatusCode,ValMthd
+0RBOLT                        ,MMGWO ,Carriage Bolts                                              ,EA    ,0.299999999999999989,,NN,,0.033000000000000002,0,1,EA    ,AC,L
+0RCHAIN                       ,MMGWO ,Bicycle Chain                                               ,FT    ,0.75,,NN,,0.824999999999999956,0,1,FT    ,AC,F
+0RCHAINGUARD                  ,MMGWO ,Bicycle Chainguard                                          ,EA    ,1.80000000000000004,,NN,,1.97999999999999998,0,1,EA    ,AC,A
+0RCOASTBRAKE                  ,MMGWO ,Coasting Brake Mechanism                                    ,EA    ,5.20000000000000018,,NN,,7.21999999999999975,0,1,EA    ,AC,T
+0RCRANK                       ,MMGWO ,Bicycle Crank                                               ,EA    ,2,,NN,,2.20000000000000018,0,1,EA    ,AC,L
+0RCRANK SNR                   ,MMGWO ,Crank - Serialized on Receipt                               ,EA    ,0,F,SI,R,4,0,1,EA    ,AC,L
+0RCRANK SNU                   ,MMGWO ,Crank - Serialized on Use                                   ,EA    ,0,F,SI,U,4.04999999999999982,0,1,EA    ,AC,L
+0RCRANK-ASSMBLY               ,MMGWO ,Retro Crank Assembly                                        ,EA    ,12.0099999999999998,,NN,,12.5489999999999995,0,1,EA    ,AC,L
+0RCRANK-ASSY SNR              ,MMGWO ,Retro Crank Assembly - Serialized on receipt                ,EA    ,15.2550000000000008,F,SI,R,0,0,1,EA    ,AC,L
+0RCRANK-ASSY SRU              ,MMGWO ,Retro Crank Assembly - Serialized on use                    ,EA    ,19.5799999999999983,F,SI,U,0,0,1,EA    ,AC,L
+0RETRO24                      ,MMGWO ,Premier Edition Retro-Bike (24" size)                     ,EA    ,220.994,,NN,,244.346000000000004,330,1,EA    ,AC,F
+0RFRAME24                     ,MMGWO ,Unisex 24" Retro Bicycle Frame                          ,EA    ,15.1999999999999993,,NN,,16.7199999999999989,0,1,EA    ,AC,L
+0RFRONTHUB                    ,MMGWO ,Front Wheel Hub                                             ,EA    ,2.5,,NN,,2.92600000000000016,0,1,EA    ,AC,L
+0RFRONTWHEEL24                ,MMGWO ,24" Front Wheel Assembly                                  ,EA    ,45,,NN,,45.4279999999999973,0,1,EA    ,AC,A
+0RHANDLBAR                    ,MMGWO ,Bicycle Handlebar                                           ,EA    ,7.5,,NN,,8.25,0,1,EA    ,AC,L
+0RKIT                         ,MMGWO ,Inventory Kit for demonstrating Kits                        ,EA    ,0,,NN,,0,0,1,EA    ,AC,L
+0RLABOR ENG                   ,MMGWO ,Engineering Labor                                           ,HR    ,0,,NN,,21,0,0,HR    ,AC,T
+0RLABOR SHOP                  ,MMGWO ,Shop Labor                                                  ,HR    ,0,,NN,,15,0,0,HR    ,AC,T
+0RNUT                         ,MMGWO ,Hex Nut                                                     ,EA    ,0.100000000000000006,,NN,,0.010999999999999999,0,1,EA    ,AC,L
+0RPEDAL                       ,MMGWO ,Retro Bicycle Pedal                                         ,EA    ,1.25,,NN,,1.375,0,1,EA    ,AC,L
+0RREARHUB                     ,MMGWO ,Rear Wheel Hub                                              ,EA    ,4.5,,NN,,6,0,1,EA    ,AC,T
+0RREARWHEEL24                 ,MMGWO ,24" Rear Wheel Assembly                                   ,EA    ,52.9969999999999999,,NN,,52.9969999999999999,0,1,EA    ,AC,T
+0RRIM24                       ,MMGWO ,24" Wheel Rim                                             ,EA    ,8,,NN,,8.80000000000000071,0,1,EA    ,AC,L
+0RSCRAP-COMP                  ,MMGWO ,Component Scrap - GL mapping                                ,EA    ,0,,NN,,0,0,0,EA    ,AC,U
+0RSCRAP-PROD                  ,MMGWO ,Component Scrap - GL mapping                                ,EA    ,0,,NN,,0,0,0,EA    ,AC,U
+0RSEAT                        ,MMGWO ,Retro Bicycle Seat (Unisex)                                 ,EA    ,3.5,,NN,,3.85000000000000009,0,1,EA    ,AC,L
+0RSEATASSMBLY                 ,MMGWO ,Seat Assembly                                               ,EA    ,15,,NN,,14.9939999999999998,0,1,EA    ,AC,L
+0RSEATCLAMP                   ,MMGWO ,Seat Clamp                                                  ,EA    ,0.25,,NN,,0.275000000000000022,0,1,EA    ,AC,L
+0RSEAT-PERF                   ,MMGWO ,Performance Bicycle Seat                                    ,EA    ,5,,NN,,0,10,1,EA    ,AC,A
+0RSEAT-PERF-ASSY              ,MMGWO ,Performance Seat Assembly                                   ,EA    ,0,,NN,,0,15,1,EA    ,AC,A
+0RSEATPOST                    ,MMGWO ,Bicycle Seat Post                                           ,EA    ,0.75,,NN,,0.824999999999999956,0,1,EA    ,AC,L
+0RSPOKE24                     ,MMGWO ,24" Retro Spoke                                           ,EA    ,0.029999999999999999,,NN,,0.033000000000000002,0,1,EA    ,AC,L
+0RTIRE24                      ,MMGWO ,24" Retro Tire                                            ,EA    ,1.19999999999999996,,NN,,1.32000000000000006,0,1,EA    ,AC,L
+0RTIREVALVE                   ,MMGWO ,Tire Valve                                                  ,EA    ,0.149999999999999994,,NN,,0.165000000000000008,0,1,EA    ,AC,L
+0RTIREVALVE LOTR              ,MMGWO ,Tire Valve - Lot Assigned on Receipt                        ,EA    ,0.200000000000000011,F,LI,R,0.170000000000000012,0,1,EA    ,AC,A
+0RTIREVALVE LOTU              ,MMGWO ,Tire Valve - Lot Assigned on Use                            ,EA    ,0,F,LI,U,0.165000000000000008,0,1,EA    ,AC,A
+BL3                           ,FILCAB,BL 3 Test Item                                              ,EA    ,0.000003,,NN,,0,0,1,EA    ,AC,A
+HON-672L-L                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,300,,NN,,300,380,1,EA    ,AC,T
+HON-672L-P                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,300,,NN,,300,380,1,EA    ,AC,T
+HON-672L-Q                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,300,,NN,,300,380,1,EA    ,AC,T
+HON-672L-S                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,380,1,EA    ,AC,T
+HON-673L-L                    ,FILCAB,600 Series Wide Lateral Three Drawer File Cabinet           ,EA    ,346.5,,NN,,0,495,1,EA    ,AC,T
+HON-673L-P                    ,FILCAB,600 Series Wide Lateral Three Drawer File Cabinet           ,EA    ,0,,NN,,0,495,1,EA    ,AC,T
+HON-673L-Q                    ,FILCAB,600 Series Wide Lateral Three Drawer File Cabinet           ,EA    ,0,,NN,,0,495,1,EA    ,AC,T
+HON-673L-S                    ,FILCAB,600 Series Wide Lateral Three Drawer File Cabinet           ,EA    ,0,,NN,,0,495,1,EA    ,AC,T
+HON-674L-L                    ,FILCAB,600 Series Wide Lateral Four Drawer File Cabinet            ,EA    ,0,,NN,,0,622,1,EA    ,AC,T
+HON-674L-P                    ,FILCAB,600 Series Wide Lateral Four Drawer File Cabinet            ,EA    ,0,,NN,,0,622,1,EA    ,AC,T
+HON-674L-Q                    ,FILCAB,600 Series Wide Lateral Four Drawer File Cabinet            ,EA    ,0,,NN,,0,622,1,EA    ,AC,T
+HON-674L-S                    ,FILCAB,600 Series Wide Lateral Four Drawer File Cabinet            ,EA    ,0,,NN,,0,622,1,EA    ,AC,T
+HON-675L-L                    ,FILCAB,600 Series Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,804,1,EA    ,AC,T
+HON-675L-P                    ,FILCAB,600 Series Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,804,1,EA    ,AC,T
+HON-675L-Q                    ,FILCAB,600 Series Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,804,1,EA    ,AC,T
+HON-675L-S                    ,FILCAB,600 Series Wide Lateral Five Drawer File Cabinet            ,EA    ,804,,NN,,0,804,1,EA    ,AC,A
+HON-682L-L                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,419,1,EA    ,AC,A
+HON-682L-P                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,419,1,EA    ,AC,A
+HON-682L-Q                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,419,1,EA    ,AC,A
+HON-682L-S                    ,FILCAB,600 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,419,1,EA    ,AC,A
+HON-683L-L                    ,FILCAB,600 Series Wide Lateral Three Drawer File Cabinet           ,EA    ,0,,NN,,0,556,1,EA    ,AC,A
+HON-683L-P                    ,FILCAB,600 Series Wide Lateral Three Drawer File Cabinet           ,EA    ,0,,NN,,0,556,1,EA    ,AC,A
+HON-683L-Q                    ,FILCAB,600 Series Wide Lateral Three Drawer File Cabinet           ,EA    ,0,,NN,,0,556,1,EA    ,AC,A
+HON-683L-S                    ,FILCAB,600 Series Wide Lateral Three Drawer File Cabinet           ,EA    ,0,,NN,,0,556,1,EA    ,AC,A
+HON-684L-L                    ,FILCAB,600 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,696,1,EA    ,AC,A
+HON-684L-P                    ,FILCAB,600 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,696,1,EA    ,AC,A
+HON-684L-Q                    ,FILCAB,600 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,696,1,EA    ,AC,A
+HON-684L-S                    ,FILCAB,600 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,696,1,EA    ,AC,A
+HON-685L-L                    ,FILCAB,600 Series Wide Lateral  Five Drawer File Cabinet           ,EA    ,0,,NN,,0,889,1,EA    ,AC,A
+HON-685L-P                    ,FILCAB,600 Series Wide Lateral  Five Drawer File Cabinet           ,EA    ,0,,NN,,0,889,1,EA    ,AC,A
+HON-685L-Q                    ,FILCAB,600 Series Wide Lateral  Five Drawer File Cabinet           ,EA    ,500,,NN,,0,889,1,EA    ,AC,A
+HON-685L-S                    ,FILCAB,600 Series Wide Lateral  Five Drawer File Cabinet           ,EA    ,0,,NN,,0,889,1,EA    ,AC,A
+HON-692L-L                    ,FILCAB,600 Series Wide Lateral  Two Drawer File Cabinet            ,EA    ,0,,NN,,0,484,1,EA    ,AC,A
+HON-692L-P                    ,FILCAB,600 Series Wide Lateral  Two Drawer File Cabinet            ,EA    ,0,,NN,,0,484,1,EA    ,AC,A
+HON-692L-Q                    ,FILCAB,600 Series Wide Lateral  Two Drawer File Cabinet            ,EA    ,0,,NN,,0,484,1,EA    ,AC,A
+HON-692L-S                    ,FILCAB,600 Series Wide Lateral  Two Drawer File Cabinet            ,EA    ,0,,NN,,0,484,1,EA    ,AC,A
+HON-693L-L                    ,FILCAB,600 Series Wide Lateral  Three Drawer File Cabinet          ,EA    ,0,,NN,,0,639,1,EA    ,AC,A
+HON-693L-P                    ,FILCAB,600 Series Wide Lateral  Three Drawer File Cabinet          ,EA    ,0,,NN,,0,639,1,EA    ,AC,A
+HON-693L-Q                    ,FILCAB,600 Series Wide Lateral  Three Drawer File Cabinet          ,EA    ,0,,NN,,0,639,1,EA    ,AC,A
+HON-693L-S                    ,FILCAB,600 Series Wide Lateral  Three Drawer File Cabinet          ,EA    ,0,,NN,,0,639,1,EA    ,AC,A
+HON-694L-L                    ,FILCAB,600 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,807,1,EA    ,AC,A
+HON-694L-P                    ,FILCAB,600 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,807,1,EA    ,AC,A
+HON-694L-Q                    ,FILCAB,600 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,807,1,EA    ,AC,A
+HON-694L-S                    ,FILCAB,600 Serier Wide Lateral Four Drawer File Cabinet            ,EA    ,0,,NN,,0,807,1,EA    ,AC,A
+HON-695L-L                    ,FILCAB,600 Serier Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,1039,1,EA    ,AC,A
+HON-695L-P                    ,FILCAB,600 Serier Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,1039,1,EA    ,AC,A
+HON-695L-Q                    ,FILCAB,600 Serier Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,1039,1,EA    ,AC,A
+HON-695L-S                    ,FILCAB,600 Serier Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,1039,1,EA    ,AC,A
+HON-782L-L                    ,FILCAB,700 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,426,1,EA    ,AC,T
+HON-782L-P                    ,FILCAB,700 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,426,1,EA    ,AC,T
+HON-782L-Q                    ,FILCAB,700 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,426,1,EA    ,AC,T
+HON-782L-S                    ,FILCAB,700 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,426,1,EA    ,AC,T
+HON-784L-L                    ,FILCAB,700 Series Wide Lateral Four Drawer File Cabinet            ,EA    ,0,,NN,,0,727,1,EA    ,AC,T
+HON-784L-P                    ,FILCAB,700 Series Wide Lateral Four Drawer File Cabinet            ,EA    ,0,,NN,,0,727,1,EA    ,AC,T
+HON-784L-Q                    ,FILCAB,700 Series Wide Lateral Four Drawer File Cabinet            ,EA    ,0,,NN,,0,727,1,EA    ,AC,T
+HON-784L-S                    ,FILCAB,700 Series Wide Lateral Four Drawer File Cabinet            ,EA    ,0,,NN,,0,727,1,EA    ,AC,T
+HON-785L-L                    ,FILCAB,700 Series Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,933,1,EA    ,AC,T
+HON-785L-P                    ,FILCAB,700 Series Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,933,1,EA    ,AC,T
+HON-785L-Q                    ,FILCAB,700 Series Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,933,1,EA    ,AC,T
+HON-785L-S                    ,FILCAB,700 Series Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,933,1,EA    ,AC,T
+HON-792L-L                    ,FILCAB,700 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,300,494,1,EA    ,AC,T
+HON-792L-P                    ,FILCAB,700 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,300,494,1,EA    ,AC,T
+HON-792L-Q                    ,FILCAB,700 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,300,494,1,EA    ,AC,T
+HON-792L-S                    ,FILCAB,700 Series Wide Lateral Two Drawer File Cabinet             ,EA    ,0,,NN,,0,494,1,EA    ,AC,T
+HON-794L-L                    ,FILCAB,700 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,835,1,EA    ,AC,T
+HON-794L-P                    ,FILCAB,700 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,835,1,EA    ,AC,T
+HON-794L-Q                    ,FILCAB,700 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,835,1,EA    ,AC,T
+HON-794L-S                    ,FILCAB,700 Series Wide Lateral  Four Drawer File Cabinet           ,EA    ,0,,NN,,0,835,1,EA    ,AC,T
+HON-795L-L                    ,FILCAB,700 Series Wide Lateral Five Drawer File Cabinet            ,EA    ,0,,NN,,0,1078,1,EA    ,AC,T
+HON-795L-P                    ,FILCAB,700 Series Wide Lateral  Five Drawer File Cabinet           ,EA    ,0,,NN,,0,1078,1,EA    ,AC,T
+HON-795L-Q                    ,FILCAB,700 Series Wide Lateral  Five Drawer File Cabinet           ,EA    ,0,,NN,,0,1078,1,EA    ,AC,T
+HON-795L-S                    ,FILCAB,700 Series Wide Lateral  Five Drawer File Cabinet           ,EA    ,0,,NN,,0,1078,1,EA    ,AC,T
+JMNONSTOCK                    ,FILCAB,Test Non Stock Item                                         ,EA    ,0,,NN,,50,0,0,EA    ,AC,T
+LABOR ITEM ONLY               ,LABOR ,For LABOR Item Only                                         ,LABOR ,0,,,,100,0,0,LABOR ,AC,T
+MRV-FC0230-B                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,346,1,EA    ,AC,A
+MRV-FC0230-G                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,346,1,EA    ,AC,A
+MRV-FC0230-P                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,346,1,EA    ,AC,A
+MRV-FC0236-B                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,392,1,EA    ,AC,A
+MRV-FC0236-G                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,392,1,EA    ,AC,A
+MRV-FC0236-P                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,392,1,EA    ,AC,A
+MRV-FC0242-B                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,438,1,EA    ,AC,T
+MRV-FC0242-G                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,438,1,EA    ,AC,A
+MRV-FC0242-P                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,438,1,EA    ,AC,A
+MRV-FC0430-B                  ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,588,1,EA    ,AC,A
+MRV-FC0430-G                  ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,558,1,EA    ,AC,A
+MRV-FC0430-P                  ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,558,1,EA    ,AC,A
+MRV-FC0436-B                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,632,1,EA    ,AC,A
+MRV-FC0436-G                  ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,632,1,EA    ,AC,A
+MRV-FC0436-P                  ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,632,1,EA    ,AC,A
+MRV-FC0442-B                  ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,756,1,EA    ,AC,T
+MRV-FC0442-G                  ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,756,1,EA    ,AC,T
+MRV-FC0442-P                  ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,756,1,EA    ,AC,T
+MRV-FC0530-B                  ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,702,1,EA    ,AC,A
+MRV-FC0530-G                  ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,702,1,EA    ,AC,A
+MRV-FC0530-P                  ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,702,1,EA    ,AC,A
+MRV-FC0536-B                  ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,802,1,EA    ,AC,A
+MRV-FC0536-G                  ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,802,1,EA    ,AC,A
+MRV-FC0536-P                  ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,802,1,EA    ,AC,A
+MRV-FC0542-B                  ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,910,1,EA    ,AC,T
+MRV-FC0542-G                  ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,910,1,EA    ,AC,T
+MRV-FC0542-P                  ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,910,1,EA    ,AC,T
+OID-47562                     ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,396,1,EA    ,AC,A
+OID-47563                     ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,396,1,EA    ,AC,T
+OID-47564                     ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,396,1,EA    ,AC,A
+OID-47565                     ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,608,1,EA    ,AC,A
+OID-47566                     ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,608,1,EA    ,AC,A
+OID-47567                     ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,608,1,EA    ,AC,A
+OID-47568                     ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,752,1,EA    ,AC,A
+OID-47569                     ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,752,1,EA    ,AC,A
+OID-47570                     ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,752,1,EA    ,AC,A
+OID-47572                     ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,442,1,EA    ,AC,A
+OID-47573                     ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,442,1,EA    ,AC,A
+OID-47574                     ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,442,1,EA    ,AC,A
+OID-47575                     ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,682,1,EA    ,AC,A
+OID-47576                     ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,682,1,EA    ,AC,A
+OID-47577                     ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,682,1,EA    ,AC,A
+OID-47578                     ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,852,1,EA    ,AC,A
+OID-47579                     ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,852,1,EA    ,AC,A
+OID-47580                     ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,852,1,EA    ,AC,A
+OID-47582                     ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,488,1,EA    ,AC,A
+OID-47583                     ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,488,1,EA    ,AC,A
+OID-47584                     ,FILCAB,Lateral Two Drawer File Cabinet                             ,EA    ,0,,NN,,0,488,1,EA    ,AC,A
+OID-47585                     ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,806,1,EA    ,AC,A
+OID-47586                     ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,806,1,EA    ,AC,A
+OID-47587                     ,FILCAB,Lateral Four Drawer File Cabinet                            ,EA    ,0,,NN,,0,806,1,EA    ,AC,A
+OID-47588                     ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,960,1,EA    ,AC,A
+OID-47589                     ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,960,1,EA    ,AC,A
+OID-47590                     ,FILCAB,Lateral Five Drawer File Cabinet                            ,EA    ,0,,NN,,0,960,1,EA    ,AC,A
+TEST21CHARACTERITEM00         ,FILCAB,Test 21 character item                                      ,EA    ,0,,NN,,0,0,1,EA    ,IN,A
+TEST22CHARACTERITEM000        ,FILCAB,Test 22 character item                                      ,EA    ,0,,NN,,0,0,1,EA    ,IN,A
+TEST2OCHARACTERITEM0          ,FILCAB,Test 20 character item                                      ,EA    ,0,,NN,,0,0,1,EA    ,AC,A
+UNV-14113                     ,FILFLD,Hanging File Folder -- Letter Size w/ 3 tabs                ,CARTON,9,,NN,,9,14.6999999999999993,1,CARTON,AC,T
+UNV-14115                     ,FILFLD,Hanging File Folder -- Letter Size w/ 5 tabs                ,CARTON,9,,NN,,9,14.1999999999999993,1,CARTON,AC,T
+UNV-14116                     ,FILFLD,Hanging File Folder -- Letter Size w/ 5 tabs                ,CARTON,0,,NN,,9,15.9499999999999993,1,CARTON,AC,T
+UNV-14117                     ,FILFLD,Hanging File Folder -- Letter Size w/ 5 tabs                ,CARTON,0,,NN,,9,15.9499999999999993,1,CARTON,AC,T
+UNV-14118                     ,FILFLD,Hanging File Folder -- Letter Size w/ 5 tabs                ,CARTON,0,,NN,,9,15.9499999999999993,1,CARTON,AC,T
+UNV-14213                     ,FILFLD,Hanging File Folder -- Legal Size w/ 3 tabs                 ,CARTON,0,,NN,,9,17.8500000000000014,1,CARTON,AC,T
+UNV-14215                     ,FILFLD,Hanging File Folder -- Legal Size w/ 5 tabs                 ,CARTON,0,,NN,,9,17.3000000000000007,1,CARTON,AC,T
+UNV-14216                     ,FILFLD,Hanging File Folder -- Legal Size w/ 5 tabs                 ,CARTON,0,,NN,,9,18.75,1,CARTON,AC,T
+UNV-14217                     ,FILFLD,Hanging File Folder -- Legal Size w/ 5 tabs                 ,CARTON,0,,NN,,9,18.75,1,CARTON,AC,T
+UNV-14218                     ,FILFLD,Hanging File Folder -- Legal Size w/ 5 tabs                 ,CARTON,0,,NN,,10,18.75,1,CARTON,DE,T
+VIDLED50                      ,CPUHWD,Video Monitor LED 50"                                     ,EA    ,500,,NN,,0,789,1,EA    ,AC,A
+XFIFO01                       ,FILCAB,FIFO Test Item 01                                           ,EA    ,55,,NN,,0,100,1,EA    ,AC,F
+XFIFOLOT01                    ,FILCAB,"FIFO, Lot-Tracked Test Item 01                              ",EA    ,70,F,LI,R,0,125,1,EA    ,AC,F
+XKIT01                        ,FILCAB,Test Kit 01                                                 ,EA    ,318,,NN,,0,0,1,EA    ,AC,A
+X-LNR-EXP-01                  ,FILCAB,"Lot numbered, when received, expiration date                ",EA    ,10,E,LI,R,0,25,1,EA    ,AC,A
+X-LNU-EXP-01                  ,FILCAB,"Lot numbered, when used, expiration date                    ",EA    ,100,E,LI,U,0,200,1,EA    ,AC,A
+XLOTEXPTEST01                 ,FILCAB,Lot - Expiration - Test 01                                  ,EA    ,0,E,LI,R,0,0,1,EA    ,AC,A
+XSPECID01                     ,FILCAB,Specific Cost ID 01                                         ,EA    ,25,,NN,,0,0,1,EA    ,AC,S
+XSPECIDLOT01                  ,FILCAB,"Specific Cost, Lot-Tracked item 01                          ",EA    ,25,F,LI,R,0,50,1,EA    ,AC,S
+XSPECIDSER01                  ,FILCAB,"Specific ID, Serial Tracked test 01                         ",EA    ,70,F,SI,R,0,100,1,EA    ,AC,S
+XSPECIDSER02                  ,FILCAB,"Specific Cost, Serial-Tracked Item 02                       ",EA    ,55,F,SI,R,0,100,1,EA    ,AC,S
+XSTDTEST01                    ,FILCAB,Standard Cost test 01                                       ,EA    ,18,,NN,,15,0,1,EA    ,AC,T
+XTESTITEM21INLENGTH00         ,CPUHWD,XTESTITEM21INLENGTH00                                       ,EA    ,100,,NN,,0,0,1,EA    ,AC,A
+XUSERSPEC001                  ,CPUHWD,User Specified Cost Test Item 001                           ,EA    ,100,,NN,,0,100,1,EA    ,AC,U
+XUSERSPECLOT01                ,FILCAB,User-Specified Lot 01                                       ,EA    ,0,F,LI,R,0,0,1,EA    ,AC,U

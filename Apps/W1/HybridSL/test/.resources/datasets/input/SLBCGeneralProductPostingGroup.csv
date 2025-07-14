@@ -1,0 +1,10 @@
+﻿Code,Description
+FREIGHT,"Freight, etc."
+MISC,Miscellaneous with Tax
+NO TAX,Miscellaneous without tax
+RAW MAT,Raw Materials
+RETAIL,Retail
+SERVICES,"Resources, etc."
+SL,Migrated from SL
+SLITEMIMPORT,SL Item Import (No impact to GL)
+ZERO,Miscellaneous without Tax
