@@ -37,7 +37,6 @@ codeunit 14623 "Create Currency IS"
             CreateCurrency.HRK(),
             CreateCurrency.IDR(),
             CreateCurrency.INR(),
-            CreateCurrency.ISK(),
             CreateCurrency.JPY(),
             CreateCurrency.KES(),
             CreateCurrency.MAD(),

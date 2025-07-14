@@ -622,6 +622,26 @@ table 30118 "Shpfy Order Header"
             Caption = 'Due Date';
             DataClassification = CustomerContent;
         }
+        field(130; "Pres. Payment Rounding Amount"; Decimal)
+        {
+            Caption = 'Presentment Payment Rounding Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(131; "Payment Rounding Amount"; Decimal)
+        {
+            Caption = 'Payment Rounding Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(132; "Pres. Refund Rounding Amount"; Decimal)
+        {
+            Caption = 'Presentment Refund Rounding Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(133; "Refund Rounding Amount"; Decimal)
+        {
+            Caption = 'Refund Rounding Amount';
+            DataClassification = SystemMetadata;
+        }
         field(500; "Shop Code"; Code[20])
         {
             Caption = 'Shop Code';

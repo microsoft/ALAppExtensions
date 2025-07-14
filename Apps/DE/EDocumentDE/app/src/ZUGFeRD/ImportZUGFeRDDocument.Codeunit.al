@@ -35,7 +35,7 @@ codeunit 13919 "Import ZUGFeRD Document"
         DocumentNamespace: Text;
         PDFInStream: InStream;
         PdfAttachmentStream: InStream;
-        DocumentElementLbl: Label '%1:%2', Comment = '%1 = Namespace, %2 = Document';
+        DocumentElementLbl: Label '%1:%2', Comment = '%1 = Namespace, %2 = Document', Locked = true;
         NoXMLFileErr: Label 'No invoice attachment found in the PDF file. Please check the PDF file.';
         CrossIndustryInvoiceLbl: Label 'CrossIndustryInvoice', Locked = true;
         UnsupportedDocumentTypeErr: Label 'Unsupported document type: %1', Comment = '%1 = Document type';
@@ -45,7 +45,7 @@ codeunit 13919 "Import ZUGFeRD Document"
         TempBlob.CreateInStream(PdfInStream);
         Clear(TempBlob);
         if not PDFDocument.GetDocumentAttachmentStream(PdfInStream, TempBlob) then
-            Message(NoXMLFileErr);
+            Error(NoXMLFileErr);
 
         TempBlob.CreateInStream(PdfAttachmentStream);
         TempXMLBuffer.LoadFromStream(PdfAttachmentStream);
@@ -77,7 +77,7 @@ codeunit 13919 "Import ZUGFeRD Document"
         DocumentType: Text;
         DocumentNamespace: Text;
         PdfAttachmentStream: InStream;
-        DocumentElementLbl: Label '%1:%2', Comment = '%1 = Namespace, %2 = Document';
+        DocumentElementLbl: Label '%1:%2', Comment = '%1 = Namespace, %2 = Document', Locked = true;
         CrossIndustryInvoiceLbl: Label 'CrossIndustryInvoice', Locked = true;
     begin
         FeatureTelemetry.LogUsage('0000EXS', FeatureNameTok, ContinueEventNameTok);

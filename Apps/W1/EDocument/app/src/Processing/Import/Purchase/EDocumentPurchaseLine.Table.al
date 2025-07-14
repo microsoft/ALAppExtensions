@@ -85,6 +85,7 @@ table 6101 "E-Document Purchase Line"
         field(10; "Total Discount"; Decimal)
         {
             Caption = 'Total Discount';
+            ToolTip = 'Specifies the line discount.';
         }
         field(11; "VAT Rate"; Decimal)
         {
@@ -121,6 +122,11 @@ table 6101 "E-Document Purchase Line"
             if ("[BC] Purchase Line Type" = const("Allocation Account")) "Allocation Account"
             else
             if ("[BC] Purchase Line Type" = const(Resource)) Resource;
+
+            trigger OnValidate()
+            begin
+                ValidateNoField();
+            end;
         }
         field(103; "[BC] Unit of Measure"; Code[20])
         {
@@ -205,6 +211,40 @@ table 6101 "E-Document Purchase Line"
 
     var
         DimMgt: Codeunit DimensionManagement;
+
+    local procedure ValidateNoField()
+    var
+        Item: Record Item;
+        GLAccount: Record "G/L Account";
+        AllocationAccount: Record "Allocation Account";
+        FixedAsset: Record "Fixed Asset";
+        Resource: Record Resource;
+        ItemCharge: Record "Item Charge";
+    begin
+        if Rec.Description <> '' then
+            exit;
+
+        case Rec."[BC] Purchase Line Type" of
+            "Purchase Line Type"::Item:
+                if Item.Get(Rec."[BC] Purchase Type No.") then
+                    Rec.Description := Item.Description;
+            "Purchase Line Type"::"G/L Account":
+                if GLAccount.Get(Rec."[BC] Purchase Type No.") then
+                    Rec.Description := GLAccount.Name;
+            "Purchase Line Type"::"Allocation Account":
+                if AllocationAccount.Get(Rec."[BC] Purchase Type No.") then
+                    Rec.Description := AllocationAccount.Name;
+            "Purchase Line Type"::"Fixed Asset":
+                if FixedAsset.Get(Rec."[BC] Purchase Type No.") then
+                    Rec.Description := FixedAsset.Description;
+            "Purchase Line Type"::Resource:
+                if Resource.Get(Rec."[BC] Purchase Type No.") then
+                    Rec.Description := Resource.Name;
+            "Purchase Line Type"::"Charge (Item)":
+                if ItemCharge.Get(Rec."[BC] Purchase Type No.") then
+                    Rec.Description := ItemCharge.Description;
+        end;
+    end;
 
     internal procedure GetNextLineNo(EDocumentEntryNo: Integer): Integer
     var

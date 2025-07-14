@@ -81,12 +81,24 @@ page 6372 "Connection Setup Card"
                     ToolTip = 'Specifies the company ID.';
                     Editable = false;
                 }
-                field("Send Mode"; Rec."Send Mode")
+                field("Avalara Send Mode"; Rec."Avalara Send Mode")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the send mode.';
                     ShowMandatory = true;
                 }
+#if not CLEAN27
+                field("Send Mode"; Rec."Send Mode")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the send mode.';
+                    ShowMandatory = true;
+                    Visible = false;
+                    ObsoleteReason = 'Use "Avalara Send Mode" instead.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
+                }
+#endif
             }
         }
     }

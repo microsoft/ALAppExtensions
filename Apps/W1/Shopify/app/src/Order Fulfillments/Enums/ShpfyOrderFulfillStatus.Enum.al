@@ -2,6 +2,7 @@ namespace Microsoft.Integration.Shopify;
 
 /// <summary>
 /// Enum Shpfy Order Fulfillment Status (ID 30113).
+/// /// Represented by shopify.dev/docs/api/admin-graphql/latest/enums/OrderDisplayFulfillmentStatus
 /// </summary>
 enum 30113 "Shpfy Order Fulfill. Status"
 {
@@ -49,5 +50,13 @@ enum 30113 "Shpfy Order Fulfill. Status"
     value(9; "On Hold")
     {
         Caption = 'On Hold';
+    }
+    value(10; "Scheduled")
+    {
+        Caption = 'Scheduled';
+    }
+    value(11; "Request Declined")
+    {
+        Caption = 'Request Declined';
     }
 }

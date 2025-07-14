@@ -335,8 +335,8 @@ codeunit 30286 "Shpfy Company API"
         TempShopifyCustomer.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JCustomer, 'customer.id'));
         TempShopifyCustomer."First Name" := CopyStr(JsonHelper.GetValueAsText(JCustomer, 'customer.firstName', MaxStrLen(TempShopifyCustomer."First Name")), 1, MaxStrLen(TempShopifyCustomer."First Name"));
         TempShopifyCustomer."Last Name" := CopyStr(JsonHelper.GetValueAsText(JCustomer, 'customer.lastName', MaxStrLen(TempShopifyCustomer."Last Name")), 1, MaxStrLen(TempShopifyCustomer."Last Name"));
-        TempShopifyCustomer.Email := CopyStr(JsonHelper.GetValueAsText(JCustomer, 'customer.email', MaxStrLen(TempShopifyCustomer.Email)), 1, MaxStrLen(TempShopifyCustomer.Email));
-        PhoneNo := JsonHelper.GetValueAsText(JCustomer, 'customer.phone');
+        TempShopifyCustomer.Email := CopyStr(JsonHelper.GetValueAsText(JCustomer, 'customer.defaultEmailAddress.emailAddress', MaxStrLen(TempShopifyCustomer.Email)), 1, MaxStrLen(TempShopifyCustomer.Email));
+        PhoneNo := JsonHelper.GetValueAsText(JCustomer, 'customer.defaultPhoneNumber.phoneNumber');
         PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
         TempShopifyCustomer."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(TempShopifyCustomer."Phone No."));
     end;

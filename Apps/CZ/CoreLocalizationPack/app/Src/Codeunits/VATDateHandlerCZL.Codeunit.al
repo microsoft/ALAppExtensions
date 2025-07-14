@@ -89,6 +89,7 @@ codeunit 11742 "VAT Date Handler CZL"
     local procedure FillVATReportingDateOnBeforeGLLedgEntryModify(var GLEntry: Record "G/L Entry"; FromGLEntry: Record "G/L Entry")
     begin
         GLEntry."VAT Reporting Date" := FromGLEntry."VAT Reporting Date";
+        GLEntry."External Document No." := FromGLEntry."External Document No.";
     end;
 
     procedure VATPeriodCZLCheck(VATDate: Date)

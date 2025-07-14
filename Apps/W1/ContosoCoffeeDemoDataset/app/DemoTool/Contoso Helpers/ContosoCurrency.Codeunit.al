@@ -61,8 +61,12 @@ codeunit 5587 "Contoso Currency"
     procedure InsertCurrencyExchangeRate(CurrencyCode: Code[10]; StartingDate: Date; ExchangeRateAmount: Decimal; AdjustmentExchRateAmount: Decimal; RelationalExchRateAmount: Decimal; RelationalAdjmtExchRateAmt: Decimal)
     var
         CurrencyExchangeRate: Record "Currency Exchange Rate";
+        Currency: Record "Currency";
         Exists: Boolean;
     begin
+        if not Currency.Get(CurrencyCode) then
+            exit;
+
         if CurrencyExchangeRate.Get(CurrencyCode, StartingDate) then begin
             Exists := true;
 

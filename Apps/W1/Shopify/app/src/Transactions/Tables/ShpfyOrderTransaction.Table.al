@@ -157,6 +157,18 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(24; "Rounding Amount"; Decimal)
+        {
+            Caption = 'Rounding Amount';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(25; "Rounding Currency"; Code[20])
+        {
+            Caption = 'Rounding Currency';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
         field(101; "Sales Document No."; code[20])
         {
             Caption = 'Sales Document No.';
