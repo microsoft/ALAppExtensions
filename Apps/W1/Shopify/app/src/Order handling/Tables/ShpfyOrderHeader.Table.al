@@ -1,7 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
 using System.IO;
-using Microsoft.CRM.Team;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Bank.BankAccount;
