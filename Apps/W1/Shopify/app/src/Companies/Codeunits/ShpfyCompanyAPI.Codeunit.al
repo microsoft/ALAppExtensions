@@ -416,7 +416,7 @@ codeunit 30286 "Shpfy Company API"
     begin
         ShopifyCompany.SetCurrentKey("Customer SystemId");
         ShopifyCompany.SetRange("Customer SystemId", Customer.SystemId);
-        if ShopifyCompany.FindFirst() then begin
+        if not ShopifyCompany.IsEmpty() then begin
             SkippedRecord.LogSkippedRecord(Customer.RecordId, StrSubstNo(CustomerAlreadyExportedCompanyLbl, Customer."No."), Shop);
             exit;
         end;
@@ -425,7 +425,6 @@ codeunit 30286 "Shpfy Company API"
             SkippedRecord.LogSkippedRecord(Customer.RecordId, StrSubstNo(CustomerAlreadyExportedLocationLbl, Customer."No."), Shop);
             exit;
         end;
-        SetShop(this.Shop);
         CreateCustomerAsCompanyLocation(Customer, this.ShopifyCompany);
     end;
 

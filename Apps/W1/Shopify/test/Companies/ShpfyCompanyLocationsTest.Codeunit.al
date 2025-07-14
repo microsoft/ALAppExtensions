@@ -5,6 +5,8 @@ codeunit 139539 "Shpfy Company Locations Test"
     TestHttpRequestPolicy = BlockOutboundRequests;
 
     var
+        ShpfyShop: Record "Shpfy Shop";
+        ShpfyCompany: Record "Shpfy Company";
         ShpfyCompanyLocation: Record "Shpfy Company Location";
         Customer: Record Customer;
         IsInitialized: Boolean;
@@ -19,7 +21,6 @@ codeunit 139539 "Shpfy Company Locations Test"
     [HandlerFunctions('HttpSubmitHandler')]
     procedure TestCreateCompanyLocationSuccess()
     var
-        ShpfyCompany: Record "Shpfy Company";
         ShpfyCompanyAPI: Codeunit "Shpfy Company API";
         ShpfyCompanies: TestPage "Shpfy Companies";
     begin
@@ -27,7 +28,9 @@ codeunit 139539 "Shpfy Company Locations Test"
         this.Initialize();
         ShpfyCompany.GetBySystemId(this.ShpfyCompanyLocation."Company SystemId");
         // [When] CreateCompanyLocation is called
-        ShpfyCompanyAPI.CreateCompanyLocation(this.ShpfyCompanyLocation, this.Customer);
+        ShpfyCompanyAPI.SetCompany(ShpfyCompany);
+        ShpfyCompanyAPI.SetShop(ShpfyShop);
+        ShpfyCompanyAPI.CreateCompanyLocation(this.Customer);
 
         // [Then] Company location should be created successfully
         this.ShpfyCompanyLocation.SetRange("Customer Id", this.Customer.SystemId);
@@ -50,9 +53,13 @@ codeunit 139539 "Shpfy Company Locations Test"
         ShpfyCompany.GetBySystemId(this.ShpfyCompanyLocation."Company SystemId");
         ShpfyCompany."Customer SystemId" := Customer.SystemId;
         ShpfyCompany.Modify(true);
+        // [Given] Ensure Shpfy Skipped Record is empty
+        ShpfySkippedRecord.DeleteAll(false);
 
         // [When] CreateCompanyLocation is called
-        ShpfyCompanyAPI.CreateCompanyLocation(this.ShpfyCompanyLocation, this.Customer);
+        ShpfyCompanyAPI.SetCompany(ShpfyCompany);
+        ShpfyCompanyAPI.SetShop(ShpfyShop);
+        ShpfyCompanyAPI.CreateCompanyLocation(this.Customer);
 
         // [Then] Operation should be skipped and record should be logged as skipped
         ShpfySkippedRecord.SetRange("Table ID", Database::Customer);
@@ -72,9 +79,17 @@ codeunit 139539 "Shpfy Company Locations Test"
         this.Initialize();
         this.ShpfyCompanyLocation."Customer Id" := Customer.SystemId;
         this.ShpfyCompanyLocation.Modify(true);
+        // [Given] Ensure the customer was not previously exported as a company
+        ShpfyCompany.GetBySystemId(this.ShpfyCompanyLocation."Company SystemId");
+        Clear(this.ShpfyCompany."Customer SystemId");
+        this.ShpfyCompany.Modify(false);
+        // [Given] Ensure Shpfy Skipped Record is empty
+        ShpfySkippedRecord.DeleteAll(false);
 
         // [When] CreateCompanyLocation is called
-        ShpfyCompanyAPI.CreateCompanyLocation(this.ShpfyCompanyLocation, this.Customer);
+        ShpfyCompanyAPI.SetCompany(ShpfyCompany);
+        ShpfyCompanyAPI.SetShop(ShpfyShop);
+        ShpfyCompanyAPI.CreateCompanyLocation(this.Customer);
 
         // [Then] Operation should be skipped and record should be logged as skipped
         ShpfySkippedRecord.SetRange("Table ID", Database::Customer);
@@ -85,8 +100,6 @@ codeunit 139539 "Shpfy Company Locations Test"
 
     internal procedure Initialize()
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyCompany: Record "Shpfy Company";
         ShpfyCompanyInitialize: Codeunit "Shpfy Company Initialize";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
