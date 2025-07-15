@@ -8,6 +8,7 @@ namespace Microsoft.DemoData.Analytics;
 using Microsoft.Purchases.Document;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool;
 using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Bank;
 using Microsoft.DemoData.Purchases;
@@ -19,7 +20,7 @@ codeunit 5688 "Create Extended Purch Document"
 
     trigger OnRun()
     var
-        AnalyticsModuleSetup: Record "Analytics Module Setup";
+        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
         PurchaseHeader: Record "Purchase Header";
         ContosoPurchase: Codeunit "Contoso Purchase";
         CreateVendor: Codeunit "Create Vendor";
@@ -31,8 +32,11 @@ codeunit 5688 "Create Extended Purch Document"
         DocumentDate: Date;
         StartingDate: Date;
     begin
-        AnalyticsModuleSetup.Get();
-        StartingDate := AnalyticsModuleSetup."Starting Date";
+        StartingDate := Today();
+        ContosoCoffeeDemoDataSetup.Get();
+        if ContosoCoffeeDemoDataSetup."Starting Date" <> 0D then begin
+            StartingDate := ContosoCoffeeDemoDataSetup."Starting Date";
+        end;
 
         DocumentDate := CalcDate('<-6M>', StartingDate);
 

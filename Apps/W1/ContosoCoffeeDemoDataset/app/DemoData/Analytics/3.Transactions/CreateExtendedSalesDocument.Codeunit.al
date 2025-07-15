@@ -8,6 +8,7 @@ namespace Microsoft.DemoData.Analytics;
 using Microsoft.Sales.Document;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool;
 using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Bank;
 using Microsoft.DemoData.Sales;
@@ -374,10 +375,13 @@ codeunit 5692 "Create Extended Sales Document"
 
     local procedure GetStartingDate()
     var
-        AnalyticsModuleSetup: Record "Analytics Module Setup";
+        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
-        AnalyticsModuleSetup.Get();
-        StartingDate := AnalyticsModuleSetup."Starting Date";
+        StartingDate := Today();
+        ContosoCoffeeDemoDataSetup.Get();
+        if ContosoCoffeeDemoDataSetup."Starting Date" <> 0D then begin
+            StartingDate := ContosoCoffeeDemoDataSetup."Starting Date";
+        end;
     end;
 
     local procedure CalculateDatesForThisMonth(DateFormulaText: Text; var FirstDayOfTheMonth: Date; var LastDayOfTheMonth: Date)
