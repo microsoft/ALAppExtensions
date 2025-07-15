@@ -424,6 +424,7 @@ table 4009 "Migration Table Mapping"
         CurrentGlobalLanguage: Integer;
     begin
         CurrentGlobalLanguage := GlobalLanguage();
+        GlobalLanguage(1033); // ENU
 
         TableMappingsJsonObject.Add(IdLbl, LowerCase(Format(MigrationTableMapping.SystemId).TrimStart('{').TrimEnd('}')));
         TableMappingsJsonObject.Add(TargetTableTypeLbl, Format(MigrationTableMapping."Target Table Type"));
@@ -433,7 +434,6 @@ table 4009 "Migration Table Mapping"
         TableMappingsJsonObject.Add(SourceTableNameLbl, MigrationTableMapping."Source Table Name");
         TableMappingsJsonObject.Add(DataPerCompanyLbl, MigrationTableMapping."Data Per Company");
 
-        GlobalLanguage(1033); // ENU
         GlobalLanguage(CurrentGlobalLanguage);
 
         exit(TableMappingsJsonObject);

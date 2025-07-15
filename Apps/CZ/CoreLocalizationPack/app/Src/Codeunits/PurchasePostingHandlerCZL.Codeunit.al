@@ -119,9 +119,9 @@ codeunit 31039 "Purchase Posting Handler CZL"
 
         case AmountType of
             AmountType::Base:
-                Amount := TempInvoicePostingBuffer.Amount;
+                Amount := TempInvoicePostingBuffer.Amount + TempInvoicePostingBuffer."Non-Deductible VAT Amount";
             AmountType::VAT:
-                Amount := TempInvoicePostingBuffer."VAT Amount";
+                Amount := TempInvoicePostingBuffer."VAT Amount" - TempInvoicePostingBuffer."Non-Deductible VAT Amount";
         end;
 
         InitGenJournalLine(PurchaseHeader, TempInvoicePostingBuffer, GenJournalLine);
@@ -360,11 +360,7 @@ codeunit 31039 "Purchase Posting Handler CZL"
     local procedure SetGLCorrectionOnPostItemJnlLineOnBeforeInitAmount(var ItemJnlLine: Record "Item Journal Line"; PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line")
     begin
         ItemJnlLine."G/L Correction CZL" := PurchHeader.Correction xor PurchLine."Negative CZL";
-    end;
-
-    local procedure Increment(var Number: Decimal; Number2: Decimal)
-    begin
-        Number := Number + Number2;
+        ItemJnlLine."Additional Currency Factor CZL" := PurchHeader."Additional Currency Factor CZL";
     end;
 
     local procedure AddError(Text: Text[250]; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])

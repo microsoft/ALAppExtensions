@@ -17,6 +17,7 @@ pageextension 6618 "FS Job Journal" extends "Job Journal"
                 ApplicationArea = Jobs;
                 Visible = FSRelatedFieldsVisible;
                 ToolTip = 'Specifies the number of units of the project journal''s No. field, that is, either the resource, item, or G/L account number, that applies. If you later change the value in the No. field, the quantity does not change on the journal line.';
+                AutoFormatType = 0;
             }
         }
     }

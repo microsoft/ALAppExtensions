@@ -2230,6 +2230,54 @@ codeunit 148017 "FEC Audit File Export Tests"
         VerifyExportGLEntriesByTransNoReport(GLRegister, AuditFile, '', Vendor."No.", Vendor.Name);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure CheckCompAuxNumAndCompAuxLibForMultiplePostingGroups()
+    var
+        AuditFile: Record "Audit File";
+        Customer: Record Customer;
+        CustomerPostingGroup: array[3] of Record "Customer Posting Group";
+        GenJournalLine: Record "Gen. Journal Line";
+        GLRegister: Record "G/L Register";
+        VATPostingSetup: Record "VAT Posting Setup";
+        StartingDate: Date;
+        VATCalculationType: Enum "Tax Calculation Type";
+    begin
+        // [SCENARIO 579514] CompAuxNum and CompAuxLib are not informed in the Audit File export when using Multiple Posting Groups in the French version.
+        Initialize();
+
+        // [GIVEN] Get Starting Date.
+        StartingDate := GetStartingDate();
+
+        // [GIVEN] Set Allow Multiple Posting Groups in Sales & Receivables Setup.
+        SetSalesAllowMultiplePostingGroups(true);
+
+        // [GIVEN] Create Customer Posting Group One And 2 Alternative Customer Posting Group.
+        LibrarySales.CreateCustomerPostingGroup(CustomerPostingGroup[1]);
+        LibrarySales.CreateCustomerPostingGroup(CustomerPostingGroup[2]);
+        LibrarySales.CreateCustomerPostingGroup(CustomerPostingGroup[3]);
+        LibrarySales.CreateAltCustomerPostingGroup(CustomerPostingGroup[1].Code, CustomerPostingGroup[2].Code);
+        LibrarySales.CreateAltCustomerPostingGroup(CustomerPostingGroup[1].Code, CustomerPostingGroup[3].Code);
+
+        // [GIVEN] Create VAT Posting Setup.
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, VATCalculationType::"Normal VAT", 25);
+
+        // [GIVEN Create Customer With Allow Multiple Posting Groups.
+        CreateCustomerWithAllowMultiplePostingGroups(Customer, CustomerPostingGroup[1].Code, VATPostingSetup."VAT Bus. Posting Group");
+
+        // [GIVEN] Multiple general journal lines are posted for the customer with Alternative Customer Posting Groups.
+        CreateTwoGenJournalLineWithBatchAndPost(GenJournalLine, 0, "Gen. Journal Account Type"::Customer, Customer."No.",
+            LibraryRandom.RandDecInRange(100, 200, 2), StartingDate, CustomerPostingGroup);
+
+        // [WHEN] Export Tax Audit report
+        RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
+
+        // [THEN] Fields 7 CompAuxNume and 8 CompAuxLib are exported as Customer's number and name respectively for Customer Receivables Account
+        // [THEN] All non-posting accounts have fields 7 CompAuxNume and 8 CompAuxLib with blank values
+        GLRegister.FindLast();
+        VerifyExportGLEntriesReport(GLRegister, AuditFile, '', Customer."No.", Customer.Name);
+    end;
+
     local procedure Initialize()
     begin
         LibrarySetupStorage.Restore();
@@ -3263,7 +3311,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         repeat
             PopulateFieldsArray(iStream, FieldsValueArray);
             VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister.SystemCreatedAt);
-            if GLEntry."G/L Account No." = GetPostingGLAccount(GLEntry) then
+            if (GLEntry."G/L Account No." = GetPostingGLAccount(GLEntry)) or GetGLAccountFromAllowMultiplePosting(PartyNo, PartyName, GLEntry) then
                 VerifyLedgerFieldValues(FieldsValueArray, PartyNo, PartyName)
             else
                 VerifyLedgerFieldValues(FieldsValueArray, '', '');
@@ -3457,6 +3505,70 @@ codeunit 148017 "FEC Audit File Export Tests"
         ActivityLog."Detailed Info".CreateInStream(ErrorTextInStream);
         ErrorTextInStream.ReadText(ErrorText);
         Assert.AreEqual(ExpectedError, ErrorText, '');
+    end;
+
+    local procedure CreateTwoGenJournalLineWithBatchAndPost(var GenJournalLine: Record "Gen. Journal Line"; DocumentType: Enum "Gen. Journal Document Type"; AccountType: Enum "Gen. Journal Account Type";
+        AccountNo: Code[20]; LineAmount: Decimal; PostingDate: Date; CustomerPostingGroup: array[3] of Record "Customer Posting Group")
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+        DocumentNo: Code[20];
+    begin
+        CreateGenJournalBatch(GenJournalBatch);
+        LibraryJournals.CreateGenJournalLine(GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, DocumentType, AccountType::Customer,
+            AccountNo, GenJournalLine."Bal. Account Type"::"Bank Account", '', -LineAmount);
+        GenJournalLine.Validate("Posting Date", PostingDate);
+        GenJournalLine.Validate("Posting Group", CustomerPostingGroup[2].Code);
+        GenJournalLine.Modify(true);
+        DocumentNo := GenJournalLine."Document No.";
+        LibraryJournals.CreateGenJournalLine(GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, DocumentType, AccountType::Customer,
+            AccountNo, GenJournalLine."Bal. Account Type"::"Bank Account", '', LineAmount);
+        GenJournalLine.Validate("Posting Date", PostingDate);
+        GenJournalLine.Validate("Document No.", DocumentNo);
+        GenJournalLine.Validate("Posting Group", CustomerPostingGroup[3].Code);
+        GenJournalLine.Modify(true);
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+    end;
+
+    local procedure CreateCustomerWithAllowMultiplePostingGroups(var Customer: Record Customer; CustomerPostingGroupCode: Code[20]; VATBusPostGroupCode: Code[20])
+    begin
+        LibrarySales.CreateCustomer(Customer);
+        Customer.Validate("Allow Multiple Posting Groups", true);
+        Customer.Validate("VAT Bus. Posting Group", VATBusPostGroupCode);
+        Customer.Validate("Customer Posting Group", CustomerPostingGroupCode);
+        Customer.Modify(true);
+    end;
+
+    local procedure SetSalesAllowMultiplePostingGroups(AllowMultiplePostingGroups: Boolean)
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup."Allow Multiple Posting Groups" := AllowMultiplePostingGroups;
+        SalesReceivablesSetup.Modify();
+    end;
+
+    local procedure GetGLAccountFromAllowMultiplePosting(var PartyNo: Code[20]; var PartyName: Text[100]; GLEntry: Record "G/L Entry"): Boolean
+    var
+        AltCustPostGroup: Record "Alt. Customer Posting Group";
+        Customer: Record Customer;
+        CustPostGroup1, CustPostGroup2 : Record "Customer Posting Group";
+        SalesSetup: Record "Sales & Receivables Setup";
+    begin
+        if (GLEntry."Source Type" = GLEntry."Source Type"::Customer) and (Customer.Get(GLEntry."Source No.")) then
+            if (SalesSetup.Get()) and (SalesSetup."Allow Multiple Posting Groups") then
+                if CustPostGroup1.Get(Customer."Customer Posting Group") then begin
+                    AltCustPostGroup.SetRange("Customer Posting Group", CustPostGroup1.Code);
+                    if AltCustPostGroup.FindSet() then
+                        repeat
+                            if CustPostGroup2.Get(AltCustPostGroup."Alt. Customer Posting Group") then
+                                if CustPostGroup2."Receivables Account" = GLEntry."G/L Account No." then begin
+                                    PartyNo := Customer."No.";
+                                    PartyName := Customer.Name;
+                                    exit(true);
+                                end;
+                        until AltCustPostGroup.Next() = 0;
+                end;
+        exit(false);
     end;
 
     [ConfirmHandler]

@@ -63,12 +63,12 @@ report 6213 "Batch Update Carbon Emission"
         Window.Update(1, Round(Counter / RecordCount * 10000, 1));
     end;
 
-    local procedure OpenDialog(var SustLedgEntry: Record "Sustainability Ledger Entry"; var RecordCount: Integer)
+    local procedure OpenDialog(var SustLedgEntry: Record "Sustainability Ledger Entry"; var RecCount: Integer)
     begin
         if not GuiAllowed() then
             exit;
 
-        RecordCount := SustLedgEntry.Count();
+        RecCount := SustLedgEntry.Count();
         Window.Open(ProcessBarMsg);
     end;
 
@@ -80,12 +80,12 @@ report 6213 "Batch Update Carbon Emission"
         Window.Close();
     end;
 
-    local procedure ShowCompletionMsg(RecordCount: Integer; Counter: Integer)
+    local procedure ShowCompletionMsg(RecCount: Integer; Counter: Integer)
     begin
         if not GuiAllowed() then
             exit;
 
-        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecordCount));
+        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecCount));
     end;
 
     local procedure UpdateCarbonEmission(var NewSustLedgEntry: Record "Sustainability Ledger Entry")

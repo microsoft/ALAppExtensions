@@ -25,12 +25,54 @@
       "version": "27.0.0.0"
     }
   ],
+  "internalsVisibleTo": [
+    {
+      "id": "d67591a4-895c-4d2e-8e94-402badd1a5c6",
+      "name": "E-Document Core Demo Data (US)",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "f3e4e6f8-2ba7-4202-834d-141ed9b89191",
+      "name": "E-Document Core Demo Data (GB)",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "444799e3-0d2d-4f83-b869-6ba642eb54a3",
+      "name": "E-Document Core Demo Data (AU)",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "0b450a33-3524-488d-99ca-1ce1beb37bd3",
+      "name": "E-Document Core Demo Data (NZ)",
+      "publisher": "Microsoft"
+    }
+  ],
   "screenshots": [],
   "platform": "27.0.0.0",
   "idRanges": [
     {
       "from": 5370,
       "to": 5380
+    },
+    {
+      "from": 5391,
+      "to": 5392
+    },
+    {
+      "from": 5398,
+      "to": 5398
+    },
+    {
+      "from": 5405,
+      "to": 5405
+    },
+    {
+      "from": 5424,
+      "to": 5424
+    },
+    {
+      "from": 5428,
+      "to": 5429
     }
   ],
   "resourceExposurePolicy": {

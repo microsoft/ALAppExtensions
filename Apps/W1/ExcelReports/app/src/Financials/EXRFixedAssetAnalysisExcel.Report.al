@@ -246,11 +246,11 @@ report 4412 "EXR Fixed Asset Analysis Excel"
         exit(FAGeneralReport.CalcFAPostedAmount(FixedAssetData."No.", FAPostingType."FA Posting Type No.", Period, StartingDate, EndingDate, DepreciationBookCode, BeforeAmount, EndingAmount, false, false));
     end;
 
-    local procedure SoldBeforeEndingDate(DisposalDate: Date): Boolean
+    local procedure SoldBeforeEndingDate(DisposalDate2: Date): Boolean
     begin
-        if DisposalDate = 0D then
+        if DisposalDate2 = 0D then
             exit(false);
-        exit(DisposalDate <= EndingDate);
+        exit(DisposalDate2 <= EndingDate);
     end;
 
 }

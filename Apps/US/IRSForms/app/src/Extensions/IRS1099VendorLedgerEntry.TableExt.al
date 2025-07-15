@@ -53,6 +53,8 @@ tableextension 10035 "IRS 1099 Vendor Ledger Entry" extends "Vendor Ledger Entry
         field(10034; "IRS 1099 Reporting Amount"; Decimal)
         {
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
 
             trigger OnValidate()
             begin

@@ -43,7 +43,7 @@ codeunit 5375 "Create E-Document Master Data"
         CreateItem('WRB-1006', 'Whole Roasted Beans, ETHIOPIA', 180, CommonUoM.Piece());
         CreateItem('WRB-1007', 'Whole Roasted Beans, HAWAII', 180, CommonUoM.Piece());
 
-        CreateItem('WDB-1000', 'Whole Decaf Beans, Colombia', 180, CommonUoM.Piece());
+        CreateItem(WholeDecafBeansColombia(), 'Whole Decaf Beans, Colombia', 180, CommonUoM.Piece());
         CreateItem('WDB-1001', 'Whole Decaf Beans, Brazil', 210, CommonUoM.Piece());
         CreateItem('WDB-1002', 'Whole Decaf Beans, Indonesia', 210, CommonUoM.Piece());
         CreateItem('WDB-1003', 'Whole Decaf Beans, Mexico', 210, CommonUoM.Piece());
@@ -52,8 +52,8 @@ codeunit 5375 "Create E-Document Master Data"
         CreateItem('WDB-1006', 'Whole Decaf Beans, Ethiopia', 210, CommonUoM.Piece());
         CreateItem('WDB-1007', 'Whole Decaf Beans, Hawaii', 210, CommonUoM.Piece());
 
-        CreateItem('GRH-1000', 'Precision Grind Home', 199, CommonUoM.Piece());
-        CreateItem('GRH-1001', 'Smart Grind Home', 299, CommonUoM.Piece());
+        CreateItem(PrecisionGrindHome(), 'Precision Grind Home', 199, CommonUoM.Piece());
+        CreateItem(SmartGrindHome(), 'Smart Grind Home', 299, CommonUoM.Piece());
     end;
 
     local procedure CreateItem(ItemNo: Code[20]; Description: Text[100]; UnitPrice: Decimal; BaseUnitOfMeasure: Code[10])
@@ -82,6 +82,21 @@ codeunit 5375 "Create E-Document Master Data"
     internal procedure RandBarcodeInt(): Integer
     begin
         exit(10000000 - 1 + Random(99999999 - 10000000 + 1));
+    end;
+
+    procedure PrecisionGrindHome(): Code[20]
+    begin
+        exit('GRH-1000');
+    end;
+
+    procedure SmartGrindHome(): Code[20]
+    begin
+        exit('GRH-1001');
+    end;
+
+    procedure WholeDecafBeansColombia(): Code[20]
+    begin
+        exit('WDB-1000');
     end;
 
     var

@@ -90,6 +90,7 @@ codeunit 30343 "Shpfy Create Item As Variant"
     local procedure UpdateProductOption(NewOptionName: Text)
     begin
         ProductApi.UpdateProductOption(ShopifyProduct.Id, OptionId, NewOptionName);
+        OptionName := NewOptionName;
     end;
 
     local procedure SetShop(ShopCode: Code[20])

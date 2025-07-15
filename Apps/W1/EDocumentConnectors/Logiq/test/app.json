@@ -69,9 +69,11 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "runtime": "15.0",
   "features": [
     "TranslationFile"
   ],
-  "target": "OnPrem"
+  "target": "OnPrem",
+  "resourceFolders": [
+    "HttpResponseFiles"
+  ]
 }

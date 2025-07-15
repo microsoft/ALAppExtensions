@@ -1,3 +1,11 @@
+namespace Microsoft.Test.Sustainability;
+
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Posting;
+using Microsoft.API.V1;
+
 codeunit 148185 "Sustainability API Tests"
 {
     Subtype = Test;

@@ -13,6 +13,7 @@ tableextension 2630 StatAccSourceCodeSetup extends "Source Code Setup"
         {
             Caption = 'Statistical Account Journal';
             TableRelation = "Source Code";
+            DataClassification = CustomerContent;
             ObsoleteReason = 'Moved to new field - Stat. Account Journal';
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
@@ -23,6 +24,7 @@ tableextension 2630 StatAccSourceCodeSetup extends "Source Code Setup"
         {
             Caption = 'Statistical Account Journal';
             TableRelation = "Source Code";
+            DataClassification = CustomerContent;
         }
     }
 

@@ -1,11 +1,12 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go-Actions/v7.2/settings.schema.json",
   "type": "PTE",
   "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
   "bcContainerHelperVersion": "latest",
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/27.0.33563.0/base",
+  "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/27.0.36535.0/base",
   "country": "base",
   "useProjectDependencies": true,
   "repoVersion": "27.0",
@@ -38,9 +39,6 @@
   "excludeEnvironments": [
     "Official-Build"
   ],
-  "buildModes": [
-    "Translated"
-  ],
   "CICDPushBranches": [],
   "CICDSchedule": "0 2 * * *",
   "CICDPullRequestBranches": [
@@ -59,5 +57,5 @@
   ],
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
   "PullRequestTrigger": "pull_request",
-  "templateSha": "4c6b438bbc8cf7ec04986fa81330427566e0e191"
+  "templateSha": "773587b64b7cff61b6549b9fa126ca8125684f20"
 }

@@ -397,7 +397,8 @@ table 31258 "Iss. Payment Order Header CZB"
             until IssPaymentOrderLineCZB.Next() = 0;
         end;
     end;
-
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the IssPaymentOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
     procedure ShowStatistics()
     var
         BankingDocStatisticsCZB: Page "Banking Doc. Statistics CZB";
@@ -408,6 +409,7 @@ table 31258 "Iss. Payment Order Header CZB"
         BankingDocStatisticsCZB.SetValues("Bank Account No.", "Document Date", -Amount);
         BankingDocStatisticsCZB.Run();
     end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeExportPmtOrd(var IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB"; var IsHandled: Boolean)

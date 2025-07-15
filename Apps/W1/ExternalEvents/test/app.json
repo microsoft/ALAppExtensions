@@ -58,7 +58,6 @@
     "includeSourceInSymbolFile": true
   },
   "target": "OnPrem",
-  "runtime": "10.0",
   "features": [
     "NoImplicitWith"
   ]

@@ -10,6 +10,8 @@ using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration.Send;
+using System.Environment.Configuration;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
 
 codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker
 {
@@ -51,7 +53,7 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
                 exit(false);
         end;
         EmailAccounts.EnableLookupMode();
-        EmailAccounts.FilterConnectorV3Accounts(true);
+        EmailAccounts.FilterConnectorV3AccountsOnly(true);
         if EmailAccounts.RunModal() <> Action::LookupOK then
             exit(false);
 
@@ -109,19 +111,60 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
         end;
     end;
 
-    internal procedure SecurityAuditLogSetupStatusDescription(Action: Text; SetupTableName: Text): Text
-    begin
-        exit(Action + ' ' + SetupTableName + ConnectorTelemetrySnippetTxt);
-    end;
-
-    internal procedure WebLinkText(): Text
+    procedure WebLinkText(): Text
     begin
         exit(WebLinkTxt);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"E-Document Log", OnBeforeExportDataStorage, '', false, false)]
+    local procedure HandleOnBeforeExportDataStorage(EDocumentLog: Record "E-Document Log"; var FileName: Text)
+    var
+        EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
+        EDocDataStorage: Record "E-Doc. Data Storage";
+        IEDocFileFormat: Interface IEDocFileFormat;
+    begin
+        if not EDocument.Get(EDocumentLog."E-Doc. Entry No") then
+            exit;
+
+        if not EDocumentService.Get(EDocumentLog."Service Code") then
+            exit;
+
+        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::Outlook then
+            exit;
+
+        if EDocument."File Name" = '' then
+            exit;
+
+        FileName := EDocument."File Name";
+
+        if EDocDataStorage.Get(EDocumentLog."E-Doc. Data Storage Entry No.") then begin
+            IEDocFileFormat := EDocDataStorage."File Format";
+            if EDocDataStorage."File Format" <> EDocDataStorage."File Format"::Unspecified then
+                FileName += ('.' + IEDocFileFormat.FileExtension());
+        end;
+
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]
+    local procedure HandleOnAfterCreatedNewCompanyByCopyCompany(NewCompanyName: Text[30])
+    var
+        OutlookSetup: Record "Outlook Setup";
+        SharepointSetup: Record "SharePoint Setup";
+        OneDriveSetup: Record "OneDrive Setup";
+    begin
+        OutlookSetup.ChangeCompany(NewCompanyName);
+        OutlookSetup.DeleteAll();
+
+        SharepointSetup.ChangeCompany(NewCompanyName);
+        SharepointSetup.DeleteAll();
+
+        OneDriveSetup.ChangeCompany(NewCompanyName);
+        OneDriveSetup.DeleteAll();
     end;
 
     var
         OutlookProcessing: Codeunit "Outlook Processing";
         SendNotSupportedErr: label 'Sending document is not supported in this context.';
-        ConnectorTelemetrySnippetTxt: label ' for Microsoft 365 E-Document connector.', Locked = true;
         WebLinkTxt: label 'https://outlook.office365.com/owa/?ItemID=%1&exvsurl=1&viewmodel=ReadMessageItem', Locked = true;
 }

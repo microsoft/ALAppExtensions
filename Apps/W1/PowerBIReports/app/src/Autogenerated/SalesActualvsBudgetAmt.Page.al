@@ -7,9 +7,7 @@ page 37008 "Sales Actual vs. Budget Amt."
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Sales Actual vs. Budget Amount';
     AboutTitle = 'About Sales Actual vs. Budget Amount';
     AboutText = 'The Sales Actual vs. Budget Amount report provides a comparative analysis of sales amounts to budget amount. Featuring variance and variance percentage metrics that provide a clear view of actual performance compared to budgeted targets.';
@@ -28,7 +26,7 @@ page 37008 "Sales Actual vs. Budget Amt."
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

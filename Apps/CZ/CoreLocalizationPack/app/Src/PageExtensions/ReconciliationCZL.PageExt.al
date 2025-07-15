@@ -14,11 +14,21 @@ pageextension 31215 "Reconciliation CZL" extends Reconciliation
         }
         addafter("No.")
         {
-            field("Account Type CZL"; Rec."Account Type CZL")
+            field("Acc. Type CZL"; Rec."Acc. Type CZL")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the account type that is being reconciled.';
             }
+#if not CLEAN27
+            field("Account Type CZL"; Rec."Account Type CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the account type that is being reconciled.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+                ObsoleteReason = 'Replaced by "Acc. Type CZL" field.';
+            }
+#endif
             field("Account No. CZL"; Rec."Account No. CZL")
             {
                 ApplicationArea = Basic, Suite;

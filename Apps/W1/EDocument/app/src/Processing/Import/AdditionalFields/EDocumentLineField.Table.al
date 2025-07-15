@@ -74,6 +74,13 @@ table 6110 "E-Document Line - Field"
             ToolTip = 'Specifies the custom integer value.';
             DataClassification = CustomerContent;
         }
+        field(10; "E-Document Service"; Code[20])
+        {
+            Caption = 'E-Document Service';
+            ToolTip = 'Specifies the E-Document Service that this field setup belongs to.';
+            FieldClass = FlowField;
+            CalcFormula = lookup("E-Document".Service where("Entry No" = field("E-Document Entry No.")));
+        }
     }
     keys
     {
@@ -93,7 +100,7 @@ table 6110 "E-Document Line - Field"
     /// <param name="EDocumentLineMapping">The draft line that will get its' value loaded</param>
     /// <param name="PurchaseLineFieldSetup:">The Purchase Invoice Line field that we want to load</param>
     /// <returns>The source that was used to load the values, Customized, Historic or Default</returns>
-    procedure Get(EDocumentLineMapping: Record "E-Document Line Mapping"; PurchaseLineFieldSetup: Record "EDoc. Purch. Line Field Setup") Source: Option Customized,Historic,Default
+    procedure Get(EDocumentPurchaseLine: Record "E-Document Purchase Line"; PurchaseLineFieldSetup: Record "ED Purchase Line Field Setup") Source: Option Customized,Historic,Default
     var
         EDocPurchaseLineHistory: Record "E-Doc. Purchase Line History";
         PurchaseInvoiceLineRecordRef: RecordRef;
@@ -102,14 +109,14 @@ table 6110 "E-Document Line - Field"
         // We start from a clean record
         Clear(Rec);
         // If a physical record exists, we load it and exit with source Customized
-        if Rec.Get(EDocumentLineMapping."E-Document Entry No.", EDocumentLineMapping."Line No.", PurchaseLineFieldSetup."Field No.") then
+        if Rec.Get(EDocumentPurchaseLine."E-Document Entry No.", EDocumentPurchaseLine."Line No.", PurchaseLineFieldSetup."Field No.") then
             exit(Source::Customized);
         // If there is no physical record, we prepare the record fields that correspond to the arguments and the default configuration of the fields
-        Rec."E-Document Entry No." := EDocumentLineMapping."E-Document Entry No.";
-        Rec."Line No." := EDocumentLineMapping."Line No.";
+        Rec."E-Document Entry No." := EDocumentPurchaseLine."E-Document Entry No.";
+        Rec."Line No." := EDocumentPurchaseLine."Line No.";
         Rec."Field No." := PurchaseLineFieldSetup."Field No.";
         // We check if there are any values to load from history, if not we exit with source Default
-        if not EDocPurchaseLineHistory.Get(EDocumentLineMapping."E-Doc. Purch. Line History Id") then
+        if not EDocPurchaseLineHistory.Get(EDocumentPurchaseLine."E-Doc. Purch. Line History Id") then
             exit(Source::Default);
         PurchaseInvoiceLineRecordRef.Open(Database::"Purch. Inv. Line");
         if not PurchaseInvoiceLineRecordRef.GetBySystemId(EDocPurchaseLineHistory."Purch. Inv. Line SystemId") then
@@ -158,12 +165,12 @@ table 6110 "E-Document Line - Field"
     procedure InsertOrModify()
     var
         EDocument: Record "E-Document";
-        EDocumentLineMapping: Record "E-Document Line Mapping";
+        EDocumentPurchaseLine: Record "E-Document Purchase Line";
         Field: Record Field;
     begin
         if not EDocument.Get(Rec."E-Document Entry No.") then
             exit;
-        if not EDocumentLineMapping.Get(Rec."E-Document Entry No.", Rec."Line No.") then
+        if not EDocumentPurchaseLine.Get(Rec."E-Document Entry No.", Rec."Line No.") then
             exit;
         if not Field.Get(Database::"Purch. Inv. Line", Rec."Field No.") then
             exit;
@@ -188,24 +195,24 @@ table 6110 "E-Document Line - Field"
         exit(RecordRef.Field(Rec."Field No.").GetEnumValueCaptionFromOrdinalValue(EnumValue));
     end;
 
-    procedure HasCustomizedRecords(EDocumentLineMapping: Record "E-Document Line Mapping"): Boolean
+    procedure HasCustomizedRecords(EDocumentPurchaseLine: Record "E-Document Purchase Line"): Boolean
     begin
         Clear(Rec);
-        FilterForEDocumentLineMapping(EDocumentLineMapping);
+        FilterForEDocumentLineMapping(EDocumentPurchaseLine);
         exit(not Rec.IsEmpty());
     end;
 
-    procedure DeleteCustomizedRecords(EDocumentLineMapping: Record "E-Document Line Mapping")
+    procedure DeleteCustomizedRecords(EDocumentPurchaseLine: Record "E-Document Purchase Line")
     begin
         Clear(Rec);
-        FilterForEDocumentLineMapping(EDocumentLineMapping);
+        FilterForEDocumentLineMapping(EDocumentPurchaseLine);
         Rec.DeleteAll();
     end;
 
-    local procedure FilterForEDocumentLineMapping(EDocumentLineMapping: Record "E-Document Line Mapping")
+    local procedure FilterForEDocumentLineMapping(EDocumentPurchaseLine: Record "E-Document Purchase Line")
     begin
-        Rec.SetRange("E-Document Entry No.", EDocumentLineMapping."E-Document Entry No.");
-        Rec.SetRange("Line No.", EDocumentLineMapping."Line No.");
+        Rec.SetRange("E-Document Entry No.", EDocumentPurchaseLine."E-Document Entry No.");
+        Rec.SetRange("Line No.", EDocumentPurchaseLine."Line No.");
     end;
 
 }

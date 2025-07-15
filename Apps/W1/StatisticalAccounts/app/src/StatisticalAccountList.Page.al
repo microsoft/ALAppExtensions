@@ -199,7 +199,7 @@ page 2632 "Statistical Account List"
         StatAccTelemetry.LogDiscovered();
     end;
 
-    internal procedure GetSelectionFilter(): Text
+    procedure GetSelectionFilter(): Text
     var
         StatisticalAccount: Record "Statistical Account";
         SelectionFilterManagement: Codeunit SelectionFilterManagement;

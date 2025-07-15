@@ -47,6 +47,12 @@
       "name": "Any",
       "publisher": "Microsoft",
       "version": "27.0.0.0"
+    },
+    {
+      "id": "3e75ec63-8d7b-4bf8-9c79-9182a7caad84",
+      "name": "Adversarial Simulation Test Library",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
     }
   ],
   "screenshots": [],
@@ -66,7 +72,11 @@
     },
     {
       "from": 133519,
-      "to": 133528
+      "to": 133529
+    },
+    {
+      "from": 133710,
+      "to": 133721
     }
   ],
   "resourceExposurePolicy": {

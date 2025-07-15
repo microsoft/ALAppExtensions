@@ -29,6 +29,8 @@ table 10033 "IRS 1099 Form Box"
         }
         field(5; "Minimum Reportable Amount"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
     }
 

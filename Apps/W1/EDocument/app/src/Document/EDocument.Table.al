@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -7,6 +7,7 @@ namespace Microsoft.eServices.EDocument;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Finance.Currency;
 using Microsoft.eServices.EDocument.Integration;
+using System.Telemetry;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Utilities;
 using System.Automation;
@@ -23,6 +24,11 @@ table 6121 "E-Document"
     LookupPageId = "E-Documents";
     DrillDownPageId = "E-Documents";
     DataClassification = CustomerContent;
+
+    Permissions =
+        tabledata "E-Document" = i,
+        tabledata "E-Document Service Status" = d;
+
 
     fields
     {
@@ -212,16 +218,24 @@ table 6121 "E-Document"
             Caption = 'File Name';
             ToolTip = 'Specifies the file name of the E-Document source.';
         }
-        field(36; "File Type"; Enum "E-Doc. Data Storage Blob Type")
+#if not CLEANSCHEMA26
+        field(36; "File Type"; Integer)
         {
             Caption = 'File Type';
             ToolTip = 'Specifies the file type of the E-Document source.';
+            ObsoleteReason = 'Use File Format in the "E-Doc. Data Storage" table instead.';
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
         }
-        field(37; "Structured Data Process"; Enum "E-Doc. Structured Data Process")
+        field(37; "Structured Data Process"; Integer)
         {
             Caption = 'Structured Data Process';
             ToolTip = 'Specifies the structured data process to run on the E-Document data.';
+            ObsoleteReason = 'Use "Process Draft Impl." field instead.';
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
         }
+#endif
         field(38; "Service Integration"; Enum "Service Integration")
         {
             Caption = 'Service Integration';
@@ -238,6 +252,30 @@ table 6121 "E-Document"
             Caption = 'Additional Source Details';
             ToolTip = 'Specifies additional details about the E-Document source.';
         }
+        field(41; "Import Processing Status"; Enum "Import E-Doc. Proc. Status")
+        {
+            Caption = 'Import Processing Status';
+            ToolTip = 'Specifies the E-Document import processing status.';
+            FieldClass = FlowField;
+            CalcFormula = lookup("E-Document Service Status"."Import Processing Status" where("E-Document Entry No" = field("Entry No")));
+        }
+        #region Import Process Implementations
+        field(42; "Structure Data Impl."; Enum "Structure Received E-Doc.")
+        {
+            Caption = 'Structure Data Implementation';
+            ToolTip = 'Specifies the implementation to use for structuring the E-Document data.';
+        }
+        field(43; "Read into Draft Impl."; Enum "E-Doc. Read into Draft")
+        {
+            Caption = 'Read into Draft Implementation';
+            ToolTip = 'Specifies the implementation to use for reading the E-Document data into a draft.';
+        }
+        field(44; "Process Draft Impl."; Enum "E-Doc. Process Draft")
+        {
+            Caption = 'Structured Data Process';
+            ToolTip = 'Specifies the implementation to use for processing the draft received.';
+        }
+        #endregion
     }
     keys
     {
@@ -264,24 +302,21 @@ table 6121 "E-Document"
         if (Rec."Document Record ID".TableNo <> 0) then
             Error(this.DeleteLinkedNotAllowedErr);
 
-        if (not Rec.IsDuplicate()) then
+        if (not Rec.IsDuplicate(false)) then
             if not GuiAllowed() then
                 Error(DeleteUniqueNotAllowedErr)
             else
                 if not Confirm(this.DeleteConfirmQst) then
                     Error('');
 
-        this.DeleteRelatedRecords();
+        this.CleanupDocument();
     end;
 
     /// <summary>
     /// Inserts a new E-Document record with the specified parameters.
     /// </summary>
-    internal procedure Create(
-        EDocumentDirection: Enum "E-Document Direction";
-        EDocumentType: Enum "E-Document Type";
-        EDocumentService: Record "E-Document Service"
-    )
+    [InherentPermissions(PermissionObjectType::TableData, Database::"E-Document", 'i')]
+    internal procedure Create(EDocumentDirection: Enum "E-Document Direction"; EDocumentType: Enum "E-Document Type"; EDocumentService: Record "E-Document Service")
     begin
         Rec."Entry No" := 0;
         Rec.Direction := EDocumentDirection;
@@ -291,15 +326,33 @@ table 6121 "E-Document"
         Rec.Insert(true);
     end;
 
-    internal procedure IsDuplicate(): Boolean
+    internal procedure IsDuplicate(ShowMessage: Boolean): Boolean
     var
         EDocument: Record "E-Document";
     begin
+        EDocument.ReadIsolation := EDocument.ReadIsolation::ReadUncommitted;
         EDocument.SetRange("Incoming E-Document No.", Rec."Incoming E-Document No.");
         EDocument.SetRange("Bill-to/Pay-to No.", Rec."Bill-to/Pay-to No.");
         EDocument.SetRange("Document Date", Rec."Document Date");
         EDocument.SetFilter("Entry No", '<>%1', Rec."Entry No");
-        exit(not EDocument.IsEmpty());
+        if not EDocument.FindFirst() then
+            exit(false);
+
+        if ShowMessage and GuiAllowed() then
+            Message(EDocumentExistsMsg, EDocument."Entry No");
+        Telemetry.LogMessage('0000PHB', StrSubstNo(EDocumentExistsMsg, EDocument."Entry No"), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
+        exit(true);
+    end;
+
+    internal procedure IsSourceDocumentStructured(): Boolean
+    var
+        EDocDataStorage: Record "E-Doc. Data Storage";
+    begin
+        // If the E-Document Data Storage can't be retrieved from the Unstructured Data Entry No.,
+        // it means that the E-Document is coming from versions before 2, and these are all structured.
+        if not EDocDataStorage.Get(Rec."Unstructured Data Entry No.") then
+            exit(true);
+        exit(Rec."Structure Data Impl." = "Structure Received E-Doc."::"Already Structured");
     end;
 
     internal procedure GetTotalAmountIncludingVAT(): Decimal
@@ -316,15 +369,13 @@ table 6121 "E-Document"
         exit(EDocumentPurchaseHeader.Total);
     end;
 
-    local procedure DeleteRelatedRecords()
+    procedure CleanupDocument()
     var
         DocumentAttachment: Record "Document Attachment";
         EDocMappingLog: Record "E-Doc. Mapping Log";
         EDocumentIntegrationLog: Record "E-Document Integration Log";
         EDocumentLog: Record "E-Document Log";
         EDocumentServiceStatus: Record "E-Document Service Status";
-        EDocumentHeaderMapping: Record "E-Document Header Mapping";
-        EDocumentLineMapping: Record "E-Document Line Mapping";
         IProcessStructuredData: Interface IProcessStructuredData;
     begin
         EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
@@ -348,47 +399,8 @@ table 6121 "E-Document"
         if not EDocMappingLog.IsEmpty() then
             EDocMappingLog.DeleteAll(true);
 
-        EDocumentHeaderMapping.SetRange("E-Document Entry No.", Rec."Entry No");
-        if not EDocumentHeaderMapping.IsEmpty() then
-            EDocumentHeaderMapping.DeleteAll(true);
-
-        EDocumentLineMapping.SetRange("E-Document Entry No.", Rec."Entry No");
-        if not EDocumentLineMapping.IsEmpty() then
-            EDocumentLineMapping.DeleteAll(true);
-
-        IProcessStructuredData := Rec."Structured Data Process";
+        IProcessStructuredData := Rec."Process Draft Impl.";
         IProcessStructuredData.CleanUpDraft(Rec);
-    end;
-
-    internal procedure PreviewContent()
-    var
-        EDocDataStorage: Record "E-Doc. Data Storage";
-        EDocumentLog: Record "E-Document Log";
-        FileInStr: InStream;
-    begin
-        if Rec."File Type" <> Rec."File Type"::PDF then
-            exit;
-
-        EDocDataStorage.SetAutoCalcFields("Data Storage");
-        if not EDocDataStorage.Get("Unstructured Data Entry No.") then begin
-            EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
-            EDocumentLog.SetFilter(Status, '<>' + Format(EDocumentLog.Status::"Batch Imported"));
-
-            if not EDocumentLog.FindFirst() then
-                Error(NoFileErr, Rec.TableCaption());
-
-            if not EDocDataStorage.Get(EDocumentLog."E-Doc. Data Storage Entry No.") then
-                Error(NoFileErr, Rec.TableCaption());
-        end;
-
-        if EDocDataStorage."Data Type" <> EDocDataStorage."Data Type"::PDF then
-            exit;
-
-        if not EDocDataStorage."Data Storage".HasValue() then
-            Error(NoFileContentErr, Rec."File Name", EDocDataStorage.TableCaption());
-
-        EDocDataStorage."Data Storage".CreateInStream(FileInStr);
-        File.ViewFromStream(FileInStr, Rec."File Name", true);
     end;
 
     internal procedure ExportDataStorage()
@@ -409,15 +421,14 @@ table 6121 "E-Document"
         EDocumentLog.ExportDataStorage();
     end;
 
-    internal procedure ViewSourceFile()
+    procedure ViewSourceFile()
+    var
+        EDocDataStorage: Record "E-Doc. Data Storage";
+        IEDocFileFormat: Interface IEDocFileFormat;
     begin
-        if Rec."File Name" = '' then
-            exit;
-
-        if Rec."File Type" = Rec."File Type"::PDF then begin
-            Rec.PreviewContent();
-            exit;
-        end;
+        EDocDataStorage.Get(Rec."Unstructured Data Entry No.");
+        IEDocFileFormat := EDocDataStorage."File Format";
+        IEDocFileFormat.PreviewContent(EDocDataStorage.Name, EDocDataStorage.GetTempBlob());
     end;
 
     internal procedure OpenEDocument(EDocumentRecordId: RecordId)
@@ -458,27 +469,25 @@ table 6121 "E-Document"
         if EDocumentService.Get(GetEDocumentServiceStatus()."E-Document Service Code") then;
     end;
 
+#if not CLEAN27
+    [Obsolete('Use flow field "Import Processing Status"', '27.0')]
     procedure GetEDocumentImportProcessingStatus(): Enum "Import E-Doc. Proc. Status"
     begin
         exit(GetEDocumentServiceStatus()."Import Processing Status");
     end;
-
-    internal procedure GetEDocumentHeaderMapping() EDocumentHeaderMapping: Record "E-Document Header Mapping"
-    begin
-        if EDocumentHeaderMapping.Get(Rec."Entry No") then;
-    end;
-
+#endif
     internal procedure ToString(): Text
     begin
         exit(StrSubstNo(ToStringLbl, SystemId, "Document Record ID", "Workflow Step Instance ID", "Job Queue Entry ID"));
     end;
 
     var
+        Telemetry: Codeunit Telemetry;
         ToStringLbl: Label '%1,%2,%3,%4', Locked = true;
         DeleteLinkedNotAllowedErr: Label 'The E-Document is linked to sales or purchase document and cannot be deleted.';
         DeleteProcessedNotAllowedErr: Label 'The E-Document has already been processed and cannot be deleted.';
         DeleteUniqueNotAllowedErr: Label 'Only duplicate E-Documents can be deleted without a confirmation in the user interface.';
         NoFileErr: label 'No previewable attachment exists for this %2.', Comment = '%1 - a table caption';
-        NoFileContentErr: label 'Previewing file %1 failed. The file was found in table %2, but it has no content.', Comment = '%1 - a file name; %2 - a table caption';
         DeleteConfirmQst: label 'Are you sure? You may not be able to retrieve this E-Document again.\\ Do you want to continue?';
+        EDocumentExistsMsg: Label 'This E-Document is a duplicate of E-Document %1.', Comment = '%1 - E-Document No.';
 }

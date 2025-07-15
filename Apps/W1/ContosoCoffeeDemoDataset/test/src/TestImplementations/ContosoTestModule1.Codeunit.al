@@ -1,3 +1,7 @@
+namespace Microsoft.Test.DemoTool;
+
+using Microsoft.DemoTool;
+
 codeunit 148046 "Contoso Test Module 1" implements "Contoso Demo Data Module"
 {
     procedure RunConfigurationPage();

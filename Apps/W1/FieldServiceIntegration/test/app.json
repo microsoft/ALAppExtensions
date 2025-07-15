@@ -37,12 +37,6 @@
       "version": "27.0.0.0"
     },
     {
-      "id": "155bc500-e420-4113-803e-7aa8e8eea112",
-      "name": "Tests-CRM integration",
-      "publisher": "Microsoft",
-      "version": "27.0.0.0"
-    },
-    {
       "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
       "name": "Library Variable Storage",
       "publisher": "Microsoft",

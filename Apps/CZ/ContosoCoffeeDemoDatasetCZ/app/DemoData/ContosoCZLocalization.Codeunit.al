@@ -323,6 +323,7 @@ codeunit 31215 "Contoso CZ Localization"
         CreatePurchaseDocumentCZ: Codeunit "Create Purchase Document CZ";
         CreateResourceCZ: Codeunit "Create Resource CZ";
         CreateVATPostingGroupsCZ: Codeunit "Create VAT Posting Groups CZ";
+        CreateVATStatementCZ: Codeunit "Create VAT Statement CZ";
         CreateVendorCZ: Codeunit "Create Vendor CZ";
         CreateVendorPostingGroupCZ: Codeunit "Create Vendor Posting Group CZ";
     begin
@@ -334,6 +335,7 @@ codeunit 31215 "Contoso CZ Localization"
                     BindSubscription(CreatePostingGroupsCZ);
                     BindSubscription(CreateResourceCZ);
                     BindSubscription(CreateCurrencyExRateCZ);
+                    BindSubscription(CreateVATStatementCZ);
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
@@ -399,6 +401,7 @@ codeunit 31215 "Contoso CZ Localization"
         CreatePurchaseDocumentCZ: Codeunit "Create Purchase Document CZ";
         CreateResourceCZ: Codeunit "Create Resource CZ";
         CreateVATPostingGroupsCZ: Codeunit "Create VAT Posting Groups CZ";
+        CreateVATStatementCZ: Codeunit "Create VAT Statement CZ";
         CreateVendorCZ: Codeunit "Create Vendor CZ";
         CreateVendorPostingGroupCZ: Codeunit "Create Vendor Posting Group CZ";
     begin
@@ -410,6 +413,7 @@ codeunit 31215 "Contoso CZ Localization"
                     UnbindSubscription(CreatePostingGroupsCZ);
                     UnbindSubscription(CreateResourceCZ);
                     UnbindSubscription(CreateCurrencyExRateCZ);
+                    UnbindSubscription(CreateVATStatementCZ);
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin

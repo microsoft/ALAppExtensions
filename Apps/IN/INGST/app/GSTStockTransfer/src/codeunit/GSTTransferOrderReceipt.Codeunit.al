@@ -137,7 +137,12 @@ codeunit 18390 "GST Transfer Order Receipt"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnAfterInsertTransRcptLineOnBeforePostDeferredValue', '', false, false)]
     local procedure OnAfterInsertTransRcptLinePostRevaluation(var TransLine: Record "Transfer Line"; TransRcptHeader: Record "Transfer Receipt Header"; TransRcptLine: Record "Transfer Receipt Line"; var ItemJnlPostLine: Codeunit "Item Jnl.-Post Line")
+    var
+        Item: Record Item;
     begin
+        if Item.Get(TransRcptLine."Item No.") then
+            if Item."Inventory Value Zero" then
+                exit;
         PostRevaluationEntryGST(TransLine, TransRcptHeader, TransRcptLine, ItemJnlPostLine);
     end;
 
@@ -1315,17 +1320,6 @@ codeunit 18390 "GST Transfer Order Receipt"
         ReservationEntry."Item Tracking" := ReservationEntry."Item Tracking"::"Lot No.";
         ReservationEntry."Appl.-to Item Entry" := ItemLedgerEntry."Entry No.";
         ReservationEntry.Insert();
-    end;
-
-    local procedure GetLocation(LocationCode: Code[10])
-    var
-        Location: Record Location;
-    begin
-        if LocationCode = '' then
-            Location.GetLocationSetup(LocationCode, Location)
-        else
-            if Location.Code <> LocationCode then
-                Location.Get(LocationCode);
     end;
 
     [IntegrationEvent(false, false)]

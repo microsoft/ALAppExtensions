@@ -15,7 +15,9 @@ tableextension 6238 "Sust. Sales Invoice Header" extends "Sales Invoice Header"
             FieldClass = FlowField;
             CalcFormula = exist("Sales Invoice Line" where("Sust. Account No." = filter('<>'''''), "Document No." = field("No.")));
         }
+#pragma warning disable AA0232
         field(6211; "Total CO2e"; Decimal)
+#pragma warning restore AA0232
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));

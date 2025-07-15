@@ -1,16 +1,30 @@
 #pragma warning disable AS0032
 namespace Microsoft.Sustainability.RoleCenters;
 
+using Microsoft.Assembly.Document;
 using Microsoft.CostAccounting.Allocation;
+using Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Budget;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Navigate;
+using Microsoft.Foundation.Task;
+using Microsoft.HumanResources.Absence;
+using Microsoft.HumanResources.Employee;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Manufacturing.Journal;
+using Microsoft.Manufacturing.MachineCenter;
+using Microsoft.Manufacturing.ProductionBOM;
+using Microsoft.Manufacturing.Routing;
+using Microsoft.Manufacturing.WorkCenter;
+using Microsoft.Projects.Project.Job;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Vendor;
@@ -18,10 +32,10 @@ using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
-using Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Sustainability.Reports;
 using Microsoft.Sustainability.Scorecard;
 using Microsoft.Sustainability.Setup;
+using System.Integration.PowerBI;
 
 page 6235 "Sustainability Manager RC"
 {
@@ -44,20 +58,64 @@ page 6235 "Sustainability Manager RC"
             {
                 ApplicationArea = Basic, Suite;
             }
-            part(CO2RatioChart; "Emission Scope Ratio Chart")
+            group("Gas Emissions")
             {
-                ApplicationArea = Basic, Suite;
-                Caption = 'CO2';
+                Caption = 'Gas Emissions';
+                ShowCaption = true;
+                part(CO2RatioChart; "Emission Scope Ratio Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'CO2';
+                }
+                part(CH4RatioChart; "CH4 Emission Ratio Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'CH4';
+                }
+                part(N2ORatioChart; "N2O Emission Ratio Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'N2O';
+                }
             }
-            part(CH4RatioChart; "CH4 Emission Ratio Chart")
+            group("Carbon Equivalent")
             {
-                ApplicationArea = Basic, Suite;
-                Caption = 'CH4';
+                part(CO2eRatioChart; "CO2e Emission Ratio Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'CO2e per Month';
+                }
             }
-            part(N2ORatioChart; "N2O Emission Ratio Chart")
+            group("Water Management")
             {
+                part(WaterRatioChart; "Water Intensity Ratio Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Water';
+                }
+                part(WaterBarChart; "Water Intensity Bar Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Water Intensity per Month';
+                }
+                part(WaterTypeBarChart; "Water Type Intensity Bar Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Water Type Intensity';
+                }
+            }
+            group("Waste Management")
+            {
+                part(WasteRatioChart; "Waste Intensity Ratio Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Waste';
+                }
+            }
+            part(PowerBIEmbeddedReportPart; "Power BI Embedded Report Part")
+            {
+                AccessByPermission = TableData "Power BI Context Settings" = I;
                 ApplicationArea = Basic, Suite;
-                Caption = 'N2O';
             }
         }
     }
@@ -66,15 +124,23 @@ page 6235 "Sustainability Manager RC"
     {
         area(Creation)
         {
+            action("Sust. Certificate")
+            {
+                ApplicationArea = Basic, Suite;
+                RunObject = Page "Sustainability Certificates";
+                Caption = 'Sustainability Certificate';
+                ToolTip = 'Executes the Sustainability Certificate action.';
+            }
             group("Journals")
             {
-                Caption = 'Journals';
+                Caption = 'Sustainability';
                 action(SustainabilityJournal)
                 {
                     ApplicationArea = Basic, Suite;
                     RunObject = Page "Sustainability Journal";
                     Caption = 'Sustainability Journal';
                     ToolTip = 'Executes the Sustainability Journal action.';
+                    Image = Journal;
                 }
                 action(RecurringSustainabilityJnl)
                 {
@@ -82,6 +148,123 @@ page 6235 "Sustainability Manager RC"
                     RunObject = Page "Recurring Sustainability Jnl.";
                     Caption = 'Recurring Sustainability Journals';
                     ToolTip = 'Executes the Recurring Sustainability Journals action.';
+                    Image = Journal;
+                }
+            }
+            group(General)
+            {
+                Caption = 'General';
+                action("General Journal")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'General Journal';
+                    RunObject = page "General Journal";
+                    Tooltip = 'Open the General Journals page.';
+                    Image = Journal;
+                }
+                action("Recurring General Jnl")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Recurring General Journal';
+                    RunObject = Page "Recurring General Journal";
+                    ToolTip = 'Executes the Recurring General Journals action.';
+                    Image = Journal;
+                }
+            }
+            group(Purchase)
+            {
+                Caption = 'Purchase';
+                action("Purchase Invoice")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Purchase Invoice';
+                    RunObject = page "Purchase Invoice";
+                    ToolTip = 'Create a new purchase invoice.';
+                    Image = NewPurchaseInvoice;
+                }
+                action("Purchase Order")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Purchase Order';
+                    RunObject = Page "Purchase Order";
+                    ToolTip = 'Create a new purchase order.';
+                    Image = NewPurchaseInvoice;
+                }
+                action("Purchase Credit Memo")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Purchase Credit Memo';
+                    RunObject = Page "Purchase Credit Memo";
+                    ToolTip = 'Create a new purchase credit memo.';
+                    Image = CreditMemo;
+                }
+            }
+            group(Production)
+            {
+                Caption = 'Production';
+                action("Consumption Journal")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Consumption Journal';
+                    RunObject = page "Consumption Journal";
+                    Tooltip = 'Open the Consumption Journals page.';
+                    Image = Journal;
+                }
+                action("Output Journal")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Output Journal';
+                    RunObject = Page "Output Journal";
+                    Tooltip = 'Open the Output Journals page.';
+                    Image = OutputJournal;
+                }
+                action("Production Journal")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Production Journal';
+                    RunObject = Page "Production Journal";
+                    Tooltip = 'Open the Production Journals page.';
+                    Image = Journal;
+                }
+            }
+            group(Tasks)
+            {
+                Caption = 'Tasks';
+                action("Sustainability Scorecards")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Scorecards';
+                    RunObject = page "Sustainability Scorecards";
+                    Tooltip = 'Open the Scorecards page.';
+                    Image = NumberGroup;
+                }
+                action("Sustainability Goals")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Goals';
+                    RunObject = Page "Sustainability Goals";
+                    Tooltip = 'Open the Goals page.';
+                    Image = BankAccountRec;
+                }
+                action("User Tasks")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'User Tasks';
+                    RunObject = Page "User Task List";
+                    Tooltip = 'Open the User Tasks page.';
+                    Image = Task;
+                }
+            }
+            group(History)
+            {
+                Caption = 'History';
+                action("Navi&gate")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Find entries...';
+                    RunObject = Page Navigate;
+                    ToolTip = 'Find entries and documents that exist for the document number and posting date on the selected document. (Formerly this action was named Navigate.)';
+                    Image = Navigate;
                 }
             }
         }
@@ -315,6 +498,96 @@ page 6235 "Sustainability Manager RC"
                     Caption = 'Posted Purchase Invoices';
                     RunObject = page "Posted Purchase Invoices";
                     ToolTip = 'Executes the Posted Purchase Invoices action.';
+                }
+            }
+            group(Social)
+            {
+                action("Employees")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Employees';
+                    RunObject = page "Employee List";
+                    Tooltip = 'Open the Employees page.';
+                }
+                action(Qualifications)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Qualifications';
+                    RunObject = page "Employee Qualifications";
+                    ToolTip = 'Open the list of qualifications that are registered for the employees.';
+                }
+                action(Absences)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Absences';
+                    RunObject = page "Employee Absences";
+                    ToolTip = 'View absence information for the employees.';
+                }
+            }
+            group(Operations)
+            {
+                action("Work Centers")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Work Centers';
+                    RunObject = page "Work Center List";
+                    ToolTip = 'View or edit the list of work centers.';
+                }
+                action("Machine Centers")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Machine Centers';
+                    RunObject = Page "Machine Center List";
+                    ToolTip = 'View the list of machine centers.';
+                }
+                action("Production BOM")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Production BOM';
+                    RunObject = Page "Production BOM List";
+                    ToolTip = 'Open the item''s production bill of material to view or edit its components.';
+                }
+                action(Routings)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Routings';
+                    RunObject = Page "Routing List";
+                    ToolTip = 'View or edit operation sequences and process times for produced items.';
+                }
+                action("Released Production Orders")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Released Production Orders';
+                    RunObject = Page "Released Production Orders";
+                    ToolTip = 'View the list of released production order that are ready for warehouse activities.';
+                }
+                action("Finished Production Orders")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Finished Production Orders';
+                    RunObject = Page "Finished Production Orders";
+                    ToolTip = 'View completed production orders. ';
+                }
+                action("Transfer Orders")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Transfer Orders';
+                    RunObject = Page "Transfer Orders";
+                    ToolTip = 'Move inventory items between company locations. With transfer orders, you ship the outbound transfer from one location and receive the inbound transfer at the other location. This allows you to manage the involved warehouse activities and provides more certainty that inventory quantities are updated correctly.';
+                }
+                action("Assembly Orders")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Assembly Orders';
+                    RunObject = Page "Assembly Orders";
+                    ToolTip = 'View ongoing assembly orders.';
+                }
+                action(Projects)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Projects';
+                    RunObject = Page "Job List";
+                    ToolTip = 'Define a project activity by creating a project card with integrated project tasks and project planning lines, structured in two layers. The project task enables you to set up project planning lines and to post consumption to the project. The project planning lines specify the detailed use of resources, items, and various general ledger expenses.';
                 }
             }
         }

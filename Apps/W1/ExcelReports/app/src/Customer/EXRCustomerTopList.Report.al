@@ -214,7 +214,7 @@ report 4409 "EXR Customer Top List"
         EXTTopCustomerSale.Open();
         if EXTTopCustomerSale.Read() then
             repeat
-                TopCustomerData.SetFilter(TopCustomerData."Customer No.", EXTTopCustomerSale.Customer_No);
+                TopCustomerData.SetFilter(TopCustomerData."Customer No.", EscapeCustomerNoFilter(EXTTopCustomerSale.Customer_No));
                 if TopCustomerData.FindFirst() then begin
                     TopCustomerData."Amount 2 (LCY)" := EXTTopCustomerSale.Sum_Purch_LCY;
                     if Customer.Get(TopCustomerData."Customer No.") then

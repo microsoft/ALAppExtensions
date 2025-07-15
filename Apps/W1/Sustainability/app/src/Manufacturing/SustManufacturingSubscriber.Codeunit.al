@@ -180,7 +180,11 @@ codeunit 6254 "Sust. Manufacturing Subscriber"
             Rec.UpdateSustainabilityEmission(Rec);
     end;
 
+#if not CLEAN27
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnPostOutputOnBeforePostItem', '', false, false)]
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Mfg. Item Jnl.-Post Line", 'OnPostOutputOnBeforePostItem', '', false, false)]
+#endif
     local procedure OnPostOutputOnBeforePostItem(var ItemJournalLine: Record "Item Journal Line"; var ProdOrderLine: Record "Prod. Order Line"; var IsHandled: Boolean)
     begin
         if IsHandled then
@@ -226,21 +230,33 @@ codeunit 6254 "Sust. Manufacturing Subscriber"
             ItemJournalLine.Validate("Sust. Account No.", '');
     end;
 
+#if not CLEAN27
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnPostConsumptionOnBeforeCalcRemainingQuantity', '', false, false)]
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Mfg. Item Jnl.-Post Line", 'OnPostConsumptionOnBeforeCalcRemainingQuantity', '', false, false)]
+#endif
     local procedure OnPostConsumptionOnBeforeCalcRemainingQuantity(var ProdOrderComp: Record "Prod. Order Component"; var ItemJnlLine: Record "Item Journal Line"; var QtyToPost: Decimal)
     begin
         if (ItemJnlLine."Sust. Account No." <> '') and (QtyToPost <> 0) then
             ProdOrderComp."Posted Total CO2e" += ItemJnlLine.GetPostingSign(ItemJnlLine.IsGHGCreditLine()) * ItemJnlLine."Total CO2e";
     end;
 
+#if not CLEAN27
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnPostOutputOnBeforeProdOrderRtngLineModify', '', false, false)]
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Mfg. Item Jnl.-Post Line", 'OnPostOutputOnBeforeProdOrderRtngLineModify', '', false, false)]
+#endif
     local procedure OnPostOutputOnBeforeProdOrderRtngLineModify(var ProdOrderRoutingLine: Record "Prod. Order Routing Line"; var ItemJournalLine: Record "Item Journal Line")
     begin
         if (ItemJournalLine."Sust. Account No." <> '') then
             ProdOrderRoutingLine."Posted Total CO2e" += ItemJournalLine.GetPostingSign(ItemJournalLine.IsGHGCreditLine()) * ItemJournalLine."Total CO2e";
     end;
 
+#if not CLEAN27
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeProdOrderLineModify', '', false, false)]
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Mfg. Item Jnl.-Post Line", 'OnBeforeProdOrderLineModify', '', false, false)]
+#endif
     local procedure OnBeforeProdOrderLineModify(var ProdOrderLine: Record "Prod. Order Line"; ItemJournalLine: Record "Item Journal Line")
     begin
         if (ItemJournalLine."Sust. Account No." <> '') then

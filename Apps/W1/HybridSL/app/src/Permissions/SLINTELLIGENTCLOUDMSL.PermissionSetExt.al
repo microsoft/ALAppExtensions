@@ -28,6 +28,7 @@ permissionsetextension 47000 "SLINTELLIGENT CLOUD - MSL" extends "INTELLIGENT CL
                   tabledata "SL Codes" = RIMD,
                   tabledata "SL Company Additional Settings" = RIMD,
                   tabledata "SL Company Migration Settings" = RIMD,
+                  tabledata "SL CustClass" = RIMD,
                   tabledata "SL Customer" = RIMD,
                   tabledata "SL Fiscal Periods" = RIMD,
                   tabledata "SL FlexDef" = RIMD,
@@ -77,6 +78,7 @@ permissionsetextension 47000 "SLINTELLIGENT CLOUD - MSL" extends "INTELLIGENT CL
                   tabledata "SL SOType" = RIMD,
                   tabledata "SL Terms" = RIMD,
                   tabledata "SL Upgrade Settings" = RIMD,
+                  tabledata "SL VendClass" = RIMD,
                   tabledata "SL Vendor" = RIMD,
                   tabledata SLGLAcctBalByPeriod = RIMD,
                   tabledata "SL Period List Work Table" = RIMD;

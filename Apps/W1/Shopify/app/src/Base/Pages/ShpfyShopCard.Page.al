@@ -64,8 +64,7 @@ page 30101 "Shpfy Shop Card"
                             exit;
                         Rec.RequestAccessToken();
                         BulkOperationMgt.EnableBulkOperations(Rec);
-                        Rec."B2B Enabled" := Rec.GetB2BEnabled();
-                        Rec."Weight Unit" := Rec.GetShopWeightUnit();
+                        Rec.GetShopSettings();
                         Rec.SyncCountries();
                         FeatureTelemetry.LogUptake('0000HUT', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
                     end;
@@ -100,7 +99,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     Importance = Additional;
-                    ToolTip = 'Specifies whether background syncs are allowed.';
+                    ToolTip = 'Specifies whether synchronization runs in the background. When enabled, you can continue working while large data sets synchronize. Disable for demos or troubleshooting to see real-time progress and receive detailed error messages.';
                 }
                 field("Allow Outgoing Requests"; Rec."Allow Outgoing Requests")
                 {
@@ -1188,8 +1187,7 @@ page 30101 "Shpfy Shop Card"
             if AuthenticationMgt.CheckScopeChange(Rec) then
                 if Confirm(StrSubstNo(ScopeChangeConfirmLbl, Rec.Code)) then begin
                     Rec.RequestAccessToken();
-                    Rec."B2B Enabled" := Rec.GetB2BEnabled();
-                    Rec."Weight Unit" := Rec.GetShopWeightUnit();
+                    Rec.GetShopSettings();
                     Rec.Modify();
                 end else begin
                     Rec.Enabled := false;
