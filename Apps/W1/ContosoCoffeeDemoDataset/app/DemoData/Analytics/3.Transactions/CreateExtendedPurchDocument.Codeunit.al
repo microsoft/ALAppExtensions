@@ -32,7 +32,7 @@ codeunit 5688 "Create Extended Purch Document"
         StartingDate: Date;
     begin
         AnalyticsModuleSetup.Get();
-        StartingDate := AnalyticsModuleSetup.GetOrDefaultStartingDate();
+        StartingDate := AnalyticsModuleSetup."Starting Date";
 
         DocumentDate := CalcDate('<-6M>', StartingDate);
 

@@ -18,7 +18,7 @@ codeunit 5698 "Create Posted Analytics Data"
         CreateExtendedSalesDocument: Codeunit "Create Extended Sales Document";
     begin
         SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Invoice);
-        SalesHeader.SetFilter("Your Reference", CreateExtendedSalesDocument.AnalyticsReference());
+        SalesHeader.SetRange("Your Reference", CreateExtendedSalesDocument.AnalyticsReference());
         if SalesHeader.Findset() then
             repeat
                 SalesHeader.Validate(Invoice, true);

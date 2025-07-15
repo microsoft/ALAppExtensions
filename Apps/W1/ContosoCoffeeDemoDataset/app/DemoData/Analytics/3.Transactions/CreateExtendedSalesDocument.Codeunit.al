@@ -377,7 +377,7 @@ codeunit 5692 "Create Extended Sales Document"
         AnalyticsModuleSetup: Record "Analytics Module Setup";
     begin
         AnalyticsModuleSetup.Get();
-        StartingDate := AnalyticsModuleSetup.GetOrDefaultStartingDate();
+        StartingDate := AnalyticsModuleSetup."Starting Date";
     end;
 
     local procedure CalculateDatesForThisMonth(DateFormulaText: Text; var FirstDayOfTheMonth: Date; var LastDayOfTheMonth: Date)
