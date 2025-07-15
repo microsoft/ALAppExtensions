@@ -1263,7 +1263,8 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
         SalesHeader."Posting Date" := IssuedReminderHeader."Posting Date";
         SalesHeader."Currency Code" := IssuedReminderHeader."Currency Code";
         SalesHeader.Validate("Sell-to Customer No.", IssuedReminderHeader."Customer No.");
-        SalesHeader.Validate("Sell-to Contact", IssuedReminderHeader.Contact);
+        if IssuedReminderHeader.Contact <> '' then
+            SalesHeader.Validate("Sell-to Contact", IssuedReminderHeader.Contact);
         SalesHeader."Your Reference" := IssuedReminderHeader."Your Reference";
         SalesHeader."Customer Posting Group" := IssuedReminderHeader."Customer Posting Group";
         SalesHeader."Gen. Bus. Posting Group" := IssuedReminderHeader."Gen. Bus. Posting Group";
@@ -1281,7 +1282,8 @@ xmlport 6100 "Fin. Results - PEPPOL BIS 3.0"
         SalesHeader."Posting Date" := IssuedFinChargeMemoHeader."Posting Date";
         SalesHeader."Currency Code" := IssuedFinChargeMemoHeader."Currency Code";
         SalesHeader.Validate("Sell-to Customer No.", IssuedFinChargeMemoHeader."Customer No.");
-        SalesHeader.Validate("Sell-to Contact", IssuedFinChargeMemoHeader.Contact);
+        if IssuedFinChargeMemoHeader.Contact <> '' then
+            SalesHeader.Validate("Sell-to Contact", IssuedFinChargeMemoHeader.Contact);
         SalesHeader."Your Reference" := IssuedFinChargeMemoHeader."Your Reference";
         SalesHeader."Customer Posting Group" := IssuedFinChargeMemoHeader."Customer Posting Group";
         SalesHeader."Gen. Bus. Posting Group" := IssuedFinChargeMemoHeader."Gen. Bus. Posting Group";
