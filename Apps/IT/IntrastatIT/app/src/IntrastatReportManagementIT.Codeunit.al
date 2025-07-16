@@ -266,7 +266,7 @@ codeunit 148121 "Intrastat Report Management IT"
         ItemLedgEntry2: Record "Item Ledger Entry";
     begin
         IsHandled := true;
-        Result := false;
+        Result := true;
 
         CompanyInfo.Get();
         if Country.Code in [CompanyInfo."Country/Region Code", ''] then
