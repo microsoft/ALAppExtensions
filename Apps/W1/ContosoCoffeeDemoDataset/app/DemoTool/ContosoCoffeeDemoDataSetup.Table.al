@@ -81,15 +81,4 @@ table 4768 "Contoso Coffee Demo Data Setup"
         Rec.Validate("Starting Date", Today());
         Rec.Insert();
     end;
-
-    [InherentPermissions(PermissionObjectType::TableData, Database::"Contoso Coffee Demo Data Setup", 'M')]
-    internal procedure InitStartingDate()
-    begin
-        if Rec.Get() then begin
-            if Rec."Starting Date" = 0D then begin
-                Rec.Validate("Starting Date", Today());
-                Rec.Modify();
-            end;
-        end;
-    end;
 }

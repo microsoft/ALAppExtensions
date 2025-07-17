@@ -32,11 +32,8 @@ codeunit 5688 "Create Extended Purch Document"
         DocumentDate: Date;
         StartingDate: Date;
     begin
-        StartingDate := Today();
         ContosoCoffeeDemoDataSetup.Get();
-        if ContosoCoffeeDemoDataSetup."Starting Date" <> 0D then begin
-            StartingDate := ContosoCoffeeDemoDataSetup."Starting Date";
-        end;
+        StartingDate := ContosoCoffeeDemoDataSetup."Starting Date";
 
         DocumentDate := CalcDate('<-6M>', StartingDate);
 

@@ -377,11 +377,8 @@ codeunit 5692 "Create Extended Sales Document"
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
-        StartingDate := Today();
         ContosoCoffeeDemoDataSetup.Get();
-        if ContosoCoffeeDemoDataSetup."Starting Date" <> 0D then begin
-            StartingDate := ContosoCoffeeDemoDataSetup."Starting Date";
-        end;
+        StartingDate := ContosoCoffeeDemoDataSetup."Starting Date";
     end;
 
     local procedure CalculateDatesForThisMonth(DateFormulaText: Text; var FirstDayOfTheMonth: Date; var LastDayOfTheMonth: Date)
