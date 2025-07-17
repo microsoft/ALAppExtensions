@@ -28,10 +28,7 @@ codeunit 5687 "Analytics Module" implements "Contoso Demo Data Module"
     end;
 
     procedure CreateSetupData()
-    var
-        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
-        ContosoCoffeeDemoDataSetup.InitStartingDate();
     end;
 
     procedure CreateMasterData()
