@@ -163,6 +163,18 @@ page 30126 "Shpfy Products"
                     ExtendedDatatype = URL;
                     ToolTip = 'Specifies the url to preview the product on the webshop.';
                 }
+                field("Error"; Rec."Has Error")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether there is an error when creating an item.';
+                }
+                field(ErrorMessage; Rec."Error Message")
+                {
+                    ApplicationArea = All;
+                    Style = Attention;
+                    StyleExpr = true;
+                    ToolTip = 'Specifies the error message if an error has occurred.';
+                }
             }
             part(Variants; "Shpfy Variants")
             {
@@ -334,6 +346,28 @@ page 30126 "Shpfy Products"
                     Metafields.RunForResource(Database::"Shpfy Product", Rec.Id, Rec."Shop Code");
                 end;
             }
+            action(CreateItem)
+            {
+                ApplicationArea = All;
+                Caption = 'Create Item';
+                Image = NewItem;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                ToolTip = 'Convert selected Shopify Products to Items.';
+
+                trigger OnAction();
+                var
+                    ShpfyProduct: Record "Shpfy Product";
+                    ShpfyCreateItem: Codeunit "Shpfy Create Item";
+                begin
+                    if Confirm(this.ConfirmLbl) then begin
+                        CurrPage.SetSelectionFilter(ShpfyProduct);
+                        ShpfyCreateItem.CreateItemsFromShopifyProducts(ShpfyProduct);
+                        CurrPage.Update(false);
+                    end;
+                end;
+            }
             group(Sync)
             {
                 action(SyncProducts)
@@ -453,4 +487,5 @@ page 30126 "Shpfy Products"
         AddItemsMsg: Label 'Add Items to Shopify';
         SyncProductsMsg: Label 'Sync Products';
         NoItemNotificationMsg: Label 'There isn''t data here yet. Do you want to synchronize products?';
+        ConfirmLbl: Label 'Create item(s) from the selected Shopify product(s)?';
 }
