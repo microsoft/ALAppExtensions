@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Processing.Import;
 
+using Microsoft.eServices.EDocument.Processing.Interfaces;
+
 /// <summary>
 /// Enum for the implementations of the E-Doc. Create Purchase Invoice interface.
 /// </summary>

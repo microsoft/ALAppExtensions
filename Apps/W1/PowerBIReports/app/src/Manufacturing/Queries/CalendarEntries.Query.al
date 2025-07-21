@@ -18,22 +18,20 @@ query 36983 "Calendar Entries"
     {
         dataitem(CalendarEntry; "Calendar Entry")
         {
-            column(capacityType; "Capacity Type")
-            {
-            }
-            column(no; "No.")
-            {
-            }
-            column(workCenterGroupCode; "Work Center Group Code")
-            {
-            }
-            column(date; Date)
-            {
-            }
+            column(capacityType; "Capacity Type") { }
+            column(no; "No.") { }
+            column(workCenterGroupCode; "Work Center Group Code") { }
+            column(workShiftCode; "Work Shift Code") { }
+            column(date; Date) { }
             column(capacityEffective; "Capacity (Effective)")
             {
                 Method = Sum;
             }
+            column(capacityTotal; "Capacity (Total)")
+            {
+                Method = Sum;
+            }
+            column(workCenterNo; "Work Center No.") { }
         }
     }
 

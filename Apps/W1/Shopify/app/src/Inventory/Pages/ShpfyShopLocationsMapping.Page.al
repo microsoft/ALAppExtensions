@@ -104,6 +104,24 @@ page 30117 "Shpfy Shop Locations Mapping"
                     Codeunit.Run(Codeunit::"Shpfy Sync Shop Locations", Shop);
                 end;
             }
+            action(CreateFulfillmentService)
+            {
+                ApplicationArea = All;
+                Caption = 'Create Shopify Fulfillment Service';
+                Image = CreateInventoryPickup;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'Create Shopify Fulfillment Service';
+
+                trigger OnAction()
+                var
+                    FullfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
+                begin
+                    FullfillmentOrdersAPI.RegisterFulfillmentService(Shop);
+                end;
+            }
         }
     }
 

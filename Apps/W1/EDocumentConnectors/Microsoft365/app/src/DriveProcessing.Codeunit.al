@@ -6,11 +6,11 @@ namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using Microsoft.EServices.EDocument;
 using System.Text;
-using Microsoft.eServices.EDocument.Integration;
 using System.Utilities;
 using System.Integration;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using System.Telemetry;
+using Microsoft.eServices.EDocument.Integration;
 
 codeunit 6381 "Drive Processing"
 {
@@ -79,6 +79,27 @@ codeunit 6381 "Drive Processing"
         end;
 
         if FilesJson.Get('id', IdToken) then
+            exit(IdToken.AsValue().AsText())
+    end;
+
+    procedure GetName(FolderSharedLink: Text[2048]): Text
+    var
+        GraphClient: Codeunit "Graph Client";
+        Base64Convert: Codeunit "Base64 Convert";
+        MyFolderIdLink, Base64SharedLink, ErrorMessageTxt : Text;
+        FilesJson: JsonObject;
+        IdToken: JsonToken;
+    begin
+        Base64SharedLink := Base64Convert.ToBase64(FolderSharedLink);
+        Base64SharedLink := 'u!' + Base64SharedLink.TrimEnd('=').Replace('/', '_').Replace('+', '-');
+        MyFolderIdLink := GetGraphSharesURL() + Base64SharedLink + '/driveItem?$select=id,name';
+        if not GraphClient.GetDriveFolderInfo(MyFolderIdLink, FilesJson) then begin
+            ErrorMessageTxt := GetLastErrorText() + GetLastErrorCallStack();
+            ClearLastError();
+            Error(ErrorMessageTxt);
+        end;
+
+        if FilesJson.Get('name', IdToken) then
             exit(IdToken.AsValue().AsText())
     end;
 
@@ -163,8 +184,8 @@ codeunit 6381 "Drive Processing"
 
     internal procedure SizeThreshold(): Integer
     begin
-        // 25 MB
-        exit(26214400)
+        // 5 MB
+        exit(5242880)
     end;
 
     procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
@@ -201,20 +222,11 @@ codeunit 6381 "Drive Processing"
         TempDocumentSharing.Data.CreateInStream(DocumentInStream, TextEncoding::UTF8);
         CopyStream(DocumentOutStream, DocumentInStream);
 
-        UpdateEDocumentAfterDocumentDownload(Edocument, DocumentId);
-        UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId);
-    end;
-
-    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext; FileId: Text)
-    begin
-        ReceiveContext.SetName(CopyStr(FileId, 1, 250));
-        ReceiveContext.SetType(Enum::"E-Doc. Data Storage Blob Type"::PDF);
-    end;
-
-    internal procedure UpdateEDocumentAfterDocumentDownload(var EDocument: Record "E-Document"; DocumentId: Text)
-    begin
         EDocument."Drive Item Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Drive Item Id"));
+        EDocument."Source Details" := CopyStr(GetSourceDetails(EDocumentService."Service Integration V2"), 1, MaxStrLen(EDocument."Source Details"));
         EDocument.Modify();
+        ReceiveContext.SetName(CopyStr(FileId, 1, 250));
+        ReceiveContext.SetFileFormat("E-Doc. File Format"::PDF);
     end;
 
     internal procedure ExtractItemIdAndName(DocumentMetadataBlob: Codeunit "Temp Blob"; var DocumentId: Text; var FileId: Text)
@@ -296,6 +308,29 @@ codeunit 6381 "Drive Processing"
         exit(SiteId);
     end;
 
+    local procedure GetSourceDetails(var ServiceIntegration: Enum "Service Integration"): Text
+    var
+        SharepointSetup: Record "Sharepoint Setup";
+        OneDriveSetup: Record "OneDrive Setup";
+        DocumentsFolderName: Text;
+    begin
+        case ServiceIntegration of
+            ServiceIntegration::SharePoint:
+                begin
+                    CheckSetupEnabled(SharepointSetup);
+                    CheckFolderSharedLinkNotEmpty(SharepointSetup."Documents Folder", SharepointSetup.TableCaption());
+                    DocumentsFolderName := SharepointSetup."Documents Folder Name";
+                end;
+            ServiceIntegration::OneDrive:
+                begin
+                    CheckSetupEnabled(OneDriveSetup);
+                    CheckFolderSharedLinkNotEmpty(OneDriveSetup."Documents Folder", OneDriveSetup.TableCaption());
+                    DocumentsFolderName := OneDriveSetup."Documents Folder Name";
+                end;
+        end;
+        exit(DocumentsFolderName);
+    end;
+
     local procedure GetImportedDocumentsFolderId(var ServiceIntegration: Enum "Service Integration"): Text
     var
         SharepointSetup: Record "Sharepoint Setup";
@@ -320,6 +355,7 @@ codeunit 6381 "Drive Processing"
         end;
         exit(ImportedDocumentsFolderId);
     end;
+
 
     local procedure CheckSetupEnabled(var OneDriveSetup: Record "OneDrive Setup")
     begin

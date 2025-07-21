@@ -16,6 +16,7 @@ pageextension 6241 "Sust. Sales Cr. Memo. Stats." extends "Sales Credit Memo Sta
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Total CO2e';
+                    ToolTip = 'Specifies the total CO2e emissions.';
                 }
             }
         }

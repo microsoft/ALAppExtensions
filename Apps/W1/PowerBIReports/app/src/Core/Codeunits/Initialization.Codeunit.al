@@ -1,6 +1,7 @@
 namespace Microsoft.PowerBIReports;
 
 using Microsoft.Foundation.Period;
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.Foundation.AuditCodes;
 using System.Environment.Configuration;
@@ -223,5 +224,36 @@ codeunit 36951 Initialization
                     CloseIncomeStmtSourceCode.Insert(true);
                 end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Change Log Management", 'OnAfterIsAlwaysLoggedTable', '', false, false)]
+    local procedure OnAfterIsAlwaysLoggedTable(TableID: Integer; var AlwaysLogTable: Boolean)
+    begin
+        if TableID = Database::"PowerBI Reports Setup" then
+            AlwaysLogTable := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Change Log Management", 'OnInsertLogEntryOnBeforeChangeLogEntryValidateChangedRecordSystemId', '', false, false)]
+    local procedure OnInsertLogEntryOnBeforeChangeLogEntryValidateChangedRecordSystemId(var ChangeLogEntry: Record "Change Log Entry"; RecRef: RecordRef; FldRef: FieldRef)
+    var
+        PowerBIReportsSetup: Record "PowerBI Reports Setup";
+        PowerBIReportConfiguredLbl: Label 'Power BI report configured by UserSecurityId %1.', Locked = true;
+    begin
+        if RecRef.Number() <> Database::"PowerBI Reports Setup" then
+            exit;
+        if not (FldRef.Number in [
+                PowerBIReportsSetup.FieldNo("Finance Report Id"),
+                PowerBIReportsSetup.FieldNo("Sales Report Id"),
+                PowerBIReportsSetup.FieldNo("Projects Report Id"),
+                PowerBIReportsSetup.FieldNo("Inventory Report Id"),
+                PowerBIReportsSetup.FieldNo("Purchases Report Id"),
+                PowerBIReportsSetup.FieldNo("Manufacturing Report Id"),
+                PowerBIReportsSetup.FieldNo("Inventory Val. Report Id"),
+                PowerBIReportsSetup.FieldNo("Sustainability Report Id")
+        ]) then
+            exit;
+        ChangeLogEntry."Field Log Entry Feature" := "Field Log Entry Feature"::"Monitor Sensitive Fields";
+        Session.LogAuditMessage(StrSubstNo(PowerBIReportConfiguredLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 1, 0);
+    end;
+
 }
 

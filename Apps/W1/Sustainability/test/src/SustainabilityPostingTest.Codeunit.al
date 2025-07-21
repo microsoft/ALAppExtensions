@@ -1,3 +1,37 @@
+namespace Microsoft.Test.Sustainability;
+
+using System.TestLibraries.Utilities;
+using System.Environment.Configuration;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Posting;
+using Microsoft.Sustainability.Scorecard;
+using System.Security.User;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Foundation.Navigate;
+using Microsoft.Foundation.Address;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Foundation.UOM;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Inventory.Item;
+using Microsoft.Assembly.Document;
+using Microsoft.Assembly.History;
+using Microsoft.Assembly.Posting;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Inventory.Location;
+using Microsoft.Foundation.Period;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Assembly.Setup;
+using Microsoft.Inventory.BOM;
+using Microsoft.Inventory.Journal;
+
 codeunit 148184 "Sustainability Posting Test"
 {
     Subtype = Test;
@@ -25,6 +59,8 @@ codeunit 148184 "Sustainability Posting Test"
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
         SustLedgerEntryShouldNotBeFoundErr: Label 'Sustainability Ledger Entry should not be found';
         SustValueEntryShouldNotBeFoundErr: Label 'Sustainability Value Entry should not be found';
+        FieldShouldNotBeEditableErr: Label '%1 should not be editable in Page %2.', Comment = '%1 = Field Caption , %2 = Page Caption';
+        FieldShouldBeEditableErr: Label '%1 should be editable in Page %2.', Comment = '%1 = Field Caption , %2 = Page Caption';
 
     [Test]
     procedure TestInformationIsTransferredToLedgerEntry()
@@ -41,7 +77,7 @@ codeunit 148184 "Sustainability Posting Test"
         // [SCENARIO] All information from Journal Line/Account/Category is transferred to the ledger Entry
         LibrarySustainability.CleanUpBeforeTesting();
 
-        // [GIVEN] A Sustainability Journal Batch and An Account that's ready to Post 
+        // [GIVEN] A Sustainability Journal Batch and An Account that's ready to Post
         SustainabilityJnlBatch := SustainabilityJournalMgt.GetASustainabilityJournalBatch(false);
         SustainabilityAccount := LibrarySustainability.GetAReadyToPostAccount();
 
@@ -557,6 +593,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure VerifySustainabilityLedgerEntryShouldBeKnockedOffWhenCorrectiveCreditMemoIsPosted()
     var
         SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
@@ -767,6 +804,9 @@ codeunit 148184 "Sustainability Posting Test"
             StrSubstNo(ValueMustBeEqualErr, PurchaseLine.FieldCaption("Posted Emission N2O"), EmissionN2O, PurchaseLine.TableCaption()));
     end;
 
+#if not CLEAN26
+#pragma warning disable AL0432
+    [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
     [Test]
     [HandlerFunctions('PurchaseOrderStatisticsPageHandler')]
     procedure VerifySustainabilityFieldsInPurchaseOrderStatistics()
@@ -840,8 +880,85 @@ codeunit 148184 "Sustainability Posting Test"
         OpenPurchaseOrderStatistics(PurchaseHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
+#endif
+
+    [Test]
+    [HandlerFunctions('PurchOrderStatisticsPageHandler')]
+    procedure VerifySustainabilityFieldsInPurchOrderStatistics()
+    var
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 496561] Verify Sustainability Fields in Purchase Order Statistics.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(20);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandIntInRange(10, 10));
+
+        // [GIVEN] Update Sustainability Account No.,Emission CO2 ,Emission CH4 ,Emission N2O.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Qty. to Receive", LibraryRandom.RandIntInRange(5, 5));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
+        PurchaseLine.Modify();
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(EmissionCO2);
+        LibraryVariableStorage.Enqueue(EmissionCH4);
+        LibraryVariableStorage.Enqueue(EmissionN2O);
+        LibraryVariableStorage.Enqueue(0);
+        LibraryVariableStorage.Enqueue(0);
+        LibraryVariableStorage.Enqueue(0);
+
+        // [VERIFY] Verify Sustainability fields in Page "Purchase Order Statistics" before posting of Purchase order.
+        OpenPurchOrderStatistics(PurchaseHeader."No.");
+        LibraryVariableStorage.Clear();
+
+        // [GIVEN] Post a Purchase Document.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Save Sustainability fields.
+        LibraryVariableStorage.Enqueue(EmissionCO2);
+        LibraryVariableStorage.Enqueue(EmissionCH4);
+        LibraryVariableStorage.Enqueue(EmissionN2O);
+        LibraryVariableStorage.Enqueue(PurchaseLine."Emission CO2 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5));
+        LibraryVariableStorage.Enqueue(PurchaseLine."Emission CH4 Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5));
+        LibraryVariableStorage.Enqueue(PurchaseLine."Emission N2O Per Unit" * PurchaseLine."Qty. per Unit of Measure" * LibraryRandom.RandIntInRange(5, 5));
+
+        // [VERIFY] Verify Sustainability fields in Page "Purchase Order Statistics" after partially posting of Purchase order.
+        OpenPurchOrderStatistics(PurchaseHeader."No.");
+        LibraryVariableStorage.Clear();
+    end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
     [HandlerFunctions('PurchaseInvoiceStatisticsPageHandler')]
@@ -900,6 +1017,7 @@ codeunit 148184 "Sustainability Posting Test"
         OpenPurchaseInvoiceStatistics(PurchaseHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
 
     [Test]
@@ -1019,9 +1137,10 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
-    [HandlerFunctions('PurchaseInvoiceStatisticsPageHandler')]
+    [HandlerFunctions('PurchaseInvoiceStatisticsPageHandler,ConfirmHandler')]
     procedure VerifySustainabilityFieldsInPurchaseCrMemoStatistics()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -1098,10 +1217,11 @@ codeunit 148184 "Sustainability Posting Test"
         VerifyPostedPurchaseCrMemoStatistics(PostedCrMemoNo);
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
 
     [Test]
-    [HandlerFunctions('PurchInvoiceStatisticsPageHandler')]
+    [HandlerFunctions('PurchInvoiceStatisticsPageHandler,ConfirmHandler')]
     procedure VerifySustainabilityFieldsInPurchCrMemoStatistics()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -1290,9 +1410,10 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     [Test]
-    [HandlerFunctions('PurchaseInvoiceStatisticsPageHandler')]
+    [HandlerFunctions('PurchaseInvoiceStatisticsPageHandler,ConfirmHandler')]
     procedure VerifySustainabilityFieldsInPurchaseCrMemoSubFormPage()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -1380,10 +1501,11 @@ codeunit 148184 "Sustainability Posting Test"
         PostedPurchCrMemoSubformPage."Emission CO2".AssertEquals(EmissionCO2);
         PostedPurchCrMemoSubformPage."Emission N2O".AssertEquals(EmissionN2O);
     end;
+#pragma warning restore AL0432
 #endif
 
     [Test]
-    [HandlerFunctions('PurchInvoiceStatisticsPageHandler')]
+    [HandlerFunctions('PurchInvoiceStatisticsPageHandler,ConfirmHandler')]
     procedure VerifySustainabilityFieldsInPurchCrMemoSubFormPage()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -2252,7 +2374,7 @@ codeunit 148184 "Sustainability Posting Test"
         NoSeries.Validate("Manual Nos.", true);
         NoSeries.Modify(true);
 
-        // [GIVEN] Create a Sustainability Account that's ready to Post 
+        // [GIVEN] Create a Sustainability Account that's ready to Post
         SustainabilityAccount := GetAReadyToPostSustainabilityAccount(
             Enum::"Emission Scope"::"Scope 2",
             Enum::"Calculation Foundation"::"Fuel/Electricity",
@@ -2405,6 +2527,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure VerifySustainabilityLedgerEntryShouldBeKnockedOffWhenCorrectiveSalesCreditMemoIsPosted()
     var
         SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
@@ -2584,6 +2707,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandler')]
@@ -2693,6 +2817,7 @@ codeunit 148184 "Sustainability Posting Test"
         OpenSalesInvoiceStatistics(SalesHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandlerNM')]
@@ -2856,9 +2981,10 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
-    [HandlerFunctions('SalesInvoiceStatisticsPageHandler')]
+    [HandlerFunctions('SalesInvoiceStatisticsPageHandler,ConfirmHandler')]
     procedure VerifySustainabilityFieldsInSalesCrMemoStatistics()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -2926,9 +3052,10 @@ codeunit 148184 "Sustainability Posting Test"
         VerifyPostedSalesCrMemoStatistics(PostedCrMemoNo);
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
     [Test]
-    [HandlerFunctions('SalesInvoiceSalesStatisticsPageHandler')]
+    [HandlerFunctions('SalesInvoiceSalesStatisticsPageHandler,ConfirmHandler')]
     procedure VerifySustainabilityFieldsInSalesCrMemoSalesStatistics()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -3102,9 +3229,10 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
-    [HandlerFunctions('SalesInvoiceStatisticsPageHandler')]
+    [HandlerFunctions('SalesInvoiceStatisticsPageHandler,ConfirmHandler')]
     procedure VerifySustainabilityFieldsInSalesCrMemoSubFormPage()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -3178,9 +3306,10 @@ codeunit 148184 "Sustainability Posting Test"
         PostedSalesCrMemoSubformPage."Sust. Account No.".AssertEquals(AccountCode);
         PostedSalesCrMemoSubformPage."Total CO2e".AssertEquals(TotalCO2e);
     end;
+#pragma warning restore AL0432
 #endif
     [Test]
-    [HandlerFunctions('SalesInvoiceSalesStatisticsPageHandler')]
+    [HandlerFunctions('SalesInvoiceSalesStatisticsPageHandler,ConfirmHandler')]
     procedure VerifySustainabilityFieldsInSalesCrMemoSubFormPageSalesStatistics()
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -4150,7 +4279,7 @@ codeunit 148184 "Sustainability Posting Test"
         PostedInvoiceNo: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry 
+        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry
         // is not created when Post Purchase Order if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -4201,6 +4330,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
     [Test]
+    [HandlerFunctions('ConfirmHandler')]
     procedure VerifySustainabilityEntriesIfEnableValueChainTrackingIsFalseWhenPostPurchaseCrMemo()
     var
         PurchaseHeader: Record "Purchase Header";
@@ -4217,7 +4347,7 @@ codeunit 148184 "Sustainability Posting Test"
         PostedCrMemoNo: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry 
+        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry
         // is not created when Post Purchase Cr. Memo if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -4307,7 +4437,7 @@ codeunit 148184 "Sustainability Posting Test"
         PostedCrMemoNo: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry 
+        // [SCENARIO 561536] Verify Sustainability Ledger Entry is created but Sustainability Value Entry
         // is not created when Post Purchase Return Order if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -4654,7 +4784,7 @@ codeunit 148184 "Sustainability Posting Test"
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 563478] Verify "Default CO2 Emission", "Default CH4 Emission", "Default N2O Emission" must not be updated in Resource 
+        // [SCENARIO 563478] Verify "Default CO2 Emission", "Default CH4 Emission", "Default N2O Emission" must not be updated in Resource
         // If "Default Sust. Account" is blank.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -4713,6 +4843,626 @@ codeunit 148184 "Sustainability Posting Test"
             0,
             Resource."Default N2O Emission",
             StrSubstNo(ValueMustBeEqualErr, Resource.FieldCaption("Default N2O Emission"), 0, Resource.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyTotalCO2eMustBeZeroAndNonEditableIfTransferLineIsCompletelyShipment()
+    var
+        AccountingPeriod: Record "Accounting Period";
+        SustainabilityAccount: Record "Sustainability Account";
+        TransferHeader: Record "Transfer Header";
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        Item: Record Item;
+        TransferOrder: TestPage "Transfer Order";
+        CO2ePerUnit: Decimal;
+        Quantity: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 564924] Verify "Total CO2e" must be zero and non-editable in Transfer Line if Line is completely shipped.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Find Accounting Period.
+        FindAccountingPeriod(AccountingPeriod);
+
+        // [GIVEN] Change WorkDate.
+        WorkDate(AccountingPeriod."Starting Date");
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "CO2e per unit" and Quantity.
+        CO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
+        Quantity := LibraryRandom.RandIntInRange(10, 10);
+
+        // [GIVEN] Create FromLocation, ToLocation and In transit Location that will be used to create Transfer Order.
+        LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+
+        // [GIVEN] Create Item with Inventory.
+        CreateItemWithInventory(Item, FromLocation.Code);
+
+        // [GIVEN] Update "Default Sust. Account", "CO2e per Unit" in an Item.
+        Item.Get(Item."No.");
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Validate("CO2e per Unit", CO2ePerUnit);
+        Item.Modify();
+
+        // [GIVEN] Create Transfer Order.
+        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, Quantity, CO2ePerUnit);
+
+        // [GIVEN] Post Transfer Order.
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, false);
+
+        // [WHEN] Open Transfer Order.
+        TransferOrder.OpenEdit();
+        TransferOrder.GoToRecord(TransferHeader);
+
+        // [THEN] Verify "Total CO2e" must be zero and non-editable in Transfer Line if Line is completely shipped.
+        TransferOrder.TransferLines."Total CO2e".AssertEquals(0);
+        Assert.IsFalse(
+            TransferOrder.TransferLines."Total CO2e".Editable(),
+            StrSubstNo(FieldShouldNotBeEditableErr, TransferOrder.TransferLines."Total CO2e".Caption(), TransferOrder.TransferLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitMustBeZeroInItemWhenTransferOrderIsShipped()
+    var
+        AccountingPeriod: Record "Accounting Period";
+        SustainabilityAccount: Record "Sustainability Account";
+        TransferHeader: Record "Transfer Header";
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        Item: Record Item;
+        CO2ePerUnit: Decimal;
+        Quantity: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 564928] Verify "CO2e per Unit" must be zero in item when Transfer Order is shipped.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Find Accounting Period.
+        FindAccountingPeriod(AccountingPeriod);
+
+        // [GIVEN] Change WorkDate.
+        WorkDate(AccountingPeriod."Starting Date");
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "CO2e per unit" and Quantity.
+        CO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
+        Quantity := LibraryRandom.RandIntInRange(10, 10);
+
+        // [GIVEN] Create FromLocation, ToLocation and In transit Location that will be used to create Transfer Order.
+        LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+
+        // [GIVEN] Create Item with Inventory.
+        CreateItemWithInventory(Item, FromLocation.Code);
+
+        // [GIVEN] Update "Default Sust. Account" in an Item.
+        Item.Get(Item."No.");
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [GIVEN] Create Transfer Order.
+        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, Quantity, CO2ePerUnit);
+
+        // [WHEN] Post Transfer Order.
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, false);
+
+        // [THEN] Verify "CO2e per Unit" must be zero in item when Transfer Order is shipped.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            0,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), 0, Item.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2ePerUnitMustBeUpdatedInItemWhenTransferOrderIsShipped()
+    var
+        EmissionFee: array[3] of Record "Emission Fee";
+        AccountingPeriod: Record "Accounting Period";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        TransferHeader: Record "Transfer Header";
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        Item: Record Item;
+        EmissionCO2perUnit: Decimal;
+        EmissionCH4perUnit: Decimal;
+        EmissionN2OperUnit: Decimal;
+        ExpectedCO2eEmission: Decimal;
+        CO2ePerUnit: Decimal;
+        ExpectedCO2ePerUnit: Decimal;
+        PurchQty: Decimal;
+        TransferQty: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 564928] Verify "CO2e per Unit" must be updated in item when Transfer Order is shipped.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Find Accounting Period.
+        FindAccountingPeriod(AccountingPeriod);
+
+        // [GIVEN] Change WorkDate.
+        WorkDate(AccountingPeriod."Starting Date");
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "CO2e per unit" and Quantity.
+        CO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
+        PurchQty := LibraryRandom.RandIntInRange(20, 20);
+        TransferQty := LibraryRandom.RandIntInRange(10, 10);
+        EmissionCO2perUnit := LibraryRandom.RandIntInRange(10, 100);
+        EmissionCH4perUnit := LibraryRandom.RandIntInRange(10, 100);
+        EmissionN2OperUnit := LibraryRandom.RandIntInRange(10, 100);
+
+        // [GIVEN] Save Expected CO2e Emission.
+        ExpectedCO2eEmission := EmissionCH4perUnit * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2perUnit * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2OperUnit * EmissionFee[3]."Carbon Equivalent Factor";
+
+        // [GIVEN] Create FromLocation, ToLocation and In transit Location that will be used to create Transfer Order.
+        LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+
+        // [GIVEN] Update "Default Sust. Account" in an Item.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            Item."No.",
+            PurchQty);
+
+        // [GIVEN] Update "Emission CO2 Per Unit" ,"Emission CH4 Per Unit" ,"Emission N2O Per Unit" in Purchase Line.
+        PurchaseLine.Validate("Location Code", FromLocation.Code);
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
+        PurchaseLine.Validate("Emission CO2 Per Unit", EmissionCO2perUnit);
+        PurchaseLine.Validate("Emission CH4 Per Unit", EmissionCH4perUnit);
+        PurchaseLine.Validate("Emission N2O Per Unit", EmissionN2OperUnit);
+        PurchaseLine.Modify(true);
+
+        // [GIVEN] Post Purchase Document with Receiving and Invoicing.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [GIVEN] Create Transfer Order.
+        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, TransferQty, CO2ePerUnit);
+
+        // [WHEN] Post Transfer Order.
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, false);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmission * PurchQty) + (CO2ePerUnit * TransferQty)) / PurchQty;
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item when Transfer Order is shipped.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2PerUnitInItemWhenTransferIsPostedAfterTwoPurchaseOrdersWithDifferentEmissions()
+    var
+        EmissionFee: array[3] of Record "Emission Fee";
+        AccountingPeriod: Record "Accounting Period";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        TransferHeader: Record "Transfer Header";
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        Item: Record Item;
+        EmissionCO2PerUnit: array[2] of Decimal;
+        EmissionCH4PerUnit: array[2] of Decimal;
+        EmissionN2OPerUnit: array[2] of Decimal;
+        ExpectedCO2eEmissionPerUnit: array[2] of Decimal;
+        TransferCO2ePerUnit: Decimal;
+        ExpectedCO2ePerUnit: Decimal;
+        PurchQty: array[2] of Decimal;
+        TransferQty: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 564928] Verify "CO2e per Unit" must be updated in item when Transfer is posted after 2 purchase orders with different emissions.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Find Accounting Period.
+        FindAccountingPeriod(AccountingPeriod);
+
+        // [GIVEN] Change WorkDate.
+        WorkDate(AccountingPeriod."Starting Date");
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "CO2e per unit" and Quantity.
+        TransferCO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
+        PurchQty[1] := LibraryRandom.RandIntInRange(20, 20);
+        PurchQty[2] := LibraryRandom.RandIntInRange(15, 15);
+        TransferQty := LibraryRandom.RandIntInRange(10, 10);
+        EmissionCO2PerUnit[1] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionCH4PerUnit[1] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionN2OPerUnit[1] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionCO2PerUnit[2] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionCH4PerUnit[2] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionN2OPerUnit[2] := LibraryRandom.RandIntInRange(10, 100);
+
+        // [GIVEN] Save Expected CO2e Emission.
+        ExpectedCO2eEmissionPerUnit[1] := EmissionCH4PerUnit[1] * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2PerUnit[1] * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2OPerUnit[1] * EmissionFee[3]."Carbon Equivalent Factor";
+        ExpectedCO2eEmissionPerUnit[2] := EmissionCH4PerUnit[2] * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2PerUnit[2] * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2OPerUnit[2] * EmissionFee[3]."Carbon Equivalent Factor";
+
+        // [GIVEN] Create FromLocation, ToLocation and In transit Location that will be used to create Transfer Order.
+        LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+
+        // [GIVEN] Update "Default Sust. Account" in an Item.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [WHEN] Create and Post Purchase Document.
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", PurchQty[1], FromLocation.Code, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2PerUnit[1], EmissionCH4PerUnit[1], EmissionN2OPerUnit[1]);
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", PurchQty[2], FromLocation.Code, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2PerUnit[2], EmissionCH4PerUnit[2], EmissionN2OPerUnit[2]);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmissionPerUnit[1] * PurchQty[1]) + (ExpectedCO2eEmissionPerUnit[2] * PurchQty[2])) / (PurchQty[1] + PurchQty[2]);
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+
+        // [GIVEN] Create Transfer Order.
+        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, TransferQty, TransferCO2ePerUnit);
+
+        // [WHEN] Post Transfer Order.
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, false);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmissionPerUnit[1] * PurchQty[1]) + (ExpectedCO2eEmissionPerUnit[2] * PurchQty[2]) + (TransferCO2ePerUnit * TransferQty)) / (PurchQty[1] + PurchQty[2]);
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item when Transfer is posted after 2 purchase orders with different emissions.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2PerUnitInItemWhenTransferIsPostedAfterTwoPurchaseOrdersWithSameEmissions()
+    var
+        EmissionFee: array[3] of Record "Emission Fee";
+        AccountingPeriod: Record "Accounting Period";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        TransferHeader: Record "Transfer Header";
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        Item: Record Item;
+        EmissionCO2PerUnit: Decimal;
+        EmissionCH4PerUnit: Decimal;
+        EmissionN2OPerUnit: Decimal;
+        ExpectedCO2eEmissionPerUnit: Decimal;
+        TransferCO2ePerUnit: Decimal;
+        ExpectedCO2ePerUnit: Decimal;
+        PurchQty: Decimal;
+        TransferQty: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 564928] Verify "CO2e per Unit" must be updated in item when Transfer is posted after 2 purchase orders with same emissions.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Find Accounting Period.
+        FindAccountingPeriod(AccountingPeriod);
+
+        // [GIVEN] Change WorkDate.
+        WorkDate(AccountingPeriod."Starting Date");
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "CO2e per unit" and Quantity.
+        TransferCO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
+        PurchQty := LibraryRandom.RandIntInRange(20, 20);
+        TransferQty := LibraryRandom.RandIntInRange(10, 10);
+        EmissionCO2PerUnit := LibraryRandom.RandIntInRange(10, 100);
+        EmissionCH4PerUnit := LibraryRandom.RandIntInRange(10, 100);
+        EmissionN2OPerUnit := LibraryRandom.RandIntInRange(10, 100);
+
+        // [GIVEN] Save Expected CO2e Emission.
+        ExpectedCO2eEmissionPerUnit := EmissionCH4PerUnit * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2PerUnit * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2OPerUnit * EmissionFee[3]."Carbon Equivalent Factor";
+
+        // [GIVEN] Create FromLocation, ToLocation and In transit Location that will be used to create Transfer Order.
+        LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+
+        // [GIVEN] Update "Default Sust. Account" in an Item.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [WHEN] Create and Post Purchase Document.
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", PurchQty, FromLocation.Code, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", PurchQty, FromLocation.Code, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmissionPerUnit * PurchQty) * 2) / (PurchQty * 2);
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+
+        // [GIVEN] Create Transfer Order.
+        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, TransferQty, TransferCO2ePerUnit);
+
+        // [WHEN] Post Transfer Order.
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, false);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmissionPerUnit * PurchQty) * 2 + (TransferCO2ePerUnit * TransferQty)) / (PurchQty * 2);
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item when Transfer is posted after 2 purchase orders with same emissions.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2PerUnitInItemWhenTransferIsPostedAfterOnePurchaseOrder()
+    var
+        EmissionFee: array[3] of Record "Emission Fee";
+        AccountingPeriod: Record "Accounting Period";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        TransferHeader: Record "Transfer Header";
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        Item: Record Item;
+        EmissionCO2PerUnit: array[2] of Decimal;
+        EmissionCH4PerUnit: array[2] of Decimal;
+        EmissionN2OPerUnit: array[2] of Decimal;
+        ExpectedCO2eEmissionPerUnit: array[2] of Decimal;
+        TransferCO2ePerUnit: Decimal;
+        ExpectedCO2ePerUnit: Decimal;
+        PurchQty: array[2] of Decimal;
+        TransferQty: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 564928] Verify "CO2e per Unit" must be updated in item when one purchase is posted before transfer and then purchase is again posted after transfer is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Find Accounting Period.
+        FindAccountingPeriod(AccountingPeriod);
+
+        // [GIVEN] Change WorkDate.
+        WorkDate(AccountingPeriod."Starting Date");
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "CO2e per unit" and Quantity.
+        TransferCO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
+        PurchQty[1] := LibraryRandom.RandIntInRange(15, 15);
+        PurchQty[2] := LibraryRandom.RandIntInRange(20, 20);
+        TransferQty := LibraryRandom.RandIntInRange(10, 10);
+        EmissionCO2PerUnit[1] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionCH4PerUnit[1] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionN2OPerUnit[1] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionCO2PerUnit[2] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionCH4PerUnit[2] := LibraryRandom.RandIntInRange(10, 100);
+        EmissionN2OPerUnit[2] := LibraryRandom.RandIntInRange(10, 100);
+
+        // [GIVEN] Save Expected CO2e Emission.
+        ExpectedCO2eEmissionPerUnit[1] := EmissionCH4PerUnit[1] * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2PerUnit[1] * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2OPerUnit[1] * EmissionFee[3]."Carbon Equivalent Factor";
+        ExpectedCO2eEmissionPerUnit[2] := EmissionCH4PerUnit[2] * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2PerUnit[2] * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2OPerUnit[2] * EmissionFee[3]."Carbon Equivalent Factor";
+
+        // [GIVEN] Create FromLocation, ToLocation and In transit Location that will be used to create Transfer Order.
+        LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+
+        // [GIVEN] Update "Default Sust. Account" in an Item.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [WHEN] Create and Post Purchase Document.
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", PurchQty[1], FromLocation.Code, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2PerUnit[1], EmissionCH4PerUnit[1], EmissionN2OPerUnit[1]);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmissionPerUnit[1] * PurchQty[1])) / PurchQty[1];
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item when purchase is posted.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+
+        // [GIVEN] Create Transfer Order.
+        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, TransferQty, TransferCO2ePerUnit);
+
+        // [WHEN] Post Transfer Order.
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, false);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmissionPerUnit[1] * PurchQty[1]) + (TransferCO2ePerUnit * TransferQty)) / (PurchQty[1]);
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item when Transfer is posted after one purchase orders.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+
+        // [WHEN] Create and Post Purchase Document.
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", PurchQty[2], FromLocation.Code, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2PerUnit[2], EmissionCH4PerUnit[2], EmissionN2OPerUnit[2]);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmissionPerUnit[1] * PurchQty[1]) + (ExpectedCO2eEmissionPerUnit[2] * PurchQty[2]) + (TransferCO2ePerUnit * TransferQty)) / (PurchQty[1] + PurchQty[2]);
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item when purchase is posted.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCO2PerUnitInItemWhenTransferIsPartiallyPostedAfterTwoPurchaseOrdersWithSameEmissions()
+    var
+        EmissionFee: array[3] of Record "Emission Fee";
+        AccountingPeriod: Record "Accounting Period";
+        SustainabilityAccount: Record "Sustainability Account";
+        PurchaseHeader: Record "Purchase Header";
+        TransferHeader: Record "Transfer Header";
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        Item: Record Item;
+        TransferLine: Record "Transfer Line";
+        TransferOrder: TestPage "Transfer Order";
+        EmissionCO2PerUnit: Decimal;
+        EmissionCH4PerUnit: Decimal;
+        EmissionN2OPerUnit: Decimal;
+        ExpectedCO2eEmissionPerUnit: Decimal;
+        TransferCO2ePerUnit: Decimal;
+        ExpectedCO2ePerUnit: Decimal;
+        PurchQty: Decimal;
+        TransferQty: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 564928] Verify "CO2e per Unit" must be updated in item when Transfer is partially posted after 2 purchase orders with same emissions.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Find Accounting Period.
+        FindAccountingPeriod(AccountingPeriod);
+
+        // [GIVEN] Change WorkDate.
+        WorkDate(AccountingPeriod."Starting Date");
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate "CO2e per unit" and Quantity.
+        TransferCO2ePerUnit := LibraryRandom.RandIntInRange(100, 100);
+        PurchQty := LibraryRandom.RandIntInRange(20, 20);
+        TransferQty := LibraryRandom.RandIntInRange(10, 10);
+        EmissionCO2PerUnit := LibraryRandom.RandIntInRange(10, 100);
+        EmissionCH4PerUnit := LibraryRandom.RandIntInRange(10, 100);
+        EmissionN2OPerUnit := LibraryRandom.RandIntInRange(10, 100);
+
+        // [GIVEN] Save Expected CO2e Emission.
+        ExpectedCO2eEmissionPerUnit := EmissionCH4PerUnit * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2PerUnit * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2OPerUnit * EmissionFee[3]."Carbon Equivalent Factor";
+
+        // [GIVEN] Create FromLocation, ToLocation and In transit Location that will be used to create Transfer Order.
+        LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+
+        // [GIVEN] Update "Default Sust. Account" in an Item.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [WHEN] Create and Post Purchase Document.
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", PurchQty, FromLocation.Code, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseDocument(PurchaseHeader, Item."No.", PurchQty, FromLocation.Code, EmissionFee[1]."Country/Region Code", AccountCode, EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmissionPerUnit * PurchQty) * 2) / (PurchQty * 2);
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+
+        // [GIVEN] Create Transfer Order.
+        CreateTransferOrderWithLocation(TransferHeader, Item, FromLocation.Code, ToLocation.Code, InTransitLocation.Code, TransferQty, TransferCO2ePerUnit);
+
+        // [GIVEN] Update "Qty. to Ship" in Transfer Line.
+        GetTransferLine(TransferHeader, TransferLine);
+        TransferLine.Validate("Qty. to Ship", (TransferQty / 2));
+        TransferLine.Modify();
+
+        // [WHEN] Post Transfer Order.
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, false);
+        ExpectedCO2ePerUnit := ((ExpectedCO2eEmissionPerUnit * PurchQty) * 2 + (TransferCO2ePerUnit * (TransferQty / 2))) / (PurchQty * 2);
+
+        // [THEN] Verify "CO2e per Unit" must be updated in item when Transfer is partially posted after 2 purchase orders with same emissions.
+        Item.Get(Item."No.");
+        Assert.AreEqual(
+            ExpectedCO2ePerUnit,
+            Item."CO2e per Unit",
+            StrSubstNo(ValueMustBeEqualErr, Item.FieldCaption("CO2e per Unit"), ExpectedCO2ePerUnit, Item.TableCaption()));
+
+        // [WHEN] Open Transfer Order.
+        TransferOrder.OpenEdit();
+        TransferOrder.GoToRecord(TransferHeader);
+
+        // [THEN] Verify "Total CO2e" must not be zero and editable in Transfer Line if Line is partially shipped.
+        TransferOrder.TransferLines."Total CO2e".AssertEquals(TransferCO2ePerUnit * TransferQty);
+        Assert.IsTrue(
+            TransferOrder.TransferLines."Total CO2e".Editable(),
+            StrSubstNo(FieldShouldBeEditableErr, TransferOrder.TransferLines."Total CO2e".Caption(), TransferOrder.TransferLines.Caption()));
     end;
 
     local procedure CreateUserSetup(var UserSetup: Record "User Setup"; UserID: Code[50])
@@ -4786,6 +5536,8 @@ codeunit 148184 "Sustainability Posting Test"
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
     end;
 
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
     local procedure OpenPurchaseOrderStatistics(No: Code[20])
     var
         PurchaseOrder: TestPage "Purchase Order";
@@ -4793,6 +5545,16 @@ codeunit 148184 "Sustainability Posting Test"
         PurchaseOrder.OpenEdit();
         PurchaseOrder.FILTER.SetFilter("No.", No);
         PurchaseOrder.Statistics.Invoke();
+    end;
+#endif
+
+    local procedure OpenPurchOrderStatistics(No: Code[20])
+    var
+        PurchaseOrder: TestPage "Purchase Order";
+    begin
+        PurchaseOrder.OpenEdit();
+        PurchaseOrder.FILTER.SetFilter("No.", No);
+        PurchaseOrder.PurchaseOrderStatistics.Invoke();
     end;
 
 #if not CLEAN26
@@ -4874,6 +5636,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseStatistics action. The new action uses RunObject and does not run the action trigger', '26.0')]
     local procedure CreateCorrectiveCreditMemoAndOpenPurchaseCrMemoStatistics(PurchaseHeader: Record "Purchase Header"): Code[20]
     var
@@ -4894,6 +5657,7 @@ codeunit 148184 "Sustainability Posting Test"
 
         exit(PurchaseHeader."No.");
     end;
+#pragma warning restore AL0432
 #endif
 
     local procedure CreateCorrectiveCreditMemoAndOpenPurchCrMemoStatistics(PurchaseHeader: Record "Purchase Header"): Code[20]
@@ -4975,13 +5739,13 @@ codeunit 148184 "Sustainability Posting Test"
     var
         CategoryTok, SubcategoryTok, AccountTok : Code[20];
     begin
-        CategoryTok := LibraryRandom.RandText(20);
-        SubcategoryTok := LibraryRandom.RandText(20);
+        CategoryTok := CopyStr(LibraryRandom.RandText(20), 1, 20);
+        SubcategoryTok := CopyStr(LibraryRandom.RandText(20), 1, 20);
         AccountTok := Format(LibraryRandom.RandIntInRange(10000, 20000));
         LibrarySustainability.InsertAccountCategory(CategoryTok, '', Scope, CalcFoundation, CO2, CH4, N2O, CustomValue, CalcFromGL);
         LibrarySustainability.InsertAccountSubcategory(CategoryTok, SubcategoryTok, '', EFCO2, EFCH4, EFN2O, RenewableEnergy);
         Account := LibrarySustainability.InsertSustainabilityAccount(
-            AccountTok, LibraryRandom.RandText(20), CategoryTok, SubcategoryTok, Enum::"Sustainability Account Type"::Posting, '', true);
+            AccountTok, CopyStr(LibraryRandom.RandText(20), 1, 20), CategoryTok, SubcategoryTok, Enum::"Sustainability Account Type"::Posting, '', true);
     end;
 
     local procedure UpdateReasonCodeinSalesHeader(var SalesHeader: Record "Sales Header")
@@ -5105,6 +5869,7 @@ codeunit 148184 "Sustainability Posting Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     local procedure CreateCorrectiveCreditMemoAndOpenSalesCrMemoStatistics(SalesHeader: Record "Sales Header"): Code[20]
     var
@@ -5123,6 +5888,7 @@ codeunit 148184 "Sustainability Posting Test"
 
         exit(SalesHeader."No.");
     end;
+#pragma warning restore AL0432
 #endif
     local procedure CreateCorrectiveCreditMemoAndOpenSalesCrMemoSalesStatistics(SalesHeader: Record "Sales Header"): Code[20]
     var
@@ -5196,7 +5962,7 @@ codeunit 148184 "Sustainability Posting Test"
         BOMComponent: Record "BOM Component";
     begin
         BOMComponent.SetRange("Parent Item No.", ParentItem."No.");
-        BOMComponent.FindSet();
+        BOMComponent.FindFirst();
 
         exit(BOMComponent."No.")
     end;
@@ -5226,9 +5992,11 @@ codeunit 148184 "Sustainability Posting Test"
         ItemJournalTemplate: Record "Item Journal Template";
         ItemJournalBatch: Record "Item Journal Batch";
     begin
+#pragma warning disable AA0210
         ItemJournalTemplate.SetRange(Type, ItemJournalTemplate.Type::Item);
         ItemJournalTemplate.SetRange(Recurring, false);
         ItemJournalTemplate.FindFirst();
+#pragma warning restore AA0210
         ItemJournalBatch.SetRange("Journal Template Name", ItemJournalTemplate.Name);
         ItemJournalBatch.FindFirst();
 
@@ -5237,19 +6005,6 @@ codeunit 148184 "Sustainability Posting Test"
             ItemJournalLine."Entry Type"::"Positive Adjmt.", Item."No.", Quantity);
 
         LibraryInventory.PostItemJournalLine(ItemJournalTemplate.Name, ItemJournalBatch.Name);
-    end;
-
-    local procedure VerifySustainabilityLedgerEntry(AccountCode: Code[20]; CO2eEmission: Decimal)
-    var
-        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
-    begin
-        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
-        SustainabilityLedgerEntry.FindFirst();
-
-        Assert.AreEqual(
-            CO2eEmission,
-            SustainabilityLedgerEntry."CO2e Emission",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), CO2eEmission, SustainabilityLedgerEntry.TableCaption()));
     end;
 
     local procedure VerifySustainabilityValueEntry(ItemNo: Code[20]; CO2eEmissionExpected: Decimal; CO2eEmissionActual: Decimal)
@@ -5307,18 +6062,6 @@ codeunit 148184 "Sustainability Posting Test"
         TransferShipmentLine.FindSet();
     end;
 
-    local procedure GetTransferReceiptHeader(var TransferReceiptHeader: Record "Transfer Receipt Header"; FromLocationCode: Code[10])
-    begin
-        TransferReceiptHeader.SetRange("Transfer-from Code", FromLocationCode);
-        TransferReceiptHeader.FindSet();
-    end;
-
-    local procedure GetTransferReceiptLine(var TransferReceiptLine: Record "Transfer Receipt Line"; ItemNo: Code[20])
-    begin
-        TransferReceiptLine.SetRange("Item No.", ItemNo);
-        TransferReceiptLine.FindSet();
-    end;
-
     local procedure VerifySustainabilityValueEntryForTransferOrder(DocumentNo: Code[20]; CO2ePerUnit: Decimal; CO2eEmission: Decimal)
     var
         SustainabilityValueEntry: Record "Sustainability Value Entry";
@@ -5327,7 +6070,7 @@ codeunit 148184 "Sustainability Posting Test"
         SustainabilityValueEntry.FindFirst();
         Assert.RecordCount(SustainabilityValueEntry, 1);
         Assert.AreEqual(
-            -CO2ePerUnit,
+            CO2ePerUnit,
             SustainabilityValueEntry."CO2e per Unit",
             StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e per Unit"), CO2ePerUnit, SustainabilityValueEntry.TableCaption()));
         Assert.AreEqual(
@@ -5369,9 +6112,90 @@ codeunit 148184 "Sustainability Posting Test"
         AccountingPeriod.FindFirst();
     end;
 
+    local procedure CreateEmissionFeeWithEmissionScope(var EmissionFee: array[3] of Record "Emission Fee"; EmissionScope: Enum "Emission Scope"; CountryRegionCode: Code[10])
+    begin
+        LibrarySustainability.InsertEmissionFee(
+            EmissionFee[1],
+            "Emission Type"::CH4,
+            EmissionScope,
+            CalcDate('<-CM>', WorkDate()),
+            CalcDate('<CM>', WorkDate()),
+            CountryRegionCode,
+            LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
+
+        LibrarySustainability.InsertEmissionFee(
+            EmissionFee[2],
+            "Emission Type"::CO2,
+            EmissionScope,
+            CalcDate('<-CM>', WorkDate()),
+            CalcDate('<CM>', WorkDate()),
+            CountryRegionCode,
+            LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
+        EmissionFee[2].Validate("Carbon Fee", LibraryRandom.RandDecInDecimalRange(0.5, 2, 1));
+        EmissionFee[2].Modify();
+
+        LibrarySustainability.InsertEmissionFee(
+            EmissionFee[3],
+            "Emission Type"::N2O,
+            EmissionScope,
+            CalcDate('<-CM>', WorkDate()),
+            CalcDate('<CM>', WorkDate()),
+            CountryRegionCode,
+            LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
+    end;
+
+    local procedure CreateAndPostPurchaseDocument(var PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; LocationCode: Code[20]; CountryRegionCode: Code[10]; AccountCode: Code[20]; EmissionCO2PerUnit: Decimal; EmissionCH4PerUnit: Decimal; EmissionN2OPerUnit: Decimal): Code[20]
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader."Buy-from Country/Region Code" := CountryRegionCode;
+        PurchaseHeader.Modify();
+
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, ItemNo, Quantity);
+        PurchaseLine.Validate("Location Code", LocationCode);
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2 Per Unit", EmissionCO2PerUnit);
+        PurchaseLine.Validate("Emission CH4 Per Unit", EmissionCH4PerUnit);
+        PurchaseLine.Validate("Emission N2O Per Unit", EmissionN2OPerUnit);
+        PurchaseLine.Modify();
+
+        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+    end;
+
+#if not CLEAN26
+    [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure PurchaseOrderStatisticsPageHandler(var PurchaseOrderStatisticsPage: TestPage "Purchase Order Statistics")
+    var
+        EmissionCO2: Variant;
+        EmissionCH4: Variant;
+        EmissionN2O: Variant;
+        PostedEmissionCO2: Variant;
+        PostedEmissionCH4: Variant;
+        PostedEmissionN2O: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(EmissionCO2);
+        LibraryVariableStorage.Dequeue(EmissionCH4);
+        LibraryVariableStorage.Dequeue(EmissionN2O);
+        LibraryVariableStorage.Dequeue(PostedEmissionCO2);
+        LibraryVariableStorage.Dequeue(PostedEmissionCH4);
+        LibraryVariableStorage.Dequeue(PostedEmissionN2O);
+
+        PurchaseOrderStatisticsPage."Emission C02".AssertEquals(EmissionCO2);
+        PurchaseOrderStatisticsPage."Emission CH4".AssertEquals(EmissionCH4);
+        PurchaseOrderStatisticsPage."Emission N2O".AssertEquals(EmissionN2O);
+        PurchaseOrderStatisticsPage."Posted Emission C02".AssertEquals(PostedEmissionCO2);
+        PurchaseOrderStatisticsPage."Posted Emission CH4".AssertEquals(PostedEmissionCH4);
+        PurchaseOrderStatisticsPage."Posted Emission N2O".AssertEquals(PostedEmissionN2O);
+    end;
+#endif
+
+    [PageHandler]
+    [Scope('OnPrem')]
+    procedure PurchOrderStatisticsPageHandler(var PurchaseOrderStatisticsPage: TestPage "Purchase Order Statistics")
     var
         EmissionCO2: Variant;
         EmissionCH4: Variant;

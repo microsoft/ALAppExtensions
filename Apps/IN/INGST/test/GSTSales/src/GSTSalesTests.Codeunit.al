@@ -14,6 +14,7 @@ codeunit 18196 "GST Sales Tests"
         Storage: Dictionary of [Text, Code[20]];
         StorageBoolean: Dictionary of [Text, Boolean];
         ComponentPerArray: array[20] of Decimal;
+        isInitialized: Boolean;
         LocationStateCodeLbl: Label 'LocationStateCode';
         KeralaCESSLbl: Label 'KeralaCESS';
         PartialShipLbl: Label 'PartialShip';
@@ -44,6 +45,7 @@ codeunit 18196 "GST Sales Tests"
         PANErr: Label 'PAN No. must be entered in Company Information.';
         QRCodeVerifyErr: Label 'QR Code is not generated';
         TaxTransactionValueEmptyErr: Label 'Tax Transaction Value cannot be empty for %1', Comment = '%1 = Sales Line Archive Record ID';
+        PriceListLineVerifyErr: Label '%1 is incorrect in %2.', Comment = '%1 and %2 = Field Caption and Table Caption';
 
     [Test]
     procedure CompanyInformationPANError()
@@ -3957,6 +3959,78 @@ codeunit 18196 "GST Sales Tests"
 
         // [THEN] G/L Entries and Detailed GST Ledger Entries verified
         LibraryGST.VerifyGLEntries(DocumentType::Invoice, PostedDocumentNo, 4);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure CreateSalesOrderWithNewSalesPriceWithPriceInclusiveofTax()
+    var
+        Item: Record Item;
+        PriceListHeader: Record "Price List Header";
+        PriceListLine: Record "Price List Line";
+        FeatureKey: Record "Feature Key";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryPriceCalculation: Codeunit "Library - Price Calculation";
+        PriceListManagement: Codeunit "Price List Management";
+        CustomerNo: Code[20];
+        LocationCOde: Code[10];
+        SalesPricesFeatureKeyLbl: Label 'SalesPrices', Locked = true;
+    begin
+        SalesPriceInitialize();
+        PriceListLine.DeleteAll();
+        PriceListHeader.DeleteAll();
+
+        // [GIVEN] Created GST Setup
+        CreateGSTSetup(Enum::"GST Customer Type"::Registered, Enum::"GST Group Type"::Goods, false);
+        InitializeShareStep(false, false);
+
+        // [GIVEN] Sales Prices, for All Customers, Item, without Currency.
+        LibraryInventory.CreateItem(Item);
+        LibraryPriceCalculation.CreatePriceHeader(PriceListHeader, Enum::"Price Type"::Sale, Enum::"Price Source Type"::"All Customers", '');
+        LibraryPriceCalculation.CreatePriceListLine(PriceListLine, PriceListHeader, Enum::"Price Amount Type"::Price, Enum::"Price Asset Type"::Item, Item."No.");
+        PriceListLine."Price Inclusive of Tax" := true;
+        PriceListLine.Status := PriceListLine.Status::Active;
+        PriceListLine.Modify(true);
+        PriceListManagement.ActivateDraftLines(PriceListHeader);
+
+        // [WHEN] Create Sales Order With Item
+        CustomerNo := Storage.Get(CustomerNoLbl);
+        LocationCode := CopyStr(Storage.Get(LocationCodeLbl), 1, MaxStrLen(LocationCode));
+        LibrarySales.CreateSalesOrderWithLocation(SalesHeader, CustomerNo, LocationCode);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", 6);
+
+        // [THEN] Verify Sales Line Price Inclusive of Tax Field
+        if (FeatureKey.Get(SalesPricesFeatureKeyLbl)) and (FeatureKey.Enabled = FeatureKey.Enabled::"All Users") then
+            Assert.AreEqual(SalesLine."Price Inclusive of Tax", true, StrSubstNo(PriceListLineVerifyErr, SalesLine.FieldCaption("Price Inclusive of Tax"), SalesLine.TableCaption))
+        else
+            Assert.AreEqual(SalesLine."Price Inclusive of Tax", false, StrSubstNo(PriceListLineVerifyErr, SalesLine.FieldCaption("Price Inclusive of Tax"), SalesLine.TableCaption));
+    end;
+
+    local procedure SalesPriceInitialize()
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        JobsSetup: Record "Jobs Setup";
+    begin
+        if isInitialized then
+            exit;
+
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup.Validate("Price List Nos.", LibraryERM.CreateNoSeriesCode('SAL'));
+        SalesReceivablesSetup.Modify();
+
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Price List Nos.", LibraryERM.CreateNoSeriesCode('PUR'));
+        PurchasesPayablesSetup.Modify();
+
+        JobsSetup.Get();
+        JobsSetup.Validate("Price List Nos.", LibraryERM.CreateNoSeriesCode('JOB'));
+        JobsSetup.Modify();
+
+        isInitialized := true;
+        Commit();
     end;
 
     local procedure CreateGSTSetupWithCustomerPaymentMethodBank(

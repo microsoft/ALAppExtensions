@@ -14,6 +14,7 @@ codeunit 139512 "Library - IT Intrastat"
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryFixedAsset: Codeunit "Library - Fixed Asset";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryService: Codeunit "Library - Service";
         LibraryRandom: Codeunit "Library - Random";
         LibraryWarehouse: Codeunit "Library - Warehouse";
 
@@ -845,5 +846,47 @@ codeunit 139512 "Library - IT Intrastat"
         IntrastatReportLine.Validate(Quantity, LibraryRandom.RandDecInRange(10, 20, 2));
         IntrastatReportLine.Modify(true);
         exit(Item."Net Weight");
+    end;
+
+    procedure CreateServiceDocument(var ServiceHeader: Record "Service Header"; var ServiceLine: Record "Service Line"; CustomerNo: Code[20]; PostingDate: Date; DocumentType: Enum "Service Document Type"; Type: Enum "Service Line Type"; No: Code[20];
+                                                                                                                                                                          NoOfLines: Integer)
+    var
+        i: Integer;
+    begin
+        // Create Service Order with Random Quantity and Unit Price.
+        CreateServiceHeader(ServiceHeader, CustomerNo, PostingDate, DocumentType);
+        for i := 1 to NoOfLines do begin
+            LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, Type, No);
+            ServiceLine.Validate(Quantity, LibraryRandom.RandDec(100, 2));
+            ServiceLine.Validate("Unit Price", LibraryRandom.RandDec(100, 2));
+            ServiceLine.Modify(true);
+        end;
+    end;
+
+    procedure CreateServiceHeader(var ServiceHeader: Record "Service Header"; CustomerNo: Code[20]; PostingDate: Date; DocumentType: Enum "Service Document Type")
+    begin
+        LibraryService.CreateServiceHeader(ServiceHeader, DocumentType, CustomerNo);
+        ServiceHeader.Validate("Posting Date", PostingDate);
+        ServiceHeader.Modify(true);
+    end;
+
+    procedure GetCompanyInfoCountryRegionCode(): Code[10]
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.Get();
+        exit(CompanyInformation."Country/Region Code");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeExportToZip', '', true, true)]
+    local procedure OnBeforeExportToZip(DataExch1: Record "Data Exch."; DataExch2: Record "Data Exch."; StatisticsPeriod: Text; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean);
+    begin
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeExportToFile', '', true, true)]
+    local procedure OnBeforeExportToFile(DataExch: Record "Data Exch."; var FileName: Text; var Handled: Boolean)
+    begin
+        Handled := true;
     end;
 }

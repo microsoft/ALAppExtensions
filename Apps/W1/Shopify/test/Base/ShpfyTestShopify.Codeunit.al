@@ -43,6 +43,20 @@ codeunit 139563 "Shpfy Test Shopify"
         LibraryAssert.ExpectedError('The Shopify Admin API used by your current Shopify connector is no longer supported. To continue using the Shopify connector, please upgrade the Shopify connector and your Business Central environment.');
     end;
 
+    [Test]
+    procedure UnitTestCorrectShopUrl()
+    var
+        Shop: Record "Shpfy Shop";
+    begin
+        // [SCENARIO] If a shop URL from admin center it is corrected to have the correct format
+        // [WHEN] The Shop is created and admin center URL is validated.
+        Shop.Code := 'test-shop';
+        Shop.Validate("Shopify URL", 'admin.shopify.com/store/test-shop/products?selectedView=all');
+
+        // [THEN] The Shop URL must be corrected to have the correct format.
+        LibraryAssert.AreEqual('https://test-shop.myshopify.com', Shop."Shopify URL", 'The Shopify URL should be in the correct format.');
+    end;
+
     local procedure SetupKeyVaultExpiryDate(ApiVersion: Text)
     var
         AzureKeyVaultTestLibrary: Codeunit "Azure Key Vault Test Library";

@@ -37,6 +37,7 @@ query 5284 "G/L Entry SAF-T"
             column(VAT_Bus__Posting_Group; "VAT Bus. Posting Group") { }
             column(VAT_Prod__Posting_Group; "VAT Prod. Posting Group") { }
             column(Last_Modified_DateTime; "Last Modified DateTime") { }
+            column(Amount; Amount) { }
             column(Debit_Amount; "Debit Amount") { }
             column(Credit_Amount; "Credit Amount") { }
         }

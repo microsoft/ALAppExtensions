@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 31247 "Job Task Card CZZ" extends "Job Task Card"
 {
     actions

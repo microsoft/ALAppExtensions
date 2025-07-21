@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 30098 "APIV2 - Fixed Assets"
 {
     APIVersion = 'v2.0';

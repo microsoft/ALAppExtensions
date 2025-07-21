@@ -18,12 +18,8 @@ query 37009 "Routing Links - PBI API"
     {
         dataitem(routingLink; "Routing Link")
         {
-            column(code; Code)
-            {
-            }
-            column(description; Description)
-            {
-            }
+            column(code; Code) { }
+            column(description; Description) { }
         }
     }
 }

@@ -314,6 +314,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         TempOrderLine."Gift Card" := false;
         TempOrderLine.Taxable := false;
         TempOrderLine."Unit Price" := SalesInvoiceLine."Unit Price";
+        TempOrderLine.Weight := SalesInvoiceLine."Net Weight";
         TempOrderHeader."Discount Amount" += SalesInvoiceLine."Line Discount Amount";
         TempOrderHeader.Modify(false);
 

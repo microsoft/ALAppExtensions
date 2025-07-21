@@ -4,10 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Transfer;
 
+#if not CLEAN26
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Item;
 
+#endif
 tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
 {
 #if not CLEANSCHEMA25
@@ -23,10 +25,12 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
         }
     }
 #endif
+#if not CLEAN26
     var
         GlobalDocumentNo: Code[20];
         GlobalIsIntrastatTransaction: Boolean;
 
+    [Obsolete('Pending removal. Use IsIntrastatTransaction from Intrastat Core extension instead.', '26.0')]
     procedure IsIntrastatTransactionCZL() IsIntrastat: Boolean
     begin
         if ("No." <> GlobalDocumentNo) or ("No." = '') then begin
@@ -58,6 +62,7 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
         exit(false);
     end;
 
+    [Obsolete('Pending removal. Replaced by internal ShipOrReceiveInventoriableTypeItems function from Intrastat Core extension. ', '26.0')]
     procedure ShipOrReceiveInventoriableTypeItemsCZL(): Boolean
     var
         TransferLine: Record "Transfer Line";
@@ -73,8 +78,10 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
             until TransferLine.Next() = 0;
     end;
 
+    [Obsolete('Pending removal. Use OnBeforeCheckIsIntrastatTransaction from Intrastat Core extension instead.', '26.0')]
     [IntegrationEvent(true, false)]
     local procedure OnBeforeUpdateGlobalIsIntrastatTransactionCZL(TransferHeader: Record "Transfer Header"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
+#endif
 }

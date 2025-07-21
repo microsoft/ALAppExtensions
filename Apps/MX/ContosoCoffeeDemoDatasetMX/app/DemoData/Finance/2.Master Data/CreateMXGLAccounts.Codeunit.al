@@ -1,3 +1,21 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoData.Common;
+using Microsoft.Inventory.Setup;
+using Microsoft.DemoData.HumanResources;
+using Microsoft.DemoData.Jobs;
+using Microsoft.Foundation.Enums;
+
 codeunit 14099 "Create MX GL Accounts"
 {
     InherentPermissions = X;
@@ -348,6 +366,7 @@ codeunit 14099 "Create MX GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.CorporateTaxesPayableName(), '9920');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherLiabilitiesTotalName(), '9990');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.ShortTermLiabilitiesTotalName(), '9995');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherAccruedExpensesAndDeferredIncomeName(), '9996');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalLiabilitiesName(), '9997');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalLiabilitiesAndEquityName(), '9999');
         ContosoGLAccount.AddAccountForLocalization(EquipmentName(), '10800');

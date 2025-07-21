@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.CRM;
+
+using Microsoft.DemoTool.Helpers;
+using Microsoft.CRM.Profiling;
+
 codeunit 5681 "Create Profile Questionnaire"
 {
     trigger OnRun()

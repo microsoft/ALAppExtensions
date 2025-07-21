@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -893,9 +893,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
         Customer: Record Customer;
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         ResponsibilityCenter: Record "Responsibility Center";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-#endif
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
@@ -930,19 +927,10 @@ table 31004 "Sales Adv. Letter Header CZZ"
             if "No." = '' then begin
                 GetSetup();
                 AdvanceLetterTemplateCZZ.TestField("Advance Letter Document Nos.");
-#if not CLEAN24
-                IsHandled := false;
-                NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "Posting Date", "No.", "No. Series", IsHandled);
-                if not IsHandled then begin
-#endif
-                    "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
-                    if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                        "No. Series" := xRec."No. Series";
-                    "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
-#if not CLEAN24
-                    NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", "Posting Date", "No.");
-                end;
-#endif
+                "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
             end;
 
         OnInitInsertOnBeforeInitRecord(Rec, xRec);
@@ -1725,6 +1713,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
             if "SWIFT Code" <> '' then
                 SWIFT := "SWIFT Code";
         end;
+        if IBANCode <> '' then
+            IBANCode := DelChr(IBANCode, '=', ' ');
 
         CalcFields("Amount Including VAT");
 

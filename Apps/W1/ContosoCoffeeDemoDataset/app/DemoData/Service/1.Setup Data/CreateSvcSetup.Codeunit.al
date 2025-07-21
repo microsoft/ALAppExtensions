@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Service;
+
+using Microsoft.Service.Setup;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5103 "Create Svc Setup"
 {
     InherentEntitlements = X;
@@ -30,8 +40,6 @@ codeunit 5103 "Create Svc Setup"
         ContosoService.InsertBaseCalendar(DefaultBaseCalendar(), DefaultBaseCalendar());
 
         CreateServiceSetup();
-        CreateInventoryPostingSetup();
-
         CreateSkillCodes();
         CreateServiceOrderTypes();
         CreateFaultReasonCodes();
@@ -53,6 +61,8 @@ codeunit 5103 "Create Svc Setup"
 
         if ServiceMgtSetup."Service Item Nos." = '' then
             ServiceMgtSetup.Validate("Service Item Nos.", SevNoSeries.ServiceItem());
+        if ServiceMgtSetup."Loaner Nos." = '' then
+            ServiceMgtSetup.Validate("Loaner Nos.", SevNoSeries.ServiceLoaner());
         if ServiceMgtSetup."Service Order Nos." = '' then
             ServiceMgtSetup.Validate("Service Order Nos.", SevNoSeries.ServiceOrder());
         if ServiceMgtSetup."Service Invoice Nos." = '' then
@@ -71,6 +81,8 @@ codeunit 5103 "Create Svc Setup"
             ServiceMgtSetup.Validate("Service Credit Memo Nos.", SevNoSeries.ServiceCreditMemo());
         if ServiceMgtSetup."Posted Serv. Credit Memo Nos." = '' then
             ServiceMgtSetup.Validate("Posted Serv. Credit Memo Nos.", SevNoSeries.PostedServiceCreditMemo());
+        if ServiceMgtSetup."Troubleshooting Nos." = '' then
+            ServiceMgtSetup.Validate("Troubleshooting Nos.", SevNoSeries.ServiceTroubleShooting());
 
         ServiceMgtSetup.Validate("Base Calendar Code", DefaultBaseCalendar());
 
@@ -79,17 +91,6 @@ codeunit 5103 "Create Svc Setup"
         ServiceMgtSetup.Modify(true);
     end;
 
-    local procedure CreateInventoryPostingSetup()
-    var
-        SvcDemoDataSetup: Record "Service Module Setup";
-        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
-        CommonPostingGroup: Codeunit "Create Common Posting Group";
-        CommonGLAccount: Codeunit "Create Common GL Account";
-    begin
-        SvcDemoDataSetup.Get();
-
-        ContosoPostingSetup.InsertInventoryPostingSetup(SvcDemoDataSetup."Service Location", CommonPostingGroup.Resale(), CommonGLAccount.Resale(), CommonGLAccount.ResaleInterim());
-    end;
 
     local procedure CreateSkillCodes()
     begin

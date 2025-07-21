@@ -6,12 +6,10 @@ page 37049 "PowerBI Released Prod. Orders"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Manufacturing;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Released Production Orders';
     AboutTitle = 'About Released Production Orders';
-    AboutText = 'View how your released production orders are tracking by comparing Expected Quantity vs Finished Quantity';
+    AboutText = 'View how your released production orders are tracking by comparing Expected Quantity vs. Finished Quantity';
 
     layout
     {
@@ -26,8 +24,14 @@ page 37049 "PowerBI Released Prod. Orders"
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
+
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
                 end;
             }

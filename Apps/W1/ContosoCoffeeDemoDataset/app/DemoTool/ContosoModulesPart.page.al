@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
+using System.Telemetry;
+
 page 5548 "Contoso Modules Part"
 {
     PageType = ListPart;
@@ -25,7 +34,7 @@ page 5548 "Contoso Modules Part"
                 field(Install; Rec.Install)
                 {
                     Editable = true;
-                    ToolTip = 'Specifies if the module should be installed when creating new company';
+                    ToolTip = 'Specifies the demo data module installation level. It indicates which data was included and can vary between "Setup Data," meaning that only settings and configurations were installed, or "All," in which case setup, master data, transactions, and history were installed.';
                 }
             }
         }

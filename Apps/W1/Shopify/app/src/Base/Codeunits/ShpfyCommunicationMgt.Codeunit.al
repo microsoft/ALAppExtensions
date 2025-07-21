@@ -17,7 +17,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         CommunicationEvents: Codeunit "Shpfy Communication Events";
         GraphQLQueries: Codeunit "Shpfy GraphQL Queries";
         NextExecutionTime: DateTime;
-        VersionTok: Label '2025-01', Locked = true;
+        VersionTok: Label '2025-07', Locked = true;
         OutgoingRequestsNotEnabledConfirmLbl: Label 'Importing data to your Shopify shop is not enabled, do you want to go to shop card to enable?';
         OutgoingRequestsNotEnabledErr: Label 'Importing data to your Shopify shop is not enabled, navigate to shop card to enable.';
         IsTestInProgress: Boolean;
@@ -309,7 +309,10 @@ codeunit 30103 "Shpfy Communication Mgt."
     [NonDebuggable]
     internal procedure Get(var Client: HttpClient; Url: Text; var Response: HttpResponseMessage)
     begin
-        Client.Get(Url, Response);
+        if IsTestInProgress then
+            CommunicationEvents.OnClientGet(Url, Response)
+        else
+            Client.Get(Url, Response);
     end;
 
     [TryFunction]
@@ -510,12 +513,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <returns>Return variable "Retry" of type Boolean.</returns>
     local procedure EvaluateResponse(HttpResponseMessage: HttpResponseMessage) Retry: Boolean
     var
-        BucketPerc: Decimal;
-        WaitTime: Duration;
-        BucketSize: Integer;
-        BucketUse: Integer;
         Status: Integer;
-        Values: array[10] of Text;
     begin
         Status := HttpResponseMessage.HttpStatusCode();
         case Status of
@@ -529,26 +527,6 @@ codeunit 30103 "Shpfy Communication Mgt."
                     Sleep(10000);
                     Retry := true;
                 end;
-            else
-                if HttpResponseMessage.Headers().GetValues('X-Shopify-Shop-Api-Call-Limit', Values) then
-                    if Evaluate(BucketUse, Values[1].Split('/').Get(1)) and Evaluate(BucketSize, Values[1].Split('/').Get(2)) then begin
-                        BucketPerc := 100 * BucketUse / BucketSize;
-                        if BucketPerc >= 90 then
-                            WaitTime := 1000
-                        else
-                            if BucketPerc >= 80 then
-                                WaitTime := 800
-                            else
-                                if BucketPerc >= 70 then
-                                    WaitTime := 600
-                                else
-                                    if BucketPerc >= 60 then
-                                        WaitTime := 400
-                                    else
-                                        if BucketPerc >= 50 then
-                                            WaitTime := 200;
-                    end;
-                NextExecutionTime := CurrentDateTime() + WaitTime;
         end;
     end;
 
@@ -606,7 +584,7 @@ codeunit 30103 "Shpfy Communication Mgt."
 
     local procedure CheckQueryLength(GraphQLQuery: Text)
     begin
-        if StrLen(GraphQLQuery) > 50000 then begin
+        if StrLen(GraphQLQuery) > GetGraphQueryLengthThreshold() then begin
             Session.LogMessage('0000K18', QueryParamTooLongTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
             if GraphQLQuery.Contains('productCreate') then
                 Error(ProductCreateQueryParamTooLongErr);
@@ -753,6 +731,11 @@ codeunit 30103 "Shpfy Communication Mgt."
             exit('true')
         else
             exit('false');
+    end;
+
+    internal procedure GetGraphQueryLengthThreshold(): Integer
+    begin
+        exit(50000);
     end;
 }
 

@@ -6,12 +6,10 @@ page 37045 "Finished Prod. Order Breakdown"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Manufacturing;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
-    Caption = 'Finished Prod. Order Breakdown';
-    AboutTitle = 'About Finished Prod. Order Breakdown';
-    AboutText = 'View Expected Quantities and Cost vs Actual Quantities and Costs over time, analyze the detail per item and drill down to the Production Order to track where variances are occurring.';
+    Caption = 'Finished Production Order Breakdown';
+    AboutTitle = 'About Finished Production Order Breakdown';
+    AboutText = 'View Expected Quantities and Cost vs. Actual Quantities and Costs over time, analyze the detail per item and drill down to the Production Order to track where variances are occurring.';
 
     layout
     {
@@ -26,8 +24,14 @@ page 37045 "Finished Prod. Order Breakdown"
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
+
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
                 end;
             }

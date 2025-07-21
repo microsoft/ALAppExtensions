@@ -6,7 +6,8 @@ namespace Microsoft.eServices.EDocument.Processing.Import;
 
 enum 6156 "E-Document Import Process"
 {
-    Extensible = true;
+    Extensible = false;
+
     value(0; "Version 1.0")
     {
         Caption = 'Version 1.0';

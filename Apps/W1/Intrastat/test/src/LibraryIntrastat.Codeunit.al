@@ -50,6 +50,22 @@ codeunit 139554 "Library - Intrastat"
         IntrastatReportNo := IntrastatReportHeader."No.";
     end;
 
+    procedure CreateSalesIntrastatReport(ReportDate: Date; var IntrastatReportNo: Code[20])
+    var
+        IntrastatReportHeader: Record "Intrastat Report Header";
+    begin
+        IntrastatReportHeader.Init();
+        IntrastatReportHeader.Validate("No.", GetIntrastatNo());
+        IntrastatReportHeader.Insert();
+
+        IntrastatReportHeader.Validate("Statistics Period", GetStatisticalPeriod(ReportDate));
+        IntrastatReportHeader.Validate(Type, IntrastatReportHeader.Type::Sales);
+
+        IntrastatReportHeader.Modify();
+
+        IntrastatReportNo := IntrastatReportHeader."No.";
+    end;
+
     procedure CreateIntrastatReportLine(var IntrastatReportLine: Record "Intrastat Report Line")
     var
         IntrastatReportHeader: Record "Intrastat Report Header";
@@ -1031,5 +1047,17 @@ codeunit 139554 "Library - Intrastat"
         Purchasing.Modify(true);
         SalesLine.Validate("Purchasing Code", Purchasing.Code);
         SalesLine.Modify(true);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeExportToZip', '', true, true)]
+    local procedure OnBeforeExportToZip(DataExch1: Record "Data Exch."; DataExch2: Record "Data Exch."; StatisticsPeriod: Text; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean);
+    begin
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeExportToFile', '', true, true)]
+    local procedure OnBeforeExportToFile(DataExch: Record "Data Exch."; var FileName: Text; var Handled: Boolean)
+    begin
+        Handled := true;
     end;
 }

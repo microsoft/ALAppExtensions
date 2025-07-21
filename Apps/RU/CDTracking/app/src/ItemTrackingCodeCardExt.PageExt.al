@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 14111 ItemTrackingCodeCardExt extends "Item Tracking Code Card"
 {
     layout

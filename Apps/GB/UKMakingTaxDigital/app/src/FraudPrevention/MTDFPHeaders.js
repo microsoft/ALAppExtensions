@@ -23,7 +23,7 @@ function Run(publicIPServiceURL) {
         browserUserAgent: navigator.userAgent,
         browserDoNotTrack: getDoNotTrack(),
         deviceID: getDeviceID(),
-        publicIP: 'error'
+        publicIP: ''
     };
 
     Promise.delay = function (t, val) {
@@ -39,10 +39,11 @@ function Run(publicIPServiceURL) {
     }
 
     Promise.raceAll(
-        [getPublicIPAsync(publicIPServiceURL)], 10000, '') // 10 sec timeout
+        [getPublicIPAsync(publicIPServiceURL)], 10000, { ip: '', source: '' }) // 10 sec timeout
         .then(
-            function ([publicIP]) {
-                headersJson.publicIP = publicIP;
+            function ([publicIPResult]) {
+                headersJson.publicIP = publicIPResult.ip || '';
+                headersJson.publicIPSource = publicIPResult.source || '';
                 Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('CallBack', [headersJson]);
             },
             function (reject) {
@@ -51,10 +52,72 @@ function Run(publicIPServiceURL) {
         );
 }
 
+function TestExternalPublicIPService(url) {
+    getPublicIPFromExtService(url)
+        .then(publicIP => {
+            Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('CallBack', [{
+                publicIP: publicIP || "",
+                publicIPSource: "external"
+            }]);
+        })
+        .catch(error => {
+            Microsoft.Dynamics.NAV.InvokeExtensibilityMethod('CallBack', [{
+                publicIP: "",
+                publicIPSource: ""
+            }]);
+        });
+}
+
 function getPublicIPAsync(url) {
+    return getPublicIPFromFCE()
+        .then(clientIp => {
+            if (clientIp)
+                return { ip: clientIp, source: "FCE" };
+
+            if (url)
+                return getPublicIPFromExtService(url)
+                    .then(extIp => ({ ip: extIp, source: "external" }));
+
+            return { ip: "", source: "" };
+        });
+}
+
+function getPublicIPFromFCE() {
+    try {
+        const baseUrl = new URL(window.location.href);
+        let internalUrl = baseUrl.origin + baseUrl.pathname + "/" + "clientIp/clientIp";
+
+        const sessionIdQueryParam = "tid";
+        try {
+            const sessionId = new URLSearchParams(location.href).get(sessionIdQueryParam);
+            if (sessionId && sessionId !== "undefined") {
+                const urlObject = new URL(internalUrl);
+                urlObject.searchParams.append(sessionIdQueryParam, sessionId);
+                internalUrl = urlObject.toString();
+            }
+        } catch {
+            // Ignore errors if we can't add the session ID
+        }
+
+        return fetch(internalUrl, { credentials: "include" })
+            .then(response => response.text())
+            .then(content => parseContentForIP(content) || "")
+            .catch(() => "");
+    } catch {
+        // If internal URL construction fails, return an empty string
+        return Promise.resolve("");
+    }
+}
+
+function getPublicIPFromExtService(url) {
+    if (!url) {
+        return Promise.resolve("");
+    }
+
     return fetch(url)
         .then(response => response.text())
-        .then(content => parseContentForIP(content));
+        .then(content => parseContentForIP(content) || "")
+        .catch(() => "");
 }
 
 function parseContentForIP(content) {

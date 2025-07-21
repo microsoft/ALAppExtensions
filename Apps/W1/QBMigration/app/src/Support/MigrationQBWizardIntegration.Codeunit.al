@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 1914 "MigrationQB Wizard Integration"
 {
     var
@@ -79,12 +80,12 @@ codeunit 1914 "MigrationQB Wizard Integration"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnSelectDataToApply', '', true, true)]
     local procedure OnSelectDataToApplyCreateDataMigrationEntites(var DataMigratorRegistration: Record "Data Migrator Registration"; var DataMigrationEntity: Record "Data Migration Entity"; var Handled: Boolean)
-    BEGIN
-        IF DataMigratorRegistration."No." <> GetCurrentCodeUnitNumber() THEN
-            EXIT;
+    begin
+        if DataMigratorRegistration."No." <> GetCurrentCodeUnitNumber() then
+            exit;
 
         Handled := MigrationQBMgt.CreateDataMigrationEntites(DataMigrationEntity);
-    END;
+    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Facade", 'OnApplySelectedData', '', true, true)]
     local procedure OnApplySelectedDataApplyQBData(var DataMigratorRegistration: Record "Data Migrator Registration"; var DataMigrationEntity: Record "Data Migration Entity"; var Handled: Boolean)

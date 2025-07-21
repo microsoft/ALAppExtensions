@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 using Microsoft.Foundation.Attachment;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Document;
 
 
@@ -37,6 +38,7 @@ codeunit 6169 "E-Doc. Attachment Processor"
     begin
         RecordRef.GetTable(EDocument);
         DocumentAttachment.SaveAttachmentFromStream(DocStream, RecordRef, FileName);
+        DocumentAttachment."Document Flow Purchase" := true;
         DocumentAttachment.Validate("E-Document Attachment", true);
         DocumentAttachment.Validate("E-Document Entry No.", EDocument."Entry No");
         DocumentAttachment.Modify();
@@ -74,8 +76,9 @@ codeunit 6169 "E-Doc. Attachment Processor"
     local procedure MoveToPurchaseDocument(EDocument: Record "E-Document"; RecordRef: RecordRef)
     var
         DocumentAttachment, DocumentAttachment2 : Record "Document Attachment";
-        PurchaseHeader: Record "Purchase Header";
         DocumentType: Enum "Attachment Document Type";
+        DocumentNo: Code[20];
+        UnrecognizedTableForPurchaseDocumentErr: Label 'Unrecognized table for e-document''s purchase document attachment';
     begin
         DocumentAttachment.SetRange("Table ID", Database::"E-Document");
         DocumentAttachment.SetRange("No.", Format(EDocument."Entry No"));
@@ -97,21 +100,39 @@ codeunit 6169 "E-Doc. Attachment Processor"
             else
                 Error(MissingEDocumentTypeErr, EDocument."Document Type");
         end;
-        RecordRef.SetTable(PurchaseHeader);
+        if not (RecordRef.Number() in [Database::"Purchase Header", Database::"Purch. Inv. Header"]) then
+            Error(UnrecognizedTableForPurchaseDocumentErr);
+
+        DocumentNo := RecordRef.Field(3).Value(); // "No." for both Purchase Header and Purchase Invoice Header
+
         DocumentAttachment.FindSet();
         repeat
             DocumentAttachment2 := DocumentAttachment;
-            DocumentAttachment2.Rename(Database::"Purchase Header", PurchaseHeader."No.", DocumentType, 0, DocumentAttachment2.ID);
+            DocumentAttachment2.Rename(RecordRef.Number(), DocumentNo, DocumentType, 0, DocumentAttachment2.ID);
         until DocumentAttachment.Next() = 0;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnCopyAttachmentsOnAfterSetFromParameters, '', false, false)]
+    local procedure OnCopyAttachmentsOnAfterSetFromParameters(FromRecRef: RecordRef; var FromDocumentAttachment: Record "Document Attachment"; var FromAttachmentDocumentType: Enum "Attachment Document Type")
+    var
+        EDocument: Record "E-Document";
+    begin
+        if FromRecRef.Number() <> Database::"E-Document" then
+            exit;
+
+        EDocument := FromRecRef;
+        FromDocumentAttachment.SetRange("No.", Format(EDocument."Entry No"));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Document Attachment Mgmt", OnAfterTableHasNumberFieldPrimaryKey, '', false, false)]
     local procedure OnAfterTableHasNumberFieldPrimaryKeyForEDocs(TableNo: Integer; var Result: Boolean; var FieldNo: Integer)
+    var
+        EDocument: Record "E-Document";
     begin
         case TableNo of
             Database::"E-Document":
                 begin
-                    FieldNo := 1;
+                    FieldNo := EDocument.FieldNo("Entry No");
                     Result := true;
                 end;
         end;

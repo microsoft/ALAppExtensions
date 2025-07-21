@@ -24,6 +24,7 @@ codeunit 6183 "Sent Document Cancellation" implements IDocumentAction
     begin
         ActionContext.Status().SetErrorStatus(Enum::"E-Document Service Status"::"Cancel Error");
         ActionContext.Status().SetStatus(Enum::"E-Document Service Status"::"Canceled");
+        IDocumentSender := EDocumentService."Service Integration V2";
         if IDocumentSender is ISentDocumentActions then
             exit((IDocumentSender as ISentDocumentActions).GetCancellationStatus(EDocument, EDocumentService, ActionContext));
     end;

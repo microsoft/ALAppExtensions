@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 139757 "Library - Master Data Mgt."
 {
     Access = Public;

@@ -1,4 +1,5 @@
-﻿permissionset 11730 "CZ Core Pack - Read CZL"
+#pragma warning disable AA0247
+permissionset 11730 "CZ Core Pack - Read CZL"
 {
     Access = Internal;
     Assignable = false;

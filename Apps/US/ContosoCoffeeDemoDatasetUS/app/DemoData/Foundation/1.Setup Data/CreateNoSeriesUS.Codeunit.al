@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Foundation;
+
+using Microsoft.Foundation.NoSeries;
+
 codeunit 11494 "Create No. Series US"
 {
     SingleInstance = true;

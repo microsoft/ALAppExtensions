@@ -31,10 +31,10 @@ pageextension 11726 "Sales Quote CZL" extends "Sales Quote"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
             }
-            field("Registration No. CZL"; Rec."Registration No. CZL")
+            field("Registration No. CZL"; Rec."Registration Number")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of customer.';
+                ToolTip = 'Specifies the customer''s registration number.';
             }
             field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
             {
@@ -59,13 +59,19 @@ pageextension 11726 "Sales Quote CZL" extends "Sales Quote"
                 ApplicationArea = BasicEU;
                 ToolTip = 'Specifies when the sales header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
+#if not CLEAN26
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The declaration of the field is moved to Intrastat CZ extension.';
+                ObsoleteTag = '26.0';
             }
+#endif
         }
         addafter("Foreign Trade")
         {

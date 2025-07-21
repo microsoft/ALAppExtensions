@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+
 codeunit 14612 "Create General Ledger Setup IS"
 {
     InherentEntitlements = X;
@@ -10,11 +19,9 @@ codeunit 14612 "Create General Ledger Setup IS"
 
     local procedure UpdateGeneralLedgerSetup()
     var
-        Currency: Record Currency;
         CreateCurrency: Codeunit "Create Currency";
     begin
-        Currency.Get(CreateCurrency.ISK());
-        ValidateRecordFields(CreateCurrency.ISK(), LocalCurrencySymbolLbl, Currency.Description, 0.001);
+        ValidateRecordFields(CreateCurrency.ISK(), LocalCurrencySymbolLbl, IcelandicKronaLbl, 0.001);
     end;
 
     local procedure ValidateRecordFields(LCYCode: Code[10]; LocalCurrencySymbol: Text[10]; LocalCurrencyDescription: Text[60]; UnitAmountRoundingPrecision: Decimal)
@@ -31,4 +38,5 @@ codeunit 14612 "Create General Ledger Setup IS"
 
     var
         LocalCurrencySymbolLbl: Label 'kr', Locked = true;
+        IcelandicKronaLbl: Label 'Icelandic krona', MaxLength = 30;
 }

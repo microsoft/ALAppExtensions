@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5252 "Create Posting Groups"
 {
     InherentEntitlements = X;
@@ -39,6 +48,7 @@ codeunit 5252 "Create Posting Groups"
     begin
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', RetailPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', ZeroPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', ServicesPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(DomesticPostingGroup(), RetailPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(DomesticPostingGroup(), ServicesPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(DomesticPostingGroup(), ZeroPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
@@ -56,6 +66,7 @@ codeunit 5252 "Create Posting Groups"
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', RetailPostingGroup(), '', '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', '', '', '', '', CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', ZeroPostingGroup(), '', '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', '', '', '', '', CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', ServicesPostingGroup(), '', '', CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', '', '', '', '', CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
         ContosoGenPostingSetup.InsertGeneralPostingSetup(DomesticPostingGroup(), RetailPostingGroup(), CreateGLAccount.SalesRetailDom(), CreateGLAccount.PurchRetailDom(), CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
         ContosoGenPostingSetup.InsertGeneralPostingSetup(DomesticPostingGroup(), ServicesPostingGroup(), CreateGLAccount.SalesResourcesDom(), CreateGLAccount.PurchRetailDom(), CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());
         ContosoGenPostingSetup.InsertGeneralPostingSetup(DomesticPostingGroup(), ZeroPostingGroup(), CreateGLAccount.SalesRetailDom(), CreateGLAccount.PurchRetailDom(), CreateGLAccount.InventoryAdjmtRetail(), CreateGLAccount.InventoryAdjmtRetail(), '', '', CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscountGranted(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.DiscReceivedRetail(), CreateGLAccount.CostofRetailSold(), CreateGLAccount.CostofResaleSoldInterim(), CreateGLAccount.InvAdjmtInterimRetail());

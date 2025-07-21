@@ -50,9 +50,13 @@ table 10036 "IRS 1099 Form Doc. Line"
         field(10; "Calculated Amount"; Decimal)
         {
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
         field(11; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
 
             trigger OnValidate()
             begin
@@ -71,10 +75,17 @@ table 10036 "IRS 1099 Form Doc. Line"
         field(100; "Minimum Reportable Amount"; Decimal)
         {
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
         field(101; "Adjustment Amount"; Decimal)
         {
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
+        }
+        field(110; "Currency Code"; Code[10])
+        {
         }
     }
 

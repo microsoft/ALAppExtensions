@@ -4,9 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-#if not CLEAN24 
-using Microsoft.Finance;
-#endif
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT;
 using Microsoft.Finance.VAT.Setup;
@@ -368,17 +365,6 @@ report 14600 "IS VAT Balancing Report"
         VATReportCaptionLbl: Label 'VAT Report';
         PaymentDueCaptionLbl: Label 'Payment Due';
 
-#if not CLEAN24
-    trigger OnInitReport()
-    var
-        ISCoreAppSetup: Record "IS Core App Setup";
-    begin
-        if not ISCoreAppSetup.IsEnabled() then begin
-            Report.Run(Report::"VAT Balancing Report");
-            Error('');
-        end;
-    end;
-#endif
 
 
     procedure FindPeriod()
@@ -475,4 +461,3 @@ report 14600 "IS VAT Balancing Report"
         exit(0);
     end;
 }
-

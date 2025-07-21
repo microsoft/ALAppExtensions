@@ -1,8 +1,9 @@
-namespace Microsoft.Sustainability.Setup;
 
+namespace Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
+using System.Telemetry;
 
 page 6221 "Sustainability Setup"
 {
@@ -38,6 +39,10 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies the value of the Discharged Into Water Unit of Measure Code field.';
                 }
+                field("Energy Unit of Measure Code"; Rec."Energy Unit of Measure Code")
+                {
+                    ToolTip = 'Specifies the value of the Energy Unit of Measure Code field.';
+                }
                 field("Emission Decimal Places"; Rec."Emission Decimal Places")
                 {
                     ToolTip = 'Specifies the number of decimal places that are shown for emission amounts. The default setting, 2:5, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 5 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
@@ -68,7 +73,7 @@ page 6221 "Sustainability Setup"
                 }
                 field("G/L Account Emissions"; Rec."G/L Account Emissions")
                 {
-                    ToolTip = 'Specifies the value of the G/L Account Emissions field.';
+                    ToolTip = 'Specifies the enablement of default Sustainability Account on the G/L Account card.';
                 }
                 field("Item Emissions"; Rec."Item Emissions")
                 {
@@ -89,6 +94,9 @@ page 6221 "Sustainability Setup"
                 field("Enable Value Chain Tracking"; Rec."Enable Value Chain Tracking")
                 {
                     ToolTip = 'Specifies the enablement of sustainability value entries postings through value chain operations and the visibility of these fields in operational documents and journals.';
+                }
+                field("Use All Gases As CO2e"; Rec."Use All Gases As CO2e")
+                {
                 }
             }
             group(Calculations)
@@ -130,6 +138,17 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies the Corporate Sustainability Reporting Directive link to report emission.';
                     Visible = false;
+                }
+                field("Energy Reporting UOM Code"; Rec."Energy Reporting UOM Code")
+                {
+                    ToolTip = 'Specifies the unit of measure code that is used to report Energy.';
+                }
+                field("Energy Reporting UOM Factor"; Rec."Energy Reporting UOM Factor")
+                {
+                    ToolTip = 'Specifies the unit of measure factor that is used to register Energy.';
+                }
+                field("Posted ESG Reporting Nos."; Rec."Posted ESG Reporting Nos.")
+                {
                 }
             }
         }
@@ -183,7 +202,32 @@ page 6221 "Sustainability Setup"
         }
     }
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
     begin
+        FeatureTelemetry.LogUptake('0000PH2', SustainabilityLbl, Enum::"Feature Uptake Status"::Discovered);
         Rec.InitRecord();
+
+        xSustainabilitySetup := Rec;
+    end;
+
+    trigger OnClosePage()
+    var
+        SessionSettings: SessionSettings;
+    begin
+        if IsUnitOfMeasureModified() then
+            SessionSettings.RequestSessionUpdate(false);
+    end;
+
+    var
+        xSustainabilitySetup: Record "Sustainability Setup";
+
+    local procedure IsUnitOfMeasureModified(): Boolean
+    begin
+        exit(
+          (Rec."Emission Unit of Measure Code" <> xSustainabilitySetup."Emission Unit of Measure Code") or
+          (Rec."Energy Unit of Measure Code" <> xSustainabilitySetup."Energy Unit of Measure Code") or
+          (Rec."Use All Gases As CO2e" <> xSustainabilitySetup."Use All Gases As CO2e"));
     end;
 }

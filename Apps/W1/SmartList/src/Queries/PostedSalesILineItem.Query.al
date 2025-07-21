@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2463 "Posted Sales I Line Item"
 {
     QueryType = Normal;

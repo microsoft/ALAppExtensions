@@ -36,23 +36,6 @@ codeunit 148195 "Drive Int. Test Impl." implements IDocumentReceiver, IDocumentS
         Assert.AreNotEqual(EDocument."Drive Item Id", '', 'Drive Item Id must have a value when MarkFetched is called');
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"E-Document Service", OnBeforeOpenServiceIntegrationSetupPage, '', false, false)]
-    local procedure OnBeforeOpenServiceIntegrationSetupPage(EDocumentService: Record "E-Document Service"; var IsServiceIntegrationSetupRun: Boolean)
-    var
-        OneDriveSetup: Page "OneDrive Setup";
-        SharepointSetup: Page "Sharepoint Setup";
-    begin
-        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::TestOneDrive then begin
-            OneDriveSetup.RunModal();
-            IsServiceIntegrationSetupRun := true;
-        end;
-
-        if EDocumentService."Service Integration V2" <> EDocumentService."Service Integration V2"::TestSharepoint then begin
-            SharepointSetup.RunModal();
-            IsServiceIntegrationSetupRun := true;
-        end;
-    end;
-
     var
         OneDriveSharepointIntTest: Codeunit "OneDrive Sharepoint Int. Test";
         SendNotSupportedErr: label 'Sending document is not supported in this context.';

@@ -58,8 +58,7 @@
     },
     {
       "id": "AA0247",
-      "action": "None",
-      "justification": "Elevate when the all apps are namespaced."
+      "action": "Error"
     },
     {
       "id": "AA0604",
@@ -77,10 +76,6 @@
     {
       "id": "AL0640",
       "action": "Error"
-    },
-    {
-      "id": "AL0655",
-      "action": "Warning"
     },
     {
       "id": "AL0659",
@@ -113,11 +108,6 @@
       "id": "AL0729",
       "action": "Warning",
       "justification": "Bug 472138. The property 'Promoted' can only be set if the property 'PageType' is set with any of the values of: 'Card,Document,List,ListPlus,Worksheet' This warning will become an error in a future release."
-    },
-    {
-      "id": "AL0748",
-      "action": "Warning",
-      "justification": "The return type 'CRM Payment Terms' of the public method 'GetRec' has 'Internal' accessibility. The return value will not be usable outside of this module without an implicit conversion."
     },
     {
       "id": "AL0749",
@@ -173,23 +163,9 @@
       "justification": "Action must have a value for the ApplicationArea property so that they are visible to users. From runtime 11.0, you can specify on the application object level the ApplicationArea to use as default for all its controls and actions."
     },
     {
-      "id": "AS0077",
-      "action": "Warning",
-      "justification": "A var modifier has been added on the parameter 'ShowDialog' in the event 'OnBeforeEmailRecords'. This might break the runtime behavior of dependent extensions subscribing to this event."
-    },
-    {
-      "id": "AS0078",
-      "action": "Warning"
-    },
-    {
       "id": "AS0099",
       "action": "Warning",
       "justification": "The ID '0' for the EnumValue 'Marketing Text' is not valid. It should be within the range '[1..2147483647]', which is allocated to the application, and outside the range '[50000..99999]', which is allocated to per-tenant customizations."
-    },
-    {
-      "id": "AS0102",
-      "action": "Warning",
-      "justification": "It is not allowed to add a return value to procedure, because it might break dependent extensions at runtime."
     },
     {
       "id": "AS0103",
@@ -363,10 +339,6 @@
       "justification": ": The Caption property for must be filled in."
     },
     {
-      "id": "AA0228",
-      "action": "Warning"
-    },
-    {
       "id": "AA0231",
       "action": "Warning",
       "justification": "Do not use the StrSubstNo or string concatenation as a parameter in the Error method."
@@ -419,6 +391,26 @@
       "id": "AA0470",
       "action": "Warning",
       "justification": "Variable with placeholders should have a comment explaining their content."
+    },
+    {
+      "id": "AA0471",
+      "action": "None",
+      "justification": "AutoformatType should be defined for decimal fields in Page objects to ensure proper formatting behavior."
+    },
+    {
+      "id": "AA0472",
+      "action": "None",
+      "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
+    },
+    {
+      "id": "AA0473",
+      "action": "None",
+      "justification": "AutoformatType should be defined for decimal fields in Table objects to ensure proper formatting behavior."
+    },
+    {
+      "id": "AA0474",
+      "action": "None",
+      "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
     },
     {
       "id": "AW0002",

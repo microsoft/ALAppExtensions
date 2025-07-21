@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -437,35 +437,29 @@ table 18350 "Service Transfer Header"
     trigger OnInsert()
     var
         NoSeries: Codeunit "No. Series";
-#if not CLEAN24
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        IsHandled: Boolean;
-#endif
         NoSeriesCode: Code[20];
     begin
         GetInventorySetup();
         if "No." = '' then begin
             InventorySetup.TestField("Service Transfer Order Nos.");
             NoSeriesCode := GetNoSeriesCode();
-#if not CLEAN24
-            IsHandled := false;
-            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", "Shipment Date", "No.", "No. Series", IsHandled);
-            if not IsHandled then begin
-#endif
-                "No. Series" := NoSeriesCode;
-                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                    "No. Series" := xRec."No. Series";
-                "No." := NoSeries.GetNextNo("No. Series", "Shipment Date");
-#if not CLEAN24
-                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, "Shipment Date", "No.");
-            end;
-#endif
+            "No. Series" := NoSeriesCode;
+            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                "No. Series" := xRec."No. Series";
+            "No." := NoSeries.GetNextNo("No. Series", "Shipment Date");
         end;
         InitRecord();
     end;
 
     trigger OnRename()
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeOnRename(Rec, xRec, IsHandled);
+        if IsHandled then
+            exit;
+
         Error(RenameErr, TableCaption());
     end;
 
@@ -524,8 +518,8 @@ table 18350 "Service Transfer Header"
         ServiceTransferHeader := Rec;
         GetInventorySetup();
         InventorySetup.TestField("Service Transfer Order Nos.");
-        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldServiceTransferHeader."No. Series", "No. Series") then begin
-            "No." := NoSeries.GetNextNo("No. Series");
+        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldServiceTransferHeader."No. Series", ServiceTransferHeader."No. Series") then begin
+            ServiceTransferHeader."No." := NoSeries.GetNextNo(ServiceTransferHeader."No. Series");
             Rec := ServiceTransferHeader;
             exit(true);
         end;
@@ -655,5 +649,10 @@ table 18350 "Service Transfer Header"
         if ("Shipment Date" <> 0D) and ("Receipt Date" <> 0D) then
             if "Shipment Date" > "Receipt Date" then
                 Error(ReceiptDateErr, FieldCaption("Receipt Date"), FieldCaption("Shipment Date"));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnRename(var ServiceTransferHeader: Record "Service Transfer Header"; xServiceTransferHeader: Record "Service Transfer Header"; var IsHandled: Boolean)
+    begin
     end;
 }

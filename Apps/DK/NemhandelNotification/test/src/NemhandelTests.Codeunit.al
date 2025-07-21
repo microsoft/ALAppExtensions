@@ -16,6 +16,8 @@ codeunit 148012 "Nemhandel Tests"
         CompanyStatusGlobal: Enum "Nemhandel Company Status";
         IsInitialized: Boolean;
         IncorrectCVRNumberFormatErr: Label 'The CVR number must be 8 digits or "A/S" followed by 3-6 digits.';
+        NemhandelNotRegisteredTxt: Label 'Your accounting software is not registered in Nemhandelsregisteret';
+        IncorrectCVRNumberFormatTxt: Label 'The Registration No. must be 8 digits or "A/S" followed by 3-6 digits';
 
     [Test]
     [HandlerFunctions('NotificationHandler')]
@@ -62,7 +64,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on Company Information page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -89,7 +91,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on Company Information page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -117,7 +119,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -144,7 +146,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -171,7 +173,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -198,7 +200,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -225,7 +227,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on the role center page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -257,7 +259,7 @@ codeunit 148012 "Nemhandel Tests"
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on Company Information page.
         NotificationText := LibraryVariableStorage.DequeueText();
-        Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
 
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -663,6 +665,99 @@ codeunit 148012 "Nemhandel Tests"
         // [THEN] Error "The CVR number must be 8 digits or "A/S" followed by 3-6 digits" is thrown.
         asserterror CompanyInformationPage."Registration No.".SetValue('   ');
         Assert.ExpectedError(IncorrectCVRNumberFormatErr);
+    end;
+
+    [Test]
+    [HandlerFunctions('NotificationHandler')]
+    procedure CVRFormatNotificationShownWhenNotValidCVRNumberFormat()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+        NotificationText: Text;
+    begin
+        // [SCENARIO 524541] Notification about CVR number format when CVR number is not 8 digits and not "A/S" followed by 3-6 digits.
+        Initialize();
+
+        // [GIVEN] Company Information with CVR number containing letters.
+        UpdateCompanyCVRNumber('ABC12345');
+
+        // [WHEN] Open Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] Notification "The Registration No. must be 8 digits or "A/S" followed by 3-6 digits" was shown on Company Information page.
+        NotificationText := LibraryVariableStorage.DequeueText();
+        Assert.ExpectedMessage(IncorrectCVRNumberFormatTxt, NotificationText);
+
+        // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was also shown on Company Information page.
+        NotificationText := LibraryVariableStorage.DequeueText();
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('NotificationHandler')]
+    procedure CVRFormatNotificationNotShownWhenBlankCVRNumber()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+        NotificationText: Text;
+    begin
+        // [SCENARIO 524541] Notification about CVR number format when CVR number is blank.
+        Initialize();
+
+        // [GIVEN] Company Information with blank CVR number.
+        UpdateCompanyCVRNumber('');
+
+        // [WHEN] Open Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] Only notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on Company Information page.
+        NotificationText := LibraryVariableStorage.DequeueText();
+        Assert.ExpectedMessage(NemhandelNotRegisteredTxt, NotificationText);
+
+        // [THEN] No more notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    procedure CVRFormatNotificationNotShownWhenValidNewCVRNumberFormat()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 524541] Notification about CVR number format when CVR number has 8 digits.
+        Initialize();
+
+        // [GIVEN] Company Information with CVR number containing 8 digits.
+        UpdateCompanyCVRNumber('87654321');
+
+        // [GIVEN] Nemhandel registration status is set to "Registered" to avoid Nemhandel registration notification.
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::Registered);
+
+        // [GIVEN] Opened Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] No notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    procedure CVRFormatNotificationNotShownWhenValidOldCVRNumberFormat()
+    var
+        CompanyInformationPage: TestPage "Company Information";
+    begin
+        // [SCENARIO 524541] Notification about CVR number format when CVR number has "A/S" followed by 4 digits.
+        Initialize();
+
+        // [GIVEN] Company Information with CVR number A/S followed by 4 digits.
+        UpdateCompanyCVRNumber('A/S1234');
+
+        // [GIVEN] Nemhandel registration status is set to "Registered" to avoid Nemhandel registration notification.
+        UpdateRegisteredWithNemhandel(Enum::"Nemhandel Company Status"::Registered);
+
+        // [GIVEN] Opened Company Information page.
+        CompanyInformationPage.OpenEdit();
+
+        // [THEN] No notifications were shown on Company Information page.
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure Initialize()

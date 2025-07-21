@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 4810 IntrastatReportManagement
 {
     Permissions = TableData "Intrastat Report Header" = imd,
@@ -45,6 +46,7 @@ codeunit 4810 IntrastatReportManagement
 #endif
         LearnMoreLinkTok: Label 'https://go.microsoft.com/fwlink/?linkid=2283605', Locked = true;
         RangeCrossingErr: Label 'There is a conflict in checklist rules for ''%1'' in ''%2'' (field must be both blank and not blank). Please review filters in %3.', Comment = '%1=caption of a field, %2=key of record, %3=caption of report checklist page';
+        MaximumLinesErr: Label 'Split files functionality can only be used when the source record is using default sorting and fields are not grouped. Please contact the %1 administrator to adjust the settings in the related %2.', Comment = '%1=Data Exchange caption, %2=Data Exch Mapping Card caption';
         DataExchangeXMLTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><root><DataExchDef Code="INTRA-2022" Name="Intrastat Report 2022" Type="5" ReadingWritingXMLport="1231" ExternalDataHandlingCodeunit="4813" ColumnSeparator="1" FileType="1" ReadingWritingCodeunit="1276"><DataExchLineDef LineType="1" Code="DEFAULT" Name="DEFAULT" ColumnCount="9"><DataExchColumnDef ColumnNo="1" Name="Tariff No." Show="false" DataType="0" Length="8" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="2" Name="Country/Region Code" Show="false" DataType="0" Length="3" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="3" Name="Transaction Type" Show="false" DataType="0" Length="2" TextPaddingRequired="true" Justification="1" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="4" Name="Quantity" Show="false" DataType="0" Length="11" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="5" Name="Total Weight" Show="false" DataType="0" Length="10" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="6" Name="Statistical Value" Show="false" DataType="0" Length="11" TextPaddingRequired="true" PadCharacter="0" Justification="0" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="7" Name="Internal Ref. No." Show="false" DataType="0" Length="30" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="8" Name="Partner Tax ID" Show="false" DataType="0" Length="20" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" /><DataExchColumnDef ColumnNo="9" Name="Country/Region of Origin Code" Show="false" DataType="0" Length="3" TextPaddingRequired="true" PadCharacter="&amp;#032;" Justification="1" UseNodeNameAsValue="false" /><DataExchMapping TableId="4812" Name="" KeyIndex="5" MappingCodeunit="1269"><DataExchFieldMapping ColumnNo="1" FieldID="5" Optional="true" TransformationRule="TRIMALL"><TransformationRules><Code>TRIMALL</Code><Description>Removes all spaces</Description><TransformationType>5</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="2" FieldID="7" Optional="true" /><DataExchFieldMapping ColumnNo="3" FieldID="8" Optional="true" /><DataExchFieldMapping ColumnNo="4" FieldID="14" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules><Code>ALPHANUMERIC_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules><TransformationRules><Code>ROUNDTOINT</Code><Description>Round to integer</Description><TransformationType>14</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>1.00</Precision><Direction>=</Direction></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="5" FieldID="21" Optional="true" TransformationRule="ROUNDUPTOINT"><TransformationRules><Code>ALPHANUMERIC_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules><TransformationRules><Code>ROUNDUPTOINT</Code><Description>Round up to integer</Description><TransformationType>14</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>1.00</Precision><Direction>&gt;</Direction></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="6" FieldID="17" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules><Code>ALPHANUMERIC_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules><TransformationRules><Code>ROUNDTOINT</Code><Description>Round to integer</Description><TransformationType>14</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>1.00</Precision><Direction>=</Direction></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="7" FieldID="23" Optional="true" /><DataExchFieldMapping ColumnNo="8" FieldID="29" Optional="true" /><DataExchFieldMapping ColumnNo="9" FieldID="24" Optional="true" TransformationRule="EUCOUNTRYCODELOOKUP"><TransformationRules><Code>EUCOUNTRYCODELOOKUP</Code><Description>EU Country Lookup</Description><TransformationType>13</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>9</TableID><SourceFieldID>1</SourceFieldID><TargetFieldID>7</TargetFieldID><FieldLookupRule>1</FieldLookupRule><Precision>0.00</Precision><Direction /></TransformationRules></DataExchFieldMapping><DataExchFieldGrouping FieldID="3" /><DataExchFieldGrouping FieldID="5" /><DataExchFieldGrouping FieldID="7" /><DataExchFieldGrouping FieldID="8" /><DataExchFieldGrouping FieldID="9" /><DataExchFieldGrouping FieldID="24" /><DataExchFieldGrouping FieldID="29" /></DataExchMapping></DataExchLineDef></DataExchDef></root>',
                             Locked = true; // will be replaced with file import when available        
 
@@ -575,12 +577,12 @@ codeunit 4810 IntrastatReportManagement
                 exit;
 
             if Selection <> 2 then begin
-                ExportOneDataExchangeDef(IntrastatReportHeader, IntrastatReportSetup."Data Exch. Def. Code - Receipt", 1, DataExch1);
+                ExportOneDataExchangeDef(IntrastatReportHeader, IntrastatReportSetup."Data Exch. Def. Code - Receipt", 1, DataExch1, IntrastatReportSetup."Max. No. of Lines in File");
                 DataExch1.CalcFields("File Content");
                 IntrastatReportHeader.Validate("Arrivals Reported", true);
             end;
             if Selection <> 1 then begin
-                ExportOneDataExchangeDef(IntrastatReportHeader, IntrastatReportSetup."Data Exch. Def. Code - Shpt.", 2, DataExch2);
+                ExportOneDataExchangeDef(IntrastatReportHeader, IntrastatReportSetup."Data Exch. Def. Code - Shpt.", 2, DataExch2, IntrastatReportSetup."Max. No. of Lines in File");
                 DataExch2.CalcFields("File Content");
                 IntrastatReportHeader.Validate("Dispatches Reported", true);
             end;
@@ -590,7 +592,7 @@ codeunit 4810 IntrastatReportManagement
 
         end else begin
             IntrastatReportSetup.TestField("Data Exch. Def. Code");
-            ExportOneDataExchangeDef(IntrastatReportHeader, IntrastatReportSetup."Data Exch. Def. Code", 0, DataExch1);
+            ExportOneDataExchangeDef(IntrastatReportHeader, IntrastatReportSetup."Data Exch. Def. Code", 0, DataExch1, IntrastatReportSetup."Max. No. of Lines in File");
             DataExch1.CalcFields("File Content");
             if not DataExch1."File Content".HasValue() then
                 Error(ExternalContentErr, DataExch1.FieldCaption("File Content"));
@@ -599,7 +601,7 @@ codeunit 4810 IntrastatReportManagement
             IntrastatReportHeader.Validate("Arrivals Reported", true);
         end;
 
-        if (Selection = 3) or IntrastatReportSetup."Zip Files" then
+        if (Selection = 3) or IntrastatReportSetup."Zip Files" or (IntrastatReportSetup."Max. No. of Lines in File" > 0) then
             ExportToZip(DataExch1, DataExch2, IntrastatReportHeader."Statistics Period", FileName, ReceptFileName, ShipmentFileName, ZipFileName)
         else
             if DataExch1."File Content".HasValue then begin
@@ -621,6 +623,8 @@ codeunit 4810 IntrastatReportManagement
         IntrastatReportHeader.Modify();
     end;
 
+#if not CLEAN27
+    [Obsolete('Use ExportOneDataExchangeDef(IntrastatReportHeader: Record "Intrastat Report Header"; DataExchDefCode: Code[20]; ExportType: Integer; var DataExch: Record "Data Exch."; MaxNoOfLines: Integer)', '27.0')]
     procedure ExportOneDataExchangeDef(IntrastatReportHeader: Record "Intrastat Report Header"; DataExchDefCode: Code[20]; ExportType: Integer; var DataExch: Record "Data Exch.")
     var
         DataExchFieldGrouping: Record "Data Exch. Field Grouping";
@@ -669,6 +673,90 @@ codeunit 4810 IntrastatReportManagement
             end;
         end;
     end;
+#endif    
+
+    procedure ExportOneDataExchangeDef(IntrastatReportHeader: Record "Intrastat Report Header"; DataExchDefCode: Code[20]; ExportType: Integer; var DataExch: Record "Data Exch."; MaxNoOfLines: Integer)
+    var
+        DataExchFieldGrouping: Record "Data Exch. Field Grouping";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        DataExchMapping: Record "Data Exch. Mapping";
+        DataExchDef: Record "Data Exch. Def";
+        DataExchMappingCard: Page "Data Exch Mapping Card";
+        RecordRefSrc: RecordRef;
+        OutStreamFilters: OutStream;
+        FirstLineNo, LastLineNo : Integer;
+        DataExchEntryNoFilter: Text;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeExportOneDataExchangeDef(IntrastatReportHeader, DataExchDefCode, ExportType, DataExch, IsHandled);
+        if not IsHandled then begin
+            DataExchMapping.SetRange("Data Exch. Def Code", DataExchDefCode);
+            DataExchMapping.SetRange("Table ID", Database::"Intrastat Report Line");
+            if not DataExchMapping.FindFirst() then
+                Error(NoDataExchMappingErr, DataExchMapping.TableCaption, DataExchDef.TableCaption, DataExchDefCode);
+
+            if MaxNoOfLines <> 0 then begin
+                if (DataExchMapping."Key Index" <> 1) then
+                    Error(MaximumLinesErr, DataExch.TableCaption(), DataExchMappingCard.Caption());
+                DataExchFieldGrouping.SetRange("Data Exch. Def Code", DataExchMapping."Data Exch. Def Code");
+                DataExchFieldGrouping.SetRange("Data Exch. Line Def Code", DataExchMapping."Data Exch. Line Def Code");
+                DataExchFieldGrouping.SetRange("Table ID", DataExchMapping."Table ID");
+                if not DataExchFieldGrouping.IsEmpty then
+                    Error(MaximumLinesErr, DataExch.TableCaption(), DataExchMappingCard.Caption());
+            end;
+
+            if DataExchMapping."Key Index" <> 1 then begin
+                RecordRefSrc.GetTable(IntrastatReportLine);
+                RecordRefSrc.CurrentKeyIndex(DataExchMapping."Key Index");
+                RecordRefSrc.SetTable(IntrastatReportLine);
+            end;
+
+            IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
+            if ExportType = 1 then // Receipt
+                IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Receipt);
+            if ExportType = 2 then // Shipment
+                IntrastatReportLine.SetRange(Type, IntrastatReportLine.Type::Shipment);
+            OnBeforeExportIntrastatReportLines(IntrastatReportLine, IntrastatReportHeader);
+
+            if IntrastatReportLine.FindSet() then begin
+                repeat
+                    if MaxNoOfLines > 0 then begin
+                        FirstLineNo := IntrastatReportLine."Line No.";
+                        if IntrastatReportLine.Next(MaxNoOfLines - 1) <> (MaxNoOfLines - 1) then
+                            IntrastatReportLine.FindLast();
+                        LastLineNo := IntrastatReportLine."Line No.";
+
+                        IntrastatReportLine.SetRange("Line No.", FirstLineNo, LastLineNo);
+                    end else
+                        IntrastatReportLine.FindLast();
+
+                    DataExchFieldGrouping.SetRange("Data Exch. Def Code", DataExchMapping."Data Exch. Def Code");
+                    DataExchFieldGrouping.SetRange("Data Exch. Line Def Code", DataExchMapping."Data Exch. Line Def Code");
+                    DataExchFieldGrouping.SetRange("Table ID", DataExchMapping."Table ID");
+                    SetInternalRefNo(IntrastatReportLine, DataExchFieldGrouping, IntrastatReportHeader);
+
+                    DataExch.Init();
+                    DataExch."Entry No." := 0;
+                    DataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
+                    DataExch."Data Exch. Line Def Code" := DataExchMapping."Data Exch. Line Def Code";
+                    DataExch."Table Filters".CreateOutStream(OutStreamFilters);
+                    OutStreamFilters.WriteText(IntrastatReportLine.GetView(false));
+                    if DataExch.Insert(true) then
+                        DataExch.ExportFromDataExch(DataExchMapping);
+                    DataExch.Modify(true);
+
+                    if MaxNoOfLines > 0 then
+                        IntrastatReportLine.SetRange("Line No.");
+
+                    DataExchEntryNoFilter += Format(DataExch."Entry No.") + '|';
+                until IntrastatReportLine.Next() = 0;
+
+                DataExchEntryNoFilter := DataExchEntryNoFilter.Substring(1, StrLen(DataExchEntryNoFilter) - 1);
+                DataExch.SetFilter("Entry No.", DataExchEntryNoFilter);
+            end;
+        end;
+    end;
 
     local procedure ExportToZip(var DataExch1: Record "Data Exch."; var DataExch2: Record "Data Exch."; StatisticsPeriod: Code[10]; FileName: Text; ReceiptFileName: Text; ShipmentFileName: Text; ZipFileName: Text)
     var
@@ -679,6 +767,7 @@ codeunit 4810 IntrastatReportManagement
         ZipInStream: InStream;
         ZipOutStream: OutStream;
         IsHandled: Boolean;
+        I: Integer;
     begin
         IsHandled := false;
         OnBeforeExportToZip(DataExch1, DataExch2, StatisticsPeriod, FileName, ReceiptFileName, ShipmentFileName, ZipFileName, IsHandled);
@@ -686,30 +775,48 @@ codeunit 4810 IntrastatReportManagement
             exit;
 
         DataCompression.CreateZipArchive();
-        DataExch1.CalcFields("File Content");
-        DataExch2.CalcFields("File Content");
 
-        if not (DataExch1."File Content".HasValue) and (not DataExch2."File Content".HasValue) then
-            Error(ExternalContentErr, DataExch1.FieldCaption("File Content"));
-
-        if DataExch2."File Content".HasValue then
+        if DataExch2."File Content".HasValue() then
             FileName := ReceiptFileName;
 
-        if DataExch1."File Content".HasValue then begin
-            DataExch1."File Content".CreateInStream(ServerReceiptsInStream);
-            DataCompression.AddEntry(ServerReceiptsInStream, FileName);
-        end;
+        if DataExch1.GetFilter("Entry No.") <> '' then
+            if DataExch1.FindSet() then
+                repeat
+                    I += 1;
+                    DataExch1.CalcFields("File Content");
+                    if not DataExch1."File Content".HasValue() then
+                        Error(ExternalContentErr, DataExch1.FieldCaption("File Content"));
 
-        if DataExch2."File Content".HasValue then begin
-            DataExch2."File Content".CreateInStream(ServerShipmentsInStream);
-            DataCompression.AddEntry(ServerShipmentsInStream, ShipmentFileName);
-        end;
+                    DataExch1."File Content".CreateInStream(ServerReceiptsInStream);
+                    DataCompression.AddEntry(ServerReceiptsInStream, GetFileName(FileName, I, DataExch1.Count() > 1));
+                until DataExch1.Next() = 0;
+
+        I := 0;
+        if DataExch2.GetFilter("Entry No.") <> '' then
+            if DataExch2.FindSet() then
+                repeat
+                    I += 1;
+                    DataExch2.CalcFields("File Content");
+                    if not DataExch2."File Content".HasValue() then
+                        Error(ExternalContentErr, DataExch2.FieldCaption("File Content"));
+
+                    DataExch2."File Content".CreateInStream(ServerShipmentsInStream);
+                    DataCompression.AddEntry(ServerShipmentsInStream, GetFileName(ShipmentFileName, I, DataExch2.Count() > 1));
+                until DataExch2.Next() = 0;
 
         ZipTempBlob.CreateOutStream(ZipOutStream);
         DataCompression.SaveZipArchive(ZipOutStream);
         DataCompression.CloseZipArchive();
         ZipTempBlob.CreateInStream(ZipInStream);
         DownloadFromStream(ZipInStream, '', '', '', ZipFileName);
+    end;
+
+    local procedure GetFileName(FileName: Text; I: Integer; SplitFiles: Boolean): Text
+    begin
+        if not SplitFiles then
+            exit(FileName);
+
+        exit(FileName.Substring(1, FileName.LastIndexOf('.') - 1) + '_' + Format(I) + FileName.Substring(FileName.LastIndexOf('.')));
     end;
 
     procedure ExportToFile(DataExch: Record "Data Exch."; var TempBlob: Codeunit "Temp Blob"; FileName: Text)

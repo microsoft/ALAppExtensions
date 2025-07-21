@@ -1,0 +1,2 @@
+<document_business_responses xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+</document_business_responses>

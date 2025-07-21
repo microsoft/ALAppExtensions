@@ -78,16 +78,15 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                     column(VATCurrencyCode; VATCurrencyCode)
                     {
                     }
+                    trigger OnAfterGetRecord()
+                    begin
+                        UseFunctionalCurrency := "General Ledger Setup"."Functional Currency CZL";
+                        if UseFunctionalCurrency then
+                            VATCurrencyCode := "General Ledger Setup"."Additional Reporting Currency"
+                        else
+                            VATCurrencyCode := "General Ledger Setup"."LCY Code";
+                    end;
                 }
-
-                trigger OnAfterGetRecord()
-                begin
-                    UseFunctionalCurrency := "General Ledger Setup"."Functional Currency CZL";
-                    if UseFunctionalCurrency then
-                        VATCurrencyCode := "General Ledger Setup"."Additional Reporting Currency"
-                    else
-                        VATCurrencyCode := "General Ledger Setup"."LCY Code";
-                end;
             }
 
             trigger OnAfterGetRecord()
@@ -343,6 +342,10 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                         trigger OnAfterGetRecord()
                         begin
                             TempVATAmountLine.GetLine(Number);
+                            if UseFunctionalCurrency then begin
+                                TempVATAmountLine."VAT Base (LCY) CZL" := TempVATAmountLine."Additional-Currency Base CZL";
+                                TempVATAmountLine."VAT Amount (LCY) CZL" := TempVATAmountLine."Additional-Currency Amount CZL";
+                            end;
                         end;
 
                         trigger OnPreDataItem()
@@ -391,6 +394,7 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
 
                 trigger OnAfterGetRecord()
                 var
+                    VATEntry: Record "VAT Entry";
                     AdditionalCurrencyFactor: Decimal;
                 begin
                     CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
@@ -425,16 +429,14 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                     if UseFunctionalCurrency then begin
                         AdditionalCurrencyFactor := CurrencyExchangeRate.ExchangeRate(TempPurchAdvLetterEntry."Posting Date", "General Ledger Setup"."Additional Reporting Currency");
                         if (AdditionalCurrencyFactor <> 0) and (AdditionalCurrencyFactor <> 1) then begin
-                            if CalculatedExchRate <> 1 then begin
-                                CurrencyExchangeRate.FindCurrency("Posting Date", "Currency Code", 1);
-                                CalculatedExchRate := Round(((1 / "Currency Factor") / (1 / AdditionalCurrencyFactor)) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
-                            end else begin
-                                CurrencyExchangeRate."Exchange Rate Amount" := 1;
-                                CalculatedExchRate := Round(AdditionalCurrencyFactor * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
+                            if ("Currency Factor" = 0) or ((TempPurchAdvLetterEntry."VAT Base Amount" + TempPurchAdvLetterEntry."VAT Amount") = 0) then
+                                CalculatedExchRate := Round(AdditionalCurrencyFactor, 0.00001)
+                            else begin
+                                VATEntry.Get(TempPurchAdvLetterEntry."VAT Entry No.");
+                                CalculatedExchRate := Round((VATEntry."Additional-Currency Base" + VATEntry."Additional-Currency Amount") / (TempPurchAdvLetterEntry."VAT Base Amount" + TempPurchAdvLetterEntry."VAT Amount"), 0.00001);
                             end;
                             ExchRateText :=
-                              StrSubstNo(Text009Txt, CurrencyExchangeRate."Exchange Rate Amount", "Currency Code",
-                              CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
+                              StrSubstNo(Text009Txt, 1, "Currency Code", CalculatedExchRate, "General Ledger Setup"."Additional Reporting Currency");
                         end;
                         if (CalculatedExchRate = 1) or ("Currency Code" = "General Ledger Setup"."Additional Reporting Currency") then
                             ExchRateText := '';

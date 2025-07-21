@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Job;
+
+using Microsoft.Projects.Project.Job;
+using Microsoft.DemoData.Jobs;
+using Microsoft.DemoData.Finance;
+
 codeunit 17157 "Create AU Job Posting Group"
 {
     SingleInstance = true;

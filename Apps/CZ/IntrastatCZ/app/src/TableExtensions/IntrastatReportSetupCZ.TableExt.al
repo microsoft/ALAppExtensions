@@ -27,26 +27,60 @@ tableextension 31326 "Intrastat Report Setup CZ" extends "Intrastat Report Setup
                       ItemCharge.TableCaption(), ItemCharge.FieldCaption("Incl. in Intrastat Amount CZ"));
             end;
         }
+#if not CLEANSCHEMA29
         field(31305; "Transaction Type Mandatory CZ"; Boolean)
         {
             Caption = 'Transaction Type Mandatory';
             DataClassification = CustomerContent;
+            ObsoleteReason = 'Use "Transaction Type Mandatory" from Intrastat Core extension instead.';
+#if CLEAN26            
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else            
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#endif            
         }
         field(31306; "Transaction Spec. Mandatory CZ"; Boolean)
         {
             Caption = 'Transaction Spec. Mandatory';
             DataClassification = CustomerContent;
+            ObsoleteReason = 'Use "Transaction Spec. Mandatory" from Intrastat Core extension instead.';
+#if CLEAN26            
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else            
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#endif            
         }
         field(31307; "Transport Method Mandatory CZ"; Boolean)
         {
             Caption = 'Transport Method Mandatory';
             DataClassification = CustomerContent;
+            ObsoleteReason = 'Use "Transport Method Mandatory" from Intrastat Core extension instead.';
+#if CLEAN26            
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else            
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#endif            
         }
         field(31308; "Shipment Method Mandatory CZ"; Boolean)
         {
             Caption = 'Shipment Method Mandatory';
             DataClassification = CustomerContent;
+            ObsoleteReason = 'Use "Shipment Method Mandatory" from Intrastat Core extension instead.';
+#if CLEAN26            
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#else            
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#endif            
         }
+#endif        
         field(31310; "Intrastat Rounding Type CZ"; Enum "Intrastat Rounding Type CZ")
         {
             Caption = 'Intrastat Rounding Type';

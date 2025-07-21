@@ -1,0 +1,43 @@
+{
+  "id": "005f978b-88ae-449e-b366-2a9c12f516a4",
+  "name": "Compensation Localization for Czech Demo Data",
+  "publisher": "Microsoft",
+  "brief": "Provides functionality for offsetting receivables and payables in Business Central for the Czech Republic.",
+  "description": "The Compensation app helps you offset receivables and payables when your customer is also your supplier. You can create entries either manually or automatically on the Compensation card and print the Agreement on Mutual Settlement of Receivables and Payables according to Czech legislation.",
+  "version": "27.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206603",
+  "dependencies": [
+    {
+      "id": "2078250c-40a0-40da-812a-8d635104dc80",
+      "name": "Compensation Localization for Czech",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
+      "name": "Contoso Coffee Demo Dataset",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "acbbfbc7-75c1-436f-8b22-926d741b2616",
+      "name": "Contoso Coffee Demo Dataset (CZ)",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "27.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "27.0.0.0",
+  "target": "Cloud"
+}

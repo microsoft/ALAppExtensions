@@ -37,12 +37,17 @@ page 30118 "Shpfy Data Capture List"
                     ToolTip = 'Specifies the users who has created this entry.';
                 }
             }
-            field(JsonViewer; Rec.GetData())
+            group(JsonData)
             {
-                ApplicationArea = All;
-                Caption = 'Json Data';
-                MultiLine = true;
-                ToolTip = 'The JSON data of that is received from Shopify.';
+                ShowCaption = false;
+                field(JsonViewer; Rec.GetData())
+                {
+                    ApplicationArea = All;
+                    Caption = 'Json Data';
+                    MultiLine = true;
+                    ExtendedDatatype = RichContent;
+                    ToolTip = 'Specifies the JSON data that is received from Shopify.';
+                }
             }
         }
     }

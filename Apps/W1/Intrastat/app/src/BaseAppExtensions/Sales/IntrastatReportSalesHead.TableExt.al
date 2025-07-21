@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
+using Microsoft.Foundation.Address;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 
@@ -26,6 +27,62 @@ tableextension 4815 "Intrastat Report Sales Head." extends "Sales Header"
             end;
         }
     }
+
+    procedure IsIntrastatTransaction(): Boolean
+    var
+        CountryRegion: Record "Country/Region";
+        IsHandled: Boolean;
+        Result: Boolean;
+    begin
+        OnBeforeCheckIsIntrastatTransaction(Rec, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
+        if "EU 3-Party Trade" then
+            exit(false);
+
+        exit(CountryRegion.IsIntrastat("VAT Country/Region Code", false));
+    end;
+
+    internal procedure ShipOrReceiveInventoriableTypeItems(): Boolean
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        SalesLine.Reset();
+        SalesLine.SetRange("Document Type", "Document Type");
+        SalesLine.SetRange("Document No.", "No.");
+        SalesLine.SetRange(Type, SalesLine.Type::Item);
+        if SalesLine.FindSet() then
+            repeat
+                if ((SalesLine."Qty. to Ship" <> 0) or (SalesLine."Return Qty. to Receive" <> 0)) and SalesLine.IsInventoriableItem() then
+                    exit(true);
+            until SalesLine.Next() = 0;
+    end;
+
+    internal procedure CheckIntrastatMandatoryFields()
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+    begin
+        if Rec.IsTemporary() or (not IntrastatReportSetup.ReadPermission) then
+            exit;
+
+        if not (Ship or Receive) then
+            exit;
+
+        if not IntrastatReportSetup.Get() then
+            exit;
+
+        if IsIntrastatTransaction() and ShipOrReceiveInventoriableTypeItems() then begin
+            if IntrastatReportSetup."Transaction Type Mandatory" then
+                TestField("Transaction Type");
+            if IntrastatReportSetup."Transaction Spec. Mandatory" then
+                TestField("Transaction Specification");
+            if IntrastatReportSetup."Transport Method Mandatory" then
+                TestField("Transport Method");
+            if IntrastatReportSetup."Shipment Method Mandatory" then
+                TestField("Shipment Method Code");
+        end;
+    end;
 
     local procedure UpdateIntrastatFields(FieldNo: Integer)
     var
@@ -82,6 +139,11 @@ tableextension 4815 "Intrastat Report Sales Head." extends "Sales Header"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateIntrastatFields(var SalesHeader: Record "Sales Header"; var Customer: Record Customer; var IntrastatReportSetup: Record "Intrastat Report Setup"; FieldNo: Integer);
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeCheckIsIntrastatTransaction(SalesHeader: Record "Sales Header"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

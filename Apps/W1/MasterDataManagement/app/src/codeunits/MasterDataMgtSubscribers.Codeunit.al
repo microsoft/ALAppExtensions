@@ -82,7 +82,8 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                     JobQueueEntry.Status := JobQueueEntry.Status::"On Hold with Inactivity Timeout"
             end else
                 JobQueueEntry.Status := JobQueueEntry.Status::Ready;
-            FeatureTelemetry.LogUsage('0000JIR', MasterDataManagement.GetFeatureName(), '');
+            FeatureTelemetry.LogUptake('0000OUA', MasterDataManagement.GetFeatureName(), Enum::"Feature Uptake Status"::Used);
+            FeatureTelemetry.LogUsage('0000JIR', MasterDataManagement.GetFeatureName(), 'Synch job finished');
             if IntegrationTableMapping.IsFullSynch() then begin
                 Session.LogMessage('0000JIS', StrSubstNo(RunningFullSynchTelemetryTxt, IntegrationTableMapping.Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
                 OriginalIntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
@@ -232,7 +233,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         MasterDataManagement: Codeunit "Master Data Management";
         TypeHelper: Codeunit "Type Helper";
         DestinationRecordRef: RecordRef;
-        OriginalDestinationFieldValue: Variant;
+        OriginalDestinationFieldValue, DestinationFieldValue : Variant;
         EmptyGuid: Guid;
         SourceValue: Text;
         DestinationRecCreatedAt: DateTime;
@@ -273,6 +274,17 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                     ValueWillBeOverwritten := TypeHelper.CompareDateTime(DestinationRecModifiedAt, MasterDataMgtCoupling."Last Synch. Modified On") > 0;
         end;
 
+        if SourceFieldRef.Type = SourceFieldRef.Type::Media then
+            if UpdateMedia(SourceFieldRef, DestinationFieldRef, DestinationFieldValue) then begin
+                NewValue := DestinationFieldValue;
+                IsValueFound := true;
+                NeedsConversion := false;
+            end else begin
+                NewValue := OriginalDestinationFieldValue;
+                IsValueFound := true;
+                NeedsConversion := false;
+            end;
+
         if ValueWillBeOverwritten then begin
             MasterDataManagement.OnLocalRecordChangeOverwrite(SourceFieldRef, DestinationFieldRef, ThrowError, IsHandled);
             if not IsHandled then begin
@@ -296,6 +308,54 @@ codeunit 7237 "Master Data Mgt. Subscribers"
             if ThrowError then
                 Error(ValueWillBeOverwrittenErr, DestinationFieldRef.Caption(), Format(DestinationFieldRef.Record().RecordId()), Format(SourceFieldRef.Value()), Format(DestinationFieldRef.Record().Caption()));
         end;
+    end;
+
+    local procedure UpdateMedia(var SourceFieldRef: FieldRef; var DestinationFieldRef: FieldRef; var NewValue: Variant): Boolean
+    var
+        SourceTenantMedia, DestinationTenantMedia : Record "Tenant Media";
+        MediaInStream: InStream;
+        MediaOutStream: OutStream;
+        SourceTenantMediaId, DestinationMediaId, EmptyGuid : Guid;
+        SourceMediaLength, DestinationMediaLength : Integer;
+        MediaUpdated: Boolean;
+        SourceMediaName, DestinationMediaName : Text;
+    begin
+        SourceTenantMedia.SetAutoCalcFields(Content);
+        DestinationTenantMedia.SetAutoCalcFields(Content);
+
+        SourceTenantMediaId := SourceFieldRef.Value();
+        DestinationMediaId := DestinationFieldRef.Value();
+        if SourceTenantMedia.Get(SourceTenantMediaId) then begin
+            SourceMediaLength := SourceTenantMedia.Content.Length();
+            SourceMediaName := SourceTenantMedia."File Name";
+            DestinationTenantMedia.SetRange(ID, DestinationMediaId);
+            DestinationTenantMedia.SetRange("Company Name", CompanyName());
+            if DestinationTenantMedia.FindFirst() then begin
+                DestinationMediaLength := DestinationTenantMedia.Content.Length();
+                DestinationMediaName := DestinationTenantMedia."File Name";
+            end;
+            if (SourceMediaLength <> DestinationMediaLength) or (SourceMediaName <> DestinationMediaName) then begin
+                if DestinationMediaId <> EmptyGuid then
+                    if DestinationTenantMedia.FindFirst() then
+                        DestinationTenantMedia.Delete();
+                SourceTenantMedia.Content.CreateInStream(MediaInStream);
+                DestinationTenantMedia.TransferFields(SourceTenantMedia, true);
+                DestinationTenantMedia.ID := CreateGuid();
+                DestinationTenantMedia."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(DestinationTenantMedia."Company Name"));
+                DestinationTenantMedia.Content.CreateOutStream(MediaOutStream);
+                CopyStream(MediaOutStream, MediaInStream);
+                DestinationTenantMedia.Insert();
+                NewValue := DestinationTenantMedia.ID;
+                MediaUpdated := true
+            end
+        end else
+            if DestinationTenantMedia.Get(DestinationMediaId) then begin
+                DestinationTenantMedia.Delete();
+                NewValue := EmptyGuid;
+                MediaUpdated := true
+            end;
+
+        exit(MediaUpdated);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Table Synch.", 'OnDetermineSynchDirection', '', false, false)]
@@ -376,6 +436,44 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                 FixPrimaryContactNo(SourceRecordRef, DestinationRecordRef);
             'G/L Account-G/L Account':
                 ValidateGlobalDimensionCodes(SourceRecordRef, DestinationRecordRef);
+        end;
+        if (SourceRecordRef.Number() = Database::"Ship-to Address") and (DestinationRecordRef.Number() = Database::"Ship-to Address") then
+            SetShipToAddressNameFromSource(SourceRecordRef, DestinationRecordRef);
+    end;
+
+    local procedure SetShipToAddressNameFromSource(var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    var
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        SourceShipToAddress: Record "Ship-to Address";
+    begin
+        if not MasterDataManagementSetup.Get() then
+            exit;
+
+        if not MasterDataManagementSetup."Is Enabled" then
+            exit;
+
+        // do nothing if the Name field synchronization is not enabled
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange("Table ID", Database::"Ship-to Address");
+        if not IntegrationTableMapping.FindFirst() then
+            exit;
+        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
+        IntegrationFieldMapping.SetRange("Field No.", SourceShipToAddress.FieldNo(Name));
+        IntegrationFieldMapping.SetRange(Status, IntegrationFieldMapping.Status::Enabled);
+        if IntegrationFieldMapping.IsEmpty() then
+            exit;
+
+        // Ship-to Address table has a OnInsert trigger such that it always sets its name to Customer's name OnInsert
+        // for Ship-to Address synchronized from source, this needs to be corrected to have the Name value identical to the one in source
+        DestinationRecordRef.Find();
+        SourceRecordRef.SetTable(SourceShipToAddress);
+        SourceShipToAddress.ChangeCompany(MasterDataManagementSetup."Company Name");
+        if Format(DestinationRecordRef.Field(SourceShipToAddress.FieldNo(Name)).Value()) <> SourceShipToAddress.Name then begin
+            DestinationRecordRef.Field(SourceShipToAddress.FieldNo(Name)).Value(SourceShipToAddress.Name);
+            DestinationRecordRef.Modify();
         end;
     end;
 

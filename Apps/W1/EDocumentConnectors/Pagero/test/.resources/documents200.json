@@ -1,0 +1,97 @@
+{
+    "items": [
+        {
+            "attachments": [],
+            "createTime": "2025-03-20T08:28:42.747Z",
+            "distribution": "Electronic",
+            "documentInfo": {
+                "amounts": {
+                    "currency": "GBP",
+                    "netAmount": "4000.00",
+                    "totalAmount": "5000.00",
+                    "vatAmount": "1000.00"
+                },
+                "direction": "Sent",
+                "documentIdentifier": "103034",
+                "documentSubType": "Debit",
+                "documentType": "Invoice",
+                "dueDate": "2027-02-28",
+                "issueDate": "2027-01-28",
+                "receiverParty": {
+                    "address": {
+                        "countryCode": "DK",
+                        "postCode": "12314",
+                        "street": "192 Market Square",
+                        "town": "dfsf"
+                    },
+                    "ids": [
+                        {
+                            "idType": "GLN",
+                            "value": "8712345000004"
+                        },
+                        {
+                            "idType": "UNDEFINED_VAT",
+                            "value": "DK25468740"
+                        },
+                        {
+                            "idType": "UNDEFINED_ORGNR",
+                            "value": "25468740"
+                        }
+                    ],
+                    "name": "The Cannon Group PLC",
+                    "personalContact": {
+                        "name": "Mr. Andy Teal"
+                    },
+                    "type": "Business"
+                },
+                "senderParty": {
+                    "address": {
+                        "countryCode": "GB",
+                        "postCode": "B27 4KT",
+                        "street": "Main Street, 14",
+                        "town": "Birmingham"
+                    },
+                    "ids": [
+                        {
+                            "idType": "UNDEFINED_ORGNR",
+                            "value": "DK00000000"
+                        },
+                        {
+                            "idType": "UNDEFINED_VAT",
+                            "value": "DK00000000"
+                        }
+                    ],
+                    "name": "CRONUS International Ltd.",
+                    "personalContact": {
+                        "email": "JO@contoso.com",
+                        "name": "Jim Olive"
+                    },
+                    "type": "Business"
+                }
+            },
+            "documentReferences": [],
+            "eventDetails": [],
+            "fileId": "1234567890",
+            "id": "01f00578-8650-17dc-8631-390b96a662c9",
+            "isFetched": false,
+            "isSelfBilled": false,
+            "receivingServiceProviderId": "-1",
+            "receivingServiceProviderName": "Pagero",
+            "receivingTradingPartnerId": "2884340",
+            "sendMode": "Test",
+            "sendingCompanyId": "02f0bc13-2ba8-4c14-bbb5-db5b49ce06b4",
+            "sendingServiceProviderId": "-1",
+            "sendingServiceProviderName": "Pagero",
+            "sendingTradingPartnerId": "2809445",
+            "validationErrors": {
+                "noOfErrors": 0
+            }
+        }
+    ],
+    "meta": {
+        "count": 1,
+        "limit": 10,
+        "offset": 0,
+        "total": 1
+    }
+}

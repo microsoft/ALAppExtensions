@@ -6,12 +6,16 @@ namespace Microsoft.EServices.EDocument.Processing.Import;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.Purchases.Vendor;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.Purchases.Document;
 
 table 6102 "E-Document Header Mapping"
 {
-    InherentEntitlements = X;
-    InherentPermissions = X;
+    Access = Internal;
+    ReplicateData = false;
+    InherentEntitlements = RIMDX;
+    InherentPermissions = RIMDX;
+
     fields
     {
         field(1; "E-Document Entry No."; Integer)
@@ -48,6 +52,11 @@ table 6102 "E-Document Header Mapping"
             Rec."E-Document Entry No." := EDocument."Entry No";
             Rec.Modify();
         end;
+    end;
+
+    internal procedure GetEDocumentPurchaseHeader() EDocumentPurchaseHeader: Record "E-Document Purchase Header"
+    begin
+        if EDocumentPurchaseHeader.Get(Rec."E-Document Entry No.") then;
     end;
 
 }

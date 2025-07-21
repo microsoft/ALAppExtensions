@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 31188 "Create FA Ext. Post. Group CZF"
 {
     InherentEntitlements = X;

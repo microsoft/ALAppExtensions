@@ -10,6 +10,7 @@ enum 5262 "Audit File Export Format" implements "Audit File Export Data Handling
 
     value(0; None)
     {
+        Caption = 'None';
         Implementation = "Audit File Export Data Handling" = "Audit File Data Handling",
                          "Audit File Export Data Check" = "Audit File Data Check";
     }

@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 17138 "Create AU Posting Groups"
 {
     SingleInstance = true;
@@ -29,13 +40,15 @@ codeunit 17138 "Create AU Posting Groups"
     local procedure UpdateGenProductPostingGroup()
     var
         GenProductPostingGroup: Record "Gen. Product Posting Group";
+        GLAccount: Record "G/L Account";
         CreatePostingGroups: Codeunit "Create Posting Groups";
         CreateAUVATPostingGroups: Codeunit "Create AU VAT Posting Groups";
+        CreateGLAccount: Codeunit "Create G/L Account";
     begin
         GenProductPostingGroup.Get(CreatePostingGroups.ServicesPostingGroup());
-        GenProductPostingGroup.Validate("Def. VAT Prod. Posting Group", CreateAUVATPostingGroups.Vat10());
+        GenProductPostingGroup.Validate("Def. VAT Prod. Posting Group", CreateAUVATPostingGroups.Gst10());
         GenProductPostingGroup.Modify(true);
-        UpdateVATProdPostingGroupOnGLAccount(CreatePostingGroups.ServicesPostingGroup(), CreateAUVATPostingGroups.Vat10());
+        UpdateVATProdPostingGroupOnGLAccount(CreatePostingGroups.ServicesPostingGroup(), CreateAUVATPostingGroups.Gst10());
 
         GenProductPostingGroup.Get(CreatePostingGroups.RawMatPostingGroup());
         GenProductPostingGroup.Validate("Def. VAT Prod. Posting Group", '');
@@ -55,6 +68,14 @@ codeunit 17138 "Create AU Posting Groups"
         UpdateVATProdPostingGroupOnGLAccount(CreatePostingGroups.ZeroPostingGroup(), '');
 
         UpdateVATProdPostingGroupOnGLAccount(CreatePostingGroups.FreightPostingGroup(), '');
+
+        GLAccount.Get(CreateGLAccount.Software());
+        GLAccount.Validate("VAT Prod. Posting Group", CreateAUVATPostingGroups.Gst10());
+        GLAccount.Modify(true);
+
+        GLAccount.Get(CreateGLAccount.ConsultantServices());
+        GLAccount.Validate("VAT Prod. Posting Group", CreateAUVATPostingGroups.Gst10());
+        GLAccount.Modify(true);
     end;
 
     local procedure UpdateGenBusinessPostingGroup()
@@ -89,7 +110,6 @@ codeunit 17138 "Create AU Posting Groups"
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.MiscPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', NonGst(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RawMatPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ServicesPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), Manufact(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.MiscPostingGroup(), '', '', '', '', '', '', '', '', '', '', '', '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), NonGst(), '', '', '', '', '', '', '', '', '', '', '', '', '');

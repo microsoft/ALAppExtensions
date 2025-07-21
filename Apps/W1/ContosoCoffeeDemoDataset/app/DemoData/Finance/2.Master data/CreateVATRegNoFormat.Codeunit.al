@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 5695 "Create VAT Reg. No. Format"
 {
     InherentEntitlements = X;

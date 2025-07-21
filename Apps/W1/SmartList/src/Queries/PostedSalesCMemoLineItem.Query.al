@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2464 "Posted Sales C Memo Line Item"
 {
     QueryType = Normal;

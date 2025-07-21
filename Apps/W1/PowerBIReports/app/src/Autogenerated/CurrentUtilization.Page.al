@@ -1,3 +1,4 @@
+#if not CLEAN26
 namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
@@ -6,13 +7,13 @@ page 37040 "Current Utilization"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Manufacturing;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Current Utilization';
     AboutTitle = 'About Current Utilization';
-    AboutText = 'View the current Weeks Utilisation % by comparing Capacity Used to Available Capacity in Hours. View all or some Work Centres to measure throughput and efficiency.';
-
+    AboutText = 'View the current Weeks Utilization % by comparing Capacity Used to Available Capacity in Hours. View all or some Work Centers to measure throughput and efficiency.';
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The Power BI report has been changed/removed and this is no longer required.';
+    ObsoleteTag = '26.0';
     layout
     {
         area(Content)
@@ -26,8 +27,14 @@ page 37040 "Current Utilization"
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
+
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
                 end;
             }
@@ -49,4 +56,5 @@ page 37040 "Current Utilization"
         ReportId := SetupHelper.GetReportIdAndEnsureSetup(CurrPage.Caption(), PowerBIReportsSetup.FieldNo("Manufacturing Report Id"));
     end;
 }
+#endif
 

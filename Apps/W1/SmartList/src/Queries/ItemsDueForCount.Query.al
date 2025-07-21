@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2558 "Items Due For Count"
 {
     QueryType = Normal;

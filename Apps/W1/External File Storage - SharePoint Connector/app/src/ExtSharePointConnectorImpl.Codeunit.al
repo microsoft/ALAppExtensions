@@ -224,17 +224,17 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
     /// <param name="Path">The directory path inside the file account.</param>
     /// <returns>Returns true if the directory exists</returns>
-    procedure DirectoryExists(AccountId: Guid; Path: Text): Boolean
+    procedure DirectoryExists(AccountId: Guid; Path: Text) Result: Boolean
     var
-        SharePointFolder: Record "SharePoint Folder";
         SharePointClient: Codeunit "SharePoint Client";
     begin
         InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
-        if SharePointClient.GetSubFoldersByServerRelativeUrl(Path, SharePointFolder) then
-            exit;
 
-        ShowError(SharePointClient);
+        Result := SharePointClient.FolderExistsByServerRelativeUrl(Path);
+
+        if not SharePointClient.GetDiagnostics().IsSuccessStatusCode() then
+            ShowError(SharePointClient);
     end;
 
     /// <summary>
@@ -359,14 +359,22 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
         exit(true);
     end;
 
-    internal procedure CreateAccount(var AccountToCopy: Record "Ext. SharePoint Account"; Password: SecretText; var TempFileAccount: Record "File Account" temporary)
+    internal procedure CreateAccount(var AccountToCopy: Record "Ext. SharePoint Account"; ClientSecretOrCertificate: SecretText; CertificatePassword: SecretText; var TempFileAccount: Record "File Account" temporary)
     var
         NewExtSharePointAccount: Record "Ext. SharePoint Account";
     begin
         NewExtSharePointAccount.TransferFields(AccountToCopy);
-
         NewExtSharePointAccount.Id := CreateGuid();
-        NewExtSharePointAccount.SetClientSecret(Password);
+
+        case NewExtSharePointAccount."Authentication Type" of
+            Enum::"Ext. SharePoint Auth Type"::"Client Secret":
+                NewExtSharePointAccount.SetClientSecret(ClientSecretOrCertificate);
+            Enum::"Ext. SharePoint Auth Type"::Certificate:
+                begin
+                    NewExtSharePointAccount.SetCertificate(ClientSecretOrCertificate);
+                    NewExtSharePointAccount.SetCertificatePassword(CertificatePassword);
+                end;
+        end;
 
         NewExtSharePointAccount.Insert();
 
@@ -388,7 +396,23 @@ codeunit 4580 "Ext. SharePoint Connector Impl" implements "External File Storage
             Error(AccountDisabledErr, SharePointAccount.Name);
 
         Scopes.Add('00000003-0000-0ff1-ce00-000000000000/.default');
-        SharePointAuthorization := SharePointAuth.CreateAuthorizationCode(Format(SharePointAccount."Tenant Id", 0, 4), Format(SharePointAccount."Client Id", 0, 4), SharePointAccount.GetClientSecret(SharePointAccount."Client Secret Key"), Scopes);
+
+        case SharePointAccount."Authentication Type" of
+            Enum::"Ext. SharePoint Auth Type"::"Client Secret":
+                SharePointAuthorization := SharePointAuth.CreateAuthorizationCode(
+                    Format(SharePointAccount."Tenant Id", 0, 4),
+                    Format(SharePointAccount."Client Id", 0, 4),
+                    SharePointAccount.GetClientSecret(SharePointAccount."Client Secret Key"),
+                    Scopes);
+            Enum::"Ext. SharePoint Auth Type"::Certificate:
+                SharePointAuthorization := SharePointAuth.CreateClientCredentials(
+                    Format(SharePointAccount."Tenant Id", 0, 4),
+                    Format(SharePointAccount."Client Id", 0, 4),
+                    SharePointAccount.GetCertificate(SharePointAccount."Certificate Key"),
+                    SharePointAccount.GetCertificatePassword(SharePointAccount."Certificate Password Key"),
+                    Scopes);
+        end;
+
         SharePointClient.Initialize(SharePointAccount."SharePoint Url", SharePointAuthorization);
     end;
 

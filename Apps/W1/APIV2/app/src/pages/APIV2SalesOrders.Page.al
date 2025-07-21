@@ -503,6 +503,14 @@ page 30028 "APIV2 - Sales Orders"
                     EntitySetName = 'salesOrderLines';
                     SubPageLink = "Document Id" = field(Id);
                 }
+                part(pdfDocument; "APIV2 - PDF Document")
+                {
+                    Caption = 'PDF Document';
+                    Multiplicity = ZeroOrOne;
+                    EntityName = 'pdfDocument';
+                    EntitySetName = 'pdfDocument';
+                    SubPageLink = "Document Id" = field(Id), "Document Type" = const("Sales Order");
+                }
                 field(discountAmount; Rec."Invoice Discount Amount")
                 {
                     Caption = 'Discount Amount';

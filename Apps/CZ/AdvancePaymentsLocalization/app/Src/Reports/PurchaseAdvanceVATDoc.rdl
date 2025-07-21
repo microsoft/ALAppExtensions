@@ -2925,7 +2925,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               <DataSetName>DataSet_Result</DataSetName>
                               <Filters>
                                 <Filter>
-                                  <FilterExpression>=Fields!ExchRateText.Value</FilterExpression>
+                                  <FilterExpression>=Fields!VATAmtLineVATIdentifier.Value</FilterExpression>
                                   <Operator>GreaterThan</Operator>
                                   <FilterValues>
                                     <FilterValue>""</FilterValue>

@@ -52,7 +52,7 @@ page 6243 "Sust. Certificate Card"
                 {
                     Editable = Rec."Has Value";
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Value of Sustainability Certificate';
+                    ToolTip = 'Specifies the value for your Sustainability Certificate if you have specific measured values related to this certificate on the Item card.';
                 }
             }
         }

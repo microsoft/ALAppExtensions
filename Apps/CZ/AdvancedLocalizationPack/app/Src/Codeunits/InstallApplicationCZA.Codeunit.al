@@ -19,11 +19,13 @@ using Microsoft.Inventory.Transfer;
 using Microsoft.Manufacturing.Capacity;
 using Microsoft.Manufacturing.Setup;
 using Microsoft.Utilities;
+using System.Environment;
 using System.Upgrade;
 
 #pragma warning disable AL0432
 codeunit 31250 "Install Application CZA"
 {
+    EventSubscriberInstance = Manual;
     Subtype = Install;
     Permissions = tabledata "Inventory Setup" = m,
                   tabledata "Manufacturing Setup" = m,
@@ -63,5 +65,29 @@ codeunit 31250 "Install Application CZA"
     begin
         DataClassEvalHandlerCZA.ApplyEvaluationClassificationsForPrivacy();
         UpgradeTag.SetAllUpgradeTags();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::GlobalTriggerManagement, 'OnBeforeOnDatabaseInsert', '', false, false)]
+    local procedure DisableGlobalTriggersOnBeforeOnDatabaseInsert(var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::GlobalTriggerManagement, 'OnBeforeOnDatabaseModify', '', false, false)]
+    local procedure DisableGlobalTriggersOnBeforeOnDatabaseModify(var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::GlobalTriggerManagement, 'OnBeforeOnDatabaseDelete', '', false, false)]
+    local procedure DisableGlobalTriggersOnBeforeOnDatabaseDelete(var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::GlobalTriggerManagement, 'OnBeforeOnDatabaseRename', '', false, false)]
+    local procedure DisableGlobalTriggersOnBeforeOnDatabaseRename(var IsHandled: Boolean)
+    begin
+        IsHandled := true;
     end;
 }

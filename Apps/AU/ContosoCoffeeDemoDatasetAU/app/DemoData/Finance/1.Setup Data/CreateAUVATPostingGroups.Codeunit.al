@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Foundation.Enums;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 17121 "Create AU VAT Posting Groups"
 {
     InherentEntitlements = X;
@@ -36,7 +46,6 @@ codeunit 17121 "Create AU VAT Posting Groups"
         ContosoPostingGroup.InsertVATProductPostingGroup(Gst10(), Gst10Lbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(NoVat(), MiscellaneousWithoutVatLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(NonGst(), NonGstLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(Vat10(), Miscellaneous10VatLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(Vat15(), Miscellaneous15VatLbl);
         ContosoPostingGroup.SetOverwriteData(false);
     end;
@@ -67,10 +76,13 @@ codeunit 17121 "Create AU VAT Posting Groups"
         exit(NonGstTok);
     end;
 
+#if not CLEAN27
+    [Obsolete('Use Gst10() instead.', '27.0')]
     procedure Vat10(): Code[20]
     begin
-        exit(Vat10Tok);
+        exit(Gst10Tok);
     end;
+#endif
 
     procedure Vat15(): Code[20]
     begin
@@ -81,12 +93,10 @@ codeunit 17121 "Create AU VAT Posting Groups"
         Gst10Tok: Label 'GST10', MaxLength = 20, Locked = true;
         NoVatTok: Label 'NO VAT', MaxLength = 20, Locked = true;
         NonGstTok: Label 'NON GST', MaxLength = 20, Locked = true;
-        Vat10Tok: Label 'VAT10', MaxLength = 20, Locked = true;
         Vat15Tok: Label 'VAT15', MaxLength = 20, Locked = true;
         Gst10Lbl: Label 'GST10', MaxLength = 100;
         MiscellaneousWithoutVatLbl: Label 'Miscellaneous without VAT', MaxLength = 100;
         NonGstLbl: Label 'NON GST', MaxLength = 100;
-        Miscellaneous10VatLbl: Label 'Miscellaneous 10 VAT', MaxLength = 100;
         Miscellaneous15VatLbl: Label 'Miscellaneous 15 VAT', MaxLength = 100;
         CustomersAndVendorsInMiscLbl: Label 'Customers and vendors in MISC', MaxLength = 100;
 }

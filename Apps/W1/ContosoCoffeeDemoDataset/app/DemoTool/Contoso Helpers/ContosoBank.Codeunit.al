@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.DemoTool.Helpers;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.Payment;
+using Microsoft.Finance.GeneralLedger.Journal;
+
 codeunit 5697 "Contoso Bank"
 {
     InherentEntitlements = X;

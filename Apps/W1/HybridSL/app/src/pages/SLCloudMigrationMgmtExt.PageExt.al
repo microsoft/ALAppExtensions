@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 47001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Management"
 {
     layout

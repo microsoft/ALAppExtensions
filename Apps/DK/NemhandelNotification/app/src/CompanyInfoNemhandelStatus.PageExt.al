@@ -42,6 +42,9 @@ pageextension 13608 "Company Info. Nemhandel Status" extends "Company Informatio
     var
         InputParams: Dictionary of [Text, Text];
     begin
+        if Rec."Registration No." <> '' then
+            NemhandelStatusMgt.ManageIncorrectCVRFormatNotification(Rec."Registration No.");
+
         if NemhandelStatusMgt.IsNemhandelStatusCheckRequired(Rec) then begin
             InputParams.Add(NemhandelStatusPageBckgrnd.GetCVRNumberKey(), Rec."Registration No.");
             RunGetCompanyStatusBackgroundTask(InputParams);

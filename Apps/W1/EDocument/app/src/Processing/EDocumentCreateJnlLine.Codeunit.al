@@ -128,9 +128,10 @@ codeunit 6137 "E-Document Create Jnl. Line"
             GenJournalLine.Validate("Due Date", EDocument."Due Date");
             GenJournalLine.Validate("External Document No.", EDocument."Incoming E-Document No.");
             GeneralLedgerSetup.Get();
-            if EDocument."Currency Code" <> GeneralLedgerSetup."LCY Code" then
-                if VerifyCurrency(EDocument) then
-                    GenJournalLine.Validate("Currency Code", EDocument."Currency Code");
+            if EDocument."Currency Code" <> '' then
+                if EDocument."Currency Code" <> GeneralLedgerSetup."LCY Code" then
+                    if VerifyCurrency(EDocument) then
+                        GenJournalLine.Validate("Currency Code", EDocument."Currency Code");
             case EDocument."Document Type" of
                 EDocument."Document Type"::"Purchase Invoice":
                     GenJournalLine.Validate(Amount, EDocument."Amount Incl. VAT");

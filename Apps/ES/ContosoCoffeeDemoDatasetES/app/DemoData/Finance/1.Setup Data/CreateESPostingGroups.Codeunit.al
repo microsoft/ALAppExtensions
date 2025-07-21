@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 10793 "Create ES Posting Groups"
 {
     SingleInstance = true;
@@ -53,6 +63,8 @@ codeunit 10793 "Create ES Posting Groups"
         ContosoGenPostingSetup.SetOverwriteData(true);
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreateESVATPostingGroups.NoVat(), '', '', CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.ChangesInStockPosting(), '', '', '', '', '', '', CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.BillOfMaterTradeCred(), CreateESGLAccounts.ChangesInRawMaterials());
         ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RetailPostingGroup(), '', '', CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.ChangesInStockPosting(), '', '', '', '', '', '', CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.BillOfMaterTradeCred(), CreateESGLAccounts.ChangesInRawMaterials());
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ServicesPostingGroup(), '', '', CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.ChangesInStockPosting(), '', '', '', '', '', '', CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.BillOfMaterTradeCred(), CreateESGLAccounts.ChangesInRawMaterials());
+
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreateESVATPostingGroups.NoVat(), '', '', CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.ChangesInStockPosting(), '', '', CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.BillOfMaterTradeCred(), CreateESGLAccounts.ChangesInRawMaterials());
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateESGLAccounts.NationalGoodsSales(), CreateESGLAccounts.NationalPurchases(), CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.ChangesInStockPosting(), '', '', CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.BillOfMaterTradeCred(), CreateESGLAccounts.ChangesInRawMaterials());
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.ServicesPostingGroup(), CreateESGLAccounts.NationalServices(), CreateESGLAccounts.NationalPurchases(), CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.ChangesInStockPosting(), '', '', CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.BillOfMaterTradeCred(), CreateESGLAccounts.ChangesInRawMaterials());
@@ -61,8 +73,11 @@ codeunit 10793 "Create ES Posting Groups"
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.ExportPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateESGLAccounts.IntNonEuGoodsSales(), CreateESGLAccounts.IntNonEuPurch(), CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.ChangesInStockPosting(), '', '', CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.BillOfMaterTradeCred(), CreateESGLAccounts.ChangesInRawMaterials());
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.ExportPostingGroup(), CreatePostingGroups.ServicesPostingGroup(), CreateESGLAccounts.IntServicesNonEu(), '', CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.ChangesInStockPosting(), '', '', CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.GoodsSalesReturnAllow(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ReturnAndAllowOnGoods(), CreateESGLAccounts.ChangesInStockPosting(), CreateESGLAccounts.BillOfMaterTradeCred(), CreateESGLAccounts.ChangesInRawMaterials());
         ContosoGenPostingSetup.SetOverwriteData(false);
+
         UpdateJobSalesAdjAcc('', CreateESVATPostingGroups.NoVat(), CreateESGLAccounts.ProjectsSales(), CreateESGLAccounts.ProjectCostsRetail());
         UpdateJobSalesAdjAcc('', CreatePostingGroups.RetailPostingGroup(), CreateESGLAccounts.ProjectsSales(), CreateESGLAccounts.ProjectCostsRetail());
+        UpdateJobSalesAdjAcc('', CreatePostingGroups.ServicesPostingGroup(), CreateESGLAccounts.ProjectsSales(), CreateESGLAccounts.ProjectCostsRetail());
+
         UpdateJobSalesAdjAcc(CreatePostingGroups.DomesticPostingGroup(), CreateESVATPostingGroups.NoVat(), CreateESGLAccounts.ProjectsSales(), CreateESGLAccounts.ProjectCostsRetail());
         UpdateJobSalesAdjAcc(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateESGLAccounts.ProjectsSales(), CreateESGLAccounts.ProjectCostsRetail());
         UpdateJobSalesAdjAcc(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.ServicesPostingGroup(), CreateESGLAccounts.ProjectsSales(), CreateESGLAccounts.ProjectCostsRetail());

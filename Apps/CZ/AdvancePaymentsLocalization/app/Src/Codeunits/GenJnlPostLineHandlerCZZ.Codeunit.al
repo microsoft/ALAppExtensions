@@ -8,8 +8,6 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Purchases.Payables;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
 
 codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
@@ -56,21 +54,15 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPrepareTempVendLedgEntryOnAfterSetFiltersBlankAppliesToDocNo', '', false, false)]
-    local procedure ExcludeAdvanceLettersOnPrepareTempVendLedgEntryOnAfterSetFiltersBlankAppliesToDocNo(var OldVendorLedgerEntry: Record "Vendor Ledger Entry"; Vendor: Record Vendor)
+    local procedure OnPrepareTempVendLedgEntryOnAfterSetFiltersBlankAppliesToDocNo(GenJournalLine: Record "Gen. Journal Line"; var OldVendorLedgerEntry: Record "Vendor Ledger Entry")
     begin
-        if Vendor."Application Method" = Vendor."Application Method"::Manual then
-            exit;
-        OldVendorLedgerEntry.SetRange("Advance Letter No. CZZ", '');
-        OldVendorLedgerEntry.SetRange("Adv. Letter Template Code CZZ", '');
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId', '', false, false)]
-    local procedure ExcludeAdvanceLettersOnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId(var OldCustLedgerEntry: Record "Cust. Ledger Entry"; Customer: Record Customer)
-    begin
-        if Customer."Application Method" = Customer."Application Method"::Manual then
-            exit;
-        OldCustLedgerEntry.SetRange("Advance Letter No. CZZ", '');
-        OldCustLedgerEntry.SetRange("Adv. Letter Template Code CZZ", '');
+        if (GenJournalLine."Advance Letter No. CZZ" <> '') or (GenJournalLine."Adv. Letter Template Code CZZ" <> '') then begin
+            // If the advance letter is posting then the manual application method must be used
+            OldVendorLedgerEntry.SetRange("Posting Date");
+            OldVendorLedgerEntry.SetFilter("Amount to Apply", '<>%1', 0);
+        end else
+            // If the advance letter is not posting then the vendor ledger entries applied to advance letter mustn't be used for application
+            OldVendorLedgerEntry.SetRange("Advance Letter No. CZZ", '');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPrepareTempCustLedgEntryOnAfterSetFiltersByAppliesToId', '', false, false)]

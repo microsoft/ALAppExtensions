@@ -13,7 +13,6 @@ using Microsoft.Service.Item;
 using Microsoft.Integration.SyncEngine;
 using Microsoft.Inventory.Setup;
 using Microsoft.Sales.Customer;
-using System.Telemetry;
 using Microsoft.Projects.Project.Posting;
 using Microsoft.Projects.Project.Journal;
 using Microsoft.Projects.Resources.Resource;
@@ -25,12 +24,16 @@ using Microsoft.Projects.Project.Planning;
 using Microsoft.Projects.Project.Ledger;
 using Microsoft.Sales.History;
 using Microsoft.Service.Setup;
+using System.Security.User;
+using System.Telemetry;
 
 codeunit 6610 "FS Int. Table Subscriber"
 {
     SingleInstance = true;
 
     var
+        TempFSWorkOrderProduct: Record "FS Work Order Product" temporary;
+        TempFSWorkOrderService: Record "FS Work Order Service" temporary;
         CDSIntegrationMgt: Codeunit "CDS Integration Mgt.";
         CDSIntegrationImpl: Codeunit "CDS Integration Impl.";
         CRMSynchHelper: Codeunit "CRM Synch. Helper";
@@ -121,8 +124,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Integration Table Mapping", 'OnBeforeModifyEvent', '', false, false)]
-    local procedure IntegrationTableMappingOnBeforeModifyEvent(var Rec: Record "Integration Table Mapping"; RunTrigger: Boolean)
+    [EventSubscriber(ObjectType::Table, Database::"Integration Table Mapping", 'OnAfterModifyEvent', '', true, false)]
+    local procedure IntegrationTableMappingOnAfterModifyEvent(var Rec: Record "Integration Table Mapping"; RunTrigger: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
         ServiceItem: Record "Service Item";
@@ -145,7 +148,7 @@ codeunit 6610 "FS Int. Table Subscriber"
             Error(MandatoryFilterErr, ServiceItem.FieldCaption("Service Item Components"));
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeTransferRecordFields', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeTransferRecordFields', '', true, false)]
     local procedure OnBeforeTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -277,7 +280,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterTransferRecordFields', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterTransferRecordFields', '', true, false)]
     local procedure OnAfterTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef; var AdditionalFieldsWereModified: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -352,7 +355,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Record Synch.", 'OnTransferFieldData', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Record Synch.", 'OnTransferFieldData', '', true, false)]
     local procedure OnTransferFieldData(SourceFieldRef: FieldRef; DestinationFieldRef: FieldRef; var NewValue: Variant; var IsValueFound: Boolean; var NeedsConversion: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -666,7 +669,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         exit(MaxQuantity);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Int. Table. Subscriber", 'OnFindNewValueForCoupledRecordPK', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Int. Table. Subscriber", 'OnFindNewValueForCoupledRecordPK', '', true, false)]
     local procedure OnFindNewValueForCoupledRecordPK(IntegrationTableMapping: Record "Integration Table Mapping"; SourceFieldRef: FieldRef; DestinationFieldRef: FieldRef; var NewValue: Variant; var IsValueFound: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -806,7 +809,7 @@ codeunit 6610 "FS Int. Table Subscriber"
             end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterInsertRecord', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterInsertRecord', '', true, false)]
     local procedure HandleOnAfterInsertRecord(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -864,7 +867,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                                 if not IsNullGuid(JobUsageLink."External Id") then
                                     if FSWorkorderProduct.Get(JobUsageLink."External Id") then begin
                                         FSWorkOrderProduct.QuantityInvoiced += JobPlanningLineInvoice."Quantity Transferred";
-                                        if not TryModifyWorkOrderProduct(FSWorkOrderProduct) then begin
+                                        if not FSWorkOrderProduct.Modify() then begin
                                             Session.LogMessage('0000MMV', UnableToModifyWOPTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                                             ClearLastError();
                                         end;
@@ -872,7 +875,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                                     else
                                         if FSWorkorderService.Get(JobUsageLink."External Id") then begin
                                             FSWorkorderService.DurationInvoiced += (JobPlanningLineInvoice."Quantity Transferred" * 60);
-                                            if not TryModifyWorkOrderService(FSWorkOrderService) then begin
+                                            if not FSWorkOrderService.Modify() then begin
                                                 Session.LogMessage('0000MMW', UnableToModifyWOSTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                                                 ClearLastError();
                                             end;
@@ -904,7 +907,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         exit(37);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeIgnoreUnchangedRecordHandled', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeIgnoreUnchangedRecordHandled', '', true, false)]
     local procedure HandleOnBeforeIgnoreUnchangedRecordHandled(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -962,7 +965,7 @@ codeunit 6610 "FS Int. Table Subscriber"
             ServiceLine.TestField("Service Item Line No.");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterUnchangedRecordHandled', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterUnchangedRecordHandled', '', true, false)]
     local procedure HandleOnAfterUnchangedRecordHandled(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -1088,7 +1091,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
         ServiceLine.SetRange(Type, ServiceLine.Type::Item);
-        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Inventory);
+        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Inventory, ServiceLine."Item Type"::"Non-Inventory");
         if ServiceLine.FindSet() then
             repeat
                 CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
@@ -1143,7 +1146,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
         ServiceLine.SetRange(Type, ServiceLine.Type::Item);
-        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Service, ServiceLine."Item Type"::"Non-Inventory");
+        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Service);
         if ServiceLine.FindSet() then
             repeat
                 CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
@@ -1358,7 +1361,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         ServiceDocumentArchiveMgmt.ArchServiceDocumentNoConfirm(ServiceHeader);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeModifyRecord', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeModifyRecord', '', true, false)]
     local procedure HandleOnBeforeModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -1382,7 +1385,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnUpdateIntegrationRecordCoupling', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnUpdateIntegrationRecordCoupling', '', true, false)]
     local procedure HandleOnUpdateIntegrationRecordCoupling(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -1511,7 +1514,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterModifyRecord', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterModifyRecord', '', true, false)]
     local procedure HandleOnAfterModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -1614,7 +1617,7 @@ codeunit 6610 "FS Int. Table Subscriber"
             until CRMIntegrationRecord.Next() = 0;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeInsertRecord', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeInsertRecord', '', true, false)]
     local procedure HandleOnBeforeInsertRecord(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
     var
         FSProjectTask: Record "FS Project Task";
@@ -1672,8 +1675,12 @@ codeunit 6610 "FS Int. Table Subscriber"
                             if Resource."Vendor No." <> '' then
                                 FSBookableResource.ResourceType := FSBookableResource.ResourceType::Account
                             else
-                                FSBookableResource.ResourceType := FSBookableResource.ResourceType::Generic;
+                                if Resource."Time Sheet Owner User ID" <> '' then
+                                    FSBookableResource.ResourceType := FSBookableResource.ResourceType::User
+                                else
+                                    FSBookableResource.ResourceType := FSBookableResource.ResourceType::Generic;
                     end;
+                    FSBookableResource.UserId := ReturnCRMUserGuidForResource(Resource);
                     DestinationRecordRef.GetTable(FSBookableResource);
                 end;
             'FS Bookable Resource-Resource':
@@ -1685,10 +1692,12 @@ codeunit 6610 "FS Int. Table Subscriber"
                         FSBookableResource.ResourceType::Equipment:
                             Resource.Type := Resource.Type::Machine;
                         FSBookableResource.ResourceType::Account,
+                        FSBookableResource.ResourceType::User,
                         FSBookableResource.ResourceType::Generic:
                             Resource.Type := Resource.Type::Person;
                     end;
                     Resource."Base Unit of Measure" := FSConnectionSetup."Hour Unit of Measure";
+                    Resource."Time Sheet Owner User ID" := SetUserIDFromFSBookableResource(FSBookableResource);
                     DestinationRecordRef.GetTable(Resource);
                     SourceRecordRef.Modify();
                 end;
@@ -1787,6 +1796,48 @@ codeunit 6610 "FS Int. Table Subscriber"
                     DestinationRecordRef.GetTable(FSWorkOrderService);
                 end;
         end;
+    end;
+
+    local procedure SetUserIDFromFSBookableResource(BookableResource: Record "FS Bookable Resource"): Code[50]
+    var
+        UserSetup: Record "User Setup";
+        CRMSystemUser: Record "CRM Systemuser";
+    begin
+        if BookableResource.ResourceType <> BookableResource.ResourceType::User then
+            exit;
+
+        if IsNullGuid(BookableResource.UserId) then
+            exit;
+
+        CRMSystemUser.SetRange(SystemUserId, BookableResource.UserId);
+        if CRMSystemUser.IsEmpty() then
+            exit;
+
+        CRMSystemUser.FindFirst();
+#pragma warning disable AA0210
+        UserSetup.SetRange("E-Mail", CRMSystemUser.InternalEMailAddress);
+#pragma warning restore AA0210
+        if UserSetup.IsEmpty() then
+            exit;
+
+        UserSetup.FindFirst();
+        exit(UserSetup."User ID");
+    end;
+
+    local procedure ReturnCRMUserGuidForResource(Resource: Record Resource): Guid
+    var
+        UserSetup: Record "User Setup";
+        CRMSystemUser: Record "CRM Systemuser";
+    begin
+        if Resource."Time Sheet Owner User ID" = '' then
+            exit;
+
+        if not UserSetup.Get(Resource."Time Sheet Owner User ID") then
+            exit;
+
+        CRMSystemUser.SetRange(InternalEMailAddress, UserSetup."E-Mail");
+        if CRMSystemUser.FindFirst() then
+            exit(CRMSystemUser.SystemUserId);
     end;
 
     local procedure CheckPostingRuleAndSetDocumentNo(var JobJournalLine: Record "Job Journal Line"; var LastJobJournalLine: Record "Job Journal Line"; JobJournalBatch: Record "Job Journal Batch"; var SourceRecordRef: RecordRef)
@@ -2007,7 +2058,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnDeletionConflictDetectedSetRecordStateAndSynchAction', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnDeletionConflictDetectedSetRecordStateAndSynchAction', '', true, false)]
     local procedure HandleOnDeletionConflictDetectedSetRecordStateAndSynchAction(var IntegrationTableMapping: Record "Integration Table Mapping"; var SourceRecordRef: RecordRef; var CoupledRecordRef: RecordRef; var RecordState: Option NotFound,Coupled,Decoupled; var SynchAction: Option "None",Insert,Modify,ForceModify,IgnoreUnchanged,Fail,Skip,Delete,Uncouple,Couple; var DeletionConflictHandled: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
@@ -2194,17 +2245,10 @@ codeunit 6610 "FS Int. Table Subscriber"
         JobUsageLink."External Id" := CRMIntegrationRecord."CRM ID";
         JobUsageLink.Modify();
 
-        // write back consumption data to Field Service
-        if not FSWorkOrderProduct.WritePermission() then
-            exit;
-        if not FSWorkOrderService.WritePermission() then
-            exit;
         if FSWorkOrderProduct.Get(CRMIntegrationRecord."CRM ID") then begin
-            FSWorkOrderProduct.QuantityConsumed += JobPlanningLine.Quantity;
-            if not TryModifyWorkOrderProduct(FSWorkOrderProduct) then begin
-                Session.LogMessage('0000MMZ', UnableToModifyWOPTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-                ClearLastError();
-            end;
+            TempFSWorkOrderProduct := FSWorkOrderProduct;
+            TempFSWorkOrderProduct.QuantityConsumed += JobPlanningLine.Quantity;
+            TempFSWorkOrderProduct.Insert();
             exit;
         end;
         if FSWorkOrderService.Get(CRMIntegrationRecord."CRM ID") then begin
@@ -2217,24 +2261,58 @@ codeunit 6610 "FS Int. Table Subscriber"
                         if JobPlanningLine."Line Type" <> JobPlanningLine."Line Type"::Budget then
                             exit;
 
-            FSWorkOrderService.DurationConsumed += Round((60 * JobPlanningLine.Quantity), 1, '=');
-            if not TryModifyWorkOrderService(FSWorkOrderService) then begin
-                Session.LogMessage('0000MN0', UnableToModifyWOSTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-                ClearLastError();
-            end;
+            TempFSWorkOrderService := FSWorkOrderService;
+            TempFSWorkOrderService.DurationConsumed += Round((60 * JobPlanningLine.Quantity), 1, '=');
+            TempFSWorkOrderService.Insert();
         end;
     end;
 
-    [TryFunction]
-    local procedure TryModifyWorkOrderProduct(var FSWorkOrderProduct: Record "FS Work Order Product")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Jnl.-Post Batch", 'OnAfterPostJnlLines', '', false, false)]
+    local procedure HandleOnAfterPostJnlLines(var JobJournalBatch: Record "Job Journal Batch"; var JobJournalLine: Record "Job Journal Line"; JobRegNo: Integer; var SuppressCommit: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        FSWorkOrderService: Record "FS Work Order Service";
     begin
-        FSWorkOrderProduct.Modify();
-    end;
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
 
-    [TryFunction]
-    local procedure TryModifyWorkOrderService(var FSWorkOrderService: Record "FS Work Order Service")
-    begin
-        FSWorkOrderService.Modify();
+        if SuppressCommit then begin
+            TempFSWorkOrderProduct.DeleteAll();
+            TempFSWorkOrderService.DeleteAll();
+            exit;
+        end;
+
+        // write back consumption data to Field Service
+        if not FSWorkOrderProduct.WritePermission() then
+            exit;
+        if not FSWorkOrderService.WritePermission() then
+            exit;
+
+        if TempFSWorkOrderProduct.FindSet() then
+            repeat
+                if FSWorkOrderProduct.Get(TempFSWorkOrderProduct.WorkOrderProductId) then begin
+                    FSWorkOrderProduct.QuantityConsumed += TempFSWorkOrderProduct.QuantityConsumed;
+                    if not FSWorkOrderProduct.Modify() then begin
+                        Session.LogMessage('0000MMZ', UnableToModifyWOPTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+                        ClearLastError();
+                    end;
+                end;
+            until TempFSWorkOrderProduct.Next() = 0;
+
+        if TempFSWorkOrderService.FindSet() then
+            repeat
+                if FSWorkOrderService.Get(TempFSWorkOrderService.WorkOrderServiceId) then begin
+                    FSWorkOrderService.DurationConsumed += TempFSWorkOrderService.DurationConsumed;
+                    if not FSWorkOrderService.Modify() then begin
+                        Session.LogMessage('0000MN0', UnableToModifyWOSTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+                        ClearLastError();
+                    end;
+                end;
+            until TempFSWorkOrderService.Next() = 0;
+
+        TempFSWorkOrderProduct.DeleteAll();
+        TempFSWorkOrderService.DeleteAll();
     end;
 
     local procedure SetJobJournalLineTypesAndNo(var FSConnectionSetup: Record "FS Connection Setup"; var SourceRecordRef: RecordRef; var JobJournalLine: Record "Job Journal Line")
@@ -2561,6 +2639,7 @@ codeunit 6610 "FS Int. Table Subscriber"
     var
         FSConnectionSetup: Record "FS Connection Setup";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        FSIntegrationMgt: Codeunit "FS Integration Mgt.";
         IntegrationRecordRef: RecordRef;
         TelemetryCategories: Dictionary of [Text, Text];
         IntegrationTableName: Text;
@@ -2580,13 +2659,16 @@ codeunit 6610 "FS Int. Table Subscriber"
                 Database::"FS Project Task",
                 Database::"FS Work Order Product",
                 Database::"FS Work Order Service",
+                Database::"FS Work Order Incident",
                 Database::"FS Customer Asset",
                 Database::"FS Bookable Resource",
+                Database::"FS Bookable Resource Booking",
+                Database::"FS Incident Type",
                 Database::"FS Resource Pay Type",
                 Database::"FS Warehouse"] then begin
             Session.LogMessage('0000M9F', FSEntitySynchTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryCategories);
-            FeatureTelemetry.LogUsage('0000M9E', 'Field Service Integration', 'Entity synch');
-            FeatureTelemetry.LogUptake('0000M9D', 'Field Service Integration', Enum::"Feature Uptake Status"::Used);
+            FeatureTelemetry.LogUsage('0000M9E', FSIntegrationMgt.ReturnIntegrationTypeLabel(FSConnectionSetup), 'Entity synch');
+            FeatureTelemetry.LogUptake('0000M9D', FSIntegrationMgt.ReturnIntegrationTypeLabel(FSConnectionSetup), Enum::"Feature Uptake Status"::Used);
             exit;
         end;
     end;
@@ -2621,7 +2703,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         IntegrationMgt.TestOneServiceItemLinePerOrderModificationIsAllowed(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnIsCRMIntegrationRecord', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnIsCRMIntegrationRecord', '', true, false)]
     local procedure HandleOnIsCRMIntegrationRecord(TableID: Integer; var isIntegrationRecord: Boolean)
     begin
         if TableID = Database::"Service Header Archive" then
@@ -2751,7 +2833,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         exit(ServiceHeaderArchive.SystemId);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenCoupledNavRecordPage', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenCoupledNavRecordPage', '', true, false)]
     local procedure OnBeforeOpenCoupledNavRecordPage(CRMID: Guid; CRMEntityTypeName: Text; var Result: Boolean; var IsHandled: Boolean)
     begin
         if IsHandled or Result or (CRMEntityTypeName <> 'msdyn_workorder') then
@@ -2764,7 +2846,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         IsHandled := Result;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenRecordCardPage', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenRecordCardPage', '', true, false)]
     local procedure OnBeforeOpenRecordCardPage(RecordID: RecordID; var IsHandled: Boolean)
     var
         ServiceHeader: Record "Service Header";

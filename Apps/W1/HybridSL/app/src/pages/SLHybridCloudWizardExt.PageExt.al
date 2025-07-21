@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 47002 "SL Hybrid Cloud Wizard Ext." extends "Hybrid Cloud Setup Wizard"
 {
     layout

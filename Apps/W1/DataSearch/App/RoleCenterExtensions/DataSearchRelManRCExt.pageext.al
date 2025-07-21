@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2686 "Data Search Rel. Man. RC Ext" extends "Sales & Relationship Mgr. RC"
 {
     ObsoleteState = Pending;

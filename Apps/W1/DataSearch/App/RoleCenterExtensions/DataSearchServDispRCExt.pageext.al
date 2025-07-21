@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2692 "Data Search Serv. Disp RC Ext" extends "Service Dispatcher Role Center"
 {
     ObsoleteState = Pending;

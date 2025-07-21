@@ -37,7 +37,7 @@ table 30102 "Shpfy Shop"
         }
         field(2; "Shopify URL"; Text[250])
         {
-            Caption = 'Shopify URL';
+            Caption = 'Shopify Admin URL';
             Access = Internal;
             DataClassification = SystemMetadata;
             ExtendedDatatype = URL;
@@ -47,11 +47,7 @@ table 30102 "Shpfy Shop"
                 AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
             begin
                 if ("Shopify URL" <> '') then begin
-                    if not "Shopify URL".ToLower().StartsWith('https://') then
-                        "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
-
-                    if "Shopify URL".ToLower().StartsWith('https://admin.shopify.com/store/') then
-                        "Shopify URL" := CopyStr('https://' + "Shopify URL".Replace('https://admin.shopify.com/store/', '').Split('/').Get(1) + '.myshopify.com', 1, MaxStrLen("Shopify URL"));
+                    AuthenticationMgt.CorrectShopUrl("Shopify URL");
 
                     if not AuthenticationMgt.IsValidShopUrl("Shopify URL") then
                         Error(InvalidShopUrlErr);
@@ -233,13 +229,8 @@ table 30102 "Shpfy Shop"
             DataClassification = CustomerContent;
             InitValue = true;
             ObsoleteReason = 'Replaced with action "Add Customer to Shopify" in Shopify Customers page.';
-#if not CLEAN24
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#endif
         }
 #endif
         field(30; "Shopify Can Update Customer"; Boolean)
@@ -362,7 +353,7 @@ table 30102 "Shpfy Shop"
         }
         field(44; "Allow Background Syncs"; Boolean)
         {
-            Caption = 'Allow Background Syncs';
+            Caption = 'Run Syncs in Background';
             DataClassification = CustomerContent;
             InitValue = true;
         }
@@ -728,19 +719,8 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             InitValue = true;
             ObsoleteReason = 'This feature will be enabled by default with version 27.0.';
-#if CLEAN24
             ObsoleteState = Removed;
             ObsoleteTag = '27.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '24.0';
-
-            trigger OnValidate()
-            begin
-                if "Replace Order Attribute Value" then
-                    UpdateOrderAttributes(Rec.Code);
-            end;
-#endif
         }
 #endif
         field(128; "Return Location Priority"; Enum "Shpfy Return Location Priority")
@@ -776,6 +756,11 @@ table 30102 "Shpfy Shop"
             Caption = 'Sync Business Central Doc. No. as Attribute';
             DataClassification = SystemMetadata;
             InitValue = true;
+        }
+        field(134; "Shpfy Comp. Tax Id Mapping"; Enum "Shpfy Comp. Tax Id Mapping")
+        {
+            Caption = 'Company Tax Id Mapping';
+            DataClassification = CustomerContent;
         }
         field(200; "Shop Id"; Integer)
         {
@@ -1002,7 +987,7 @@ table 30102 "Shpfy Shop"
         RetentionPolicySetup.Modify(true);
     end;
 
-    internal procedure GetB2BEnabled(): Boolean;
+    internal procedure GetShopSettings()
     var
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
@@ -1010,16 +995,13 @@ table 30102 "Shpfy Shop"
         JItem: JsonToken;
     begin
         CommunicationMgt.SetShop(Rec);
-        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { name plan { displayName partnerDevelopment shopifyPlus } } }"}');
+        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { name plan { displayName partnerDevelopment shopifyPlus } weightUnit } }"}');
         if JResponse.SelectToken('$.data.shop.plan', JItem) then
-            if JItem.IsObject then begin
-                if JsonHelper.GetValueAsBoolean(JItem, 'shopifyPlus') then
-                    exit(true);
-                if JsonHelper.GetValueAsBoolean(JItem, 'partnerDevelopment') then
-                    exit(true);
-                if JsonHelper.GetValueAsText(JItem, 'displayName') = 'Plus Trial' then
-                    exit(true);
-            end;
+            if JItem.IsObject then
+                Rec."B2B Enabled" := JsonHelper.GetValueAsBoolean(JItem, 'partnerDevelopment') or
+                                      JsonHelper.GetValueAsBoolean(JItem, 'shopifyPlus') or
+                                        (JsonHelper.GetValueAsText(JItem, 'displayName') = 'Plus Trial');
+        Rec."Weight Unit" := ConvertToWeightUnit(JsonHelper.GetValueAsText(JResponse, 'data.shop.weightUnit'));
     end;
 
     internal procedure GetShopWeightUnit(): Enum "Shpfy Weight Unit"
@@ -1032,25 +1014,6 @@ table 30102 "Shpfy Shop"
         JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { weightUnit } }"}');
         exit(ConvertToWeightUnit(JsonHelper.GetValueAsText(JResponse, 'data.shop.weightUnit')));
     end;
-
-#if not CLEAN24
-    local procedure UpdateOrderAttributes(ShopCode: Code[20])
-    var
-        OrderHeader: Record "Shpfy Order Header";
-        OrderAttribute: Record "Shpfy Order Attribute";
-    begin
-        OrderHeader.SetRange("Shop Code", ShopCode);
-        if OrderHeader.FindSet() then
-            repeat
-                OrderAttribute.SetRange("Order Id", OrderHeader."Shopify Order Id");
-                if OrderAttribute.FindSet() then
-                    repeat
-                        OrderAttribute."Attribute Value" := OrderAttribute.Value;
-                        OrderAttribute.Modify();
-                    until OrderAttribute.Next() = 0;
-            until OrderHeader.Next() = 0;
-    end;
-#endif
 
     internal procedure SyncCountries()
     begin

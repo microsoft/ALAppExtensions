@@ -8,11 +8,21 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
         BulkOperationId: BigInteger;
         BulkOperationRunning: Boolean;
         BulkUploadFail: Boolean;
+        BulkOperationUrl: Text;
+        VariantId1: BigInteger;
+        VariantId2: BigInteger;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Bulk Operation Mgt.", 'OnInvalidUser', '', true, false)]
     local procedure OnInvalidUser(var IsHandled: Boolean)
     begin
         IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientGet', '', true, false)]
+    local procedure OnClientGet(var Url: Text; var Response: HttpResponseMessage)
+    begin
+        if Url = BulkOperationUrl then
+            Response := GetBulkOperationResult();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
@@ -40,7 +50,8 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
         GraphQLQuery: Text;
         StagedUploadGQLTxt: Label '{"query": "mutation { stagedUploadsCreate(input', Locked = true;
         BulkMutationGQLTxt: Label '{"query": "mutation { bulkOperationRunMutation(mutation', Locked = true;
-        BulkOperationGQLTxt: Label '{"query": "query { currentBulkOperation(type', Locked = true;
+        CurrentBulkOperationGQLTxt: Label '{"query": "query { currentBulkOperation(type', Locked = true;
+        BulkOperationGQLTxt: Label '{"query": "query { node(id: \"gid://shopify/BulkOperation/', Locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -53,11 +64,13 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
                                 HttpResponseMessage := GetStagedUplodResult();
                             if GraphQLQuery.StartsWith(BulkMutationGQLTxt) then
                                 HttpResponseMessage := GetBulkMutationResponse();
-                            if GraphQLQuery.StartsWith(BulkOperationGQLTxt) then
+                            if GraphQLQuery.StartsWith(CurrentBulkOperationGQLTxt) then
                                 if BulkOperationRunning then
-                                    HttpResponseMessage := GetBulkOperationRunningResult()
+                                    HttpResponseMessage := GetCurrentBulkOperationRunningResult()
                                 else
-                                    HttpResponseMessage := GetBulkOperationCompletedResult()
+                                    HttpResponseMessage := GetCurrentBulkOperationCompletedResult();
+                            if GraphQLQuery.StartsWith(BulkOperationGQLTxt) then
+                                HttpResponseMessage := GetBulkOperationCompletedResult();
                         end;
                 end;
         end;
@@ -93,25 +106,25 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
         exit(HttpResponseMessage);
     end;
 
-    local procedure GetBulkOperationCompletedResult(): HttpResponseMessage
+    local procedure GetCurrentBulkOperationCompletedResult(): HttpResponseMessage
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
         ResInStream: InStream;
     begin
-        NavApp.GetResource('Bulk Operations/BulkOperationCompletedResult.txt', ResInStream, TextEncoding::UTF8);
+        NavApp.GetResource('Bulk Operations/CurrentBulkOperationCompletedResult.txt', ResInStream, TextEncoding::UTF8);
         ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(StrSubstNo(Body, Format(BulkOperationId)));
         exit(HttpResponseMessage);
     end;
 
-    local procedure GetBulkOperationRunningResult(): HttpResponseMessage
+    local procedure GetCurrentBulkOperationRunningResult(): HttpResponseMessage
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
         ResInStream: InStream;
     begin
-        NavApp.GetResource('Bulk Operations/BulkOperationRunningResult.txt', ResInStream, TextEncoding::UTF8);
+        NavApp.GetResource('Bulk Operations/CurrentBulkOperationRunningResult.txt', ResInStream, TextEncoding::UTF8);
         ResInStream.ReadText(Body);
         HttpResponseMessage.Content.WriteFrom(StrSubstNo(Body, Format(BulkOperationId)));
         exit(HttpResponseMessage);
@@ -121,6 +134,34 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
     var
         HttpResponseMessage: HttpResponseMessage;
     begin
+        exit(HttpResponseMessage);
+    end;
+
+    local procedure GetBulkOperationResult(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        Body: TextBuilder;
+        BodyLine: Text;
+        ResInStream: InStream;
+    begin
+        NavApp.GetResource('Bulk Operations/BulkOperationResult.txt', ResInStream, TextEncoding::UTF8);
+        while not ResInStream.EOS do begin
+            ResInStream.ReadText(BodyLine);
+            Body.AppendLine(StrSubstNo(BodyLine, Format(VariantId1), Format(VariantId2)));
+        end;
+        HttpResponseMessage.Content.WriteFrom(Body.ToText());
+        exit(HttpResponseMessage);
+    end;
+
+    local procedure GetBulkOperationCompletedResult(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        Body: Text;
+        ResInStream: InStream;
+    begin
+        NavApp.GetResource('Bulk Operations/BulkOperationCompletedResult.txt', ResInStream, TextEncoding::UTF8);
+        ResInStream.ReadText(Body);
+        HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
 
@@ -137,5 +178,16 @@ codeunit 139615 "Shpfy Bulk Op. Subscriber"
     internal procedure SetBulkUploadFail(Fail: Boolean)
     begin
         BulkUploadFail := Fail;
+    end;
+
+    internal procedure SetBulkOperationUrl(Url: Text)
+    begin
+        BulkOperationUrl := Url;
+    end;
+
+    internal procedure SetVariantIds(Id1: BigInteger; Id2: BigInteger)
+    begin
+        VariantId1 := Id1;
+        VariantId2 := Id2;
     end;
 }

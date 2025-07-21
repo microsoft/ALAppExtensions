@@ -84,6 +84,10 @@ table 47017 "SL Migration Config"
         {
             InitValue = false;
         }
+        field(22; "Project Data Created"; Boolean)
+        {
+            InitValue = false;
+        }
     }
 
     keys
@@ -127,6 +131,17 @@ table 47017 "SL Migration Config"
     begin
         MigrationSLConfig.GetSingleInstance();
         exit(MigrationSLConfig."Account Validation Error");
+    end;
+
+    internal procedure IsAllPostMigationDataCreated(): Boolean
+    var
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+    begin
+        if not "Project Data Created" then
+            if SLCompanyAdditionalSettings.GetProjectModuleEnabled() then
+                exit(false);
+
+        exit(true);
     end;
 
     internal procedure HasHistoricalJobRan(): Boolean

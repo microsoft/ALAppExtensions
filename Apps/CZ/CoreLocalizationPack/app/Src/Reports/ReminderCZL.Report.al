@@ -16,6 +16,7 @@ using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
+using System.Text;
 using System.Utilities;
 
 report 31182 "Reminder CZL"
@@ -223,10 +224,16 @@ report 31182 "Reminder CZL"
                     column(OriginalAmount_IssuedReminderLine; "Original Amount")
                     {
                     }
+                    column(Formatted_OriginalAmount_IssuedReminderLineCaption; format("Original Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
+                    {
+                    }
                     column(RemainingAmount_IssuedReminderLineCaption; FieldCaption("Remaining Amount"))
                     {
                     }
                     column(RemainingAmount_IssuedReminderLine; "Remaining Amount")
+                    {
+                    }
+                    column(Formatted_RemainingAmount_IssuedReminderLine; format("Remaining Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
                     {
                     }
                     column(Description_IssuedReminderLineCaption; FieldCaption(Description))
@@ -245,6 +252,9 @@ report 31182 "Reminder CZL"
                     {
                     }
                     column(AmountInclVAT; AmountInclVAT)
+                    {
+                    }
+                    column(Formatted_AmountInclVAT; format(AmountInclVAT, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
                     {
                     }
                     column(LineAmountText; LineAmountText)
@@ -308,7 +318,13 @@ report 31182 "Reminder CZL"
                     column(OriginalAmount_NotDueLine; "Original Amount")
                     {
                     }
+                    column(Formatted_OriginalAmount_NotDueLine; format("Original Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
+                    {
+                    }
                     column(RemainingAmount_NotDueLine; "Remaining Amount")
+                    {
+                    }
+                    column(Formatted_RemainingAmount_NotDueLine; format("Remaining Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
                     {
                     }
                     column(Description_NotDueLine; Description)
@@ -348,6 +364,9 @@ report 31182 "Reminder CZL"
                     {
                     }
                     column(TotalLineAmount; TotalLineAmount)
+                    {
+                    }
+                    column(Formatted_TotalLineAmount; format(TotalLineAmount, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Issued Reminder Header"."Currency Code")))
                     {
                     }
                     column(GreetingText; GreetingTxt)
@@ -507,6 +526,7 @@ report 31182 "Reminder CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
+        AutoFormat: Codeunit "Auto Format";
         LogInteractionEnable: Boolean;
         TotalLbl: Label 'Total';
         DocumentLbl: Label 'Reminder';

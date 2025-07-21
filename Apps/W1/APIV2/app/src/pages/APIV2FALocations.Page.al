@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 30097 "APIV2 - FA Locations"
 {
     DelayedInsert = true;

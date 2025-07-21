@@ -10,13 +10,13 @@
   ],
   "rules": [
     {
-      "id": "AA0228",
-      "action": "Warning",
-      "justification": "The local method 'AssertConnectionNotRegistered' is declared but never used."
-    },
-    {
       "id": "AA0230",
       "action": "Warning"
+    },
+    {
+      "id": "AA0247",
+      "action": "None",
+      "justification": "Tests should not be namespaced."
     },
     {
       "id": "AA0462",

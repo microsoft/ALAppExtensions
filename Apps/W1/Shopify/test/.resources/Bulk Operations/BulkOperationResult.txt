@@ -1,0 +1,4 @@
+{"data":{"productVariantsBulkUpdate":{"productVariants":[{"id":"gid://shopify/ProductVariant/%1","updatedAt":"2025-02-25T14:43:15Z"}],"userErrors":[]}},"__lineNumber":0}
+{"data":{"productVariantsBulkUpdate":{"productVariants":null,"userErrors":[{"field":["variants","0","id"],"message":"Product variant does not exist"}]}},"__lineNumber":1}
+{"errors":[{"message":"This product is currently being modified. Please try again later.","locations":[{"line":1,"column":47}],"path":["productVariantUpdate"],"extensions":{"code":"TOO_MANY_PARALLEL_REQUESTS_FOR_THIS_PRODUCT"}}],"data":{"productVariantUpdate":null},"__lineNumber":2}
+{"data":{"productVariantsBulkUpdate":{"productVariants":[{"id":"gid://shopify/ProductVariant/%2","updatedAt":"2025-02-25T14:43:15Z"}],"userErrors":[]}},"__lineNumber":3}

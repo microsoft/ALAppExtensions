@@ -6,9 +6,7 @@ page 37001 "Sales Moving Annual Total"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Sales Moving Annual Total';
     AboutTitle = 'About Sales Moving Annual Total';
     AboutText = 'The Sales Moving Annual Total report provides a rolling 12-month view of sales figures, tracking the current year to the previous year''s performance. ';
@@ -26,8 +24,14 @@ page 37001 "Sales Moving Annual Total"
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
+
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
                 end;
             }

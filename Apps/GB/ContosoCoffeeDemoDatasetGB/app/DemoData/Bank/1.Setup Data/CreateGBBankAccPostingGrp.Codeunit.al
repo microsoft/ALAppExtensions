@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11509 "Create GB Bank Acc Posting Grp"
 {
     SingleInstance = true;

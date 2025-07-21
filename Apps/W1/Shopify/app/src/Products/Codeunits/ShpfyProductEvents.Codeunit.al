@@ -202,22 +202,6 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
-#if not CLEAN24
-    /// <summary> 
-    /// Raised Before Find Mapping.
-    /// </summary>
-    /// <param name="Direction">Parameter of type enum "Shopify Mapping Direction".</param>
-    /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
-    /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
-    /// <param name="Item">Parameter of type Record Item.</param>
-    /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
-    /// <param name="Handled">Parameter of type Boolean.</param>
-    [Obsolete('This event is deprecated. Please use OnBeforeFindProductMapping', '24.0')]
-    [IntegrationEvent(false, false)]
-    internal procedure OnBeforeFindMapping(Direction: enum "Shpfy Mapping Direction"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; ItemVariant: Record "Item Variant"; var Handled: Boolean);
-    begin
-    end;
-#endif
 
     /// <summary> 
     /// Raised Before Find Mapping.
@@ -403,6 +387,17 @@ codeunit 30177 "Shpfy Product Events"
     /// <param name="ShopifyProduct">Parameter of Record "Shopify Product".</param>
     [IntegrationEvent(false, false)]
     internal procedure OnAfterFillInShopifyProductFields(Item: Record Item; var ShopifyProduct: Record "Shpfy Product")
+    begin
+    end;
+
+    /// <summary>
+    /// Raised after products to export are filtered.
+    /// </summary>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shpfy Product".</param>
+    /// <param name="Shop">Parameter of type Record "Shpfy Shop".</param>
+    /// <param name="OnlyUpdatePrice">Parameter of type Boolean.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnAfterProductsToSynchronizeFiltersSet(var ShopifyProduct: Record "Shpfy Product"; Shop: Record "Shpfy Shop"; OnlyUpdatePrice: Boolean)
     begin
     end;
 }

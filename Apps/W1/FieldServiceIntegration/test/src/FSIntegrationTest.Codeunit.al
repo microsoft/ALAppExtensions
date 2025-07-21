@@ -4,29 +4,33 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Test.Integration.DynamicsFieldService;
 
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Team;
+using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.D365Sales;
 using Microsoft.Integration.DynamicsFieldService;
-using System.TestLibraries.Utilities;
-using Microsoft.Projects.Project.Journal;
-using Microsoft.Foundation.UOM;
-using Microsoft.Integration.SyncEngine;
-using System.Threading;
-using Microsoft.Integration.Dataverse;
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Setup;
+using Microsoft.Integration.SyncEngine;
 using Microsoft.Finance.Currency;
-using System.TestLibraries.Environment.Configuration;
-using System.Security.Encryption;
-using Microsoft.CRM.Contact;
-using Microsoft.Sales.Customer;
-using Microsoft.CRM.Team;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Service.Setup;
+using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Foundation.UOM;
 using Microsoft.Foundation.NoSeries;
-using System.Security.AccessControl;
-using Microsoft.TestLibraries.DynamicsFieldService;
-using Microsoft.Service.Document;
-using Microsoft.Service.Test;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Project.Journal;
+using Microsoft.Projects.Project.Posting;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Service.Archive;
+using Microsoft.Service.Document;
+using Microsoft.Service.Setup;
+using Microsoft.Service.Test;
+using Microsoft.TestLibraries.DynamicsFieldService;
+using System.Security.AccessControl;
+using System.Security.Encryption;
+using System.Threading;
+using System.TestLibraries.Environment.Configuration;
+using System.TestLibraries.Utilities;
 
 codeunit 139204 "FS Integration Test"
 {
@@ -40,7 +44,6 @@ codeunit 139204 "FS Integration Test"
 
     var
         CRMProductName: Codeunit "CRM Product Name";
-        CRMSetupTest: Codeunit "CRM Setup Test";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         FSIntegrationTestLibrary: Codeunit "FS Integration Test Library";
         Assert: Codeunit Assert;
@@ -49,6 +52,8 @@ codeunit 139204 "FS Integration Test"
         LibraryService: Codeunit "Library - Service";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryResource: Codeunit "Library - Resource";
+        LibraryJob: Codeunit "Library - Job";
+        LibraryRandom: Codeunit "Library - Random";
         ConnectionErr: Label 'The connection setup cannot be validated. Verify the settings and try again.';
         ConnectionSuccessMsg: Label 'The connection test was successful';
         JobQueueEntryStatusReadyErr: Label 'Job Queue Entry status should be Ready.';
@@ -141,7 +146,7 @@ codeunit 139204 "FS Integration Test"
         InitSetup(false, '');
 
         // [GIVEN] Setup without Job Journal Template and Integration Type = Service.
-        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
         FSConnectionSetup.Modify();
 
         // [THEN] Validate that the connection is enabled without error message (regarding job journal).
@@ -155,7 +160,6 @@ codeunit 139204 "FS Integration Test"
     var
         FSConnectionSetup: Record "FS Connection Setup";
         JobJournalTemplate: Record "Job Journal Template";
-        LibraryJob: Codeunit "Library - Job";
         DummyPassword: Text;
     begin
         // [FEATURE] [UT]
@@ -181,7 +185,6 @@ codeunit 139204 "FS Integration Test"
     var
         FSConnectionSetup: Record "FS Connection Setup";
         JobJournalTemplate: Record "Job Journal Template";
-        LibraryJob: Codeunit "Library - Job";
     begin
         // [FEATURE] [UT] Service Order Integration
         // [SCENARIO] Journal Batch is not required to enable the Service integration type.
@@ -193,7 +196,7 @@ codeunit 139204 "FS Integration Test"
         LibraryJob.CreateJobJournalTemplate(JobJournalTemplate);
         JobJournalTemplate.Insert();
         FSConnectionSetup."Job Journal Template" := JobJournalTemplate.Name;
-        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
         FSConnectionSetup.Modify();
 
         // [THEN] Validate that the connection is enabled without error message (regarding job journal).
@@ -210,7 +213,6 @@ codeunit 139204 "FS Integration Test"
         FSConnectionSetup: Record "FS Connection Setup";
         JobJournalTemplate: Record "Job Journal Template";
         JobJournalBatch: Record "Job Journal Batch";
-        LibraryJob: Codeunit "Library - Job";
         DummyPassword: Text;
     begin
         // [FEATURE] [UT]
@@ -253,7 +255,7 @@ codeunit 139204 "FS Integration Test"
         // [WHEN] Set Integration Type to "Service".
         // [THEN] Error message "Manual No. Series is required for Service integration." appears.
         FSConnectionSetup.Get();
-        asserterror FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::Service);
+        asserterror FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::"Service and projects");
         Assert.ExpectedError('Please make sure that the No. Series setup is correct.');
     end;
 
@@ -274,7 +276,7 @@ codeunit 139204 "FS Integration Test"
         // [WHEN] Set Integration Type to "Project".
         // [THEN] No error message appears.
         FSConnectionSetup.Get();
-        FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::Project);
+        FSConnectionSetup.Validate("Integration Type", FSConnectionSetup."Integration Type"::Projects);
     end;
 
     [Test]
@@ -297,7 +299,7 @@ codeunit 139204 "FS Integration Test"
         // [WHEN] Field Service Integration is enabled.
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
         FSIntegrationTestLibrary.ResetConfiguration(FSConnectionSetup);
 
@@ -346,7 +348,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := FSConnectionSetup."Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Service Managment Flag is set to false.
@@ -367,7 +369,6 @@ codeunit 139204 "FS Integration Test"
         JobJournalTemplate: Record "Job Journal Template";
         JobJournalBatch: Record "Job Journal Batch";
         UnitOfMeasure: Record "Unit of Measure";
-        LibraryJob: Codeunit "Library - Job";
         DummyPassword: Text;
     begin
         // [FEATURE] [UT]
@@ -400,7 +401,6 @@ codeunit 139204 "FS Integration Test"
         JobJournalTemplate: Record "Job Journal Template";
         JobJournalBatch: Record "Job Journal Batch";
         UnitOfMeasure: Record "Unit of Measure";
-        LibraryJob: Codeunit "Library - Job";
     begin
         // [FEATURE] [Table Mapping] [UI]
         Initialize();
@@ -634,7 +634,6 @@ codeunit 139204 "FS Integration Test"
         JobJournalTemplate: Record "Job Journal Template";
         JobJournalBatch: Record "Job Journal Batch";
         UnitOfMeasure: Record "Unit of Measure";
-        LibraryJob: Codeunit "Library - Job";
     begin
         // [SCENARIO] Enabling CRM Connection move all CRM Job Queue Entries in "Ready" status
         Initialize();
@@ -1121,7 +1120,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Project;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Work Order Line
@@ -1154,7 +1153,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Project;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Work Order Line
@@ -1187,7 +1186,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Project;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Work Order Line
@@ -1220,7 +1219,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Project;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::Projects;
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Work Order Line
@@ -1256,7 +1255,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Existing Service Header
@@ -1291,7 +1290,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is enabled
@@ -1333,7 +1332,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is enabled
@@ -1380,7 +1379,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is enabled
@@ -1413,7 +1412,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is disabled
@@ -1446,7 +1445,7 @@ codeunit 139204 "FS Integration Test"
         Initialize();
         InitSetup(true, '');
         FSConnectionSetup.Get();
-        FSConnectionSetup."Integration Type" := "FS Integration Type"::Service;
+        FSConnectionSetup."Integration Type" := "FS Integration Type"::"Service and projects";
         FSConnectionSetup.Modify(false);
 
         // [GIVEN] Archive Service Orders is enabled
@@ -1531,6 +1530,47 @@ codeunit 139204 "FS Integration Test"
         Assert.AreEqual((ServiceLineArchive."Qty. to Consume" + ServiceLineArchive."Quantity Consumed") * 60, FSWorkOrderService.DurationConsumed, 'Duration Consumed should be ' + Format(ServiceLineArchive."Qty. to Consume" + ServiceLineArchive."Quantity Consumed"));
     end;
 
+    [Test]
+    procedure QuantityConsumedIsNotWrittenIntoWorkOrderRecordForPostingPreview()
+    var
+        Job: Record Job;
+        JobTask: Record "Job Task";
+        JobJournalLine: Record "Job Journal Line";
+        WorkOrderProduct: Record "FS Work Order Product";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        JobJnlPost: Codeunit "Job Jnl.-Post";
+        GenJnlPostPreview: Codeunit "Gen. Jnl.-Post Preview";
+    begin
+        // [SCENARIO 524900] Quantity Consumed is not written into Work Order record for Posting Preview
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Create Project and Project Task
+        CreateJobAndJobTask(Job, JobTask);
+
+        // [GIVEN] Create Project Journal Line
+        CreateJobJournalLine(JobJournalLine, JobTask, CreateItem());
+
+        // [GIVEN] Create Work Order Product
+        CreateWorkOrderProduct(WorkOrderProduct);
+        WorkOrderProduct.EstimateQuantity := JobJournalLine.Quantity;
+        WorkOrderProduct.Modify();
+
+        // [GIVEN] Create CRM Integration Record
+        CRMIntegrationRecord.CoupleCRMIDToRecordID(WorkOrderProduct.WorkOrderProductId, JobJournalLine.RecordId());
+        CRMIntegrationRecord.Get(WorkOrderProduct.WorkOrderProductId, JobJournalLine.SystemId);
+
+        // [WHEN] Run Posting Preview procedure
+        BindSubscription(JobJnlPost);
+        asserterror GenJnlPostPreview.Preview(JobJnlPost, JobJournalLine);
+        UnbindSubscription(JobJnlPost);
+
+        // [THEN] Verify that Quantity Consumed is not written into Work Order record.
+        WorkOrderProduct.Get(CRMIntegrationRecord."CRM ID");
+        Assert.AreEqual(0, WorkOrderProduct.QuantityConsumed, 'Quantity Consumed should not be written into Work Order record for Posting Preview action.');
+    end;
+
     local procedure Initialize()
     var
         AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
@@ -1543,7 +1583,6 @@ codeunit 139204 "FS Integration Test"
             CryptographyManagement.DisableEncryption(true);
         Assert.IsFalse(EncryptionEnabled(), 'Encryption should be disabled');
 
-        Clear(CRMSetupTest);
         UnregisterTableConnection(TableConnectionType::CRM, '');
         UnregisterTableConnection(TableConnectionType::CRM, GetDefaultTableConnection(TableConnectionType::CRM));
         Assert.AreEqual(
@@ -1644,7 +1683,6 @@ codeunit 139204 "FS Integration Test"
         JobJournalTemplate: Record "Job Journal Template";
         JobJournalBatch: Record "Job Journal Batch";
         UnitOfMeasure: Record "Unit of Measure";
-        LibraryJob: Codeunit "Library - Job";
         DummyPassword: Text;
     begin
         FSConnectionSetup.Init();
@@ -1756,6 +1794,38 @@ codeunit 139204 "FS Integration Test"
             if CheckSetOnHold then
                 Assert.IsTrue(JobQueueEntry.Status = JobQueueEntry.Status::"On Hold", JobQueueEntryStatusOnHoldErr);
         until JobQueueEntry.Next() = 0;
+    end;
+
+    local procedure CreateJobAndJobTask(var Job: Record Job; var JobTask: Record "Job Task")
+    begin
+        LibraryJob.CreateJob(Job);
+        LibraryJob.CreateJobTask(Job, JobTask);
+    end;
+
+    local procedure CreateJobJournalLine(var JobJournalLine: Record "Job Journal Line"; JobTask: Record "Job Task"; No: Code[20])
+    begin
+        LibraryJob.CreateJobJournalLineForType("Job Line Type"::Billable, JobJournalLine.Type::Item, JobTask, JobJournalLine);
+        JobJournalLine.Validate("No.", No);
+        JobJournalLine.Validate(Quantity, LibraryRandom.RandInt(10));  // Use Random because value is not important.
+        JobJournalLine.Modify(true);
+    end;
+
+    local procedure CreateItem(): Code[20]
+    var
+        Item: Record Item;
+    begin
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Unit Price", LibraryRandom.RandDec(100, 2));  // Using Random value for Unit Price because value is not important.
+        Item.Validate("Last Direct Cost", LibraryRandom.RandDec(100, 2));  // Using Random value for Last Direct Cost because value is not important.
+        Item.Modify(true);
+        exit(Item."No.");
+    end;
+
+    local procedure CreateWorkOrderProduct(var WorkOrderProduct: Record "FS Work Order Product")
+    begin
+        WorkOrderProduct.Init();
+        WorkOrderProduct.WorkOrderProductId := CreateGuid();
+        WorkOrderProduct.Insert();
     end;
 
     [ConfirmHandler]

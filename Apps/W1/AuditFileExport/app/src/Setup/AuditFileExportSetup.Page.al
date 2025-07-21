@@ -19,6 +19,7 @@ page 5264 "Audit File Export Setup"
         {
             group(General)
             {
+                Caption = 'General';
                 grid(Lines)
                 {
                     group(GeneralInfo)
@@ -40,6 +41,7 @@ page 5264 "Audit File Export Setup"
             }
             group("Data Quality")
             {
+                Caption = 'Data Quality';
                 field(CheckCompanyInformation; Rec."Check Company Information")
                 {
                     ApplicationArea = Basic, Suite;

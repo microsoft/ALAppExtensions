@@ -86,6 +86,8 @@ codeunit 30194 "Shpfy Transactions"
         JsonHelper.GetValueIntoField(JOrderTransaction, 'paymentId', RecordRef, OrderTransaction.FieldNo("Payment Id"));
         JsonHelper.GetValueIntoField(JOrderTransaction, 'amountSet.shopMoney.amount', RecordRef, OrderTransaction.FieldNo(Amount));
         JsonHelper.GetValueIntoField(JOrderTransaction, 'amountSet.shopMoney.currencyCode', RecordRef, OrderTransaction.FieldNo(Currency));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'amountRoundingSet.shopMoney.amount', RecordRef, OrderTransaction.FieldNo("Rounding Amount"));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'amountRoundingSet.shopMoney.currencyCode', RecordRef, OrderTransaction.FieldNo("Rounding Currency"));
 
         ReceiptJson := JsonHelper.GetValueAsText(JOrderTransaction, 'receiptJson');
         if JObject.ReadFrom(ReceiptJson) then

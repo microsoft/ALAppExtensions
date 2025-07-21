@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 tableextension 6162 "E-Doc. Purch. Payables Setup" extends "Purchases & Payables Setup"
 {
     fields

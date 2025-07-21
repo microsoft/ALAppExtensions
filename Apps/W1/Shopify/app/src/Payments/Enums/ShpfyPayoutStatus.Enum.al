@@ -2,6 +2,7 @@ namespace Microsoft.Integration.Shopify;
 
 /// <summary>
 /// Enum Shpfy Payout Status (ID 30128).
+/// Represented by shopify.dev/docs/api/admin-graphql/latest/enums/ShopifyPaymentsPayoutStatus
 /// </summary>
 enum 30128 "Shpfy Payout Status"
 {

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2455 "Unposted Sales Trx Orders"
 {
     QueryType = Normal;

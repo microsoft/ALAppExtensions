@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 14113 WarehouseManagerRCExt extends "Warehouse Manager Role Center"
 {
     actions

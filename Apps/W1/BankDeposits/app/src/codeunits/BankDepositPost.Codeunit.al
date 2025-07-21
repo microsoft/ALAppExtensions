@@ -189,6 +189,15 @@ codeunit 1690 "Bank Deposit-Post"
         exit(GenJournalLine."Line No.");
     end;
 
+    internal procedure GetAppliesToIDForLine(BankDepositHeaderNo: Code[20]; GenJournalLineNo: Integer): Code[50]
+    var
+        DummyGenJournalLine: Record "Gen. Journal Line";
+        AppliesToID: Text;
+    begin
+        AppliesToID := StrSubstNo(AppliesToIDTxt, BankDepositHeaderNo, GenJournalLineNo);
+        exit(CopyStr(AppliesToID, 1, MaxStrLen(DummyGenJournalLine."Applies-to ID")));
+    end;
+
     local procedure ModifyGenJournalLinesForBankDepositPosting(BankDepositHeader: Record "Bank Deposit Header"; ForceDocumentNo: Boolean) TotalAmountLCY: Decimal
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -309,17 +318,11 @@ codeunit 1690 "Bank Deposit-Post"
     local procedure SetBalancingEntryToPostedDepositLines(BankDepositHeader: Record "Bank Deposit Header"; GLEntry: Record "G/L Entry")
     var
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
-#if not CLEAN24
-        GenJournalLine: Record "Gen. Journal Line";
-#endif
     begin
         PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
         PostedBankDepositLine.FindSet();
         repeat
             PostedBankDepositLine."Bank Account Ledger Entry No." := GLEntry."Entry No.";
-#if not CLEAN24
-            OnBeforePostedBankDepositLineModify(PostedBankDepositLine, GenJournalLine);
-#endif
             PostedBankDepositLine.Modify();
         until PostedBankDepositLine.Next() = 0;
     end;
@@ -342,6 +345,7 @@ codeunit 1690 "Bank Deposit-Post"
         StatusTxt: Label 'Status        #4###################\', Comment = '#4 - a number (progress indicator)';
         MovingToHistoryTxt: Label 'Moving Bank Deposit to History';
         PostingLinesToLedgersTxt: Label 'Posting Lines to Ledgers';
+        AppliesToIDTxt: Label '%1-%2', Comment = '%1 - Bank Deposit No., %2 - Line No.';
 
     local procedure CopyBankComments(BankDepositHeader: Record "Bank Deposit Header")
     var
@@ -540,13 +544,6 @@ codeunit 1690 "Bank Deposit-Post"
     begin
     end;
 
-#if not CLEAN24
-    [Obsolete('Posted Bank Deposit Lines are not modified after created anymore, they are created with the required information. Adapt the logic to use OnBeforePostedBankDepositLineInsert. This procedure is only called when setting the balancing entries to all the posted deposit lines and GenJournalLine is meaningless.', '24.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforePostedBankDepositLineModify(var PostedBankDepositLine: Record "Posted Bank Deposit Line"; GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnRunOnAfterPostBalancingEntry(var GenJournalLine: Record "Gen. Journal Line")
@@ -563,6 +560,5 @@ codeunit 1690 "Bank Deposit-Post"
     begin
     end;
 }
-
 
 

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 14102 "CD FA Information List"
 {
     ApplicationArea = FixedAssets;

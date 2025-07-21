@@ -1,3 +1,19 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Inventory.Setup;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.Common;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.HumanResources;
+using Microsoft.DemoData.Jobs;
+
 codeunit 11080 "Create DE GL Accounts"
 {
     InherentPermissions = X;
@@ -21,14 +37,14 @@ codeunit 11080 "Create DE GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.SalesVATStandardName(), '3806');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVATStandardName(), '1406');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRawMatName(), '1001');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.DirectCostAppliedRetailName(), '1102');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRawMatName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRawMatName(), '1001');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.OverheadAppliedRetailName(), '1102');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '');
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRetailName(), '');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRawMatName(), '4093');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseVarianceRetailName(), '4093');
 
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.RawMaterialsName(), '1001');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchRawMatDomName(), '1001');
@@ -58,8 +74,8 @@ codeunit 11080 "Create DE GL Accounts"
         ContosoGLAccount: Codeunit "Contoso GL Account";
         MfgGLAccount: Codeunit "Create Mfg GL Account";
     begin
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.DirectCostAppliedCapName(), '');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.DirectCostAppliedCapName(), '4091');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '4092');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '5031');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '5032');
@@ -69,7 +85,7 @@ codeunit 11080 "Create DE GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '5036');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.FinishedGoodsName(), '1101');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '1085');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create FA GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
@@ -78,14 +94,14 @@ codeunit 11080 "Create DE GL Accounts"
         ContosoGLAccount: Codeunit "Contoso GL Account";
         FAGLAccount: Codeunit "Create FA GL Account";
     begin
-        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.IncreasesDuringTheYearName(), '');
-        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.DecreasesDuringTheYearName(), '');
-        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.AccumDepreciationBuildingsName(), '');
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.IncreasesDuringTheYearName(), '0280');
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.DecreasesDuringTheYearName(), '0210');
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.AccumDepreciationBuildingsName(), '0210');
 
-        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.MiscellaneousName(), '');
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.MiscellaneousName(), '4985');
 
         ContosoGLAccount.AddAccountForLocalization(FAGLAccount.DepreciationEquipmentName(), '4830');
-        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.GainsAndLossesName(), '');
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.GainsAndLossesName(), '2720');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create HR GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
@@ -94,7 +110,7 @@ codeunit 11080 "Create DE GL Accounts"
         ContosoGLAccount: Codeunit "Contoso GL Account";
         HRGLAccount: Codeunit "Create HR GL Account";
     begin
-        ContosoGLAccount.AddAccountForLocalization(HRGLAccount.EmployeesPayableName(), '');
+        ContosoGLAccount.AddAccountForLocalization(HRGLAccount.EmployeesPayableName(), '4150');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Job GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
@@ -103,7 +119,7 @@ codeunit 11080 "Create DE GL Accounts"
         ContosoGLAccount: Codeunit "Contoso GL Account";
         JobGLAccount: Codeunit "Create Job GL Account";
     begin
-        ContosoGLAccount.AddAccountForLocalization(JobGLAccount.WIPInvoicedSalesName(), '');
+        ContosoGLAccount.AddAccountForLocalization(JobGLAccount.WIPInvoicedSalesName(), '1081');
         ContosoGLAccount.AddAccountForLocalization(JobGLAccount.WIPJobCostsName(), '1082');
 
         ContosoGLAccount.AddAccountForLocalization(JobGLAccount.JobSalesAppliedName(), '4416');

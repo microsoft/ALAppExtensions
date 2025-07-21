@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2689 "Data Search Whse WrkWms RC Ext" extends "Whse. Worker WMS Role Center"
 {
     ObsoleteState = Pending;

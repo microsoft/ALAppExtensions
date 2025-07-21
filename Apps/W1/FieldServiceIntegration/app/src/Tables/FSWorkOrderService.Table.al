@@ -5,6 +5,7 @@
 namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
+using Microsoft.Integration.Dataverse;
 
 #pragma warning disable AS0130
 #pragma warning disable PTE0025
@@ -205,6 +206,8 @@ table 6620 "FS Work Order Service"
             Description = 'Enter any additional costs associated with this service. The values are manually entered. Note: additional cost is not unit dependent.';
             Caption = 'Additional Cost';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(36; TransactionCurrencyId; GUID)
         {
@@ -223,6 +226,7 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the exchange rate for the currency associated with the entity with respect to the base currency.';
             Caption = 'Exchange Rate';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(39; AdditionalCost_Base; Decimal)
         {
@@ -232,6 +236,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the additional cost in the base currency.';
             Caption = 'Additional Cost (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(41; Booking; GUID)
         {
@@ -249,6 +255,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the sale amount per unit calculated by the system considering the minimum charge, if applicable.';
             Caption = 'Calculated Unit Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(43; CalculatedUnitAmount_Base; Decimal)
         {
@@ -258,6 +266,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the calculated unit amount in the base currency.';
             Caption = 'Calculated Unit Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(44; CommissionCosts; Decimal)
         {
@@ -266,6 +276,8 @@ table 6620 "FS Work Order Service"
             Description = 'Enter the commission costs associated with this service. The value is manually specified and isn''t automatically calculated.';
             Caption = 'Commission Costs';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(45; CommissionCosts_Base; Decimal)
         {
@@ -275,6 +287,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the commission costs in the base currency.';
             Caption = 'Commission Costs (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(46; CustomerAsset; GUID)
         {
@@ -309,6 +323,8 @@ table 6620 "FS Work Order Service"
             Description = 'Specify any discount amount on this service. Note: If you enter a discount amount you cannot enter a discount %';
             Caption = 'Discount Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(51; DiscountAmount_Base; Decimal)
         {
@@ -318,6 +334,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the discount Amount in the base currency.';
             Caption = 'Discount Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(52; DiscountPercent; Decimal)
         {
@@ -326,6 +344,7 @@ table 6620 "FS Work Order Service"
             Description = 'Specify any discount % on this service. Note: If you enter a discount % it will overwrite the discount $';
             Caption = 'Discount %';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(53; Duration; Integer)
         {
@@ -350,6 +369,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the estimated sale amount per unit calculated by the system considering the initial charge (if applicable).';
             Caption = 'Estimate Calculated Unit Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(57; EstimateCalculatedUnitAmount_Base; Decimal)
         {
@@ -359,6 +380,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the estimate calculated unit amount in the base currency.';
             Caption = 'Estimate Calculated Unit Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(58; EstimateDiscountAmount; Decimal)
         {
@@ -367,6 +390,8 @@ table 6620 "FS Work Order Service"
             Description = 'Enter a discount amount on the subtotal amount. Note: If you enter a discount amount you cannot enter a discount %';
             Caption = 'Estimate Discount Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(59; EstimateDiscountAmount_Base; Decimal)
         {
@@ -376,6 +401,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the estimate discount amount in the base currency.';
             Caption = 'Estimate Discount Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(60; EstimateDiscountPercent; Decimal)
         {
@@ -384,6 +411,7 @@ table 6620 "FS Work Order Service"
             Description = 'Enter a discount % on the subtotal amount. Note: If you enter a discount % it will overwrite the discount $';
             Caption = 'Estimate Discount %';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(61; EstimateDuration; Integer)
         {
@@ -400,6 +428,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the total amount for this service, excluding discounts.';
             Caption = 'Estimate Subtotal';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(63; EstimateSubtotal_Base; Decimal)
         {
@@ -409,6 +439,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the estimate subtotal in the base currency.';
             Caption = 'Estimate Subtotal (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(64; EstimateTotalAmount; Decimal)
         {
@@ -417,6 +449,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the estimated total amount of this service, including discounts.';
             Caption = 'Estimate Total Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(65; EstimateTotalAmount_Base; Decimal)
         {
@@ -426,6 +460,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the estimate total amount in the base currency.';
             Caption = 'Estimate Total Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(66; EstimateTotalCost; Decimal)
         {
@@ -434,6 +470,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the estimated total cost of this service.';
             Caption = 'Estimate Total Cost';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(67; EstimateTotalCost_Base; Decimal)
         {
@@ -443,6 +481,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the estimate total cost in the base currency.';
             Caption = 'Estimate Total Cost (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(68; EstimateUnitAmount; Decimal)
         {
@@ -451,6 +491,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the estimated sale amount per unit.';
             Caption = 'Estimate Unit Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(69; EtimateUnitAmount_Base; Decimal)
         {
@@ -460,6 +502,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the estimate unit amount in the base currency.';
             Caption = 'Estimate Unit Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(70; EstimateUnitCost; Decimal)
         {
@@ -468,6 +512,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the estimated cost amount per unit.';
             Caption = 'Estimate Unit Cost';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(71; EstimateUnitCost_Base; Decimal)
         {
@@ -477,6 +523,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the estimate unit cost in the base currency.';
             Caption = 'Estimate Unit Cost (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(72; InternalDescription; BLOB)
         {
@@ -521,6 +569,8 @@ table 6620 "FS Work Order Service"
             Description = 'Enter the amount charged as a minimum charge.';
             Caption = 'Minimum Charge Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(78; MinimumChargeAmount_Base; Decimal)
         {
@@ -530,6 +580,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the minimum charge amount in the base currency.';
             Caption = 'Minimum Charge Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(79; MinimumChargeDuration; Integer)
         {
@@ -564,6 +616,8 @@ table 6620 "FS Work Order Service"
             Description = 'Enter the total amount excluding discounts.';
             Caption = 'Subtotal';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(83; Subtotal_Base; Decimal)
         {
@@ -573,6 +627,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the subtotal in the base currency.';
             Caption = 'Subtotal (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(84; Taxable; Boolean)
         {
@@ -588,6 +644,8 @@ table 6620 "FS Work Order Service"
             ExternalType = 'Money';
             Caption = 'Total Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(87; TotalAmount_Base; Decimal)
         {
@@ -597,6 +655,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the total amount in the base currency.';
             Caption = 'Total Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(88; TotalCost; Decimal)
         {
@@ -605,6 +665,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the total cost of this service. This is calculated by (Unit Cost * Units) + Additional Cost + Commission Costs.';
             Caption = 'Total Cost';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(89; TotalCost_Base; Decimal)
         {
@@ -614,6 +676,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the total cost in the base currency.';
             Caption = 'Total Cost (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(90; Unit; GUID)
         {
@@ -631,6 +695,8 @@ table 6620 "FS Work Order Service"
             Description = 'Enter the amount you want to charge the customer per unit. By default, this is calculated based on the selected price list. The amount can be changed.';
             Caption = 'Unit Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(92; UnitAmount_Base; Decimal)
         {
@@ -640,6 +706,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the unit amount in the base currency.';
             Caption = 'Unit Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(93; UnitCost; Decimal)
         {
@@ -648,6 +716,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the actual cost per unit.';
             Caption = 'Unit Cost';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(94; UnitCost_Base; Decimal)
         {
@@ -657,6 +727,8 @@ table 6620 "FS Work Order Service"
             Description = 'Shows the value of the unit cost in the base currency.';
             Caption = 'Unit Cost (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(95; WorkOrder; GUID)
         {
@@ -790,4 +862,20 @@ table 6620 "FS Work Order Service"
         {
         }
     }
+
+    local procedure GetCurrencyCode(): Code[10]
+    var
+        CRMSyncHelper: Codeunit "CRM Synch. Helper";
+    begin
+        exit(CRMSyncHelper.GetNavCurrencyCode(Rec.TransactionCurrencyId));
+    end;
+
+    local procedure GetBaseCurrencyCode(): Code[10]
+    var
+        CRMConnectionSetup: Record "CRM Connection Setup";
+        CRMSyncHelper: Codeunit "CRM Synch. Helper";
+    begin
+        CRMConnectionSetup.Get();
+        exit(CRMSyncHelper.GetNavCurrencyCode(CRMConnectionSetup.BaseCurrencyId));
+    end;
 }

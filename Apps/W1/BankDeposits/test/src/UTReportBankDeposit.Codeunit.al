@@ -31,6 +31,7 @@ codeunit 139767 "UT Report Bank Deposit"
         DimSetEntryDimensionCodeCapTxt: Label 'DimensionSetEntry__Dimension_Code_';
         DimSetEntryDimensionCodeTxt: Label 'DimensionSetEntry2__Dimension_Code_';
         DimSetEntryDimensionValueCodeTxt: Label 'DimensionSetEntry2__Dimension_Value_Code_';
+        AmountPmtToleranceCapTxt: Label 'AmountPmtTolerance_Control1020036';
 
     [Test]
     [HandlerFunctions('DepositRequestPageHandler')]
@@ -629,6 +630,89 @@ codeunit 139767 "UT Report Bank Deposit"
         BankDepositHeader.Delete();
     end;
 
+    [HandlerFunctions('DepositTestReportRequestHandler,ApplyCustEntriesOKPageHandler')]
+    [Test]
+    procedure AcceptedPaymentToleranceWhenPaymentAppliedMultipleInvoices()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        Customer: Record Customer;
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        GenJournalLine: Record "Gen. Journal Line";
+        Item: Record Item;
+        PaymentTerms: Record "Payment Terms";
+        SalesLine: array[3] of Record "Sales Line";
+        VATPostingSetup: Record "VAT Posting Setup";
+        LibraryInventory: Codeunit "Library - Inventory";
+        BankDeposit: TestPage "Bank Deposit";
+        PostedDocumentNo: array[3] of Code[20];
+        RequestXml: Text;
+    begin
+        // [SCENARIO 564934] Accepted Payment Tolerance exceeds Max. Payment Tolerance when payment is applied to multiple invoices in specific scenario
+        Initialize();
+
+        // [GIVEN] Find VAT Posting Setup with 0 VAT %.
+        LibraryERM.FindZeroVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
+
+        // [GIVEN] Create a Payment Terms with Due Date Calculation as 30D.
+        LibraryERM.CreatePaymentTerms(PaymentTerms);
+        Evaluate(PaymentTerms."Due Date Calculation", '<30D>');
+        PaymentTerms.Modify(true);
+
+        // [GIVEN] Create Customer with Payment Terms and VAT Bus. Posting Group.
+        LibrarySales.CreateCustomer(Customer);
+        Customer.Validate("VAT Bus. Posting Group", VATPostingSetup."VAT Bus. Posting Group");
+        Customer.Validate("Payment Terms Code", PaymentTerms.Code);
+        Customer.Modify(true);
+
+        // [GIVEN] Create an Item with VAT Prod. Posting Group.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("VAT Prod. Posting Group", VATPostingSetup."VAT Prod. Posting Group");
+        Item.Modify(true);
+        CustLedgerEntry.DeleteAll();
+
+        // [GIVEN] Create and Post First Sales Invoice with Quantiy as 1 and Unit Price as 120.
+        PostedDocumentNo[1] := CreateAndPostSalesDocument(
+            SalesLine[1], Customer."No.", SalesLine[1]."Document Type"::Invoice, SalesLine[1].Type::Item, Item."No.",
+            1, 120);
+
+        // [GIVEN] Create and Post Second Sales Invoice with Quantiy as 1 and Unit Price as 1010.
+        PostedDocumentNo[2] := CreateAndPostSalesDocument(
+            SalesLine[2], Customer."No.", SalesLine[2]."Document Type"::Invoice, SalesLine[2].Type::Item, Item."No.",
+            1, 1010);
+
+        // [GIVEN] Create and Post Third Sales Invoice with Quantiy as 1 and Unit Price as 10001.
+        PostedDocumentNo[3] := CreateAndPostSalesDocument(
+            SalesLine[3], Customer."No.", SalesLine[3]."Document Type"::Invoice, SalesLine[3].Type::Item, Item."No.",
+            1, 10001);
+
+        // [GIVEN] Create Bank Deposit Header 
+        CreateBankDepositHeader(BankDepositHeader);
+
+        // [GIVEN] Open Bank Deposit Page and Set value for Account Type and Account No.
+        BankDeposit.Trap();
+        BankDepositHeader.SetRecFilter();
+        Page.Run(Page::"Bank Deposit", BankDepositHeader);
+        BankDeposit.Subform."Account Type".SetValue(GenJournalLine."Account Type"::Customer);
+        BankDeposit.Subform."Account No.".SetValue(Customer."No.");
+        BankDeposit.Subform.ApplyEntries.Invoke();
+        Commit();
+
+        // [WHEN] Running the Bank Deposit Test Report
+        LibraryVariableStorage.Enqueue(BankDepositHeader."No.");
+        BankDepositHeader.SetRange("No.", BankDepositHeader."No.");
+        BankDepositHeader.SetRange("Bank Account No.", BankDepositHeader."Bank Account No.");
+        RequestXml := Report.RunRequestPage(Report::"Bank Deposit Test Report");
+        LibraryReportDataSet.RunReportAndLoad(Report::"Bank Deposit Test Report", BankDepositHeader, RequestXml);
+
+        // [THEN] Verfiy Amount Pmt. Tolerance Value
+        LibraryReportDataSet.AssertElementWithValueExists(AmountPmtToleranceCapTxt, 20);
+        LibraryReportDataSet.GetNextRow();
+        LibraryReportDataSet.AssertElementWithValueExists(AmountPmtToleranceCapTxt, 10);
+        LibraryReportDataSet.GetNextRow();
+        LibraryReportDataSet.AssertElementWithValueExists(AmountPmtToleranceCapTxt, 1);
+        BankDepositHeader.Delete();
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
@@ -878,6 +962,24 @@ codeunit 139767 "UT Report Bank Deposit"
         LibraryReportDataSet.AssertElementWithValueExists('Account_No_____________AccountName', AccountName);
     end;
 
+    local procedure CreateAndPostSalesDocument(
+        var SalesLine: Record "Sales Line";
+        CustomerNo: Code[20];
+        DocumentType: Enum "Sales Document Type";
+        Type: Enum "Sales Line Type";
+        No: Code[20];
+        Quantity: Decimal;
+        UnitPrice: Decimal): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Type, No, Quantity);
+        SalesLine.Validate("Unit Price", UnitPrice);
+        SalesLine.Modify(true);
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
     [RequestPageHandler]
     procedure DepositRequestPageHandler(var BankDeposit: TestRequestPage "Bank Deposit")
     var
@@ -901,6 +1003,32 @@ codeunit 139767 "UT Report Bank Deposit"
         BankDepositTestReport.ShowApplications.SetValue(true);
         BankDepositTestReport.ShowDimensions.SetValue(true);
         BankDepositTestReport.SaveAsXml(LibraryReportDataSet.GetParametersFileName(), LibraryReportDataSet.GetFileName());
+    end;
+
+    [RequestPageHandler]
+    procedure DepositTestReportRequestHandler(var BankDepositTestReport: TestRequestPage "Bank Deposit Test Report")
+    var
+        NoVariant: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(NoVariant);
+        BankDepositTestReport."Bank Deposit Header".SetFilter("No.", NoVariant);
+        BankDepositTestReport.ShowApplications.SetValue(true);
+        BankDepositTestReport.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure ApplyCustEntriesOKPageHandler(var ApplyCustomerEntries: TestPage "Apply Customer Entries")
+    begin
+        ApplyCustomerEntries."Amount to Apply".SetValue(100);
+        ApplyCustomerEntries."Max. Payment Tolerance".SetValue(20);
+        ApplyCustomerEntries.Next();
+        ApplyCustomerEntries."Amount to Apply".SetValue(1000);
+        ApplyCustomerEntries."Max. Payment Tolerance".SetValue(10);
+        ApplyCustomerEntries.Next();
+        ApplyCustomerEntries."Amount to Apply".SetValue(10000);
+        ApplyCustomerEntries."Max. Payment Tolerance".SetValue(1);
+        ApplyCustomerEntries.OK().Invoke();
     end;
 
     [IntegrationEvent(false, false)]

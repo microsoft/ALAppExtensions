@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 2481 "SmartList Upgrade"
 {
     Subtype = Upgrade;

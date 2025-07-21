@@ -228,6 +228,9 @@ report 31014 "Sales - Advance Letter CZZ"
             column(AmountIncludingVAT; AmountIncludingVAT)
             {
             }
+            column(Formatted_AmountIncludingVAT; Format(AmountIncludingVAT, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Advance Letter Header"."Currency Code")))
+            {
+            }
             column(QRPaymentCode; QRPaymentCode)
             {
             }
@@ -276,6 +279,9 @@ report 31014 "Sales - Advance Letter CZZ"
                     {
                     }
                     column(AmountIncludingVAT_SalesAdvanceLetterLine; "Amount Including VAT")
+                    {
+                    }
+                    column(Formatted_AmountIncludingVAT_SalesAdvanceLetterLine; Format("Amount Including VAT", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Sales Advance Letter Header"."Currency Code")))
                     {
                     }
                 }
@@ -399,6 +405,7 @@ report 31014 "Sales - Advance Letter CZZ"
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         FormatDocument: Codeunit "Format Document";
+        AutoFormat: Codeunit "Auto Format";
         NoOfLoops: Integer;
         DocumentLbl: Label 'Advance Letter';
         PageLbl: Label 'Page';

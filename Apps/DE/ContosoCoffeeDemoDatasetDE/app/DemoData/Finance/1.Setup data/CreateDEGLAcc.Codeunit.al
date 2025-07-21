@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.Enums;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 11119 "Create DE GL Acc."
 {
     InherentEntitlements = X;
@@ -326,6 +337,7 @@ codeunit 11119 "Create DE GL Acc."
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.FinishedGoodsName(), '1101');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalAssetsName(), '1999');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherLiabilitiesName(), '3500');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherAccruedExpensesAndDeferredIncomeName(), '3990');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalLiabilitiesName(), '3999');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.IncomeStatementName(), '4');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.InterestIncomeName(), '4203');

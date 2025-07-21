@@ -17,6 +17,7 @@ codeunit 148103 "SAF-T XML Tests"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryERM: Codeunit "Library - ERM";
         LibraryDimension: Codeunit "Library - Dimension";
+        LibraryJournals: Codeunit "Library - Journals";
         SAFTTestHelper: Codeunit "SAF-T Test Helper";
         Assert: Codeunit Assert;
         SAFTMappingType: Enum "SAF-T Mapping Type";
@@ -212,6 +213,7 @@ codeunit 148103 "SAF-T XML Tests"
         DimSetID: Integer;
         JournalsNumber: Integer;
         EntriesInTransactionNumber: Integer;
+        TransactionNo: Integer;
         i: Integer;
         j: Integer;
         EntryType: Integer;
@@ -232,13 +234,14 @@ codeunit 148103 "SAF-T XML Tests"
         GLAccount.FindFirst();
         SAFTTestHelper.SetDimensionForGLAccount(GLAccount."No.", SAFTAnalysisType, DimValueCode, DimSetID);
         SAFTSourceCode.FindSet();
+        TransactionNo := GetLastUsedTransactionNo();
         for i := 1 to JournalsNumber do begin
             SourceCode.SetRange("SAF-T Source Code", SAFTSourceCode.Code);
             SourceCode.FindFirst();
             DocNo := LibraryUtility.GenerateGUID();
             for j := 1 to EntriesInTransactionNumber do
                 for EntryType := VATEntry.Type::Purchase to VATEntry.Type::Sale do begin
-                    SAFTTestHelper.MockVATEntry(VATEntry, SAFTExportHeader."Ending Date", DocNo, EntryType, i);
+                    SAFTTestHelper.MockVATEntry(VATEntry, SAFTExportHeader."Ending Date", DocNo, EntryType, TransactionNo + i);
                     SAFTTestHelper.MockGLEntryVATEntryLink(
                         SAFTTestHelper.MockGLEntry(
                             SAFTExportHeader."Ending Date", VATEntry."Document No.", GLAccount."No.",
@@ -277,6 +280,7 @@ codeunit 148103 "SAF-T XML Tests"
         Customer: Record Customer;
         CustomerPostingGroup: Record "Customer Posting Group";
         GLEntry: Record "G/L Entry";
+        TransactionNo: Integer;
         DocNo: Code[20];
     begin
         // [SCENARIO 331600] "CustomerID" xml node exports only once per document
@@ -300,13 +304,14 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
 
         // [GIVEN] Two G/L Entries with accounts "X" and "Y"
+        TransactionNo := GetLastUsedTransactionNo() + 1;
         SAFTTestHelper.MockGLEntry(
             SAFTExportHeader."Ending Date", DocNo, CustomerPostingGroup."Receivables Account",
-            1, 0, 0, '',
+            TransactionNo, 0, 0, '',
             '', GLEntry."Source Type"::Customer, Customer."No.", '', LibraryRandom.RandDec(100, 2), 0);
         SAFTTestHelper.MockGLEntry(
             SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
-            1, 0, 0, '',
+            TransactionNo, 0, 0, '',
             '', GLEntry."Source Type"::Customer, Customer."No.", '', LibraryRandom.RandDec(100, 2), 0);
 
         // [WHEN] Export G/L Entries to the XML file
@@ -345,6 +350,7 @@ codeunit 148103 "SAF-T XML Tests"
         Vendor: Record Vendor;
         VendorPostingGroup: Record "Vendor Posting Group";
         GLEntry: Record "G/L Entry";
+        TransactionNo: Integer;
         DocNo: Code[20];
     begin
         // [SCENARIO 331600] "SupplierID" xml node exports only once per document
@@ -368,13 +374,14 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
 
         // [GIVEN] Two G/L Entries with accounts "X" and "Y"
+        TransactionNo := GetLastUsedTransactionNo() + 1;
         SAFTTestHelper.MockGLEntry(
             SAFTExportHeader."Ending Date", DocNo, VendorPostingGroup."Payables Account",
-            1, 0, 0, '',
+            TransactionNo, 0, 0, '',
             '', GLEntry."Source Type"::Vendor, Vendor."No.", '', LibraryRandom.RandDec(100, 2), 0);
         SAFTTestHelper.MockGLEntry(
             SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
-            1, 0, 0, '',
+            TransactionNo, 0, 0, '',
             '', GLEntry."Source Type"::Vendor, Vendor."No.", '', LibraryRandom.RandDec(100, 2), 0);
 
         // [WHEN] Export G/L Entries to the XML file
@@ -439,6 +446,7 @@ codeunit 148103 "SAF-T XML Tests"
         Vendor: Record Customer;
         GLEntry: Record "G/L Entry";
         VATEntry: array[2] of Record "VAT Entry";
+        TransactionNo: Integer;
         DocNo: Code[20];
         i: Integer;
     begin
@@ -460,13 +468,14 @@ codeunit 148103 "SAF-T XML Tests"
         // [GIVEN] Two G/L Entries with the same document/transaction, each related to its own VAT Entry
         // [GIVEN] VAT Entry 1: Base = 100, Amount = 21
         // [GIVEN] VAT Entry 2. Base = 200, Amount = 36
-        SAFTTestHelper.MockVATEntry(VATEntry[2], SAFTExportHeader."Ending Date", VATEntry[1].Type::Purchase, 1);
+        TransactionNo := GetLastUsedTransactionNo() + 1;
+        SAFTTestHelper.MockVATEntry(VATEntry[2], SAFTExportHeader."Ending Date", VATEntry[1].Type::Purchase, TransactionNo);
         for i := 1 to ArrayLen(VATEntry) do begin
-            SAFTTestHelper.MockVATEntry(VATEntry[i], SAFTExportHeader."Ending Date", VATEntry[i].Type::Purchase, 1);
+            SAFTTestHelper.MockVATEntry(VATEntry[i], SAFTExportHeader."Ending Date", VATEntry[i].Type::Purchase, TransactionNo);
             SAFTTestHelper.MockGLEntryVATEntryLink(
                 SAFTTestHelper.MockGLEntry(
                     SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
-                    1, 0, GLEntry."Gen. Posting Type"::Purchase, VATEntry[i]."VAT Bus. Posting Group",
+                    TransactionNo, 0, GLEntry."Gen. Posting Type"::Purchase, VATEntry[i]."VAT Bus. Posting Group",
                     VATEntry[i]."VAT Prod. Posting Group", GLEntry."Source Type"::Vendor, Vendor."No.", '', LibraryRandom.RandDec(100, 2), 0),
                 VATEntry[i]."Entry No.");
         end;
@@ -512,6 +521,7 @@ codeunit 148103 "SAF-T XML Tests"
         GLAccount: Record "G/L Account";
         Customer: Record Customer;
         GLEntry: Record "G/L Entry";
+        TransactionNo: Integer;
         DocNo: Code[20];
     begin
         // [SCENARIO 360658] A value of "Last Modified DateTime" exports to the SystemEntryDate xml node
@@ -529,10 +539,11 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
 
         // [GIVEN] A G/L Entry with "Last Modified DateTime" = "X" and "Posting Date" = "Y"
+        TransactionNo := GetLastUsedTransactionNo() + 1;
         GLEntry.Get(
             SAFTTestHelper.MockGLEntry(
                 SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
-                1, 0, GLEntry."Gen. Posting Type"::Sale, '',
+                TransactionNo, 0, GLEntry."Gen. Posting Type"::Sale, '',
                 '', GLEntry."Source Type"::Customer, Customer."No.", '', LibraryRandom.RandDec(100, 2), 0));
 
         // [WHEN] Export G/L Entries to the XML file
@@ -564,6 +575,7 @@ codeunit 148103 "SAF-T XML Tests"
         GLAccount: Record "G/L Account";
         Customer: Record Customer;
         GLEntry: Record "G/L Entry";
+        TransactionNo: Integer;
         DocNo: Code[20];
     begin
         // [SCENARIO 360658] A value of "Posting Date" exports to the SystemEntryDate xml node when "Last Modified DateTime" is blank
@@ -581,10 +593,11 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
 
         // [GIVEN] A G/L Entry with blank "Last Modified DateTime" and "Posting Date" = "Y"
+        TransactionNo := GetLastUsedTransactionNo() + 1;
         GLEntry.Get(
             SAFTTestHelper.MockGLEntry(
                 SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
-                1, 0, GLEntry."Gen. Posting Type"::Sale, '',
+                TransactionNo, 0, GLEntry."Gen. Posting Type"::Sale, '',
                 '', GLEntry."Source Type"::Customer, Customer."No.", '', LibraryRandom.RandDec(100, 2), 0));
         GLEntry.Validate("Last Modified DateTime", 0DT);
         GLEntry.Modify();
@@ -961,9 +974,7 @@ codeunit 148103 "SAF-T XML Tests"
         AmountLCY := LibraryRandom.RandDec(100, 2);
         ExchangeRate := round(1 / LibraryRandom.RandIntInRange(5, 10), 0.00001);
         Amount := Round(AmountLCY / ExchangeRate);
-        GLEntry.SetCurrentKey("Transaction No.");
-        if GLEntry.FindLast() then;
-        TransactionNo := GLEntry."Transaction No." + 1;
+        TransactionNo := GetLastUsedTransactionNo() + 1;
         GLEntryNo :=
             SAFTTestHelper.MockGLEntry(
                 SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
@@ -1188,9 +1199,7 @@ codeunit 148103 "SAF-T XML Tests"
         AmountLCY := LibraryRandom.RandDec(100, 2);
         ExchangeRate := round(1 / LibraryRandom.RandIntInRange(5, 10), 0.00001);
         Amount := Round(AmountLCY / ExchangeRate);
-        GLEntry.SetCurrentKey("Transaction No.");
-        if GLEntry.FindLast() then;
-        TransactionNo := GLEntry."Transaction No." + 1;
+        TransactionNo := GetLastUsedTransactionNo() + 1;
         GLEntryNo :=
             SAFTTestHelper.MockGLEntry(
                 SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
@@ -1294,9 +1303,7 @@ codeunit 148103 "SAF-T XML Tests"
         AmountLCY := 0;
         Amount := 0.1;
         ExchangeRate := 0.1;
-        GLEntry.SetCurrentKey("Transaction No.");
-        if GLEntry.FindLast() then;
-        TransactionNo := GLEntry."Transaction No." + 1;
+        TransactionNo := GetLastUsedTransactionNo() + 1;
         GLEntryNo :=
             SAFTTestHelper.MockGLEntry(
                 SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
@@ -1366,9 +1373,7 @@ codeunit 148103 "SAF-T XML Tests"
         AmountLCY := 0;
         Amount := 0.1;
         ExchangeRate := 0.1;
-        GLEntry.SetCurrentKey("Transaction No.");
-        if GLEntry.FindLast() then;
-        TransactionNo := GLEntry."Transaction No." + 1;
+        TransactionNo := GetLastUsedTransactionNo() + 1;
         GLEntryNo :=
             SAFTTestHelper.MockGLEntry(
                 SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
@@ -1438,9 +1443,7 @@ codeunit 148103 "SAF-T XML Tests"
         AmountLCY := 0;
         Amount := 0.1;
         ExchangeRate := 0.1;
-        GLEntry.SetCurrentKey("Transaction No.");
-        if GLEntry.FindLast() then;
-        TransactionNo := GLEntry."Transaction No." + 1;
+        TransactionNo := GetLastUsedTransactionNo() + 1;
         GLEntryNo :=
             SAFTTestHelper.MockGLEntry(
                 SAFTExportHeader."Ending Date", DocNo, GLAccount."No.",
@@ -1479,6 +1482,7 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTMappingRange: Record "SAF-T Mapping Range";
         TempXMLBuffer: Record "XML Buffer" temporary;
         Amount: array[2] of Decimal;
+        LastUsedTransactionNo: Integer;
     begin
         // [SCENARIO 485839] G/L Entry Totals xml nodes contain values from all periods when SAF-T file splitted to multiple periods
 
@@ -1491,15 +1495,16 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
 
         // [GIVEN] G/L Entry with "Transaction No." = 1, "Posting Date" = 01.01.2023 and Debit = 100
+        LastUsedTransactionNo := GetLastUsedTransactionNo();
         Amount[1] := LibraryRandom.RandDec(100, 2);
         SAFTTestHelper.MockGLEntry(
             SAFTExportHeader."Starting Date", LibraryUtility.GenerateGUID(), '',
-            1, 0, 0, '', '', 0, '', '', Amount[1], 0);
+            LastUsedTransactionNo + 1, 0, 0, '', '', 0, '', '', Amount[1], 0);
         // [GIVEN] G/L Entry with "Transaction No." = 2, "Posting Date" = 01.02.2023 and Credit Amount = 200
         Amount[2] := LibraryRandom.RandDec(100, 2);
         SAFTTestHelper.MockGLEntry(
             SAFTExportHeader."Ending Date", LibraryUtility.GenerateGUID(), '',
-            2, 0, 0, '', '', 0, '', '', 0, Amount[2]);
+            LastUsedTransactionNo + 2, 0, 0, '', '', 0, '', '', 0, Amount[2]);
 
         // [WHEN] Export G/L Entries to the XML file
         LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
@@ -1671,9 +1676,6 @@ codeunit 148103 "SAF-T XML Tests"
 
         // [GIVEN] Create SAF-T Export Header where "Export Currency Information" is enabled by default
         SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
-        SAFTExportHeader."Starting Date" := WorkDate() + 1;
-        SAFTExportHeader."Ending Date" := WorkDate() + 1;
-        SAFTExportHeader.Modify(true);
         SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
 
         // [GIVEN] Create and Post Payment Journal
@@ -1713,6 +1715,123 @@ codeunit 148103 "SAF-T XML Tests"
         // [THEN] The third have only "n1:Amount"
         VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
         SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(GenJournalLine[1]."Amount (LCY)" + GenJournalLine[2]."Amount (LCY)"));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure DebitCreditAmountWhenPaymentReversed()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempChildXMLBuffer: Record "XML Buffer" temporary;
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        ReversalEntry: Record "Reversal Entry";
+        PaymentAmount: Decimal;
+    begin
+        // [SCENARIO 537092] Export reversed payment.
+        Initialize();
+
+        // [GIVEN] SAF-T set up.
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Income Statement", 10);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+
+        // [GIVEN] SAF-T Export Header
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
+
+        // [GIVEN] Posted payment for Customer with Amount -100.
+        PaymentAmount := LibraryRandom.RandInt(100);
+        CreatePaymentJournalBatch(GenJournalBatch);
+        LibraryJournals.CreateGenJournalLine(
+            GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, Enum::"Gen. Journal Document Type"::Payment,
+            Enum::"Gen. Journal Account Type"::Customer, LibrarySales.CreateCustomerNo(), Enum::"Gen. Journal Account Type"::"G/L Account",
+            LibraryERM.CreateGLAccountNo(), -PaymentAmount);
+        GenJournalLine.Validate("Posting Date", SAFTExportHeader."Ending Date");
+        GenJournalLine.Modify(true);
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [GIVEN] Reversal Entry for payment.
+        ReversalEntry.SetHideDialog(true);
+        ReversalEntry.ReverseTransaction(GetPostedDocTransactionNo(GenJournalLine."Document No."));
+
+        // [WHEN] Export G/L Entries to the XML file
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+        SAFTExportLine.SetRange("Master Data", false);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+
+        // [THEN] Two "n1:Transaction/n1:Line/n1:DebitAmount" nodes have been generated
+        Assert.IsTrue(
+            TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries/n1:Journal/n1:Transaction/n1:Line/n1:DebitAmount'),
+            'DebitAmount node was not found.');
+        Assert.RecordCount(TempXMLBuffer, 2);
+
+        // [THEN] Both debit nodes have "n1:Amount" = 100
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
+        SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(PaymentAmount));
+        TempXMLBuffer.Next();
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
+        SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(PaymentAmount));
+
+        // [THEN] Two "n1:Transaction/n1:Line/n1:CreditAmount" nodes have been generated
+        Assert.IsTrue(
+            TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries/n1:Journal/n1:Transaction/n1:Line/n1:CreditAmount'),
+            'CreditAmount node was not found.');
+        Assert.RecordCount(TempXMLBuffer, 2);
+
+        // [THEN] Both credit nodes have "n1:Amount" = 100
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
+        SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(PaymentAmount));
+        TempXMLBuffer.Next();
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 1);
+        SAFTTestHelper.AssertCurrentElementValue(TempChildXMLBuffer, 'n1:Amount', SAFTTestHelper.FormatAmount(PaymentAmount));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure CreditAmountShouldAppearAsPositiveWhenExportCurrencyInformationIsEnabled()
+    var
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        TempChildXMLBuffer: Record "XML Buffer" temporary;
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        // [SCENARIO 564905] The Credit Amount appears as a negative value when generating valid SAF-T XML with Export Currency Information enabled in the Norwegian version.
+        Initialize();
+
+        // [GIVEN] Setup SAF-T
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Four Digit Standard Account", 10);
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+
+        // [GIVEN] Create SAF-T Export Header where "Export Currency Information" is enabled by default
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
+        SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
+
+        // [GIVEN] Create and Post Cash Receipt Journal
+        CreateAndPostCashReceiptJnl(GenJournalLine, SAFTExportHeader);
+
+        // [WHEN] Export G/L Entries to the XML file
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+        SAFTExportLine.SetRange("Master Data", false);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+
+        // [THEN] One "n1:Transaction/n1:Line/n1:CreditAmount" nodes have been generated
+        Assert.IsTrue(
+            TempXMLBuffer.FindNodesByXPath(
+                TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries/n1:Journal/n1:Transaction/n1:Line/n1:CreditAmount'),
+                'No G/L entries exported.');
+        Assert.RecordCount(TempXMLBuffer, 1);
+
+        // [THEN] The Credit Amount node has "n1:CurrencyCode", "n1:ExchangeRate" and positive value for Amount nodes - "n1:Amount", and "n1:CurrencyAmount" 
+        VerifyChildElementsCount(TempChildXMLBuffer, TempXMLBuffer, 4);
+        VerifyCurrencyAmountInfo(
+            TempChildXMLBuffer, GenJournalLine."Currency Code", Abs(GenJournalLine.Amount),
+            Abs(GenJournalLine."Amount (LCY)"), GenJournalLine."Currency Factor");
     end;
 
     local procedure Initialize()
@@ -1759,6 +1878,24 @@ codeunit 148103 "SAF-T XML Tests"
           SAFTMappingRange, "SAF-T Mapping Type"::"Four Digit Standard Account", LibraryRandom.RandIntInRange(3, 5));
         SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
         SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
+    end;
+
+    local procedure GetPostedDocTransactionNo(DocumentNo: Code[20]): Integer
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.SetRange("Document No.", DocumentNo);
+        GLEntry.FindLast();
+        exit(GLEntry."Transaction No.");
+    end;
+
+    local procedure GetLastUsedTransactionNo(): Integer
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.SetCurrentKey("Transaction No.");
+        GLEntry.FindLast();
+        exit(GLEntry."Transaction No.");
     end;
 
     local procedure VerifyHeaderStructure(var TempXMLBuffer: Record "XML Buffer" temporary; SAFTExportLine: Record "SAF-T Export Line")
@@ -2327,7 +2464,6 @@ codeunit 148103 "SAF-T XML Tests"
     var
         GenJournalBatch: Record "Gen. Journal Batch";
         Vendor: Record Vendor;
-        LibraryJournals: Codeunit "Library - Journals";
         PaymentJournal: TestPage "Payment Journal";
     begin
         CreatePaymentJournalBatch(GenJournalBatch);
@@ -2378,6 +2514,49 @@ codeunit 148103 "SAF-T XML Tests"
     local procedure GetDifferentCurrencyCode(): Code[10]
     begin
         exit(LibraryERM.CreateCurrencyWithRandomExchRates());
+    end;
+
+    local procedure CreateAndPostCashReceiptJnl(
+        var GenJournalLine: Record "Gen. Journal Line";
+        SAFTExportHeader: Record "SAF-T Export Header")
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+        Customer: Record Customer;
+        BankAccountPostingGroup: Record "Bank Account Posting Group";
+        CashReceiptJournal: TestPage "Cash Receipt Journal";
+    begin
+        CreateCashReceiptJournalBatch(GenJournalBatch);
+
+        LibrarySales.CreateCustomer(Customer);
+        Customer."Currency Code" := GetDifferentCurrencyCode();
+        Customer.Modify(true);
+
+        LibraryJournals.CreateGenJournalLine(
+            GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::Payment,
+            GenJournalLine."Account Type"::Customer, Customer."No.", GenJournalLine."Bal. Account Type"::"Bank Account",
+            LibraryERM.CreateBankAccountNo(), -LibraryRandom.RandInt(100));
+        GenJournalLine.Validate("Posting Date", SAFTExportHeader."Ending Date");
+        GenJournalLine.Modify(true);
+
+        BankAccountPostingGroup.FindSet();
+        BankAccountPostingGroup.ModifyAll("G/L Account No.", LibraryERM.CreateGLAccountNo());
+
+        CashReceiptJournal.OpenEdit();
+        CashReceiptJournal.Post.Invoke();
+    end;
+
+    local procedure CreateCashReceiptJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        GenJournalTemplate.SetRange(Type, GenJournalTemplate.Type::"Cash Receipts");
+        GenJournalTemplate.DeleteAll();
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        GenJournalTemplate.Validate(Type, GenJournalTemplate.Type::"Cash Receipts");
+        GenJournalTemplate.Modify(true);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        GenJournalBatch.Validate("Bal. Account Type", GenJournalBatch."Bal. Account Type"::"Bank Account");
+        GenJournalBatch.Modify(true);
     end;
 
     [MessageHandler]

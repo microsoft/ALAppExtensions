@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 4769 "Contoso GL Account"
 {
     TableType = Temporary;

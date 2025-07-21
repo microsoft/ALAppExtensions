@@ -24,4 +24,14 @@ codeunit 139634 "Shpfy Mock Bulk ProductCreate" implements "Shpfy IBulk Operatio
     begin
         exit('mutation');
     end;
+
+    procedure RevertFailedRequests(var BulkOperation: Record "Shpfy Bulk Operation")
+    begin
+        exit;
+    end;
+
+    procedure RevertAllRequests(var BulkOperation: Record "Shpfy Bulk Operation")
+    begin
+        exit;
+    end;
 }

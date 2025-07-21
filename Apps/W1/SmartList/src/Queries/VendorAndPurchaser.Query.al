@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 query 2501 "Vendor And Purchaser"
 {
     QueryType = Normal;

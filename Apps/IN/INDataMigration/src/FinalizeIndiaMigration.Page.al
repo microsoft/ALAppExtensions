@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 page 19010 "Finalize India Migration"
 {
     Caption = 'Finalize India Migration Wizard';

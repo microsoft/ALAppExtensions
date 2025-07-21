@@ -1,9 +1,17 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Foundation;
+
+using Microsoft.Foundation.Company;
+
 codeunit 11491 "Create Company Information US"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    //TODO: Post Code hardcoded.
     trigger OnRun()
     begin
         UpdateCompanyInformation();

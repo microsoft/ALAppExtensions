@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoTool;
+
+using System.Telemetry;
+
 page 5194 "Contoso Demo Tool"
 {
     PageType = List;
@@ -25,7 +34,7 @@ page 5194 "Contoso Demo Tool"
                 }
                 field("Data Level"; Rec."Data Level")
                 {
-                    ToolTip = 'Specifies the demo data module installation level';
+                    ToolTip = 'Specifies the demo data module installation level. It indicates which data was included and can vary between "Setup Data," meaning that only settings and configurations were installed, or "All," in which case setup, master data, transactions, and history were installed.';
                 }
             }
         }

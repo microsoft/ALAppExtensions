@@ -3290,6 +3290,9 @@ End Function</Code>
         <Field Name="AmountIncludingVATFormat">
           <DataField>AmountIncludingVATFormat</DataField>
         </Field>
+        <Field Name="Formatted_AmountIncludingVAT">
+          <DataField>Formatted_AmountIncludingVAT</DataField>
+        </Field>
         <Field Name="QRPaymentCode">
           <DataField>QRPaymentCode</DataField>
         </Field>
@@ -3331,6 +3334,9 @@ End Function</Code>
         </Field>
         <Field Name="AmountIncludingVAT_SalesAdvanceLetterLineFormat">
           <DataField>AmountIncludingVAT_SalesAdvanceLetterLineFormat</DataField>
+        </Field>
+        <Field Name="Formatted_AmountIncludingVAT_SalesAdvanceLetterLine">
+          <DataField>Formatted_AmountIncludingVAT_SalesAdvanceLetterLine</DataField>
         </Field>
         <Field Name="FullName_Employee">
           <DataField>FullName_Employee</DataField>

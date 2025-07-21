@@ -524,10 +524,10 @@ codeunit 31301 "Install Application CZ"
                 exit;
 
             IntrastatReportSetup."No Item Charges in Int. CZ" := StatutoryReportingSetupCZL."No Item Charges in Intrastat";
-            IntrastatReportSetup."Transaction Type Mandatory CZ" := StatutoryReportingSetupCZL."Transaction Type Mandatory";
-            IntrastatReportSetup."Transaction Spec. Mandatory CZ" := StatutoryReportingSetupCZL."Transaction Spec. Mandatory";
-            IntrastatReportSetup."Transport Method Mandatory CZ" := StatutoryReportingSetupCZL."Transport Method Mandatory";
-            IntrastatReportSetup."Shipment Method Mandatory CZ" := StatutoryReportingSetupCZL."Shipment Method Mandatory";
+            IntrastatReportSetup."Transaction Type Mandatory" := StatutoryReportingSetupCZL."Transaction Type Mandatory";
+            IntrastatReportSetup."Transaction Spec. Mandatory" := StatutoryReportingSetupCZL."Transaction Spec. Mandatory";
+            IntrastatReportSetup."Transport Method Mandatory" := StatutoryReportingSetupCZL."Transport Method Mandatory";
+            IntrastatReportSetup."Shipment Method Mandatory" := StatutoryReportingSetupCZL."Shipment Method Mandatory";
             IntrastatReportSetup."Intrastat Rounding Type CZ" := Enum::"Intrastat Rounding Type CZ".FromInteger(StatutoryReportingSetupCZL."Intrastat Rounding Type");
             IntrastatReportSetup.Modify(false);
         end;

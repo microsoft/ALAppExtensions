@@ -10,8 +10,15 @@ pageextension 31407 "Service Quote CZ" extends "Service Quote"
 {
     layout
     {
-        addafter(IsIntrastatTransactionCZL)
+        addlast(" Foreign Trade")
         {
+            field(IsIntrastatTransactionCZ; Rec.IsIntrastatTransaction())
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Transaction';
+                Editable = false;
+                ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+            }
             field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
             {
                 ApplicationArea = Basic, Suite;

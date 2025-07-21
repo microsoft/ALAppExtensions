@@ -244,6 +244,7 @@ table 6616 "FS Resource Pay Type"
             Description = 'Enter the markup percentage on the resource hourly cost. Use a value greater than 100% to mark it up and a value less than 100% to mark it down.';
             Caption = 'Hourly Markup %';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
     }
     keys

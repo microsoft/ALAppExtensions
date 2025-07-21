@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 permissionset 27225 "QBMigration - Edit"
 {
     Assignable = false;

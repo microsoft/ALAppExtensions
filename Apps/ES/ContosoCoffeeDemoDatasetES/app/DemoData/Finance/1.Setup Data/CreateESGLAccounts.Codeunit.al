@@ -1,3 +1,21 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.Enums;
+using Microsoft.Inventory.Setup;
+using Microsoft.DemoData.Common;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.HumanResources;
+using Microsoft.DemoData.Jobs;
+using Microsoft.DemoTool.Helpers;
+
 codeunit 10780 "Create ES GL Accounts"
 {
     InherentPermissions = X;
@@ -125,6 +143,7 @@ codeunit 10780 "Create ES GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.AllowancesName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.LongtermLiabilitiesName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherLiabilitiesName(), '589');
+        ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.OtherAccruedExpensesAndDeferredIncomeName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.TotalLiabilitiesName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.INCOMESTATEMENTName(), '');
         ContosoGLAccount.AddAccountForLocalization(CreateGLAccount.SalesofResourcesName(), '');
@@ -7633,7 +7652,7 @@ codeunit 10780 "Create ES GL Accounts"
 
     procedure BadDoubtfulDebtsName(): Text[100]
     begin
-        exit(BadDoubtfulDebtsTok);
+        exit(DoubtfulTradeReceivablesTok);
     end;
 
     procedure TrAccRecRetEmpt(): Code[20]
@@ -7803,7 +7822,7 @@ codeunit 10780 "Create ES GL Accounts"
 
     procedure BadDoubtfulDebtName(): Text[100]
     begin
-        exit(BadDoubtfulDebtTok);
+        exit(DoubtfulReceivablesTok);
     end;
 
     procedure DebtorsJointVentures(): Code[20]
@@ -15148,7 +15167,7 @@ codeunit 10780 "Create ES GL Accounts"
         FiscalIncDifRetPrevYearsHeadingTok: Label 'Fiscal Inc. Dif Ret Prev Years, Heading', MaxLength = 100;
         FiscalIncDifRetPrevYearsTok: Label 'Fiscal Inc. Dif Ret Prev Years', MaxLength = 100;
         FiscalIncDeductDiscountsTok: Label 'Fiscal Inc. Deduct & Discounts', MaxLength = 100;
-        ProvisionTok: Label 'Provision', MaxLength = 100;
+        ProvisionTok: Label 'Provisions Group', MaxLength = 100;
         ProvisionForPensionsEquityTok: Label 'Provision for Pensions, Equity', MaxLength = 100;
         TaxationReserveEquityTok: Label 'Taxation Reserve, Equity', MaxLength = 100;
         ProvisionForResponsibilitiesTok: Label 'Provision for Responsibilities', MaxLength = 100;
@@ -15449,7 +15468,7 @@ codeunit 10780 "Create ES GL Accounts"
         TrAccRecInvNotRecGTok: Label 'Tr. Acc Rec Inv Not Rec (G)', MaxLength = 100;
         TradeAcsRecAccATok: Label 'Trade Acs. Rec. Acc. (A)', MaxLength = 100;
         TrAccRecOtherVincCompTok: Label 'Tr. Acc Rec. Other Vinc. Comp.', MaxLength = 100;
-        BadDoubtfulDebtsTok: Label 'Bad & Doubtful Debts', MaxLength = 100;
+        DoubtfulTradeReceivablesTok: Label 'Doubtful trade receivables', MaxLength = 100;
         TrAccRecRetEmptTok: Label 'Tr. Acc. Rec. Ret. Empt.', MaxLength = 100;
         TradeDebtorsCreditBalancesTok: Label 'Trade Debtors-Credit Balances', MaxLength = 100;
         StTrDebtAdvancesNationalTok: Label 'ST Tr. Debt Advances National', MaxLength = 100;
@@ -15466,7 +15485,7 @@ codeunit 10780 "Create ES GL Accounts"
         DebtorsDiscountedBillsTok: Label 'Debtors Discounted Bills', MaxLength = 100;
         DebtBillsOnCollManagTok: Label 'Debt. Bills on Coll. Manag.', MaxLength = 100;
         DebtorsUnpaidBillsTok: Label 'Debtors Unpaid Bills', MaxLength = 100;
-        BadDoubtfulDebtTok: Label 'Bad & Doubtful Debt.', MaxLength = 100;
+        DoubtfulReceivablesTok: Label 'Doubtful Receivables', MaxLength = 100;
         DebtorsJointVenturesTok: Label 'Debtors Joint Ventures', MaxLength = 100;
         EmployeesTok: Label 'Employees', MaxLength = 100;
         RemunerationAdvancesHeadingTok: Label 'Remuneration Advances, Heading', MaxLength = 100;
@@ -15607,7 +15626,7 @@ codeunit 10780 "Create ES GL Accounts"
         InterimFinancialInvestmTok: Label 'Interim Financial Investm.', MaxLength = 100;
         InvestmentsInCapitalInstTok: Label 'Investments in Capital Inst', MaxLength = 100;
         StFixedIncomeSecurityTok: Label 'ST Fixed-Income Security', MaxLength = 100;
-        StFixedIncomeInvestmTok: Label 'ST Fixed-Income Investm.', MaxLength = 100;
+        StFixedIncomeInvestmTok: Label 'ST Fixed-Income Investment', MaxLength = 100;
         ShortTermLoansHeadingTok: Label 'Short-Term Loans, Heading', MaxLength = 100;
         StFaTransferenceLoansTok: Label 'ST FA Transference Loans', MaxLength = 100;
         StaffStCreditsTok: Label 'Staff ST Credits', MaxLength = 100;

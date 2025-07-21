@@ -517,6 +517,10 @@ codeunit 139695 "Shpfy Invoices Test"
         DocLinkToBCDoc.DeleteAll(false);
         ShpfyCustomer.DeleteAll(false);
 
+        Shop := CommunicationMgt.GetShopRecord();
+        Shop."Weight Unit" := Shop."Weight Unit"::Kilograms;
+        Shop.Modify(false);
+
         IsInitialized := true;
     end;
 

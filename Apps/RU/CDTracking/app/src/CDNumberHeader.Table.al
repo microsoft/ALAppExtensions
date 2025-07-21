@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 table 14104 "CD Number Header"
 {
     Caption = 'CD Number Header';

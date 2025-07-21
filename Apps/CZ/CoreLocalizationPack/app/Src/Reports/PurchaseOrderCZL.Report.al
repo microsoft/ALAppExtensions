@@ -21,6 +21,7 @@ using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
+using System.Text;
 using System.Utilities;
 
 report 31185 "Purchase Order CZL"
@@ -253,10 +254,16 @@ report 31185 "Purchase Order CZL"
             column(Amount_PurchaseHeader; Amount)
             {
             }
+            column(Formatted_Amount_PurchaseHeader; format(Amount, 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Purchase Header"."Currency Code")))
+            {
+            }
             column(AmountIncludingVAT_PurchaseHeaderCaption; FieldCaption("Amount Including VAT"))
             {
             }
             column(AmountIncludingVAT_PurchaseHeader; "Amount Including VAT")
+            {
+            }
+            column(Formatted_AmountIncludingVAT_PurchaseHeader; format("Amount Including VAT", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Purchase Header"."Currency Code")))
             {
             }
             column(DocFooterText; DocFooterText)
@@ -376,6 +383,9 @@ report 31185 "Purchase Order CZL"
                     {
                     }
                     column(LineAmount_PurchaseLine; "Line Amount")
+                    {
+                    }
+                    column(Formatted_LineAmount_PurchaseLine; format("Line Amount", 0, AutoFormat.ResolveAutoFormat(Enum::"Auto Format"::AmountFormat, "Purchase Header"."Currency Code")))
                     {
                     }
                     column(InvDiscountAmount_PurchaseLineCaption; FieldCaption("Inv. Discount Amount"))
@@ -523,6 +533,7 @@ report 31185 "Purchase Order CZL"
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ArchiveManagement: Codeunit ArchiveManagement;
+        AutoFormat: Codeunit "Auto Format";
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Order';
         PageLbl: Label 'Page';

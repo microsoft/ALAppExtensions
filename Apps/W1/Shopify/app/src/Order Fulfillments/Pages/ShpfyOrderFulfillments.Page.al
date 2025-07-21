@@ -91,7 +91,7 @@ page 30112 "Shpfy Order Fulfillments"
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 RunObject = Page "Posted Sales Shipment";
-                RunPageLink = "Shpfy Fulfillment Id" = FIELD("Shopify Fulfillment Id");
+                RunPageLink = "Shpfy Fulfillment Id" = field("Shopify Fulfillment Id");
                 RunPageMode = View;
                 ToolTip = 'View related posted sales shipments.';
             }

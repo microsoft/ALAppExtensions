@@ -6,9 +6,7 @@ page 37021 "Purch. Actual vs. Budget Amt."
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Purchases Actual vs. Budget Amount';
     AboutTitle = 'About Purchases Actual vs. Budget Amount';
     AboutText = 'The Purchases Actual vs. Budget Amount report offers a comparative analysis of purchase amounts against budgeted amounts. It includes variance and variance percentage metrics to clearly show how actual purchases align with budgeted targets.';
@@ -26,8 +24,14 @@ page 37021 "Purch. Actual vs. Budget Amt."
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
+
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
                 end;
             }

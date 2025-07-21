@@ -575,6 +575,16 @@ codeunit 18970 "Check Management Subscriber"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::CheckManagement, 'OnBeforePostRoundingAmount', '', false, false)]
+    local procedure OnBeforePostRoundingAmount(var BankAcc: Record "Bank Account"; var CheckLedgEntry: Record "Check Ledger Entry"; var IsHandled: Boolean)
+    begin
+        if CheckLedgEntry."Bank Payment Type" <> CheckLedgEntry."Bank Payment Type"::"Manual Check" then
+            exit;
+
+        if BankAcc."Currency Code" = '' then
+            IsHandled := true;
+    end;
+
     [EventSubscriber(ObjectType::Report, Report::Check, 'OnAfterAssignGenJnlLineDocumentNo', '', false, false)]
     local procedure OnAfterAssignGenJnlLineDocumentNo(var GenJnlLine: Record "Gen. Journal Line"; PreviousDocumentNo: Code[20])
     var
@@ -591,6 +601,40 @@ codeunit 18970 "Check Management Subscriber"
         GenJnlLine."Document No." := PreviousDocumentNo;
         GenJnlLine."Cheque No." := CopyStr(ChequeNo, 1, 10);
         GenJnlLine."Cheque Date" := GenJnlLine."Posting Date";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::CheckManagement, 'OnFinancialVoidCheckOnAfterPostBalAccLine', '', false, false)]
+    local procedure OnFinancialVoidCheckOnAfterPostBalAccLine(var GenJournalLine: Record "Gen. Journal Line"; CheckLedgerEntry: Record "Check Ledger Entry"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
+        TaxBaseLibrary: Codeunit "Tax Base Library";
+        TotalTDSEncludingSheCess: Decimal;
+        TDSEntryNo: Integer;
+        TDSAccountNo: Code[20];
+    begin
+        if CheckLedgerEntry."Bank Payment Type" <> CheckLedgerEntry."Bank Payment Type"::"Manual Check" then
+            exit;
+
+        TaxBaseLibrary.GetTotalTDSIncludingSheCess(CheckLedgerEntry."Document No.", TotalTDSEncludingSheCess, TDSAccountNo, TDSEntryNo);
+        if TDSEntryNo <> 0 then begin
+            GenJournalLine.Init();
+            GenJournalLine."Document No." := CheckLedgerEntry."Document No.";
+            GenJournalLine."Stale Cheque" := true;
+            GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
+            GenJournalLine."Posting Date" := CheckLedgerEntry."Posting Date";
+            GenJournalLine.Validate("Account No.", TDSAccountNo);
+            GenJournalLine.Description := StrSubstNo(VoidingCheckLbl, CheckLedgerEntry."Check No.");
+            GenJournalLine.Validate(Amount, TotalTDSEncludingSheCess);
+            GenJournalLine."Source Code" := SourceCodeSetup."Financially Voided Check";
+            GenJournalLine."Shortcut Dimension 1 Code" := BankAccountLedgerEntry."Global Dimension 1 Code";
+            GenJournalLine."Shortcut Dimension 2 Code" := BankAccountLedgerEntry."Global Dimension 2 Code";
+            GenJournalLine."Dimension Set ID" := BankAccountLedgerEntry."Dimension Set ID";
+            GenJournalLine."Allow Zero-Amount Posting" := true;
+            GenJnlPostLine.Run(GenJournalLine);
+
+            TaxBaseLibrary.ReverseTDSEntry(TDSEntryNo, GenJnlPostLine.GetNextTransactionNo());
+        end;
     end;
 
     procedure OnActionPrintCheckforContravoucher(GenJourLine: Record "Gen. Journal Line")

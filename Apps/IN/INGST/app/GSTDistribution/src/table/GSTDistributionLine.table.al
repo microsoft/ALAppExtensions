@@ -119,6 +119,11 @@ table 18204 "GST Distribution Line"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(28; "Location Posting No. Series"; Code[20])
+        {
+            Caption = 'Posting No. Series';
+            DataClassification = CustomerContent;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -131,6 +136,7 @@ table 18204 "GST Distribution Line"
                 ShowDimensions();
             end;
         }
+
     }
 
     keys

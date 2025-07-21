@@ -117,6 +117,7 @@ table 11733 "Cash Document Line CZP"
                     CashDeskEventCZP.TestField("Account No.", "Account No.");
 
                 GetCashDocumentHeaderCZP();
+                OnValidateAccountNoOnBeforeUpdateCashDocumentHeader(Rec, CashDocumentHeaderCZP);
                 if ("Account Type" in ["Account Type"::Customer, "Account Type"::Vendor]) and ("Account No." <> '') then
                     if CashDocumentHeaderCZP."Partner No." = '' then begin
                         case "Account Type" of
@@ -843,6 +844,12 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'Gen. Posting Type';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Gen. Posting Type" <> "Gen. Posting Type"::" " then
+                    Validate("VAT Prod. Posting Group");
+            end;
         }
         field(70; "VAT Calculation Type"; Enum "Tax Calculation Type")
         {
@@ -869,26 +876,26 @@ table 11733 "Cash Document Line CZP"
 
             trigger OnValidate()
             begin
-                if VATPostingSetup.Get("VAT Bus. Posting Group", "VAT Prod. Posting Group") then begin
-                    "VAT %" := VATPostingSetup."VAT %";
-                    "VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
-                    "VAT Identifier" := VATPostingSetup."VAT Identifier";
-                    case "VAT Calculation Type" of
-                        "VAT Calculation Type"::"Reverse Charge VAT",
-                        "VAT Calculation Type"::"Sales Tax":
-                            "VAT %" := 0;
-                        "VAT Calculation Type"::"Full VAT":
-                            begin
-                                TestField("Account Type", "Account Type"::"G/L Account");
-                                VATPostingSetup.TestField("Sales VAT Account");
-                                TestField("Account No.", VATPostingSetup."Sales VAT Account");
-                            end;
+                "VAT %" := 0;
+                "VAT Calculation Type" := "VAT Calculation Type"::"Normal VAT";
+                "VAT Identifier" := '';
+                if "Gen. Posting Type" <> "Gen. Posting Type"::" " then
+                    if VATPostingSetup.Get("VAT Bus. Posting Group", "VAT Prod. Posting Group") then begin
+                        "VAT %" := VATPostingSetup."VAT %";
+                        "VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
+                        "VAT Identifier" := VATPostingSetup."VAT Identifier";
+                        case "VAT Calculation Type" of
+                            "VAT Calculation Type"::"Reverse Charge VAT",
+                            "VAT Calculation Type"::"Sales Tax":
+                                "VAT %" := 0;
+                            "VAT Calculation Type"::"Full VAT":
+                                begin
+                                    TestField("Account Type", "Account Type"::"G/L Account");
+                                    VATPostingSetup.TestField("Sales VAT Account");
+                                    TestField("Account No.", VATPostingSetup."Sales VAT Account");
+                                end;
+                        end;
                     end;
-                end else begin
-                    "VAT %" := 0;
-                    "VAT Calculation Type" := "VAT Calculation Type"::"Normal VAT";
-                    "VAT Identifier" := '';
-                end;
                 Validate(Amount);
             end;
         }
@@ -1830,7 +1837,8 @@ table 11733 "Cash Document Line CZP"
         Validate("VAT Bus. Posting Group", PostedGLAccount."VAT Bus. Posting Group");
         Validate("VAT Prod. Posting Group", PostedGLAccount."VAT Prod. Posting Group");
     end;
-
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the CashDocumentStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
     procedure ExtStatistics()
     var
         CashDocumentLineCZP: Record "Cash Document Line CZP";
@@ -1849,6 +1857,7 @@ table 11733 "Cash Document Line CZP"
         CashDocumentLineCZP.SetRange("Line No.", "Line No.");
         Page.RunModal(Page::"Cash Document Statistics CZP", CashDocumentLineCZP);
     end;
+#endif
 
     procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)
     begin
@@ -2082,6 +2091,8 @@ table 11733 "Cash Document Line CZP"
 
     local procedure CalcTotalAmounts(var TotalCashDocumentLineCZP: Record "Cash Document Line CZP")
     begin
+        if "Allocation Account No." = '' then
+            exit;
         TotalCashDocumentLineCZP.Init();
         if ("VAT Calculation Type" = "VAT Calculation Type"::"Sales Tax") or
            (("VAT Calculation Type" in
@@ -2092,6 +2103,7 @@ table 11733 "Cash Document Line CZP"
             TotalCashDocumentLineCZP.SetFilter("Line No.", '<>%1', "Line No.");
             TotalCashDocumentLineCZP.SetRange("VAT Identifier", "VAT Identifier");
             TotalCashDocumentLineCZP.SetFilter("VAT %", '<>%1', 0);
+            TotalCashDocumentLineCZP.SetRange("Allocation Account No.", "Allocation Account No.");
             if not TotalCashDocumentLineCZP.IsEmpty() then
                 TotalCashDocumentLineCZP.CalcSums("VAT Base Amount", "Amount Including VAT", "VAT Amount");
         end;
@@ -2137,6 +2149,26 @@ table 11733 "Cash Document Line CZP"
     procedure IsExtendedText(): Boolean
     begin
         exit(("Account Type" = "Account Type"::" ") and ("Attached to Line No." <> 0) and (Amount = 0));
+    end;
+
+    procedure AccountTypeToNetChangeAccountType(): Enum "Net Change Account Type CZL"
+    begin
+        case "Account Type" of
+            "Account Type"::"G/L Account":
+                exit("Net Change Account Type CZL"::"G/L Account");
+            "Account Type"::Customer:
+                exit("Net Change Account Type CZL"::Customer);
+            "Account Type"::Vendor:
+                exit("Net Change Account Type CZL"::Vendor);
+            "Account Type"::Employee:
+                exit("Net Change Account Type CZL"::Employee);
+            "Account Type"::"Bank Account":
+                exit("Net Change Account Type CZL"::"Bank Account");
+            "Account Type"::"Fixed Asset":
+                exit("Net Change Account Type CZL"::"Fixed Asset");
+            "Account Type"::"Allocation Account":
+                exit("Net Change Account Type CZL"::"Allocation Account");
+        end;
     end;
 
     [IntegrationEvent(false, false)]
@@ -2293,6 +2325,11 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnDeleteOnAfterSetCashDocumentLineFilters(var CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateAccountNoOnBeforeUpdateCashDocumentHeader(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP");
     begin
     end;
 }

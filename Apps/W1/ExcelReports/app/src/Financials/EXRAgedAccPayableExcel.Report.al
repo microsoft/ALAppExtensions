@@ -14,7 +14,7 @@ using Microsoft.ExcelReports;
 report 4403 "EXR Aged Acc Payable Excel"
 {
     ApplicationArea = All;
-    Caption = 'Aged Accounts Payable Excel (Preview)';
+    Caption = 'Aged Accounts Payable (Excel)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = AgedAccountsPayableExcel;
     ExcelLayoutMultipleDataSheets = true;
@@ -166,8 +166,8 @@ report 4403 "EXR Aged Acc Payable Excel"
     requestpage
     {
         SaveValues = true;
-        AboutTitle = 'Aged Accounts Payable Excel';
-        AboutText = 'This report contains aggregated aging data based on vendor ledger entries. The data is aggregated and bucketed according to the ‘Aged as of'' and ‘period length'' parameters in the reports request page. The aggregated data is summarized per the 2 global dimensions.';
+        AboutTitle = 'About Aged Accounts Payables (Excel)';
+        AboutText = 'Analyze vendor balances at the end of each period: by period (LCY), by period (FCY), or with an overview Due by Currencies. Monitor unpaid invoices, and prioritize payments for overdue accounts.';
 
         layout
         {
@@ -242,11 +242,11 @@ report 4403 "EXR Aged Acc Payable Excel"
     }
     labels
     {
-        ByPeriodLCY = 'By period (LCY)';
+        ByPeriodLCY = 'By Period (LCY)', MaxLength = 31, Comment = 'Excel worksheet name.';
         BalanceLCY = 'Balance (LCY)';
         AgedAccountsPayableByPeriodLCY = 'Aged Accounts Payable by Period (LCY)';
         OpenAmountsInLCY = 'Open amounts in LCY';
-        ByPeriodFCY = 'By Period (FCY)';
+        ByPeriodFCY = 'By Period (FCY)', MaxLength = 31, Comment = 'Excel worksheet name.';
         BalanceFCY = 'Balance (FCY)';
         AgedAccountsPayableByPeriodFCY = 'Aged Accounts Payable by Period (FCY)';
         OpenAmountsInFCY = 'Open amounts in FCY';
@@ -260,10 +260,23 @@ report 4403 "EXR Aged Acc Payable Excel"
         DocumentDateMonth = 'Document Date (Month)';
         DocumentDateQuarter = 'Document Date (Quarter)';
         DocumentDateYear = 'Document Date (Year)';
-        DueByCurrencies = 'Due by Currencies';
+        DueByCurrencies = 'Due by Currencies', MaxLength = 31, Comment = 'Excel worksheet name.';
         OpenByFCY = 'Open by (FCY)';
         DataRetrieved = 'Data retrieved:';
         CurrencyCodeDisplay = 'Currency Code';
+        AgedAsOf = 'Aged as of:';
+        AgedAccountsPayable = 'Aged Accounts Payable';
+        AgedAccountsPayablePrint = 'Aged Accounts Payable (Print)', MaxLength = 31, Comment = 'Excel worksheet name.';
+        AgedBy = 'Aged by:';
+        // About the report labels
+        AboutTheReportLabel = 'About the report', MaxLength = 31, Comment = 'Excel worksheet name.';
+        EnvironmentLabel = 'Environment';
+        CompanyLabel = 'Company';
+        UserLabel = 'User';
+        RunOnLabel = 'Run on';
+        ReportNameLabel = 'Report name';
+        DocumentationLabel = 'Documentation';
+        TimezoneLabel = 'UTC';
     }
 
     var

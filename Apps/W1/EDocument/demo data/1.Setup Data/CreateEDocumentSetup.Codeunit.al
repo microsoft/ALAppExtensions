@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 5374 "Create E-Document Setup"
 {
     InherentEntitlements = X;
@@ -5,31 +6,10 @@ codeunit 5374 "Create E-Document Setup"
 
     trigger OnRun()
     begin
+        CreateEDocumentsSetupWithNewExperience();
         CreateEDocService();
         CreateWorkflow();
         CreateDocSendingProfile();
-        SetupCompanyInfo();
-    end;
-
-    local procedure SetupCompanyInfo()
-    var
-        CompanyInfo: Record "Company Information";
-        Exists: Boolean;
-    begin
-        if CompanyInfo.Get() then
-            Exists := true;
-
-        if CompanyInfo.Name = '' then
-            CompanyInfo.Name := 'Contoso Coffee';
-        if CompanyInfo.Address = '' then
-            CompanyInfo.Address := '1234 Main St';
-        if CompanyInfo."VAT Registration No." = '' then
-            CompanyInfo."VAT Registration No." := '77777777';
-
-        if Exists then
-            CompanyInfo.Modify()
-        else
-            CompanyInfo.Insert();
     end;
 
     local procedure CreateWorkflow()
@@ -64,6 +44,17 @@ codeunit 5374 "Create E-Document Setup"
         Workflow.Category := CategoryCode;
         Workflow.Enabled := false;
         if Workflow.Insert() then;
+    end;
+
+    local procedure CreateEDocumentsSetupWithNewExperience()
+    var
+        EDocumentsSetup: Record "E-Documents Setup";
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        if EDocumentsSetup.IsNewEDocumentExperienceActive() then
+            exit;
+        if EnvironmentInformation.IsOnPrem() then
+            EDocumentsSetup.InsertNewExperienceSetup();
     end;
 
     local procedure CreateEDocService()

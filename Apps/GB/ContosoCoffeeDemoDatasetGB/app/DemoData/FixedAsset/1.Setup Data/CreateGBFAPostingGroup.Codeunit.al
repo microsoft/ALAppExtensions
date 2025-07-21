@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 11506 "Create GB FA Posting Group"
 {
     SingleInstance = true;

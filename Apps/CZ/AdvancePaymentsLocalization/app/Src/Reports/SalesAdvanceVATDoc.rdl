@@ -2927,7 +2927,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               <DataSetName>DataSet_Result</DataSetName>
                               <Filters>
                                 <Filter>
-                                  <FilterExpression>=Fields!ExchRateText.Value</FilterExpression>
+                                  <FilterExpression>=Fields!VATAmtLineVATIdentifier.Value</FilterExpression>
                                   <Operator>GreaterThan</Operator>
                                   <FilterValues>
                                     <FilterValue>""</FilterValue>
@@ -3564,6 +3564,9 @@ End Function</Code>
         <Field Name="AmountIncludingVATFormat">
           <DataField>AmountIncludingVATFormat</DataField>
         </Field>
+        <Field Name="Formatted_AmountIncludingVAT">
+          <DataField>Formatted_AmountIncludingVAT</DataField>
+        </Field>
         <Field Name="CopyNo">
           <DataField>CopyNo</DataField>
         </Field>
@@ -3591,11 +3594,17 @@ End Function</Code>
         <Field Name="VATAmtLineVATBaseFormat">
           <DataField>VATAmtLineVATBaseFormat</DataField>
         </Field>
+        <Field Name="Formatted_VATAmtLineVATBase">
+          <DataField>Formatted_VATAmtLineVATBase</DataField>
+        </Field>
         <Field Name="VATAmtLineVATAmt">
           <DataField>VATAmtLineVATAmt</DataField>
         </Field>
         <Field Name="VATAmtLineVATAmtFormat">
           <DataField>VATAmtLineVATAmtFormat</DataField>
+        </Field>
+        <Field Name="Formatted_VATAmtLineVATAmt">
+          <DataField>Formatted_VATAmtLineVATAmt</DataField>
         </Field>
         <Field Name="VATAmtLineVATBaseLCY">
           <DataField>VATAmtLineVATBaseLCY</DataField>
@@ -3603,11 +3612,17 @@ End Function</Code>
         <Field Name="VATAmtLineVATBaseLCYFormat">
           <DataField>VATAmtLineVATBaseLCYFormat</DataField>
         </Field>
+        <Field Name="Formatted_VATAmtLineVATBaseLCY">
+          <DataField>Formatted_VATAmtLineVATBaseLCY</DataField>
+        </Field>
         <Field Name="VATAmtLineVATAmtLCY">
           <DataField>VATAmtLineVATAmtLCY</DataField>
         </Field>
         <Field Name="VATAmtLineVATAmtLCYFormat">
           <DataField>VATAmtLineVATAmtLCYFormat</DataField>
+        </Field>
+        <Field Name="Formatted_VATAmtLineVATAmtLCY">
+          <DataField>Formatted_VATAmtLineVATAmtLCY</DataField>
         </Field>
         <Field Name="FullName_Employee">
           <DataField>FullName_Employee</DataField>

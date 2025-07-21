@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Finance;
+
+using Microsoft.Finance.Currency;
+
 codeunit 10831 "Create ES Currency"
 {
     InherentEntitlements = X;
@@ -18,7 +27,6 @@ codeunit 10831 "Create ES Currency"
         UpdateCurrency(CreateCurrency.CZK(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.DKK(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.DZD(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
-        UpdateCurrency(CreateCurrency.EUR(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.FJD(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.GBP(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.HKD(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());

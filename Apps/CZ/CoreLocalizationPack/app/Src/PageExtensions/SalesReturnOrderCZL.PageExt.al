@@ -11,6 +11,12 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
 {
     layout
     {
+        modify("VAT Registration No.")
+        {
+            Editable = true;
+            Importance = Standard;
+        }
+        movelast("Invoice Details"; "VAT Registration No.")
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -55,15 +61,21 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
         }
         addlast("Invoice Details")
         {
+#if not CLEAN27
             field("VAT Registration No. CZL"; Rec."VAT Registration No.")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT registration number. The field will be used when you do business with partners from EU countries/regions.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+                ObsoleteReason = 'Replaced by standard "VAT Registration No." field.';
             }
-            field("Registration No. CZL"; Rec."Registration No. CZL")
+#endif
+            field("Registration No. CZL"; Rec."Registration Number")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of customer.';
+                ToolTip = 'Specifies the customer''s registration number.';
             }
             field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
             {
@@ -82,7 +94,7 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
         }
         addafter("Currency Code")
         {
-            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCode())
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL())
             {
                 ApplicationArea = Suite;
                 Caption = 'Additional Currency Code';
@@ -92,7 +104,9 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
                 trigger OnAssistEdit()
                 begin
                     Clear(ChangeExchangeRate);
-                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    if Rec."Additional Currency Factor CZL" = 0 then
+                        Rec.UpdateAddCurrencyFactorCZL();
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
                     if ChangeExchangeRate.RunModal() = Action::OK then
                         Rec."Additional Currency Factor CZL" := ChangeExchangeRate.GetParameter();
                     Clear(ChangeExchangeRate);
@@ -141,13 +155,19 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies when the sales header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
+#if not CLEAN26
             field(IsIntrastatTransactionCZL; Rec.IsIntrastatTransactionCZL())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Intrastat Transaction';
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The declaration of the field is moved to Intrastat CZ extension.';
+                ObsoleteTag = '26.0';
             }
+#endif
         }
         addafter("Foreign Trade")
         {
@@ -217,7 +237,7 @@ pageextension 11730 "Sales Return Order CZL" extends "Sales Return Order"
 
     trigger OnOpenPage()
     begin
-        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
     end;
 
     var

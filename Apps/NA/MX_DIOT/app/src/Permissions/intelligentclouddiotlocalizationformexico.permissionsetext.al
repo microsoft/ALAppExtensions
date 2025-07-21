@@ -6,7 +6,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Security.AccessControl;
 
-permissionsetextension 31328 "INTELLIGENT CLOUD - DIOT - Localization for Mexico" extends "INTELLIGENT CLOUD"
+permissionsetextension 27037 "INTELLIGENT CLOUD - DIOT - Localization for Mexico" extends "INTELLIGENT CLOUD"
 {
     Permissions = tabledata "DIOT Concept" = RIMD,
                   tabledata "DIOT Concept Link" = RIMD,

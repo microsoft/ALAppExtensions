@@ -1,6 +1,8 @@
 namespace Microsoft.PowerBIReports;
 
+using System.Azure.Identity;
 using System.DateTime;
+
 
 page 36955 "Date Setup"
 {
@@ -73,11 +75,15 @@ page 36955 "Date Setup"
                 field(dateTblEnd; Rec."Date Table Ending Date")
                 {
                 }
+                field(tenantID; AzureADTenant.GetAadTenantId())
+                {
+                }
             }
         }
     }
 
     var
+        AzureADTenant: Codeunit "Azure AD Tenant";
         TimeZoneDisplayName: Text[250];
 
     trigger OnAfterGetCurrRecord()

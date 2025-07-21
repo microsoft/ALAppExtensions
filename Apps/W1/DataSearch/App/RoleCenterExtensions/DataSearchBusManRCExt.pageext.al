@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 pageextension 2683 "Data Search Bus. Man. RC Ext" extends "Business Manager Role Center"
 {
     ObsoleteState = Pending;

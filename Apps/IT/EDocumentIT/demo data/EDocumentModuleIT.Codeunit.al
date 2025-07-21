@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 12194 "E-Document Module IT"
 {
     SingleInstance = true;

@@ -749,7 +749,8 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
                             if UseFunctionalCurrency then begin
                                 AdditionalTempVATAmountLine.GetLine(Number);
                                 VALVATBaseLCY := AdditionalTempVATAmountLine."Additional-Currency Base CZL";
-                                VALVATAmountLCY := AdditionalTempVATAmountLine."Additional-Currency Amount CZL";
+                                if VALVATAmountLCY <> 0 then
+                                    VALVATAmountLCY := AdditionalTempVATAmountLine."Additional-Currency Amount CZL";
                             end;
                         end;
 
@@ -784,16 +785,15 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
                                 if ("Purch. Inv. Header"."Currency Code" = GeneralLedgerSetup."LCY Code") or ("Purch. Inv. Header"."Currency Code" = '') then
                                     VALSpecLCYHeader := '';
                             end else begin
+                                if TempVATAmountLine."VAT Amount" = 0 then
+                                    AdditionalTempVATAmountLine."Additional-Currency Amount CZL" := 0;
                                 if ("Purch. Inv. Header"."Additional Currency Factor CZL" <> 0) and ("Purch. Inv. Header"."Additional Currency Factor CZL" <> 1) then begin
                                     VALSpecLCYHeader := VATAmtSpecificationLbl + Format(GeneralLedgerSetup."Additional Reporting Currency");
-                                    if CalculatedExchRate <> 1 then begin
-                                        CurrencyExchangeRate.FindCurrency("Purch. Inv. Header"."Posting Date", "Purch. Inv. Header"."Currency Code", 1);
-                                        CalculatedExchRate := Round(((1 / "Purch. Inv. Header"."VAT Currency Factor CZL") / (1 / "Purch. Inv. Header"."Additional Currency Factor CZL")) * CurrencyExchangeRate."Exchange Rate Amount", 0.00001)
-                                    end else begin
-                                        CurrencyExchangeRate."Exchange Rate Amount" := 1;
-                                        CalculatedExchRate := Round("Purch. Inv. Header"."Additional Currency Factor CZL" * CurrencyExchangeRate."Exchange Rate Amount", 0.00001);
-                                    end;
-                                    VALExchRate := StrSubstNo(ExchRateAdditionalLbl, CurrencyExchangeRate."Exchange Rate Amount", "Purch. Inv. Header"."Currency Code", CalculatedExchRate, GeneralLedgerSetup."Additional Reporting Currency");
+                                    if ("Purch. Inv. Header"."VAT Currency Factor CZL" = 0) or ((TempVATAmountLine."VAT Base" + TempVATAmountLine."VAT Amount") = 0) then
+                                        CalculatedExchRate := Round("Purch. Inv. Header"."Additional Currency Factor CZL", 0.00001)
+                                    else
+                                        CalculatedExchRate := Round((AdditionalTempVATAmountLine."Additional-Currency Base CZL" + AdditionalTempVATAmountLine."Additional-Currency Amount CZL") / (TempVATAmountLine."VAT Base" + TempVATAmountLine."VAT Amount"), 0.00001);
+                                    VALExchRate := StrSubstNo(ExchRateAdditionalLbl, 1, "Purch. Inv. Header"."Currency Code", CalculatedExchRate, GeneralLedgerSetup."Additional Reporting Currency");
                                 end;
                                 if (CalculatedExchRate = 1) or ("Purch. Inv. Header"."Currency Code" = GeneralLedgerSetup."Additional Reporting Currency") then
                                     VALSpecLCYHeader := '';

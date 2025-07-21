@@ -18,12 +18,16 @@ query 37008 "Prod. Orders - PBI API"
     {
         dataitem(productionOrder; "Production Order")
         {
-            column(status; Status)
-            {
-            }
-            column(no; "No.")
-            {
-            }
+            column(status; Status) { }
+            column(no; "No.") { }
+            column(sourceType; "Source Type") { }
+            column(sourceNo; "Source No.") { }
+            column(routingNo; "Routing No.") { }
+            column(startingDate; "Starting Date") { }
+            column(endingDate; "Ending Date") { }
+            column(dueDate; "Due Date") { }
+            column(quantity; Quantity) { }
+            column(description; Description) { }
         }
     }
 }

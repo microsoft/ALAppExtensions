@@ -6,9 +6,7 @@ page 37016 "Purchases by Item"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Purchases by Item';
     AboutTitle = 'About Purchases by Item';
     AboutText = 'The Purchases by Item report breaks down procurement performance by item, highlighting metrics such as Purchase Amount, Purchase Quantity. The Treemap visualizes the relative size and contribution of each item to the whole, making it easy to identify the largest or smallest purchases at a glance.';
@@ -26,8 +24,14 @@ page 37016 "Purchases by Item"
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
+
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
                 end;
             }

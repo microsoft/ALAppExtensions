@@ -31,19 +31,19 @@ codeunit 47000 "SL Account Migrator"
 
     internal procedure MigrateAccountDetails(SLAccountStaging: Record "SL Account Staging"; GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
     var
-        HelperFunctions: Codeunit "SL Helper Functions";
+        SLHelperFunctions: Codeunit "SL Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         AccountNum: Code[20];
         AccountType: Option Posting;
     begin
-        AccountNum := CopyStr(SLAccountStaging.AcctNum, 1, 20);
+        AccountNum := CopyStr(SLAccountStaging.AcctNum, 1, MaxStrLen(SLAccountStaging.AcctNum));
 
-        if not GLAccDataMigrationFacade.CreateGLAccountIfNeeded(AccountNum, CopyStr(SLAccountStaging.Name, 1, 50), AccountType::Posting) then
+        if not GLAccDataMigrationFacade.CreateGLAccountIfNeeded(AccountNum, CopyStr(SLAccountStaging.Name, 1, MaxStrLen(SLAccountStaging.Name)), AccountType::Posting) then
             exit;
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLAccountStaging.RecordId));
-        GLAccDataMigrationFacade.SetAccountCategory(HelperFunctions.ConvertAccountCategory(SLAccountStaging));
-        GLAccDataMigrationFacade.SetDebitCreditType(HelperFunctions.ConvertDebitCreditType(SLAccountStaging));
-        GLAccDataMigrationFacade.SetIncomeBalanceType(HelperFunctions.ConvertIncomeBalanceType(SLAccountStaging));
+        GLAccDataMigrationFacade.SetAccountCategory(SLHelperFunctions.ConvertAccountCategory(SLAccountStaging));
+        GLAccDataMigrationFacade.SetDebitCreditType(SLHelperFunctions.ConvertDebitCreditType(SLAccountStaging));
+        GLAccDataMigrationFacade.SetIncomeBalanceType(SLHelperFunctions.ConvertIncomeBalanceType(SLAccountStaging));
         GLAccDataMigrationFacade.ModifyGLAccount(true);
     end;
 
@@ -67,7 +67,7 @@ codeunit 47000 "SL Account Migrator"
     local procedure OnMigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         SLAccountStaging: Record "SL Account Staging";
-        HelperFunctions: Codeunit "SL Helper Functions";
+        SLHelperFunctions: Codeunit "SL Helper Functions";
     begin
         if RecordIdToMigrate.TableNo <> Database::"SL Account Staging" then
             exit;
@@ -76,74 +76,76 @@ codeunit 47000 "SL Account Migrator"
         Sender.CreateGenProductPostingGroupIfNeeded(PostingGroupCodeTxt, PostingGroupDescriptionTxt);
         Sender.CreateGeneralPostingSetupIfNeeded(PostingGroupCodeTxt);
 
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('SalesAccount') then
-            Sender.SetGeneralPostingSetupSalesAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('SalesAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('SalesLineDiscAccount') then
-            Sender.SetGeneralPostingSetupSalesLineDiscAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('SalesLineDiscAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('SalesInvDiscAccount') then
-            Sender.SetGeneralPostingSetupSalesInvDiscAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('SalesInvDiscAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('SalesPmtDiscDebitAccount') then
-            Sender.SetGeneralPostingSetupSalesPmtDiscDebitAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('SalesPmtDiscDebitAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('PurchAccount') then
-            Sender.SetGeneralPostingSetupPurchAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('PurchAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('PurchInvDiscAccount') then
-            Sender.SetGeneralPostingSetupPurchInvDiscAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('PurchInvDiscAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('COGSAccount') then
-            Sender.SetGeneralPostingSetupCOGSAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('COGSAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('InventoryAdjmtAccount') then
-            Sender.SetGeneralPostingSetupInventoryAdjmtAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('InventoryAdjmtAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('SalesCreditMemoAccount') then
-            Sender.SetGeneralPostingSetupSalesCreditMemoAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('SalesCreditMemoAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('PurchPmtDiscDebitAcc') then
-            Sender.SetGeneralPostingSetupPurchPmtDiscDebitAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('PurchPmtDiscDebitAcc'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('PurchPrepaymentsAccount') then
-            Sender.SetGeneralPostingSetupPurchPrepaymentsAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('PurchPrepaymentsAccount'));
-        if SLAccountStaging.AcctNum = HelperFunctions.GetPostingAccountNumber('PurchaseVarianceAccount') then
-            Sender.SetGeneralPostingSetupPurchaseVarianceAccount(PostingGroupCodeTxt, HelperFunctions.GetPostingAccountNumber('PurchaseVarianceAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('SalesAccount') then
+            Sender.SetGeneralPostingSetupSalesAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('SalesAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('SalesLineDiscAccount') then
+            Sender.SetGeneralPostingSetupSalesLineDiscAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('SalesLineDiscAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('SalesInvDiscAccount') then
+            Sender.SetGeneralPostingSetupSalesInvDiscAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('SalesInvDiscAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('SalesPmtDiscDebitAccount') then
+            Sender.SetGeneralPostingSetupSalesPmtDiscDebitAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('SalesPmtDiscDebitAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('PurchAccount') then
+            Sender.SetGeneralPostingSetupPurchAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('PurchAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('PurchInvDiscAccount') then
+            Sender.SetGeneralPostingSetupPurchInvDiscAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('PurchInvDiscAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('COGSAccount') then
+            Sender.SetGeneralPostingSetupCOGSAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('COGSAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('InventoryAdjmtAccount') then
+            Sender.SetGeneralPostingSetupInventoryAdjmtAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('InventoryAdjmtAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('SalesCreditMemoAccount') then
+            Sender.SetGeneralPostingSetupSalesCreditMemoAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('SalesCreditMemoAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('PurchPmtDiscDebitAcc') then
+            Sender.SetGeneralPostingSetupPurchPmtDiscDebitAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('PurchPmtDiscDebitAcc'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('PurchPrepaymentsAccount') then
+            Sender.SetGeneralPostingSetupPurchPrepaymentsAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('PurchPrepaymentsAccount'));
+        if SLAccountStaging.AcctNum = SLHelperFunctions.GetPostingAccountNumber('PurchaseVarianceAccount') then
+            Sender.SetGeneralPostingSetupPurchaseVarianceAccount(PostingGroupCodeTxt, SLHelperFunctions.GetPostingAccountNumber('PurchaseVarianceAccount'));
         Sender.ModifyGLAccount(true);
     end;
 
     internal procedure GenerateGLTransactionBatches(SLAccountStaging: Record "SL Account Staging");
     var
-        MigrationSlAccountTrans: Record "SL AccountTransactions";
         GenJournalLine: Record "Gen. Journal Line";
-        MigrationSLFiscalPeriods: Record "SL Fiscal Periods";
+        SLAccountTransactions: Record "SL AccountTransactions";
+        SLFiscalPeriods: Record "SL Fiscal Periods";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         DimSetID: Integer;
         DescriptionTrxTxt: Label 'Migrated transaction', Locked = true;
         PostingGroupCode: Text;
     begin
-        MigrationSlAccountTrans.SetCurrentKey(Year, PERIODID, AcctNum);
-        MigrationSlAccountTrans.SetFilter(AcctNum, '= %1', SLAccountStaging.AcctNum);
-        if MigrationSlAccountTrans.FindSet() then
+        SLAccountTransactions.SetCurrentKey(Year, PERIODID, AcctNum);
+        SLAccountTransactions.SetFilter(AcctNum, '= %1', SLAccountStaging.AcctNum);
+        if SLAccountTransactions.FindSet() then
             repeat
-                PostingGroupCode := 'SL' + Format(MigrationSlAccountTrans.Year) + '-' + Format(MigrationSlAccountTrans.PERIODID);
+                PostingGroupCode := 'SL' + Format(SLAccountTransactions.Year) + '-' + Format(SLAccountTransactions.PERIODID);
 
-                if MigrationSlAccountTrans.Balance = 0 then
+                if SLAccountTransactions.Balance = 0 then
                     exit;
-                if MigrationSlAccountTrans.CreditAmount > 0 then
-                    MigrationSlAccountTrans.Balance := (-1 * MigrationSlAccountTrans.Balance);
+                if SLAccountStaging.AccountCategory = 2 then  // Liability
+                    SLAccountTransactions.Balance := (-1 * SLAccountTransactions.Balance);
+                if SLAccountStaging.AccountCategory = 4 then  // Income
+                    SLAccountTransactions.Balance := (-1 * SLAccountTransactions.Balance);
 
                 CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10));
 
-                if MigrationSLFiscalPeriods.Get(MigrationSlAccountTrans.PERIODID, MigrationSlAccountTrans.Year) then
+                if SLFiscalPeriods.Get(SLAccountTransactions.PERIODID, SLAccountTransactions.Year) then
                     DataMigrationFacadeHelper.CreateGeneralJournalLine(
                     GenJournalLine,
                     CopyStr(PostingGroupCode, 1, 10),
-                    CopyStr(GlDocNoLbl, 1, 20),
-                    CopyStr(DescriptionTrxTxt, 1, 50),
+                    CopyStr(GlDocNoLbl, 1, MaxStrLen(GlDocNoLbl)),
+                    CopyStr(DescriptionTrxTxt, 1, MaxStrLen(DescriptionTrxTxt)),
                     GenJournalLine."Account Type"::"G/L Account",
-                    CopyStr(SLAccountStaging.AcctNum, 1, 20),
-                    MigrationSLFiscalPeriods.PerEndDT,
+                    CopyStr(SLAccountStaging.AcctNum, 1, MaxStrLen(SLAccountStaging.AcctNum)),
+                    SLFiscalPeriods.PerEndDT,
                     0D,
-                    MigrationSlAccountTrans.Balance,
-                    MigrationSlAccountTrans.Balance,
+                    SLAccountTransactions.Balance,
+                    SLAccountTransactions.Balance,
                     '',
                     '');
-                DimSetID := CreateDimSet(MigrationSlAccountTrans);
+                DimSetID := CreateDimSet(SLAccountTransactions);
                 GenJournalLine.Validate("Dimension Set ID", DimSetID);
                 GenJournalLine.Modify(true);
-            until MigrationSlAccountTrans.Next() = 0;
+            until SLAccountTransactions.Next() = 0;
     end;
 
     internal procedure CreateGeneralJournalBatchIfNeeded(GeneralJournalBatchCode: Code[10])

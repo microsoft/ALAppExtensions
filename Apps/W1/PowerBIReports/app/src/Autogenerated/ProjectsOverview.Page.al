@@ -6,9 +6,7 @@ page 37033 "Projects Overview"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Projects Overview';
     AboutTitle = 'About Projects Overview';
     AboutText = 'The Projects Overview dashboard provides key insights into project performance with metrics like Percent Complete, Percent Invoiced, Realization Percent, Actual Profit, and Actual Profit Margin. It features visuals comparing Actual vs. Budgeted Costs, highlighting Profit per Project, and organizing projects by Project Manager for streamlined project management.';
@@ -26,8 +24,14 @@ page 37033 "Projects Overview"
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
 
+                trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
+                begin
+                    SetupHelper.LogReportLoaded(CorrelationId);
+                end;
+
                 trigger ErrorOccurred(Operation: Text; ErrorText: Text)
                 begin
+                    SetupHelper.LogError(Operation, ErrorText);
                     SetupHelper.ShowPowerBIErrorNotification(Operation, ErrorText);
                 end;
             }

@@ -1,3 +1,4 @@
+#pragma warning disable AA0247
 codeunit 40112 "GP Migration Error Handler"
 {
     SingleInstance = true;
