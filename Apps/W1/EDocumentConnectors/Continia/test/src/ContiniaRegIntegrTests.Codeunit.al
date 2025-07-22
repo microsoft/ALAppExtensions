@@ -9,6 +9,7 @@ using Microsoft.Foundation.Company;
 codeunit 148204 "Continia Reg. Integr. Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestHttpRequestPolicy = AllowOutboundFromHandler;
     Access = Internal;
 

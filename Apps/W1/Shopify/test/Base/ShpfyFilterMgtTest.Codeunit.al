@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+
 /// <summary>
 /// Codeunit Shpfy Filter Mgt. Test (ID 139560).
 /// </summary>
@@ -19,7 +29,7 @@ codeunit 139560 "Shpfy Filter Mgt. Test"
         SearchStrings: List of [Text];
     begin
         // Creating Test data.
-        For Index := 1 to StrLen(Format(InvalidCharsTxt)) do begin
+        for Index := 1 to StrLen(Format(InvalidCharsTxt)) do begin
             TestFields.BigIntegerField := Index;
             TestFields.TextField := Any.AlphabeticText(5 + Index) + Format(InvalidCharsTxt) [Index] + Any.AlphabeticText(3);
             TestFields.Insert();
@@ -30,7 +40,7 @@ codeunit 139560 "Shpfy Filter Mgt. Test"
         //            the result must be that 1 record is found.
 
         // [GIVEN] Textfield to convert for creating a search string.
-        if TestFields.FindSet(false, false) then
+        if TestFields.FindSet(false) then
             repeat
                 SearchStrings.Add(FilterMgt.CleanFilterValue(TestFields.TextField));
             until TestFields.Next() = 0;

@@ -38,6 +38,7 @@ using Microsoft.Projects.Project.Planning;
 codeunit 148187 "Sust. Certificate Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

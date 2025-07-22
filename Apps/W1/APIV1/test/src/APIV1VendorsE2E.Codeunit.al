@@ -3,6 +3,8 @@ codeunit 139703 "APIV1 - Vendors E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = IntegrationTest;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.History;
@@ -41,16 +46,22 @@ table 30124 "Shpfy Payment Transaction"
         {
             Caption = 'Amount';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency;
         }
         field(7; Fee; Decimal)
         {
             Caption = 'Fee';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency;
         }
         field(8; "Net Amount"; Decimal)
         {
             Caption = 'Net Amount';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency;
         }
         field(9; "Source Id"; BigInteger)
         {

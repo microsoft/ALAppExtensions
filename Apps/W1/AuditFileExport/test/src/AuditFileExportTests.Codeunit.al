@@ -1,6 +1,7 @@
 codeunit 148035 "Audit File Export Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

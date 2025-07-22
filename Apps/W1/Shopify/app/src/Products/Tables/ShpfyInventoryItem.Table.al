@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -65,6 +70,8 @@ table 30126 "Shpfy Inventory Item"
         {
             Caption = 'Unit Cost';
             DataClassification = CustomerContent;
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
         }
         field(12; "Updated At"; DateTime)
         {

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Customer;
@@ -37,10 +42,10 @@ codeunit 30110 "Shpfy Create Customer"
     /// <summary> 
     /// Do Create Customer.
     /// </summary>
-    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     /// <param name="CustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
     /// <param name="Customer">Parameter of type Record Customer.</param>
-    local procedure DoCreateCustomer(Shop: Record "Shpfy Shop"; var CustomerAddress: Record "Shpfy Customer Address"; var Customer: Record Customer);
+    local procedure DoCreateCustomer(ShopifyShop: Record "Shpfy Shop"; var CustomerAddress: Record "Shpfy Customer Address"; var Customer: Record Customer);
     var
         ShopifyCustomer: Record "Shpfy Customer";
         CurrentTemplateCode: Code[20];
@@ -49,7 +54,7 @@ codeunit 30110 "Shpfy Create Customer"
         ShopifyCustomer.Get(CustomerAddress."Customer Id");
 
         if TemplateCode = '' then
-            CurrentTemplateCode := FindCustomerTemplate(Shop, CustomerAddress."Country/Region Code")
+            CurrentTemplateCode := FindCustomerTemplate(ShopifyShop, CustomerAddress."Country/Region Code")
         else
             CurrentTemplateCode := TemplateCode;
 
@@ -78,31 +83,31 @@ codeunit 30110 "Shpfy Create Customer"
     /// <summary> 
     /// Find Customer Template.
     /// </summary>
-    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     /// <param name="CountryCode">Parameter of type code[20].</param>
     /// <returns>Return variable "Result" of type Code[20].</returns>
-    local procedure FindCustomerTemplate(Shop: Record "Shpfy Shop"; CountryCode: code[20]) Result: Code[20]
+    local procedure FindCustomerTemplate(ShopifyShop: Record "Shpfy Shop"; CountryCode: code[20]) Result: Code[20]
     var
         CustomerTemplate: Record "Shpfy Customer Template";
         IsHandled: Boolean;
     begin
-        CustomerEvents.OnBeforeFindCustomerTemplate(Shop, CountryCode, Result, IsHandled);
+        CustomerEvents.OnBeforeFindCustomerTemplate(ShopifyShop, CountryCode, Result, IsHandled);
         if not IsHandled then begin
-            if CustomerTemplate.Get(Shop.Code, CountryCode) then begin
+            if CustomerTemplate.Get(ShopifyShop.Code, CountryCode) then begin
                 if CustomerTemplate."Customer Templ. Code" <> '' then
                     Result := CustomerTemplate."Customer Templ. Code";
             end else begin
                 Clear(CustomerTemplate);
-                CustomerTemplate."Shop Code" := Shop.Code;
+                CustomerTemplate."Shop Code" := ShopifyShop.Code;
                 CustomerTemplate."Country/Region Code" := CountryCode;
                 CustomerTemplate.Insert();
             end;
             if Result = '' then begin
-                Shop.TestField("Customer Templ. Code");
-                Result := Shop."Customer Templ. Code";
+                ShopifyShop.TestField("Customer Templ. Code");
+                Result := ShopifyShop."Customer Templ. Code";
             end;
         end;
-        CustomerEvents.OnAfterFindCustomerTemplate(Shop, CountryCode, Result);
+        CustomerEvents.OnAfterFindCustomerTemplate(ShopifyShop, CountryCode, Result);
         exit(Result);
     end;
 

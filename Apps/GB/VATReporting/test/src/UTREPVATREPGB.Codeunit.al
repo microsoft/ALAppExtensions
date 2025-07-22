@@ -10,6 +10,7 @@ codeunit 148101 "UT REP VATREP GB"
 {
 
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

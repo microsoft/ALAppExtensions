@@ -123,6 +123,7 @@ codeunit 18690 "TDS Tax Engine Setup"
         CaseList.Add('{f8bf58d9-7681-458d-9dfc-71ea23a9f853}');
         CaseList.Add('{1abe2c56-9700-4a30-a14a-5e8ecc2f32dd}');
         CaseList.Add('{b8a33720-278b-45b4-8465-2d9fa273d813}');
+        CaseList.Add('{16861b6c-7897-42eb-8e26-7b4e885d00f8}');
     end;
 
     local procedure GetConfig(CaseID: Guid; var Handled: Boolean): Text
@@ -158,6 +159,7 @@ codeunit 18690 "TDS Tax Engine Setup"
         "{f8bf58d9-7681-458d-9dfc-71ea23a9f853}Lbl": Label 'TDS Use Cases';
         "{1abe2c56-9700-4a30-a14a-5e8ecc2f32dd}Lbl": Label 'TDS Use Cases';
         "{b8a33720-278b-45b4-8465-2d9fa273d813}Lbl": Label 'TDS Use Cases';
+        "{16861b6c-7897-42eb-8e26-7b4e885d00f8}Lbl": Label 'TDS Use Cases';
     begin
         Handled := true;
 
@@ -224,6 +226,8 @@ codeunit 18690 "TDS Tax Engine Setup"
                 exit("{1abe2c56-9700-4a30-a14a-5e8ecc2f32dd}Lbl");
             '{b8a33720-278b-45b4-8465-2d9fa273d813}':
                 exit("{b8a33720-278b-45b4-8465-2d9fa273d813}Lbl");
+            '{16861b6c-7897-42eb-8e26-7b4e885d00f8}':
+                exit("{16861b6c-7897-42eb-8e26-7b4e885d00f8}Lbl");
         end;
 
         Handled := false;

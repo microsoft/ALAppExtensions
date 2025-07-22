@@ -365,15 +365,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             exit;
 
         // Generate OpenAI Completion
-#if not CLEAN27
-#pragma warning disable AS0105
-#pragma warning disable AL0432
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oPreview());
-#pragma warning restore AL0432
-#pragma warning restore AS0105            
-#else
         AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
-#endif  
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation");
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
         AOAIChatCompletionParams.SetTemperature(0);

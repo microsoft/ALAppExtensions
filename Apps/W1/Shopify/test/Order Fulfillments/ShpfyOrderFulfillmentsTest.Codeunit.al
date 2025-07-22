@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+
 /// <summary>
 /// Codeunit Shpfy Order Fulfillments Test (ID 139578).
 /// </summary>
@@ -24,7 +34,7 @@ codeunit 139578 "Shpfy Order Fulfillments Test"
         // [GIVEN] A random Generated Fufilment
         Id := Any.IntegerInRange(10000, 99999);
         OrderId := Any.IntegerInRange(10000, 99999);
-        TrackingNo := Any.AlphabeticText(MaxStrLen(TrackingNo));
+        TrackingNo := CopyStr(Any.AlphabeticText(MaxStrLen(TrackingNo)), 1, MaxStrLen(TrackingNo));
         JFulfillment := GetRandomFullFilmentAsJsonToken(Id, TrackingNo);
 
         // [WHEN] Invoke the function ImportFulfillment(JFulfillment)

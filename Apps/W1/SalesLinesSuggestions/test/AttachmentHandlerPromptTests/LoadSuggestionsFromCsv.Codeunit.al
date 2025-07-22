@@ -7,6 +7,7 @@ using System.Utilities;
 codeunit 133522 "Load Suggestions from csv"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

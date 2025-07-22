@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using System.TestLibraries.Utilities;
+using System.Utilities;
+
 /// <summary>
 /// Table Shpfy Test Fields (ID 135600).
 /// </summary>
@@ -83,6 +93,7 @@ table 139560 "Shpfy Test Fields"
         {
             Caption = 'Decimal Field';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
 
             trigger OnValidate()
             begin
@@ -149,7 +160,6 @@ table 139560 "Shpfy Test Fields"
             Clustered = true;
         }
     }
-
     var
         ValidateMsg: Label 'Validate Triggger Executed', Locked = true;
 
@@ -168,8 +178,8 @@ table 139560 "Shpfy Test Fields"
         TempBlob.ToRecordRef(RecordRef, Result.FieldNo(BlobField));
         RecordRef.SetTable(Result);
         Result.BooleanField := true;
-        Result.CodeField := Any.AlphanumericText(MaxStrLen(Result.CodeField));
-        Result.TextField := Any.AlphanumericText(MaxStrLen(Result.TextField));
+        Result.CodeField := CopyStr(Any.AlphanumericText(MaxStrLen(Result.CodeField)), 1, MaxStrLen(Result.CodeField));
+        Result.TextField := CopyStr(Any.AlphanumericText(MaxStrLen(Result.TextField)), 1, MaxStrLen(Result.TextField));
         Result.DateField := Any.DateInRange(100);
         Result.DateTimeField := CurrentDateTime();
         Result.DecimalField := Any.DecimalInRange(9999, 3);

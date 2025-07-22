@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Customer;
@@ -55,7 +60,7 @@ codeunit 30284 "Shpfy Company Export"
         end;
 
         if CreateCompanyMainContact(Customer, ShopifyCustomer) then
-            if FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation) then
+            if FillInShopifyCompany(Customer, ShopifyCompany) or FillInShopifyCompanyLocation(Customer, CompanyLocation) then
                 if CompanyAPI.CreateCompany(ShopifyCompany, CompanyLocation, ShopifyCustomer) then begin
                     ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
                     ShopifyCompany."Customer SystemId" := Customer.SystemId;
@@ -87,22 +92,32 @@ codeunit 30284 "Shpfy Company Export"
         exit(ShopifyCustomer.FindFirst());
     end;
 
-    internal procedure FillInShopifyCompany(Customer: Record Customer; var ShopifyCompany: Record "Shpfy Company"; var CompanyLocation: Record "Shpfy Company Location"): Boolean
+    internal procedure FillInShopifyCompany(Customer: Record Customer; var ShopifyCompany: Record "Shpfy Company"): Boolean
+    var
+        TempShopifyCompany: Record "Shpfy Company" temporary;
+    begin
+        TempShopifyCompany := ShopifyCompany;
+
+        ShopifyCompany.Name := Customer.Name;
+        ShopifyCompany."External Id" := Customer."No.";
+
+        if HasDiff(ShopifyCompany, TempShopifyCompany) then begin
+            ShopifyCompany."Last Updated by BC" := CurrentDateTime;
+            exit(true);
+        end;
+    end;
+
+    internal procedure FillInShopifyCompanyLocation(Customer: Record Customer; var CompanyLocation: Record "Shpfy Company Location"): Boolean
     var
         CompanyInformation: Record "Company Information";
         CountryRegion: Record "Country/Region";
         TaxArea: Record "Shpfy Tax Area";
-        TempShopifyCompany: Record "Shpfy Company" temporary;
         TempCompanyLocation: Record "Shpfy Company Location" temporary;
         TaxRegistrationIdMapping: Interface "Shpfy Tax Registration Id Mapping";
         CountyCodeTooLongErr: Text;
         PaymentTermsId: BigInteger;
     begin
-        TempShopifyCompany := ShopifyCompany;
         TempCompanyLocation := CompanyLocation;
-
-        ShopifyCompany.Name := Customer.Name;
-        ShopifyCompany."External Id" := Customer."No.";
 
         CompanyLocation.Name := Customer.Address;
         CompanyLocation.Address := Customer.Address;
@@ -162,10 +177,7 @@ codeunit 30284 "Shpfy Company Export"
         if GetShopifyPaymentTermsIdFromCustomer(Customer, PaymentTermsId) then
             CompanyLocation."Shpfy Payment Terms Id" := PaymentTermsId;
 
-        if HasDiff(ShopifyCompany, TempShopifyCompany) or HasDiff(CompanyLocation, TempCompanyLocation) then begin
-            ShopifyCompany."Last Updated by BC" := CurrentDateTime;
-            exit(true);
-        end;
+        exit(HasDiff(CompanyLocation, TempCompanyLocation));
     end;
 
     local procedure HasDiff(RecAsVariant: Variant; xRecAsVariant: Variant): Boolean
@@ -199,6 +211,7 @@ codeunit 30284 "Shpfy Company Export"
 
     local procedure UpdateShopifyCompany(Customer: Record Customer; CompanyId: BigInteger)
     var
+        CurrCustomer: Record Customer;
         ShopifyCompany: Record "Shpfy Company";
         CompanyLocation: Record "Shpfy Company Location";
     begin
@@ -208,14 +221,24 @@ codeunit 30284 "Shpfy Company Export"
             exit;
         end;
 
-        CompanyLocation.SetRange("Company SystemId", ShopifyCompany.SystemId);
-        CompanyLocation.FindFirst();
-
-        if FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation) then begin
-            CompanyAPI.UpdateCompany(ShopifyCompany, CompanyLocation);
+        if FillInShopifyCompany(Customer, ShopifyCompany) then begin
+            CompanyAPI.UpdateCompany(ShopifyCompany);
             ShopifyCompany.Modify();
-            CompanyLocation.Modify();
         end;
+
+        CompanyLocation.SetRange("Company SystemId", ShopifyCompany.SystemId);
+        CompanyLocation.FindSet();
+        repeat
+            if IsNullGuid(CompanyLocation."Customer Id") then
+                CurrCustomer := Customer
+            else
+                CurrCustomer.GetBySystemId(CompanyLocation."Customer Id");
+
+            if FillInShopifyCompanyLocation(CurrCustomer, CompanyLocation) then begin
+                CompanyAPI.UpdateCompanyLocation(CompanyLocation);
+                CompanyLocation.Modify();
+            end;
+        until CompanyLocation.Next() = 0;
 
         if Shop."Company Metafields To Shopify" then
             UpdateMetafields(ShopifyCompany.Id);

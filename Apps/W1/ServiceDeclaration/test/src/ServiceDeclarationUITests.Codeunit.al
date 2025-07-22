@@ -1,6 +1,7 @@
 codeunit 139902 "Service Declaration UI Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

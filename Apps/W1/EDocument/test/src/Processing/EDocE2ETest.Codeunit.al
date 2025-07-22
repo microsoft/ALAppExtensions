@@ -1,6 +1,7 @@
 codeunit 139624 "E-Doc E2E Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     EventSubscriberInstance = Manual;
 
     var

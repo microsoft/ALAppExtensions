@@ -13,6 +13,7 @@ codeunit 144013 "VAT On Sales/Purchase Document"
 {
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

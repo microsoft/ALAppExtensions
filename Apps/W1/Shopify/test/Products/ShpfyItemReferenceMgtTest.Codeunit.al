@@ -1,6 +1,19 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Catalog;
+
 codeunit 139602 "Shpfy Item Reference Mgt. Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var
@@ -23,11 +36,11 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] Item."No."
         Item := ProductInitTest.CreateItem();
         // [GIVEN] VariantCode
-        VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
+        VariantCode := CopyStr(Any.AlphabeticText(MaxStrLen(VariantCode)), 1, MaxStrLen(VariantCode));
         // [GIVEN] UoM
-        UoM := Any.AlphabeticText(MaxStrLen(UoM));
+        UoM := CopyStr(Any.AlphabeticText(MaxStrLen(UoM)), 1, MaxStrLen(UoM));
         // [GIVEN] BarCode
-        BarCode := Any.AlphanumericText(MaxStrLen(BarCode));
+        BarCode := CopyStr(Any.AlphanumericText(MaxStrLen(BarCode)), 1, MaxStrLen(BarCode));
 
         // [WHEN] Invoke ItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
         ItemReferenceMgt.CreateItemBarCode(Item."No.", VariantCode, UoM, BarCode);
@@ -63,14 +76,14 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] Item."No."
         Item := ProductInitTest.CreateItem();
         // [GIVEN] VariantCode
-        VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
+        VariantCode := CopyStr(Any.AlphabeticText(MaxStrLen(VariantCode)), 1, MaxStrLen(VariantCode));
         // [GIVEN] UoM
-        UoM := Any.AlphabeticText(MaxStrLen(UoM));
+        UoM := CopyStr(Any.AlphabeticText(MaxStrLen(UoM)), 1, MaxStrLen(UoM));
         // [GIVEN] "Item Reference Type"::Vendor
         // [GIVEN] VendorNo
-        VendorNo := Any.AlphabeticText(MaxStrLen(VendorNo));
+        VendorNo := CopyStr(Any.AlphabeticText(MaxStrLen(VendorNo)), 1, MaxStrLen(VendorNo));
         // [GIVEN] VendorItemNo
-        VendorItemNo := Any.AlphanumericText(MaxStrLen(VendorItemNo));
+        VendorItemNo := CopyStr(Any.AlphanumericText(MaxStrLen(VendorItemNo)), 1, MaxStrLen(VendorItemNo));
 
         // [WHEN] Invoke ItemReferenceMgt.CreateItemBarCode(Item."No."", VariantCode, UoM, BarCode)
         ItemReferenceMgt.CreateItemReference(Item."No.", VariantCode, UoM, "Item Reference Type"::Vendor, VendorNo, VendorItemNo);
@@ -106,9 +119,9 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [SCENARION] Create a bar code reference for an item and check if this reference exists in the "Item Reference" table.
 
         Item := ProductInitTest.CreateItem();
-        VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
-        UoM := Any.AlphabeticText(MaxStrLen(UoM));
-        BarCode := Any.AlphabeticText(MaxStrLen(BarCode));
+        VariantCode := CopyStr(Any.AlphabeticText(MaxStrLen(VariantCode)), 1, MaxStrLen(VariantCode));
+        UoM := CopyStr(Any.AlphabeticText(MaxStrLen(UoM)), 1, MaxStrLen(UoM));
+        BarCode := CopyStr(Any.AlphabeticText(MaxStrLen(BarCode)), 1, MaxStrLen(BarCode));
         ItemReference.Init();
         ItemReference."Item No." := Item."No.";
         ItemReference."Variant Code" := VariantCode;
@@ -152,15 +165,15 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [SCENARION] Create a vendor item reference for an item and check if this reference exists in the "Item Reference" table.
 
         Item := ProductInitTest.CreateItem();
-        VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
-        UoM := Any.AlphabeticText(MaxStrLen(UoM));
-        ReferenceNo := Any.AlphabeticText(MaxStrLen(ReferenceNo));
+        VariantCode := CopyStr(Any.AlphabeticText(MaxStrLen(VariantCode)), 1, MaxStrLen(VariantCode));
+        UoM := CopyStr(Any.AlphabeticText(MaxStrLen(UoM)), 1, MaxStrLen(UoM));
+        ReferenceNo := CopyStr(Any.AlphabeticText(MaxStrLen(ReferenceNo)), 1, MaxStrLen(ReferenceNo));
         ItemReference.Init();
         ItemReference."Item No." := Item."No.";
         ItemReference."Variant Code" := VariantCode;
         ItemReference."Unit of Measure" := UoM;
         ItemReference."Reference Type" := "Item Reference Type"::"Vendor";
-        ItemReference."Reference Type No." := Any.AlphabeticText(MaxStrLen(ItemReference."Reference Type No."));
+        ItemReference."Reference Type No." := CopyStr(Any.AlphabeticText(MaxStrLen(ItemReference."Reference Type No.")), 1, MaxStrLen(ItemReference."Reference Type No."));
         ItemReference."Reference No." := ReferenceNo;
         ItemReference.Insert();
 
@@ -198,9 +211,9 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [SCENARION] Create a bar code reference for an item and check if get the bar code with the function GetItemBarcode.
 
         Item := ProductInitTest.CreateItem();
-        VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
-        UoM := Any.AlphabeticText(MaxStrLen(UoM));
-        BarCode := Any.AlphabeticText(MaxStrLen(BarCode));
+        VariantCode := CopyStr(Any.AlphabeticText(MaxStrLen(VariantCode)), 1, MaxStrLen(VariantCode));
+        UoM := CopyStr(Any.AlphabeticText(MaxStrLen(UoM)), 1, MaxStrLen(UoM));
+        BarCode := CopyStr(Any.AlphabeticText(MaxStrLen(BarCode)), 1, MaxStrLen(BarCode));
         ItemReference.Init();
         ItemReference."Item No." := Item."No.";
         ItemReference."Variant Code" := VariantCode;
@@ -214,7 +227,7 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [GIVEN] UoM
 
         // [WHEN] Invoke ItemReferenceMgt.FindByBarCode(BarCode, UoM, FoundItemNo, FoundVariantCode) and store the result in Result
-        Result := ItemReferenceMgt.GetItemBarcode(Item."No.", VariantCode, UoM);
+        Result := CopyStr(ItemReferenceMgt.GetItemBarcode(Item."No.", VariantCode, UoM), 1, MaxStrLen(Result));
 
         // [THEN] Result = BarCode
         LibraryAssert.AreEqual(BarCode, Result, 'Result = BarCode');
@@ -235,15 +248,15 @@ codeunit 139602 "Shpfy Item Reference Mgt. Test"
         // [SCENARION] Create a vendor item reference for an item and check if this reference exists in the "Item Reference" table.
 
         Item := ProductInitTest.CreateItem();
-        VariantCode := Any.AlphabeticText(MaxStrLen(VariantCode));
-        UoM := Any.AlphabeticText(MaxStrLen(UoM));
-        ReferenceNo := Any.AlphabeticText(MaxStrLen(ReferenceNo));
+        VariantCode := CopyStr(Any.AlphabeticText(MaxStrLen(VariantCode)), 1, MaxStrLen(VariantCode));
+        UoM := CopyStr(Any.AlphabeticText(MaxStrLen(UoM)), 1, MaxStrLen(UoM));
+        ReferenceNo := CopyStr(Any.AlphabeticText(MaxStrLen(ReferenceNo)), 1, MaxStrLen(ReferenceNo));
         ItemReference.Init();
         ItemReference."Item No." := Item."No.";
         ItemReference."Variant Code" := VariantCode;
         ItemReference."Unit of Measure" := UoM;
         ItemReference."Reference Type" := "Item Reference Type"::"Vendor";
-        ItemReference."Reference Type No." := Any.AlphabeticText(MaxStrLen(ItemReference."Reference Type No."));
+        ItemReference."Reference Type No." := CopyStr(Any.AlphabeticText(MaxStrLen(ItemReference."Reference Type No.")), 1, MaxStrLen(ItemReference."Reference Type No."));
         ItemReference."Reference No." := ReferenceNo;
         ItemReference.Insert();
 

@@ -9,6 +9,7 @@ using Microsoft.Finance.Consolidation;
 codeunit 139544 "Trial Balance Excel Reports"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     var

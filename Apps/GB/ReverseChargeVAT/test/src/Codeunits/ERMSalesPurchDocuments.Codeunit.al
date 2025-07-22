@@ -17,6 +17,7 @@ codeunit 144012 "ERM Sales Purch Documents"
 {
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

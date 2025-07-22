@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Item;
+
 codeunit 139564 "Shpfy Order Refunds Helper"
 {
     var
@@ -78,7 +90,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         Any.SetDefaultSeed();
         Customer := GetCustomer();
         OrderHeader."Shopify Order Id" := Any.IntegerInRange(100000, 999999);
-        OrderHeader."Sales Order No." := Any.AlphabeticText(10);
+        OrderHeader."Sales Order No." := CopyStr(Any.AlphabeticText(10), 1, MaxStrLen(OrderHeader."Sales Order No."));
         OrderHeader."Created At" := CurrentDateTime;
         OrderHeader.Confirmed := true;
         OrderHeader."Updated At" := CurrentDateTime;
@@ -86,7 +98,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         OrderHeader.Email := Customer."E-Mail";
         OrderHeader."Phone No." := Customer."Phone No.";
         OrderHeader."Customer Id" := Any.IntegerInRange(100000, 999999);
-        OrderHeader."Sell-to First Name" := Customer.Name;
+        OrderHeader."Sell-to First Name" := CopyStr(Customer.Name, 1, MaxStrLen(OrderHeader."Sell-to First Name"));
         OrderHeader."Sell-to Last Name" := Customer."Name 2";
         OrderHeader."Sell-to Address" := Customer.Address;
         OrderHeader."Sell-to Address 2" := Customer."Address 2";
@@ -94,8 +106,8 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         OrderHeader."Sell-to City" := Customer.City;
         OrderHeader."Sell-to County" := Customer.County;
         OrderHeader."Sell-to Country/Region Code" := Customer."Country/Region Code";
-        OrderHeader."Sell-to Customer No." := Customer."No.";
-        OrderHeader."Bill-to First Name" := Customer.Name;
+        OrderHeader."Sell-to Customer No." := CopyStr(Customer."No.", 1, MaxStrLen(OrderHeader."Sell-to Customer No."));
+        OrderHeader."Bill-to First Name" := CopyStr(Customer.Name, 1, MaxStrLen(OrderHeader."Bill-to First Name"));
         OrderHeader."Bill-to Lastname" := Customer."Name 2";
         OrderHeader."Bill-to Address" := Customer.Address;
         OrderHeader."Bill-to Address 2" := Customer."Address 2";
@@ -104,7 +116,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         OrderHeader."Bill-to County" := Customer.County;
         OrderHeader."Bill-to Country/Region Code" := Customer."Country/Region Code";
         OrderHeader."Bill-to Customer No." := Customer."No.";
-        OrderHeader."Ship-to First Name" := Customer.Name;
+        OrderHeader."Ship-to First Name" := CopyStr(Customer.Name, 1, MaxStrLen(OrderHeader."Ship-to First Name"));
         OrderHeader."Ship-to Last Name" := Customer."Name 2";
         OrderHeader."Ship-to Address" := Customer.Address;
         OrderHeader."Ship-to Address 2" := Customer."Address 2";
@@ -160,7 +172,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
     begin
         ReturnHeader."Return Id" := Any.IntegerInRange(100000, 999999);
         ReturnHeader."Order Id" := OrderId;
-        ReturnHeader."Return No." := Any.AlphabeticText(10);
+        ReturnHeader."Return No." := CopyStr(Any.AlphabeticText(10), 1, MaxStrLen(ReturnHeader."Return No."));
         ReturnHeader.Status := Enum::"Shpfy Return Status"::Closed;
         ReturnHeader."Total Quantity" := 1;
         ReturnHeader."Shop Code" := Shop.Code;
@@ -274,14 +286,14 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         exit(InitializeTest.GetDummyCustomer());
     end;
 
-    internal procedure ProcessShopifyOrder(var OrderId: BigInteger)
+    internal procedure ProcessShopifyOrder(OrderId: BigInteger)
     var
         DocLink: Record "Shpfy Doc. Link To Doc.";
     begin
         DocLink."Shopify Document Type" := Enum::"Shpfy shop Document Type"::"Shopify shop Order";
         DocLink."Shopify Document Id" := OrderId;
         DocLink."Document Type" := Enum::"Shpfy Document Type"::"Sales Order";
-        DocLink."Document No." := Any.AlphabeticText(10);
+        DocLink."Document No." := CopyStr(Any.AlphabeticText(10), 1, MaxStrLen(DocLink."Document No."));
         DocLink.Insert();
     end;
 

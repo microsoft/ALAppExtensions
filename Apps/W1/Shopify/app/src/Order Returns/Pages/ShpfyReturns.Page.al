@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 page 30150 "Shpfy Returns"
@@ -20,17 +25,17 @@ page 30150 "Shpfy Returns"
                 field("Return No."; Rec."Return No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The No. of the return.';
+                    ToolTip = 'Specifies the No. of the return.';
                 }
                 field("Shopify Order No."; Rec."Shopify Order No.")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The unique identifier for the order that appears on the order page in the Shopify admin and the order status page. For example, "#1001", "EN1001", or "1001-A".';
+                    ToolTip = 'Specifies the unique identifier for the order that appears on the order page in the Shopify admin and the order status page. For example, "#1001", "EN1001", or "1001-A".';
                 }
                 field(Status; Rec.Status)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The status of the return.';
+                    ToolTip = 'Specifies the status of the return.';
                 }
                 field("Sell-to Customer No."; Rec."Sell-to Customer No.")
                 {
@@ -56,17 +61,17 @@ page 30150 "Shpfy Returns"
                 {
                     ApplicationArea = All;
                     Caption = 'Decline Note';
-                    ToolTip = 'The notification message sent to the customer about their declined return request.';
+                    ToolTip = 'Specifies the notification message sent to the customer about their declined return request.';
                 }
                 field("Decline Reason"; Rec."Decline Reason")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The reason the customer''s return request was declined.';
+                    ToolTip = 'Specifies the reason the customer''s return request was declined.';
                 }
                 field("Total Quantity"; Rec."Total Quantity")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The sum of all line item quantities for the return.';
+                    ToolTip = 'Specifies the sum of all line item quantities for the return.';
                 }
             }
         }

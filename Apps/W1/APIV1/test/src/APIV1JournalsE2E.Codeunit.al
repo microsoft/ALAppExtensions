@@ -3,6 +3,7 @@ codeunit 139727 "APIV1 - Journals E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
