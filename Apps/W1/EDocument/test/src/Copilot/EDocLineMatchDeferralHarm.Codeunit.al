@@ -15,6 +15,7 @@ using Microsoft.Finance.Deferral;
 codeunit 133721 "EDoc Line Match Deferral Harm"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     SingleInstance = true;
     TestPermissions = Disabled;
     Access = Internal;

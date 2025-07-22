@@ -1,12 +1,25 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Catalog;
+
 codeunit 139601 "Shpfy Create Product Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
 
     var
-        Any: codeunit Any;
-        LibraryAssert: codeunit "Library Assert";
+        Any: Codeunit Any;
+        LibraryAssert: Codeunit "Library Assert";
 
     [Test]
     procedure UnitTestCreateTempProductFromItem()
@@ -257,7 +270,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -326,7 +339,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -395,7 +408,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -464,7 +477,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -741,7 +754,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -810,7 +823,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -879,7 +892,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -948,7 +961,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -1225,7 +1238,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -1294,7 +1307,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -1363,7 +1376,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -1432,7 +1445,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -1709,7 +1722,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -1778,7 +1791,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -1847,7 +1860,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -1916,7 +1929,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -2195,7 +2208,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -2267,7 +2280,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -2339,7 +2352,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -2411,7 +2424,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -2703,7 +2716,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -2775,7 +2788,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -2847,7 +2860,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');
@@ -2919,7 +2932,7 @@ codeunit 139601 "Shpfy Create Product Test"
         // [THEN] There are TempShopifyVariant records;
         LibraryAssert.RecordIsNotEmpty(TempShopifyVariant);
 
-        if TempShopifyVariant.FindSet(false, false) then
+        if TempShopifyVariant.FindSet(false) then
             repeat
                 // [THEN] There is a Item Variant record linked to the TempShopifyVariant record.
                 LibraryAssert.IsTrue(ItemVariant.GetBySystemId(TempShopifyVariant."Item Variant SystemId"), 'Item Variant Record is found.');

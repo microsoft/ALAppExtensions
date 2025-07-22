@@ -8,6 +8,7 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
     // version Test,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
 
     var
         Assert: Codeunit "Assert";

@@ -26,6 +26,7 @@ using Microsoft.Manufacturing.Capacity;
 codeunit 148190 "Sust. Value Entry Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

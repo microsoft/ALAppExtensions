@@ -35,6 +35,7 @@ using Microsoft.Inventory.Journal;
 codeunit 148184 "Sustainability Posting Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

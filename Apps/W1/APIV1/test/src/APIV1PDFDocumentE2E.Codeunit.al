@@ -1,6 +1,8 @@
 codeunit 139744 "APIV1 - PDF Document E2E"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

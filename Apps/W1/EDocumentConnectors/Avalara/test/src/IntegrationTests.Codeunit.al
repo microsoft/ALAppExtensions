@@ -19,6 +19,7 @@ codeunit 148191 "Integration Tests"
 {
 
     Subtype = Test;
+    TestType = IntegrationTest;
     Permissions = tabledata "Connection Setup" = rimd,
                   tabledata "E-Document" = r;
     TestHttpRequestPolicy = AllowOutboundFromHandler;

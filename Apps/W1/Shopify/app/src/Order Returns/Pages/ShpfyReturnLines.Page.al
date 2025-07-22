@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 page 30149 "Shpfy Return Lines"
@@ -30,37 +35,37 @@ page 30149 "Shpfy Return Lines"
                 field(Quantity; Rec.Quantity)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The quantity being returned.';
+                    ToolTip = 'Specifies the quantity being returned.';
                 }
                 field("Return Reason"; Rec."Return Reason")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The reason for returning the item.';
+                    ToolTip = 'Specifies the reason for returning the item.';
                 }
                 field("Refundable Quantity"; Rec."Refundable Quantity")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The quantity that can be refunded.';
+                    ToolTip = 'Specifies the quantity that can be refunded.';
                 }
                 field("Refunded Quantity"; Rec."Refunded Quantity")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The quantity that was refunded.';
+                    ToolTip = 'Specifies the quantity that was refunded.';
                 }
                 field("Discounted Total Amount"; Rec."Discounted Total Amount")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The total line price after all discounts on the line item, including both line item level discounts and code-based line item discounts, are applied.';
+                    ToolTip = 'Specifies the total line price after all discounts on the line item, including both line item level discounts and code-based line item discounts, are applied.';
                 }
                 field(Weight; Rec.Weight)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The weight value using the unit.';
+                    ToolTip = 'Specifies the weight value using the unit.';
                 }
                 field("Weight Unit"; Rec."Weight Unit")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The unit of measurement.';
+                    ToolTip = 'Specifies the unit of measurement.';
                 }
             }
             group(ReturnReason)
@@ -73,7 +78,7 @@ page 30149 "Shpfy Return Lines"
                     ApplicationArea = All;
                     MultiLine = true;
                     ShowCaption = false;
-                    ToolTip = 'The reason for returning the item.';
+                    ToolTip = 'Specifies the reason for returning the item.';
                 }
             }
             group(CustomerNote)

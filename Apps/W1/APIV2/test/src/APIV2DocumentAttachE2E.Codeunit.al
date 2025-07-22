@@ -3,6 +3,7 @@ codeunit 139899 "APIV2 - Document Attach. E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

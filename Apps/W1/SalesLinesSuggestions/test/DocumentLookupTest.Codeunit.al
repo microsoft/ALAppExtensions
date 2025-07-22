@@ -8,6 +8,7 @@ using System.TestLibraries.Utilities;
 codeunit 133510 "Document Lookup Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

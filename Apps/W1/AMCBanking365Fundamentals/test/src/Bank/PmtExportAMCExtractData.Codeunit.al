@@ -3,6 +3,7 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
     Permissions = TableData "Data Exch." = i,
                   TableData "Payment Export Data" = d;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

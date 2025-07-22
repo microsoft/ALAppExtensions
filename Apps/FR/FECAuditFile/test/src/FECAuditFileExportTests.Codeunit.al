@@ -1,6 +1,7 @@
 codeunit 148017 "FEC Audit File Export Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

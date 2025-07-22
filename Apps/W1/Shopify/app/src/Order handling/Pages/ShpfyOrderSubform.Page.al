@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -77,6 +82,7 @@ page 30122 "Shpfy Order Subform"
                     ApplicationArea = All;
                     Editable = false;
                     ToolTip = 'Specifies the discount amount that is granted for the item on the line.';
+
                 }
                 field(FullfillableQuantity; Rec."Fulfillable Quantity")
                 {

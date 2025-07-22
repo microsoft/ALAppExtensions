@@ -21,14 +21,35 @@ page 22208 "Reviewed G/L Entries"
         {
             repeater(Group)
             {
-                field("Posting Date"; GLEntry."Posting Date") { }
-                field("Document Type"; GLEntry."Document Type") { }
-                field("Document No."; GLEntry."Document No.") { }
-                field(Description; GLEntry.Description) { }
-                field(Amount; GLEntry.Amount) { }
-                field("Reviewed Identifier"; Rec."Reviewed Identifier") { }
-                field("Reviewed By"; Rec."Reviewed By") { }
-                field("Reviewed Amount"; Rec."Reviewed Amount") { }
+                field("Posting Date"; GLEntry."Posting Date")
+                {
+                    ToolTip = 'Specifies the date when the G/L entry was posted.';
+                }
+                field("Document Type"; GLEntry."Document Type")
+                {
+                    ToolTip = 'Specifies the type of document associated with the G/L entry.';
+                }
+                field("Document No."; GLEntry."Document No.")
+                {
+                    ToolTip = 'Specifies the document number associated with the G/L entry.';
+                }
+                field(Description; GLEntry.Description)
+                {
+                    ToolTip = 'Specifies the description of the G/L entry.';
+                }
+                field(Amount; GLEntry.Amount)
+                {
+                    ToolTip = 'Specifies the amount of the G/L entry.';
+                }
+                field("Reviewed Identifier"; Rec."Reviewed Identifier")
+                {
+                }
+                field("Reviewed By"; Rec."Reviewed By")
+                {
+                }
+                field("Reviewed Amount"; Rec."Reviewed Amount")
+                {
+                }
             }
         }
     }

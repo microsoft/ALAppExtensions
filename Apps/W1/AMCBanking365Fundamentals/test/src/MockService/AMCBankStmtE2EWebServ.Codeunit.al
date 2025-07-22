@@ -1,6 +1,7 @@
 codeunit 135080 "AMC Bank Stmt E2E Web Serv"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

@@ -200,7 +200,6 @@ report 4413 "EXR Fixed Asset Projected"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
-        TimezoneLabel = 'UTC';
     }
     trigger OnPreReport()
     begin

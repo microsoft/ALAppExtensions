@@ -5,6 +5,7 @@
 codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();

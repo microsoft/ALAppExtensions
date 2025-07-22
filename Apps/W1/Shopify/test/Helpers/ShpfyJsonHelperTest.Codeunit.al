@@ -1,9 +1,22 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Address;
+
 /// <summary>
 /// Codeunit Shpfy Json Helper Test (ID 139574).
 /// </summary>
 codeunit 139574 "Shpfy Json Helper Test"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = NonRestrictive;
 
     var
@@ -437,7 +450,7 @@ codeunit 139574 "Shpfy Json Helper Test"
         JValue: JsonValue;
     begin
         // Creating Test data and expected results.
-        ExpectedResult := Any.AlphanumericText(10);
+        ExpectedResult := CopyStr(Any.AlphanumericText(10), 1, MaxStrLen(ExpectedResult));
         ZeroCode := '';
         JValue.SetValue(ExpectedResult);
         JToken.ReadFrom('{"data":{"someValue": ' + Format(JValue) + '}}');
@@ -446,39 +459,39 @@ codeunit 139574 "Shpfy Json Helper Test"
 
         // [GIVEN] a JsonToken with a JsonValue that contains an Code value.
         // [GIVEN] a path for finding the JsonValue in the JsonToken.
-        Result := JsonHelper.GetValueAsCode(JToken, 'data.someValue');
+        Result := CopyStr(JsonHelper.GetValueAsCode(JToken, 'data.someValue'), 1, MaxStrLen(Result));
         // [THEN] the result of the function = ExpectedResult
         LibraryAssert.AreEqual(ExpectedResult, Result, '');
 
         // [GIVEN] a JsonToken with a JsonValue that contains an Code value longer then MaxLength.
         // [GIVEN] a wrong path for finding the JsonValue in the JsonToken.
         // [GIVEN] a MaxLength value = 5;
-        Result := JsonHelper.GetValueAsCode(JToken, 'data.someValue', 5);
+        Result := CopyStr(JsonHelper.GetValueAsCode(JToken, 'data.someValue', 5), 1, MaxStrLen(Result));
         // [THEN] the result of the function = CopyStr(ExpectedResult, 1, 5)
         LibraryAssert.AreEqual(CopyStr(ExpectedResult, 1, 5), Result, '');
 
         // [GIVEN] a JsonToken with a JsonValue that contains an Code value.
         // [GIVEN] a wrong path for finding the JsonValue in the JsonToken.
-        Result := JsonHelper.GetValueAsCode(JToken, 'data.value');
+        Result := CopyStr(JsonHelper.GetValueAsCode(JToken, 'data.value'), 1, MaxStrLen(Result));
         // [THEN] the result of the function = ZeroCode.
         LibraryAssert.AreEqual(ZeroCode, Result, '');
 
         // [GIVEN] a JsonObject with a JsonValue that contains an Code value.
         // [GIVEN] a path for finding the JsonValue in the JsonObject.
-        Result := JsonHelper.GetValueAsCode(JToken.AsObject(), 'data.someValue');
+        Result := CopyStr(JsonHelper.GetValueAsCode(JToken.AsObject(), 'data.someValue'), 1, MaxStrLen(Result));
         // [THEN] the result of the function = ExpectedResult
         LibraryAssert.AreEqual(ExpectedResult, Result, '');
 
         // [GIVEN] a JsonObject with a JsonValue that contains an Code value longer then MaxLength.
         // [GIVEN] a wrong path for finding the JsonValue in the JsonToken.
         // [GIVEN] a MaxLength value = 5;
-        Result := JsonHelper.GetValueAsCode(JToken.AsObject(), 'data.someValue', 5);
+        Result := CopyStr(JsonHelper.GetValueAsCode(JToken.AsObject(), 'data.someValue', 5), 1, MaxStrLen(Result));
         // [THEN] the result of the function = CopyStr(ExpectedResult, 1, 5)
         LibraryAssert.AreEqual(CopyStr(ExpectedResult, 1, 5), Result, '');
 
         // [GIVEN] a JsonObject with a JsonValue that contains an Code value.
         // [GIVEN] a wrong path for finding the JsonValue in the JsonObject.
-        Result := JsonHelper.GetValueAsCode(JToken.AsObject(), 'data.value');
+        Result := CopyStr(JsonHelper.GetValueAsCode(JToken.AsObject(), 'data.value'), 1, MaxStrLen(Result));
         // [THEN] the result of the function = ZeroCode.
         LibraryAssert.AreEqual(ZeroCode, Result, '');
     end;
@@ -741,7 +754,7 @@ codeunit 139574 "Shpfy Json Helper Test"
         JValue: JsonValue;
     begin
         // Creating Test data and expected results.
-        ExpectedResult := Any.AlphanumericText(100);
+        ExpectedResult := CopyStr(Any.AlphanumericText(100), 1, MaxStrLen(ExpectedResult));
         ZeroText := '';
         JValue.SetValue(ExpectedResult);
         JToken.ReadFrom('{"data":{"someValue": ' + Format(JValue) + '}}');
@@ -750,39 +763,39 @@ codeunit 139574 "Shpfy Json Helper Test"
 
         // [GIVEN] a JsonToken with a JsonValue that contains an Text value.
         // [GIVEN] a path for finding the JsonValue in the JsonToken.
-        Result := JsonHelper.GetValueAsText(JToken, 'data.someValue');
+        Result := CopyStr(JsonHelper.GetValueAsText(JToken, 'data.someValue'), 1, MaxStrLen(Result));
         // [THEN] the result of the function = ExpectedResult
         LibraryAssert.AreEqual(ExpectedResult, Result, '');
 
         // [GIVEN] a JsonToken with a JsonValue that contains an Text value longer then MaxLength.
         // [GIVEN] a wrong path for finding the JsonValue in the JsonToken.
         // [GIVEN] a MaxLength value = 5;
-        Result := JsonHelper.GetValueAsText(JToken, 'data.someValue', 25);
+        Result := CopyStr(JsonHelper.GetValueAsText(JToken, 'data.someValue', 25), 1, MaxStrLen(Result));
         // [THEN] the result of the function = CopyStr(ExpectedResult, 1, 25)
         LibraryAssert.AreEqual(CopyStr(ExpectedResult, 1, 25), Result, '');
 
         // [GIVEN] a JsonToken with a JsonValue that contains an Text value.
         // [GIVEN] a wrong path for finding the JsonValue in the JsonToken.
-        Result := JsonHelper.GetValueAsText(JToken, 'data.value');
+        Result := CopyStr(JsonHelper.GetValueAsText(JToken, 'data.value'), 1, MaxStrLen(Result));
         // [THEN] the result of the function = ZeroText.
         LibraryAssert.AreEqual(ZeroText, Result, '');
 
         // [GIVEN] a JsonObject with a JsonValue that contains an Text value.
         // [GIVEN] a path for finding the JsonValue in the JsonObject.
-        Result := JsonHelper.GetValueAsText(JToken.AsObject(), 'data.someValue');
+        Result := CopyStr(JsonHelper.GetValueAsText(JToken.AsObject(), 'data.someValue'), 1, MaxStrLen(Result));
         // [THEN] the result of the function = ExpectedResult
         LibraryAssert.AreEqual(ExpectedResult, Result, '');
 
         // [GIVEN] a JsonObject with a JsonValue that contains an Text value longer then MaxLength.
         // [GIVEN] a wrong path for finding the JsonValue in the JsonToken.
         // [GIVEN] a MaxLength value = 5;
-        Result := JsonHelper.GetValueAsText(JToken.AsObject(), 'data.someValue', 5);
+        Result := CopyStr(JsonHelper.GetValueAsText(JToken.AsObject(), 'data.someValue', 5), 1, MaxStrLen(Result));
         // [THEN] the result of the function = CopyStr(ExpectedResult, 1, 5)
         LibraryAssert.AreEqual(CopyStr(ExpectedResult, 1, 5), Result, '');
 
         // [GIVEN] a JsonObject with a JsonValue that contains an Text value.
         // [GIVEN] a wrong path for finding the JsonValue in the JsonObject.
-        Result := JsonHelper.GetValueAsText(JToken.AsObject(), 'data.value');
+        Result := CopyStr(JsonHelper.GetValueAsText(JToken.AsObject(), 'data.value'), 1, MaxStrLen(Result));
         // [THEN] the result of the function = ZeroText.
         LibraryAssert.AreEqual(ZeroText, Result, '');
     end;

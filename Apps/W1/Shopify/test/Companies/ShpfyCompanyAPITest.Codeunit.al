@@ -1,6 +1,18 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Sales.Customer;
+
 codeunit 139637 "Shpfy Company API Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var
@@ -265,7 +277,8 @@ codeunit 139637 "Shpfy Company API Test"
     begin
         BindSubscription(CompanyAPISubs);
         CompanyAPI.SetShop(Shop);
-        CompanyAPI.UpdateCompany(ShopifyCompany, CompanyLocation);
+        CompanyAPI.UpdateCompany(ShopifyCompany);
+        CompanyAPI.UpdateCompanyLocation(CompanyLocation);
         GraphQL := CompanyAPISubs.GetExecutedQuery();
         UnbindSubscription(CompanyAPISubs);
     end;

@@ -51,6 +51,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
 
         // Post document creation
         DocumentAttachmentMgt.CopyAttachments(EDocument, PurchaseHeader);
+        DocumentAttachmentMgt.DeleteAttachedDocuments(EDocument);
 
         // Post document validation - Silently emit telemetry
         if not TryValidateDocumentTotals(PurchaseHeader) then
@@ -80,8 +81,11 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
         PurchaseLine: Record "Purchase Line";
         EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
+        DimensionManagement: Codeunit DimensionManagement;
+        PurchaseLineCombinedDimensions: array[10] of Integer;
         StopCreatingPurchaseInvoice: Boolean;
         VendorInvoiceNo: Code[35];
+        GlobalDim1, GlobalDim2 : Code[20];
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         if not AllDraftLinesHaveTypeAndNumberSpecificed(EDocumentPurchaseHeader) then begin
@@ -142,7 +146,11 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
                 if EDocumentPurchaseLine."Total Discount" > 0 then
                     PurchaseLine.Validate("Line Discount Amount", EDocumentPurchaseLine."Total Discount");
                 PurchaseLine.Validate("Deferral Code", EDocumentPurchaseLine."[BC] Deferral Code");
-                PurchaseLine.Validate("Dimension Set ID", EDocumentPurchaseLine."[BC] Dimension Set ID");
+
+                Clear(PurchaseLineCombinedDimensions);
+                PurchaseLineCombinedDimensions[1] := PurchaseLine."Dimension Set ID";
+                PurchaseLineCombinedDimensions[2] := EDocumentPurchaseLine."[BC] Dimension Set ID";
+                PurchaseLine.Validate("Dimension Set ID", DimensionManagement.GetCombinedDimensionSetID(PurchaseLineCombinedDimensions, GlobalDim1, GlobalDim2));
                 PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 1 Code");
                 PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 2 Code");
                 EDocumentPurchaseHistMapping.ApplyHistoryValuesToPurchaseLine(EDocumentPurchaseLine, PurchaseLine);

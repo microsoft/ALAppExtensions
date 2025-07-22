@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
@@ -128,6 +133,8 @@ codeunit 30166 "Shpfy Process Order"
                 SalesHeader.Validate("Payment Method Code", ShopifyOrderHeader."Payment Method Code");
             if ShopifyOrderHeader."Payment Terms Type" <> '' then
                 UpdatePaymentTerms(SalesHeader, ShopifyOrderHeader."Payment Terms Type", ShopifyOrderHeader."Payment Terms Name");
+            if ShopifyOrderHeader."Salesperson Code" <> '' then
+                SalesHeader.Validate("Salesperson Code", ShopifyOrderHeader."Salesperson Code");
 
             SalesHeader.Modify(true);
 

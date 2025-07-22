@@ -1,6 +1,7 @@
 codeunit 148043 "DIOT Wizard Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

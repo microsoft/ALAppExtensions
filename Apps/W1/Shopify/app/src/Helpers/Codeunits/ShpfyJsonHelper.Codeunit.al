@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.Text;
@@ -277,14 +282,22 @@ codeunit 30157 "Shpfy Json Helper"
         TokenPaths := TokenPath.Split('.');
         foreach TokenPath in TokenPaths do
             if JToken.AsObject().Get(TokenPath, JToken) then
-                if TokenPaths.IndexOf(TokenPath) = TokenPaths.Count then
-                    if JToken.IsValue then
-                        exit(JToken.AsValue().IsNull);
+                if TokenPaths.IndexOf(TokenPath) = TokenPaths.Count() then
+                    if JToken.IsValue() then
+                        exit(JToken.AsValue().IsNull());
     end;
 
     internal procedure IsNull(JObject: JsonObject; TokenPath: Text): boolean
     begin
         exit(IsNull(JObject.AsToken(), TokenPath))
+    end;
+
+    internal procedure IsTokenNull(JToken: JsonToken): Boolean
+    begin
+        if JToken.IsValue() then
+            exit(JToken.AsValue().IsNull())
+        else
+            exit(false);
     end;
     #endregion IsNull
 
@@ -402,7 +415,7 @@ codeunit 30157 "Shpfy Json Helper"
     /// </summary>
     /// <param name="JObject">Parameter of type JsonObject.</param>
     /// <param name="TokenPath">Parameter of type Text contains the path members combined with the .-char.</param>
-    /// <returns>Return value of type Boolean.</returns>
+    /// <returns>Return variable "Boolean".</returns>
     internal procedure GetValueAsBoolean(JObject: JsonObject; TokenPath: Text): Boolean
     var
         JValue: JsonValue;

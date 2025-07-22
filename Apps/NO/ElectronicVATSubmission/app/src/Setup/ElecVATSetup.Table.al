@@ -1,10 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Privacy;
+using System.Telemetry;
 
 table 10686 "Elec. VAT Setup"
 {
@@ -21,13 +22,14 @@ table 10686 "Elec. VAT Setup"
 
             trigger OnValidate()
             var
+                AuditLog: Codeunit "Audit Log";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 ElectVATSetupConsentProvidedLbl: Label 'NO Elect. VAT Setup - consent provided by UserSecurityId %1.', Locked = true;
             begin
                 if Enabled then
                     Enabled := CustomerConsentMgt.ConfirmUserConsent();
                 if Enabled then
-                    Session.LogAuditMessage(StrSubstNo(ElectVATSetupConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
+                    AuditLog.LogAuditMessage(StrSubstNo(ElectVATSetupConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
             end;
         }
         field(3; "OAuth Feature GUID"; GUID)

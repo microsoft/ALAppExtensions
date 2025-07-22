@@ -10,6 +10,7 @@ using System.Reflection;
 codeunit 133573 "Bank Rec. With AI Match Acc."
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

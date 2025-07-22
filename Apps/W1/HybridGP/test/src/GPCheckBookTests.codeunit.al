@@ -4,6 +4,7 @@ codeunit 139678 "GP Checkbook Tests"
 
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     Permissions = tableData "Bank Account Ledger Entry" = rimd;
     TestPermissions = Disabled;
 
