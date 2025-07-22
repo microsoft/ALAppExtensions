@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "_Exclude_SyncBaseApp_",
   "description": "_Exclude_SyncBaseApp_",
-  "version": "$(app_currentVersion)",
+  "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
   "help": "https://go.microsoft.com/fwlink/?linkid=2206524",
@@ -13,7 +13,7 @@
   "logo": "ExtensionLogo.png",
   "dependencies": [],
   "screenshots": [],
-  "platform": "$(app_platformVersion)",
+  "platform": "27.0.0.0",
   "idRanges": [
     {
       "from": 1,
@@ -25,6 +25,6 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "$(app_minimumVersion)",
+  "application": "27.0.0.0",
   "target": "Cloud"
 }
