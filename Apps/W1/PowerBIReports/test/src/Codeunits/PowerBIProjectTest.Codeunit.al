@@ -14,6 +14,7 @@ using Microsoft.PowerBIReports.Test;
 codeunit 139879 "PowerBI Project Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     Access = Internal;
 
     var

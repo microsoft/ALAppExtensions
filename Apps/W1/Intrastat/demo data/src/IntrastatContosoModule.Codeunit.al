@@ -12,11 +12,15 @@ codeunit 4844 "Intrastat Contoso Module" implements "Contoso Demo Data Module"
     InherentPermissions = X;
 
     procedure RunConfigurationPage()
+    var
+        ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
+        Message(ContosoDemoTool.GetNoConfiguirationMsg());
     end;
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"]
     begin
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::Foundation);
     end;
 
     procedure CreateSetupData()

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.History;
@@ -26,9 +31,9 @@ report 30119 "Shpfy Sync Invoices to Shpfy"
                 if ShopCode = '' then
                     Error(ShopCodeNotSetErr);
 
-                Shop.Get(ShopCode);
+                ShopifyShop.Get(ShopCode);
 
-                if not Shop."Posted Invoice Sync" then
+                if not ShopifyShop."Posted Invoice Sync" then
                     Error(PostedInvoiceSyncNotSetErr);
 
                 ShopifyPaymentTerms.SetRange("Shop Code", ShopCode);
@@ -96,7 +101,7 @@ report 30119 "Shpfy Sync Invoices to Shpfy"
     }
 
     var
-        Shop: Record "Shpfy Shop";
+        ShopifyShop: Record "Shpfy Shop";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         ShopCode: Code[20];
         CurrSalesInvoiceHeaderNo: Code[20];
@@ -122,7 +127,7 @@ report 30119 "Shpfy Sync Invoices to Shpfy"
         PaymentTermsMappingErrorInfo.ErrorType := PaymentTermsMappingErrorInfo.ErrorType::Client;
         PaymentTermsMappingErrorInfo.Verbosity := PaymentTermsMappingErrorInfo.Verbosity::Error;
         PaymentTermsMappingErrorInfo.Message := NoPaymentTermsErr;
-        PaymentTermsMappingErrorInfo.RecordId(Shop.RecordId());
+        PaymentTermsMappingErrorInfo.RecordId(ShopifyShop.RecordId());
         PaymentTermsMappingErrorInfo.AddAction(ConfigurePaymentTermsMappingLbl, Codeunit::"Shpfy Posted Invoice Export", 'ConfigurePaymentTermsMapping');
         Error(PaymentTermsMappingErrorInfo);
     end;

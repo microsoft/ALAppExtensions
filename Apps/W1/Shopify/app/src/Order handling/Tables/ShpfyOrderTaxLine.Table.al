@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -34,12 +39,15 @@ table 30122 "Shpfy Order Tax Line"
             Caption = 'Rate';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 0;
         }
         field(5; Amount; Decimal)
         {
             Caption = 'Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderCurrencyCode();
         }
 #if not CLEANSCHEMA25
         field(6; "Currency Code"; Code[10])
@@ -57,12 +65,15 @@ table 30122 "Shpfy Order Tax Line"
             Caption = 'Presentment Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderPresentmentCurrencyCode();
         }
         field(8; "Rate %"; Decimal)
         {
             Caption = 'Rate %';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 0;
         }
     }
     keys
@@ -84,5 +95,25 @@ table 30122 "Shpfy Order Tax Line"
             else
                 "Line No." := 1;
         end;
+    end;
+
+    local procedure OrderCurrencyCode(): Code[10]
+    var
+        OrderHeader: Record "Shpfy Order Header";
+        OrderLine: Record "Shpfy Order Line";
+    begin
+        if OrderLine.Get("Parent Id") then
+            if OrderHeader.Get(OrderLine."Shopify Order Id") then
+                exit(OrderHeader."Currency Code");
+    end;
+
+    local procedure OrderPresentmentCurrencyCode(): Code[10]
+    var
+        OrderHeader: Record "Shpfy Order Header";
+        OrderLine: Record "Shpfy Order Line";
+    begin
+        if OrderLine.Get("Parent Id") then
+            if OrderHeader.Get(OrderLine."Shopify Order Id") then
+                exit(OrderHeader."Presentment Currency Code");
     end;
 }

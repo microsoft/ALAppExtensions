@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+
 codeunit 134243 "Shpfy Company Import Subs."
 {
     EventSubscriberInstance = Manual;
@@ -47,8 +56,9 @@ codeunit 134243 "Shpfy Company Import Subs."
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        ResponseLbl: Label '{ "data": { "company" :{ "mainContact" : {}, "updatedAt" : "%1" } }}', Comment = '%1 - updatedAt', Locked = true;
     begin
-        Body := StrSubstNo('{ "data": { "company" :{ "mainContact" : {}, "updatedAt" : "%1" } }}', Format(CurrentDateTime, 0, 9));
+        Body := StrSubstNo(ResponseLbl, Format(CurrentDateTime, 0, 9));
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;

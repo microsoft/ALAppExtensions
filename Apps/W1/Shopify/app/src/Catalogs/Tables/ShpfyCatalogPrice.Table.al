@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -31,11 +36,15 @@ table 30153 "Shpfy Catalog Price"
         {
             Caption = 'Price';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Price List Currency";
         }
         field(5; "Compare at Price"; Decimal)
         {
             Caption = 'Compare at Price';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Price List Currency";
         }
         field(6; "Price List Currency"; Code[3])
         {

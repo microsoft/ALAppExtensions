@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
@@ -46,6 +51,8 @@ table 30129 "Shpfy Variant"
         {
             Caption = 'Compare at Price';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(8; "Display Name"; Text[250])
         {
@@ -66,6 +73,8 @@ table 30129 "Shpfy Variant"
         {
             Caption = 'Price';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(12; SKU; Text[50])
         {
@@ -91,6 +100,7 @@ table 30129 "Shpfy Variant"
         {
             Caption = 'Weight';
             DataClassification = CustomerContent;
+            AutoFormatType = 0;
         }
         field(17; "Option 1 Name"; Text[50])
         {
@@ -126,6 +136,8 @@ table 30129 "Shpfy Variant"
         {
             Caption = 'Unit Cost';
             DataClassification = CustomerContent;
+            AutoFormatType = 2;
+            AutoFormatExpression = '';
         }
         field(24; "Image Id"; BigInteger)
         {

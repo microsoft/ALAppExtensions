@@ -1,6 +1,7 @@
 codeunit 144112 "Serv. Decl. IT Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

@@ -6,6 +6,7 @@
 codeunit 148020 "Payment Export Formats"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

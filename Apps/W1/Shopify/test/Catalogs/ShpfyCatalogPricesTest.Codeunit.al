@@ -1,6 +1,20 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Pricing;
+using Microsoft.Sales.Customer;
+
 codeunit 139646 "Shpfy Catalog Prices Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var
@@ -37,10 +51,10 @@ codeunit 139646 "Shpfy Catalog Prices Test"
         InitDiscountPerc := Any.DecimalInRange(5, 20, 1);
         Item := ProductInitTest.CreateItem(Shop."Item Templ. Code", InitUnitCost, InitPrice);
 #if not CLEAN25
-        ProductInitTest.CreateSalesPrice(Shop.Code, Item."No.", InitPrice);
-        CustomerDiscountGroup := ProductInitTest.CreateSalesLineDiscount(Shop.Code, Item."No.", InitDiscountPerc);
+        ProductInitTest.CreateSalesPrice(CopyStr(Shop.Code, 1, 10), Item."No.", InitPrice);
+        CustomerDiscountGroup := ProductInitTest.CreateSalesLineDiscount(CopyStr(Shop.Code, 1, 10), Item."No.", InitDiscountPerc);
 #else
-        CustomerDiscountGroup := ProductInitTest.CreatePriceList(Shop.Code, Item."No.", InitPrice, InitDiscountPerc);
+        CustomerDiscountGroup := ProductInitTest.CreatePriceList(CopyStr(Shop.Code, 1, 10), Item."No.", InitPrice, InitDiscountPerc);
 #endif
 
         // [SCENARIO] Doing the price calculation of an product for a catalog where the fields "Customer Price Group" and Customer Discount Group" are not filled in.
@@ -120,7 +134,7 @@ codeunit 139646 "Shpfy Catalog Prices Test"
         // [GIVEN] Updating the catalog to apply a universal discount to all customers.
 #if CLEAN25
         InitDiscountPerc := Any.DecimalInRange(5, 20, 1);
-        ProductInitTest.CreateAllCustomerPriceList(Shop.Code, Item."No.", InitPrice, InitDiscountPerc);
+        ProductInitTest.CreateAllCustomerPriceList(CopyStr(Shop.Code, 1, 10), Item."No.", InitPrice, InitDiscountPerc);
         Catalog."Customer No." := Customer."No.";
         Catalog.Modify();
 
@@ -179,7 +193,7 @@ codeunit 139646 "Shpfy Catalog Prices Test"
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Applying customer-specific discounts.
         CustDiscPerc := Any.DecimalInRange(5, 20, 1);
-	ProductInitTest.CreateCustomerPriceList(Shop.Code, Item."No.", InitPrice, CustDiscPerc, Customer);
+	ProductInitTest.CreateCustomerPriceList(CopyStr(Shop.Code, 1, 10), Item."No.", InitPrice, CustDiscPerc, Customer);
         Catalog."Customer No." := Customer."No.";
         Catalog.Modify();
         ProductPriceCalculation.SetShopAndCatalog(Shop, Catalog);
@@ -242,8 +256,9 @@ codeunit 139646 "Shpfy Catalog Prices Test"
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Applying a universal discount for all customers.
         CustDiscPerc := Any.DecimalInRange(5, 20, 1);
-	ProductInitTest.CreateCustomerPriceList(Shop.Code, Item."No.", InitPrice, CustDiscPerc, Customer);
-        ProductInitTest.CreateAllCustomerPriceList(Shop.Code, Item."No.", InitPrice, InitPerc);
+        InitPerc := 0;
+	ProductInitTest.CreateCustomerPriceList(CopyStr(Shop.Code, 1, 10), Item."No.", InitPrice, CustDiscPerc, Customer);
+        ProductInitTest.CreateAllCustomerPriceList(CopyStr(Shop.Code, 1, 10), Item."No.", InitPrice, InitPerc);
         Catalog."Customer No." := Customer."No.";
         Catalog.Modify();
 
@@ -303,7 +318,7 @@ codeunit 139646 "Shpfy Catalog Prices Test"
 #if CLEAN25
         LibrarySales.CreateCustomer(Customer);
         InitDiscountPerc := Any.DecimalInRange(5, 20, 1);
-	CustomerDiscountGroup := ProductInitTest.CreatePriceList(Shop.Code, Item."No.", InitPrice, InitDiscountPerc);
+	CustomerDiscountGroup := ProductInitTest.CreatePriceList(CopyStr(Shop.Code, 1, 10), Item."No.", InitPrice, InitDiscountPerc);
         // [GIVEN] Updating catalog with customer-specific discount group details.
         Catalog."Customer No." := Customer."No.";
         Customer."Customer Disc. Group" := CustomerDiscountGroup.Code;

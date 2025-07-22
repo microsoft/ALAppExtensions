@@ -3,6 +3,7 @@ codeunit 139869 "APIV2 - Cust. Ret. Reasons E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

@@ -1,3 +1,18 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Environment.Configuration;
+using System.TestLibraries.Reflection;
+using System.Environment.Configuration;
+using System.Environment;
+using Microsoft.Finance.RoleCenters;
+using System.Reflection;
+
 codeunit 139580 "Shpfy Checklist Init. Test"
 {
     Subtype = Test;

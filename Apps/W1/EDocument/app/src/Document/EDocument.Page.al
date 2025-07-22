@@ -490,6 +490,9 @@ page 6121 "E-Document"
         HasErrors := false;
         IsProcessed := false;
         NewEDocumentExperienceActive := EDocumentsSetup.IsNewEDocumentExperienceActive();
+
+        if Rec."Entry No" <> 0 then
+            Rec.SetRecFilter(); // Filter the record to only this instance to avoid navigation 
     end;
 
     trigger OnAfterGetRecord()

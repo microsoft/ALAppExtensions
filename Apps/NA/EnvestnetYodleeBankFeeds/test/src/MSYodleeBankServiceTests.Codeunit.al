@@ -3,6 +3,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     // version Test,W1
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();

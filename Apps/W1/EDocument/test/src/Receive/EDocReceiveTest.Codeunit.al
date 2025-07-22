@@ -1,6 +1,7 @@
 codeunit 139628 "E-Doc. Receive Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

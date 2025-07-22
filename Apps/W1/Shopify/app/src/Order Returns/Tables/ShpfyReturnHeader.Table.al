@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.Reflection;
@@ -59,19 +64,25 @@ table 30147 "Shpfy Return Header"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+#pragma warning disable AA0232
         field(12; "Discounted Total Amount"; Decimal)
         {
             Caption = 'Discounted Total Amount';
             FieldClass = FlowField;
             CalcFormula = sum("Shpfy Return Line"."Discounted Total Amount" where("Return Id" = field("Return Id")));
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderCurrencyCode();
         }
+#pragma warning restore AA0232
         field(13; "Presentment Disc. Total Amt."; Decimal)
         {
             Caption = 'Presentment Discounted Total Amount';
             FieldClass = FlowField;
             CalcFormula = sum("Shpfy Return Line"."Presentment Disc. Total Amt." where("Return Id" = field("Return Id")));
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderPresentmentCurrencyCode();
         }
         field(101; "Sell-to Customer No."; Code[20])
         {
@@ -148,5 +159,21 @@ table 30147 "Shpfy Return Header"
         "Decline Note".CreateOutStream(OutStream, TextEncoding::UTF8);
         OutStream.WriteText(NewDeclineNote);
         Modify();
+    end;
+
+    local procedure OrderCurrencyCode(): Code[10]
+    var
+        OrderHeader: Record "Shpfy Order Header";
+    begin
+        if OrderHeader.Get("Order Id") then
+            exit(OrderHeader."Currency Code");
+    end;
+
+    local procedure OrderPresentmentCurrencyCode(): Code[10]
+    var
+        OrderHeader: Record "Shpfy Order Header";
+    begin
+        if OrderHeader.Get("Order Id") then
+            exit(OrderHeader."Presentment Currency Code");
     end;
 }

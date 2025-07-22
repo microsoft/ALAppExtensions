@@ -1,6 +1,7 @@
 codeunit 148012 "Nemhandel Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
