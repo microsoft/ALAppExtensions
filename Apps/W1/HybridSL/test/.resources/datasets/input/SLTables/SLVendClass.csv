@@ -1,0 +1,4 @@
+﻿ClassID,APAcct,Descr
+EMP       ,2050      ,Employee                      
+INTER     ,2050      ,Intercompany Vendor           
+TRADE     ,2050      ,Trade Vendor                  

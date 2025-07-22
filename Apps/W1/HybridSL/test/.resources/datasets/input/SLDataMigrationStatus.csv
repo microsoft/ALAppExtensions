@@ -1,0 +1,3 @@
+﻿Migration Type,Destination Table ID,Total Number,Migrated Number,Progress Percent,Status,Source Staging Table ID,Migration Codeunit To Run
+Dynamics SL,18,36,36,10000,Completed,57012,57018
+Dynamics SL,23,85,85,10000,Completed,57049,57021
