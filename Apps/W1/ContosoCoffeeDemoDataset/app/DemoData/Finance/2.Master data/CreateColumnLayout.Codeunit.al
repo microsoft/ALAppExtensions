@@ -6,6 +6,7 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Enums;
 using Microsoft.Finance.FinancialReports;
 
 codeunit 5395 "Create Column Layout"
@@ -143,6 +144,55 @@ codeunit 5395 "Create Column Layout"
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 110000, 'A', NovemberLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[11]', false);
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 120000, 'A', DecemberLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[12]', false);
         ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 130000, '', TotalLbl, Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::Entries, 'A', false, Enum::"Column Layout Show"::Always, '', false);
+
+        ColumnLayoutName := CreateColumnLayoutName.BalanceSheetMultiYearBalanceComparison();
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, '1', CurrentYearLbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[1..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, '2', PriorYearLbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-1FY[1..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 30000, '3', TwoYearsPriorLbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-2FY[1..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 40000, '4', ThreeYearsPriorLbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-3FY[1..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 50000, '5', FourYearsPriorLbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-4FY[1..12]', false);
+
+        ColumnLayoutName := CreateColumnLayoutName.BalanceSheetCurrentYearBalanceByQuarter();
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, '1', Quarter1Lbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[1..3]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, '2', Quarter2Lbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[4..6]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 30000, '3', Quarter3Lbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[7..9]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 40000, '4', Quarter4Lbl, Enum::"Column Layout Type"::"Balance at Date", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[10..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 50000, '5', TotalLbl, Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::Entries, Enum::"Account Schedule Amount Type"::"Net Amount", '1..4', false, Enum::"Column Layout Show"::Always, '', false, 0);
+
+        ColumnLayoutName := CreateColumnLayoutName.IncomeStatementCurrentYearNetChangeByQuarter();
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, '1', Quarter1Lbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[1..3]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, '2', Quarter2Lbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[4..6]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 30000, '3', Quarter3Lbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[7..9]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 40000, '4', Quarter4Lbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[10..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 50000, '5', TotalLbl, Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::Entries, Enum::"Account Schedule Amount Type"::"Net Amount", '1..4', false, Enum::"Column Layout Show"::Always, '', false, 0);
+
+
+        ColumnLayoutName := CreateColumnLayoutName.IncomeStatementMultiYearNetChangeComparison();
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, '1', CurrentYearLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, 'FY[1..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, '2', PriorYearLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-1FY[1..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 30000, '3', TwoYearsPriorLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-2FY[1..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 40000, '4', ThreeYearsPriorLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-3FY[1..12]', false);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 50000, '5', FourYearsPriorLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, '', false, Enum::"Column Layout Show"::Always, '-4FY[1..12]', false);
+
+        ColumnLayoutName := CreateColumnLayoutName.PeriodAndYearToDate();
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, '', CurrPeriodLbl, Enum::"Column Layout Type"::"Net Change", Enum::"Column Layout Entry Type"::Entries, Enum::"Account Schedule Amount Type"::"Net Amount", '', false, Enum::"Column Layout Show"::Always, '', false, 0);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, '', YearToDateLbl, Enum::"Column Layout Type"::"Year to Date", Enum::"Column Layout Entry Type"::Entries, Enum::"Account Schedule Amount Type"::"Net Amount", '', false, Enum::"Column Layout Show"::Always, '', false, 0);
+
+
+        ColumnLayoutName := CreateColumnLayoutName.PeriodAndYearToDateWithPercentTotalRevenue();
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, 'PTD', CurrPeriodLbl, Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::"Budget Entries", Enum::"Account Schedule Amount Type"::"Net Amount", '', false, Enum::"Column Layout Show"::Always, '', false, 0, Enum::"Analysis Rounding Factor"::None);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, '', '', Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::Entries, Enum::"Account Schedule Amount Type"::"Net Amount", 'PTD%', true, Enum::"Column Layout Show"::Always, '', false, 0, Enum::"Analysis Rounding Factor"::None);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 30000, 'YTD', YearToDateLbl, Enum::"Column Layout Type"::"Year to Date", Enum::"Column Layout Entry Type"::Entries, Enum::"Account Schedule Amount Type"::"Net Amount", '', false, Enum::"Column Layout Show"::Always, '', false, 0, Enum::"Analysis Rounding Factor"::None);
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 40000, '', '', Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::Entries, Enum::"Account Schedule Amount Type"::"Net Amount", 'YTD%', true, Enum::"Column Layout Show"::Always, '', false, 0, Enum::"Analysis Rounding Factor"::None);
+
+
+        ColumnLayoutName := CreateColumnLayoutName.ThisYearToDatevsPriorYearToDate();
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 10000, 'CUR', CurrentYearToDateLbl, Enum::"Column Layout Type"::"Year to Date", Enum::"Column Layout Entry Type"::"Entries", Enum::"Account Schedule Amount Type"::"Net Amount", '', false, Enum::"Column Layout Show"::Always, '', false, 0, Enum::"Analysis Rounding Factor"::"1");
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 20000, '', '', Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::"Entries", Enum::"Account Schedule Amount Type"::"Net Amount", 'CUR%', true, Enum::"Column Layout Show"::Always, '', false, 0, Enum::"Analysis Rounding Factor"::"1");
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 30000, 'PRIOR', PriorYearToDateLbl, Enum::"Column Layout Type"::"Year to Date", Enum::"Column Layout Entry Type"::"Entries", Enum::"Account Schedule Amount Type"::"Net Amount", '-1Y', false, Enum::"Column Layout Show"::Always, '', false, 1033, Enum::"Analysis Rounding Factor"::"1");
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 40000, '', '', Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::"Entries", Enum::"Account Schedule Amount Type"::"Net Amount", 'PRIOR%', true, Enum::"Column Layout Show"::Always, '', false, 0, Enum::"Analysis Rounding Factor"::"1");
+        ContosoAccountSchedule.InsertColumnLayout(ColumnLayoutName, 50000, 'DIFF', DifferenceLbl, Enum::"Column Layout Type"::Formula, Enum::"Column Layout Entry Type"::"Entries", Enum::"Account Schedule Amount Type"::"Net Amount", 'CUR-PRIOR', false, Enum::"Column Layout Show"::Always, '', false, 0, Enum::"Analysis Rounding Factor"::"1");
+
     end;
 
     internal procedure CreateSetupColumnLayout()
@@ -209,4 +259,18 @@ codeunit 5395 "Create Column Layout"
         YearToDateBudgetLbl: Label 'Year to Date Budget', MaxLength = 30;
         TotalBudgetPlannedLbl: Label 'Total Budget Planned', MaxLength = 30;
         TotalBudgetRemainingLbl: Label 'Total Budget Remaining', MaxLength = 30;
+        CurrentYearLbl: Label 'Current Year', MaxLength = 30;
+        PriorYearLbl: Label 'Prior Year', MaxLength = 30;
+        TwoYearsPriorLbl: Label '2 Years Prior', MaxLength = 30;
+        ThreeYearsPriorLbl: Label '3 Years Prior', MaxLength = 30;
+        FourYearsPriorLbl: Label '4 Years Prior', MaxLength = 30;
+        CurrPeriodLbl: Label 'Current Period', MaxLength = 30;
+        Quarter1Lbl: Label 'Quarter 1', MaxLength = 39;
+        Quarter2Lbl: Label 'Quarter 2', MaxLength = 39;
+        Quarter3Lbl: Label 'Quarter 3', MaxLength = 39;
+        Quarter4Lbl: Label 'Quarter 4', MaxLength = 39;
+        YearToDateLbl: Label 'Year to Date', MaxLength = 30;
+        CurrentYearToDateLbl: Label 'Current Year to Date', MaxLength = 30;
+        PriorYearToDateLbl: Label 'Prioer Year to Date', MaxLength = 30;
+
 }

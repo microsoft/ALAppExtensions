@@ -5,6 +5,7 @@
 namespace Microsoft.DemoTool.Helpers;
 
 using Microsoft.Finance.FinancialReports;
+using Microsoft.Foundation.Enums;
 using System.Visualization;
 
 codeunit 5239 "Contoso Account Schedule"
@@ -212,6 +213,11 @@ codeunit 5239 "Contoso Account Schedule"
     end;
 
     procedure InsertColumnLayout(ColumnLayoutName: Code[10]; LineNo: Integer; ColumnNo: Code[10]; ColumnHeader: Text[30]; ColumnType: Enum "Column Layout Type"; LedgerEntryType: Enum "Column Layout Entry Type"; AmountType: Enum "Account Schedule Amount Type"; Formula: Code[80]; ShowOppositeSign: Boolean; Show: Enum "Column Layout Show"; ComparisonPeriodFormula: Code[20]; HideCurrencySymbol: Boolean; FormulaLCID: Integer)
+    begin
+        InsertColumnLayout(ColumnLayoutName, LineNo, ColumnNo, ColumnHeader, ColumnType, LedgerEntryType, AmountType, Formula, ShowOppositeSign, Show, ComparisonPeriodFormula, HideCurrencySymbol, FormulaLCID, Enum::"Analysis Rounding Factor"::None);
+    end;
+
+    procedure InsertColumnLayout(ColumnLayoutName: Code[10]; LineNo: Integer; ColumnNo: Code[10]; ColumnHeader: Text[30]; ColumnType: Enum "Column Layout Type"; LedgerEntryType: Enum "Column Layout Entry Type"; AmountType: Enum "Account Schedule Amount Type"; Formula: Code[80]; ShowOppositeSign: Boolean; Show: Enum "Column Layout Show"; ComparisonPeriodFormula: Code[20]; HideCurrencySymbol: Boolean; FormulaLCID: Integer; ReoundingFactor: Enum "Analysis Rounding Factor")
     var
         ColumnLayout: Record "Column Layout";
         Exists: Boolean;
@@ -236,6 +242,7 @@ codeunit 5239 "Contoso Account Schedule"
         ColumnLayout.Validate("Comparison Period Formula LCID", FormulaLCID);
         ColumnLayout."Comparison Period Formula" := ComparisonPeriodFormula;
         ColumnLayout.Validate("Hide Currency Symbol", HideCurrencySymbol);
+        ColumnLayout.Validate("Rounding Factor", ReoundingFactor);
 
         if Exists then
             ColumnLayout.Modify(true)
