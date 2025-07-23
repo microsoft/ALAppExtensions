@@ -67,12 +67,14 @@ codeunit 11465 "US Contoso Localization"
                     Codeunit.Run(Codeunit::"Create General Ledger Setup US");
                     Codeunit.Run(Codeunit::"Create Posting Groups US");
                     Codeunit.Run(Codeunit::"Create Column Layout Name US");
+                    Codeunit.Run(Codeunit::"Create Financial Report US");
                     Codeunit.Run(Codeunit::"Create Currency US");
                     Codeunit.Run(Codeunit::"Create Tax Group US");
                     Codeunit.Run(Codeunit::"Create Tax Setup US");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
+                    Codeunit.Run(Codeunit::"Create Acc. Schedule Name US");
                     Codeunit.Run(Codeunit::"Create Acc. Schedule Line US");
                     Codeunit.Run(Codeunit::"Create Column Layout US");
                     Codeunit.Run(Codeunit::"Create Curr Exchange Rate US");
