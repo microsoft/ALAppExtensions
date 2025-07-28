@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -12,6 +12,7 @@ using Microsoft.Purchases.Payables;
 codeunit 148010 "IRS 1099 Document Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
@@ -31,6 +32,8 @@ codeunit 148010 "IRS 1099 Document Tests"
         CannotCreateFormDocSamePeriodVendorFormErr: Label 'You cannot create multiple form documents with the same period, vendor and form.';
         CreateCreateFormDocLineSameFormBoxErr: Label 'You cannot create two form document lines with the same form box.';
         CannotChangeIRSDataInEntryConnectedToFormDocumentErr: Label 'You cannot change the IRS data in the vendor ledger entry connected to the form document. Period = %1, Vendor No. = %2, Form No. = %3', Comment = '%1 = Period No., %2 = Vendor No., %3 = Form No.';
+        PeriodNoFieldVisibleErr: Label 'Field Period No. should be visible.';
+        PeriodNoNotVisibleErr: Label 'Field Period No. should not be visible.';
 
 
     trigger OnRun()
@@ -949,6 +952,49 @@ codeunit 148010 "IRS 1099 Document Tests"
 #endif
     end;
 
+    [Test]
+    procedure VerifyPeriodNoFieldVisible()
+    var
+        IRS1099FormDocument: TestPage "IRS 1099 Form Documents";
+    begin
+        // [SCENARIO 574754] "Period No." field is visible when open blank "IRS 1099 form Document" 
+        Initialize();
+
+        // [WHEN] Open the blank IRS 1099 Document card page.
+        IRS1099FormDocument.OpenEdit();
+
+        // [THEN] "Period No." field is visible
+        Assert.IsTrue(IRS1099FormDocument."Period No.".Visible(), PeriodNoFieldVisibleErr);
+    end;
+
+    [Test]
+    procedure VerifyPeriodNoFieldNotVisible()
+    var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocuments: TestPage "IRS 1099 Form Documents";
+        IRS1099FormDocument: TestPage "IRS 1099 Form Document";
+    begin
+        // [SCENARIO 574754] "Period No."" field is not visible when open "IRS 1099 form Documents" have some record
+        Initialize();
+
+        // [GIVEN] Create IRS1099FormDocHeader
+        MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Open);
+
+        // [GIVEN] Open the list page and go to created record
+        IRS1099FormDocuments.OpenView();
+        IRS1099FormDocuments.Filter.SetFilter("Vendor No.", IRS1099FormDocHeader."Vendor No.");
+
+        // [GIVEN] Trap the card page "IRS 1099 form Document"
+        IRS1099FormDocument.Trap();
+
+        // [WHEN] Edit the list page "IRS 1099 form Documents"
+        IRS1099FormDocuments.Edit().Invoke();
+
+        // [THEN] Verify the "Period No." field is not visible on page.
+        Assert.IsFalse(IRS1099FormDocument."Period No.".Visible(), PeriodNoNotVisibleErr);
+    end;
+
+
     local procedure Initialize()
     var
         IRSReportingPeriod: Record "IRS Reporting Period";
@@ -989,5 +1035,20 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099FormDocLine.DeleteAll();
         IRS1099FormDocLineDetail.SetRange("Document ID", DocID);
         IRS1099FormDocLineDetail.DeleteAll();
+    end;
+
+    local procedure MockFormDocument(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header"; Status: Enum "IRS 1099 Form Doc. Status")
+    var
+        PeriodNo, FormNo, VendorNo, FormBoxNo : Code[20];
+        DocID: Integer;
+    begin
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        VendorNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), FormNo, FormBoxNo);
+        LibraryIRS1099FormBox.CreateSingleFormStatementLine(WorkDate(), FormNo, FormBoxNo);
+        DocID := LibraryIRS1099Document.MockFormDocumentForVendor(PeriodNo, VendorNo, FormNo, Status);
+        LibraryIRS1099Document.MockFormDocumentLineForVendor(DocID, PeriodNo, VendorNo, FormNo, FormBoxNo);
+        IRS1099FormDocHeader.Get(DocID);
     end;
 }

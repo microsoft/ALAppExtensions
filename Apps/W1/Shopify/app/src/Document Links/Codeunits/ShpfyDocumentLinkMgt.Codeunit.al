@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Document;
@@ -59,27 +64,51 @@ codeunit 30262 "Shpfy Document Link Mgt."
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterPostSalesDoc', '', true, false)]
     local procedure OnAfterSalesPosting(var SalesHeader: Record "Sales Header"; PreviewMode: Boolean; SalesShptHdrNo: Code[20]; SalesInvHdrNo: Code[20]; RetRcpHdrNo: Code[20]; SalesCrMemoHdrNo: Code[20])
+    var
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        SalesShipments: List of [Code[20]];
     begin
         if SalesHeader.IsTemporary() then
             exit;
 
-        if not PreviewMode then begin
-            DocLinkToBCDoc.SetRange("Document Type", ShpfyBCDocumentTypeConvert.Convert(SalesHeader."Document Type"));
-            DocLinkToBCDoc.SetRange("Document No.", SalesHeader."No.");
-            DocLinkToBCDoc.SetCurrentKey("Document Type", "Document No.");
-            if DocLinkToBCDoc.FindFirst() then begin
-                CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Shipment", SalesShptHdrNo);
-                CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Invoice", SalesInvHdrNo);
-                CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Return Receipt", RetRcpHdrNo);
-                CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Credit Memo", SalesCrMemoHdrNo);
-            end else begin
-                DocLinkToBCDoc.SetRange("Document Type", DocLinkToBCDoc."Document Type"::"Posted Sales Invoice");
-                DocLinkToBCDoc.SetRange("Document No.", SalesInvHdrNo);
-                if DocLinkToBCDoc.FindFirst() then begin
-                    CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Shipment", SalesShptHdrNo);
-                    CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Return Receipt", RetRcpHdrNo);
-                end;
-            end;
+        if PreviewMode then
+            exit;
+
+        DocLinkToBCDoc.SetRange("Document Type", ShpfyBCDocumentTypeConvert.Convert(SalesHeader."Document Type"));
+        DocLinkToBCDoc.SetRange("Document No.", SalesHeader."No.");
+        DocLinkToBCDoc.SetCurrentKey("Document Type", "Document No.");
+        if DocLinkToBCDoc.FindFirst() then begin
+            CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Shipment", SalesShptHdrNo);
+            CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Invoice", SalesInvHdrNo);
+            CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Return Receipt", RetRcpHdrNo);
+            CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Credit Memo", SalesCrMemoHdrNo);
+            exit;
+        end;
+
+        DocLinkToBCDoc.SetRange("Document Type", DocLinkToBCDoc."Document Type"::"Posted Sales Invoice");
+        DocLinkToBCDoc.SetRange("Document No.", SalesInvHdrNo);
+        if DocLinkToBCDoc.FindFirst() then begin
+            CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Shipment", SalesShptHdrNo);
+            CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Return Receipt", RetRcpHdrNo);
+            exit;
+        end;
+
+        if SalesHeader."Document Type" = SalesHeader."Document Type"::Invoice then begin
+            SalesInvoiceLine.SetRange("Document No.", SalesInvHdrNo);
+            SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
+            SalesInvoiceLine.SetFilter("Shipment No.", '<>%1', '');
+            if SalesInvoiceLine.FindSet() then
+                repeat
+                    if not SalesShipments.Contains(SalesInvoiceLine."Shipment No.") then
+                        if SalesShipmentHeader.Get(SalesInvoiceLine."Shipment No.") then begin
+                            SalesShipments.Add(SalesInvoiceLine."Shipment No.");
+                            DocLinkToBCDoc.SetRange("Document Type", DocLinkToBCDoc."Document Type"::"Posted Sales Shipment");
+                            DocLinkToBCDoc.SetRange("Document No.", SalesShipmentHeader."No.");
+                            if DocLinkToBCDoc.FindFirst() then
+                                CreateNewDocumentLink(DocLinkToBCDoc."Shopify Document Type", DocLinkToBCDoc."Shopify Document Id", "Shpfy Document Type"::"Posted Sales Invoice", SalesInvHdrNo);
+                        end;
+                until SalesInvoiceLine.Next() = 0;
         end;
     end;
 

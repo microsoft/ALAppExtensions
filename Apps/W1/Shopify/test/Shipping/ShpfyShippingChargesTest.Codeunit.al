@@ -1,6 +1,23 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Sales.Document;
+using Microsoft.Inventory.Item;
+using System.TestLibraries.Utilities;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Enums;
+
 codeunit 139546 "Shpfy Shipping Charges Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -146,7 +163,7 @@ codeunit 139546 "Shpfy Shipping Charges Test"
             ShipmentMethod.Code,
             ShippingAgent.Code,
             ShippingAgentServices.Code,
-            LibraryRandom.RandText(20),
+            CopyStr(LibraryRandom.RandText(20), 1, 20),
             OrderShippingCharges.Title
         );
 
@@ -360,33 +377,33 @@ codeunit 139546 "Shpfy Shipping Charges Test"
         ShpfyShipmentMethodMapping.Insert(true);
     end;
 
-    local procedure CreateShipmentMethod(ShipmentMethod: Record "Shipment Method")
+    local procedure CreateShipmentMethod(LocalShipmentMethod: Record "Shipment Method")
     var
         LibraryUtility: Codeunit "Library - Utility";
     begin
-        ShipmentMethod.Init();
-        ShipmentMethod.Code := CopyStr(LibraryUtility.GenerateRandomText(MaxStrLen(ShipmentMethod.Code)), 1, MaxStrLen(ShipmentMethod.Code));
-        ShipmentMethod.Insert(true);
+        LocalShipmentMethod.Init();
+        LocalShipmentMethod.Code := CopyStr(LibraryUtility.GenerateRandomText(MaxStrLen(LocalShipmentMethod.Code)), 1, MaxStrLen(LocalShipmentMethod.Code));
+        LocalShipmentMethod.Insert(true);
     end;
 
-    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var OrdersToImport: Record "Shpfy Orders to Import"; var ImportOrder: Codeunit "Shpfy Import Order"; var JShopifyOrder: JsonObject; var JShopifyLineItems: JsonArray)
+    local procedure ImportShopifyOrder(var ShopifyShop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var OrdersToImport: Record "Shpfy Orders to Import"; var ImportOrder: Codeunit "Shpfy Import Order"; var JShopifyOrder: JsonObject; var JShopifyLineItems: JsonArray)
     var
     begin
-        ImportOrder.ImportCreateAndUpdateOrderHeaderFromMock(Shop.Code, OrdersToImport.Id, JShopifyOrder);
+        ImportOrder.ImportCreateAndUpdateOrderHeaderFromMock(ShopifyShop.Code, OrdersToImport.Id, JShopifyOrder);
         ImportOrder.ImportCreateAndUpdateOrderLinesFromMock(OrdersToImport.Id, JShopifyLineItems);
         Commit();
         OrderHeader.Get(OrdersToImport.Id);
     end;
 
-    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var ImportOrder: Codeunit "Shpfy Import Order"; B2B: Boolean)
+    local procedure ImportShopifyOrder(var ShopifyShop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var ImportOrder: Codeunit "Shpfy Import Order"; B2B: Boolean)
     var
         OrdersToImport: Record "Shpfy Orders to Import";
         OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
         JShopifyLineItems: JsonArray;
         JShopifyOrder: JsonObject;
     begin
-        JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, B2B);
-        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(ShopifyShop, OrdersToImport, JShopifyLineItems, B2B);
+        ImportShopifyOrder(ShopifyShop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
     end;
 
     local procedure CreateOrderShippingCharges(var OrderShippingCharges: Record "Shpfy Order Shipping Charges"; ShopifyOrderId: BigInteger)
@@ -394,7 +411,7 @@ codeunit 139546 "Shpfy Shipping Charges Test"
         OrderShippingCharges.Init();
         OrderShippingCharges."Shopify Shipping Line Id" := LibraryRandom.RandInt(100000);
         OrderShippingCharges."Shopify Order Id" := ShopifyOrderId;
-        OrderShippingCharges.Title := LibraryRandom.RandText(50);
+        OrderShippingCharges.Title := CopyStr(LibraryRandom.RandText(50), 1, MaxStrLen(OrderShippingCharges.Title));
         OrderShippingCharges.Amount := LibraryRandom.RandDec(10, 0);
         OrderShippingCharges.Insert(true);
     end;

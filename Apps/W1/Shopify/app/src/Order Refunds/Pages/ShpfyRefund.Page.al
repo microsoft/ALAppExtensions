@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 page 30145 "Shpfy Refund"
@@ -102,6 +107,13 @@ page 30145 "Shpfy Refund"
                     ToolTip = 'Last error information with the last process of this document.';
                     MultiLine = true;
                     Style = Attention;
+                }
+                field(CallStack; Rec.GetLastErrorCallStack())
+                {
+                    Caption = 'Error Call Stack';
+                    ApplicationArea = All;
+                    MultiLine = true;
+                    ToolTip = 'Specifies the processing error callstack.';
                 }
             }
         }

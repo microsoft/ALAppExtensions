@@ -64,6 +64,11 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                     Editable = false;
                     ToolTip = 'Specifies the value of the CO2e per Unit field.';
                 }
+                field("Item Of Concern"; Rec."Item Of Concern")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the Item Of Concern field.';
+                }
             }
         }
     }
@@ -76,11 +81,26 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
             {
                 Caption = 'Calculate CO2e';
                 ApplicationArea = Basic, Suite;
-                Visible = SustainabilityVisible;
+                Visible = SustainabilityVisible and not SustainabilityAllGasesAsCO2eVisible;
                 Image = Calculate;
                 Promoted = true;
                 PromotedCategory = Process;
                 ToolTip = 'Executes the Calculate CO2e action.';
+
+                trigger OnAction()
+                begin
+                    RunCalculateCO2e();
+                end;
+            }
+            action("Calculate Total CO2e")
+            {
+                Caption = 'Calculate Total CO2e';
+                ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible and SustainabilityAllGasesAsCO2eVisible;
+                Image = Calculate;
+                Promoted = true;
+                PromotedCategory = Process;
+                ToolTip = 'Executes the Calculate Total CO2e action.';
 
                 trigger OnAction()
                 begin
@@ -102,6 +122,7 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
         SustainabilitySetup.Get();
 
         SustainabilityVisible := SustainabilitySetup."Item Emissions";
+        SustainabilityAllGasesAsCO2eVisible := SustainabilitySetup."Use All Gases As CO2e";
     end;
 
     local procedure RunCalculateCO2e()
@@ -116,4 +137,5 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
 
     var
         SustainabilityVisible: Boolean;
+        SustainabilityAllGasesAsCO2eVisible: Boolean;
 }

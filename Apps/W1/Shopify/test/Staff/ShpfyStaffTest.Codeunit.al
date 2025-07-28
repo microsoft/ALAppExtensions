@@ -1,11 +1,26 @@
-codeunit 139542 "Shpfy Staff Test"
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.CRM.Team;
+using Microsoft.Sales.Document;
+
+codeunit 139551 "Shpfy Staff Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     TestHttpRequestPolicy = BlockOutboundRequests;
 
     var
         ShpfyShop: Record "Shpfy Shop";
+        Any: Codeunit Any;
+        OrdersAPISubscriber: Codeunit "Shpfy Orders API Subscriber";
         IsInitialized: Boolean;
         ResponseResourceUrl: Text;
 
@@ -113,7 +128,7 @@ codeunit 139542 "Shpfy Staff Test"
         Salesperson: Record "Salesperson/Purchaser";
         LibrarySales: Codeunit "Library - Sales";
         LibraryAssert: Codeunit "Library Assert";
-        SalespersonPurchaserMappingErr: Label '%1 = %2 already mapped for the Shopify Staff Member %3.', Comment = '%1 = Salesperson/Purchaser table caption, %2 = Salesperson/Purchaser code, %3 = Shopify Staff Member name';
+        SalespersonPurchaserMappingErr: Label '%1 %2 already mapped to Shopify Staff Member %3.', Comment = '%1 = Salesperson/Purchaser table caption, %2 = Salesperson/Purchaser code, %3 = Shopify Staff Member name';
     begin
         this.Initialize();
 
@@ -138,7 +153,6 @@ codeunit 139542 "Shpfy Staff Test"
     end;
 
     [Test]
-    [HandlerFunctions('HttpSubmitHandler')]
     procedure TestImportOrderToBCAssignSalesperson()
     var
         StaffMember: Record "Shpfy Staff Member";
@@ -161,19 +175,18 @@ codeunit 139542 "Shpfy Staff Test"
         StaffMember.Modify(false);
 
         // [Given] An order exists in Shopify
-        // [GIVEN] the order to import as a json structure.
-        OrderHandlingHelper.SetDisableEventMocking();
         JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(ShpfyShop, OrdersToImport, JShopifyLineItems, true);
 
         // [When] The order is imported into BC
+        BindSubscription(OrdersAPISubscriber);
         OrderHandlingHelper.ImportShopifyOrder(ShpfyShop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        UnbindSubscription(OrdersAPISubscriber);
 
         // [Then] The Salesperson is assigned on the imported order
         LibraryAssert.IsTrue(OrderHeader."Salesperson Code" = StaffMember."Salesperson Code", 'Salesperson should be assigned on the imported order.');
     end;
 
     [Test]
-    [HandlerFunctions('HttpSubmitHandler')]
     procedure TestCreateSOFromImportedOrderSalespersonAssigned()
     var
         StaffMember: Record "Shpfy Staff Member";
@@ -195,17 +208,17 @@ codeunit 139542 "Shpfy Staff Test"
         StaffMember.Modify(false);
 
         // [Given] A Shopify order has been imported into BC
-        OrderHandlingHelper.SetDisableEventMocking();
+        BindSubscription(OrdersAPISubscriber);
         OrderHandlingHelper.ImportShopifyOrder(ShpfyShop, OrderHeader, ImportOrder, true);
+        UnbindSubscription(OrdersAPISubscriber);
         Commit();
 
         // [When] A Sales Order is created in BC from the imported Shopify order
         ProcessOrders.ProcessShopifyOrder(OrderHeader);
-        OrderHeader.FindFirst();
+        OrderHeader.Get(OrderHeader."Shopify Order Id");
 
         // [Then] The Salesperson is assigned on the Sales Order
-        SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
-        LibraryAssert.IsTrue(SalesHeader.FindLast(), 'Sales document is created from Shopify order');
+        SalesHeader.Get(SalesHeader."Document Type"::Order, OrderHeader."Sales Order No.");
         LibraryAssert.AreEqual(OrderHeader."Salesperson Code", SalesHeader."Salesperson Code", 'ShpfyOrderHeader."Salesperson Code" = SalesHeader."Salesperson Code"');
     end;
 
@@ -213,13 +226,16 @@ codeunit 139542 "Shpfy Staff Test"
     var
         ShpfyStaffMember: Record "Shpfy Staff Member";
         InitializeTest: Codeunit "Shpfy Initialize Test";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryRandom: Codeunit "Library - Random";
         AccessToken: SecretText;
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Shpfy Staff Test");
         ClearLastError();
-        this.ResponseResourceUrl := 'Staff/ShpfyStaffMembers.txt';
+        this.ResponseResourceUrl := 'Staff/StaffMembers.txt';
+
+        ShpfyStaffMember.DeleteAll(false);
 
         if IsInitialized then
             exit;
@@ -228,16 +244,17 @@ codeunit 139542 "Shpfy Staff Test"
 
         LibraryRandom.Init();
 
+        Any.SetDefaultSeed();
+
         IsInitialized := true;
         Commit();
 
         // Creating Shopify Shop
-        InitializeTest.SetDisableEventMocking();
         ShpfyShop := InitializeTest.CreateShop();
         ShpfyShop."B2B Enabled" := true;
         ShpfyShop.Modify();
 
-        ShpfyStaffMember.DeleteAll(false);
+        CommunicationMgt.SetTestInProgress(false);
 
         //Register Shopify Access Token
         AccessToken := LibraryRandom.RandText(20);
@@ -264,10 +281,7 @@ codeunit 139542 "Shpfy Staff Test"
     end;
 
     local procedure CreateNewStaffMember(ShopCode: Code[20]; StaffMember: Record "Shpfy Staff Member"; StaffId: BigInteger)
-    var
-        Any: Codeunit Any;
     begin
-        Any.SetDefaultSeed();
         StaffMember.Init();
         StaffMember."Shop Code" := ShopCode;
         StaffMember.Id := StaffId;
@@ -279,7 +293,7 @@ codeunit 139542 "Shpfy Staff Test"
 
     local procedure GetStaffIdToModify(): BigInteger
     begin
-        // When changing this value make sure to also change the value in the test data file ShpfyStaffMembers.txt
+        // When changing this value make sure to also change the value in the test data file StaffMembers.txt
         exit(1234567890L);
     end;
 

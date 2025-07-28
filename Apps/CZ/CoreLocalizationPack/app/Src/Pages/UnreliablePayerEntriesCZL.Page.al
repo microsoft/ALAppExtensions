@@ -102,11 +102,31 @@ page 11753 "Unreliable Payer Entries CZL"
                 end;
             }
         }
+        area(Navigation)
+        {
+            action("Vendor Bank Accounts")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Vendor Bank Accounts';
+                Image = BankAccount;
+                RunObject = Page "Vendor Bank Account List";
+                RunPageLink = "Vendor No." = field("Vendor No.");
+                ToolTip = 'View or set up the vendor''s bank accounts. You can set up any number of bank accounts for each vendor.';
+            }
+        }
         area(Promoted)
         {
             group(Category_New)
             {
+                Caption = 'New';
                 actionref(CreateVendorBankAccountCZL_Promoted; CreateVendorBankAccountCZL)
+                {
+                }
+            }
+            group(Category_Category4)
+            {
+                Caption = 'Navigate';
+                actionref(VendorBankAccounts_Promoted; "Vendor Bank Accounts")
                 {
                 }
             }

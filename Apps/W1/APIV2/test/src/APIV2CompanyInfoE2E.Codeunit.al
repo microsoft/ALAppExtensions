@@ -3,6 +3,7 @@ codeunit 139806 "APIV2 - Company Info. E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

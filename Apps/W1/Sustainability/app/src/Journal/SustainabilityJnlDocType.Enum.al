@@ -4,7 +4,7 @@ enum 6213 "Sustainability Jnl. Doc. Type"
 {
     Access = Public;
     Caption = 'Sustainability Journal Document Type';
-    Extensible = false;
+    Extensible = true;
 
     value(0; " ") { Caption = ' '; }
     value(1; "Invoice") { Caption = 'Invoice'; }

@@ -20,8 +20,8 @@ codeunit 5218 "Sustainability Module" implements "Contoso Demo Data Module"
 
     procedure CreateSetupData()
     begin
-        Codeunit.Run(Codeunit::"Create Sustainability Setup");
         Codeunit.Run(Codeunit::"Create Sustain. No Series");
+        Codeunit.Run(Codeunit::"Create Sustainability Setup");
         Codeunit.Run(Codeunit::"Create Sustainability Category");
         Codeunit.Run(Codeunit::"Create Sustain. Subcategory");
         Codeunit.Run(Codeunit::"Create Sustainability Account");

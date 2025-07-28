@@ -294,7 +294,6 @@ codeunit 10016 "IRS 1096 Form Mgt."
             exit('');
         exit(IRSCode);
     end;
-#endif
 
     local procedure InsertLineRelation(IRS1096FormLine: Record "IRS 1096 Form Line"; VendLedgEntry: Record "Vendor Ledger Entry")
     var
@@ -306,7 +305,6 @@ codeunit 10016 "IRS 1096 Form Mgt."
         IRS1096FormLineRelation.Insert(true);
     end;
 
-#if not CLEAN25
     local procedure InsertFromFormBuffer(var TempCreatedIRS1096FormHeader: Record "IRS 1096 Form Header" temporary; var TempIRS1096FormLine: Record "IRS 1096 Form Line" temporary)
     var
         IRS1096FormHeader: Record "IRS 1096 Form Header";
@@ -371,11 +369,13 @@ codeunit 10016 "IRS 1096 Form Mgt."
                                             '', VideoCategory::FinancialReporting, AssistedSetupHelpTxt);
     end;
 
+#if not CLEAN27
+    [Obsolete('This event is no longer used.', '27.0')]
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetGeneral1099CodeFromVendLedgEntry(VendLedgEntry: Record "Vendor Ledger Entry"; var IRSCode: Code[20]; var IsHandled: Boolean)
     begin
     end;
-
+#endif
     [IntegrationEvent(true, false)]
     local procedure OnAfterCheckFeatureEnabled(var IsEnabled: Boolean)
     begin

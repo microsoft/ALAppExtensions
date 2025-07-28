@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
+
 using Microsoft.CRM.Team;
 
 /// <summary>
@@ -34,7 +40,7 @@ table 30136 "Shpfy Staff Member"
         field(4; Active; Boolean)
         {
             Caption = 'Active';
-            ToolTip = 'Indicates if the staff member is active.';
+            ToolTip = 'Specifies if the staff member is active.';
             Editable = false;
         }
         field(5; "Email"; Text[100])
@@ -46,7 +52,7 @@ table 30136 "Shpfy Staff Member"
         field(6; Exists; Boolean)
         {
             Caption = 'Exists';
-            ToolTip = 'Indicates if the staff member exists.';
+            ToolTip = 'Specifies if the staff member exists.';
             Editable = false;
         }
         field(7; "First Name"; Text[100])
@@ -64,7 +70,7 @@ table 30136 "Shpfy Staff Member"
         field(9; "Shop Owner"; Boolean)
         {
             Caption = 'Shop Owner';
-            ToolTip = 'Indicates if the staff member is the shop owner.';
+            ToolTip = 'Specifies if the staff member is the shop owner.';
             Editable = false;
         }
         field(10; "Last Name"; Text[100])

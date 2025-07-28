@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 codeunit 30316 "Shpfy Metafield API"
@@ -129,17 +134,12 @@ codeunit 30316 "Shpfy Metafield API"
         GraphQuery.Append(Format(MetafieldSet."Owner Id"));
         GraphQuery.Append('\",');
         GraphQuery.Append('value: \"');
-        GraphQuery.Append(EscapeGrapQLData(MetafieldSet.Value));
+        GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(MetafieldSet.Value));
         GraphQuery.Append('\",');
         GraphQuery.Append('type: \"');
         GraphQuery.Append(GetTypeName(MetafieldSet.Type));
         GraphQuery.Append('\"');
         GraphQuery.Append('},');
-    end;
-
-    local procedure EscapeGrapQLData(Data: Text): Text
-    begin
-        exit(Data.Replace('\', '\\\\').Replace('"', '\\\"'));
     end;
 
     local procedure GetTypeName(Type: Enum "Shpfy Metafield Type"): Text

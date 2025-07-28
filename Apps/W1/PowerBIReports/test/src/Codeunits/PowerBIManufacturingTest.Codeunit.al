@@ -22,6 +22,7 @@ using Microsoft.PowerBIReports.Test;
 codeunit 139878 "PowerBI Manufacturing Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     Access = Internal;
     TestPermissions = Disabled;
 

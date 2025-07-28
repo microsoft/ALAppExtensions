@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+
 /// <summary>
 /// Codeunit Shpfy Order Risks Test (ID 139579).
 /// </summary>
@@ -7,7 +17,7 @@ codeunit 139579 "Shpfy Order Risks Test"
     TestPermissions = Disabled;
 
     var
-        Any: codeunit Any;
+        Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
 
     [Test]

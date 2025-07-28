@@ -264,39 +264,10 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnInsertPostedHeadersOnAfterCalcShouldInsertInvoiceHeader, '', false, false)]
     local procedure OnInsertPostedHeadersOnAfterCalcShouldInsertInvoiceHeader(var SalesHeader: Record "Sales Header"; var ShouldInsertInvoiceHeader: Boolean)
+    var
+        ReverseChargeVATProcedures: Codeunit "Reverse Charge VAT Procedures";
     begin
         if ShouldInsertInvoiceHeader then
-            SalesHeader.SetReverseChargeApplies(CheckIfReverseChargeApplies(SalesHeader));
-    end;
-
-    local procedure CheckIfReverseChargeApplies(SalesHeader: Record "Sales Header"): Boolean
-    var
-        SalesLine: Record "Sales Line";
-        GLSetup: Record "General Ledger Setup";
-        SalesSetup: Record "Sales & Receivables Setup";
-        TotalAmount: Decimal;
-    begin
-        GLSetup.Get();
-        SalesSetup.Get();
-        if not GLSetup."Threshold applies GB" or (SalesHeader."VAT Registration No." = '') or
-           (SalesSetup."Domestic Customers GB" <> SalesHeader."VAT Bus. Posting Group")
-        then
-            exit(false);
-        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange("Reverse Charge Item GB", true);
-        SalesLine.SetFilter(Quantity, '<>0');
-        SalesLine.SetFilter("Qty. to Invoice", '<>0');
-        if SalesLine.FindSet() then
-            repeat
-                TotalAmount := TotalAmount + SalesLine.Amount * SalesLine."Qty. to Invoice" / SalesLine.Quantity;
-                if SalesHeader."Currency Factor" <> 0 then begin
-                    if TotalAmount - SalesLine."Inv. Discount Amount" >= GLSetup."Threshold Amount GB" * SalesHeader."Currency Factor" then
-                        exit(true);
-                end else
-                    if TotalAmount - SalesLine."Inv. Discount Amount" >= GLSetup."Threshold Amount GB" then
-                        exit(true);
-            until SalesLine.Next() = 0;
-        exit(false);
+            SalesHeader.SetReverseChargeApplies(ReverseChargeVATProcedures.CheckIfReverseChargeApplies(SalesHeader));
     end;
 }

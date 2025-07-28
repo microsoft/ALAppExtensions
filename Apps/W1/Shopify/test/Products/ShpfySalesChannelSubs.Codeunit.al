@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+
 codeunit 139697 "Shpfy Sales Channel Subs."
 {
     EventSubscriberInstance = Manual;
@@ -107,9 +117,10 @@ codeunit 139697 "Shpfy Sales Channel Subs."
         HttpResponseMessage: HttpResponseMessage;
         BodyTxt: Text;
         EdgesTxt: Text;
+        ResponseLbl: Label '{ "data": { "publications": { "edges": %1 } }}', Comment = '%1 - edges', Locked = true;
     begin
         JEdges.WriteTo(EdgesTxt);
-        BodyTxt := StrSubstNo('{ "data": { "publications": { "edges": %1 } }}', EdgesTxt);
+        BodyTxt := StrSubstNo(ResponseLbl, EdgesTxt);
         HttpResponseMessage.Content.WriteFrom(BodyTxt);
         exit(HttpResponseMessage);
     end;

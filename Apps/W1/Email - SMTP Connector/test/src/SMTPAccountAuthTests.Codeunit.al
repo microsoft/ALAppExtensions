@@ -6,6 +6,7 @@
 codeunit 139762 "SMTP Account Auth Tests"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     EventSubscriberInstance = Manual;
     TestPermissions = Disabled;
 

@@ -3,6 +3,7 @@ codeunit 139716 "APIV1 - Income Statement E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

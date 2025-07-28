@@ -25,7 +25,7 @@ codeunit 6233 "Sust. Preview Post Instance"
         TempDocumentEntry.Init();
         TempDocumentEntry."Entry No." := RecRef.Number;
         TempDocumentEntry."Table ID" := RecRef.Number;
-        TempDocumentEntry."Table Name" := RecRef.Caption;
+        TempDocumentEntry."Table Name" := CopyStr(RecRef.Caption, 1, MaxStrLen(TempDocumentEntry."Table Name"));
         TempDocumentEntry."No. of Records" := RecRef.Count();
         TempDocumentEntry.Insert();
     end;
@@ -42,7 +42,7 @@ codeunit 6233 "Sust. Preview Post Instance"
         TempDocumentEntry.Init();
         TempDocumentEntry."Entry No." := RecRef.Number;
         TempDocumentEntry."Table ID" := RecRef.Number;
-        TempDocumentEntry."Table Name" := RecRef.Caption;
+        TempDocumentEntry."Table Name" := CopyStr(RecRef.Caption, 1, MaxStrLen(TempDocumentEntry."Table Name"));
         TempDocumentEntry."No. of Records" := RecRef.Count();
         TempDocumentEntry.Insert();
     end;

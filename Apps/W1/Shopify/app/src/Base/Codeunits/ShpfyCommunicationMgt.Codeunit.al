@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.Telemetry;
@@ -17,7 +22,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         CommunicationEvents: Codeunit "Shpfy Communication Events";
         GraphQLQueries: Codeunit "Shpfy GraphQL Queries";
         NextExecutionTime: DateTime;
-        VersionTok: Label '2025-01', Locked = true;
+        VersionTok: Label '2025-07', Locked = true;
         OutgoingRequestsNotEnabledConfirmLbl: Label 'Importing data to your Shopify shop is not enabled, do you want to go to shop card to enable?';
         OutgoingRequestsNotEnabledErr: Label 'Importing data to your Shopify shop is not enabled, navigate to shop card to enable.';
         IsTestInProgress: Boolean;
@@ -48,9 +53,9 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// Create Web Request URL.
     /// </summary>
     /// <param name="UrlPath">Parameter of type Text.</param>
-    /// <param name="ApiVersion">Parameter of type Text.</param>
+    /// <param name="Version">Parameter of type Text.</param>
     /// <returns>Return value of type Text.</returns>
-    internal procedure CreateWebRequestURL(UrlPath: Text; ApiVersion: Text): Text
+    internal procedure CreateWebRequestURL(UrlPath: Text; Version: Text): Text
     begin
         Shop.TestField("Shopify URL");
         if UrlPath.StartsWith('gift_cards') then
@@ -60,9 +65,9 @@ codeunit 30103 "Shpfy Communication Mgt."
                 exit(Shop."Shopify URL" + '/admin/' + UrlPath)
         else
             if Shop."Shopify URL".EndsWith('/') then
-                exit(Shop."Shopify URL" + 'admin/api/' + ApiVersion + '/' + UrlPath)
+                exit(Shop."Shopify URL" + 'admin/api/' + Version + '/' + UrlPath)
             else
-                exit(Shop."Shopify URL" + '/admin/api/' + ApiVersion + '/' + UrlPath);
+                exit(Shop."Shopify URL" + '/admin/api/' + Version + '/' + UrlPath);
     end;
 
     /// <summary> 
@@ -404,9 +409,8 @@ codeunit 30103 "Shpfy Communication Mgt."
         if IsTestInProgress then begin
             CommunicationEvents.OnGetAccessToken(ClearAccessToken);
             AccessToken := ClearAccessToken;
-        end
-        else
-            AccessToken := Shop.GetAccessToken();
+        end else
+            AccessToken := GetAccessToken(Shop);
 
         HttpHeaders.Add('X-Shopify-Access-Token', AccessToken);
         HttpRequestMsg.Method := Method;
@@ -419,6 +423,36 @@ codeunit 30103 "Shpfy Communication Mgt."
             ContentHttpHeaders.Add('Content-Type', 'application/json');
             HttpRequestMsg.Content(HttpContent);
         end;
+    end;
+
+    local procedure GetAccessToken(var ShopifyShop: Record "Shpfy Shop"): SecretText
+    var
+        Store: Text;
+    begin
+        ShopifyShop.Testfield(Enabled, true);
+        Store := ShopifyShop.GetStoreName();
+        if Store <> '' then
+            exit(GetAccessToken(Store));
+    end;
+
+    local procedure GetAccessToken(Store: Text): SecretText
+    var
+        RegisteredStoreNew: Record "Shpfy Registered Store New";
+        AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
+        AccessToken: SecretText;
+        NoAccessTokenErr: label 'No Access token for the store "%1".\Please request an access token for this store.', Comment = '%1 = Store';
+        ChangedScopeErr: Label 'The application scope is changed, please request a new access token for the store "%1".', Comment = '%1 = Store';
+    begin
+        if RegisteredStoreNew.Get(Store) then
+            if RegisteredStoreNew."Requested Scope" = AuthenticationMgt.GetScope() then begin
+                AccessToken := RegisteredStoreNew.GetAccessToken();
+                if not AccessToken.IsEmpty() then
+                    exit(AccessToken)
+                else
+                    Error(NoAccessTokenErr, Store);
+            end else
+                Error(ChangedScopeErr, Store);
+        Error(NoAccessTokenErr, Store);
     end;
 
     /// <summary> 
@@ -513,12 +547,7 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// <returns>Return variable "Retry" of type Boolean.</returns>
     local procedure EvaluateResponse(HttpResponseMessage: HttpResponseMessage) Retry: Boolean
     var
-        BucketPerc: Decimal;
-        WaitTime: Duration;
-        BucketSize: Integer;
-        BucketUse: Integer;
         Status: Integer;
-        Values: array[10] of Text;
     begin
         Status := HttpResponseMessage.HttpStatusCode();
         case Status of
@@ -532,26 +561,6 @@ codeunit 30103 "Shpfy Communication Mgt."
                     Sleep(10000);
                     Retry := true;
                 end;
-            else
-                if HttpResponseMessage.Headers().GetValues('X-Shopify-Shop-Api-Call-Limit', Values) then
-                    if Evaluate(BucketUse, Values[1].Split('/').Get(1)) and Evaluate(BucketSize, Values[1].Split('/').Get(2)) then begin
-                        BucketPerc := 100 * BucketUse / BucketSize;
-                        if BucketPerc >= 90 then
-                            WaitTime := 1000
-                        else
-                            if BucketPerc >= 80 then
-                                WaitTime := 800
-                            else
-                                if BucketPerc >= 70 then
-                                    WaitTime := 600
-                                else
-                                    if BucketPerc >= 60 then
-                                        WaitTime := 400
-                                    else
-                                        if BucketPerc >= 50 then
-                                            WaitTime := 200;
-                    end;
-                NextExecutionTime := CurrentDateTime() + WaitTime;
         end;
     end;
 
@@ -663,16 +672,14 @@ codeunit 30103 "Shpfy Communication Mgt."
     end;
 
     [NonDebuggable]
-    [Scope('OnPrem')]
-    internal procedure SetApiVersionCache(ApiVersionExpiryDate: Text)
+    local procedure SetApiVersionCache(ApiVersionExpiryDate: Text)
     begin
         IsolatedStorage.Set('ApiVersionExpiryDate(' + VersionTok + ')', ApiVersionExpiryDate, DataScope::Module);
         IsolatedStorage.Set('ApiVersionCache(' + VersionTok + ')', Format(CurrentDateTime(), 0, 9), DataScope::Module);
     end;
 
     [NonDebuggable]
-    [Scope('OnPrem')]
-    internal procedure GetApiVersionCache(var ApiVersionExpiryDate: DateTime): Boolean
+    local procedure GetApiVersionCache(var ApiVersionExpiryDate: DateTime): Boolean
     var
         Day: Integer;
         Month: Integer;

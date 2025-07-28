@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -20,70 +25,50 @@ enum 30127 "Shpfy Payment Trans. Type"
     {
         Caption = 'Refund';
     }
-#if not CLEAN26
+    /// <summary>This value is no longer supported by Shopify but kept to support old transactions with this type.</summary>
     value(3; Dispute)
     {
         Caption = 'Dispute';
-        ObsoleteReason = 'This payment transaction type has been deprecated by Shopify after moving to GraphQL API.';
-        ObsoleteState = Pending;
-        ObsoleteTag = '26.0';
     }
+    /// <summary>This value is no longer supported by Shopify but kept to support old transactions with this type.</summary>
     value(4; Reserve)
     {
         Caption = 'Reserve';
-        ObsoleteReason = 'This payment transaction type has been deprecated by Shopify after moving to GraphQL API.';
-        ObsoleteState = Pending;
-        ObsoleteTag = '26.0';
     }
-#endif
     value(5; Adjustment)
     {
         Caption = 'Adjustment';
     }
-#if not CLEAN26
+    /// <summary>This value is no longer supported by Shopify but kept to support old transactions with this type.</summary>
     value(6; Credit)
     {
         Caption = 'Credit';
-        ObsoleteReason = 'This payment transaction type has been deprecated by Shopify after moving to GraphQL API.';
-        ObsoleteState = Pending;
-        ObsoleteTag = '26.0';
     }
+    /// <summary>This value is no longer supported by Shopify but kept to support old transactions with this type.</summary>
     value(7; Debit)
     {
         Caption = 'Debit';
-        ObsoleteReason = 'This payment transaction type has been deprecated by Shopify after moving to GraphQL API.';
-        ObsoleteState = Pending;
-        ObsoleteTag = '26.0';
     }
+    /// <summary>This value is no longer supported by Shopify but kept to support old transactions with this type.</summary>
     value(8; Payout)
     {
         Caption = 'Payout';
-        ObsoleteReason = 'This payment transaction type has been deprecated by Shopify after moving to GraphQL API.';
-        ObsoleteState = Pending;
-        ObsoleteTag = '26.0';
     }
+    /// <summary>This value is no longer supported by Shopify but kept to support old transactions with this type.</summary>
     value(9; "Payout Failure")
     {
         Caption = 'Payout Failure';
-        ObsoleteReason = 'This payment transaction type has been deprecated by Shopify after moving to GraphQL API.';
-        ObsoleteState = Pending;
-        ObsoleteTag = '26.0';
     }
+    /// <summary>This value is no longer supported by Shopify but kept to support old transactions with this type.</summary>
     value(10; "Payout Cancellation")
     {
         Caption = 'Payout Cancellation';
-        ObsoleteReason = 'This payment transaction type has been deprecated by Shopify after moving to GraphQL API.';
-        ObsoleteState = Pending;
-        ObsoleteTag = '26.0';
     }
+    /// <summary>This value is no longer supported by Shopify but kept to support old transactions with this type.</summary>
     value(11; "Payment Refund")
     {
         Caption = 'Payment Refund';
-        ObsoleteReason = 'This payment transaction type has been deprecated by Shopify after moving to GraphQL API.';
-        ObsoleteState = Pending;
-        ObsoleteTag = '26.0';
     }
-#endif
     value(12; "Shop Cash Credit")
     {
         Caption = 'Shop Cash Credit';

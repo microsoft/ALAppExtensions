@@ -241,36 +241,6 @@ codeunit 18794 "TDS RegF On Purchases"
         TDS194QOpening.Run();
     end;
 
-    local procedure RunTDS194QOpeningReportWithPurchAmtGreaterThanThresholdAmt(
-        VendorNo: Code[20];
-        AssesseeCode: Code[10];
-        TDSSectionCode: Code[10])
-    var
-        SourceCodeSetup: Record "Source Code Setup";
-        TDS194QOpening: Report "TDS 194Q Opening";
-        DocumentNo: Code[20];
-        PurchaseAmount: Decimal;
-        TDSThresholdAmount: Decimal;
-    begin
-        SourceCodeSetup.Get();
-        SourceCodeSetup."TDS Above Threshold Opening" := LibraryUtility.GenerateRandomCode(SourceCodeSetup.FieldNo("TDS Above Threshold Opening"), Database::"Source Code Setup");
-        SourceCodeSetup.Modify(true);
-
-        StorageCode.Set(TDSAboveThresholdOpeningLbl, SourceCodeSetup."TDS Above Threshold Opening");
-
-        DocumentNo := 'OPENING123';
-        StorageCode.Set(DocumentNoLbl, DocumentNo);
-
-        PurchaseAmount := LibraryRandom.RandDecInRange(5000000, 6000000, 0);
-        StorageDecimal.Set(PurchaseAmountLbl, PurchaseAmount);
-
-        Evaluate(TDSThresholdAmount, Storage.Get(TDSThresholdAmountLbl));
-
-        TDS194QOpening.InitializeRequest(VendorNo, AssesseeCode, TDSSectionCode, DocumentNo, WorkDate(), PurchaseAmount, TDSThresholdAmount);
-        TDS194QOpening.UseRequestPage(false);
-        TDS194QOpening.Run();
-    end;
-
     local procedure CreateTaxRateSetup(TDSSection: Code[10]; AssesseeCode: Code[10]; ConcessionlCode: Code[10]; EffectiveDate: Date)
     var
         Section: Code[10];

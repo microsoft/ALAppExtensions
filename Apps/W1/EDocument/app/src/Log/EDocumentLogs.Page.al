@@ -56,6 +56,18 @@ page 6125 "E-Document Logs"
                     {
                         ToolTip = 'Specifies the status of the document.';
                     }
+                    field("Initial Processing Status"; InitialProcessingStatus)
+                    {
+                        Caption = 'Initial Processing Status';
+                        ToolTip = 'Specifies the initial processing status of the document.';
+                        Visible = ShowImportProcessingStatus;
+                    }
+                    field("Import Step Executed"; ImportStepExecuted)
+                    {
+                        Caption = 'Import Step Executed';
+                        ToolTip = 'Specifies which import step was executed.';
+                        Visible = ShowImportProcessingStatus;
+                    }
                     field("Import Processing Status"; Rec."Processing Status")
                     {
                         ToolTip = 'Specifies the processing status of the document.';
@@ -135,14 +147,51 @@ page 6125 "E-Document Logs"
         ShowImportProcessingStatus := (EDocument.GetEDocumentService().GetImportProcessVersion() <> "E-Document Import Process"::"Version 1.0") and (EDocument.Direction = "E-Document Direction"::Incoming);
     end;
 
+    trigger OnAfterGetRecord()
+    begin
+        Clear(ImportStepExecuted);
+        Clear(InitialProcessingStatus);
+        if not ShowImportProcessingStatus then
+            exit;
+
+        if Rec.Status <> "E-Document Service Status"::Imported then
+            exit;
+
+        SetProcessingStatusTexts(Rec."Processing Status", Rec."Step Undone", InitialProcessingStatus, ImportStepExecuted);
+    end;
+
     trigger OnAfterGetCurrRecord()
     begin
         IsExportEnabled := Rec."E-Doc. Data Storage Entry No." <> 0;
     end;
 
     var
+        ImportStepExecuted, InitialProcessingStatus : Text;
         ShowImportProcessingStatus: Boolean;
         IsExportEnabled: Boolean;
         RecordDoesNotHaveMappingLogsMsg: Label '%1 Log entry type does not support Mapping Logs.', Comment = '%1 - The log status indicating the type';
         NoMappingLogsFoundMsg: Label 'No Mapping Logs were found for this entry. Mapping Logs are only generated when E-Document Service %1 has defined export/import mapping rules.', Comment = '%1 - E-Document Service code';
+
+    local procedure SetProcessingStatusTexts(FinalState: Enum "Import E-Doc. Proc. Status"; StepUndone: Boolean; var InitialState: Text; var StepExecutedText: Text)
+    var
+        ImportEDocumentProcess: Codeunit "Import E-Document Process";
+        PreviousState: Enum "Import E-Doc. Proc. Status";
+        StepExecuted: Enum "Import E-Document Steps";
+        i: Integer;
+        UndoneLbl: Label '(Undone)';
+    begin
+        if not StepUndone then begin
+            i := ImportEDocumentProcess.StatusStepIndex(FinalState) - 1;
+            if i < 0 then
+                exit;
+            ImportEDocumentProcess.IndexToStatus(i, PreviousState);
+            ImportEDocumentProcess.GetNextStep(PreviousState, StepExecuted);
+        end else begin
+            ImportEDocumentProcess.GetNextStep(FinalState, StepExecuted);
+            PreviousState := ImportEDocumentProcess.GetStatusForStep(StepExecuted, false);
+        end;
+        StepExecutedText := Format(StepExecuted) + (StepUndone ? ' ' + UndoneLbl : '');
+        InitialState := Format(PreviousState);
+    end;
+
 }

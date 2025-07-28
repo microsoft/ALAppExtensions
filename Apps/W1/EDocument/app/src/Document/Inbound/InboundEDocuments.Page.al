@@ -2,13 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-#pragma warning disable AS0031, AS0032
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Attachment;
 using Microsoft.eServices.EDocument.Processing.Import;
-using Microsoft.eServices.EDocument.Processing.Import.Purchase;
-using Microsoft.Purchases.Vendor;
 
 page 6105 "Inbound E-Documents"
 {
@@ -16,9 +13,12 @@ page 6105 "Inbound E-Documents"
     SourceTable = "E-Document";
     PageType = List;
     RefreshOnActivate = true;
-    Editable = false;
+    UsageCategory = Lists;
+    Editable = true;
+    Extensible = false;
     DeleteAllowed = true;
     InsertAllowed = false;
+    ModifyAllowed = false;
     SourceTableView = sorting(SystemCreatedAt) order(descending) where(Direction = const("E-Document Direction"::Incoming));
 
     layout
@@ -29,10 +29,11 @@ page 6105 "Inbound E-Documents"
             repeater(DocumentList)
             {
                 ShowCaption = false;
+                Editable = false;
                 field("Entry No"; Rec."Entry No")
                 {
                     Caption = 'Entry No.';
-                    ToolTip = 'Specifies the unique number of the electronic document.';
+                    ToolTip = 'Specifies the unique number of the document.';
                     Visible = false;
                 }
                 field("Document Name"; DocumentNameTxt)
@@ -47,43 +48,44 @@ page 6105 "Inbound E-Documents"
                 field(SystemCreatedAt; Rec.SystemCreatedAt)
                 {
                     Caption = 'Received At';
-                    ToolTip = 'Specifies the date and time when the electronic document was created.';
+                    ToolTip = 'Specifies the date and time when the document was created.';
                 }
                 field(Service; Rec.Service)
                 {
                     Visible = false;
                     Caption = 'Service';
-                    ToolTip = 'Specifies the service code of the electronic document.';
+                    ToolTip = 'Specifies the E-Document Service that retrieved the document.';
                 }
                 field("Service Integration"; Rec."Service Integration")
                 {
                     Caption = 'Source';
-                    ToolTip = 'Specifies the source of the electronic document.';
+                    ToolTip = 'Specifies the source of the document.';
                 }
                 field("Source Details"; Rec."Source Details")
                 {
                     Caption = 'Source Details';
-                    ToolTip = 'Specifies the details about the source of the electronic document.';
+                    ToolTip = 'Specifies the details about the source of the document.';
                 }
                 field("Vendor Name"; VendorNameTxt)
                 {
                     Caption = 'Sender';
-                    ToolTip = 'Specifies the vendor name of the electronic document.';
+                    ToolTip = 'Specifies the vendor name of the document.';
                 }
-                field("Import Processing Status"; ImportProcessingStatus)
+                field("Import Processing Status"; Rec."Import Processing Status")
                 {
                     Caption = 'Processing Status';
-                    ToolTip = 'Specifies the processing status of the inbound electronic document.';
+                    ToolTip = 'Specifies the stage in which the processing of this document is in.';
                 }
                 field("Document Type"; Rec."Document Type")
                 {
-                    Caption = 'Finalized Document Type';
-                    ToolTip = 'Specifies the document type of the electronic document.';
+                    Caption = 'Document Type';
+                    ToolTip = 'Specifies the type of the document.';
+                    StyleExpr = DocumentTypeStyleTxt;
                 }
                 field("Document Record ID"; RecordLinkTxt)
                 {
                     Caption = 'Finalized Document No.';
-                    ToolTip = 'Specifies the document created from the electronic document.';
+                    ToolTip = 'Specifies the entity created from the document.';
                     trigger OnDrillDown()
                     begin
                         Rec.ShowRecord();
@@ -98,12 +100,21 @@ page 6105 "Inbound E-Documents"
                 ApplicationArea = All;
                 Caption = 'Documents';
                 UpdatePropagation = Both;
-                SubPageLink = "E-Document Entry No." = field("Entry No"),
-                              "E-Document Attachment" = const(true);
+                SubPageLink = "Table ID" = const(Database::"E-Document"),
+                            "E-Document Entry No." = field("Entry No"),
+                            "E-Document Attachment" = const(true);
+            }
+            part(InboundEDocPicture; "Inbound E-Doc. Picture")
+            {
+                Caption = 'Preview';
+                SubPageLink = "Entry No." = field("Unstructured Data Entry No."),
+                            "File Format" = const("E-Doc. File Format"::PDF);
+                ShowFilter = false;
+                Visible = HasPdf;
             }
             part(InboundEDocFactbox; "Inbound E-Doc. Factbox")
             {
-                Caption = 'E-Document';
+                Caption = 'E-Document Details';
                 SubPageLink = "E-Document Entry No" = field("Entry No");
                 ShowFilter = false;
             }
@@ -113,7 +124,6 @@ page 6105 "Inbound E-Documents"
     {
         area(Processing)
         {
-
             fileuploadaction(ImportPdf)
             {
                 Caption = 'Import PDF';
@@ -121,6 +131,7 @@ page 6105 "Inbound E-Documents"
                 AllowedFileExtensions = '.pdf';
                 AllowMultipleFiles = true;
                 Image = SendAsPDF;
+                Visible = false;
 
                 trigger OnAction(Files: List of [FileUpload])
                 begin
@@ -134,6 +145,7 @@ page 6105 "Inbound E-Documents"
                 AllowedFileExtensions = '.xml';
                 AllowMultipleFiles = true;
                 Image = XMLFile;
+                Visible = false;
 
                 trigger OnAction(Files: List of [FileUpload])
                 begin
@@ -146,17 +158,76 @@ page 6105 "Inbound E-Documents"
                 ToolTip = 'Create an electronic document by manually uploading a file.';
                 Image = Import;
                 AllowMultipleFiles = true;
+                Visible = false;
 
                 trigger OnAction(Files: List of [FileUpload])
                 begin
                     NewFromFile(Files);
                 end;
             }
+#if not CLEAN27
+#pragma warning disable AA0194
+            action(ViewMailMessage)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'View e-mail message';
+                ToolTip = 'View the source e-mail message.';
+                Image = Email;
+                Visible = EmailVisibilityFlag;
+                ObsoleteReason = 'Will be removed in future versions';
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+
+                trigger OnAction()
+                var
+                begin
+                    // Temporary solution to keep page not extensible.
+                end;
+            }
+#pragma warning restore AA0194
+#endif
+            action(AnalyzeDocument)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Analyze PDF';
+                ToolTip = 'Analyze the pdf document with Azure Document Intelligence.';
+                Image = NewPurchaseInvoice;
+                Visible = false;
+
+                trigger OnAction()
+                var
+                    EDocImportParameters: Record "E-Doc. Import Parameters";
+                    EDocImport: Codeunit "E-Doc. Import";
+                begin
+                    EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Read into Draft";
+                    EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
+                end;
+            }
+            action(PrepareDraftDocument)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Prepare Draft';
+                ToolTip = 'Prepare the draft document.';
+                Image = Process;
+                Visible = false;
+
+                trigger OnAction()
+                var
+                    EDocImportParameters: Record "E-Doc. Import Parameters";
+                    EDocImport: Codeunit "E-Doc. Import";
+                    ImportEDocumentProcess: Codeunit "Import E-Document Process";
+                begin
+                    EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Prepare Draft";
+                    EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
+                    if ImportEDocumentProcess.IsEDocumentInStateGE(Rec, Enum::"Import E-Doc. Proc. Status"::"Ready for draft") then
+                        EDocumentHelper.OpenDraftPage(Rec)
+                end;
+            }
             action(OpenDraftDocument)
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Open draft document';
-                ToolTip = 'Process the selected electronic document.';
+                ToolTip = 'Process the selected document.';
                 Image = PurchaseInvoice;
                 Enabled = Rec."Entry No" <> 0;
 
@@ -231,23 +302,54 @@ page 6105 "Inbound E-Documents"
                 }
             }
             actionref(Promoted_ViewFile; ViewFile) { }
+#if not CLEAN27
+            actionref(Promoted_ViewMailMessage; ViewMailMessage)
+            {
+                ObsoleteReason = 'Will be removed in future versions';
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+            }
+#endif
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
         }
     }
-
-    var
-        EDocumentHelper: Codeunit "E-Document Helper";
-        ImportProcessingStatus: Enum "Import E-Doc. Proc. Status";
-        RecordLinkTxt, VendorNameTxt, DocumentNameTxt : Text;
+    views
+    {
+        view(UnknownDocumentType)
+        {
+            Caption = 'Unknown Document Type';
+            Filters = where("Document Type" = const("E-Document Type"::None));
+        }
+        view(Unprocessed)
+        {
+            Caption = 'Purchase Invoices - Unprocessed';
+            Filters = where("Document Type" = const("E-Document Type"::"Purchase Invoice"), "Import Processing Status" = const("Import E-Doc. Proc. Status"::Unprocessed));
+        }
+        view(DraftReady)
+        {
+            Caption = 'Purchase Invoices - Draft Ready';
+            Filters = where("Document Type" = const("E-Document Type"::"Purchase Invoice"), "Import Processing Status" = const("Import E-Doc. Proc. Status"::"Draft Ready"));
+        }
+        view(Processed)
+        {
+            Caption = 'Purchase Invoices - Processed';
+            Filters = where("Document Type" = const("E-Document Type"::"Purchase Invoice"), "Import Processing Status" = const("Import E-Doc. Proc. Status"::Processed));
+        }
+    }
 
     trigger OnAfterGetRecord()
     var
         EDocumentProcessing: Codeunit "E-Document Processing";
     begin
-        ImportProcessingStatus := Rec.GetEDocumentImportProcessingStatus();
         RecordLinkTxt := EDocumentProcessing.GetRecordLinkText(Rec);
         PopulateDocumentNameTxt();
         PopulateVendorNameTxt();
+        SetDocumentTypeStyleExpression();
+
+        HasPdf := false;
+        if EDocDataStorage.Get(Rec."Unstructured Data Entry No.") then
+            HasPdf := EDocDataStorage."File Format" = Enum::"E-Doc. File Format"::PDF;
+        SetEmailActionsVisibility();
     end;
 
     local procedure PopulateDocumentNameTxt()
@@ -264,20 +366,8 @@ page 6105 "Inbound E-Documents"
     end;
 
     local procedure PopulateVendorNameTxt()
-    var
-        EDocumentHeaderMapping: Record "E-Document Header Mapping";
-        EDocumentPurchaseHeader: Record "E-Document Purchase Header";
-        Vendor: Record Vendor;
     begin
         VendorNameTxt := Rec."Bill-to/Pay-to Name";
-        EDocumentHeaderMapping := Rec.GetEDocumentHeaderMapping();
-        if Vendor.Get(EDocumentHeaderMapping."Vendor No.") then
-            VendorNameTxt := Vendor.Name
-        else begin
-            EDocumentPurchaseHeader := EDocumentHeaderMapping.GetEDocumentPurchaseHeader();
-            if EDocumentPurchaseHeader."Vendor Company Name" <> '' then
-                VendorNameTxt := EDocumentPurchaseHeader."Vendor Company Name";
-        end;
     end;
 
     trigger OnOpenPage()
@@ -297,7 +387,7 @@ page 6105 "Inbound E-Documents"
         if not ChooseEDocumentService(EDocumentService) then
             exit;
 
-        ProcessFilesUploads(EDocumentService, Files, Enum::"E-Doc. Data Storage Blob Type"::Unspecified);
+        ProcessFilesUploads(EDocumentService, Files, Enum::"E-Doc. File Format"::Unspecified);
     end;
 
     local procedure NewFromPdf(Files: List of [FileUpload])
@@ -305,7 +395,7 @@ page 6105 "Inbound E-Documents"
         EDocumentService: Record "E-Document Service";
     begin
         EDocumentService.GetPDFReaderService();
-        ProcessFilesUploads(EDocumentService, Files, Enum::"E-Doc. Data Storage Blob Type"::PDF);
+        ProcessFilesUploads(EDocumentService, Files, Enum::"E-Doc. File Format"::PDF);
     end;
 
     local procedure NewFromXml(Files: List of [FileUpload])
@@ -315,10 +405,10 @@ page 6105 "Inbound E-Documents"
         if not ChooseEDocumentService(EDocumentService) then
             exit;
 
-        ProcessFilesUploads(EDocumentService, Files, Enum::"E-Doc. Data Storage Blob Type"::XML);
+        ProcessFilesUploads(EDocumentService, Files, Enum::"E-Doc. File Format"::XML);
     end;
 
-    local procedure ProcessFilesUploads(EDocumentService: Record "E-Document Service"; Files: List of [FileUpload]; Type: Enum "E-Doc. Data Storage Blob Type")
+    local procedure ProcessFilesUploads(EDocumentService: Record "E-Document Service"; Files: List of [FileUpload]; Type: Enum "E-Doc. File Format")
     var
         EDocument: Record "E-Document";
         EDocImport: Codeunit "E-Doc. Import";
@@ -374,7 +464,8 @@ page 6105 "Inbound E-Documents"
         if not EDocImport.ProcessAutomaticallyIncomingEDocument(EDocument) then
             exit;
 
-        Success := EDocument.GetEDocumentImportProcessingStatus() = "Import E-Doc. Proc. Status"::"Draft Ready";
+        EDocument.CalcFields("Import Processing Status");
+        Success := EDocument."Import Processing Status" = "Import E-Doc. Proc. Status"::"Draft Ready";
         if Success and OpenDraft then
             EDocumentHelper.OpenDraftPage(EDocument);
     end;
@@ -384,6 +475,22 @@ page 6105 "Inbound E-Documents"
         exit(Page.RunModal(Page::"E-Document Services", EDocumentService) = Action::LookupOK);
     end;
 
-}
+    local procedure SetDocumentTypeStyleExpression()
+    begin
+        DocumentTypeStyleTxt := 'Standard';
+        if Rec."Document Type" = Rec."Document Type"::None then
+            DocumentTypeStyleTxt := 'Ambiguous';
+    end;
 
-#pragma warning restore AS0031, AS0032
+    local procedure SetEmailActionsVisibility()
+    begin
+        EmailVisibilityFlag := Rec.GetEDocumentService()."Service Integration V2".AsInteger() = 6383; // Outlook Integration
+    end;
+
+    var
+        EDocDataStorage: Record "E-Doc. Data Storage";
+        EDocumentHelper: Codeunit "E-Document Helper";
+        RecordLinkTxt, VendorNameTxt, DocumentNameTxt, DocumentTypeStyleTxt : Text;
+        HasPdf: Boolean;
+        EmailVisibilityFlag: Boolean;
+}

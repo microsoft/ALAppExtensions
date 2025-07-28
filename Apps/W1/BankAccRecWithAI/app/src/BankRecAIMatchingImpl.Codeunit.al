@@ -365,7 +365,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation");
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
         AOAIChatCompletionParams.SetTemperature(0);
@@ -495,9 +495,13 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
                     BankRecLineDescription := BankAccReconciliationLine.Description;
                     if BankAccReconciliationLine."Additional Transaction Info" <> '' then
                         BankRecLineDescription += (' ' + BankAccReconciliationLine."Additional Transaction Info");
+                    if BankAccReconciliationLine."Payment Reference No." <> '' then
+                        BankRecLineDescription += (' ' + BankAccReconciliationLine."Payment Reference No.");
+                    if BankAccReconciliationLine."Document No." <> '' then
+                        BankRecLineDescription += (' ' + BankAccReconciliationLine."Document No.");
 
                     EntryAddedToTop5 := false;
-                    SimilarityScore := ComputeStringNearness(TempBankAccLedgerEntryMatchingBuffer."Description" + ' ' + TempBankAccLedgerEntryMatchingBuffer."Document No.", CopyStr(BankRecLineDescription, 1, 250));
+                    SimilarityScore := ComputeStringNearness(TempBankAccLedgerEntryMatchingBuffer."Description" + ' ' + TempBankAccLedgerEntryMatchingBuffer."Document No." + ' ' + TempBankAccLedgerEntryMatchingBuffer."External Document No.", CopyStr(BankRecLineDescription, 1, 250));
                     AmountEquals := (TempBankAccLedgerEntryMatchingBuffer."Remaining Amount" = BankAccReconciliationLine.Difference);
 
                     for i := 1 to 5 do
@@ -676,7 +680,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
 
         if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Bank Account Reconciliation") then begin
             Session.LogMessage('0000OZO', TelemetryAttemptingToRegisterCapabilityTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
-            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation", Enum::"Copilot Availability"::"Generally Available", LearnMoreUrlTxt);
+            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation", Enum::"Copilot Availability"::"Generally Available", Enum::"Copilot Billing Type"::"Not Billed", LearnMoreUrlTxt);
             if not UpgradeTag.HasUpgradeTag(GetRegisterBankAccRecCopilotGACapabilityUpgradeTag()) then
                 UpgradeTag.SetUpgradeTag(GetRegisterBankAccRecCopilotGACapabilityUpgradeTag());
             Commit();
@@ -686,7 +690,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
 
         if UpgradeTag.HasUpgradeTag(GetRegisterBankAccRecCopilotGACapabilityUpgradeTag()) then
             exit;
-        CopilotCapability.ModifyCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation", Enum::"Copilot Availability"::"Generally Available", LearnMoreUrlTxt);
+        CopilotCapability.ModifyCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation", Enum::"Copilot Availability"::"Generally Available", Enum::"Copilot Billing Type"::"Not Billed", LearnMoreUrlTxt);
         UpgradeTag.SetUpgradeTag(GetRegisterBankAccRecCopilotGACapabilityUpgradeTag());
     end;
 

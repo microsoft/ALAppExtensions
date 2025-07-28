@@ -4,8 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Avalara;
 
+#if not CLEANSCHEMA30
 using Microsoft.EServices.EDocumentConnector;
-
+#endif
 table 6372 "Connection Setup"
 {
     fields
@@ -70,11 +71,42 @@ table 6372 "Connection Setup"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(12; "Avalara Send Mode"; Enum "Avalara Send Mode")
+        {
+            Caption = 'Send Mode';
+            DataClassification = CustomerContent;
+
+#if not CLEAN27
+#pragma warning disable AL0432
+            trigger OnValidate()
+            begin
+                case Rec."Avalara Send Mode" of
+                    Enum::"Avalara Send Mode"::Production:
+                        Rec."Send Mode" := Rec."Send Mode"::Production;
+                    Enum::"Avalara Send Mode"::Test:
+                        Rec."Send Mode" := Rec."Send Mode"::Test;
+                    Enum::"Avalara Send Mode"::Certification:
+                        Rec."Send Mode" := Rec."Send Mode"::Certification;
+                end;
+            end;
+#pragma warning restore AL0432
+#endif
+        }
+#if not CLEANSCHEMA30
         field(13; "Send Mode"; Enum "E-Doc. Ext. Send Mode")
         {
             Caption = 'Send Mode';
             DataClassification = EndUserIdentifiableInformation;
+            ObsoleteReason = 'Use "Avalara Send Mode" instead.';
+#if not CLEAN27
+            ObsoleteState = Pending;
+            ObsoleteTag = '27.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '30.0';
+#endif
         }
+#endif
     }
 
     keys

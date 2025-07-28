@@ -5,7 +5,6 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 10712 "Create General Ledger Setup NO"
@@ -20,11 +19,9 @@ codeunit 10712 "Create General Ledger Setup NO"
 
     local procedure UpdateGeneralLedgerSetup()
     var
-        Currency: Record Currency;
         CreateCurrency: Codeunit "Create Currency";
     begin
-        Currency.Get(CreateCurrency.NOK());
-        ValidateRecordFields(CreateCurrency.NOK(), LocalCurrencySymbolLbl, Currency.Description, 0.001);
+        ValidateRecordFields(CreateCurrency.NOK(), LocalCurrencySymbolLbl, NorwegianKroneLbl, 0.001);
     end;
 
     local procedure ValidateRecordFields(LCYCode: Code[10]; LocalCurrencySymbol: Text[10]; LocalCurrencyDescription: Text[60]; UnitAmountRoundingPrecision: Decimal)
@@ -41,4 +38,5 @@ codeunit 10712 "Create General Ledger Setup NO"
 
     var
         LocalCurrencySymbolLbl: Label 'kr', Locked = true;
+        NorwegianKroneLbl: Label 'Norwegian krone', MaxLength = 30;
 }

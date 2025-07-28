@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 page 30146 "Shpfy Refund Lines"
@@ -31,40 +36,42 @@ page 30146 "Shpfy Refund Lines"
                 field(Quantity; Rec.Quantity)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The quantity of a refunded line item.';
+                    ToolTip = 'Specifies the quantity of a refunded line item.';
                 }
                 field(Amount; Rec.Amount)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The price of a refunded line item.';
+                    ToolTip = 'Specifies the price of a refunded line item.';
                 }
                 field(LineDiscount; (Rec.Quantity * Rec.Amount) - Rec."Subtotal Amount")
                 {
                     ApplicationArea = All;
                     Caption = 'Line Discount';
-                    ToolTip = 'The line discount of a refunded line item.';
+                    ToolTip = 'Specifies the line discount of a refunded line item.';
                     Editable = false;
                     BlankZero = true;
+                    AutoFormatType = 1;
+                    AutoFormatExpression = Rec.OrderCurrencyCode();
                 }
                 field("Subtotal Amount"; Rec."Subtotal Amount")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The subtotal price of a refunded line item.';
+                    ToolTip = 'Specifies the subtotal price of a refunded line item.';
                 }
                 field("Total Tax Amount"; Rec."Total Tax Amount")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The total tax charged on a refunded line item.';
+                    ToolTip = 'Specifies the total tax charged on a refunded line item.';
                 }
                 field("Restock Type"; Rec."Restock Type")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The type of restock for the refunded line item.';
+                    ToolTip = 'Specifies the type of restock for the refunded line item.';
                 }
                 field(Restocked; Rec.Restocked)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Whether the refunded line item was restocked.';
+                    ToolTip = 'Specifies whether the refunded line item was restocked.';
                 }
             }
         }

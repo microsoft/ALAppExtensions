@@ -14,21 +14,27 @@ tableextension 6223 "Sust. Analysis View Entry" extends "Analysis View Entry"
         }
         field(6210; "Emission CO2"; Decimal)
         {
+            DataClassification = CustomerContent;
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CO2';
+            CaptionClass = '102,6,1';
         }
         field(6211; "Emission CH4"; Decimal)
         {
+            DataClassification = CustomerContent;
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CH4';
+            CaptionClass = '102,6,2';
         }
         field(6212; "Emission N2O"; Decimal)
         {
+            DataClassification = CustomerContent;
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission N2O';
+            CaptionClass = '102,6,3';
         }
         field(6213; "CO2e Emission"; Decimal)
         {

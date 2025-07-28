@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Sales.History;
+
 codeunit 139606 "Shpfy Shipping Test"
 {
     Subtype = Test;
@@ -22,6 +33,7 @@ codeunit 139606 "Shpfy Shipping Test"
         ShopifyOrderId: BigInteger;
         ShopifyFulfillmentOrderId: BigInteger;
         LocationId: BigInteger;
+        QuantityLbl: Label 'quantity: %1', Comment = '%1 - quantity', Locked = true;
     begin
         // [SCENARIO] Export a Sales Shipment record into a Json token that contains the shipping info
         // [GIVEN] A random Sales Shipment, a random LocationId, a random Shop
@@ -43,9 +55,11 @@ codeunit 139606 "Shpfy Shipping Test"
         // [THEN] We must find the fulfilment lines in the json token
         OrderLine.SetRange("Shopify Order Id", ShopifyOrderId);
         OrderLine.FindFirst();
+#pragma warning disable AA0210
         SalesShipmentLine.SetRange("Shpfy Order Line Id", OrderLine."Line Id");
+#pragma warning restore AA0210
         SalesShipmentLine.FindFirst();
-        LibraryAssert.IsTrue(FulfillmentRequest.Contains(StrSubstNo('quantity: %1', SalesShipmentLine.Quantity)), 'quantity check');
+        LibraryAssert.IsTrue(FulfillmentRequest.Contains(StrSubstNo(QuantityLbl, SalesShipmentLine.Quantity)), 'quantity check');
     end;
 
     [Test]

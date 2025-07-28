@@ -9,6 +9,7 @@
 codeunit 139507 "Test Data Search"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
 
     var
         LibraryAssert: Codeunit "Library Assert";

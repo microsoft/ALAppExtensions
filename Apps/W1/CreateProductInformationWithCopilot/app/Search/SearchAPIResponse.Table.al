@@ -20,6 +20,7 @@ table 7339 "Search API Response"
         field(2; Score; Decimal)
         {
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
     }
 

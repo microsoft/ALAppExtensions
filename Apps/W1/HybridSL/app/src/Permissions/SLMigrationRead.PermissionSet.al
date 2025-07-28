@@ -30,6 +30,7 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL Codes" = R,
                   tabledata "SL Company Additional Settings" = R,
                   tabledata "SL Company Migration Settings" = R,
+                  tabledata "SL CustClass" = R,
                   tabledata "SL Customer" = R,
                   tabledata "SL Fiscal Periods" = R,
                   tabledata "SL FlexDef" = R,
@@ -80,6 +81,7 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL SOType" = R,
                   tabledata "SL Terms" = R,
                   tabledata "SL Upgrade Settings" = R,
+                  tabledata "SL VendClass" = R,
                   tabledata "SL Vendor" = R,
                   tabledata SLGLAcctBalByPeriod = R;
 }

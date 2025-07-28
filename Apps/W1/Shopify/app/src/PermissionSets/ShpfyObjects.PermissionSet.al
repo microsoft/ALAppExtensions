@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -70,7 +75,9 @@ permissionset 30104 "Shpfy - Objects"
         table "Shpfy Translation" = X,
         table "Shpfy Variant" = X,
         report "Shpfy Add Company to Shopify" = X,
+        report "Shpfy Add Cust. As Locations" = X,
         report "Shpfy Add Customer to Shopify" = X,
+        report "Shpfy Add Item As Variant" = X,
         report "Shpfy Add Item to Shopify" = X,
         report "Shpfy Create Location Filter" = X,
         report "Shpfy Create Sales Orders" = X,

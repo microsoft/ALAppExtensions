@@ -400,12 +400,12 @@ codeunit 5253 "Create Post Code"
     var
         PostCode: Record "Post Code";
     begin
-        PostCode.Code := Code;
-        PostCode.City := City;
-        PostCode."Search City" := "Search City";
-        PostCode."Country/Region Code" := "Country/Region Code";
-        PostCode.County := County;
-        PostCode."Time Zone" := "Time Zone";
+        PostCode.Code := CopyStr(Code, 1, MaxStrLen(PostCode.Code));
+        PostCode.City := CopyStr(City, 1, MaxStrLen(PostCode.City));
+        PostCode."Search City" := CopyStr("Search City", 1, MaxStrLen(PostCode."Search City"));
+        PostCode."Country/Region Code" := CopyStr("Country/Region Code", 1, MaxStrLen(PostCode."Country/Region Code"));
+        PostCode.County := CopyStr(County, 1, MaxStrLen(PostCode.County));
+        PostCode."Time Zone" := CopyStr("Time Zone", 1, MaxStrLen(PostCode."Time Zone"));
         if PostCode.Insert(false) then;
     end;
 }

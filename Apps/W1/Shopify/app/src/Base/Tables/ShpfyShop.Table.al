@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Finance.GeneralLedger.Account;
@@ -16,6 +21,7 @@ using System.DataAdministration;
 using System.Privacy;
 using System.Threading;
 using Microsoft.Inventory.Location;
+using System.Telemetry;
 
 /// <summary>
 /// Table Shpfy Shop (ID 30102).
@@ -63,12 +69,13 @@ table 30102 "Shpfy Shop"
             var
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 WebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
+                AuditLog: Codeunit "Audit Log";
             begin
                 if Rec."Enabled" then begin
                     Rec.TestField("Shopify URL");
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
                     if Rec.Enabled then
-                        Session.LogAuditMessage(StrSubstNo(ShopifyConsentProvidedLbl, UserSecurityId(), CompanyName()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
+                        AuditLog.LogAuditMessage(StrSubstNo(ShopifyConsentProvidedLbl, UserSecurityId(), CompanyName()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                 end else begin
                     Rec.Enabled := true;
                     Rec.Validate("Order Created Webhooks", false);
@@ -353,7 +360,7 @@ table 30102 "Shpfy Shop"
         }
         field(44; "Allow Background Syncs"; Boolean)
         {
-            Caption = 'Allow Background Syncs';
+            Caption = 'Run Syncs in Background';
             DataClassification = CustomerContent;
             InitValue = true;
         }
@@ -814,19 +821,6 @@ table 30102 "Shpfy Shop"
         CategoryTok: Label 'Shopify Integration', Locked = true;
         ShopifyConsentProvidedLbl: Label 'Shopify - consent provided by UserSecurityId %1 for company %2.', Comment = '%1 - User Security ID, %2 - Company name', Locked = true;
 
-    [Scope('OnPrem')]
-    internal procedure GetAccessToken() Result: SecretText
-    var
-        AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
-        Store: Text;
-    begin
-        Rec.Testfield(Enabled, true);
-        Store := GetStoreName();
-        if Store <> '' then
-            exit(AuthenticationMgt.GetAccessToken(Store));
-    end;
-
-    [Scope('OnPrem')]
     internal procedure RequestAccessToken()
     var
         AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -837,7 +831,6 @@ table 30102 "Shpfy Shop"
             AuthenticationMgt.InstallShopifyApp(Store);
     end;
 
-    [Scope('OnPrem')]
     internal procedure HasAccessToken(): Boolean
     var
         AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
@@ -987,7 +980,7 @@ table 30102 "Shpfy Shop"
         RetentionPolicySetup.Modify(true);
     end;
 
-    internal procedure GetB2BEnabled(): Boolean;
+    internal procedure GetShopSettings()
     var
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
@@ -995,16 +988,13 @@ table 30102 "Shpfy Shop"
         JItem: JsonToken;
     begin
         CommunicationMgt.SetShop(Rec);
-        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { name plan { displayName partnerDevelopment shopifyPlus } } }"}');
+        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { name plan { displayName partnerDevelopment shopifyPlus } weightUnit } }"}');
         if JResponse.SelectToken('$.data.shop.plan', JItem) then
-            if JItem.IsObject then begin
-                if JsonHelper.GetValueAsBoolean(JItem, 'shopifyPlus') then
-                    exit(true);
-                if JsonHelper.GetValueAsBoolean(JItem, 'partnerDevelopment') then
-                    exit(true);
-                if JsonHelper.GetValueAsText(JItem, 'displayName') = 'Plus Trial' then
-                    exit(true);
-            end;
+            if JItem.IsObject then
+                Rec."B2B Enabled" := JsonHelper.GetValueAsBoolean(JItem, 'partnerDevelopment') or
+                                      JsonHelper.GetValueAsBoolean(JItem, 'shopifyPlus') or
+                                        (JsonHelper.GetValueAsText(JItem, 'displayName') = 'Plus Trial');
+        Rec."Weight Unit" := ConvertToWeightUnit(JsonHelper.GetValueAsText(JResponse, 'data.shop.weightUnit'));
     end;
 
     internal procedure GetShopWeightUnit(): Enum "Shpfy Weight Unit"
@@ -1017,7 +1007,6 @@ table 30102 "Shpfy Shop"
         JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { weightUnit } }"}');
         exit(ConvertToWeightUnit(JsonHelper.GetValueAsText(JResponse, 'data.shop.weightUnit')));
     end;
-
 
     internal procedure SyncCountries()
     begin

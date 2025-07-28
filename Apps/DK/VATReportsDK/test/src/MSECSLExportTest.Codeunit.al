@@ -6,6 +6,7 @@
 codeunit 148040 "MS - ECSL Export Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

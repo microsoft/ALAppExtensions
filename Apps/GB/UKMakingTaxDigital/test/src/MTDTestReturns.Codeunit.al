@@ -6,6 +6,7 @@
 codeunit 148087 "MTDTestReturns"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

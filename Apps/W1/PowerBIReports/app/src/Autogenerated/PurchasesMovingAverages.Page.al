@@ -6,9 +6,7 @@ page 37012 "Purchases Moving Averages"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Purchases Moving Averages';
     AboutTitle = 'About Purchases Moving Averages';
     AboutText = 'The Purchases Moving Average report visualizes the 30-day moving average of purchase amounts over time. This helps identify trends by smoothing out fluctuations and highlighting overall patterns.';
@@ -25,7 +23,7 @@ page 37012 "Purchases Moving Averages"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

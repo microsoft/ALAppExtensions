@@ -28,6 +28,8 @@ tableextension 10050 "IRS 1099 Posted Gen. Jnl. Line" extends "Posted Gen. Journ
         field(10054; "IRS 1099 Reporting Amount"; Decimal)
         {
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
     }
 }

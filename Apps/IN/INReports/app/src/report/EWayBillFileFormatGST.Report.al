@@ -315,8 +315,6 @@ report 18036 "E-Way Bill File Format GST"
         IGSTAmount: Decimal;
         CessAmount: Decimal;
         Others: Decimal;
-        ServiceNo: Code[20];
-        DetailGstLENo: Code[20];
         TotalInvoiceValue: Decimal;
         CessNonAdvolAmount: Decimal;
         ServiceDoc: Boolean;
@@ -1057,26 +1055,6 @@ report 18036 "E-Way Bill File Format GST"
                     end;
                 GetTotalInvoiceValue(DetailedGSTLedgerEntry);
             until DetailedGSTLedgerEntry.Next() = 0;
-    end;
-    //Function For Showing Other Charges In 'Others' Field
-    local procedure GetOthersValue()
-    var
-        DetailedGstLedEntry: Record "Detailed GST Ledger Entry";
-    begin
-        if DetailGstLENo <> "Detailed GST Ledger Entry"."Document No." then begin
-            Others := 0;
-            DetailedGstLedEntry.SetRange("Document No.", "Detailed GST Ledger Entry"."Document No.");
-            DetailedGstLedEntry.SetRange("GST Group Type", DetailedGstLedEntry."GST Group Type"::Service);
-            if DetailedGstLedEntry.FindSet() then
-                repeat
-                    if ServiceNo <> DetailedGstLedEntry."No." then begin
-                        Others += DetailedGstLedEntry."GST Base Amount";
-                        ServiceNo := DetailedGstLedEntry."No.";
-                    end;
-                until DetailedGstLedEntry.Next() = 0;
-            DetailGstLENo := DetailedGstLedEntry."Document No.";
-            ServiceNo := '';
-        end;
     end;
 
     local procedure GetTotalInvoiceValue(var DetailedGstLedgerEntry: Record "Detailed GST Ledger Entry")

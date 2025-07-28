@@ -217,14 +217,7 @@ page 18480 "Order Subcon. Details Delivery"
         CurrPage.Update();
     end;
 
-    local procedure MakeConfirmation(DocumentNo: code[20])
-    begin
-        if not Confirm(SendPostQst, true, DocumentNo) then
-            exit;
-    end;
-
     var
         DeliveryChallanHeader: Record "Delivery Challan Header";
         SubcontractingValidations: Codeunit "Subcontracting Validations";
-        SendPostQst: Label 'Do you want to post the %1?', Comment = '%1 = Document No';
 }

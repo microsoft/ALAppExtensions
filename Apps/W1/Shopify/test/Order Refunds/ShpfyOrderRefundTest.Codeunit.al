@@ -1,6 +1,19 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Sales.Document;
+using Microsoft.Inventory.Location;
+
 codeunit 139611 "Shpfy Order Refund Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -334,8 +347,10 @@ codeunit 139611 "Shpfy Order Refund Test"
     end;
 
     local procedure CreateRefundLineResponse(var JRefundLine: JsonObject; RefundLineId: BigInteger; RefundLocationId: BigInteger)
+    var
+        RefundLineLbl: Label '{"lineItem": {"id": "gid://shopify/LineItem/%1"}, "quantity": 1, "restockType": "no_restock", "location": {"legacyResourceId": %2}}', Comment = '%1 = RefundLineId, %2 = RefundLocationId', Locked = true;
     begin
-        JRefundLine.ReadFrom(StrSubstNo('{"lineItem": {"id": "gid://shopify/LineItem/%1"}, "quantity": 1, "restockType": "no_restock", "location": {"legacyResourceId": %2}}', RefundLineId, RefundLocationId));
+        JRefundLine.ReadFrom(StrSubstNo(RefundLineLbl, RefundLineId, RefundLocationId));
     end;
 
     local procedure CerateProcessedShopifyOrder(var OrderId: BigInteger; var OrderLineId: BigInteger)
@@ -360,7 +375,7 @@ codeunit 139611 "Shpfy Order Refund Test"
     local procedure CreateLocation(var Location: Record Location)
     begin
         Location.Init();
-        Location.Code := Any.AlphanumericText(10);
+        Location.Code := CopyStr(Any.AlphanumericText(10), 1, MaxStrLen(Location.Code));
         Location.Insert();
     end;
 

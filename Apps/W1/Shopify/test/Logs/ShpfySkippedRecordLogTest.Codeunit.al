@@ -1,6 +1,21 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using Microsoft.Sales.History;
+using System.TestLibraries.Utilities;
+using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Item;
+using Microsoft.Foundation.PaymentTerms;
+
 codeunit 139581 "Shpfy Skipped Record Log Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var
@@ -67,7 +82,6 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     [HandlerFunctions('AddItemToShopifyHandler')]
     procedure UnitTestLogItemBlocked()
     var
-
         Item: Record Item;
         SkippedRecord: Record "Shpfy Skipped Record";
         AddItemToShopify: Report "Shpfy Add Item to Shopify";
@@ -135,9 +149,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         Initialize();
 
         // [GIVEN] An item record and variant that is blocked
-        CreateBlockedItem(Item);
-        Item.Blocked := false;
-        Item.Modify();
+        CreateItem(Item);
         CreateBlockedItemVariant(Item, ItemVariant);
 
         // [WHEN] Invoke Create Product
@@ -335,6 +347,69 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     end;
 
     [Test]
+    procedure UnitTestSkipShopifyVariantPriceCalcWithItemVariantForVariantWithBlockedItemVariant()
+    var
+        Item: Record Item;
+        ShopifyProduct: Record "Shpfy Product";
+        ShopifyVariant: Record "Shpfy Variant";
+        ItemVariant: Record "Item Variant";
+        SkippedRecord: Record "Shpfy Skipped Record";
+        ProductExport: Codeunit "Shpfy Product Export";
+    begin
+        // [SCENARIO] Skip shopify variant price calculation using item variant for variant with blocked item variant.
+        Initialize();
+
+        // [GIVEN] Blocked or sales blocked item variant
+        CreateItem(Item);
+        CreateBlockedItemVariant(Item, ItemVariant);
+        // [GIVEN] Shopify Product
+        CreateShpfyProduct(ShopifyProduct, Item.SystemId, Shop.Code, ShopifyVariant);
+
+        // [WHEN] Invoke FillInProductVariantData
+        ProductExport.SetShop(Shop);
+        ProductExport.SetOnlyUpdatePriceOn();
+        ProductExport.FillInProductVariantData(ShopifyVariant, Item, ItemVariant);
+
+        // [THEN] Related log record is created in shopify skipped record table.
+        SkippedRecord.SetRange("Record ID", ItemVariant.RecordId);
+        SkippedRecord.SetRange("Shopify Id", ShopifyVariant.Id);
+        LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
+        LibraryAssert.AreEqual('Variant price is not synchronized because the item variant is blocked or sales blocked.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+    end;
+
+    [Test]
+    procedure UnitTestSkipShopifyVariantPriceCalcWithItemUnitOfMeasureAndItemVariantForVariantWithBlockedItemVariant()
+    var
+        Item: Record Item;
+        ShopifyProduct: Record "Shpfy Product";
+        ShopifyVariant: Record "Shpfy Variant";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        ItemVariant: Record "Item Variant";
+        SkippedRecord: Record "Shpfy Skipped Record";
+        ProductExport: Codeunit "Shpfy Product Export";
+    begin
+        // [SCENARIO] Skip shopify variant price calculation using item unit of measure and item variant for variant with blocked item variant.
+        Initialize();
+
+        // [GIVEN] Blocked or sales blockec item variant
+        CreateItem(Item);
+        CreateBlockedItemVariant(Item, ItemVariant);
+        // [GIVEN] Shopify Product
+        CreateShpfyProduct(ShopifyProduct, Item.SystemId, Shop.Code, ShopifyVariant);
+
+        // [WHEN] Invoke FillInProductVariantData
+        ProductExport.SetShop(Shop);
+        ProductExport.SetOnlyUpdatePriceOn();
+        ProductExport.FillInProductVariantData(ShopifyVariant, Item, ItemVariant, ItemUnitOfMeasure);
+
+        // [THEN] Related log record is created in shopify skipped record table.
+        SkippedRecord.SetRange("Record ID", ItemVariant.RecordId);
+        SkippedRecord.SetRange("Shopify Id", ShopifyVariant.Id);
+        LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
+        LibraryAssert.AreEqual('Variant price is not synchronized because the item variant is blocked or sales blocked.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+    end;
+
+    [Test]
     procedure UnitTestLogSalesInvoiceWithNotExistingShopifyCustomer()
     var
         Customer: Record Customer;
@@ -368,6 +443,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord: Record "Shpfy Skipped Record";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         PaymentTermsCode: Code[10];
+        SkipReasonLbl: Label 'Payment terms %1 do not exist in Shopify.', Comment = '%1 - Payment terms code', Locked = true;
     begin
         // [SCENARIO] Log skipped record when sales invoice export is skipped because of not existing shopify payment terms.
         Initialize();
@@ -387,7 +463,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesInvoiceHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual(StrSubstNo('Payment terms %1 do not exist in Shopify.', PaymentTermsCode), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual(StrSubstNo(SkipReasonLbl, PaymentTermsCode), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
@@ -399,6 +475,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord: Record "Shpfy Skipped Record";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         PaymentTermsCode: Code[10];
+        SkipReasonLbl: Label 'Bill-to customer no. %1 is the default customer no. in Shopify customer template for shop %2.', Comment = '%1 - Customer no, %2 - Shop code', Locked = true;
     begin
         // [SCENARIO] Log skipped record when sales invoice export is skipped because bill to customer no which is default shopify shop customer no.
         Initialize();
@@ -421,7 +498,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesInvoiceHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual(StrSubstNo('Bill-to customer no. %1 is the default customer no. in Shopify customer template for shop %2.', Customer."No.", ShopWithDefaultCustomerNo.Code), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual(StrSubstNo(SkipReasonLbl, Customer."No.", ShopWithDefaultCustomerNo.Code), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
@@ -434,6 +511,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         ShopifyCustomerTemplate: Record "Shpfy Customer Template";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         PaymentTermsCode: Code[10];
+        SkipReasonLbl: Label 'Shopify customer template exists for customer no. %1 shop %2.', Comment = '%1 - Customer no, %2 - Shop code', Locked = true;
     begin
         // [SCENARIO] Log skipped record when sales invoice export is skipped because customer no which is used in shopify customer templates.
         Initialize();
@@ -456,7 +534,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesInvoiceHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual(StrSubstNo('Shopify customer template exists for customer no. %1 shop %2.', Customer."No.", ShopWithCustTemplates.Code), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual(StrSubstNo(SkipReasonLbl, Customer."No.", ShopWithCustTemplates.Code), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
@@ -588,6 +666,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SalesShipmentHeader: Record "Sales Shipment Header";
         SkippedRecord: Record "Shpfy Skipped Record";
         ShopifyOrderId: BigInteger;
+        SkipReasonLbl: Label 'Shopify order %1 does not exist.', Comment = '%1 - Shopify order id', Locked = true;
     begin
         // [SCENARIO] Log skipped record when sales shipment export is skipped because not existing related shopify order.
         Initialize();
@@ -607,7 +686,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesShipmentHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual(StrSubstNo('Shopify order %1 does not exist.', ShopifyOrderId), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual(StrSubstNo(SkipReasonLbl, ShopifyOrderId), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
@@ -689,7 +768,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         ShopifyId := Any.IntegerInRange(10000, 999999);
 
         // [WHEN] Invoke Skip Record Management
-        SkippedRecordCodeunit.LogSkippedRecord(ShopifyId, RecordID, Any.AlphabeticText(250), ShopWithDisabledLogging);
+        SkippedRecordCodeunit.LogSkippedRecord(ShopifyId, RecordID, CopyStr(Any.AlphabeticText(250), 1, 250), ShopWithDisabledLogging);
 
         // [THEN] No record is created in shopify skipped record table.
         SkippedRecord.SetRange("Shopify Id", ShopifyId);
@@ -768,7 +847,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     local procedure CreateSalesInvoiceHeader(var SalesInvoiceHeader: Record "Sales Invoice Header"; CustomerNo: Code[20]; PaymentTermsCode: Code[10])
     begin
         SalesInvoiceHeader.Init();
-        SalesInvoiceHeader."No." := Any.AlphanumericText(20);
+        SalesInvoiceHeader."No." := CopyStr(Any.AlphanumericText(20), 1, MaxStrLen(SalesInvoiceHeader."No."));
         SalesInvoiceHeader."Bill-to Customer No." := CustomerNo;
         SalesInvoiceHeader."Payment Terms Code" := PaymentTermsCode;
         SalesInvoiceHeader.Insert(false);
@@ -782,7 +861,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         PaymentTerms.DeleteAll(false);
         ShopifyPaymentTerms.DeleteAll(false);
         PaymentTerms.Init();
-        PaymentTerms.Code := Any.AlphanumericText(10);
+        PaymentTerms.Code := CopyStr(Any.AlphanumericText(10), 1, MaxStrLen(PaymentTerms.Code));
         PaymentTerms.Insert(false);
         ShopifyPaymentTerms.Init();
         ShopifyPaymentTerms."Shop Code" := ShopCode;
@@ -797,7 +876,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SalesInvoiceLine.Init();
         SalesInvoiceLine."Document No." := DocumentNo;
         SalesInvoiceLine.Type := SalesInvoiceLine.Type::Item;
-        SalesInvoiceLine."No." := No;
+        SalesInvoiceLine."No." := CopyStr(No, 1, MaxStrLen(SalesInvoiceLine."No."));
         SalesInvoiceLine.Quantity := Quantity;
         SalesInvoiceLine.Insert(false);
     end;
@@ -805,28 +884,27 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     local procedure CreateSalesShipmentHeader(var SalesShipmentHeader: Record "Sales Shipment Header"; ShpfyOrderId: BigInteger)
     begin
         SalesShipmentHeader.Init();
-        SalesShipmentHeader."No." := Any.AlphanumericText(20);
+        SalesShipmentHeader."No." := CopyStr(Any.AlphanumericText(20), 1, MaxStrLen(SalesShipmentHeader."No."));
         SalesShipmentHeader."Shpfy Order Id" := ShpfyOrderId;
         SalesShipmentHeader.Insert(false);
     end;
 
-    local procedure CreateShopWithDisabledLogging(var Shop: Record "Shpfy Shop")
+    local procedure CreateShopWithDisabledLogging(var ShopifyShop: Record "Shpfy Shop")
     begin
-        CreateShopWithDefCustomerNo(Shop, '');
-        Shop."Logging Mode" := Enum::"Shpfy Logging Mode"::Disabled;
-        Shop.Modify(false);
+        CreateShopWithDefCustomerNo(ShopifyShop, '');
+        ShopifyShop."Logging Mode" := Enum::"Shpfy Logging Mode"::Disabled;
+        ShopifyShop.Modify(false);
     end;
 
-    local procedure CreateShopifyOrder(Shop: Record "Shpfy Shop"; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
+    local procedure CreateShopifyOrder(ShopifyShop: Record "Shpfy Shop"; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
     var
         ShopifyOrderHeader: Record "Shpfy Order Header";
         ShippingHelper: Codeunit "Shpfy Shipping Helper";
-        LocationId: BigInteger;
         ShopifyOrderId: BigInteger;
     begin
-        ShopifyOrderId := ShippingHelper.CreateRandomShopifyOrder(LocationId, DeliveryMethodType);
+        ShopifyOrderId := ShippingHelper.CreateRandomShopifyOrder(0, DeliveryMethodType);
         ShopifyOrderHeader.Get(ShopifyOrderId);
-        ShopifyOrderHeader."Shop Code" := Shop.Code;
+        ShopifyOrderHeader."Shop Code" := ShopifyShop.Code;
         ShopifyOrderHeader.Modify(false);
         exit(ShopifyOrderId);
     end;
@@ -844,27 +922,27 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     local procedure CreateRandomCustomer(var Customer: Record Customer)
     begin
         Customer.Init();
-        Customer."No." := Any.AlphanumericText(20);
+        Customer."No." := CopyStr(Any.AlphanumericText(20), 1, MaxStrLen(Customer."No."));
         Customer.Insert(false);
     end;
 
 
-    local procedure CreateShopifyCustomerTemplate(var ShopifyCustomerTemplate: Record "Shpfy Customer Template"; Shop: Record "Shpfy Shop"; CustomerNo: Code[20])
+    local procedure CreateShopifyCustomerTemplate(var ShopifyCustomerTemplate: Record "Shpfy Customer Template"; ShopifyShop: Record "Shpfy Shop"; CustomerNo: Code[20])
     begin
         ShopifyCustomerTemplate.Init();
-        ShopifyCustomerTemplate."Shop Code" := Shop.Code;
+        ShopifyCustomerTemplate."Shop Code" := ShopifyShop.Code;
         ShopifyCustomerTemplate."Default Customer No." := CustomerNo;
         ShopifyCustomerTemplate.Insert(false);
     end;
 
-    local procedure CreateSalesShipmentLine(SalesShipmentNo: Code[20])
+    local procedure CreateSalesShipmentLine(ShipmentNo: Code[20])
     var
         SalesShipmentLine: Record "Sales Shipment Line";
     begin
         SalesShipmentLine.Init();
-        SalesShipmentLine."Document No." := SalesShipmentNo;
+        SalesShipmentLine."Document No." := ShipmentNo;
         SalesShipmentLine."Line No." := 10000;
-        SalesShipmentLine."No." := Any.AlphanumericText(20);
+        SalesShipmentLine."No." := CopyStr(Any.AlphanumericText(20), 1, MaxStrLen(SalesShipmentLine."No."));
         SalesShipmentLine.Type := SalesShipmentLine.Type::Item;
         SalesShipmentLine.Quantity := Any.IntegerInRange(1, 100);
         SalesShipmentLine.Insert(false);
@@ -873,7 +951,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     local procedure CreateItem(var Item: Record Item)
     begin
         Item.Init();
-        Item."No." := Any.AlphanumericText(20);
+        Item."No." := CopyStr(Any.AlphanumericText(20), 1, MaxStrLen(Item."No."));
         Item.Insert(false);
     end;
 
@@ -887,7 +965,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
 
     local procedure CreateBlockedItemVariant(Item: Record Item; var ItemVariant: Record "Item Variant")
     begin
-        ItemVariant.Code := Any.AlphanumericText(10);
+        ItemVariant.Code := CopyStr(Any.AlphanumericText(10), 1, MaxStrLen(ItemVariant.Code));
         ItemVariant."Item No." := Item."No.";
         ItemVariant.Blocked := true;
         ItemVariant."Sales Blocked" := true;
@@ -902,10 +980,10 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         ShopifyCustomer."Customer SystemId" := CreateGuid();
     end;
 
-    local procedure SetActionForRemovedProducts(var Shop: Record "Shpfy Shop"; ShpfyRemoveProductAction: Enum Microsoft.Integration.Shopify."Shpfy Remove Product Action")
+    local procedure SetActionForRemovedProducts(var ShopifyShop: Record "Shpfy Shop"; ShpfyRemoveProductAction: Enum Microsoft.Integration.Shopify."Shpfy Remove Product Action")
     begin
-        Shop."Action for Removed Products" := ShpfyRemoveProductAction;
-        Shop.Modify(false);
+        ShopifyShop."Action for Removed Products" := ShpfyRemoveProductAction;
+        ShopifyShop.Modify(false);
     end;
 
     local procedure CreateShopifyProductWithStatus(var Item: Record Item; var ShpfyProduct: Record "Shpfy Product"; ShpfyProductStatus: Enum Microsoft.Integration.Shopify."Shpfy Product Status")
@@ -915,20 +993,20 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         ShpfyProduct.Modify(false);
     end;
 
-    local procedure CreateCustomerWithEmail(var Customer: Record Customer; EmailAdress: Text)
+    local procedure CreateCustomerWithEmail(var Customer: Record Customer; EmailAdress: Text[80])
     begin
         Customer.Init();
-        Customer."No." := Any.AlphanumericText(20);
+        Customer."No." := CopyStr(Any.AlphanumericText(20), 1, MaxStrLen(Customer."No."));
         Customer."E-Mail" := EmailAdress;
         Customer.Insert(true);
     end;
 
-    local procedure CreateShopWithDefCustomerNo(var Shop: Record "Shpfy Shop"; DefaultCustomer: Code[20])
+    local procedure CreateShopWithDefCustomerNo(var ShopifyShop: Record "Shpfy Shop"; DefaultCustomer: Code[20])
     begin
-        Shop.Init();
-        Shop.Code := Any.AlphanumericText(20);
-        Shop."Default Customer No." := DefaultCustomer;
-        Shop.Insert(false);
+        ShopifyShop.Init();
+        ShopifyShop.Code := CopyStr(Any.AlphanumericText(20), 1, MaxStrLen(ShopifyShop.Code));
+        ShopifyShop."Default Customer No." := DefaultCustomer;
+        ShopifyShop.Insert(false);
     end;
 
     local procedure InvokeShopifyCustomerExport(var Customer: Record Customer; ShpfyCustomerId: BigInteger)

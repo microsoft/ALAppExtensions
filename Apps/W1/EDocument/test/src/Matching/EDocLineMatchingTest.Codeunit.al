@@ -2,6 +2,7 @@ codeunit 139659 "E-Doc. Line Matching Test"
 {
 
     Subtype = Test;
+    TestType = Uncategorized;
     EventSubscriberInstance = Manual;
 
 

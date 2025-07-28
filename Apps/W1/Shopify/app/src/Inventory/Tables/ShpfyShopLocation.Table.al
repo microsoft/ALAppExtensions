@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Location;
@@ -167,13 +172,13 @@ table 30113 "Shpfy Shop Location"
     internal procedure CreateLocationFilter()
     var
         Location: Record Location;
-        CreateLocationFilter: Report "Shpfy Create Location Filter";
+        ShopifyCreateLocationFilter: Report "Shpfy Create Location Filter";
     begin
         if "Location Filter" <> '' then
             Location.SetFilter(Code, "Location Filter");
-        CreateLocationFilter.SetTableView(Location);
-        CreateLocationFilter.RunModal();
-        "Location Filter" := CopyStr(CreateLocationFilter.GetLocationFilter(), 1, MaxStrLen("Location Filter"));
+        ShopifyCreateLocationFilter.SetTableView(Location);
+        ShopifyCreateLocationFilter.RunModal();
+        "Location Filter" := CopyStr(ShopifyCreateLocationFilter.GetLocationFilter(), 1, MaxStrLen("Location Filter"));
     end;
 
 }

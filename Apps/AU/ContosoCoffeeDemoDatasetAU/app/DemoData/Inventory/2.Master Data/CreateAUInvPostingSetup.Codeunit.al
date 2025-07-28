@@ -22,6 +22,20 @@ codeunit 17119 "Create AU Inv Posting Setup"
         CreateAUInvPostingGroup: Codeunit "Create AU Inv Posting Group";
         CreateAUGLAccounts: Codeunit "Create AU GL Accounts";
         CreateGLAccount: Codeunit "Create G/L Account";
+    begin
+        ContosoPostingSetup.SetOverwriteData(true);
+        ContosoPostingSetup.InsertInventoryPostingSetup(BlankLocationLbl, CreateAUInvPostingGroup.Finished(), CreateGLAccount.FinishedGoods(), CreateGLAccount.FinishedGoodsInterim(), CreateAUGLAccounts.WipAccountFinishedGoods(), CreateAUGLAccounts.MaterialVariance(), CreateAUGLAccounts.CapacityVariance(), CreateAUGLAccounts.SubcontractedVariance(), CreateAUGLAccounts.CapOverheadVariance(), CreateAUGLAccounts.MfgOverheadVariance());
+        ContosoPostingSetup.InsertInventoryPostingSetup(BlankLocationLbl, CreateAUInvPostingGroup.RAWMAT(), CreateGLAccount.RawMaterials(), CreateGLAccount.RawMaterialsInterim(), CreateAUGLAccounts.WipAccountFinishedGoods(), CreateAUGLAccounts.MaterialVariance(), CreateAUGLAccounts.CapacityVariance(), CreateAUGLAccounts.SubcontractedVariance(), CreateAUGLAccounts.CapOverheadVariance(), CreateAUGLAccounts.MfgOverheadVariance());
+
+        ContosoPostingSetup.SetOverwriteData(false);
+    end;
+
+    procedure UpdateInventoryPosting()
+    var
+        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
+        CreateAUInvPostingGroup: Codeunit "Create AU Inv Posting Group";
+        CreateAUGLAccounts: Codeunit "Create AU GL Accounts";
+        CreateGLAccount: Codeunit "Create G/L Account";
         CreateLocation: Codeunit "Create Location";
         CreateInventoryPostingGroup: Codeunit "Create Inventory Posting Group";
     begin

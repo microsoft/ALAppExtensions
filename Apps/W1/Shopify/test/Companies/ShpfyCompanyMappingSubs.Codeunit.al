@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+
 codeunit 134244 "Shpfy Company Mapping Subs."
 {
     EventSubscriberInstance = Manual;
@@ -22,7 +31,7 @@ codeunit 134244 "Shpfy Company Mapping Subs."
         Uri: Text;
         GraphQlQuery: Text;
         GetCompanyGQLStartTok: Label '{"query":"{company(id: \"gid://shopify/Company/', Locked = true;
-        GetCompanyGQLEndTok: Label '\") {name id externalId note createdAt updatedAt mainContact { id customer { id firstName lastName email phone}} metafields(first: 50) {edges {node {id namespace ownerType legacyResourceId key value type}}}}}"}', Locked = true;
+        GetCompanyGQLEndTok: Label '\") {name id externalId note createdAt updatedAt mainContact { id customer { id firstName lastName defaultPhoneNumber { phoneNumber } defaultEmailAddress { emailAddress }}} metafields(first: 50) {edges {node {id namespace ownerType legacyResourceId key value type}}}}}"}', Locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of

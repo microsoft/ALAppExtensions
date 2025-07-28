@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -19,22 +24,19 @@ page 30171 "Shpfy Staff Mapping"
         {
             repeater(General)
             {
-                field("First Name"; Rec."First Name") { }
-                field("Last Name"; Rec."Last Name") { }
-                field(Initials; Rec.Initials) { }
                 field(Name; Rec.Name) { }
                 field("Shop Owner"; Rec."Shop Owner") { }
-                field(Exists; Rec.Exists) { }
+                field(Exists; Rec.Exists) { Visible = false; }
                 field(Email; Rec.Email) { }
+                field(Phone; Rec.Phone) { Visible = false; }
                 field("Account Type"; Rec."Account Type") { }
                 field(Active; Rec.Active) { }
-                field(Locale; Rec.Locale) { }
-                field(Phone; Rec.Phone) { }
+                field(Locale; Rec.Locale) { Visible = false; }
                 field("Salesperson/Purchaser Code"; Rec."Salesperson Code") { }
             }
         }
     }
-    
+
     actions
     {
         area(processing)

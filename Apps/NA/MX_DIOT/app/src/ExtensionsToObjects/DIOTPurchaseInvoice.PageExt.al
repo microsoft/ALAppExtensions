@@ -10,7 +10,7 @@ pageextension 27033 "DIOT Purchase Invoice" extends "Purchase Invoice"
     {
         addafter("Purchaser Code")
         {
-            field("DIOT Type of Operation"; "DIOT Type of Operation")
+            field("DIOT Type of Operation"; Rec."DIOT Type of Operation")
             {
                 ApplicationArea = BasicMX;
                 Caption = 'DIOT Type of Operation';

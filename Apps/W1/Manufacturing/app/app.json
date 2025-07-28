@@ -1,0 +1,34 @@
+{
+  "id": "4d6c453d-e61d-4872-b35d-6c731c0fd93e",
+  "name": "Manufacturing",
+  "publisher": "Microsoft",
+  "version": "27.0.0.0",
+  "brief": "Manufacturing app",
+  "description": "The app enables the management of production orders.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2104024",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/production-manage-manufacturing",
+  "dependencies": [],
+  "screenshots": [],
+  "logo": "ExtensionLogo.png",
+  "internalsVisibleTo": [],
+  "platform": "27.0.0.0",
+  "application": "27.0.0.0",
+  "idRanges": [
+    {
+      "from": 99000750,
+      "to": 99000899
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud",
+  "features": [
+    "TranslationFile"
+  ]
+}

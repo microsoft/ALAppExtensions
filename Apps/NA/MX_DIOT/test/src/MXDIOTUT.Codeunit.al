@@ -1,6 +1,7 @@
 codeunit 148041 "MX DIOT UT"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -27,7 +28,7 @@ codeunit 148041 "MX DIOT UT"
         BlankStartingDateErr: Label 'Please provide a starting date.';
         BlankEndingDateErr: Label 'Please provide an ending date.';
         LeaseAndRentNonMXErr: Label 'Operations with non-mx Vendor cannot have Lease And Rent Type of operation.';
-        NegativeAmountErr: Label 'The amount for Concept No. %1 for Vendor with No. = %2 is negative, which is not valid.';
+        NegativeAmountErr: Label 'The amount for Concept No. %1 for Vendor with No. = %2 is negative, which is not valid.', Comment = '%1 - Concept No., %2 - Vendor No.';
         NoDataMsg: Label 'There are no VAT Entries for configured concepts in the specified date range.';
         MissingRFCNoErr: Label 'MX vendors must have RFC Number filled in.';
 
@@ -42,7 +43,7 @@ codeunit 148041 "MX DIOT UT"
         // [SCENARIO] User can successfully generate report with no errors for local and foreign Vendors
         Initialize();
 
-        PrepareVATPostingSetupAndLink(VATPostingSetup, 1);
+        PrepareVATPostingSetupAndLink(VATPostingSetup, BaseAmountConceptNo);
         LibraryMXDIOT.CreateDIOTVendor(Vendor[1], VATPostingSetup."VAT Bus. Posting Group", false);
         LibraryMXDIOT.MockPurchaseVATEntry(VATEntry[1], VATPostingSetup, WorkDate(), Vendor[1]."No.");
         LibraryMXDIOT.CreateDIOTVendor(Vendor[2], VATPostingSetup."VAT Bus. Posting Group", true);
@@ -235,7 +236,7 @@ codeunit 148041 "MX DIOT UT"
         end;
         DIOTDataManagement.CollectDIOTDataSet(TempDIOTReportBuffer, TempDIOTReportVendorBuffer, TempErrorMessage, WorkDate(), WorkDate());
 
-        DIOTConcept.Get(3);
+        DIOTConcept.Get(VATAmountConceptNo);
         ExpectedVATAmount := ExpectedBaseAmount * (VATPostingSetup."VAT %" / 100) * (DIOTConcept."Non-Deductible Pct" / 100);
 
         VerifyDIOTBufferAmount(TempDIOTReportBuffer, Vendor."No.", Vendor."DIOT Type of Operation"::Others, BaseAmountConceptNo, ExpectedBaseAmount);
@@ -405,9 +406,11 @@ codeunit 148041 "MX DIOT UT"
         TempDIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary;
         TempErrorMessage: Record "Error Message" temporary;
         TempBLOB: Codeunit "Temp Blob";
+        LineFields: List of [Text];
+        Line: Text;
         i: Integer;
     begin
-        // [SCENARIO] Exported file has exactly 24 columns separated by '|' and line for vendor exists
+        // [SCENARIO] Exported file has exactly 54 columns separated by '|' and line for vendor exists
         Initialize();
 
         PrepareVATPostingSetupAndLink(VATPostingSetup, BaseAmountConceptNo);
@@ -421,7 +424,10 @@ codeunit 148041 "MX DIOT UT"
         DIOTDataManagement.GenerateDIOTFile(TempDIOTReportBuffer, TempDIOTReportVendorBuffer, TempBLOB);
 
         VerifyDIOTFileStructure(TempBLOB);
-        Assert.IsTrue(FindLineInDIOTBlob(TempBLOB, Vendor, DIOTDataManagement.GetTypeOfOperationCode(VATEntry."DIOT Type of Operation"::Others)) <> '', 'Line not found in DIOT File');
+        Line := FindLineInDIOTBlob(TempBLOB, Vendor, DIOTDataManagement.GetTypeOfOperationCode(VATEntry."DIOT Type of Operation"::Others));
+        Assert.IsTrue(Line <> '', 'Line not found in DIOT File');
+        LineFields := Line.Split('|');
+        Assert.AreEqual(54, LineFields.Count(), 'DIOT File must have exactly 54 columns');
     end;
 
     [Test]
@@ -580,7 +586,191 @@ codeunit 148041 "MX DIOT UT"
         VerifyDIOTBufferAmount(TempDIOTReportBuffer, Vendor."No.", Vendor."DIOT Type of Operation"::Others, BaseAmountConceptNo, ExpectedBaseAmount);
     end;
 
+    [Test]
+    procedure TaxJurisdiction_LocalVendor()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        Vendor: Record Vendor;
+        VATEntry: Record "VAT Entry";
+        TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary;
+        TempReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary;
+        TempErrorMessage: Record "Error Message" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        LineFields: List of [Text];
+        Line: Text;
+    begin
+        // [SCENARIO 566061] Tax Jurisdiction Location for local vendor.
+        Initialize();
+
+        // [GIVEN] Local vendor with Tax Jurisdiction Location "J".
+        PrepareVATPostingSetupAndLink(VATPostingSetup, BaseAmountConceptNo);
+        LibraryMXDIOT.CreateDIOTVendor(Vendor, VATPostingSetup."VAT Bus. Posting Group", true);
+        LibraryMXDIOT.MockPurchaseVATEntry(VATEntry, VATPostingSetup, WorkDate(), Vendor."No.");
+        UpdateTaxJurisdictionOnVendor(Vendor, LibraryUtility.GenerateGUID());
+
+        // [WHEN] Run DIOT Report
+        DIOTDataManagement.CollectDIOTDataSet(TempDIOTReportBuffer, TempReportVendorBuffer, TempErrorMessage, WorkDate(), WorkDate());
+        DIOTDataManagement.GenerateDIOTFile(TempDIOTReportBuffer, TempReportVendorBuffer, TempBlob);
+
+        // [THEN] Tax Jurisdiction Location is empty for local vendor
+        TempReportVendorBuffer.SetRange("Vendor No.", Vendor."No.");
+        TempReportVendorBuffer.SetRange("Type of Operation", Vendor."DIOT Type of Operation"::Others);
+        TempReportVendorBuffer.FindFirst();
+        Assert.AreEqual('', TempReportVendorBuffer."Tax Jurisdiction Location", 'Tax Jurisdiction Location must be empty for local vendor');
+
+        Line := FindLineInDIOTBlob(TempBlob, Vendor, DIOTDataManagement.GetTypeOfOperationCode(VATEntry."DIOT Type of Operation"::Others));
+        LineFields := Line.Split('|');
+        Assert.AreEqual('', LineFields.Get(6), 'Country/Region Code field must be empty for local vendor');
+        Assert.AreEqual('', LineFields.Get(7), 'Tax Jurisdiction Location field must be empty in DIOT file line');
+    end;
+
+    [Test]
+    procedure TaxJurisdiction_ForeignVendorNotZZZ()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        Vendor: Record Vendor;
+        VATEntry: Record "VAT Entry";
+        TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary;
+        TempReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary;
+        TempErrorMessage: Record "Error Message" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        LineFields: List of [Text];
+        Line: Text;
+    begin
+        // [SCENARIO 566061] Tax Jurisdiction Location for foreign vendor when Country is not ZZZ (Other).
+        Initialize();
+
+        // [GIVEN] Foreign vendor with Country Code "BR" and Tax Jurisdiction Location "J".
+        PrepareVATPostingSetupAndLink(VATPostingSetup, BaseAmountConceptNo);
+        LibraryMXDIOT.CreateDIOTVendor(Vendor, VATPostingSetup."VAT Bus. Posting Group", false);
+        LibraryMXDIOT.MockPurchaseVATEntry(VATEntry, VATPostingSetup, WorkDate(), Vendor."No.");
+        UpdateCountryCodeOnVendor(Vendor, 'BR');
+        UpdateTaxJurisdictionOnVendor(Vendor, LibraryUtility.GenerateGUID());
+
+        // [WHEN] Run DIOT Report
+        DIOTDataManagement.CollectDIOTDataSet(TempDIOTReportBuffer, TempReportVendorBuffer, TempErrorMessage, WorkDate(), WorkDate());
+        DIOTDataManagement.GenerateDIOTFile(TempDIOTReportBuffer, TempReportVendorBuffer, TempBlob);
+
+        // [THEN] Tax Jurisdiction Location is empty for foreign vendor when Country is not ZZZ.
+        TempReportVendorBuffer.SetRange("Vendor No.", Vendor."No.");
+        TempReportVendorBuffer.SetRange("Type of Operation", Vendor."DIOT Type of Operation"::Others);
+        TempReportVendorBuffer.FindFirst();
+        Assert.AreEqual('', TempReportVendorBuffer."Tax Jurisdiction Location", 'Tax Jurisdiction Location must be empty for foreign vendor when Country is not ZZZ');
+
+        Line := FindLineInDIOTBlob(TempBlob, Vendor, DIOTDataManagement.GetTypeOfOperationCode(VATEntry."DIOT Type of Operation"::Others));
+        LineFields := Line.Split('|');
+        Assert.AreEqual('BRA', LineFields.Get(6), 'Country/Region Code field must be ISO-3166-1 Alpha-3 code for Brazil');
+        Assert.AreEqual('', LineFields.Get(7), 'Tax Jurisdiction Location field must be empty in DIOT file line');
+    end;
+
+    [Test]
+    procedure TaxJurisdiction_ForeignVendorZZZ()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        Vendor: Record Vendor;
+        VATEntry: Record "VAT Entry";
+        TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary;
+        TempReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary;
+        TempErrorMessage: Record "Error Message" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        TaxJurisdictionLocation: Text[300];
+        LineFields: List of [Text];
+        Line: Text;
+    begin
+        // [SCENARIO 566061] Tax Jurisdiction Location for foreign vendor when Country is ZZZ (Other).
+        Initialize();
+
+        // [GIVEN] Foreign vendor with Country Code "" and Tax Jurisdiction Location "J".
+        PrepareVATPostingSetupAndLink(VATPostingSetup, BaseAmountConceptNo);
+        LibraryMXDIOT.CreateDIOTVendor(Vendor, VATPostingSetup."VAT Bus. Posting Group", false);
+        UpdateCountryCodeOnVendor(Vendor, '');
+        LibraryMXDIOT.MockPurchaseVATEntry(VATEntry, VATPostingSetup, WorkDate(), Vendor."No.");
+        TaxJurisdictionLocation := LibraryUtility.GenerateGUID();
+        UpdateTaxJurisdictionOnVendor(Vendor, TaxJurisdictionLocation);
+
+        // [WHEN] Run DIOT Report
+        DIOTDataManagement.CollectDIOTDataSet(TempDIOTReportBuffer, TempReportVendorBuffer, TempErrorMessage, WorkDate(), WorkDate());
+        DIOTDataManagement.GenerateDIOTFile(TempDIOTReportBuffer, TempReportVendorBuffer, TempBlob);
+
+        // [THEN] Tax Jurisdiction Location is "J" for foreign vendor when DIOT Country is ZZZ.
+        TempReportVendorBuffer.SetRange("Vendor No.", Vendor."No.");
+        TempReportVendorBuffer.SetRange("Type of Operation", Vendor."DIOT Type of Operation"::Others);
+        TempReportVendorBuffer.FindFirst();
+        Assert.AreEqual(TaxJurisdictionLocation, TempReportVendorBuffer."Tax Jurisdiction Location", 'Tax Jurisdiction Location must not be empty for foreign vendor when Country is ZZZ');
+
+        Line := FindLineInDIOTBlob(TempBlob, Vendor, DIOTDataManagement.GetTypeOfOperationCode(VATEntry."DIOT Type of Operation"::Others));
+        LineFields := Line.Split('|');
+        Assert.AreEqual('ZZZ', LineFields.Get(6), 'Country/Region Code field must be ZZZ');
+        Assert.AreEqual(TaxJurisdictionLocation, LineFields.Get(7), 'Tax Jurisdiction Location field must be on 7th position in DIOT file line');
+    end;
+
+    [Test]
+    procedure TaxEffectsAppliedTrueOnVendor()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        Vendor: Record Vendor;
+        VATEntry: Record "VAT Entry";
+        TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary;
+        TempReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary;
+        TempErrorMessage: Record "Error Message" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        LineFields: List of [Text];
+        Line: Text;
+    begin
+        // [SCENARIO 566061] Tax Effects Applied value in txt file when Vendor has Tax Effects Applied = true.
+        Initialize();
+
+        // [GIVEN] Vendor with Tax Effects Applied = true.
+        PrepareVATPostingSetupAndLink(VATPostingSetup, BaseAmountConceptNo);
+        LibraryMXDIOT.CreateDIOTVendor(Vendor, VATPostingSetup."VAT Bus. Posting Group", true);
+        UpdateTaxEffectsAppliedOnVendor(Vendor, true);
+        LibraryMXDIOT.MockPurchaseVATEntry(VATEntry, VATPostingSetup, WorkDate(), Vendor."No.");
+
+        // [WHEN] Run DIOT Report
+        DIOTDataManagement.CollectDIOTDataSet(TempDIOTReportBuffer, TempReportVendorBuffer, TempErrorMessage, WorkDate(), WorkDate());
+        DIOTDataManagement.GenerateDIOTFile(TempDIOTReportBuffer, TempReportVendorBuffer, TempBlob);
+
+        // [THEN] DIOT file line for vendor has 54th field "01" for Tax Effects Applied.
+        Line := FindLineInDIOTBlob(TempBlob, Vendor, DIOTDataManagement.GetTypeOfOperationCode(VATEntry."DIOT Type of Operation"::Others));
+        LineFields := Line.Split('|');
+        Assert.AreEqual('01', LineFields.Get(54), 'Tax Effects Applied field must be "01" for vendor with Tax Effects Applied = true');
+    end;
+
+    [Test]
+    procedure TaxEffectsAppliedFalseOnVendor()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        Vendor: Record Vendor;
+        VATEntry: Record "VAT Entry";
+        TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary;
+        TempReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary;
+        TempErrorMessage: Record "Error Message" temporary;
+        TempBlob: Codeunit "Temp Blob";
+        LineFields: List of [Text];
+        Line: Text;
+    begin
+        // [SCENARIO 566061] Tax Effects Applied value in txt file when Vendor has Tax Effects Applied = false.
+        Initialize();
+
+        // [GIVEN] Vendor with Tax Effects Applied = false.
+        PrepareVATPostingSetupAndLink(VATPostingSetup, BaseAmountConceptNo);
+        LibraryMXDIOT.CreateDIOTVendor(Vendor, VATPostingSetup."VAT Bus. Posting Group", true);
+        UpdateTaxEffectsAppliedOnVendor(Vendor, false);
+        LibraryMXDIOT.MockPurchaseVATEntry(VATEntry, VATPostingSetup, WorkDate(), Vendor."No.");
+
+        // [WHEN] Run DIOT Report
+        DIOTDataManagement.CollectDIOTDataSet(TempDIOTReportBuffer, TempReportVendorBuffer, TempErrorMessage, WorkDate(), WorkDate());
+        DIOTDataManagement.GenerateDIOTFile(TempDIOTReportBuffer, TempReportVendorBuffer, TempBlob);
+
+        // [THEN] DIOT file line for vendor has 54th field "02" for Tax Effects Applied.
+        Line := FindLineInDIOTBlob(TempBlob, Vendor, DIOTDataManagement.GetTypeOfOperationCode(VATEntry."DIOT Type of Operation"::Others));
+        LineFields := Line.Split('|');
+        Assert.AreEqual('02', LineFields.Get(54), 'Tax Effects Applied field must be "02" for vendor with Tax Effects Applied = false');
+    end;
+
     local procedure Initialize()
+    var
+        DummyDIOTConcept: Record "DIOT Concept";
     begin
         Clear(DIOTDataManagement);
         ClearConceptLinks();
@@ -592,6 +782,10 @@ codeunit 148041 "MX DIOT UT"
         BaseAmountConceptNo := 1;
         VATAmountConceptNo := 3;
         WHTAmountConceptNo := DIOTDataManagement.GetWHTConceptNo();
+        LibraryMXDIOT.UpdateColumnTypeOnConcept(BaseAmountConceptNo, DummyDIOTConcept."Column Type"::"VAT Base");
+        LibraryMXDIOT.UpdateColumnTypeOnConcept(VATAmountConceptNo, DummyDIOTConcept."Column Type"::"VAT Amount");
+        LibraryMXDIOT.UpdateNonDeductiblePctOnConcept(VATAmountConceptNo, 20);
+
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"MX DIOT UT");
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"MX DIOT UT");
@@ -738,6 +932,24 @@ codeunit 148041 "MX DIOT UT"
         Report.Run(Report::"Create DIOT Report");
     end;
 
+    local procedure UpdateCountryCodeOnVendor(var Vendor: Record Vendor; CountryCode: Code[10])
+    begin
+        Vendor.Validate("Country/Region Code", CountryCode);
+        Vendor.Modify(true);
+    end;
+
+    local procedure UpdateTaxJurisdictionOnVendor(var Vendor: Record Vendor; TaxJurisdictionLocation: Text[300])
+    begin
+        Vendor.Validate("Tax Jurisdiction Location", TaxJurisdictionLocation);
+        Vendor.Modify(true);
+    end;
+
+    local procedure UpdateTaxEffectsAppliedOnVendor(var Vendor: Record Vendor; TaxEffectsApplied: Boolean)
+    begin
+        Vendor.Validate("Tax Effects Applied", TaxEffectsApplied);
+        Vendor.Modify(true);
+    end;
+
     local procedure VerifyDIOTFileStructure(var tempBLOB: Codeunit "Temp Blob")
     var
         iStream: InStream;
@@ -746,7 +958,7 @@ codeunit 148041 "MX DIOT UT"
         tempBLOB.CreateInStream(iStream);
         while not iStream.EOS() do begin
             iStream.ReadText(Line);
-            Assert.AreEqual(24, CountCharsInString(Line, '|'), 'DIOT Line must have exactly 24 | separators');
+            Assert.AreEqual(53, CountCharsInString(Line, '|'), 'DIOT Line must have exactly 53 | separators');
         end;
     end;
 
@@ -774,7 +986,6 @@ codeunit 148041 "MX DIOT UT"
             TestField("RFC Number", Vendor."RFC No.");
             TestField("Vendor Name", Vendor.Name);
             TestField("Country/Region Code", DIOTDataMgmt.ConvertToDIOTCountryCode(Vendor."Country/Region Code"));
-            TestField(Nationality, DIOTDataMgmt.GetNationalyForCountryCode("Country/Region Code"));
         end;
     end;
 
@@ -789,7 +1000,6 @@ codeunit 148041 "MX DIOT UT"
             TestField("RFC Number", Vendor."RFC No.");
             TestField("Vendor Name", '');
             TestField("Country/Region Code", '');
-            TestField(Nationality, '');
         end;
     end;
 

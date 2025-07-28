@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+
 /// <summary>
 /// Codeunit Shpfy Customer Init Test (ID 139585).
 /// </summary>
@@ -7,7 +17,7 @@ codeunit 139585 "Shpfy Customer Init Test"
 
     var
 
-        Any: codeunit Any;
+        Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
 
     internal procedure CreateShopifyCustomerAddress() CustomerAddress: Record "Shpfy Customer Address"
@@ -121,7 +131,7 @@ codeunit 139585 "Shpfy Customer Init Test"
     var
 #pragma warning disable AL0435
 #pragma warning disable AA0240
-        GraphQLTxt: Label '{"query":"mutation {customerUpdate(input: {id: \"gid://shopify/Customer/%1\", email: \"!mail@domain.com\", firstName: \"!Firstname\", lastName: \"!Lastname\", phone: \"!111\", addresses: {id: \"gid://shopify/MailingAddress/%2?model_name=CustomerAddress\", company: \"!Company\", firstName: \"!Firstname\", lastName: \"!Lastname\", address1: \"!Address\", address2: \"!Address 2\", zip: \"1111\", city: \"!City\", countryCode: US, phone: \"!111\"}}) {customer {id, tags, updatedAt, verifiedEmail, emailMarketingConsent {consentUpdatedAt marketingState}, defaultAddress {id, province, country}}, userErrors {field, message}}}"}', Comment = '%1 = CustomerId, %2 = CustomerAddressId', Locked = true;
+        GraphQLTxt: Label '{"query":"mutation {customerUpdate(input: {id: \"gid://shopify/Customer/%1\", email: \"!mail@domain.com\", firstName: \"!Firstname\", lastName: \"!Lastname\", phone: \"!111\", addresses: {id: \"gid://shopify/MailingAddress/%2?model_name=CustomerAddress\", company: \"!Company\", firstName: \"!Firstname\", lastName: \"!Lastname\", address1: \"!Address\", address2: \"!Address 2\", zip: \"1111\", city: \"!City\", countryCode: US, phone: \"!111\"}}) {customer {id, tags, updatedAt, verifiedEmail, defaultEmailAddress {marketingState marketingUpdatedAt}, defaultAddress {id, province, country}}, userErrors {field, message}}}"}', Comment = '%1 = CustomerId, %2 = CustomerAddressId', Locked = true;
 #pragma warning restore AA0240
 #pragma warning restore AL0435
     begin
@@ -133,7 +143,7 @@ codeunit 139585 "Shpfy Customer Init Test"
         JCustomer: JsonObject;
 #pragma warning disable AL0435
 #pragma warning disable AA0240
-        JCustomerTxt: Label '{"legacyResourceId":"%1","firstName":"First Name","lastName":"Last Name","email":"Email","phone":"Phone No.","taxExempt":false,"taxExemptions":[],"verifiedEmail":true,"state":"DISABLED","note":null,"createdAt":"2022-04-01T00:00:00Z","updatedAt":"%3T00:00:00Z","tags":[],"emailMarketingConsent":{"consentUpdatedAt":"2022-04-01T00:00:00Z","marketingState":"NOT_SUBSCRIBED"},"addresses":[{"id":"gid:\/\/shopify\/MailingAddress\/%2?model_name=CustomerAddress","company":"Company","firstName":"First Name","lastName":"Last Name","address1":"Address 1","address2":"Address 2","zip":"ZIP","city":"City","countryCodeV2":"US","country":"Country/Region Name","provinceCode":"Province Code","province":"Province Name","phone":"Phone No."}],"defaultAddress":{"id":"gid:\/\/shopify\/MailingAddress\/7065543475272?model_name=CustomerAddress"},"metafields":{"edges":[]}}', Comment = '%1 = CustomerId, %2 = CustomerAddressId, %3 = Date of Update as YYYY-MM-DD', Locked = true;
+        JCustomerTxt: Label '{"legacyResourceId":"%1","firstName":"First Name","lastName":"Last Name","defaultEmailAddress":{"emailAddress":"Email","marketingState":"NOT_SUBSCRIBED","marketingUpdatedAt":"2022-04-01T00:00:00Z"},"defaultPhoneNumber":{"phoneNumber": "Phone No."},"taxExempt":false,"taxExemptions":[],"verifiedEmail":true,"state": "DISABLED","note": null,"createdAt": "2022-04-01T00:00:00Z","updatedAt": "%3T00:00:00Z","tags":[],"addresses":[{"id":"gid:\/\/shopify\/MailingAddress\/%2?model_name=CustomerAddress","company":"Company","firstName":"First Name","lastName":"Last Name","address1":"Address 1","address2":"Address 2","zip":"ZIP","city":"City","countryCodeV2":"US","country":"Country/Region Name","provinceCode":"Province Code","province":"Province Name","phone":"Phone No."}],"defaultAddress":{"id":"gid:\/\/shopify\/MailingAddress\/7065543475272?model_name=CustomerAddress"},"metafields":{"edges":[]}}', Comment = '%1 = CustomerId, %2 = CustomerAddressId, %3 = Date of Update as YYYY-MM-DD', Locked = true;
 #pragma warning restore AA0240
 #pragma warning restore AL0435
     begin

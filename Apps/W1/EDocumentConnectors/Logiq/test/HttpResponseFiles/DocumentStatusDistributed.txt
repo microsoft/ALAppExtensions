@@ -1,0 +1,27 @@
+{
+    "messageId": "f77f441a-ed9e-4066-8974-f82ec5761992",
+    "timestamp": "2024-11-06T11:41:36",
+    "state": "distributed",
+    "channel": null,
+    "documentType": null,
+    "documentNumber": null,
+    "email": null,
+    "ourId": {
+        "source": "e1",
+        "value": "15731753"
+    },
+    "supplier": {
+        "organisationNumber": null,
+        "name": null
+    },
+    "receiver": {
+        "organisationNumber": null,
+        "name": null
+    },
+    "error": {
+        "errorCode": "",
+        "errorMessage": ""
+    },
+    "otherIds": null,
+    "externalId": null
+}

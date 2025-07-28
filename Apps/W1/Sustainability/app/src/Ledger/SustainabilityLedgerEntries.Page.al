@@ -79,6 +79,10 @@ page 6220 "Sustainability Ledger Entries"
                 {
                     ToolTip = 'Specifies the description of the entry.';
                 }
+                field("Energy Source Code"; Rec."Energy Source Code")
+                {
+                    ToolTip = 'Specifies the Energy Source Code of the entry.';
+                }
                 field("Manual Input"; Rec."Manual Input")
                 {
                     ToolTip = 'Specifies whether the amounts are input manually.';
@@ -152,6 +156,10 @@ page 6220 "Sustainability Ledger Entries"
                 field("Waste Intensity"; Rec."Waste Intensity")
                 {
                     ToolTip = 'Specifies the Waste Intensity of the entry.';
+                }
+                field("Energy Consumption"; Rec."Energy Consumption")
+                {
+                    ToolTip = 'Specifies the Energy Consumption.';
                 }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {

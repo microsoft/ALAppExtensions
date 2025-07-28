@@ -10,6 +10,7 @@ using System.TestTools.AITestToolkit;
 codeunit 133575 "Bank Rec. With AI Prompt Inj1"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

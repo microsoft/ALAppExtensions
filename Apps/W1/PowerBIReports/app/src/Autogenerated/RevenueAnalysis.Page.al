@@ -6,9 +6,7 @@ page 37070 "Revenue Analysis"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Revenue Analysis';
     AboutTitle = 'About Revenue Analysis';
     AboutText = 'The Revenue Analysis report breaks down Monthly Recurring Revenue by various dimension such as billing rhythm, contract type or customer.';
@@ -25,7 +23,7 @@ page 37070 "Revenue Analysis"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

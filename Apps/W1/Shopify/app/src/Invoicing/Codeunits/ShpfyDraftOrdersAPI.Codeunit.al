@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Comment;
@@ -175,6 +180,14 @@ codeunit 30159 "Shpfy Draft Orders API"
                 GraphQuery.Append(Format(TempOrderLine."Unit Price", 0, 9));
                 GraphQuery.Append(', currencyCode: ');
                 GraphQuery.Append(GetISOCode(TempOrderHeader."Currency Code"));
+                GraphQuery.Append('}, weight: {value: ');
+                GraphQuery.Append(Format(TempOrderLine.Weight, 0, 9));
+                GraphQuery.Append(', unit: ');
+                if Shop."Weight Unit" = Shop."Weight Unit"::" " then begin
+                    Shop."Weight Unit" := Shop.GetShopWeightUnit();
+                    Shop.Modify();
+                end;
+                GraphQuery.Append(Shop."Weight Unit".Names.Get(Shop."Weight Unit".Ordinals.IndexOf(Shop."Weight Unit".AsInteger())).Trim().ToUpper().Replace(' ', '_'));
                 GraphQuery.Append('}},');
             until TempOrderLine.Next() = 0;
 
