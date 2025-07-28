@@ -15,9 +15,7 @@ permissionset 30100 "Shpfy - Read"
     Assignable = false;
     Caption = 'Shopify - Read', MaxLength = 30;
 
-    IncludedPermissionSets = "Shpfy - Objects";
-
-    Permissions =
+    IncludedPermissionSets = "Shpfy - Objects";    Permissions =
         tabledata "Shpfy Bulk Operation" = R,
         tabledata "Shpfy Catalog" = R,
         tabledata "Shpfy Catalog Price" = R,
@@ -31,9 +29,9 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Data Capture" = R,
         tabledata "Shpfy Dispute" = R,
         tabledata "Shpfy Doc. Link To Doc." = R,
-        tabledata "Shpfy Fulfillment Line" = R,
         tabledata "Shpfy FulFillment Order Header" = R,
         tabledata "Shpfy FulFillment Order Line" = R,
+        tabledata "Shpfy Fulfillment Line" = R,
         tabledata "Shpfy Gift Card" = R,
         tabledata "Shpfy Initial Import Line" = r,
         tabledata "Shpfy Inventory Item" = R,
@@ -50,9 +48,9 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Order Payment Gateway" = R,
         tabledata "Shpfy Order Risk" = R,
         tabledata "Shpfy Order Shipping Charges" = R,
-        tabledata "Shpfy Orders To Import" = R,
         tabledata "Shpfy Order Tax Line" = R,
         tabledata "Shpfy Order Transaction" = R,
+        tabledata "Shpfy Orders To Import" = R,
         tabledata "Shpfy Payment Method Mapping" = R,
         tabledata "Shpfy Payment Terms" = R,
         tabledata "Shpfy Payment Transaction" = R,

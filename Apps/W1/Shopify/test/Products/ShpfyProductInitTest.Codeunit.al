@@ -28,6 +28,7 @@ codeunit 139603 "Shpfy Product Init Test"
     var
         Any: Codeunit Any;
         LastItemNo: Code[20];
+        DisableEventMocking: Boolean;
 
     internal procedure CreateGenProdPostingGroup(Code: Code[20]) GenProdPostingGroup: Record "Gen. Product Posting Group";
     begin
@@ -71,6 +72,8 @@ codeunit 139603 "Shpfy Product Init Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ItemTemplateCode: Code[20];
     begin
+        if DisableEventMocking then
+            InitializeTest.SetDisableEventMocking();
         Shop := InitializeTest.CreateShop();
         ItemTemplateCode := Shop."Item Templ. Code";
         exit(CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2), WithVariants));
@@ -409,5 +412,13 @@ codeunit 139603 "Shpfy Product Init Test"
             exit(ShopifyVariant.Id + 1)
         else
             exit(10000);
+    end;
+
+    /// <summary>
+    /// Sets the DisableEventMocking flag to true.
+    /// </summary>
+    internal procedure SetDisableEventMocking()
+    begin
+        this.DisableEventMocking := true;
     end;
 }

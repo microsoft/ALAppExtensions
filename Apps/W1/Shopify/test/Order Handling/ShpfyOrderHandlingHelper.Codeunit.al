@@ -241,6 +241,8 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JLocation: JsonObject;
         GidLbl: Label 'gid://shopify/LineItem/%1', Locked = true, Comment = '%1 = Line Id';
     begin
+        if DisableEventMocking then
+            ProductInitTest.SetDisableEventMocking();
         Item := ProductInitTest.CreateItem();
         Item.SetRecFilter();
         CreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant, TempTag);
@@ -470,5 +472,13 @@ codeunit 139607 "Shpfy Order Handling Helper"
         ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
         ShopifyCompany.Modify();
         exit(ShopifyCompany.Id);
+    end;
+
+    /// <summary>
+    /// Sets the DisableEventMocking flag to true.
+    /// </summary>
+    internal procedure SetDisableEventMocking()
+    begin
+        this.DisableEventMocking := true;
     end;
 }

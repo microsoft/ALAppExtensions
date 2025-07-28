@@ -39,6 +39,7 @@ codeunit 139561 "Shpfy Initialize Test"
         DummyCustomerEmailLbl: Label 'dummy@customer.com';
 #pragma warning restore AA0240
         DummyItemDescriptionLbl: Label 'Dummy Item Description';
+        DisableEventMocking: Boolean;
 
     trigger OnRun()
     begin
@@ -94,7 +95,10 @@ codeunit 139561 "Shpfy Initialize Test"
         if Shop.Insert() then;
         Commit();
         CommunicationMgt.SetShop(Shop);
-        CommunicationMgt.SetTestInProgress(true);
+        if DisableEventMocking then
+            CommunicationMgt.SetTestInProgress(false)
+        else
+            CommunicationMgt.SetTestInProgress(true);
         CreateDummyCustomer(CustomerTemplateCode);
         CreateDummyItem(ItemTemplateCode);
         if not TempShop.Get(Code) then begin
@@ -421,5 +425,30 @@ codeunit 139561 "Shpfy Initialize Test"
         ShippingChargesGLAccount.Modify(false);
         CreateVATPostingSetup(PostingGroupCode, ShippingChargesGLAccount."VAT Prod. Posting Group");
         exit(ShippingChargesGLAccount."No.");
+    end;
+
+    internal procedure RegisterAccessTokenForShop(Store: Text; AccessToken: SecretText)
+    var
+        RegisteredStoreNew: Record "Shpfy Registered Store New";
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_files,write_merchant_managed_fulfillment_orders,write_fulfillments,write_inventory,read_locations,write_products,write_shipping,read_shopify_payments_disputes,read_shopify_payments_payouts,write_returns,write_translations,write_third_party_fulfillment_orders,write_order_edits,write_companies,write_publications,write_payment_terms,write_draft_orders,read_locales,read_shopify_payments_accounts,read_markets', Locked = true;
+    begin
+        Store := Store.ToLower();
+        if not RegisteredStoreNew.Get(Store) then begin
+            RegisteredStoreNew.Init();
+            RegisteredStoreNew.Store := CopyStr(Store, 1, MaxStrLen(RegisteredStoreNew.Store));
+            RegisteredStoreNew.Insert();
+        end;
+        RegisteredStoreNew."Requested Scope" := ScopeTxt;
+        RegisteredStoreNew."Actual Scope" := ScopeTxt;
+        RegisteredStoreNew.Modify();
+        RegisteredStoreNew.SetAccessToken(AccessToken);
+    end;
+
+    /// <summary>
+    /// Sets the DisableEventMocking flag to true.
+    /// </summary>
+    internal procedure SetDisableEventMocking()
+    begin
+        this.DisableEventMocking := true;
     end;
 }
