@@ -14,6 +14,7 @@ using Microsoft.Sustainability.Ledger;
 codeunit 148211 "Sust. Job Journal Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -34,7 +39,7 @@ report 30107 "Shpfy Sync Images"
                 field(ProductFilter; ProductFilterTxt)
                 {
                     Caption = 'Items to sync';
-                    Tooltip = 'Items to sync';
+                    Tooltip = 'Specifies the items to sync';
                     Visible = false;
                     ApplicationArea = All;
                 }

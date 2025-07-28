@@ -1,6 +1,7 @@
 codeunit 135081 "Base64 Decoding / Encoding"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -85,7 +90,7 @@ codeunit 30189 "Shpfy Variant API"
 
     internal procedure AddProductVariants(var ShopifyVariant: Record "Shpfy Variant" temporary; ProductId: BigInteger; Strategy: Enum "Shpfy Variant Create Strategy")
     var
-        NewShopifyVariant: Record "Shpfy Variant" temporary;
+        TempNewShopifyVariant: Record "Shpfy Variant" temporary;
         InventoryQuantities: Text;
         GraphQuery: TextBuilder;
         VariantGraphQuery: TextBuilder;
@@ -107,18 +112,18 @@ codeunit 30189 "Shpfy Variant API"
                 VariantGraphQuery := GetVariantGraphQuery(ShopifyVariant, InventoryQuantities);
                 if GraphQuery.Length() + VariantGraphQuery.Length() + StrLen(ReturnQuery) < CommunicationMgt.GetGraphQueryLengthThreshold() then begin
                     GraphQuery.Append(VariantGraphQuery.ToText() + ', ');
-                    NewShopifyVariant := ShopifyVariant;
-                    NewShopifyVariant.Insert();
+                    TempNewShopifyVariant := ShopifyVariant;
+                    TempNewShopifyVariant.Insert();
                 end else begin
                     GraphQuery.Remove(GraphQuery.Length - 1, 2);
                     GraphQuery.Append(ReturnQuery);
                     JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
                     if JsonHelper.GetJsonArray(JResponse, JVariants, 'data.productVariantsBulkCreate.productVariants') then
-                        CreateNewVariants(JVariants, NewShopifyVariant, ProductId);
+                        CreateNewVariants(JVariants, TempNewShopifyVariant, ProductId);
 
-                    NewShopifyVariant.DeleteAll();
-                    NewShopifyVariant := ShopifyVariant;
-                    NewShopifyVariant.Insert();
+                    TempNewShopifyVariant.DeleteAll();
+                    TempNewShopifyVariant := ShopifyVariant;
+                    TempNewShopifyVariant.Insert();
                     GraphQuery.Clear();
                     GraphQuery.Append('{"query":"mutation { productVariantsBulkCreate(productId: \"gid://shopify/Product/');
                     GraphQuery.Append(Format(ProductId));
@@ -133,7 +138,7 @@ codeunit 30189 "Shpfy Variant API"
 
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
             if JsonHelper.GetJsonArray(JResponse, JVariants, 'data.productVariantsBulkCreate.productVariants') then
-                CreateNewVariants(JVariants, NewShopifyVariant, ProductId);
+                CreateNewVariants(JVariants, TempNewShopifyVariant, ProductId);
         end;
     end;
 
@@ -338,7 +343,7 @@ codeunit 30189 "Shpfy Variant API"
     begin
         if JVariants.Count = 0 then
             exit;
-
+        Index := 0;
         ShopifyVariant.FindSet();
         repeat
             if JVariants.Get(Index, JVariant) then

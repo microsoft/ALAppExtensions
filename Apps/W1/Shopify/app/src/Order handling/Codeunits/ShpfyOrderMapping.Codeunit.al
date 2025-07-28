@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Foundation.Address;
@@ -140,6 +145,7 @@ codeunit 30163 "Shpfy Order Mapping"
         CompanyMapping: Codeunit "Shpfy Company Mapping";
         CustomerTemplateCode: Code[20];
         IsHandled: Boolean;
+        MappedFromLocation: Boolean;
     begin
         CustomerTemplateCode := OrderHeader."Customer Templ. Code";
 
@@ -148,10 +154,12 @@ codeunit 30163 "Shpfy Order Mapping"
             OrderEvents.OnBeforeMapCompany(OrderHeader, IsHandled);
             if not IsHandled then begin
                 if OrderHeader."Company Location Id" <> 0 then
-                    if not MapSellToBillToCustomersFromCompanyLocation(OrderHeader) then begin
-                        OrderHeader."Sell-to Customer No." := CompanyMapping.DoMapping(OrderHeader."Company Id", CustomerTemplateCode, AllowCreateCompany);
-                        OrderHeader."Bill-to Customer No." := OrderHeader."Sell-to Customer No.";
-                    end;
+                    MappedFromLocation := MapSellToBillToCustomersFromCompanyLocation(OrderHeader);
+
+                if not MappedFromLocation then begin
+                    OrderHeader."Sell-to Customer No." := CompanyMapping.DoMapping(OrderHeader."Company Id", CustomerTemplateCode, AllowCreateCompany);
+                    OrderHeader."Bill-to Customer No." := OrderHeader."Sell-to Customer No.";
+                end;
 
                 if (OrderHeader."Bill-to Customer No." = '') and (not Shop."Auto Create Unknown Customers") and (Shop."Default Company No." <> '') then
                     OrderHeader."Bill-to Customer No." := Shop."Default Company No.";

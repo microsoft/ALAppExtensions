@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -61,16 +66,18 @@ permissionset 30104 "Shpfy - Objects"
         table "Shpfy Shop Inventory" = X,
         table "Shpfy Shop Location" = X,
         table "Shpfy Skipped Record" = X,
+        table "Shpfy Staff Member" = X,
         table "Shpfy Suggest Payment" = X,
         table "Shpfy Synchronization Info" = X,
         table "Shpfy Tag" = X,
         table "Shpfy Tax Area" = X,
-        table "Shpfy Translation" = X,
         table "Shpfy Transaction Gateway" = X,
+        table "Shpfy Translation" = X,
         table "Shpfy Variant" = X,
         report "Shpfy Add Company to Shopify" = X,
-        report "Shpfy Add Cust. as Locations" = X,
+        report "Shpfy Add Cust. As Locations" = X,
         report "Shpfy Add Customer to Shopify" = X,
+        report "Shpfy Add Item As Variant" = X,
         report "Shpfy Add Item to Shopify" = X,
         report "Shpfy Create Location Filter" = X,
         report "Shpfy Create Sales Orders" = X,
@@ -143,9 +150,9 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL AddProductImage" = X,
         codeunit "Shpfy GQL AllCustomerIds" = X,
         codeunit "Shpfy GQL ApiKey" = X,
+        codeunit "Shpfy GQL BulkOpMutation" = X,
         codeunit "Shpfy GQL BulkOperation" = X,
         codeunit "Shpfy GQL BulkOperations" = X,
-        codeunit "Shpfy GQL BulkOpMutation" = X,
         codeunit "Shpfy GQL CatalogPrices" = X,
         codeunit "Shpfy GQL CatalogProducts" = X,
         codeunit "Shpfy GQL Catalogs" = X,
@@ -184,6 +191,7 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL Get Next S. Channels" = X,
         codeunit "Shpfy GQL Get SalesChannels" = X,
         codeunit "Shpfy GQL GetProductImage" = X,
+        codeunit "Shpfy GQL GetStaffMembers" = X,
         codeunit "Shpfy GQL GetWebhookSubs" = X,
         codeunit "Shpfy GQL InventoryActivate" = X,
         codeunit "Shpfy GQL InventoryEntries" = X,
@@ -221,10 +229,11 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL NextRefundShipLines" = X,
         codeunit "Shpfy GQL NextReturnLines" = X,
         codeunit "Shpfy GQL NextShipmentLines" = X,
+        codeunit "Shpfy GQL NextStaffMembers" = X,
         codeunit "Shpfy GQL NextVariantIds" = X,
         codeunit "Shpfy GQL NextVariantImages" = X,
-        codeunit "Shpfy GQL OpenFulfillmOrders" = X,
         codeunit "Shpfy GQL OpenFulfillmOrdLines" = X,
+        codeunit "Shpfy GQL OpenFulfillmOrders" = X,
         codeunit "Shpfy GQL OpenOrdersToImport" = X,
         codeunit "Shpfy GQL OrderCancel" = X,
         codeunit "Shpfy GQL OrderFulfillment" = X,
@@ -355,6 +364,7 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy Shipping Methods" = X,
         codeunit "Shpfy Shop Mgt." = X,
         codeunit "Shpfy Skipped Record" = X,
+        codeunit "Shpfy Staff Member API" = X,
         codeunit "Shpfy Suggest Payments" = X,
         codeunit "Shpfy Suppress Asm Warning" = X,
         codeunit "Shpfy Sync Catalog Prices" = X,
@@ -445,6 +455,7 @@ permissionset 30104 "Shpfy - Objects"
         page "Shpfy Shop Selection" = X,
         page "Shpfy Shops" = X,
         page "Shpfy Skipped Records" = X,
+        page "Shpfy Staff Mapping" = X,
         page "Shpfy Tag Factbox" = X,
         page "Shpfy Tags" = X,
         page "Shpfy Tax Areas" = X,

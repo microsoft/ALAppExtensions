@@ -204,9 +204,8 @@ page 6181 "E-Document Purchase Draft"
                 ApplicationArea = All;
                 Caption = 'Documents';
                 UpdatePropagation = Both;
-                SubPageLink = "Table ID" = const(Database::"E-Document"),
-                            "E-Document Entry No." = field("Entry No"),
-                            "E-Document Attachment" = const(true);
+                SubPageLink = "E-Document Entry No." = field("Entry No"),
+                              "E-Document Attachment" = const(true);
             }
             part(InboundEDocPicture; "Inbound E-Doc. Picture")
             {
@@ -377,6 +376,9 @@ page 6181 "E-Document Purchase Draft"
         HasErrors := false;
         PageEditable := IsEditable();
         EDocumentNotification.SendPurchaseDocumentDraftNotifications(Rec."Entry No");
+
+        if Rec."Entry No" <> 0 then
+            Rec.SetRecFilter(); // Filter the record to only this instance to avoid navigation 
     end;
 
     local procedure IsEditable(): Boolean

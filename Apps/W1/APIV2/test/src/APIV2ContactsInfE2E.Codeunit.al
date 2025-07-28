@@ -3,6 +3,7 @@ codeunit 139853 "APIV2 - Contacts Inf. E2E"
     // version Test,W1,All
 
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

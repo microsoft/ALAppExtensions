@@ -47,6 +47,10 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
             begin
                 if not VATReportingDateMgt.IsVATDateEnabled() then
                     TestField("VAT Reporting Date", "Posting Date");
+                if Rec."VAT Reporting Date" = 0D then
+                    if (xRec."Document Date" <> Rec."Document Date") and (Rec."Document Type" = Rec."Document Type"::Quote) then
+                        Rec."VAT Reporting Date" := Rec."Document Date";
+
                 CheckCurrencyExchangeRateCZL("VAT Reporting Date");
 
                 NeedUpdateVATCurrencyFactor := ("Currency Code" <> '') and ("VAT Reporting Date" <> xRec."VAT Reporting Date");

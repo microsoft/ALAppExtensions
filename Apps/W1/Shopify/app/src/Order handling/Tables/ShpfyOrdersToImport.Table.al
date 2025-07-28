@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.Reflection;
@@ -121,6 +126,8 @@ table 30121 "Shpfy Orders to Import"
             Caption = 'Order Amount';
             DataClassification = CustomerContent;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
 
         field(16; "Currency Code"; Code[10])
@@ -198,13 +205,17 @@ table 30121 "Shpfy Orders to Import"
         {
             Caption = 'VAT Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(29; "Presentment VAT Amount"; Decimal)
         {
             Caption = 'Presentment VAT Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
-        field(100; "Import Action"; enum "Shpfy Import Action")
+        field(100; "Import Action"; Enum "Shpfy Import Action")
         {
             Caption = 'Import Action';
             DataClassification = CustomerContent;

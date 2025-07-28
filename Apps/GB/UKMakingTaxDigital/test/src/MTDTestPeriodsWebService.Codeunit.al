@@ -6,6 +6,7 @@
 codeunit 148084 "MTDTestPeriodsWebService"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

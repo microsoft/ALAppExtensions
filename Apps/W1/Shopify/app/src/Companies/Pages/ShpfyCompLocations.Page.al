@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Customer;
@@ -65,7 +70,7 @@ page 30165 "Shpfy Comp. Locations"
 
                 trigger OnAction()
                 var
-                    AddCustomerAsLocation: Report "Shpfy Add Cust. as Locations";
+                    AddCustomerAsLocation: Report "Shpfy Add Cust. As Locations";
                     ParentCompanySystemId: Guid;
                 begin
                     Evaluate(ParentCompanySystemId, Rec.GetFilter("Company SystemId"));
@@ -73,6 +78,13 @@ page 30165 "Shpfy Comp. Locations"
                     AddCustomerAsLocation.SetParentCompany(ParentCompanySystemId);
                     AddCustomerAsLocation.Run();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(AddCustomersAsLocations_Promoted; AddCustomersAsLocations) { }
             }
         }
     }

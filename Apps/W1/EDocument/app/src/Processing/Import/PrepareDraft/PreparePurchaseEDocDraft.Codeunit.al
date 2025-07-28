@@ -8,6 +8,7 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.Foundation.UOM;
+using System.Log;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using System.AI;
@@ -29,6 +30,8 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         EDocVendorAssignmentHistory: Record "E-Doc. Vendor Assign. History";
         EDocPurchaseLineHistory: Record "E-Doc. Purchase Line History";
         EDocPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
+        DeferralActivityLog: Codeunit "Activity Log Builder";
+        AccountNumberActivityLog: Codeunit "Activity Log Builder";
         IUnitOfMeasureProvider: Interface IUnitOfMeasureProvider;
         IPurchaseLineProvider: Interface IPurchaseLineProvider;
         IPurchaseOrderProvider: Interface IPurchaseOrderProvider;
@@ -71,9 +74,14 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
                 IPurchaseLineProvider.GetPurchaseLine(EDocumentPurchaseLine);
 
                 if EDocPurchaseHistMapping.FindRelatedPurchaseLineInHistory(EDocumentPurchaseHeader."[BC] Vendor No.", EDocumentPurchaseLine, EDocPurchaseLineHistory) then
-                    EDocPurchaseHistMapping.UpdateMissingLineValuesFromHistory(EDocPurchaseLineHistory, EDocumentPurchaseLine);
+                    EDocPurchaseHistMapping.UpdateMissingLineValuesFromHistory(EDocPurchaseLineHistory, EDocumentPurchaseLine, DeferralActivityLog, AccountNumberActivityLog);
 
                 EDocumentPurchaseLine.Modify();
+
+                if EDocPurchaseHistMapping.GetAccountNumberSetInLine() then
+                    AccountNumberActivityLog.Log();
+                if EDocPurchaseHistMapping.GetDeferralSetInLine() then
+                    DeferralActivityLog.Log();
             until EDocumentPurchaseLine.Next() = 0;
 
         // Ask Copilot to try to find fields that are suited to be matched

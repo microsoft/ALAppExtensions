@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -26,9 +31,9 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Data Capture" = IMD,
         tabledata "Shpfy Dispute" = IMD,
         tabledata "Shpfy Doc. Link To Doc." = IMD,
-        tabledata "Shpfy Fulfillment Line" = IMD,
         tabledata "Shpfy FulFillment Order Header" = IMD,
         tabledata "Shpfy FulFillment Order Line" = IMD,
+        tabledata "Shpfy Fulfillment Line" = IMD,
         tabledata "Shpfy Gift Card" = IMD,
         tabledata "Shpfy Initial Import Line" = imd,
         tabledata "Shpfy Inventory Item" = IMD,
@@ -36,11 +41,6 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Language" = IMD,
         tabledata "Shpfy Log Entry" = IMD,
         tabledata "Shpfy Metafield" = IMD,
-        tabledata "Shpfy Refund Header" = IMD,
-        tabledata "Shpfy Refund Line" = IMD,
-        tabledata "Shpfy Refund Shipping Line" = IMD,
-        tabledata "Shpfy Return Header" = IMD,
-        tabledata "Shpfy Return Line" = IMD,
         tabledata "Shpfy Order Attribute" = IMD,
         tabledata "Shpfy Order Disc.Appl." = IMD,
         tabledata "Shpfy Order Fulfillment" = IMD,
@@ -50,15 +50,20 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Order Payment Gateway" = IMD,
         tabledata "Shpfy Order Risk" = IMD,
         tabledata "Shpfy Order Shipping Charges" = IMD,
-        tabledata "Shpfy Orders To Import" = IMD,
         tabledata "Shpfy Order Tax Line" = IMD,
         tabledata "Shpfy Order Transaction" = IMD,
+        tabledata "Shpfy Orders To Import" = IMD,
         tabledata "Shpfy Payment Method Mapping" = IMD,
         tabledata "Shpfy Payment Terms" = IMD,
         tabledata "Shpfy Payment Transaction" = IMD,
         tabledata "Shpfy Payout" = IMD,
         tabledata "Shpfy Product" = IMD,
+        tabledata "Shpfy Refund Header" = IMD,
+        tabledata "Shpfy Refund Line" = IMD,
+        tabledata "Shpfy Refund Shipping Line" = IMD,
         tabledata "Shpfy Registered Store New" = imd,
+        tabledata "Shpfy Return Header" = IMD,
+        tabledata "Shpfy Return Line" = IMD,
         tabledata "Shpfy Sales Channel" = IMD,
         tabledata "Shpfy Shipment Method Mapping" = IMD,
         tabledata "Shpfy Shop" = IMD,
@@ -66,6 +71,7 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Shop Inventory" = IMD,
         tabledata "Shpfy Shop Location" = IMD,
         tabledata "Shpfy Skipped Record" = IMD,
+        tabledata "Shpfy Staff Member" = IMD,
         tabledata "Shpfy Synchronization Info" = IMD,
         tabledata "Shpfy Tag" = IMD,
         tabledata "Shpfy Tax Area" = IMD,

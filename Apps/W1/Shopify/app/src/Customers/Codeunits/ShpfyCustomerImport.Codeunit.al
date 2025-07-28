@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -45,7 +50,7 @@ codeunit 30117 "Shpfy Customer Import"
         Shop: Record "Shpfy Shop";
         CustomerApi: Codeunit "Shpfy Customer API";
         AllowCreate: Boolean;
-        TemplateCode: Code[10];
+        TemplateCode: Code[20];
 
     /// <summary> 
     /// Get Customer.
@@ -83,10 +88,10 @@ codeunit 30117 "Shpfy Customer Import"
     /// <summary> 
     /// Set Customer.
     /// </summary>
-    /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
-    internal procedure SetCustomer(ShopifyCustomer: Record "Shpfy Customer")
+    /// <param name="Customer">Parameter of type Record "Shopify Customer".</param>
+    internal procedure SetCustomer(Customer: Record "Shpfy Customer")
     begin
-        SetCustomer(ShopifyCustomer.Id);
+        SetCustomer(Customer.Id);
     end;
 
     /// <summary> 
@@ -113,8 +118,8 @@ codeunit 30117 "Shpfy Customer Import"
     /// <summary> 
     /// Set Template Code.
     /// </summary>
-    /// <param name="Code">Parameter of type Code[10].</param>
-    internal procedure SetTemplateCode(Code: Code[10])
+    /// <param name="Code">Parameter of type Code[20].</param>
+    internal procedure SetTemplateCode(Code: Code[20])
     begin
         TemplateCode := Code;
     end;

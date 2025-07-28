@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Document;
@@ -32,6 +37,8 @@ table 30133 "Shpfy Order Transaction"
             Caption = 'Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency;
         }
         field(4; Type; Enum "Shpfy Transaction Type")
         {
@@ -162,6 +169,8 @@ table 30133 "Shpfy Order Transaction"
             Caption = 'Rounding Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency;
         }
         field(25; "Rounding Currency"; Code[20])
         {

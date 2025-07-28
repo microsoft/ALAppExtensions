@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Customer;
@@ -12,7 +17,7 @@ codeunit 30286 "Shpfy Company API"
 
     var
         Shop: Record "Shpfy Shop";
-        ShopifyCompany: Record "Shpfy Company";
+        Company: Record "Shpfy Company";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
         MetafieldAPI: Codeunit "Shpfy Metafield API";
@@ -49,7 +54,7 @@ codeunit 30286 "Shpfy Company API"
             exit(false);
     end;
 
-    internal procedure UpdateCompany(var ShopifyCompany: Record "Shpfy Company"; var CompanyLocation: Record "Shpfy Company Location")
+    internal procedure UpdateCompany(var ShopifyCompany: Record "Shpfy Company")
     var
         JItem: JsonToken;
         JResponse: JsonToken;
@@ -67,7 +72,13 @@ codeunit 30286 "Shpfy Company API"
                     ShopifyCompany."Updated At" := JsonHelper.GetValueAsDateTime(JItem, 'updatedAt');
                 end;
         end;
+    end;
 
+    internal procedure UpdateCompanyLocation(var CompanyLocation: Record "Shpfy Company Location")
+    var
+        GraphQuery: Text;
+        JResponse: JsonToken;
+    begin
         GraphQuery := CreateGraphQueryUpdateLocation(CompanyLocation);
         if GraphQuery <> '' then
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
@@ -78,9 +89,9 @@ codeunit 30286 "Shpfy Company API"
 
     internal procedure SetShop(Shop: Record "Shpfy Shop")
     begin
-        this.Shop := Shop;
-        CommunicationMgt.SetShop(Shop);
-        MetafieldAPI.SetShop(Shop);
+        this.Shop := ShopifyShop;
+        CommunicationMgt.SetShop(ShopifyShop);
+        MetafieldAPI.SetShop(ShopifyShop);
     end;
 
     local procedure AddFieldToGraphQuery(var GraphQuery: TextBuilder; FieldName: Text; ValueAsVariant: Variant): Boolean
@@ -425,12 +436,12 @@ codeunit 30286 "Shpfy Company API"
             SkippedRecord.LogSkippedRecord(Customer.RecordId, StrSubstNo(CustomerAlreadyExportedLocationLbl, Customer."No."), Shop);
             exit;
         end;
-        CreateCustomerAsCompanyLocation(Customer, this.ShopifyCompany);
+        CreateCustomerAsCompanyLocation(Customer, this.Company);
     end;
 
     internal procedure SetCompany(ShopifyCompany: Record "Shpfy Company")
     begin
-        this.ShopifyCompany := ShopifyCompany;
+        this.Company := ShopifyCompany;
     end;
 
     /// <summary>
@@ -454,56 +465,52 @@ codeunit 30286 "Shpfy Company API"
     var
         CompanyLocation: Record "Shpfy Company Location";
         CompanyExport: Codeunit "Shpfy Company Export";
-        GraphQLType: Enum "Shpfy GraphQL Type";
-        Parameters: Dictionary of [Text, Text];
+        GraphQuery: TextBuilder;
         JResponse: JsonToken;
         JCompanyLocation: JsonToken;
+        CompanyIdTxt: Label 'gid://shopify/Company/%1', Comment = '%1 = Company Id', Locked = true;
+        PaymentTermsTemplateIdTxt: Label 'gid://shopify/PaymentTermsTemplate/%1', Comment = '%1 = Payment Terms Template Id', Locked = true;
     begin
         CompanyExport.SetShop(this.Shop);
-        CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation);
+        CompanyExport.FillInShopifyCompanyLocation(Customer, CompanyLocation);
 
-        GraphQLType := "Shpfy GraphQL Type"::CreateCompanyLocation;
+        GraphQuery.Append('{"query": "mutation { companyLocationCreate( companyId: \"' + StrSubstNo(CompanyIdTxt, ShopifyCompany.Id) + '\", input: {');
 
-        Parameters.Add('CompanyId', Format(ShopifyCompany.Id));
+        if ShopifyCompany."External Id" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'externalId', ShopifyCompany."External Id");
+        if CompanyLocation.Name <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'name', CompanyLocation.Name);
+        if CompanyLocation."Phone No." <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'phone', CompanyLocation."Phone No.");
+        if CompanyLocation."Tax Registration Id" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'taxRegistrationId', CompanyLocation."Tax Registration Id");
+        GraphQuery.Append('taxExempt: false, billingSameAsShipping: true, shippingAddress: {');
+        if CompanyLocation.Address <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'address1', CompanyLocation.Address);
+        if CompanyLocation."Address 2" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'address2', CompanyLocation."Address 2");
+        if CompanyLocation.City <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'city', CompanyLocation.City);
+        if CompanyLocation."Country/Region Code" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
+        if CompanyLocation."Phone No." <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'phone', CompanyLocation."Phone No.");
+        if CompanyLocation."Province Code" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
+        if CompanyLocation.Zip <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'zip', CompanyLocation.Zip);
+        if CompanyLocation.Recipient <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'recipient', CompanyLocation.Recipient);
+        GraphQuery.Append('}, buyerExperienceConfiguration: { checkoutToDraft: false, editableShippingAddress: false, ');
+        if CompanyLocation."Shpfy Payment Terms Id" <> 0 then
+            AddFieldToGraphQuery(GraphQuery, 'paymentTermsTemplateId', StrSubstNo(PaymentTermsTemplateIdTxt, CompanyLocation."Shpfy Payment Terms Id"));
+        GraphQuery.Remove(GraphQuery.Length - 1, 2);
+        GraphQuery.Append('}}) { companyLocation { id name billingAddress { address1 address2 city countryCode phone province recipient zip zoneCode } ');
+        GraphQuery.Append('shippingAddress { address1 address2 city countryCode phone province recipient zip zoneCode } ');
+        GraphQuery.Append('buyerExperienceConfiguration { paymentTermsTemplate { id } checkoutToDraft editableShippingAddress } taxRegistrationId taxExemptions } ');
+        GraphQuery.Append('userErrors { field message } } }"}');
 
-        // Location input parameters (in documented order)
-        Parameters.Add('BillingSameAsShipping', Format(false, 0, 9));
-        Parameters.Add('ExternalId', Format(ShopifyCompany."External Id"));
-        // Locale
-        Parameters.Add('Name', Format(CompanyLocation.Name));
-        Parameters.Add('Phone', Format(CompanyLocation."Phone No."));
-        // Note
-        Parameters.Add('TaxExempt', Format(false, 0, 9));
-        // taxExemptions
-        Parameters.Add('TaxRegistrationId', Format(CompanyLocation."Tax Registration Id"));
-
-        // Billing address parameters
-        Parameters.Add('BillingAddress1', Format(CompanyLocation.Address));
-        Parameters.Add('BillingAddress2', Format(CompanyLocation."Address 2"));
-        Parameters.Add('BillingCity', Format(CompanyLocation.City));
-        Parameters.Add('BillingCountryCode', Format(CompanyLocation."Country/Region Code"));
-        Parameters.Add('BillingFirstName', Format(Customer.Name));
-        Parameters.Add('BillingPhone', Format(CompanyLocation."Phone No."));
-        Parameters.Add('BillingZoneCode', Format(CompanyLocation."Province Code"));
-        Parameters.Add('BillingZip', Format(CompanyLocation.Zip));
-
-        // Shipping address parameters (same as billing when billingSameAsShipping is true)
-        Parameters.Add('ShippingAddress1', Format(CompanyLocation.Address));
-        Parameters.Add('ShippingAddress2', Format(CompanyLocation."Address 2"));
-        Parameters.Add('ShippingCity', Format(CompanyLocation.City));
-        Parameters.Add('ShippingCountryCode', Format(CompanyLocation."Country/Region Code"));
-        Parameters.Add('ShippingFirstName', Format(Customer.Name));
-        Parameters.Add('ShippingPhone', Format(CompanyLocation."Phone No."));
-        Parameters.Add('ShippingZoneCode', Format(CompanyLocation."Province Code"));
-        Parameters.Add('ShippingZip', Format(CompanyLocation.Zip));
-
-        // Buyer experience configuration
-        Parameters.Add('CheckoutToDraft', Format(false, 0, 9));
-        // Percentage
-        Parameters.Add('EditableShippingAddress', Format(false, 0, 9));
-        Parameters.Add('PaymentTermsTemplateId', Format(CompanyLocation."Shpfy Payment Terms Id"));
-
-        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
         if JResponse.SelectToken('$.data.companyLocationCreate.companyLocation', JCompanyLocation) then
             if not JsonHelper.IsTokenNull(JCompanyLocation) then
                 CreateCustomerLocation(JCompanyLocation.AsObject(), ShopifyCompany, Customer.SystemId);

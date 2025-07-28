@@ -18,6 +18,7 @@ codeunit 139780 "Integration Tests"
 {
 
     Subtype = Test;
+    TestType = IntegrationTest;
     Permissions = tabledata "Logiq Connection Setup" = rimd,
                   tabledata "Logiq Connection User Setup" = rimd,
                   tabledata "E-Document" = rd;

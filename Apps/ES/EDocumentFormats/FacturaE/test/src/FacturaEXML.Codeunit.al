@@ -15,6 +15,8 @@ using System.Utilities;
 codeunit 148001 "Factura-E XML"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
+    RequiredTestIsolation = Disabled;
 
     var
         Assert: Codeunit Assert;

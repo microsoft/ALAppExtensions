@@ -3,6 +3,7 @@ namespace Microsoft.EServices.EDocumentConnector.Continia;
 codeunit 148205 "Continia Api Comm. Unit Tests"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestHttpRequestPolicy = AllowOutboundFromHandler;
     Access = Internal;
 

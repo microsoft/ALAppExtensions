@@ -4,6 +4,7 @@ codeunit 139661 "GP Account Tests"
 
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

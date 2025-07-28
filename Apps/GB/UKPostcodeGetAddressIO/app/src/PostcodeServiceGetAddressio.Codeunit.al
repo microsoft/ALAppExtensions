@@ -257,6 +257,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
 
     local procedure GetFullAddressStringByID(AddressID: Text; var FullAddressString: Text; var IsSuccessful: Boolean; var ErrorMsg: Text)
     var
+        CountryRec: Record "Country/Region";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         JsonObject: JsonObject;
         Token: JsonToken;
@@ -276,20 +277,25 @@ codeunit 9092 "Postcode Service GetAddress.io"
 
         JsonObject.ReadFrom(ResponseText);
 
-        if JsonObject.SelectToken('line_1', Token) then 
+        if JsonObject.SelectToken('line_1', Token) then
             Line1 := Token.AsValue().AsText();
-        if JsonObject.SelectToken('line_2', Token) then 
+        if JsonObject.SelectToken('line_2', Token) then
             Line2 := Token.AsValue().AsText();
-        if JsonObject.SelectToken('line_3', Token) then 
+        if JsonObject.SelectToken('line_3', Token) then
             Line3 := Token.AsValue().AsText();
-        if JsonObject.SelectToken('locality', Token) then 
+        if JsonObject.SelectToken('locality', Token) then
             Locality := Token.AsValue().AsText();
-        if JsonObject.SelectToken('town_or_city', Token) then 
+        if JsonObject.SelectToken('town_or_city', Token) then
             City := Token.AsValue().AsText();
-        if JsonObject.SelectToken('county', Token) then 
+        if JsonObject.SelectToken('county', Token) then
             County := Token.AsValue().AsText();
-        if JsonObject.SelectToken('country', Token) then 
-            Country := Token.AsValue().AsText();
+        if JsonObject.SelectToken('country', Token) then begin
+            CountryRec.SetRange(Name, Token.AsValue().AsText());
+            if CountryRec.FindFirst() then
+                Country := CountryRec.Code
+            else
+                Country := 'GB';
+        end;
 
         FullAddressString :=
             Line1 + ', ' +

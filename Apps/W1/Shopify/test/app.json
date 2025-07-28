@@ -61,6 +61,10 @@
       "to": 139549
     },
     {
+      "from": 139551,
+      "to": 139551
+    },
+    {
       "from": 139558,
       "to": 139574
     },
@@ -94,5 +98,8 @@
   "application": "27.0.0.0",
   "resourceFolders": [
     ".resources"
+  ],
+  "features": [
+    "TranslationFile"
   ]
 }

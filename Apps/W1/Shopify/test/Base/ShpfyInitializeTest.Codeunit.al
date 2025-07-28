@@ -1,3 +1,23 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Item;
+using System.TestLibraries.Utilities;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.Foundation.Enums;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Address;
+
 /// <summary>
 /// Codeunit Shpfy Initialize Test (ID 139561).
 /// </summary>
@@ -15,8 +35,11 @@ codeunit 139561 "Shpfy Initialize Test"
         LibraryERM: Codeunit "Library - ERM";
         LibraryRandom: Codeunit "Library - Random";
         ShopifyAccessToken: Text;
+#pragma warning disable AA0240
         DummyCustomerEmailLbl: Label 'dummy@customer.com';
+#pragma warning restore AA0240
         DummyItemDescriptionLbl: Label 'Dummy Item Description';
+        DisableEventMocking: Boolean;
 
     trigger OnRun()
     begin
@@ -41,7 +64,7 @@ codeunit 139561 "Shpfy Initialize Test"
             if Shop.Get(TempShop.Code) then
                 exit(Shop);
 
-        Code := Any.AlphabeticText(MaxStrLen(Code));
+        Code := CopyStr(Any.AlphabeticText(MaxStrLen(Code)), 1, MaxStrLen(Code));
 
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup,
            VATPostingSetup."VAT Calculation Type"::"Normal VAT", LibraryRandom.RandDecInDecimalRange(10, 25, 0));
@@ -54,7 +77,7 @@ codeunit 139561 "Shpfy Initialize Test"
         Shop.Code := Code;
         Shop."Shopify URL" := StrSubstNo(UrlTxt, Any.AlphabeticText(20));
         Shop.Enabled := true;
-        PostingGroupCode := Any.AlphabeticText(10);
+        PostingGroupCode := CopyStr(Any.AlphabeticText(10), 1, MaxStrLen(PostingGroupCode));
         CustomerTemplateCode := CreateCustomerTemplate(PostingGroupCode);
         ItemTemplateCode := CreateItemTemplate(PostingGroupCode);
         Shop."Customer Templ. Code" := CreateCustomerTemplate(PostingGroupCode);
@@ -67,12 +90,15 @@ codeunit 139561 "Shpfy Initialize Test"
         Shop."Gen. Bus. Posting Group" := PostingGroupCode;
         Shop."VAT Bus. Posting Group" := PostingGroupCode;
         CreateCountryRegionCode(CustomerTemplateCode);
-        Shop."VAT Country/Region Code" := CustomerTemplateCode;
+        Shop."VAT Country/Region Code" := CopyStr(CustomerTemplateCode, 1, MaxStrLen(Shop."VAT Country/Region Code"));
         Shop."Refund Account" := RefundGLAccount."No.";
         if Shop.Insert() then;
         Commit();
         CommunicationMgt.SetShop(Shop);
-        CommunicationMgt.SetTestInProgress(true);
+        if DisableEventMocking then
+            CommunicationMgt.SetTestInProgress(false)
+        else
+            CommunicationMgt.SetTestInProgress(true);
         CreateDummyCustomer(CustomerTemplateCode);
         CreateDummyItem(ItemTemplateCode);
         if not TempShop.Get(Code) then begin
@@ -159,7 +185,7 @@ codeunit 139561 "Shpfy Initialize Test"
         VatProductPostingGroup: Record "VAT Product Posting Group";
         NoSeries: Record "No. Series";
     begin
-        Code := Any.AlphabeticText(10);
+        Code := CopyStr(Any.AlphabeticText(10), 1, MaxStrLen(Code));
         InventoryPostingGroup := CreateInventoryPostingGroup(PostingGroupCode);
         GenProductPostingGroup := CreateGenProdPostingGroup(PostingGroupCode);
         VatProductPostingGroup := CreateVatProdPostingGroup(PostingGroupCode);
@@ -259,7 +285,7 @@ codeunit 139561 "Shpfy Initialize Test"
         GeneralPostingSetup: Record "General Posting Setup";
         VatPostingSetup: Record "VAT Posting Setup";
     begin
-        Code := Any.AlphabeticText(10);
+        Code := CopyStr(Any.AlphabeticText(10), 1, MaxStrLen(Code));
         CustomerPostingGroup := CreateCustomerPostingGroup(PostingGroupCode);
         GenBusinessPostingGroup := CreateGenBusPostingGroup(PostingGroupCode);
         VatBusinessPostingGroup := CreateVatBusPostingGroup(PostingGroupCode);
@@ -342,7 +368,7 @@ codeunit 139561 "Shpfy Initialize Test"
     var
         Headers: HttpHeaders;
         ShopifyAccessTokenTxt: Label 'X-Shopify-Access-Token', Locked = true;
-        Values: Array[1] of Text;
+        Values: array[1] of Text;
     begin
         HttpRequestMessage.GetHeaders(Headers);
         LibraryAssert.IsTrue(Headers.Contains(ShopifyAccessTokenTxt), 'access token doesn''t exist');
@@ -359,7 +385,7 @@ codeunit 139561 "Shpfy Initialize Test"
             Clear(VatPostingSetup);
             VatPostingSetup."VAT Bus. Posting Group" := BusinessPostingGroup;
             VatPostingSetup."VAT Prod. Posting Group" := ProductPostingGroup;
-            VatPostingSetup."VAT Identifier" := Any.AlphabeticText(MaxStrLen(VatPostingSetup."VAT Identifier"));
+            VatPostingSetup."VAT Identifier" := CopyStr(Any.AlphabeticText(MaxStrLen(VatPostingSetup."VAT Identifier")), 1, MaxStrLen(VatPostingSetup."VAT Identifier"));
             VatPostingSetup."VAT Calculation Type" := "Tax Calculation Type"::"Normal VAT";
             VatPostingSetup."VAT %" := 10;
             VatPostingSetup.Insert();
@@ -376,7 +402,7 @@ codeunit 139561 "Shpfy Initialize Test"
     internal procedure RegisterAccessTokenForShop(Store: Text; AccessToken: SecretText)
     var
         RegisteredStoreNew: Record "Shpfy Registered Store New";
-        ScopeTxt: Label 'read_users,write_orders,read_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_files,write_merchant_managed_fulfillment_orders,write_fulfillments,write_inventory,read_locations,write_products,write_shipping,read_shopify_payments_disputes,read_shopify_payments_payouts,write_returns,write_translations,write_third_party_fulfillment_orders,write_order_edits,write_companies,write_publications,write_payment_terms,write_draft_orders,read_locales,read_shopify_payments_accounts', Locked = true;
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_files,write_merchant_managed_fulfillment_orders,write_fulfillments,write_inventory,read_locations,write_products,write_shipping,read_shopify_payments_disputes,read_shopify_payments_payouts,write_returns,write_translations,write_third_party_fulfillment_orders,write_order_edits,write_companies,write_publications,write_payment_terms,write_draft_orders,read_locales,read_shopify_payments_accounts,read_users', Locked = true;
     begin
         Store := Store.ToLower();
         if not RegisteredStoreNew.Get(Store) then begin
@@ -399,5 +425,30 @@ codeunit 139561 "Shpfy Initialize Test"
         ShippingChargesGLAccount.Modify(false);
         CreateVATPostingSetup(PostingGroupCode, ShippingChargesGLAccount."VAT Prod. Posting Group");
         exit(ShippingChargesGLAccount."No.");
+    end;
+
+    internal procedure RegisterAccessTokenForShop(Store: Text; AccessToken: SecretText)
+    var
+        RegisteredStoreNew: Record "Shpfy Registered Store New";
+        ScopeTxt: Label 'write_orders,read_all_orders,write_assigned_fulfillment_orders,read_checkouts,write_customers,read_discounts,write_files,write_merchant_managed_fulfillment_orders,write_fulfillments,write_inventory,read_locations,write_products,write_shipping,read_shopify_payments_disputes,read_shopify_payments_payouts,write_returns,write_translations,write_third_party_fulfillment_orders,write_order_edits,write_companies,write_publications,write_payment_terms,write_draft_orders,read_locales,read_shopify_payments_accounts,read_markets', Locked = true;
+    begin
+        Store := Store.ToLower();
+        if not RegisteredStoreNew.Get(Store) then begin
+            RegisteredStoreNew.Init();
+            RegisteredStoreNew.Store := CopyStr(Store, 1, MaxStrLen(RegisteredStoreNew.Store));
+            RegisteredStoreNew.Insert();
+        end;
+        RegisteredStoreNew."Requested Scope" := ScopeTxt;
+        RegisteredStoreNew."Actual Scope" := ScopeTxt;
+        RegisteredStoreNew.Modify();
+        RegisteredStoreNew.SetAccessToken(AccessToken);
+    end;
+
+    /// <summary>
+    /// Sets the DisableEventMocking flag to true.
+    /// </summary>
+    internal procedure SetDisableEventMocking()
+    begin
+        this.DisableEventMocking := true;
     end;
 }

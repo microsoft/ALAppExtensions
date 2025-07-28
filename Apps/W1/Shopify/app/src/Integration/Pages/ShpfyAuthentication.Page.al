@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.Security.Authentication;
@@ -53,10 +58,10 @@ page 30135 "Shpfy Authentication"
     [NonDebuggable]
     local procedure StartAuthorization()
     begin
-        CurrPage.OAuthIntegration.StartAuthorization(OAuthRequestUrl.Unwrap());
+        CurrPage.OAuthIntegration.StartAuthorization(OAuthRequestUrl);
     end;
 
-    internal procedure SetOAuth2Properties(AuthRequestUrl: SecretText)
+    internal procedure SetOAuth2Properties(AuthRequestUrl: Text)
     begin
         OAuthRequestUrl := AuthRequestUrl;
     end;
@@ -82,16 +87,16 @@ page 30135 "Shpfy Authentication"
     end;
 
     [NonDebuggable]
-    local procedure SetProperties(Code: SecretText)
+    local procedure SetProperties(Code: Text)
     var
         Response: Text;
         ParmValue, PropertyKey, PropertyValue : Text;
         ParmValues: List of [Text];
     begin
-        if Code.IsEmpty() then
+        if Code = '' then
             exit;
 
-        Response := Code.Unwrap();
+        Response := Code;
 
         if Response.EndsWith('#') then
             Response := CopyStr(Response, 1, StrLen(Response) - 1);
@@ -113,14 +118,14 @@ page 30135 "Shpfy Authentication"
         end;
     end;
 
-    [Scope('OnPrem')]
     procedure GetAuthError(): Text
     begin
         exit(AuthError);
     end;
 
     var
-        OAuthRequestUrl: SecretText;
+        [NonDebuggable]
+        OAuthRequestUrl: Text;
         AuthCodeHmac: SecretText;
         AuthCodeShop: Text;
         AuthCodeCode: SecretText;

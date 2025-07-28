@@ -3,6 +3,7 @@ codeunit 139838 "APIV2 - Purchase Inv Lines E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

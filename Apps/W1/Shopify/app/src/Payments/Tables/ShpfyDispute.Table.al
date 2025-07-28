@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -38,8 +43,10 @@ table 30155 "Shpfy Dispute"
         {
             Caption = 'Amount';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = Currency;
         }
-        field(6; "Reason"; enum "Shpfy Dispute Reason")
+        field(6; "Reason"; Enum "Shpfy Dispute Reason")
         {
             Caption = 'Shopify Dispute Reason';
             DataClassification = CustomerContent;

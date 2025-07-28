@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -35,24 +40,32 @@ table 30162 "Shpfy Refund Shipping Line"
             Caption = 'Subtotal Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderCurrencyCode();
         }
         field(5; "Presentment Subtotal Amount"; Decimal)
         {
             Caption = 'Presentment Subtotal Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderPresentmentCurrencyCode();
         }
         field(6; "Tax Amount"; Decimal)
         {
             Caption = 'Total Tax Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderCurrencyCode();
         }
         field(7; "Presentment Tax Amount"; Decimal)
         {
             Caption = 'Presentment Total Tax Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderPresentmentCurrencyCode();
         }
     }
     keys
@@ -72,5 +85,25 @@ table 30162 "Shpfy Refund Shipping Line"
         DataCapture.SetRange("Linked To Id", Rec.SystemId);
         if not DataCapture.IsEmpty then
             DataCapture.DeleteAll(false);
+    end;
+
+    local procedure OrderCurrencyCode(): Code[10]
+    var
+        RefundHeader: Record "Shpfy Refund Header";
+        OrderHeader: Record "Shpfy Order Header";
+    begin
+        if RefundHeader.Get("Refund Id") then
+            if OrderHeader.Get(RefundHeader."Order Id") then
+                exit(OrderHeader."Currency Code");
+    end;
+
+    local procedure OrderPresentmentCurrencyCode(): Code[10]
+    var
+        RefundHeader: Record "Shpfy Refund Header";
+        OrderHeader: Record "Shpfy Order Header";
+    begin
+        if RefundHeader.Get("Refund Id") then
+            if OrderHeader.Get(RefundHeader."Order Id") then
+                exit(OrderHeader."Presentment Currency Code");
     end;
 }

@@ -1,6 +1,7 @@
 codeunit 148101 "SAF-T Wizard Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

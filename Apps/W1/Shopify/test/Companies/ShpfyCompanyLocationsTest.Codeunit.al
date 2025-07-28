@@ -1,13 +1,25 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using Microsoft.Sales.Customer;
+using System.TestLibraries.Utilities;
+
 codeunit 139539 "Shpfy Company Locations Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
     TestHttpRequestPolicy = BlockOutboundRequests;
 
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyCompany: Record "Shpfy Company";
-        ShpfyCompanyLocation: Record "Shpfy Company Location";
+        Shop: Record "Shpfy Shop";
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyLocation: Record "Shpfy Company Location";
         Customer: Record Customer;
         IsInitialized: Boolean;
         ResponseResourceUrl: Text;
@@ -21,86 +33,88 @@ codeunit 139539 "Shpfy Company Locations Test"
     [HandlerFunctions('HttpSubmitHandler')]
     procedure TestCreateCompanyLocationSuccess()
     var
-        ShpfyCompanyAPI: Codeunit "Shpfy Company API";
-        ShpfyCompanies: TestPage "Shpfy Companies";
+        CompanyAPI: Codeunit "Shpfy Company API";
+        ShopifyCompanies: TestPage "Shpfy Companies";
     begin
         // [Given] A valid customer and company location setup
         this.Initialize();
-        ShpfyCompany.GetBySystemId(this.ShpfyCompanyLocation."Company SystemId");
+        ShopifyCompany.GetBySystemId(this.CompanyLocation."Company SystemId");
         // [When] CreateCompanyLocation is called
-        ShpfyCompanyAPI.SetCompany(ShpfyCompany);
-        ShpfyCompanyAPI.SetShop(ShpfyShop);
-        ShpfyCompanyAPI.CreateCompanyLocation(this.Customer);
+        CompanyAPI.SetCompany(ShopifyCompany);
+        CompanyAPI.SetShop(Shop);
+        CompanyAPI.CreateCompanyLocation(this.Customer);
 
         // [Then] Company location should be created successfully
-        this.ShpfyCompanyLocation.SetRange("Customer Id", this.Customer.SystemId);
-        this.ShpfyCompanyLocation.FindFirst();
-        ShpfyCompanies.OpenEdit();
-        ShpfyCompanies.GoToRecord(ShpfyCompany);
-        ShpfyCompanies.Locations.GoToRecord(this.ShpfyCompanyLocation);
+#pragma warning disable AA0210
+        this.CompanyLocation.SetRange("Customer Id", this.Customer.SystemId);
+#pragma warning restore AA0210
+        this.CompanyLocation.FindFirst();
+        ShopifyCompanies.OpenEdit();
+        ShopifyCompanies.GoToRecord(ShopifyCompany);
+        ShopifyCompanies.Locations.GoToRecord(this.CompanyLocation);
     end;
 
     [Test]
     procedure TestCreateCompanyLocationCustomerAlreadyExportedAsCompany()
     var
-        ShpfyCompany: Record "Shpfy Company";
-        ShpfySkippedRecord: Record "Shpfy Skipped Record";
+        Company: Record "Shpfy Company";
+        SkippedRecord: Record "Shpfy Skipped Record";
         LibraryAssert: Codeunit "Library Assert";
-        ShpfyCompanyAPI: Codeunit "Shpfy Company API";
+        CompanyAPI: Codeunit "Shpfy Company API";
     begin
         // [Given] Customer already exported as a company
         this.Initialize();
-        ShpfyCompany.GetBySystemId(this.ShpfyCompanyLocation."Company SystemId");
-        ShpfyCompany."Customer SystemId" := Customer.SystemId;
-        ShpfyCompany.Modify(true);
+        Company.GetBySystemId(this.CompanyLocation."Company SystemId");
+        Company."Customer SystemId" := Customer.SystemId;
+        Company.Modify(true);
         // [Given] Ensure Shpfy Skipped Record is empty
-        ShpfySkippedRecord.DeleteAll(false);
+        SkippedRecord.DeleteAll(false);
 
         // [When] CreateCompanyLocation is called
-        ShpfyCompanyAPI.SetCompany(ShpfyCompany);
-        ShpfyCompanyAPI.SetShop(ShpfyShop);
-        ShpfyCompanyAPI.CreateCompanyLocation(this.Customer);
+        CompanyAPI.SetCompany(Company);
+        CompanyAPI.SetShop(Shop);
+        CompanyAPI.CreateCompanyLocation(this.Customer);
 
         // [Then] Operation should be skipped and record should be logged as skipped
-        ShpfySkippedRecord.SetRange("Table ID", Database::Customer);
-        ShpfySkippedRecord.SetRange("Record ID", this.Customer.RecordId);
-        LibraryAssert.IsTrue(ShpfySkippedRecord.FindFirst(), 'Expected skipped record to be logged');
-        LibraryAssert.IsTrue(ShpfySkippedRecord."Skipped Reason".Contains('already exported as a company'), 'Expected reason to mention already exported as company');
+        SkippedRecord.SetRange("Table ID", Database::Customer);
+        SkippedRecord.SetRange("Record ID", this.Customer.RecordId);
+        LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Expected skipped record to be logged');
+        LibraryAssert.IsTrue(SkippedRecord."Skipped Reason".Contains('already exported as a company'), 'Expected reason to mention already exported as company');
     end;
 
     [Test]
     procedure TestCreateCompanyLocationCustomerAlreadyExportedAsLocation()
     var
-        ShpfySkippedRecord: Record "Shpfy Skipped Record";
+        SkippedRecord: Record "Shpfy Skipped Record";
         LibraryAssert: Codeunit "Library Assert";
-        ShpfyCompanyAPI: Codeunit "Shpfy Company API";
+        CompanyAPI: Codeunit "Shpfy Company API";
     begin
         // [Given] Customer already exported as a location
         this.Initialize();
-        this.ShpfyCompanyLocation."Customer Id" := Customer.SystemId;
-        this.ShpfyCompanyLocation.Modify(true);
+        this.CompanyLocation."Customer Id" := Customer.SystemId;
+        this.CompanyLocation.Modify(true);
         // [Given] Ensure the customer was not previously exported as a company
-        ShpfyCompany.GetBySystemId(this.ShpfyCompanyLocation."Company SystemId");
-        Clear(this.ShpfyCompany."Customer SystemId");
-        this.ShpfyCompany.Modify(false);
+        ShopifyCompany.GetBySystemId(this.CompanyLocation."Company SystemId");
+        Clear(this.ShopifyCompany."Customer SystemId");
+        this.ShopifyCompany.Modify(false);
         // [Given] Ensure Shpfy Skipped Record is empty
-        ShpfySkippedRecord.DeleteAll(false);
+        SkippedRecord.DeleteAll(false);
 
         // [When] CreateCompanyLocation is called
-        ShpfyCompanyAPI.SetCompany(ShpfyCompany);
-        ShpfyCompanyAPI.SetShop(ShpfyShop);
-        ShpfyCompanyAPI.CreateCompanyLocation(this.Customer);
+        CompanyAPI.SetCompany(ShopifyCompany);
+        CompanyAPI.SetShop(Shop);
+        CompanyAPI.CreateCompanyLocation(this.Customer);
 
         // [Then] Operation should be skipped and record should be logged as skipped
-        ShpfySkippedRecord.SetRange("Table ID", Database::Customer);
-        ShpfySkippedRecord.SetRange("Record ID", this.Customer.RecordId);
-        LibraryAssert.IsTrue(ShpfySkippedRecord.FindFirst(), 'Expected skipped record to be logged');
-        LibraryAssert.IsTrue(ShpfySkippedRecord."Skipped Reason".Contains('already exported as a location'), 'Expected reason to mention already exported as location');
+        SkippedRecord.SetRange("Table ID", Database::Customer);
+        SkippedRecord.SetRange("Record ID", this.Customer.RecordId);
+        LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Expected skipped record to be logged');
+        LibraryAssert.IsTrue(SkippedRecord."Skipped Reason".Contains('already exported as a location'), 'Expected reason to mention already exported as location');
     end;
 
     internal procedure Initialize()
     var
-        ShpfyCompanyInitialize: Codeunit "Shpfy Company Initialize";
+        CompanyInitialize: Codeunit "Shpfy Company Initialize";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
@@ -119,19 +133,19 @@ codeunit 139539 "Shpfy Company Locations Test"
         this.IsInitialized := true;
         Commit();
 
-        ShpfyShop := InitializeTest.CreateShop();
-        ShpfyShop."B2B Enabled" := true;
-        ShpfyShop.Modify();
+        Shop := InitializeTest.CreateShop();
+        Shop."B2B Enabled" := true;
+        Shop.Modify();
 
         CommunicationMgt.SetTestInProgress(false);
-        this.ShpfyCompanyLocation := ShpfyCompanyInitialize.CreateShopifyCompanyLocation();
-        ShpfyCompany.GetBySystemId(this.ShpfyCompanyLocation."Company SystemId");
-        ShpfyCompany."Shop Code" := ShpfyShop.Code;
-        ShpfyCompany.Modify(false);
+        this.CompanyLocation := CompanyInitialize.CreateShopifyCompanyLocation();
+        ShopifyCompany.GetBySystemId(this.CompanyLocation."Company SystemId");
+        ShopifyCompany."Shop Code" := Shop.Code;
+        ShopifyCompany.Modify(false);
 
         LibrarySales.CreateCustomer(this.Customer);
         AccessToken := LibraryRandom.RandText(20);
-        InitializeTest.RegisterAccessTokenForShop(ShpfyShop.GetStoreName(), AccessToken);
+        InitializeTest.RegisterAccessTokenForShop(Shop.GetStoreName(), AccessToken);
 
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Shpfy Company Locations Test");
     end;
