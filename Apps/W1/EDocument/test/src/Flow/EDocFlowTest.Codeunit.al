@@ -1,6 +1,7 @@
 codeunit 139631 "E-Doc. Flow Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     EventSubscriberInstance = Manual;
 
     var

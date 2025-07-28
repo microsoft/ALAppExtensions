@@ -2,6 +2,7 @@
 codeunit 144041 "Create 1096 Forms Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     ObsoleteReason = 'Moved to IRS Forms App.';
     ObsoleteState = Pending;

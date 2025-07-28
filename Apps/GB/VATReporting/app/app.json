@@ -12,9 +12,7 @@
   "logo": "ExtensionLogo.png",
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/ui-extensions",
   "application": "27.0.0.0",
-  "dependencies": 
-  [
-  ],
+  "dependencies": [],
   "screenshots": [],
   "platform": "27.0.0.0",
   "idRanges": [

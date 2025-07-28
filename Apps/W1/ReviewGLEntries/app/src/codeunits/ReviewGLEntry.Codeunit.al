@@ -9,6 +9,9 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
 {
     Permissions = TableData "G/L Entry" = rm,
                   TableData "G/L Entry Review Setup" = ri,
+#if not CLEAN27
+                  TableData "G/L Entry Review Entry" = rid,
+#endif
                   TableData "G/L Entry Review Log" = rid;
 
     var
@@ -91,11 +94,10 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
         if not GLEntry.IsEmpty() and (GLEntry."Amount to Review" = 0) then begin
             GLEntry.CalcSums("Debit Amount", "Credit Amount");
             Balance := GLEntry."Credit Amount" - GLEntry."Debit Amount";
-        end else begin
+        end else
             repeat
                 Balance := Balance + GLEntry."Amount to Review";
             until GLEntry.Next() = 0;
-        end;
 
         exit(Balance = 0);
     end;
@@ -125,7 +127,7 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
 #if not CLEAN27
     [Obsolete('Use the event OnAfterReviewEntriesLog instead.', '27.0')]
     [IntegrationEvent(false, false)]
-    local procedure OnAfterReviewEntries(var GLEntry: Record "G/L Entry"; var GLEntryReviewLog: Record "G/L Entry Review Entry")
+    local procedure OnAfterReviewEntries(var GLEntry: Record "G/L Entry"; var GLEntryReviewEntry: Record "G/L Entry Review Entry")
     begin
     end;
 #endif

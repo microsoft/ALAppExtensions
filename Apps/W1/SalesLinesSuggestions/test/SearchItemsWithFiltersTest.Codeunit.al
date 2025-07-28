@@ -9,6 +9,7 @@ using Microsoft.Sales.Document;
 codeunit 133512 "Search Items With Filters Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

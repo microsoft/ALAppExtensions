@@ -23,6 +23,7 @@ tableextension 10539 "MTD Report Setup" extends "VAT Report Setup"
 
             trigger OnValidate()
             var
+                AuditLog: Codeunit "Audit Log";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 FeatureTelemetry: Codeunit "Feature Telemetry";
                 UKMakingTaxTok: Label 'UK Making Tax Digital', Locked = true;
@@ -33,7 +34,7 @@ tableextension 10539 "MTD Report Setup" extends "VAT Report Setup"
                     "MTD Enabled" := CustomerConsentMgt.ConfirmUserConsent();
 
                 if "MTD Enabled" then
-                    Session.LogAuditMessage(StrSubstNo(UKMakingTaxConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
+                    AuditLog.LogAuditMessage(StrSubstNo(UKMakingTaxConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
             end;
         }
         field(10540; "MTD FP Public IP Service URL"; Text[250])

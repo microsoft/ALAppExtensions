@@ -8,6 +8,7 @@ using Microsoft.Sustainability.Calculation;
 codeunit 148181 "Sustainability Journal Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

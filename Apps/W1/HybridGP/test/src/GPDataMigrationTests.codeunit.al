@@ -6,6 +6,7 @@ codeunit 139664 "GP Data Migration Tests"
 
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

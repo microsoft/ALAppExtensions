@@ -1,6 +1,7 @@
 codeunit 148109 "SAF-T Export Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

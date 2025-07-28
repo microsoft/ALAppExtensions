@@ -7,6 +7,7 @@ codeunit 148001 "C5 Helper Functions Test"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

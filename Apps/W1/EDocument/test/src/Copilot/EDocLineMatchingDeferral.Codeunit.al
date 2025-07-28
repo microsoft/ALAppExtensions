@@ -14,6 +14,7 @@ using Microsoft.Finance.Deferral;
 codeunit 133720 "EDoc Line Matching - Deferral"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     Access = Internal;
 

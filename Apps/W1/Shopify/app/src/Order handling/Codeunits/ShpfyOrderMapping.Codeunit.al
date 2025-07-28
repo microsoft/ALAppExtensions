@@ -1,8 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
+using Microsoft.Foundation.Address;
 using Microsoft.Inventory.Item;
 using Microsoft.CRM.Contact;
 using Microsoft.CRM.BusinessRelation;
+using Microsoft.Sales.Customer;
 
 /// <summary>
 /// Codeunit Shpfy Order Mapping (ID 30163).
@@ -138,6 +145,7 @@ codeunit 30163 "Shpfy Order Mapping"
         CompanyMapping: Codeunit "Shpfy Company Mapping";
         CustomerTemplateCode: Code[20];
         IsHandled: Boolean;
+        MappedFromLocation: Boolean;
     begin
         CustomerTemplateCode := OrderHeader."Customer Templ. Code";
 
@@ -145,8 +153,13 @@ codeunit 30163 "Shpfy Order Mapping"
         if OrderHeader."Bill-to Customer No." = '' then begin
             OrderEvents.OnBeforeMapCompany(OrderHeader, IsHandled);
             if not IsHandled then begin
-                OrderHeader."Sell-to Customer No." := CompanyMapping.DoMapping(OrderHeader."Company Id", CustomerTemplateCode, AllowCreateCompany);
-                OrderHeader."Bill-to Customer No." := OrderHeader."Sell-to Customer No.";
+                if OrderHeader."Company Location Id" <> 0 then
+                    MappedFromLocation := MapSellToBillToCustomersFromCompanyLocation(OrderHeader);
+
+                if not MappedFromLocation then begin
+                    OrderHeader."Sell-to Customer No." := CompanyMapping.DoMapping(OrderHeader."Company Id", CustomerTemplateCode, AllowCreateCompany);
+                    OrderHeader."Bill-to Customer No." := OrderHeader."Sell-to Customer No.";
+                end;
 
                 if (OrderHeader."Bill-to Customer No." = '') and (not Shop."Auto Create Unknown Customers") and (Shop."Default Company No." <> '') then
                     OrderHeader."Bill-to Customer No." := Shop."Default Company No.";
@@ -296,5 +309,96 @@ codeunit 30163 "Shpfy Order Mapping"
             end;
             OrderEvents.OnAfterMapPaymentMethod(OrderHeader);
         end;
+    end;
+
+    local procedure MapSellToBillToCustomersFromCompanyLocation(var OrderHeader: Record "Shpfy Order Header"): Boolean
+    var
+        Company: Record "Shpfy Company";
+        Customer: Record Customer;
+        CompanyLocation: Record "Shpfy Company Location";
+    begin
+        if not Company.Get(OrderHeader."Company Id") then
+            exit(false);
+
+        Company.CalcFields("Customer No.");
+
+        if not CompanyLocation.Get(OrderHeader."Company Location Id") then
+            exit(false);
+
+        ClearSellToFields(OrderHeader);
+        ClearBillToFields(OrderHeader);
+
+        if (Company."Customer No." <> '') and (CompanyLocation."Sell-to Customer No." = '') and (CompanyLocation."Bill-to Customer No." = '') then begin
+            OrderHeader."Sell-to Customer No." := Company."Customer No.";
+            OrderHeader."Bill-to Customer No." := Company."Customer No.";
+        end;
+        if (Company."Customer No." <> '') and (CompanyLocation."Sell-to Customer No." <> '') and (CompanyLocation."Bill-to Customer No." = '') then begin
+            OrderHeader."Sell-to Customer No." := CompanyLocation."Sell-to Customer No.";
+            OrderHeader."Bill-to Customer No." := CompanyLocation."Sell-to Customer No.";
+        end;
+        if (Company."Customer No." <> '') and (CompanyLocation."Sell-to Customer No." <> '') and (CompanyLocation."Bill-to Customer No." <> '') then begin
+            OrderHeader."Sell-to Customer No." := CompanyLocation."Sell-to Customer No.";
+            OrderHeader."Bill-to Customer No." := CompanyLocation."Bill-to Customer No.";
+        end;
+
+
+        if OrderHeader."Sell-to Customer No." <> '' then begin
+            Customer.Get(OrderHeader."Sell-to Customer No.");
+            CopyCustomerAddressFieldsFromCustomer(OrderHeader, Customer);
+        end;
+
+        if OrderHeader."Bill-to Customer No." <> '' then begin
+            Customer.Get(OrderHeader."Bill-to Customer No.");
+            CopyCustomerAddressFieldsFromCustomer(OrderHeader, Customer);
+        end;
+        exit(true);
+    end;
+
+    local procedure CopyCustomerAddressFieldsFromCustomer(var OrderHeader: Record "Shpfy Order Header"; Customer: Record Customer)
+    begin
+        OrderHeader."Sell-to Address" := Customer.Address;
+        OrderHeader."Sell-to Address 2" := Customer."Address 2";
+        OrderHeader."Sell-to City" := Customer.City;
+        OrderHeader."Sell-to Country/Region Code" := Customer."Country/Region Code";
+        OrderHeader."Bill-to Country/Region Name" := GetCountryRegionName(Customer."Country/Region Code");
+        OrderHeader."Sell-to County" := Customer.County;
+        OrderHeader."Sell-to Post Code" := Customer."Post Code";
+    end;
+
+    local procedure GetCountryRegionName(CountryRegionCode: Code[10]): Text[50]
+    var
+        CountryRegion: Record "Country/Region";
+    begin
+        if CountryRegionCode = '' then
+            exit('');
+
+        CountryRegion.Get(CountryRegionCode);
+        exit(CountryRegion.Name);
+    end;
+
+    local procedure ClearSellToFields(var OrderHeader: Record "Shpfy Order Header")
+    begin
+        OrderHeader."Sell-to Customer No." := '';
+        OrderHeader."Sell-to Customer Name" := '';
+        OrderHeader."Sell-to Customer Name 2" := '';
+        OrderHeader."Sell-to Address" := '';
+        OrderHeader."Sell-to Address 2" := '';
+        OrderHeader."Sell-to City" := '';
+        OrderHeader."Sell-to County" := '';
+        OrderHeader."Sell-to Post Code" := '';
+        OrderHeader."Sell-to Country/Region Code" := '';
+    end;
+
+    local procedure ClearBillToFields(var OrderHeader: Record "Shpfy Order Header")
+    begin
+        OrderHeader."Bill-to Customer No." := '';
+        OrderHeader."Bill-to Name" := '';
+        OrderHeader."Bill-to Name 2" := '';
+        OrderHeader."Bill-to Address" := '';
+        OrderHeader."Bill-to Address 2" := '';
+        OrderHeader."Bill-to City" := '';
+        OrderHeader."Bill-to County" := '';
+        OrderHeader."Bill-to Post Code" := '';
+        OrderHeader."Bill-to Country/Region Code" := '';
     end;
 }

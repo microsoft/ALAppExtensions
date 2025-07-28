@@ -12,8 +12,7 @@
   "logo": "ExtensionLogo.png",
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/ui-extensions",
   "application": "27.0.0.0",
-  "dependencies": 
-  [
+  "dependencies": [
     {
       "id": "2a11a180-3b8e-481f-a90c-7e5f78773b9f",
       "name": "Posting Date Check On Posting",

@@ -64,6 +64,11 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                     Editable = false;
                     ToolTip = 'Specifies the value of the CO2e per Unit field.';
                 }
+                field("Item Of Concern"; Rec."Item Of Concern")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the Item Of Concern field.';
+                }
             }
         }
     }

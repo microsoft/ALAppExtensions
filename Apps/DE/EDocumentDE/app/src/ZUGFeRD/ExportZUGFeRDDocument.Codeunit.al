@@ -24,7 +24,6 @@ codeunit 13917 "Export ZUGFeRD Document"
 {
     TableNo = "Record Export Buffer";
     EventSubscriberInstance = Manual;
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 
@@ -82,7 +81,12 @@ codeunit 13917 "Export ZUGFeRD Document"
     procedure GenerateSalesInvoicePDFAttachment(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempBlob: Codeunit "Temp Blob"): Boolean
     var
         ReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeGenerateSalesInvoicePDFAttachment(SalesInvoiceHeader, TempBlob, IsHandled);
+        if IsHandled then
+            exit(TempBlob.HasValue());
         SalesInvoiceHeader.SetRange("No.", SalesInvoiceHeader."No.");
         ReportSelections.GetPdfReportForCust(
             TempBlob, "Report Selection Usage"::"S.Invoice",
@@ -93,7 +97,12 @@ codeunit 13917 "Export ZUGFeRD Document"
     procedure GenerateSalesCrMemoPDFAttachment(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempBlob: Codeunit "Temp Blob"): Boolean
     var
         ReportSelections: Record "Report Selections";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeGenerateSalesCrMemoPDFAttachment(SalesCrMemoHeader, TempBlob, IsHandled);
+        if IsHandled then
+            exit(TempBlob.HasValue());
         SalesCrMemoHeader.SetRange("No.", SalesCrMemoHeader."No.");
         ReportSelections.GetPdfReportForCust(
             TempBlob, "Report Selection Usage"::"S.Cr.Memo",
@@ -541,8 +550,9 @@ codeunit 13917 "Export ZUGFeRD Document"
                 ApplicableTradeTaxElement.Add(XmlElement.Create('RateApplicablePercent', XmlNamespaceRAM, FormatFourDecimal(SalesInvoiceLine."VAT %")));
                 SpecifiedLineTradeSettlementElement.Add(ApplicableTradeTaxElement);
 
-                InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesInvoiceLine."Tax Category", SalesInvoiceLine."VAT Bus. Posting Group",
-                                   SalesInvoiceLine."VAT Prod. Posting Group"), SalesInvoiceLine."Line Discount Amount", SalesInvoiceLine."VAT %", false);
+                if SalesInvoiceLine."Line Discount Amount" <> 0 then
+                    InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesInvoiceLine."Tax Category", SalesInvoiceLine."VAT Bus. Posting Group",
+                        SalesInvoiceLine."VAT Prod. Posting Group"), SalesInvoiceLine."Line Discount Amount", SalesInvoiceLine."VAT %", false);
 
                 SpecifiedTradeSettlementLineMonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementLineMonetarySummation', XmlNamespaceRAM);
                 SpecifiedTradeSettlementLineMonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvoiceLine.Amount + SalesInvoiceLine."Inv. Discount Amount")));
@@ -610,8 +620,9 @@ codeunit 13917 "Export ZUGFeRD Document"
                 ApplicableTradeTaxElement.Add(XmlElement.Create('RateApplicablePercent', XmlNamespaceRAM, FormatFourDecimal(SalesCrMemoLine."VAT %")));
                 SpecifiedLineTradeSettlementElement.Add(ApplicableTradeTaxElement);
 
-                InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group",
-                    SalesCrMemoLine."VAT Prod. Posting Group"), SalesCrMemoLine."Line Discount Amount", SalesCrMemoLine."VAT %", false);
+                if SalesCrMemoLine."Line Discount Amount" <> 0 then
+                    InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group",
+                        SalesCrMemoLine."VAT Prod. Posting Group"), SalesCrMemoLine."Line Discount Amount", SalesCrMemoLine."VAT %", false);
                 SpecifiedTradeSettlementLineMonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementLineMonetarySummation', XmlNamespaceRAM);
                 SpecifiedTradeSettlementLineMonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount")));
                 SpecifiedLineTradeSettlementElement.Add(SpecifiedTradeSettlementLineMonetarySummationElement);
@@ -954,6 +965,16 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCalculateCrMemoLineAmounts(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGenerateSalesInvoicePDFAttachment(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGenerateSalesCrMemoPDFAttachment(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
     begin
     end;
 

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Location;
@@ -61,12 +66,12 @@ page 30117 "Shpfy Shop Locations Mapping"
                 field("Default Product Location"; Rec."Default Product Location")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The default product locations will be added to new products in Shopify.';
+                    ToolTip = 'Specifies the default product locations will be added to new products in Shopify.';
                 }
                 field("Stock Calculation"; Rec."Stock Calculation")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Select the stock calculation used for this location.';
+                    ToolTip = 'Specifies the stock calculation used for this location.';
                 }
                 field(Active; Rec.Active)
                 {

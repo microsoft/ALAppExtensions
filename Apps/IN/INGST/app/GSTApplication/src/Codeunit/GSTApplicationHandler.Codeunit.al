@@ -2224,10 +2224,10 @@ codeunit 18430 "GST Application Handler"
         if DetailedGSTLedgerEntry.FindSet() then begin
             DocumentNo := DetailedGSTLedgerEntry."Document No.";
             GSTApplicationLibrary.GetDetailedGSTLedgerEntryInfo(DetailedGSTLedgerEntry, DetailedGSTLedgerEntryInfo);
-            CreateUnapplicationGSTLedger(GenJournalLine, TransactionType, TransactionNo, DocumentNo, DetailedGSTLedgerEntryInfo."RCM Exempt Transaction");
             GSTPostingBuffer[1].DeleteAll();
 
             repeat
+                CreateUnapplicationGSTLedger(GenJournalLine, TransactionType, TransactionNo, DetailedGSTLedgerEntry."Document No.", DetailedGSTLedgerEntryInfo."RCM Exempt Transaction");
                 InsertUnApplicationDetailedGSTLedgerEntry(DetailedGSTLedgerEntry);
             until DetailedGSTLedgerEntry.Next() = 0;
         end;
@@ -2315,31 +2315,30 @@ codeunit 18430 "GST Application Handler"
         GSTLedgerEntry.SetRange("Transaction Type", GSTLedgerTransactionType);
         GSTLedgerEntry.SetRange("Entry Type", "Entry Type"::Application);
         GSTLedgerEntry.SetRange(UnApplied, false);
-        if GSTLedgerEntry.FindSet() then
-            repeat
-                InsertUnApplicationGSTLedgerEntry(GSTLedgerEntry, TransactionNo, GenJournalLine."Source Code");
+        if GSTLedgerEntry.FindFirst() then begin
+            InsertUnApplicationGSTLedgerEntry(GSTLedgerEntry, TransactionNo, GenJournalLine."Source Code");
 
-                if GSTLedgerEntry."Transaction Type" = GSTLedgerEntry."Transaction Type"::Sales then
-                    PostSalesApplicationGLEntries(GenJournalLine, GSTLedgerEntry."Account No.", GSTLedgerEntry."Bal. Account No.", true, GSTLedgerEntry."GST Amount")
+            if GSTLedgerEntry."Transaction Type" = GSTLedgerEntry."Transaction Type"::Sales then
+                PostSalesApplicationGLEntries(GenJournalLine, GSTLedgerEntry."Account No.", GSTLedgerEntry."Bal. Account No.", true, GSTLedgerEntry."GST Amount")
+            else
+                if GSTLedgerEntry."Payment Type" = GSTLedgerEntry."Payment Type"::Normal then
+                    PostNormalPaymentApplicationGLEntries(
+                        GenJournalLine,
+                        true,
+                        GSTLedgerEntry."Account No.",
+                        GSTLedgerEntry."Account No. 2",
+                        GSTLedgerEntry."Bal. Account No.",
+                        GSTLedgerEntry."Bal. Account No. 2",
+                        GSTLedgerEntry."GST Amount")
                 else
-                    if GSTLedgerEntry."Payment Type" = GSTLedgerEntry."Payment Type"::Normal then
-                        PostNormalPaymentApplicationGLEntries(
-                            GenJournalLine,
-                            true,
-                            GSTLedgerEntry."Account No.",
-                            GSTLedgerEntry."Account No. 2",
-                            GSTLedgerEntry."Bal. Account No.",
-                            GSTLedgerEntry."Bal. Account No. 2",
-                            GSTLedgerEntry."GST Amount")
-                    else
-                        PostPurchaseApplicationGLEntries(
-                            GenJournalLine,
-                            true,
-                            GSTLedgerEntry."Account No.",
-                            GSTLedgerEntry."Bal. Account No.",
-                            GSTLedgerEntry."Bal. Account No. 2",
-                            GSTLedgerEntry."GST Amount", RCMExempt);
-            until GSTLedgerEntry.Next() = 0;
+                    PostPurchaseApplicationGLEntries(
+                        GenJournalLine,
+                        true,
+                        GSTLedgerEntry."Account No.",
+                        GSTLedgerEntry."Bal. Account No.",
+                        GSTLedgerEntry."Bal. Account No. 2",
+                        GSTLedgerEntry."GST Amount", RCMExempt);
+        end;
     end;
 
     local procedure InsertUnApplicationGSTLedgerEntry(

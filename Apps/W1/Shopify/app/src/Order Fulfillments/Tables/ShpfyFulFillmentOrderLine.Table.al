@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 table 30144 "Shpfy FulFillment Order Line"
@@ -46,6 +51,7 @@ table 30144 "Shpfy FulFillment Order Line"
         {
             Caption = 'Qty. to Fulfill';
             DataClassification = CustomerContent;
+            AutoFormatType = 0;
         }
         field(9; "Shopify Variant Id"; BigInteger)
         {

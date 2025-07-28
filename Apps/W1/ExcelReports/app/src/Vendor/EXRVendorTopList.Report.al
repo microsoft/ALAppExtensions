@@ -124,7 +124,6 @@ report 4404 "EXR Vendor Top List"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
-        TimezoneLabel = 'UTC';
     }
 
     var

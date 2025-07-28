@@ -14,6 +14,7 @@ using Microsoft.Finance.Deferral;
 codeunit 133719 "EDoc Line Match Def Grnd"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     Access = Internal;
 

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Document;
@@ -6,7 +11,7 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
 {
 
     var
-        SalesHeader: Record "Sales Header";
+        OrderSalesHeader: Record "Sales Header";
         Shop: Record "Shpfy Shop";
         RefundProcessEvents: Codeunit "Shpfy Refund Process Events";
         RefundId: BigInteger;
@@ -29,7 +34,7 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
 
     internal procedure GetSalesHeader(): Record "Sales Header";
     begin
-        exit(SalesHeader);
+        exit(OrderSalesHeader);
     end;
 
     local procedure CreateSalesDocument()
@@ -39,11 +44,11 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
     begin
         if RefundHeader.Get(RefundId) then begin
             Shop.Get(RefundHeader."Shop Code");
-            if DoCreateSalesHeader(RefundHeader, SalesDocumentType, SalesHeader) then begin
-                CreateSalesLines(RefundHeader, SalesHeader);
+            if DoCreateSalesHeader(RefundHeader, SalesDocumentType, OrderSalesHeader) then begin
+                CreateSalesLines(RefundHeader, OrderSalesHeader);
                 RefundHeader.Get(RefundHeader."Refund Id");
-                ReleaseSalesDocument.Run(SalesHeader);
-                RefundProcessEvents.OnAfterProcessSalesDocument(RefundHeader, SalesHeader);
+                ReleaseSalesDocument.Run(OrderSalesHeader);
+                RefundProcessEvents.OnAfterProcessSalesDocument(RefundHeader, OrderSalesHeader);
             end;
         end;
     end;
@@ -99,13 +104,14 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
                 SalesHeader.Validate("Ship-to Code", '');
                 SalesHeader."Ship-to Name" := CopyStr(OrderHeader."Ship-to Name", 1, MaxStrLen(SalesHeader."Ship-to Name"));
                 SalesHeader."Ship-to Name 2" := CopyStr(OrderHeader."Ship-to Name 2", 1, MaxStrLen(SalesHeader."Ship-to Name 2"));
-                SalesHeader."Ship-to Address" := copyStr(OrderHeader."Ship-to Address", 1, MaxStrLen(SalesHeader."Ship-to Address"));
+                SalesHeader."Ship-to Address" := CopyStr(OrderHeader."Ship-to Address", 1, MaxStrLen(SalesHeader."Ship-to Address"));
                 SalesHeader."Ship-to Address 2" := CopyStr(OrderHeader."Ship-to Address 2", 1, MaxStrLen(SalesHeader."Ship-to Address 2"));
                 SalesHeader."Ship-to City" := CopyStr(OrderHeader."Ship-to City", 1, MaxStrLen(SalesHeader."Ship-to City"));
                 SalesHeader."Ship-to Country/Region Code" := ProcessOrder.GetCountryCode(CopyStr(OrderHeader."Ship-to Country/Region Code", 1, 10));
                 SalesHeader."Ship-to Post Code" := CopyStr(OrderHeader."Ship-to Post Code", 1, MaxStrLen(SalesHeader."Ship-to Post Code"));
                 SalesHeader."Ship-to County" := CopyStr(OrderHeader."Ship-to County", 1, MaxStrLen(SalesHeader."Ship-to County"));
                 SalesHeader."Ship-to Contact" := OrderHeader."Ship-to Contact Name";
+                SalesHeader."Prices Including VAT" := OrderHeader."VAT Included";
                 SalesHeader.Validate("Currency Code", Shop."Currency Code");
                 SalesHeader.Validate("Document Date", DT2Date(RefundHeader."Created At"));
                 if OrderMgt.FindTaxArea(OrderHeader, ShopifyTaxArea) and (ShopifyTaxArea."Tax Area Code" <> '') then

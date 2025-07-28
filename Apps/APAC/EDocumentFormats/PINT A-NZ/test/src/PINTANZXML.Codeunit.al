@@ -18,6 +18,8 @@ using Microsoft.Bank.Setup;
 codeunit 148004 "PINT A-NZ XML"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
+    RequiredTestIsolation = Disabled;
 
     var
         Assert: Codeunit Assert;

@@ -128,6 +128,8 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
         ItemReference.SetRange("Reference Type No.", VendorNo);
         ItemReference.SetRange("Reference No.", EDocumentPurchaseLine."Product Code");
         ItemReference.SetRange("Unit of Measure", EDocumentPurchaseLine."[BC] Unit of Measure");
+        ItemReference.SetFilter("Starting Date", '<= %1', WorkDate());
+        ItemReference.SetFilter("Ending Date", '>= %1 | %2', WorkDate(), 0D);
         if ItemReference.FindSet() then
             repeat
                 if ItemReference.HasValidUnitOfMeasure() then

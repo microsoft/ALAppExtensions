@@ -22,6 +22,7 @@ using System.Utilities;
 codeunit 139876 "PowerBI Finance Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     Access = Internal;
 
     var
