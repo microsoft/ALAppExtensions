@@ -87,7 +87,7 @@ codeunit 30286 "Shpfy Company API"
         UpdateCompanyLocationPaymentTerms(CompanyLocation)
     end;
 
-    internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
+    internal procedure SetShop(Shop: Record "Shpfy Shop")
     begin
         this.Shop := ShopifyShop;
         CommunicationMgt.SetShop(ShopifyShop);

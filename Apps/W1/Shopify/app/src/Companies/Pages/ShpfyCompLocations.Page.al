@@ -5,6 +5,8 @@
 
 namespace Microsoft.Integration.Shopify;
 
+using Microsoft.Sales.Customer;
+
 /// <summary>
 /// Page Shpfy Company Locations (ID 30165).
 /// </summary>

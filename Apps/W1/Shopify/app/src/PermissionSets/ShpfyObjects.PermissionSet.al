@@ -165,6 +165,7 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL CompanyMetafieldIds" = X,
         codeunit "Shpfy GQL CompLocations" = X,
         codeunit "Shpfy GQL CreateCatalog" = X,
+        codeunit "Shpfy GQL CreateCompLocation" = X,
         codeunit "Shpfy GQL CreateCompLocTaxId" = X,
         codeunit "Shpfy GQL CreateFulfillmentSvc" = X,
         codeunit "Shpfy GQL CreatePriceList" = X,
