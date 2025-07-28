@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "The Dynamics 365 Business Central E-Documents module enables different models of electronic invoicing, available for additional localizations.",
   "description": "Business Central's E-Documents module is the foundation layer for all e-invoicing standards covering most common processes, but it can be used for other electronic documents. The module is easily extendable with the country-based e-invoicing apps. The E-Documents app covers both sales and purchase processes and can have different lifecycles from standard invoices in Business Central.",
-  "version": "27.0.0.0",
+  "version": "$(app_currentVersion)",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
@@ -24,11 +24,6 @@
       "publisher": "Microsoft"
     },
     {
-      "id": "d67591a4-895c-4d2e-8e94-402badd1a5c6",
-      "name": "E-Document Core Demo Data (US)",
-      "publisher": "Microsoft"
-    },
-    {
       "id": "14aa1237-2f69-4c25-9a68-fa7d54e08613",
       "name": "Payables Agent",
       "publisher": "Microsoft"
@@ -37,20 +32,10 @@
       "id": "967eceac-106e-4102-b76a-fe5dc3d799e5",
       "name": "Payables Agent Tests",
       "publisher": "Microsoft"
-    },
-    {
-      "id": "74af2bd0-01ca-4bfe-aeca-75bc389cb11a",
-      "name": "New E-Doc Experience Helper",
-      "publisher": "Microsoft"
-    },
-    {
-      "id": "9767f7d7-43ce-4416-a2b7-93e3f2d57eeb",
-      "name": "ADI Json Content",
-      "publisher": "Microsoft"
     }
   ],
   "screenshots": [],
-  "platform": "27.0.0.0",
+  "platform": "$(app_platformVersion)",
   "idRanges": [
     {
       "from": 6100,
@@ -62,7 +47,7 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "27.0.0.0",
+  "application": "$(app_minimumVersion)",
   "target": "OnPrem",
   "resourceFolders": [
     ".resources"

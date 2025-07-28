@@ -21,7 +21,7 @@ using Microsoft.Foundation.PaymentTerms;
 codeunit 13922 "ZUGFeRD XML Document Tests"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
 
     trigger OnRun();
     begin
@@ -183,7 +183,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
 
         // [THEN] ZUGFeRD Electronic Document is created with payment terms
-        VerifyPaymentTerms(SalesInvoiceHeader."Payment Terms Code", TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms');
+        VerifyPaymentTerms(SalesInvoiceHeader."Payment Terms Code", SalesInvoiceHeader."Due Date", TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms');
     end;
 
     [Test]
@@ -441,7 +441,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
 
         // [THEN] ZUGFeRD Electronic Document is created with payment terms
-        VerifyPaymentTerms(SalesCrMemoHeader."Payment Terms Code", TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms');
+        VerifyPaymentTerms(SalesCrMemoHeader."Payment Terms Code", SalesCrMemoHeader."Due Date", TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms');
     end;
 
     [Test]
@@ -631,6 +631,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         SalesHeader.Validate("Your Reference", LibraryUtility.GenerateRandomText(20));
         SalesHeader.Validate("Payment Terms Code", PaymentTermsCode);
         SalesHeader.Validate("Payment Method Code", PaymentMethod.Code);
+        SalesHeader.Validate("Due Date", LibraryRandom.RandDate(LibraryRandom.RandIntInRange(5, 10)));
         SalesHeader.Modify(true);
     end;
 
@@ -793,7 +794,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Assert.AreEqual(GetIBAN(CompanyInformation.IBAN), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
-    local procedure VerifyPaymentTerms(PaymentTermsCode: Code[10]; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
+    local procedure VerifyPaymentTerms(PaymentTermsCode: Code[10]; DueDate: Date; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
     var
         PaymentTerms: Record "Payment Terms";
         Path: Text;
@@ -801,6 +802,8 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         PaymentTerms.Get(PaymentTermsCode);
         Path := DocumentTok + '/ram:Description';
         Assert.AreEqual(PaymentTerms.Description, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/ram:DueDateDateTime/udt:DateTimeString';
+        Assert.AreEqual(FormatDate(DueDate), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyTaxTotals(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -1166,7 +1169,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     begin
         exit(Format(VarDecimal, 0, '<Precision,4:4><Standard Format,9>'))
     end;
-
 
     local procedure Initialize();
     begin

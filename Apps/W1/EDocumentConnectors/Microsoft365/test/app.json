@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "E-Document Connector - Microsoft 365 Tests",
   "description": "E-Document Connector - Microsoft 365 Tests",
-  "version": "27.0.0.0",
+  "version": "$(app_currentVersion)",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
@@ -16,23 +16,23 @@
       "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
       "name": "E-Document Core",
       "publisher": "Microsoft",
-      "version": "27.0.0.0"
+      "version": "$(app_minimumVersion)"
     },
     {
       "id": "ec6b3b0e-f983-408b-8476-bafb4368ecbc",
       "name": "E-Document Connector - Microsoft 365",
       "publisher": "Microsoft",
-      "version": "27.0.0.0"
+      "version": "$(app_minimumVersion)"
     },
     {
       "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
       "name": "Tests-TestLibraries",
       "publisher": "Microsoft",
-      "version": "27.0.0.0"
+      "version": "$(app_minimumVersion)"
     }
   ],
   "screenshots": [],
-  "platform": "27.0.0.0",
+  "platform": "$(app_platformVersion)",
   "idRanges": [
     {
       "from": 148195,
@@ -44,7 +44,7 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "27.0.0.0",
+  "application": "$(app_minimumVersion)",
   "target": "OnPrem",
   "features": [
     "TranslationFile"

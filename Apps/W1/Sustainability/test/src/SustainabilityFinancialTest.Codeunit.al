@@ -11,7 +11,7 @@ using Microsoft.Purchases.Document;
 codeunit 148186 "Sustainability Financial Test"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

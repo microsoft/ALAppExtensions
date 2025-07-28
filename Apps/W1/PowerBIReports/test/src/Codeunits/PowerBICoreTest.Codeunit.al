@@ -13,7 +13,7 @@ using System.Text;
 codeunit 139875 "PowerBI Core Test"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     Access = Internal;
 
     var

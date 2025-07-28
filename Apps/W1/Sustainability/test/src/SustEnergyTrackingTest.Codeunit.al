@@ -15,7 +15,7 @@ using Microsoft.Foundation.AuditCodes;
 codeunit 148208 "Sust. Energy Tracking Test"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

@@ -589,6 +589,14 @@ page 36951 "PowerBI Reports Setup"
         }
     }
 
+    trigger OnOpenPage()
+    var
+        PowerBIInitialization: Codeunit Initialization;
+    begin
+        if not Rec.FindFirst() then
+            PowerBIInitialization.SetupDefaultsForPowerBIReportsIfNotInitialized();
+    end;
+
     trigger OnAfterGetCurrRecord()
     begin
         OnUpdateCalendarSelection();
