@@ -19,7 +19,7 @@ using Microsoft.Foundation.PaymentTerms;
 codeunit 13918 "XRechnung XML Document Tests"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
 
     trigger OnRun();
     begin

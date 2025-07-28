@@ -21,7 +21,7 @@ codeunit 139540 "Sales Forecast Tests"
     // version Test,W1,All
 
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
 
     var

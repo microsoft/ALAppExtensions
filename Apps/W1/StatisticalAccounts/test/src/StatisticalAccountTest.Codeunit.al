@@ -14,7 +14,7 @@ codeunit 139683 "Statistical Account Test"
 {
     // [FEATURE] [Statistical Accounts]
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

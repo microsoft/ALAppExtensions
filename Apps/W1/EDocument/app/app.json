@@ -24,11 +24,6 @@
       "publisher": "Microsoft"
     },
     {
-      "id": "d67591a4-895c-4d2e-8e94-402badd1a5c6",
-      "name": "E-Document Core Demo Data (US)",
-      "publisher": "Microsoft"
-    },
-    {
       "id": "14aa1237-2f69-4c25-9a68-fa7d54e08613",
       "name": "Payables Agent",
       "publisher": "Microsoft"
@@ -36,16 +31,6 @@
     {
       "id": "967eceac-106e-4102-b76a-fe5dc3d799e5",
       "name": "Payables Agent Tests",
-      "publisher": "Microsoft"
-    },
-    {
-      "id": "74af2bd0-01ca-4bfe-aeca-75bc389cb11a",
-      "name": "New E-Doc Experience Helper",
-      "publisher": "Microsoft"
-    },
-    {
-      "id": "9767f7d7-43ce-4416-a2b7-93e3f2d57eeb",
-      "name": "ADI Json Content",
       "publisher": "Microsoft"
     }
   ],

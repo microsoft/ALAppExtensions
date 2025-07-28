@@ -311,7 +311,6 @@ codeunit 30161 "Shpfy Import Order"
     var
         Parameters: Dictionary of [Text, Text];
         JResponse: JsonToken;
-        GraphQuery: Text;
     begin
         Parameters.Add('OrderId', Format(OrderId));
         if Shop."B2B Enabled" then
@@ -491,10 +490,6 @@ codeunit 30161 "Shpfy Import Order"
                 JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.mainContact.customer.defaultPhoneNumber.phoneNumber', OrderHeaderRecordRef, OrderHeader.FieldNo("Company Main Contact Phone No."));
                 if Format(OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Sell-to Customer Name")).Value) = '' then
                     JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.name', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to Customer Name"));
-                if Shop."B2B Enabled" then begin
-                    StaffMemberId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrder, 'staffMember.id'));
-                    SetSalespersonOnOrderHeader(OrderHeader."Shop Code", StaffMemberId, OrderHeaderRecordRef);
-                end;
             end;
             if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity.location') then begin
                 LocationId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrder, 'purchasingEntity.location.id'));

@@ -9,7 +9,7 @@
 codeunit 139504 "Test Data Archive Impl."
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
 
     var
         Assert: Codeunit "Library Assert";
