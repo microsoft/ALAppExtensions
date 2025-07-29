@@ -11,16 +11,16 @@ enum 6110 "E-Doc. Proc. Customizations" implements
     IPurchaseOrderProvider,
     IPurchaseLineProvider,
     IUnitOfMeasureProvider,
-    IEDocumentCreatePurchaseInvoice
+    IEDocumentCreatePurchaseInvoice,
+    IEDocumentCreatePurchaseCreditMemo
 {
     Extensible = true;
     DefaultImplementation = IVendorProvider = "E-Doc. Providers",
                             IPurchaseOrderProvider = "E-Doc. Providers",
                             IPurchaseLineProvider = "E-Doc. Providers",
                             IUnitOfMeasureProvider = "E-Doc. Providers",
-                            IEDocumentCreatePurchaseInvoice = "E-Doc. Create Purchase Invoice";
+                            IEDocumentCreatePurchaseInvoice = "E-Doc. Create Purchase Invoice",
+                            IEDocumentCreatePurchaseCreditMemo = "E-Doc. Create Purch. Cr. Memo";
 
-    value(0; Default)
-    {
-    }
+    value(0; Default) { }
 }

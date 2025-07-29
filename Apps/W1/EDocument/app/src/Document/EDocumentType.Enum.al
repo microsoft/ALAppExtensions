@@ -56,6 +56,7 @@ enum 6121 "E-Document Type" implements IEDocumentFinishDraft
     value(10; "Purchase Credit Memo")
     {
         Caption = 'Purchase Credit Memo';
+        Implementation = IEDocumentFinishDraft = "E-Doc. Create Purch. Cr. Memo";
     }
     value(11; "Service Order")
     {

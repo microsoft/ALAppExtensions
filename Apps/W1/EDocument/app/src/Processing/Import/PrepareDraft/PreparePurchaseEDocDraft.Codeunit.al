@@ -88,7 +88,7 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         if EDocumentPurchaseHeader."[BC] Vendor No." <> '' then
             CopilotLineMatching(EDocument."Entry No");
 
-        exit("E-Document Type"::"Purchase Invoice");
+        exit(EDocumentPurchaseHeader."E-Document Type");
     end;
 
     local procedure CopilotLineMatching(EDocumentEntryNo: Integer)

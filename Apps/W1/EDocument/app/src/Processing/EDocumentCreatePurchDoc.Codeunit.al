@@ -156,6 +156,10 @@ codeunit 6136 "E-Document Create Purch. Doc."
                             EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseField, TempDocumentLine.Field(PurchaseField."No."));
                     until PurchaseField.Next() = 0;
 
+                // After processing all fields, set direct unit cost to be the same as in the import file
+                if Format(DocumentLine.Field(PurchaseLine.FieldNo(Type)).Value()) <> '0' then 
+                    EDocumentImportHelper.ProcessDecimalField(EDocument, DocumentLine, PurchaseLine.FieldNo("Direct Unit Cost"), TempDocumentLine.Field(PurchaseLine.FieldNo("Direct Unit Cost")).Value());
+
                 OnCreateNewPurchLineOnBeforeRecRefModify(EDocument, TempDocumentHeader, DocumentHeader, TempDocumentLine, DocumentLine);
                 DocumentLine.Modify(true);
             until TempDocumentLine.Next() = 0;

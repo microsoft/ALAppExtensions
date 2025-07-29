@@ -16,9 +16,9 @@ using System.Telemetry;
 using Microsoft.Foundation.Attachment;
 
 /// <summary>
-/// Dealing with the creation of the purchase invoice after the draft has been populated.
+/// Dealing with the creation of the purchase credit memo after the draft has been populated.
 /// </summary>
-codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft, IEDocumentCreatePurchaseInvoice
+codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, IEDocumentCreatePurchaseCreditMemo
 {
     Access = Internal;
     Permissions = tabledata "Dimension Set Tree Node" = im,
@@ -27,7 +27,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
     var
         Telemetry: Codeunit "Telemetry";
         EDocImpSessionTelemetry: Codeunit "E-Doc. Imp. Session Telemetry";
-        InvoiceAlreadyExistsErr: Label 'A purchase invoice with external document number %1 already exists for vendor %2.', Comment = '%1 = Vendor Invoice No., %2 = Vendor No.';
+        CreditMemoAlreadyExistsErr: Label 'A purchase credit memo with external document number %1 already exists for vendor %2.', Comment = '%1 = Vendor Credit Memo No., %2 = Vendor No.';
         DraftLineDoesNotConstantTypeAndNumberErr: Label 'One of the draft lines do not contain the type and number. Please, specify these fields manually.';
 
     procedure ApplyDraftToBC(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters"): RecordId
@@ -35,16 +35,16 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         PurchaseHeader: Record "Purchase Header";
         DocumentAttachmentMgt: Codeunit "Document Attachment Mgmt";
-        IEDocumentFinishPurchaseDraft: Interface IEDocumentCreatePurchaseInvoice;
+        IEDocumentFinishPurchaseDraft: Interface IEDocumentCreatePurchaseCreditMemo;
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         IEDocumentFinishPurchaseDraft := EDocImportParameters."Processing Customizations";
-        PurchaseHeader := IEDocumentFinishPurchaseDraft.CreatePurchaseInvoice(EDocument);
+        PurchaseHeader := IEDocumentFinishPurchaseDraft.CreatePurchaseCreditMemo(EDocument);
         PurchaseHeader.SetRecFilter();
         PurchaseHeader.FindFirst();
         PurchaseHeader."Doc. Amount Incl. VAT" := EDocumentPurchaseHeader.Total;
         PurchaseHeader."Doc. Amount VAT" := EDocumentPurchaseHeader."Total VAT";
-        PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Invoice);
+        PurchaseHeader.TestField("Document Type", "Purchase Document Type"::"Credit Memo");
         PurchaseHeader.TestField("No.");
         PurchaseHeader."E-Document Link" := EDocument.SystemId;
         PurchaseHeader.Modify();
@@ -67,12 +67,12 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         PurchaseHeader.SetRange("E-Document Link", EDocument.SystemId);
         if not PurchaseHeader.FindFirst() then
             exit;
-        PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Invoice);
+        PurchaseHeader.TestField("Document Type", "Purchase Document Type"::"Credit Memo");
         Clear(PurchaseHeader."E-Document Link");
         PurchaseHeader.Delete(true);
     end;
 
-    procedure CreatePurchaseInvoice(EDocument: Record "E-Document"): Record "Purchase Header"
+    procedure CreatePurchaseCreditMemo(EDocument: Record "E-Document"): Record "Purchase Header"
     var
         PurchaseHeader: Record "Purchase Header";
         GLSetup: Record "General Ledger Setup";
@@ -83,29 +83,29 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
         DimensionManagement: Codeunit DimensionManagement;
         PurchaseLineCombinedDimensions: array[10] of Integer;
-        StopCreatingPurchaseInvoice: Boolean;
-        VendorInvoiceNo: Code[35];
+        StopCreatingPurchaseCreditMemo: Boolean;
+        VendorCreditMemoNo: Code[35];
         GlobalDim1, GlobalDim2 : Code[20];
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         if not AllDraftLinesHaveTypeAndNumberSpecificed(EDocumentPurchaseHeader) then begin
-            Telemetry.LogMessage('0000PLY', 'Draft line does not contain type or number', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All);
+            Telemetry.LogMessage('0000PLZ', 'Draft line does not contain type or number', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All);
             Error(DraftLineDoesNotConstantTypeAndNumberErr);
         end;
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");
-        PurchaseHeader.Validate("Document Type", "Purchase Document Type"::Invoice);
+        PurchaseHeader.Validate("Document Type", "Purchase Document Type"::"Credit Memo");
         PurchaseHeader.Validate("Buy-from Vendor No.", EDocumentPurchaseHeader."[BC] Vendor No.");
 
-        VendorInvoiceNo := CopyStr(EDocumentPurchaseHeader."Sales Invoice No.", 1, MaxStrLen(PurchaseHeader."Vendor Invoice No."));
+        VendorCreditMemoNo := CopyStr(EDocumentPurchaseHeader."Sales Invoice No.", 1, MaxStrLen(PurchaseHeader."Vendor Cr. Memo No."));
         VendorLedgerEntry.SetLoadFields("Entry No.");
         VendorLedgerEntry.ReadIsolation := VendorLedgerEntry.ReadIsolation::ReadUncommitted;
-        StopCreatingPurchaseInvoice := PurchaseHeader.FindPostedDocumentWithSameExternalDocNo(VendorLedgerEntry, VendorInvoiceNo);
-        if StopCreatingPurchaseInvoice then begin
-            Telemetry.LogMessage('0000PHC', InvoiceAlreadyExistsErr, Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
-            Error(InvoiceAlreadyExistsErr, VendorInvoiceNo, EDocumentPurchaseHeader."[BC] Vendor No.");
+        StopCreatingPurchaseCreditMemo := PurchaseHeader.FindPostedDocumentWithSameExternalDocNo(VendorLedgerEntry, VendorCreditMemoNo);
+        if StopCreatingPurchaseCreditMemo then begin
+            Telemetry.LogMessage('0000PHD', CreditMemoAlreadyExistsErr, Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
+            Error(CreditMemoAlreadyExistsErr, VendorCreditMemoNo, EDocumentPurchaseHeader."[BC] Vendor No.");
         end;
 
-        PurchaseHeader.Validate("Vendor Invoice No.", VendorInvoiceNo);
+        PurchaseHeader.Validate("Vendor Cr. Memo No.", VendorCreditMemoNo);
         PurchaseHeader.Validate("Vendor Order No.", EDocumentPurchaseHeader."Purchase Order No.");
         PurchaseHeader.Insert(true);
 
@@ -113,7 +113,6 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
             PurchaseHeader.Validate("Document Date", EDocumentPurchaseHeader."Document Date");
         if EDocumentPurchaseHeader."Due Date" <> 0D then
             PurchaseHeader.Validate("Due Date", EDocumentPurchaseHeader."Due Date");
-        PurchaseHeader."Invoice Received Date" := PurchaseHeader."Document Date";
         PurchaseHeader.Modify();
 
         // Validate of currency has to happen after insert.
