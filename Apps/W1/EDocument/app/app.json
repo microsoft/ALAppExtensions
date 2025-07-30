@@ -47,6 +47,11 @@
       "id": "9767f7d7-43ce-4416-a2b7-93e3f2d57eeb",
       "name": "ADI Json Content",
       "publisher": "Microsoft"
+    },
+    {
+      "id": "8238f99b-cbe5-4b9c-b247-7771145b7470",
+      "name": "E-Document Format for Factura-E",
+      "publisher": "Microsoft"
     }
   ],
   "screenshots": [],
