@@ -52,7 +52,7 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
 
         PopulateFacturaEPurchaseInvoiceHeader(FacturaEXML, XmlNamespaces, EDocumentPurchaseHeader, EDocument);
         InsertFacturaEPurchaseInvoiceLines(FacturaEXML, XmlNamespaces, EDocumentPurchaseHeader."E-Document Entry No.");
-        EDocumentPurchaseHeader.Modify();
+        EDocumentPurchaseHeader.Modify(false);
         EDocument.Direction := EDocument.Direction::Incoming;
         exit(Enum::"E-Doc. Process Draft"::"Purchase Document");
     end;
