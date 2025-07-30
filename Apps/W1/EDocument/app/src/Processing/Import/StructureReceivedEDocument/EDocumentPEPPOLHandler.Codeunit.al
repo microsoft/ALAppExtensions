@@ -101,14 +101,13 @@ codeunit 6173 "E-Document PEPPOL Handler" implements IStructuredFormatReader
         if not PeppolXML.SelectNodes(CreditNoteLinePathLbl, XmlNamespaces, LineXMLList) then
             exit;
 
-        for i := 1 to LineXMLList.Count do begin
+        foreach LineXMLNode in LineXMLList do begin
             Clear(EDocumentPurchaseLine);
             EDocumentPurchaseLine.Validate("E-Document Entry No.", EDocumentEntryNo);
             EDocumentPurchaseLine."Line No." := EDocumentPurchaseLine.GetNextLineNo(EDocumentEntryNo);
-            LineXMLList.Get(i, LineXMLNode);
             NewLineXML.ReplaceNodes(LineXMLNode);
             PopulateEDocumentPurchaseCreditMemoLine(NewLineXML, XmlNamespaces, EDocumentPurchaseLine);
-            EDocumentPurchaseLine.Insert();
+            EDocumentPurchaseLine.Insert(false);
         end;
     end;
 

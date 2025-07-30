@@ -115,6 +115,7 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
         Vendor: Record Vendor;
         VendorReceiveEDocumentErr: Label 'The %1 = %2 has an invalid %3 value: %4. Please correct the vendor setup.', Comment = '%1 = Vendor Table Caption, %2 = Vendor No., %3 = Receive E-Document To Field Caption, %4 = Receive E-Document To Value';
     begin
+        Vendor.SetLoadFields("Receive E-Document To");
         Vendor.Get(EDocumentPurchaseHeader."[BC] Vendor No.");
         case Vendor."Receive E-Document To" of
             Vendor."Receive E-Document To"::"Purchase Invoice":
@@ -169,16 +170,16 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
         case PurchaseLineType of
             "Purchase Line Type"::Item:
                 begin
-                    if Item.Get(PurchaseLineTypeNo) then;
-                    if Item."Purch. Unit of Measure" <> '' then
-                        UnitOfMeasureCode := Item."Purch. Unit of Measure"
-                    else
-                        UnitOfMeasureCode := Item."Base Unit of Measure";
+                    if Item.Get(PurchaseLineTypeNo) then
+                        if Item."Purch. Unit of Measure" <> '' then
+                            UnitOfMeasureCode := Item."Purch. Unit of Measure"
+                        else
+                            UnitOfMeasureCode := Item."Base Unit of Measure";
                 end;
             "Purchase Line Type"::Resource:
                 begin
-                    if Resource.Get(PurchaseLineTypeNo) then;
-                    UnitOfMeasureCode := Resource."Base Unit of Measure";
+                    if Resource.Get(PurchaseLineTypeNo) then
+                        UnitOfMeasureCode := Resource."Base Unit of Measure";
                 end;
         end;
     end;

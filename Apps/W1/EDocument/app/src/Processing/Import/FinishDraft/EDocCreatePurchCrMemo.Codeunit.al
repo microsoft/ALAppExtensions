@@ -34,24 +34,11 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         PurchaseHeader: Record "Purchase Header";
-        DocumentAttachmentMgt: Codeunit "Document Attachment Mgmt";
         IEDocumentFinishPurchaseDraft: Interface IEDocumentCreatePurchaseCreditMemo;
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         IEDocumentFinishPurchaseDraft := EDocImportParameters."Processing Customizations";
         PurchaseHeader := IEDocumentFinishPurchaseDraft.CreatePurchaseCreditMemo(EDocument);
-        PurchaseHeader.SetRecFilter();
-        PurchaseHeader.FindFirst();
-        PurchaseHeader."Doc. Amount Incl. VAT" := EDocumentPurchaseHeader.Total;
-        PurchaseHeader."Doc. Amount VAT" := EDocumentPurchaseHeader."Total VAT";
-        PurchaseHeader.TestField("Document Type", "Purchase Document Type"::"Credit Memo");
-        PurchaseHeader.TestField("No.");
-        PurchaseHeader."E-Document Link" := EDocument.SystemId;
-        PurchaseHeader.Modify();
-
-        // Post document creation
-        DocumentAttachmentMgt.CopyAttachments(EDocument, PurchaseHeader);
-        DocumentAttachmentMgt.DeleteAttachedDocuments(EDocument);
 
         // Post document validation - Silently emit telemetry
         if not TryValidateDocumentTotals(PurchaseHeader) then
@@ -75,17 +62,9 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
     procedure CreatePurchaseCreditMemo(EDocument: Record "E-Document"): Record "Purchase Header"
     var
         PurchaseHeader: Record "Purchase Header";
-        GLSetup: Record "General Ledger Setup";
-        VendorLedgerEntry: Record "Vendor Ledger Entry";
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
-        PurchaseLine: Record "Purchase Line";
         EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
-        DimensionManagement: Codeunit DimensionManagement;
-        PurchaseLineCombinedDimensions: array[10] of Integer;
-        StopCreatingPurchaseCreditMemo: Boolean;
-        VendorCreditMemoNo: Code[35];
-        GlobalDim1, GlobalDim2 : Code[20];
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         if not AllDraftLinesHaveTypeAndNumberSpecificed(EDocumentPurchaseHeader) then begin
@@ -93,75 +72,14 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
             Error(DraftLineDoesNotConstantTypeAndNumberErr);
         end;
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");
-        PurchaseHeader.Validate("Document Type", "Purchase Document Type"::"Credit Memo");
-        PurchaseHeader.Validate("Buy-from Vendor No.", EDocumentPurchaseHeader."[BC] Vendor No.");
-
-        VendorCreditMemoNo := CopyStr(EDocumentPurchaseHeader."Sales Invoice No.", 1, MaxStrLen(PurchaseHeader."Vendor Cr. Memo No."));
-        VendorLedgerEntry.SetLoadFields("Entry No.");
-        VendorLedgerEntry.ReadIsolation := VendorLedgerEntry.ReadIsolation::ReadUncommitted;
-        StopCreatingPurchaseCreditMemo := PurchaseHeader.FindPostedDocumentWithSameExternalDocNo(VendorLedgerEntry, VendorCreditMemoNo);
-        if StopCreatingPurchaseCreditMemo then begin
-            Telemetry.LogMessage('0000PHD', CreditMemoAlreadyExistsErr, Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
-            Error(CreditMemoAlreadyExistsErr, VendorCreditMemoNo, EDocumentPurchaseHeader."[BC] Vendor No.");
-        end;
-
-        PurchaseHeader.Validate("Vendor Cr. Memo No.", VendorCreditMemoNo);
-        PurchaseHeader.Validate("Vendor Order No.", EDocumentPurchaseHeader."Purchase Order No.");
-        PurchaseHeader.Insert(true);
-
-        if EDocumentPurchaseHeader."Document Date" <> 0D then
-            PurchaseHeader.Validate("Document Date", EDocumentPurchaseHeader."Document Date");
-        if EDocumentPurchaseHeader."Due Date" <> 0D then
-            PurchaseHeader.Validate("Due Date", EDocumentPurchaseHeader."Due Date");
-        PurchaseHeader.Modify();
-
-        // Validate of currency has to happen after insert.
-        GLSetup.GetRecordOnce();
-        if EDocumentPurchaseHeader."Currency Code" <> GLSetup.GetCurrencyCode('') then begin
-            PurchaseHeader.Validate("Currency Code", EDocumentPurchaseHeader."Currency Code");
-            PurchaseHeader.Modify();
-        end;
-
-        // Track changes for history
-        EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseHeader, PurchaseHeader);
+        CreatePurchaseHeader(EDocument, PurchaseHeader, EDocumentPurchaseHeader, EDocumentPurchaseHistMapping);
 
         EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocument."Entry No");
         if EDocumentPurchaseLine.FindSet() then
             repeat
-                PurchaseLine."Document Type" := PurchaseHeader."Document Type";
-                PurchaseLine."Document No." := PurchaseHeader."No.";
-                PurchaseLine."Line No." += 10000;
-                PurchaseLine."Unit of Measure Code" := CopyStr(EDocumentPurchaseLine."[BC] Unit of Measure", 1, MaxStrLen(PurchaseLine."Unit of Measure Code"));
-                PurchaseLine."Variant Code" := EDocumentPurchaseLine."[BC] Variant Code";
-                PurchaseLine.Type := EDocumentPurchaseLine."[BC] Purchase Line Type";
-                PurchaseLine.Validate("No.", EDocumentPurchaseLine."[BC] Purchase Type No.");
-                PurchaseLine.Description := EDocumentPurchaseLine.Description;
-
-                if EDocumentPurchaseLine."[BC] Item Reference No." <> '' then
-                    PurchaseLine.Validate("Item Reference No.", EDocumentPurchaseLine."[BC] Item Reference No.");
-
-                PurchaseLine.Validate(Quantity, EDocumentPurchaseLine.Quantity);
-                PurchaseLine.Validate("Direct Unit Cost", EDocumentPurchaseLine."Unit Price");
-                if EDocumentPurchaseLine."Total Discount" > 0 then
-                    PurchaseLine.Validate("Line Discount Amount", EDocumentPurchaseLine."Total Discount");
-                PurchaseLine.Validate("Deferral Code", EDocumentPurchaseLine."[BC] Deferral Code");
-
-                Clear(PurchaseLineCombinedDimensions);
-                PurchaseLineCombinedDimensions[1] := PurchaseLine."Dimension Set ID";
-                PurchaseLineCombinedDimensions[2] := EDocumentPurchaseLine."[BC] Dimension Set ID";
-                PurchaseLine.Validate("Dimension Set ID", DimensionManagement.GetCombinedDimensionSetID(PurchaseLineCombinedDimensions, GlobalDim1, GlobalDim2));
-                PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 1 Code");
-                PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 2 Code");
-                EDocumentPurchaseHistMapping.ApplyHistoryValuesToPurchaseLine(EDocumentPurchaseLine, PurchaseLine);
-                PurchaseLine.Insert();
-
-                // Track changes for history
-                EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseLine, PurchaseLine);
-
+                CreatePurchaseLine(EDocument, PurchaseHeader, EDocumentPurchaseLine, EDocumentPurchaseHistMapping);
             until EDocumentPurchaseLine.Next() = 0;
-
         exit(PurchaseHeader);
-
     end;
 
     [TryFunction]
@@ -189,5 +107,102 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
                 exit(false);
         until EDocumentPurchaseLine.Next() = 0;
         exit(true);
+    end;
+
+    local procedure CreatePurchaseLine(EDocument: Record "E-Document"; PurchaseHeader: Record "Purchase Header"; EDocumentPurchaseLine: Record "E-Document Purchase Line"; var EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping")
+    var
+        PurchaseLine: Record "Purchase Line";
+        DimensionManagement: Codeunit DimensionManagement;
+        PurchaseLineCombinedDimensions: array[10] of Integer;
+        GlobalDim1: Code[20];
+        GlobalDim2: Code[20];
+    begin
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        if PurchaseLine.FindFirst() then;
+
+        PurchaseLine."Document Type" := PurchaseHeader."Document Type";
+        PurchaseLine."Document No." := PurchaseHeader."No.";
+        PurchaseLine."Line No." += 10000;
+        PurchaseLine."Unit of Measure Code" := CopyStr(EDocumentPurchaseLine."[BC] Unit of Measure", 1, MaxStrLen(PurchaseLine."Unit of Measure Code"));
+        PurchaseLine."Variant Code" := EDocumentPurchaseLine."[BC] Variant Code";
+        PurchaseLine.Type := EDocumentPurchaseLine."[BC] Purchase Line Type";
+        PurchaseLine.Validate("No.", EDocumentPurchaseLine."[BC] Purchase Type No.");
+        PurchaseLine.Description := EDocumentPurchaseLine.Description;
+
+        if EDocumentPurchaseLine."[BC] Item Reference No." <> '' then
+            PurchaseLine.Validate("Item Reference No.", EDocumentPurchaseLine."[BC] Item Reference No.");
+
+        PurchaseLine.Validate(Quantity, EDocumentPurchaseLine.Quantity);
+        PurchaseLine.Validate("Direct Unit Cost", EDocumentPurchaseLine."Unit Price");
+        if EDocumentPurchaseLine."Total Discount" > 0 then
+            PurchaseLine.Validate("Line Discount Amount", EDocumentPurchaseLine."Total Discount");
+        PurchaseLine.Validate("Deferral Code", EDocumentPurchaseLine."[BC] Deferral Code");
+
+        Clear(PurchaseLineCombinedDimensions);
+        PurchaseLineCombinedDimensions[1] := PurchaseLine."Dimension Set ID";
+        PurchaseLineCombinedDimensions[2] := EDocumentPurchaseLine."[BC] Dimension Set ID";
+        PurchaseLine.Validate("Dimension Set ID", DimensionManagement.GetCombinedDimensionSetID(PurchaseLineCombinedDimensions, GlobalDim1, GlobalDim2));
+        PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 1 Code");
+        PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 2 Code");
+        EDocumentPurchaseHistMapping.ApplyHistoryValuesToPurchaseLine(EDocumentPurchaseLine, PurchaseLine);
+        PurchaseLine.Insert(false);
+
+        // Track changes for history
+        EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseLine, PurchaseLine);
+    end;
+
+    local procedure CreatePurchaseHeader(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header"; EDocumentPurchaseHeader: Record "E-Document Purchase Header"; var EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping")
+    var
+        GLSetup: Record "General Ledger Setup";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        DocumentAttachmentMgt: Codeunit "Document Attachment Mgmt";
+        StopCreatingPurchaseCreditMemo: Boolean;
+        VendorCreditMemoNo: Code[35];
+    begin
+        PurchaseHeader.Validate("Document Type", "Purchase Document Type"::"Credit Memo");
+        PurchaseHeader.Validate("Buy-from Vendor No.", EDocumentPurchaseHeader."[BC] Vendor No.");
+
+        VendorCreditMemoNo := CopyStr(EDocumentPurchaseHeader."Sales Invoice No.", 1, MaxStrLen(PurchaseHeader."Vendor Cr. Memo No."));
+        VendorLedgerEntry.SetLoadFields("Entry No.");
+        VendorLedgerEntry.ReadIsolation := VendorLedgerEntry.ReadIsolation::ReadUncommitted;
+        StopCreatingPurchaseCreditMemo := PurchaseHeader.FindPostedDocumentWithSameExternalDocNo(VendorLedgerEntry, VendorCreditMemoNo);
+        if StopCreatingPurchaseCreditMemo then begin
+            Telemetry.LogMessage('0000PHD', CreditMemoAlreadyExistsErr, Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
+            Error(CreditMemoAlreadyExistsErr, VendorCreditMemoNo, EDocumentPurchaseHeader."[BC] Vendor No.");
+        end;
+
+        PurchaseHeader.Validate("Vendor Cr. Memo No.", VendorCreditMemoNo);
+        PurchaseHeader.Validate("Vendor Order No.", EDocumentPurchaseHeader."Purchase Order No.");
+        PurchaseHeader.Insert(true);
+
+        if EDocumentPurchaseHeader."Document Date" <> 0D then
+            PurchaseHeader.Validate("Document Date", EDocumentPurchaseHeader."Document Date");
+        if EDocumentPurchaseHeader."Due Date" <> 0D then
+            PurchaseHeader.Validate("Due Date", EDocumentPurchaseHeader."Due Date");
+        PurchaseHeader.Modify(false);
+
+        // Validate of currency has to happen after insert.
+        GLSetup.GetRecordOnce();
+        if EDocumentPurchaseHeader."Currency Code" <> GLSetup.GetCurrencyCode('') then begin
+            PurchaseHeader.Validate("Currency Code", EDocumentPurchaseHeader."Currency Code");
+            PurchaseHeader.Modify(false);
+        end;
+
+        // Track changes for history
+        EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseHeader, PurchaseHeader);
+
+        PurchaseHeader.SetRecFilter();
+        PurchaseHeader.FindFirst();
+        PurchaseHeader."Doc. Amount Incl. VAT" := EDocumentPurchaseHeader.Total;
+        PurchaseHeader."Doc. Amount VAT" := EDocumentPurchaseHeader."Total VAT";
+        PurchaseHeader.TestField("Document Type", "Purchase Document Type"::"Credit Memo");
+        PurchaseHeader.TestField("No.");
+        PurchaseHeader."E-Document Link" := EDocument.SystemId;
+        PurchaseHeader.Modify(false);
+
+        // Post document creation
+        DocumentAttachmentMgt.CopyAttachments(EDocument, PurchaseHeader);
+        DocumentAttachmentMgt.DeleteAttachedDocuments(EDocument);
     end;
 }
