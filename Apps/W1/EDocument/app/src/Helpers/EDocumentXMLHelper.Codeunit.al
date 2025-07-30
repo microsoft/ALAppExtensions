@@ -10,6 +10,14 @@ codeunit 6127 "EDocument XML Helper"
 {
     Access = Internal;
 
+    /// <summary>
+    /// Extracts currency value from XML document and sets it in the currency field if it differs from LCY.
+    /// </summary>
+    /// <param name="XMLDocument">The XML document to search in.</param>
+    /// <param name="XMLNamespaces">The XML namespace manager for XPath queries.</param>
+    /// <param name="Path">The XPath expression to locate the currency value.</param>
+    /// <param name="MaxLength">The maximum length of the currency code.</param>
+    /// <param name="CurrencyField">The currency field to update with the extracted value.</param>
     internal procedure SetCurrencyValueInField(XMLDocument: XmlDocument; XMLNamespaces: XmlNamespaceManager; Path: Text; MaxLength: Integer; var CurrencyField: Code[10])
     var
         GLSetup: Record "General Ledger Setup";
@@ -38,6 +46,14 @@ codeunit 6127 "EDocument XML Helper"
 #pragma warning restore AA0139
     end;
 
+    /// <summary>
+    /// Extracts string value from XML document and sets it in the specified field.
+    /// </summary>
+    /// <param name="XMLDocument">The XML document to search in.</param>
+    /// <param name="XMLNamespaces">The XML namespace manager for XPath queries.</param>
+    /// <param name="Path">The XPath expression to locate the string value.</param>
+    /// <param name="MaxLength">The maximum length of the string value.</param>
+    /// <param name="Field">The text field to update with the extracted value.</param>
     internal procedure SetStringValueInField(XMLDocument: XmlDocument; XMLNamespaces: XmlNamespaceManager; Path: Text; MaxLength: Integer; var Field: Text)
     var
         XMLNode: XmlNode;
@@ -56,6 +72,13 @@ codeunit 6127 "EDocument XML Helper"
         end;
     end;
 
+    /// <summary>
+    /// Extracts numeric value from XML document and sets it in the specified decimal field.
+    /// </summary>
+    /// <param name="XMLDocument">The XML document to search in.</param>
+    /// <param name="XMLNamespaces">The XML namespace manager for XPath queries.</param>
+    /// <param name="Path">The XPath expression to locate the numeric value.</param>
+    /// <param name="DecimalValue">The decimal field to update with the extracted value.</param>
     internal procedure SetNumberValueInField(XMLDocument: XmlDocument; XMLNamespaces: XmlNamespaceManager; Path: Text; var DecimalValue: Decimal)
     var
         XMLNode: XmlNode;
@@ -67,6 +90,13 @@ codeunit 6127 "EDocument XML Helper"
             Evaluate(DecimalValue, XMLNode.AsXmlElement().InnerText(), 9);
     end;
 
+    /// <summary>
+    /// Extracts date value from XML document and sets it in the specified date field.
+    /// </summary>
+    /// <param name="XMLDocument">The XML document to search in.</param>
+    /// <param name="XMLNamespaces">The XML namespace manager for XPath queries.</param>
+    /// <param name="Path">The XPath expression to locate the date value.</param>
+    /// <param name="DateValue">The date field to update with the extracted value.</param>
     internal procedure SetDateValueInField(XMLDocument: XmlDocument; XMLNamespaces: XmlNamespaceManager; Path: Text; var DateValue: Date)
     var
         XMLNode: XmlNode;

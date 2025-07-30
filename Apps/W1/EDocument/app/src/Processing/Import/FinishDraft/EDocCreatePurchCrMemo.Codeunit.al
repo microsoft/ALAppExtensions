@@ -30,7 +30,13 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
         CreditMemoAlreadyExistsErr: Label 'A purchase credit memo with external document number %1 already exists for vendor %2.', Comment = '%1 = Vendor Credit Memo No., %2 = Vendor No.';
         DraftLineDoesNotConstantTypeAndNumberErr: Label 'One of the draft lines do not contain the type and number. Please, specify these fields manually.';
 
-    procedure ApplyDraftToBC(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters"): RecordId
+    /// <summary>
+    /// Applies the draft E-Document to Business Central by creating a purchase credit memo from the draft data.
+    /// </summary>
+    /// <param name="EDocument">The E-Document record containing the draft data to be applied.</param>
+    /// <param name="EDocImportParameters">The import parameters containing processing customizations.</param>
+    /// <returns>The RecordId of the created purchase credit memo.</returns>
+    internal procedure ApplyDraftToBC(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters"): RecordId
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         PurchaseHeader: Record "Purchase Header";
@@ -47,7 +53,11 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
         exit(PurchaseHeader.RecordId);
     end;
 
-    procedure RevertDraftActions(EDocument: Record "E-Document")
+    /// <summary>
+    /// Reverts the draft actions by deleting the associated purchase credit memo document.
+    /// </summary>
+    /// <param name="EDocument">The E-Document record whose draft actions should be reverted.</param>
+    internal procedure RevertDraftActions(EDocument: Record "E-Document")
     var
         PurchaseHeader: Record "Purchase Header";
     begin
@@ -59,7 +69,12 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
         PurchaseHeader.Delete(true);
     end;
 
-    procedure CreatePurchaseCreditMemo(EDocument: Record "E-Document"): Record "Purchase Header"
+    /// <summary>
+    /// Creates a purchase credit memo from E-Document draft data, including header and line information.
+    /// </summary>
+    /// <param name="EDocument">The E-Document record containing the draft data to create the credit memo from.</param>
+    /// <returns>The created purchase header record for the credit memo.</returns>
+    internal procedure CreatePurchaseCreditMemo(EDocument: Record "E-Document"): Record "Purchase Header"
     var
         PurchaseHeader: Record "Purchase Header";
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
