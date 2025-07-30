@@ -109,49 +109,6 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
         exit(true);
     end;
 
-    local procedure CreatePurchaseLine(EDocument: Record "E-Document"; PurchaseHeader: Record "Purchase Header"; EDocumentPurchaseLine: Record "E-Document Purchase Line"; var EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping")
-    var
-        PurchaseLine: Record "Purchase Line";
-        DimensionManagement: Codeunit DimensionManagement;
-        PurchaseLineCombinedDimensions: array[10] of Integer;
-        GlobalDim1: Code[20];
-        GlobalDim2: Code[20];
-    begin
-        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
-        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
-        if PurchaseLine.FindFirst() then;
-
-        PurchaseLine."Document Type" := PurchaseHeader."Document Type";
-        PurchaseLine."Document No." := PurchaseHeader."No.";
-        PurchaseLine."Line No." += 10000;
-        PurchaseLine."Unit of Measure Code" := CopyStr(EDocumentPurchaseLine."[BC] Unit of Measure", 1, MaxStrLen(PurchaseLine."Unit of Measure Code"));
-        PurchaseLine."Variant Code" := EDocumentPurchaseLine."[BC] Variant Code";
-        PurchaseLine.Type := EDocumentPurchaseLine."[BC] Purchase Line Type";
-        PurchaseLine.Validate("No.", EDocumentPurchaseLine."[BC] Purchase Type No.");
-        PurchaseLine.Description := EDocumentPurchaseLine.Description;
-
-        if EDocumentPurchaseLine."[BC] Item Reference No." <> '' then
-            PurchaseLine.Validate("Item Reference No.", EDocumentPurchaseLine."[BC] Item Reference No.");
-
-        PurchaseLine.Validate(Quantity, EDocumentPurchaseLine.Quantity);
-        PurchaseLine.Validate("Direct Unit Cost", EDocumentPurchaseLine."Unit Price");
-        if EDocumentPurchaseLine."Total Discount" > 0 then
-            PurchaseLine.Validate("Line Discount Amount", EDocumentPurchaseLine."Total Discount");
-        PurchaseLine.Validate("Deferral Code", EDocumentPurchaseLine."[BC] Deferral Code");
-
-        Clear(PurchaseLineCombinedDimensions);
-        PurchaseLineCombinedDimensions[1] := PurchaseLine."Dimension Set ID";
-        PurchaseLineCombinedDimensions[2] := EDocumentPurchaseLine."[BC] Dimension Set ID";
-        PurchaseLine.Validate("Dimension Set ID", DimensionManagement.GetCombinedDimensionSetID(PurchaseLineCombinedDimensions, GlobalDim1, GlobalDim2));
-        PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 1 Code");
-        PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 2 Code");
-        EDocumentPurchaseHistMapping.ApplyHistoryValuesToPurchaseLine(EDocumentPurchaseLine, PurchaseLine);
-        PurchaseLine.Insert(false);
-
-        // Track changes for history
-        EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseLine, PurchaseLine);
-    end;
-
     local procedure CreatePurchaseHeader(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header"; EDocumentPurchaseHeader: Record "E-Document Purchase Header"; var EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping")
     var
         GLSetup: Record "General Ledger Setup";
@@ -204,5 +161,48 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
         // Post document creation
         DocumentAttachmentMgt.CopyAttachments(EDocument, PurchaseHeader);
         DocumentAttachmentMgt.DeleteAttachedDocuments(EDocument);
+    end;
+
+    local procedure CreatePurchaseLine(EDocument: Record "E-Document"; PurchaseHeader: Record "Purchase Header"; EDocumentPurchaseLine: Record "E-Document Purchase Line"; var EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping")
+    var
+        PurchaseLine: Record "Purchase Line";
+        DimensionManagement: Codeunit DimensionManagement;
+        PurchaseLineCombinedDimensions: array[10] of Integer;
+        GlobalDim1: Code[20];
+        GlobalDim2: Code[20];
+    begin
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        if PurchaseLine.FindLast() then;
+
+        PurchaseLine."Document Type" := PurchaseHeader."Document Type";
+        PurchaseLine."Document No." := PurchaseHeader."No.";
+        PurchaseLine."Line No." += 10000;
+        PurchaseLine."Unit of Measure Code" := CopyStr(EDocumentPurchaseLine."[BC] Unit of Measure", 1, MaxStrLen(PurchaseLine."Unit of Measure Code"));
+        PurchaseLine."Variant Code" := EDocumentPurchaseLine."[BC] Variant Code";
+        PurchaseLine.Type := EDocumentPurchaseLine."[BC] Purchase Line Type";
+        PurchaseLine.Validate("No.", EDocumentPurchaseLine."[BC] Purchase Type No.");
+        PurchaseLine.Description := EDocumentPurchaseLine.Description;
+
+        if EDocumentPurchaseLine."[BC] Item Reference No." <> '' then
+            PurchaseLine.Validate("Item Reference No.", EDocumentPurchaseLine."[BC] Item Reference No.");
+
+        PurchaseLine.Validate(Quantity, EDocumentPurchaseLine.Quantity);
+        PurchaseLine.Validate("Direct Unit Cost", EDocumentPurchaseLine."Unit Price");
+        if EDocumentPurchaseLine."Total Discount" > 0 then
+            PurchaseLine.Validate("Line Discount Amount", EDocumentPurchaseLine."Total Discount");
+        PurchaseLine.Validate("Deferral Code", EDocumentPurchaseLine."[BC] Deferral Code");
+
+        Clear(PurchaseLineCombinedDimensions);
+        PurchaseLineCombinedDimensions[1] := PurchaseLine."Dimension Set ID";
+        PurchaseLineCombinedDimensions[2] := EDocumentPurchaseLine."[BC] Dimension Set ID";
+        PurchaseLine.Validate("Dimension Set ID", DimensionManagement.GetCombinedDimensionSetID(PurchaseLineCombinedDimensions, GlobalDim1, GlobalDim2));
+        PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 1 Code");
+        PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 2 Code");
+        EDocumentPurchaseHistMapping.ApplyHistoryValuesToPurchaseLine(EDocumentPurchaseLine, PurchaseLine);
+        PurchaseLine.Insert(false);
+
+        // Track changes for history
+        EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseLine, PurchaseLine);
     end;
 }
