@@ -26,20 +26,6 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
         Shop.Modify();
     end;
 
-    internal procedure GetShopifyFulfillmentOrders()
-    var
-        Shop: Record "Shpfy Shop";
-    begin
-        Shop.Reset();
-        if Shop.FindSet() then
-            repeat
-                if not Shop."Fulfillment Service Activated" then
-                    RegisterFulfillmentService(Shop);
-
-                GetShopifyFulFillmentOrders(Shop);
-            until Shop.Next() = 0;
-    end;
-
     internal procedure GetShopifyFulFillmentOrders(Shop: Record "Shpfy Shop")
     var
         Cursor: Text;
@@ -226,8 +212,9 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
 
         CommunicationMgt.SetShop(Shop);
 
-        if not Shop."Fulfillment Service Activated" then
-            RegisterFulfillmentService(Shop);
+        if Shop."Allow Outgoing Requests" then
+            if not Shop."Fulfillment Service Activated" then
+                RegisterFulfillmentService(Shop);
 
         GraphQLType := "Shpfy GraphQL Type"::GetFulfillmentOrdersFromOrder;
         repeat

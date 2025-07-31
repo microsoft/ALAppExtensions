@@ -30,6 +30,8 @@ codeunit 139875 "PowerBI Core Test"
         PowerBIAPIEndpoints: Enum "PowerBI API Endpoints";
         IsInitialized: Boolean;
         ResponseEmptyErr: Label 'Response should not be empty.';
+        FieldHiddenMsg: Label '''%1'' field should be hidden.', Comment = '%1 - field caption';
+        FieldShownMsg: Label '''%1'' field should be shown.', Comment = '%1 - field caption';
 
     local procedure Initialize()
     begin
@@ -44,8 +46,12 @@ codeunit 139875 "PowerBI Core Test"
     procedure TestGenerateItemSalesReportDateFilter_StartEndDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
         ExpectedFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
@@ -64,16 +70,31 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sales Date");
 
-        // [THEN] A filter text of format "%1..%2" should be created 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Item Sales Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Item Sales End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Item Sales Date Formula".Visible();
+
+        // [THEN] A filter text of format "%1..%2" should be created
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] The Start Date & End Date fields should be shown.
+        Assert.IsTrue(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales Start Date".Caption()));
+        Assert.IsTrue(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales End Date".Caption()));
+        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Item Sales Date Formula".Caption()));
     end;
 
     [Test]
     procedure TestGenerateItemSalesReportDateFilter_RelativeDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
         ExpectedFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
@@ -91,15 +112,30 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sales Date");
 
-        // [THEN] A filter text of format "%1.." should be created 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Item Sales Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Item Sales End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Item Sales Date Formula".Visible();
+
+        // [THEN] A filter text of format "%1.." should be created
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] The Date Formula field should be shown
+        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales Start Date".Caption()));
+        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales End Date".Caption()));
+        Assert.IsTrue(IsDateFormulaVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales Date Formula".Caption()));
     end;
 
     [Test]
     procedure TestGenerateItemSalesReportDateFilter_Blank()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
@@ -112,16 +148,31 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sales Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Item Sales Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Item Sales End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Item Sales Date Formula".Visible();
+
         // [THEN] A blank filter text should be created 
         Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] All date setup fields must be hidden.
+        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales Start Date".Caption()));
+        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales End Date".Caption()));
+        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales Date Formula".Caption()));
     end;
 
     [Test]
     procedure TestGenerateSustainabilityReportDateFilter_StartEndDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ExpectedFilterTxt: Text;
         ActualFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateSustainabilityReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
@@ -140,16 +191,31 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sustainability Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Sustainability Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Sustainability End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Sustainability Date Formula".Visible();
+
         // [THEN] A filter text of format "%1..%2" should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] The Start Date & End Date fields should be shown.
+        Assert.IsTrue(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability Start Date".Caption()));
+        Assert.IsTrue(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability End Date".Caption()));
+        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Sustainability Date Formula".Caption()));
     end;
 
     [Test]
     procedure TestGenerateSustainabilityReportDateFilter_RelativeDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ExpectedFilterTxt: Text;
         ActualFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateSustainabilityReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
@@ -167,15 +233,30 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sustainability Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Sustainability Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Sustainability End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Sustainability Date Formula".Visible();
+
         // [THEN] A filter text of format "%1.." should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] The Date Formula field should be shown.
+        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Sustainability Start Date".Caption()));
+        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Sustainability End Date".Caption()));
+        Assert.IsTrue(IsDateFormulaVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability Date Formula".Caption()));
     end;
 
     [Test]
     procedure TestGenerateSustainabilityReportDateFilter_Blank()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateSustainabilityReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
@@ -188,16 +269,31 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sustainability Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Sustainability Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Sustainability End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Sustainability Date Formula".Visible();
+
         // [THEN] A blank filter text should be created 
         Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] All date setup fields should be hidden.
+        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability Start Date".Caption()));
+        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability End Date".Caption()));
+        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability Date Formula".Caption()));
     end;
 
     [Test]
     procedure GenerateItemPurchasesReportDateFilter_StartEndDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
         ExpectedFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
@@ -216,16 +312,31 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Purchases Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Item Purch. Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Item Purch. End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Item Purch. Date Formula".Visible();
+
         // [THEN] A filter text of format "%1..%2" should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] The Start Date & End Date fields should be shown.
+        Assert.IsTrue(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Purch. Start Date".Caption()));
+        Assert.IsTrue(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Purch. End Date".Caption()));
+        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Item Purch. Date Formula".Caption()));
     end;
 
     [Test]
     procedure GenerateItemPurchasesReportDateFilter_RelativeDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
         ExpectedFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
@@ -243,15 +354,30 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Purchases Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Item Purch. Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Item Purch. End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Item Purch. Date Formula".Visible();
+
         // [THEN] A filter text of format "%1.." should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] The Date Formula field should be shown.
+        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Item Purch. Start Date".Caption()));
+        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Item Purch. End Date".Caption()));
+        Assert.IsTrue(IsDateFormulaVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Purch. Date Formula".Caption()));
     end;
 
     [Test]
     procedure GenerateItemPurchasesReportDateFilter_Blank()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
@@ -264,16 +390,31 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Purchases Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Item Purch. Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Item Purch. End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Item Purch. Date Formula".Visible();
+
         // [THEN] A blank filter text should be created 
         Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] All date setup fields should be hidden.
+        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Item Purch. Start Date".Caption()));
+        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Item Purch. End Date".Caption()));
+        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Item Purch. Date Formula".Caption()));
     end;
 
     [Test]
     procedure GenerateManufacturingReportDateFilter_StartEndDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
         ExpectedFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
@@ -292,16 +433,31 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateManufacturingReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Manufacturing Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Manufacturing Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Manufacturing End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Manufacturing Date Formula".Visible();
+
         // [THEN] A filter text of format "%1..%2" should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] The Start Date & End Date fields should be shown.
+        Assert.IsTrue(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Manufacturing Start Date".Caption()));
+        Assert.IsTrue(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Manufacturing End Date".Caption()));
+        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Manufacturing Date Formula".Caption()));
     end;
 
     [Test]
     procedure GenerateManufacturingReportDateFilter_RelativeDate()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
         ExpectedFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
@@ -319,15 +475,30 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateManufacturingReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Manufacturing Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Manufacturing Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Manufacturing End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Manufacturing Date Formula".Visible();
+
         // [THEN] A filter text of format "%1.." should be created 
         Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] The Date Formula field should be shown.
+        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Manufacturing Start Date".Caption()));
+        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Manufacturing End Date".Caption()));
+        Assert.IsTrue(IsDateFormulaVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Manufacturing Date Formula".Caption()));
     end;
 
     [Test]
     procedure GenerateManufacturingReportDateFilter_Blank()
     var
         PBISetup: Record "PowerBI Reports Setup";
+        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
         ActualFilterTxt: Text;
+        IsStartDateVisible: Boolean;
+        IsEndDateVisible: Boolean;
+        IsDateFormulaVisible: Boolean;
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
@@ -340,8 +511,20 @@ codeunit 139875 "PowerBI Core Test"
         // [WHEN] GenerateManufacturingReportDateFilter executes 
         ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Manufacturing Date");
 
+        // [WHEN] The Power BI Reports Setup page opens
+        PowerBIReportsSetup.OpenEdit();
+        IsStartDateVisible := PowerBIReportsSetup."Manufacturing Start Date".Visible();
+        IsEndDateVisible := PowerBIReportsSetup."Manufacturing End Date".Visible();
+        IsDateFormulaVisible := PowerBIReportsSetup."Manufacturing Date Formula".Visible();
+
+
         // [THEN] A blank filter text should be created 
         Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
+
+        // [THEN] All date setup fields should be hidden.
+        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Manufacturing Start Date".Caption()));
+        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Manufacturing End Date".Caption()));
+        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Manufacturing Date Formula".Caption()));
     end;
 
     [Test]

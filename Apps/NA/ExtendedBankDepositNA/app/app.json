@@ -2,7 +2,7 @@
     "id":  "0144dfc5-827d-4f37-925a-a20d49f8ef63",
     "name":  "Extended Bank Deposit NA",
     "publisher":  "Microsoft",
-    "version":  "27.0.0.0",
+    "version":  "$(app_currentVersion)",
     "brief":  "Extended Bank Deposit NA",
     "description":  "Extended Bank Deposit NA",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,13 +15,13 @@
                              "id":  "7a129d06-5fd6-4fb6-b82b-0bf539c779d0",
                              "name":  "_Exclude_Bank Deposits",
                              "publisher":  "Microsoft",
-                             "version":  "27.0.0.0"
+                             "version":  "$(app_minimumVersion)"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "27.0.0.0",
+    "platform":  "$(app_platformVersion)",
     "idRanges":  [
                      {
                          "from":  10154,
@@ -35,7 +35,7 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "Cloud",
-    "application":  "27.0.0.0",
+    "application":  "$(app_minimumVersion)",
     "features":  [
                      "TranslationFile",
                      "GenerateCaptions"

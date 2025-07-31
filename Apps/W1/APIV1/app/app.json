@@ -2,7 +2,7 @@
   "id": "8afe7b40-8c87-4beb-ada0-451d1761bf95",
   "name": "_Exclude_APIV1_",
   "publisher": "Microsoft",
-  "version": "27.0.0.0",
+  "version": "$(app_currentVersion)",
   "brief": "APIV1",
   "description": "APIV1",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -13,7 +13,7 @@
   "logo": "ExtensionLogo.png",
   "dependencies": [],
   "screenshots": [],
-  "platform": "27.0.0.0",
+  "platform": "$(app_platformVersion)",
   "idRanges": [
     {
       "from": 2146,
@@ -34,5 +34,5 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "27.0.0.0"
+  "application": "$(app_minimumVersion)"
 }

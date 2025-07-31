@@ -73,6 +73,13 @@ codeunit 11744 "Purchase Header Handler CZL"
         PurchaseHeader.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateDocumentDateWithPostingDate', '', false, false)]
+    local procedure OnBeforeValidateDocumentDateWithPostingDate(var PurchaseHeader: Record "Purchase Header")
+    begin
+        if PurchaseHeader.IsVATReportingDateChanged() then
+            PurchaseHeader.DisableUpdateVATCurrencyFactor();
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnInitFromPurchHeader', '', false, false)]
     local procedure UpdateBankAccountOnInitPurchHeader(var PurchaseHeader: Record "Purchase Header"; SourcePurchaseHeader: Record "Purchase Header")
     begin

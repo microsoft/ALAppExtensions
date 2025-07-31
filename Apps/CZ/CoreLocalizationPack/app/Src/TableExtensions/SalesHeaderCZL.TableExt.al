@@ -328,6 +328,7 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
 
         if ("Currency Factor" <> xRec."Currency Factor") and
            ("Currency Factor" <> "VAT Currency Factor CZL") and
+           ("VAT Reporting Date" = xRec."VAT Reporting Date") and
            ("VAT Reporting Date" = "Posting Date")
         then begin
             "VAT Currency Factor CZL" := "Currency Factor";
@@ -431,6 +432,11 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         else
             "VAT Currency Factor CZL" := xRec."VAT Currency Factor CZL";
         exit(IsConfirmedCZL);
+    end;
+
+    internal procedure IsVATReportingDateChanged(): Boolean
+    begin
+        exit("VAT Reporting Date" <> xRec."VAT Reporting Date");
     end;
 
     procedure UpdateBankInfoCZL(BankAccountCode: Code[20]; BankAccountNo: Text[30]; BankBranchNo: Text[20]; BankName: Text[100]; TransitNo: Text[20]; IBANCode: Code[50]; SWIFTCode: Code[20])
