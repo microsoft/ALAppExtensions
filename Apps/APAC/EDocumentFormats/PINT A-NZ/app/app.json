@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "E-Document Format for PINT A-NZ.",
   "description": "E-Document Format for PINT A-NZ is a customization for Australian/New Zealand business requirements. This app supports PINT A-NZ format for working with E-documents app.",
-  "version": "27.0.37120.0",
+  "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2304905",
