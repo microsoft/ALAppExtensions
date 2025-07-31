@@ -6,7 +6,7 @@ namespace Microsoft.eServices.EDocument.Helpers;
 
 using Microsoft.Finance.GeneralLedger.Setup;
 
-codeunit 6127 "EDocument XML Helper"
+codeunit 6175 "EDocument XML Helper"
 {
     Access = Internal;
 
