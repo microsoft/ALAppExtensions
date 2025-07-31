@@ -79,13 +79,7 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
     end;
 
 #pragma warning disable AA0139 // false positive: overflow handled by SetStringValueInField
-    /// <summary>
-    /// Populates the purchase invoice header with data extracted from the Factura-E XML document.
-    /// </summary>
-    /// <param name="FacturaEXML">The Factura-E XML document containing the invoice data.</param>
-    /// <param name="XmlNamespaces">The XML namespace manager for handling XML namespaces.</param>
-    /// <param name="EDocumentPurchaseHeader">The E-Document Purchase Header record to be populated.</param>
-    /// <param name="EDocument">The E-Document record containing document information.</param>
+
     local procedure PopulateFacturaEPurchaseInvoiceHeader(FacturaEXML: XmlDocument; XmlNamespaces: XmlNamespaceManager; var EDocumentPurchaseHeader: Record "E-Document Purchase Header"; var EDocument: Record "E-Document")
     var
         EDocumentXMLHelper: Codeunit "EDocument XML Helper";
@@ -107,13 +101,6 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
             EDocumentPurchaseHeader."[BC] Vendor No." := VendorNo;
     end;
 #pragma warning restore AA0139
-
-    /// <summary>
-    /// Inserts purchase invoice lines extracted from the Factura-E XML document.
-    /// </summary>
-    /// <param name="FacturaEXML">The Factura-E XML document containing the invoice line data.</param>
-    /// <param name="XmlNamespaces">The XML namespace manager for handling XML namespaces.</param>
-    /// <param name="EDocumentEntryNo">The E-Document entry number to associate with the lines.</param>
     local procedure InsertFacturaEPurchaseInvoiceLines(FacturaEXML: XmlDocument; XmlNamespaces: XmlNamespaceManager; EDocumentEntryNo: Integer)
     var
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
@@ -136,12 +123,6 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
     end;
 
 #pragma warning disable AA0139 // false positive: overflow handled by SetStringValueInField
-    /// <summary>
-    /// Populates a single purchase line with data extracted from the Factura-E XML line.
-    /// </summary>
-    /// <param name="LineXML">The XML document containing a single invoice line.</param>
-    /// <param name="XmlNamespaces">The XML namespace manager for handling XML namespaces.</param>
-    /// <param name="EDocumentPurchaseLine">The E-Document Purchase Line record to be populated.</param>
     local procedure PopulateFacturaEPurchaseLine(LineXML: XmlDocument; XmlNamespaces: XmlNamespaceManager; var EDocumentPurchaseLine: Record "E-Document Purchase Line")
     var
         EDocumentXMLHelper: Codeunit "EDocument XML Helper";
@@ -166,14 +147,6 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
     end;
 #pragma warning restore AA0139
 
-    /// <summary>
-    /// Parses the seller party information from the Factura-E XML and attempts to find the corresponding vendor.
-    /// </summary>
-    /// <param name="FacturaEXML">The Factura-E XML document containing the seller party data.</param>
-    /// <param name="XmlNamespaces">The XML namespace manager for handling XML namespaces.</param>
-    /// <param name="EDocument">The E-Document record containing document information.</param>
-    /// <param name="EDocumentPurchaseHeader">The E-Document Purchase Header record to be updated with vendor information.</param>
-    /// <returns>Returns the vendor number if found, otherwise returns empty string.</returns>
     local procedure ParseSellerParty(FacturaEXML: XmlDocument; XmlNamespaces: XmlNamespaceManager; var EDocument: Record "E-Document"; var EDocumentPurchaseHeader: Record "E-Document Purchase Header") VendorNo: Code[20]
     var
         Vendor: Record Vendor;
@@ -235,12 +208,6 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
         end;
     end;
 
-    /// <summary>
-    /// Parses the buyer party information from the Factura-E XML and updates the purchase header with customer details.
-    /// </summary>
-    /// <param name="FacturaEXML">The Factura-E XML document containing the buyer party data.</param>
-    /// <param name="XmlNamespaces">The XML namespace manager for handling XML namespaces.</param>
-    /// <param name="EDocumentPurchaseHeader">The E-Document Purchase Header record to be updated with customer information.</param>
     local procedure ParseBuyerParty(FacturaEXML: XmlDocument; XmlNamespaces: XmlNamespaceManager; var EDocumentPurchaseHeader: Record "E-Document Purchase Header")
     var
         BuyerName, BuyerAddress : Text;
@@ -256,13 +223,6 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
             EDocumentPurchaseHeader."Customer VAT Id" := CopyStr(XMLNode.AsXmlElement().InnerText(), 1, MaxStrLen(EDocumentPurchaseHeader."Customer VAT Id"));
     end;
 
-    /// <summary>
-    /// Extracts the name from a party (seller or buyer) depending on the person type (individual or corporate).
-    /// </summary>
-    /// <param name="FacturaEXML">The Factura-E XML document containing the party data.</param>
-    /// <param name="XmlNamespaces">The XML namespace manager for handling XML namespaces.</param>
-    /// <param name="PathPrefix">The XML path prefix to the party node (e.g., '/namespace:Facturae/Parties/SellerParty/').</param>
-    /// <returns>Returns the formatted name based on the person type.</returns>
     local procedure GetNameDependingOnType(FacturaEXML: XmlDocument; XmlNamespaces: XmlNamespaceManager; PathPrefix: Text) Name: Text
     var
         XMLNode: XmlNode;
@@ -284,13 +244,6 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
                 Name := XMLNode.AsXmlElement().InnerText();
     end;
 
-    /// <summary>
-    /// Extracts the address from a party (seller or buyer) depending on the residence type (Spain or overseas).
-    /// </summary>
-    /// <param name="FacturaEXML">The Factura-E XML document containing the party data.</param>
-    /// <param name="XmlNamespaces">The XML namespace manager for handling XML namespaces.</param>
-    /// <param name="PathPrefix">The XML path prefix to the party node (e.g., '/namespace:Facturae/Parties/SellerParty/').</param>
-    /// <returns>Returns the address based on the residence type.</returns>
     local procedure GetAddressDependingOnType(FacturaEXML: XmlDocument; XmlNamespaces: XmlNamespaceManager; PathPrefix: Text) Address: Text
     var
         XMLNode: XmlNode;
@@ -308,11 +261,6 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
                 Address := XMLNode.AsXmlElement().InnerText();
     end;
 
-    /// <summary>
-    /// Attempts to convert an international unit of measure code to the corresponding Business Central unit of measure code.
-    /// </summary>
-    /// <param name="ImportedUOMCode">The international unit of measure code as text.</param>
-    /// <returns>Returns the Business Central unit of measure code if found, otherwise returns empty string.</returns>
     local procedure TryGetUOMCodeFromInternationalCode(ImportedUOMCode: Text) UOMCode: Code[10]
     var
         UnitOfMeasure: Record "Unit of Measure";
