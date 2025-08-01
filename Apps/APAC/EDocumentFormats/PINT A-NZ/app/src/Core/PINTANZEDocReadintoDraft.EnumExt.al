@@ -8,6 +8,6 @@ enumextension 28006 "PINT A-NZ EDoc Read into Draft" extends "E-Doc. Read into D
     value(28005; "PINT A-NZ")
     {
         Caption = 'PINT A-NZ';
-        Implementation = IStructuredFormatReader = "PINT A-NZ Read Draft Handler";
+        Implementation = IStructuredFormatReader = "E-Document PINT A-NZ Handler";
     }
 }
