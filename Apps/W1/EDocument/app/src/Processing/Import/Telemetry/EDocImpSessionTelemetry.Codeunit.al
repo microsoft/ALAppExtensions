@@ -29,37 +29,45 @@ codeunit 6122 "E-Doc. Imp. Session Telemetry"
 
     internal procedure SetSession(CurrentStatus: Enum "Import E-Doc. Proc. Status"; DesiredStatus: Enum "Import E-Doc. Proc. Status")
     begin
+        if BindSubscription(this) then;
         Clear(Data);
         Clear(LineData);
-        if BindSubscription(this) then;
-        this.SetText('CurrentStatus', Format(CurrentStatus));
-        this.SetText('DesiredStatus', Format(DesiredStatus));
+        this.SetText('CurrentStatus', CurrentStatus.Names().Get(CurrentStatus.Ordinals.IndexOf(CurrentStatus.AsInteger())));
+        this.SetText('DesiredStatus', DesiredStatus.Names().Get(DesiredStatus.Ordinals.IndexOf(DesiredStatus.AsInteger())));
     end;
 
     internal procedure Emit(EDocument: Record "E-Document")
     var
         Telemetry: Codeunit "Telemetry";
+        SystemID, Session : Text;
+    begin
+        Session := LowerCase(CreateGuid()).Replace('}', '').Replace('{', '');
+        SystemID := LowerCase(EDocument.SystemId).Replace('}', '').Replace('{', '');
+        Data.Set('Session', Session);
+        Data.Set('E-Document System Id', SystemID);
+        Telemetry.LogMessage('0000PJD', 'E-Document Import Session', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Data);
+        EmitLines(SystemID, Session);
+
+        Clear(Data);
+        Clear(LineData);
+        if UnbindSubscription(this) then;
+    end;
+
+    local procedure EmitLines(SystemId: Text; Session: Text)
+    var
+        Telemetry: Codeunit "Telemetry";
         K: Guid;
-        LK, LV, SystemID : Text;
         LineDataEntry: Dictionary of [Text, Text];
     begin
         foreach K in LineData.Keys() do begin
             if not LineData.Get(K, LineDataEntry) then
                 continue;
 
-            foreach LK in LineDataEntry.Keys() do begin
-                if not LineDataEntry.Get(LK, LV) then
-                    continue;
-
-                if Data.Add(Format(K) + '_' + LK, LV) then;
-            end;
+            LineDataEntry.Set('Session', Session);
+            LineDataEntry.Set('E-Document System Id', SystemID);
+            LineDataEntry.Set('E-Document Line System Id', LowerCase(K).Replace('}', '').Replace('{', ''));
+            Telemetry.LogMessage('0000PSQ', 'E-Document Import Session', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, LineDataEntry);
         end;
-
-        SystemID := Format(EDocument.SystemId);
-        SystemID := SystemID.Replace('}', '');
-        SystemID := SystemID.Replace('{', '');
-        Data.Set('E-Document System Id', SystemID);
-        Telemetry.LogMessage('0000PJD', 'E-Document Import Session Run', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Data);
         if UnbindSubscription(this) then;
         Clear(Data);
         Clear(LineData);
@@ -74,7 +82,7 @@ codeunit 6122 "E-Doc. Imp. Session Telemetry"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Imp. Session Telemetry", SetBool, '', false, false)]
     local procedure OnSetBool("Key": Text; "Value": Boolean)
     begin
-        Data.Set("Key", Format("Value"))
+        Data.Set("Key", Format("Value", 0, 9));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Imp. Session Telemetry", SetLineBool, '', false, false)]
@@ -85,7 +93,7 @@ codeunit 6122 "E-Doc. Imp. Session Telemetry"
         if not LineData.ContainsKey(LineId) then
             LineData.Set(LineId, EmptyDict);
 
-        LineData.Get(LineId).Set("Key", Format("Value"));
+        LineData.Get(LineId).Set("Key", Format("Value", 0, 9));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Imp. Session Telemetry", SetLineText, '', false, false)]

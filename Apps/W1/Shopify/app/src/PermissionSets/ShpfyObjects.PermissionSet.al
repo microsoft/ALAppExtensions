@@ -431,6 +431,7 @@ permissionset 30104 "Shpfy - Objects"
         page "Shpfy Order Risks" = X,
         page "Shpfy Order Shipping Charges" = X,
         page "Shpfy Order Subform" = X,
+        page "Shpfy Order Totals FactBox" = X,
         page "Shpfy Order Transactions" = X,
         page "Shpfy Orders" = X,
         page "Shpfy Orders to Import" = X,
