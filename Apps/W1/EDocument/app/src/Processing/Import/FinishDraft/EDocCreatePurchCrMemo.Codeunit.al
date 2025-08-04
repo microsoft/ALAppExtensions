@@ -64,6 +64,7 @@ codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, 
         PurchaseHeader.SetRange("E-Document Link", EDocument.SystemId);
         if not PurchaseHeader.FindFirst() then
             exit;
+            
         PurchaseHeader.TestField("Document Type", "Purchase Document Type"::"Credit Memo");
         Clear(PurchaseHeader."E-Document Link");
         PurchaseHeader.Delete(true);
