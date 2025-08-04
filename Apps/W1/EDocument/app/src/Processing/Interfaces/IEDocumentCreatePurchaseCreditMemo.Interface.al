@@ -15,7 +15,7 @@ interface IEDocumentCreatePurchaseCreditMemo
     /// <summary>
     /// Creates a purchase credit memo from an E-Document with a draft ready.
     /// </summary>
-    /// <param name="EDocument"></param>
-    /// <returns></returns>
+    /// <param name="EDocument">The E-Document record to create the purchase credit memo from.</param>
+    /// <returns>The created purchase header record for the credit memo.</returns>
     procedure CreatePurchaseCreditMemo(EDocument: Record "E-Document"): Record "Purchase Header";
 }

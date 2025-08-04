@@ -13,5 +13,6 @@ enum 6118 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentCreatePurchaseCre
 {
     Extensible = true;
     DefaultImplementation = IEDocumentCreatePurchaseCreditMemo = "E-Doc. Create Purch. Cr. Memo";
+    
     value(0; "Default") { }
 }
