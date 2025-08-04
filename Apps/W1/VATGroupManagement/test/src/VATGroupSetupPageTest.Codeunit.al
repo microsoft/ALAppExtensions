@@ -1,7 +1,7 @@
 codeunit 139524 "VAT Group Setup Page Test"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

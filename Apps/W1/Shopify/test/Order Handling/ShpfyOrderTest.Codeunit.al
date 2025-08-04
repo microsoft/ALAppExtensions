@@ -12,7 +12,7 @@ using Microsoft.Sales.Document;
 codeunit 139609 "Shpfy Order Test"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

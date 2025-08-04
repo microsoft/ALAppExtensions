@@ -399,7 +399,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         InsertTradeTax(SettlementElement, SalesInvLine, LineAmount, LineVATAmount);
         InsertInvDiscountAllowanceCharge(SettlementElement, SalesInvLine, LineDiscAmount, LineAmounts);
 
-        InsertPaymentTerms(SettlementElement, SalesInvHeader."Payment Terms Code");
+        InsertPaymentTerms(SettlementElement, SalesInvHeader."Payment Terms Code", SalesInvHeader."Due Date");
         MonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementHeaderMonetarySummation', XmlNamespaceRAM);
         MonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvHeader.Amount + LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")))));
         MonetarySummationElement.Add(XmlElement.Create('AllowanceTotalAmount', XmlNamespaceRAM, FormatDecimal(LineAmounts.Get(SalesInvLine.FieldName("Inv. Discount Amount")))));
@@ -424,7 +424,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         InsertTradeTax(SettlementElement, SalesCrMemoLine, LineAmount, LineVATAmount);
         InsertInvDiscountAllowanceCharge(SettlementElement, SalesCrMemoLine, LineDiscAmount, LineAmounts);
 
-        InsertPaymentTerms(SettlementElement, SalesCrMemoHeader."Payment Terms Code");
+        InsertPaymentTerms(SettlementElement, SalesCrMemoHeader."Payment Terms Code", SalesCrMemoHeader."Due Date");
         MonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementHeaderMonetarySummation', XmlNamespaceRAM);
         MonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoHeader.Amount + LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")))));
         MonetarySummationElement.Add(XmlElement.Create('AllowanceTotalAmount', XmlNamespaceRAM, FormatDecimal(LineAmounts.Get(SalesCrMemoLine.FieldName("Inv. Discount Amount")))));
@@ -638,11 +638,12 @@ codeunit 13917 "Export ZUGFeRD Document"
         RootXMLNode.Add(SupplyChainTradeTransactionElement);
     end;
 
-    local procedure InsertPaymentTerms(var RootXMLNode: XmlElement; PaymentTermsCode: Code[10])
+    local procedure InsertPaymentTerms(var RootXMLNode: XmlElement; PaymentTermsCode: Code[10]; DueDate: Date)
     var
         PaymentTerms: Record "Payment Terms";
         PaymentTermsElement: XmlElement;
         PaymentTermsDescriptionElement: XmlElement;
+        DueDateElement: XmlElement;
     begin
         if PaymentTermsCode = '' then
             exit;
@@ -652,6 +653,10 @@ codeunit 13917 "Export ZUGFeRD Document"
         PaymentTermsElement := XmlElement.Create('SpecifiedTradePaymentTerms', XmlNamespaceRAM);
         PaymentTermsDescriptionElement := XmlElement.Create('Description', XmlNamespaceRAM, PaymentTerms.Description);
         PaymentTermsElement.Add(PaymentTermsDescriptionElement);
+
+        DueDateElement := XmlElement.Create('DueDateDateTime', XmlNamespaceRAM);
+        DueDateElement.Add(XmlElement.Create('DateTimeString', XmlNamespaceUDT, XmlAttribute.Create('format', '102'), FormatDate(DueDate)));
+        PaymentTermsElement.Add(DueDateElement);
         RootXMLNode.Add(PaymentTermsElement);
     end;
 

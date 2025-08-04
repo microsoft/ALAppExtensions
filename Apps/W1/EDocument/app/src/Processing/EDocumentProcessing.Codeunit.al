@@ -4,9 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Vendor;
@@ -18,7 +21,6 @@ using Microsoft.Sales.Reminder;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.Reflection;
-using Microsoft.eServices.EDocument.Processing.Import;
 
 codeunit 6108 "E-Document Processing"
 {
@@ -113,10 +115,12 @@ codeunit 6108 "E-Document Processing"
         SalesHeader: Record "Sales Header";
         PurchaseHeader: Record "Purchase Header";
         FinChargeMemoHeader: Record "Finance Charge Memo Header";
+        TransferHeader: Record "Transfer Header";
     begin
         case RecRef.Number of
             Database::"Sales Header", Database::"Sales Invoice Header", Database::"Sales Cr.Memo Header",
-            Database::"Service Header", Database::"Service Invoice Header", Database::"Service Cr.Memo Header":
+            Database::"Service Header", Database::"Service Invoice Header", Database::"Service Cr.Memo Header",
+            Database::"Sales Shipment Header":
                 exit(GetDocSendingProfileForCustVend(RecRef.Field(SalesHeader.FieldNo("Bill-to Customer No.")).Value, ''));
 
             Database::"Finance Charge Memo Header", Database::"Issued Fin. Charge Memo Header",
@@ -125,6 +129,9 @@ codeunit 6108 "E-Document Processing"
 
             Database::"Purchase Header", Database::"Purch. Inv. Header", Database::"Purch. Cr. Memo Hdr.":
                 exit(GetDocSendingProfileForCustVend('', RecRef.Field(PurchaseHeader.FieldNo("Pay-to Vendor No.")).Value));
+
+            Database::"Transfer Shipment Header":
+                exit(GetDocSendingProfileForTransferShipment(RecRef.Field(TransferHeader.FieldNo("Transfer-to Code")).Value));
         end;
     end;
 
@@ -169,6 +176,16 @@ codeunit 6108 "E-Document Processing"
             EDocument."Document Type"::"Issued Reminder":
                 begin
                     SourceDocumentLines.Open(Database::"Issued Reminder Line");
+                    SourceDocumentLines.Field(1).SetRange(EDocument."Document No.");
+                end;
+            EDocument."Document Type"::"Sales Shipment":
+                begin
+                    SourceDocumentLines.Open(Database::"Sales Shipment Line");
+                    SourceDocumentLines.Field(3).SetRange(EDocument."Document No.");
+                end;
+            EDocument."Document Type"::"Transfer Shipment":
+                begin
+                    SourceDocumentLines.Open(Database::"Transfer Shipment Line");
                     SourceDocumentLines.Field(1).SetRange(EDocument."Document No.");
                 end;
         end;
@@ -316,6 +333,30 @@ codeunit 6108 "E-Document Processing"
     begin
         if Customer.Get(CustomerNo) then
             if DocumentSendingProfile.Get(Customer."Document Sending Profile") then
+                exit(true);
+
+        DocumentSendingProfile.SetRange(Default, true);
+        if DocumentSendingProfile.FindFirst() then
+            exit(true);
+    end;
+
+    local procedure GetDocSendingProfileForTransferShipment(LocationCode: Code[20]) DocumentSendingProfile: Record "Document Sending Profile"
+    begin
+        GetDocSendingProfileForTransferShipment(DocumentSendingProfile, LocationCode);
+    end;
+
+    /// <summary>
+    /// Get the document sending profile for transfer shipment.
+    /// </summary>
+    /// <param name="DocumentSendingProfile">Return value: Document sending profile used for provided location code.</param>
+    /// <param name="LocationCode">Transfer To location code.</param>
+    /// <returns>True if document sending profile for Transfer Shipment was found.</returns>
+    internal procedure GetDocSendingProfileForTransferShipment(var DocumentSendingProfile: Record "Document Sending Profile"; LocationCode: Code[20]): Boolean
+    var
+        Location: Record "Location";
+    begin
+        if Location.Get(LocationCode) then
+            if DocumentSendingProfile.Get(Location."Transfer Doc. Sending Profile") then
                 exit(true);
 
         DocumentSendingProfile.SetRange(Default, true);

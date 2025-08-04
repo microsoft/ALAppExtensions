@@ -12,7 +12,7 @@ using System.TestLibraries.Utilities;
 codeunit 139568 "Shpfy Customer Export Test"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

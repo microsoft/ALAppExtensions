@@ -1,7 +1,7 @@
 codeunit 139740 "VAT Group Submit To Repr. Test"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
