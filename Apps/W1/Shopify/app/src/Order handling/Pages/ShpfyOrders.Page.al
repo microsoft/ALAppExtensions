@@ -195,6 +195,13 @@ page 30115 "Shpfy Orders"
                 Caption = 'Linked Documents';
                 SubPageLink = "Shopify Document Type" = const("Shpfy Shop Document Type"::"Shopify Shop Order"), "Shopify Document Id" = field("Shopify Order Id");
             }
+            part(OrderTotals; "Shpfy Order Totals FactBox")
+            {
+                ApplicationArea = All;
+                Caption = 'Order Totals';
+                SubPageLink = "Shopify Order Id" = field("Shopify Order Id");
+                Visible = (Rec."Sales Order No." <> '') or (Rec."Sales Invoice No." <> '');
+            }
             part(CustomerStatistics; "Customer Statistics FactBox")
             {
                 ApplicationArea = All;

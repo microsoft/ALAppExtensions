@@ -14,6 +14,7 @@ using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+using System.Log;
 
 
 codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasureProvider, IVendorProvider, IPurchaseOrderProvider
@@ -75,6 +76,15 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
         if UnitOfMeasure.FindFirst() then;
     end;
 
+    local procedure SetActivityLog(SystemId: Guid; FieldNo: Integer; Reasoning: Text[250]; RecordRef: RecordRef; PageId: Integer; RefTitle: Text[250]; ActivityLog: Codeunit "Activity Log Builder"): Boolean
+    begin
+        ActivityLog
+            .Init(Database::"E-Document Purchase Line", FieldNo, SystemId)
+            .SetExplanation(Reasoning)
+            .SetReferenceSource(PageId, RecordRef)
+            .SetReferenceTitle(RefTitle);
+    end;
+
     procedure GetPurchaseLine(var EDocumentPurchaseLine: Record "E-Document Purchase Line")
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
@@ -82,8 +92,14 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
         EDocument: Record "E-Document";
         TextToAccountMapping: Record "Text-to-Account Mapping";
         EDocImpSessionTelemetry: Codeunit "E-Doc. Imp. Session Telemetry";
+        EDocActivityLogSession: Codeunit "E-Doc. Activity Log Session";
+        ActivityLog: Codeunit "Activity Log Builder";
         VendorNo: Code[20];
         FilterInvalidCharTxt: Label '(&)', Locked = true;
+        ItemReferenceReasonMsg: Label 'Item reference was found for vendor %1.', Comment = '%1 - Vendor No.';
+        ItemReferenceSourceMsg: Label 'Item Reference %1', Comment = '%1 - Item Reference No.';
+        AccountNumberReasonMsg: Label 'Account was matched with Text to Account Mapping setup for vendor %1.', Comment = '%1 - Vendor No.';
+        AccountNumberSourceMsg: Label 'Text to Account Mapping %1', Comment = '%1 - Text to Account Mapping Line No.';
     begin
         EDocument.Get(EDocumentPurchaseLine."E-Document Entry No.");
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
@@ -96,6 +112,9 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
             EDocumentPurchaseLine.Validate("[BC] Variant Code", ItemReference."Variant Code");
             EDocumentPurchaseLine.Validate("[BC] Item Reference No.", ItemReference."Reference No.");
             EDocImpSessionTelemetry.SetLineBool(EDocumentPurchaseLine.SystemId, 'Item Reference ', true);
+
+            SetActivityLog(EDocumentPurchaseLine.SystemId, EDocumentPurchaseLine.FieldNo("[BC] Item Reference No."), StrSubstNo(ItemReferenceReasonMsg, VendorNo), ItemReference, Page::"Item References", StrSubstNo(ItemReferenceSourceMsg, ItemReference."Reference No."), ActivityLog);
+            EDocActivityLogSession.Set(EDocActivityLogSession.ItemRefTok(), ActivityLog);
             exit;
         end;
 
@@ -105,6 +124,9 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
             EDocumentPurchaseLine."[BC] Purchase Line Type" := "Purchase Line Type"::"G/L Account";
             EDocumentPurchaseLine.Validate("[BC] Purchase Type No.", TextToAccountMapping."Debit Acc. No.");
             EDocImpSessionTelemetry.SetLineBool(EDocumentPurchaseLine.SystemId, 'Text To Account Mapping', true);
+
+            SetActivityLog(EDocumentPurchaseLine.SystemId, EDocumentPurchaseLine.FieldNo("[BC] Purchase Type No."), StrSubstNo(AccountNumberReasonMsg, VendorNo), TextToAccountMapping, Page::"Text-to-Account Mapping", StrSubstNo(AccountNumberSourceMsg, TextToAccountMapping."Line No."), ActivityLog);
+            EDocActivityLogSession.Set(EDocActivityLogSession.TextToAccountMappingTok(), ActivityLog);
             exit;
         end;
     end;

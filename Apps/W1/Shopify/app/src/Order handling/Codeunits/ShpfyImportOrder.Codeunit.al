@@ -40,8 +40,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderHeader.Get(OrderHeader."Shopify Order Id");
         ImportOrderAndCreateOrUpdate(OrderHeader."Shop Code", OrderHeader."Shopify Order Id");
         OrderHeader.Get(OrderHeader."Shopify Order Id");
-        if not OrderHeader."Has Error" then
-            if OrderMapping.DoMapping(OrderHeader) then;
+        if OrderMapping.DoMapping(OrderHeader) then;
     end;
 
     internal procedure ImportCreateAndUpdateOrderHeaderFromMock(ShopCode: Code[20]; OrderId: BigInteger; MockJOrder: JsonObject)

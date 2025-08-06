@@ -138,6 +138,13 @@ table 30145 "Shpfy Refund Line"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(106; "Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Unit of Measure Code';
+            FieldClass = FlowField;
+            CalcFormula = lookup("Shpfy Order Line"."Unit of Measure Code" where("Line Id" = field("Order Line Id")));
+            Editable = false;
+        }
     }
     keys
     {

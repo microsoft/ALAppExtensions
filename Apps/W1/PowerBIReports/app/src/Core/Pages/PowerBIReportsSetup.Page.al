@@ -283,20 +283,32 @@ page 36951 "PowerBI Reports Setup"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the date filtering type for Item Sales report filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI). Choose Start/End Date to define an interval for which to load data. Chose Relative Date to load data based on a date formula, e.g. last 6 months.';
                 }
-                field("Item Sales Start Date"; Rec."Item Sales Start Date")
+                group("Item Sales Start End Date Filters")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Item Sales report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ShowCaption = false;
+                    Visible = Rec."Item Sales Load Date Type" = Rec."Item Sales Load Date Type"::"Start/End Date";
+
+                    field("Item Sales Start Date"; Rec."Item Sales Start Date")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the start date for Item Sales report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    }
+                    field("Item Sales End Date"; Rec."Item Sales End Date")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the end date for Item Sales report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    }
                 }
-                field("Item Sales End Date"; Rec."Item Sales End Date")
+                group("Item Sales Relative Date Filter")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Item Sales report filter. Set this if you have specified Start/End Date as the Load Date Type.';
-                }
-                field("Item Sales Date Formula"; Rec."Item Sales Date Formula")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Item Sales report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    ShowCaption = false;
+                    Visible = Rec."Item Sales Load Date Type" = Rec."Item Sales Load Date Type"::"Relative Date";
+
+                    field("Item Sales Date Formula"; Rec."Item Sales Date Formula")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the date formula for Item Sales report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    }
                 }
             }
 
@@ -323,20 +335,32 @@ page 36951 "PowerBI Reports Setup"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the date type for Item Purchases report filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI). Choose Start/End Date to define an interval for which to load data. Chose Relative Date to load data based on a date formula, e.g. last 6 months.';
                 }
-                field("Item Purch. Start Date"; Rec."Item Purch. Start Date")
+                group("Item Purch. Start End Date Filters")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Item Purchases report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ShowCaption = false;
+                    Visible = Rec."Item Purch. Load Date Type" = Rec."Item Purch. Load Date Type"::"Start/End Date";
+
+                    field("Item Purch. Start Date"; Rec."Item Purch. Start Date")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the start date for Item Purchases report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    }
+                    field("Item Purch. End Date"; Rec."Item Purch. End Date")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the end date for Item Purchases report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    }
                 }
-                field("Item Purch. End Date"; Rec."Item Purch. End Date")
+                group("Item Purch. Relative Date Filter")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Item Purchases report filter. Set this if you have specified Start/End Date as the Load Date Type.';
-                }
-                field("Item Purch. Date Formula"; Rec."Item Purch. Date Formula")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Item Purchases report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    ShowCaption = false;
+                    Visible = Rec."Item Purch. Load Date Type" = Rec."Item Purch. Load Date Type"::"Relative Date";
+
+                    field("Item Purch. Date Formula"; Rec."Item Purch. Date Formula")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the date formula for Item Purchases report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    }
                 }
             }
 
@@ -434,20 +458,32 @@ page 36951 "PowerBI Reports Setup"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the date type for Manufacturing report filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI). Choose Start/End Date to define an interval for which to load data. Chose Relative Date to load data based on a date formula, e.g. last 6 months.';
                 }
-                field("Manufacturing Start Date"; Rec."Manufacturing Start Date")
+                group("Manufacturing Start End Date Filters")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Manufacturing report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ShowCaption = false;
+                    Visible = Rec."Manufacturing Load Date Type" = Rec."Manufacturing Load Date Type"::"Start/End Date";
+
+                    field("Manufacturing Start Date"; Rec."Manufacturing Start Date")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the start date for Manufacturing report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    }
+                    field("Manufacturing End Date"; Rec."Manufacturing End Date")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the end date for Manufacturing report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    }
                 }
-                field("Manufacturing End Date"; Rec."Manufacturing End Date")
+                group("Manufacturing Relative Date Filter")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Manufacturing report filter. Set this if you have specified Start/End Date as the Load Date Type.';
-                }
-                field("Manufacturing Date Formula"; Rec."Manufacturing Date Formula")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Manufacturing report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    ShowCaption = false;
+                    Visible = Rec."Manufacturing Load Date Type" = Rec."Manufacturing Load Date Type"::"Relative Date";
+
+                    field("Manufacturing Date Formula"; Rec."Manufacturing Date Formula")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the date formula for Manufacturing report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    }
                 }
             }
             group(SustainabilityReport)
@@ -474,20 +510,32 @@ page 36951 "PowerBI Reports Setup"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the date filtering type for Sustainability report filter (if you want to restrict the amount of data that is loaded to the semantic model in Power BI). Choose Start/End Date to define an interval for which to load data. Chose Relative Date to load data based on a date formula, e.g. last 6 months.';
                 }
-                field("Sustainability Start Date"; Rec."Sustainability Start Date")
+                group("Sustainability Start End Date Filters")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Sustainability report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    ShowCaption = false;
+                    Visible = Rec."Sustainability Load Date Type" = Rec."Sustainability Load Date Type"::"Start/End Date";
+
+                    field("Sustainability Start Date"; Rec."Sustainability Start Date")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the start date for Sustainability report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    }
+                    field("Sustainability End Date"; Rec."Sustainability End Date")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the end date for Sustainability report filter. Set this if you have specified Start/End Date as the Load Date Type.';
+                    }
                 }
-                field("Sustainability End Date"; Rec."Sustainability End Date")
+                group("Sustainability Relative Date Filter")
                 {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Sustainability report filter. Set this if you have specified Start/End Date as the Load Date Type.';
-                }
-                field("Sustainability Date Formula"; Rec."Sustainability Date Formula")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Sustainability report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    ShowCaption = false;
+                    Visible = Rec."Sustainability Load Date Type" = Rec."Sustainability Load Date Type"::"Relative Date";
+
+                    field("Sustainability Date Formula"; Rec."Sustainability Date Formula")
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the date formula for Sustainability report filter. Set this if you have specified Relative Date as the Load Date Type.';
+                    }
                 }
             }
             group(SubscriptionBillingReport)

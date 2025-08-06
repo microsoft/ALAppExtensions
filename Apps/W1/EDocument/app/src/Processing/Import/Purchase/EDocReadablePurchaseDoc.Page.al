@@ -239,14 +239,9 @@ page 6182 "E-Doc. Readable Purchase Doc."
     end;
 
     trigger OnOpenPage()
-    var
-        ImportEDocumentProcess: Codeunit "Import E-Document Process";
     begin
         if Rec."E-Document Entry No." = 0 then
             Error('');
-        AIGeneratedContentNotification.Message(ImportEDocumentProcess.AIGeneratedContentText());
-        AIGeneratedContentNotification.AddAction(ImportEDocumentProcess.TermsAndConditionsText(), Codeunit::"Import E-Document Process", 'OpenTermsAndConditions');
-        AIGeneratedContentNotification.Send();
     end;
 
     internal procedure SetBuffer(var EDocumentPurchaseHeader: Record "E-Document Purchase Header" temporary; var EDocumentPurchaseLine: Record "E-Document Purchase Line" temporary)
@@ -258,6 +253,5 @@ page 6182 "E-Doc. Readable Purchase Doc."
     end;
 
     var
-        AIGeneratedContentNotification: Notification;
         DataCaption: Text;
 }
