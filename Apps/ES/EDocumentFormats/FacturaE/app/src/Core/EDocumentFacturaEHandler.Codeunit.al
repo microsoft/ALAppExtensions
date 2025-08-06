@@ -37,17 +37,17 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
         FacturaEXML: XmlDocument;
         XmlNamespaces: XmlNamespaceManager;
         XmlElement: XmlElement;
-        FacturaENamespaceLbl: Label 'http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml', Locked = true;
-        DigitalSignatureNamespaceLbl: Label 'http://www.w3.org/2000/09/xmldsig#', Locked = true;
-        ETSINamespaceLbl: Label 'http://uri.etsi.org/01903/v1.2.2#', Locked = true;
+        FacturaENamespaceTok: Label 'http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml', Locked = true;
+        DigitalSignatureNamespaceTok: Label 'http://www.w3.org/2000/09/xmldsig#', Locked = true;
+        ETSINamespaceTok: Label 'http://uri.etsi.org/01903/v1.2.2#', Locked = true;
         XMLNode: XmlNode;
     begin
         EDocumentPurchaseHeader.InsertForEDocument(EDocument);
 
         XmlDocument.ReadFrom(TempBlob.CreateInStream(TextEncoding::UTF8), FacturaEXML);
-        XmlNamespaces.AddNamespace('namespace', FacturaENamespaceLbl);
-        XmlNamespaces.AddNamespace('ds', DigitalSignatureNamespaceLbl);
-        XmlNamespaces.AddNamespace('etsi', ETSINamespaceLbl);
+        XmlNamespaces.AddNamespace('namespace', FacturaENamespaceTok);
+        XmlNamespaces.AddNamespace('ds', DigitalSignatureNamespaceTok);
+        XmlNamespaces.AddNamespace('etsi', ETSINamespaceTok);
 
         FacturaEXML.GetRoot(XmlElement);
         EDocumentPurchaseHeader."E-Document Type" := "E-Document Type"::"Purchase Invoice";
@@ -107,9 +107,9 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
         NewLineXML: XmlDocument;
         LineXMLList: XmlNodeList;
         LineXMLNode: XmlNode;
-        InvoiceLinePathLbl: Label '/namespace:Facturae/Invoices/Invoice/Items/InvoiceLine', Locked = true;
+        InvoiceLinePathTok: Label '/namespace:Facturae/Invoices/Invoice/Items/InvoiceLine', Locked = true;
     begin
-        if not FacturaEXML.SelectNodes(InvoiceLinePathLbl, XmlNamespaces, LineXMLList) then
+        if not FacturaEXML.SelectNodes(InvoiceLinePathTok, XmlNamespaces, LineXMLList) then
             exit;
 
         foreach LineXMLNode in LineXMLList do begin
