@@ -8,7 +8,7 @@ namespace Microsoft.Sales.ExcelReports;
 using Microsoft.Sales.Customer;
 using Microsoft.Finance.ExcelReports;
 
-pageextension 4410 "Customer List" extends "Customer List"
+pageextension 4450 "Customer List" extends "Customer List"
 {
     actions
     {
