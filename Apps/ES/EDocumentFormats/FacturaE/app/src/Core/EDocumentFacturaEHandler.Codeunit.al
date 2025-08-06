@@ -79,7 +79,6 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
     end;
 
 #pragma warning disable AA0139 // false positive: overflow handled by SetStringValueInField
-
     local procedure PopulateFacturaEPurchaseInvoiceHeader(FacturaEXML: XmlDocument; XmlNamespaces: XmlNamespaceManager; var EDocumentPurchaseHeader: Record "E-Document Purchase Header"; var EDocument: Record "E-Document")
     var
         EDocumentXMLHelper: Codeunit "EDocument XML Helper";
