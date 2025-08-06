@@ -13,6 +13,9 @@ table 6124 "E-Document Log"
     DataClassification = CustomerContent;
     ReplicateData = false;
 
+    Permissions =
+        tabledata "E-Doc. Data Storage" = md;
+
     fields
     {
         field(1; "Entry No."; Integer)

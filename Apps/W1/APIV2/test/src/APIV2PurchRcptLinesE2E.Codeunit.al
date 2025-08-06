@@ -3,7 +3,7 @@ codeunit 139850 "APIV2 - Purch. Rcpt. Lines E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

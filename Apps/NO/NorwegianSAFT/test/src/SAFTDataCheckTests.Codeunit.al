@@ -1,7 +1,7 @@
 codeunit 148107 "SAF-T Data Check Tests"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

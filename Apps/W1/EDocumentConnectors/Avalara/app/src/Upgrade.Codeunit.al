@@ -63,7 +63,8 @@ codeunit 6380 Upgrade
         EDocumentServiceStatus: Record "E-Document Service Status";
         ConnectionSetup: Record "Connection Setup";
         UpgradeTag: Codeunit "Upgrade Tag";
-        Codes: Text;
+        RecordRef: RecordRef;
+        Codes, DocumentId : Text;
     begin
         if UpgradeTag.HasUpgradeTag(UpgradeAvalaraDocIdTag()) then
             exit;
@@ -80,33 +81,41 @@ codeunit 6380 Upgrade
                 Codes := Codes.TrimEnd('|'); // Remove the last '|' character
         end;
 
-        EDocument.ReadIsolation := IsolationLevel::ReadUncommitted;
-        EDocument.SetLoadFields("Entry No", "Document Id", "Avalara Document Id");
-        EDocumentServiceStatus.SetLoadFields("E-Document Entry No", "E-Document Service Code");
-        EDocumentServiceStatus.SetFilter("E-Document Service Code", Codes);
-        if EDocumentServiceStatus.FindSet() then
-            repeat
-                if EDocument.Get(EDocumentServiceStatus."E-Document Entry No") then
-                    if EDocument."Document Id" <> '' then begin
-                        EDocument."Avalara Document Id" := EDocument."Document Id";
-                        EDocument.Modify();
+        // Only run upgrade from Document Id to Avalara Document Id if the field exists.
+        // Since any upgrade comes from version where dependency on Pagero existed, this is safe.
+        // 6363 = "Document Id"
+        RecordRef.GetTable(EDocument);
+        if RecordRef.FieldExist(6363) then begin
+
+            EDocument.ReadIsolation := IsolationLevel::ReadUncommitted;
+            EDocumentServiceStatus.SetLoadFields("E-Document Entry No", "E-Document Service Code");
+            EDocumentServiceStatus.SetFilter("E-Document Service Code", Codes);
+            if EDocumentServiceStatus.FindSet() then
+                repeat
+                    if EDocument.Get(EDocumentServiceStatus."E-Document Entry No") then begin
+                        RecordRef := EDocument;
+                        DocumentId := RecordRef.Field(6363).Value();
+                        if DocumentId <> '' then begin
+                            EDocument."Avalara Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Avalara Document Id"));
+                            EDocument.Modify();
+                        end;
                     end;
-            until EDocumentServiceStatus.Next() = 0;
+                until EDocumentServiceStatus.Next() = 0;
 
-        if ConnectionSetup.FindSet() then
-            repeat
-                case ConnectionSetup."Send Mode" of
-                    ConnectionSetup."Send Mode"::Production:
-                        ConnectionSetup."Avalara Send Mode" := Enum::"Avalara Send Mode"::Production;
-                    ConnectionSetup."Send Mode"::Test:
-                        ConnectionSetup."Avalara Send Mode" := Enum::"Avalara Send Mode"::Test;
-                    ConnectionSetup."Send Mode"::Certification:
-                        ConnectionSetup."Avalara Send Mode" := Enum::"Avalara Send Mode"::Certification;
-                end;
-                ConnectionSetup.Modify();
-            until ConnectionSetup.Next() = 0;
+            if ConnectionSetup.FindSet() then
+                repeat
+                    case ConnectionSetup."Send Mode" of
+                        ConnectionSetup."Send Mode"::Production:
+                            ConnectionSetup."Avalara Send Mode" := Enum::"Avalara Send Mode"::Production;
+                        ConnectionSetup."Send Mode"::Test:
+                            ConnectionSetup."Avalara Send Mode" := Enum::"Avalara Send Mode"::Test;
+                        ConnectionSetup."Send Mode"::Certification:
+                            ConnectionSetup."Avalara Send Mode" := Enum::"Avalara Send Mode"::Certification;
+                    end;
+                    ConnectionSetup.Modify();
+                until ConnectionSetup.Next() = 0;
 
-
+        end;
         UpgradeTag.SetUpgradeTag(UpgradeAvalaraDocIdTag());
     end;
 #endif

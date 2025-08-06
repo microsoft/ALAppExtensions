@@ -1,7 +1,7 @@
 codeunit 134412 "Pmt. Export AMC - Test Format"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

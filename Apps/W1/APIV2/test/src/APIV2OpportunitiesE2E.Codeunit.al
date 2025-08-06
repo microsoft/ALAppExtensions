@@ -3,8 +3,7 @@ codeunit 139855 "APIV2 - Opportunities E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
-    TestType = IntegrationTest;
-    RequiredTestIsolation = Disabled;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

@@ -19,7 +19,7 @@ using Microsoft.eServices.EDocument.Integration;
 codeunit 148193 IntegrationTests
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
 
     Permissions = tabledata "SignUp Connection Setup" = rimd,
                   tabledata "E-Document" = r;

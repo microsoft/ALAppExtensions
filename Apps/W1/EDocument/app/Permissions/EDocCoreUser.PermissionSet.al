@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.eServices.EDocument.OrderMatch;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.eServices.EDocument.Service.Participant;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
@@ -28,13 +29,13 @@ permissionset 6105 "E-Doc. Core - User"
         tabledata "E-Doc. Service Supported Type" = im,
     #endregion
     #region Mapping
-        tabledata "E-Doc. Mapping" = im,
+        tabledata "E-Doc. Mapping" = imd,
         tabledata "E-Doc. Mapping Log" = imd,
     #endregion Mapping
     #region Logging
         tabledata "E-Document Log" = imd,
-        tabledata "E-Doc. Data Storage" = im,
-        tabledata "E-Document Integration Log" = im,
+        tabledata "E-Doc. Data Storage" = imd,
+        tabledata "E-Document Integration Log" = imd,
     #endregion Logging
         tabledata "E-Doc. Imported Line" = IMD,
         tabledata "E-Doc. Order Match" = IMD,
@@ -48,6 +49,8 @@ permissionset 6105 "E-Doc. Core - User"
         tabledata "E-Doc. Vendor Assign. History" = IMD,
         tabledata "E-Doc. Purchase Line History" = IMD,
         tabledata "ED Purchase Line Field Setup" = IMD,
-        tabledata "E-Doc. Record Link" = IMD;
+        tabledata "E-Doc. Record Link" = IMD,
     #endregion Purchase draft
+        tabledata "Gen. Journal Line" = imd;
+
 }

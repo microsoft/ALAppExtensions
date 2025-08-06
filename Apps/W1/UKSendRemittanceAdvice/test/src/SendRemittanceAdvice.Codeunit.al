@@ -6,7 +6,7 @@
 codeunit 139610 SendRemittanceAdvice
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

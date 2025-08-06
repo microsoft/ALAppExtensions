@@ -23,7 +23,7 @@ page 6111 "Inbound E-Doc. Picture"
             {
                 ApplicationArea = All;
                 ShowCaption = false;
-                ToolTip = 'Specifies the picture';
+                ToolTip = 'Picture associated to the e-document like the preview of the PDF.';
             }
         }
     }

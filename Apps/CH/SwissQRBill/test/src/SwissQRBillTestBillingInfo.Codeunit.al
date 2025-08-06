@@ -1,7 +1,7 @@
 codeunit 148091 "Swiss QR-Bill Test BillingInfo"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

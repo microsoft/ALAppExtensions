@@ -25,12 +25,6 @@
       "version": "27.0.0.0"
     },
     {
-      "id": "d852a468-263e-49e5-bfda-f09e33342b89",
-      "name": "E-Document Connector - Pagero",
-      "publisher": "Microsoft",
-      "version": "27.0.0.0"
-    },
-    {
       "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8c",
       "name": "E-Document Core Tests",
       "publisher": "Microsoft",
