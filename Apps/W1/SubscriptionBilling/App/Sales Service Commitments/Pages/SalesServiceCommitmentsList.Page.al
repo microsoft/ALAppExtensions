@@ -154,7 +154,7 @@ page 8015 "Sales Service Commitments List"
                 field("Period Calculation"; Rec."Period Calculation")
                 {
                     Visible = false;
-                    ToolTip = 'The Period Calculation controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
+                    ToolTip = 'Specifies the Period Calculation, which controls how a period is determined for billing. The calculation of a month from 28.02. can extend to 27.03. (Align to Start of Month) or 30.03. (Align to End of Month).';
                 }
                 field(SystemCreatedAt; Rec.SystemCreatedAt)
                 {

@@ -34,6 +34,8 @@ codeunit 8069 "Sales Subscription Line Mgmt."
 
         if not IsSalesLineWithSalesServiceCommitments(SalesLine, false) then
             exit;
+        if SalesLine."Line No." = 0 then
+            exit;
 
         SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
         ItemServCommitmentPackage.SetRange("Item No.", SalesLine."No.");
@@ -73,13 +75,16 @@ codeunit 8069 "Sales Subscription Line Mgmt."
             exit;
         if SalesLine.IsContractRenewal() then
             Error(NoAddServicesForContractRenewalAllowedErr);
-        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
-        ServiceCommitmentPackage.SetRange("Price Group", SalesHeader."Customer Price Group");
-        if ServiceCommitmentPackage.IsEmpty then
-            ServiceCommitmentPackage.SetRange("Price Group");
 
         PackageFilter := ItemServCommitmentPackage.GetPackageFilterForItem(SalesLine, RemoveExistingPackageFromFilter);
         ServiceCommitmentPackage.FilterCodeOnPackageFilter(PackageFilter);
+
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+        if SalesHeader."Customer Price Group" <> '' then
+            ServiceCommitmentPackage.SetFilter("Price Group", '%1|%2', SalesHeader."Customer Price Group", '');
+        if ServiceCommitmentPackage.IsEmpty() then
+            ServiceCommitmentPackage.SetRange("Price Group");
+
         OnAddAdditionalSalesSubscriptionLinesForSalesLineAfterApplyFilters(ServiceCommitmentPackage, SalesLine);
 
         ShowAssignServiceCommitments := not ServiceCommitmentPackage.IsEmpty();
@@ -100,20 +105,15 @@ codeunit 8069 "Sales Subscription Line Mgmt."
         end;
     end;
 
-    local procedure IsSalesLineWithSalesServiceCommitments(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean; ServiceCommitmentItemOnly: Boolean): Boolean
-    var
-        SalesLine2: Record "Sales Line";
+    procedure IsSalesLineWithSalesServiceCommitments(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean; ServiceCommitmentItemOnly: Boolean): Boolean
     begin
         if not SkipTemporaryCheck then
             if SalesLine.IsTemporary() then
                 exit(false);
         if (SalesLine.Type <> SalesLine.Type::Item) or
            (SalesLine."No." = '') or
-           (SalesLine."Line No." = 0) or
            not SalesLine.IsSalesDocumentTypeWithServiceCommitments()
         then
-            exit(false);
-        if not SalesLine2.Get(SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No.") then
             exit(false);
         if ServiceCommitmentItemOnly then begin
             if not ItemManagement.IsServiceCommitmentItem(SalesLine."No.") then
@@ -124,12 +124,12 @@ codeunit 8069 "Sales Subscription Line Mgmt."
         exit(true);
     end;
 
-    local procedure IsSalesLineWithSalesServiceCommitments(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean): Boolean
+    procedure IsSalesLineWithSalesServiceCommitments(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean): Boolean
     begin
         exit(IsSalesLineWithSalesServiceCommitments(SalesLine, SkipTemporaryCheck, false));
     end;
 
-    internal procedure IsSalesLineWithServiceCommitmentItem(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean): Boolean
+    procedure IsSalesLineWithServiceCommitmentItem(var SalesLine: Record "Sales Line"; SkipTemporaryCheck: Boolean): Boolean
     begin
         exit(IsSalesLineWithSalesServiceCommitments(SalesLine, SkipTemporaryCheck, true));
     end;
@@ -171,23 +171,21 @@ codeunit 8069 "Sales Subscription Line Mgmt."
     begin
         if ServiceCommitmentPackage.Get(ServCommPackageCode) then begin
             ServiceCommitmentPackageLine.SetRange("Subscription Package Code", ServiceCommitmentPackage.Code);
-            if ServiceCommitmentPackageLine.FindSet() then begin
-                SalesLine.Modify(false);
+            if ServiceCommitmentPackageLine.FindSet() then
                 repeat
                     CreateSalesServCommLineFromServCommPackageLine(SalesLine, ServiceCommitmentPackageLine);
                 until ServiceCommitmentPackageLine.Next() = 0;
-            end;
         end;
     end;
 
-    local procedure CreateSalesServCommLineFromServCommPackageLine(var SalesLine: Record "Sales Line"; ServiceCommitmentPackageLine: Record "Subscription Package Line")
+    procedure CreateSalesServCommLineFromServCommPackageLine(var SalesLine: Record "Sales Line"; ServiceCommitmentPackageLine: Record "Subscription Package Line")
     var
         SalesServiceCommitment: Record "Sales Subscription Line";
     begin
         CreateSalesServCommLineFromServCommPackageLine(SalesLine, ServiceCommitmentPackageLine, SalesServiceCommitment);
     end;
 
-    local procedure CreateSalesServCommLineFromServCommPackageLine(var SalesLine: Record "Sales Line"; ServiceCommitmentPackageLine: Record "Subscription Package Line"; var SalesServiceCommitment: Record "Sales Subscription Line")
+    procedure CreateSalesServCommLineFromServCommPackageLine(var SalesLine: Record "Sales Line"; ServiceCommitmentPackageLine: Record "Subscription Package Line"; var SalesServiceCommitment: Record "Sales Subscription Line")
     var
         IsHandled: Boolean;
     begin
@@ -479,7 +477,7 @@ codeunit 8069 "Sales Subscription Line Mgmt."
         MyNotification: Record "My Notifications";
         NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
         Notify: Notification;
-        DiscountNotTransferredTxt: Label 'The %1 of %2 %3 has not been transferred to the Sales Subscription Line(s). The %1 is only transferred to Sales Subscription Line, if %4 is set to %5.';
+        DiscountNotTransferredTxt: Label 'The %1 of %2 %3 has not been transferred to the Sales Subscription Line(s). The %1 is only transferred to Sales Subscription Line, if %4 is set to %5.', Comment = '%1= Discount %, %2= Sales Line Type, %3= Sales Line No., %4= Calculation Base Type, %5= Document Price And Discount';
         DontShowAgainActionLbl: Label 'Don''t show again';
     begin
         if SalesServiceCommitment.IsEmpty() then

@@ -1387,7 +1387,7 @@ codeunit 148123 "Purch. Adv. Payments FCY CZZ"
     begin
         VATDocument.OriginalDocumentVATDate.SetValue(LibraryVariableStorage.DequeueDate());
         VATDocument.ExternalDocumentNo.SetValue(LibraryVariableStorage.DequeueText());
-        VATDocument.Lines."VAT Amount (ACY)".SetValue(LibraryVariableStorage.DequeueDecimal());
+        VATDocument.Lines."VAT Amount (LCY)".SetValue(LibraryVariableStorage.DequeueDecimal());
         VATDocument.OK().Invoke();
     end;
 

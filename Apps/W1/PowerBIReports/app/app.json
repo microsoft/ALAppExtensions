@@ -18,12 +18,6 @@
       "name": "Sustainability",
       "publisher": "Microsoft",
       "version": "27.0.0.0"
-    },
-    {
-      "id": "3099ffc7-4cf7-4df6-9b96-7e4bc2bb587c",
-      "publisher": "Microsoft",
-      "name": "Subscription Billing",
-      "version": "27.0.0.0"
     }
   ],
   "internalsVisibleTo": [
@@ -43,7 +37,7 @@
     },
     {
       "from": 37055,
-      "to": 37083
+      "to": 37108
     }
   ],
   "features": [

@@ -1,3 +1,14 @@
+namespace Microsoft.Test.Sustainability;
+
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Foundation.Navigate;
+
 codeunit 148188 "Sust. General Journal Test"
 {
     Subtype = Test;

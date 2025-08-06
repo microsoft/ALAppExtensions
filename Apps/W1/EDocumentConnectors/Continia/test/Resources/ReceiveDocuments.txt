@@ -1,0 +1,22 @@
+<documents xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <document>
+        <created_utc>2024-10-05T09:11:23.223</created_utc>
+        <direction>IncomingEnum</direction>
+        <document_id>65dd7456-7a49-4382-9f76-1211fa8ad0bf</document_id>
+        <document_instance>bef5048c-985e-4674-8b95-66e1e05fc91b</document_instance>
+        <participation_profile_id>{participationProfileId.ToLower}</participation_profile_id>
+        <receiver_network_id_type_id>568c29e7-c2c8-49bb-b135-9199d5b791d1</receiver_network_id_type_id>
+        <receiver_network_id_value>452845225</receiver_network_id_value>
+        <sender_network_id_type_id>568c29e7-c2c8-49bb-b135-9199d5b791d1</sender_network_id_type_id>
+        <sender_network_id_value>855475824</sender_network_id_value>
+        <status>CreatedEnum</status>
+        <timestamp>467014</timestamp>
+        <updated_utc>2024-10-05T09:11:23.223</updated_utc>
+        <xml_document>
+            <file_token>{fileDownloadUrl}/peppol</file_token>
+        </xml_document>
+        <xml_envelope>
+            <file_token>{envelopeDownloadUrl}</file_token>
+        </xml_envelope>
+    </document>
+</documents>

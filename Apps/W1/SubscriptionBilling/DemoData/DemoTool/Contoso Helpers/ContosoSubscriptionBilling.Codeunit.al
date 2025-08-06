@@ -1,5 +1,6 @@
 namespace Microsoft.SubscriptionBilling;
 
+using System.Security.AccessControl;
 using System.Threading;
 using System.Utilities;
 using Microsoft.Finance.GeneralLedger.Setup;
@@ -208,7 +209,7 @@ codeunit 8105 "Contoso Subscription Billing"
                 exit;
 
         ContosoItem.InsertItem(ItemNo, ItemType, Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, InventoryPostingGroup, Enum::"Costing Method"::FIFO, CommonUOM.Piece(), '', '', 0, '', '', 0,
-            Enum::"Replenishment System"::Purchase, 1, VendorNo, '', Enum::"Flushing Method"::Manual, Enum::"Reordering Policy"::" ", false, '', Picture, '', LastDirectCost, 0, 0, 0, '');
+            Enum::"Replenishment System"::Purchase, 1, VendorNo, '', Enum::"Flushing Method"::"Pick + Manual", Enum::"Reordering Policy"::" ", false, '', Picture, '', LastDirectCost, 0, 0, 0, '');
 
         Item.Get(ItemNo);
         Item.Validate("Subscription Option", ServiceCommitmentOption);
@@ -671,11 +672,34 @@ codeunit 8105 "Contoso Subscription Billing"
         JobQueueEntry.Validate("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
         JobQueueEntry.Validate("Object ID to Run", Codeunit::"Update Sub. Lines Term. Dates");
         JobQueueEntry.Insert(true);
+        if not CanScheduleJob() then
+            exit;
         JobQueueEntry.Validate("Earliest Start Date/Time", CurrentDateTime());
         Evaluate(NextRunDateFormula, '<1D>');
         JobQueueEntry.Validate("Next Run Date Formula", NextRunDateFormula);
         JobQueueEntry.Validate("Starting Time", 010000T);
         JobQueueEntry.Modify(true);
         JobQueueEntry.SetStatus(JobQueueEntry.Status::Ready);
+    end;
+
+    local procedure CanScheduleJob(): Boolean
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        User: Record User;
+        EmptyGuid: Guid;
+        UserId: Guid;
+    begin
+        if not (JobQueueEntry.WritePermission() and JobQueueEntry.ReadPermission()) then
+            exit(false);
+        UserId := UserSecurityId();
+        if User.IsEmpty() then
+            exit(true);
+        if Format(UserId) = Format(EmptyGuid) then
+            exit(true);
+        if not User.Get(UserId) then
+            exit(false);
+        if User."License Type" = User."License Type"::"Limited User" then
+            exit(false);
+        exit(true);
     end;
 }

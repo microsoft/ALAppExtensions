@@ -6,9 +6,7 @@ page 37015 "Purchases Year-Over-Year"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Purchases Year-Over-Year';
     AboutTitle = 'About Purchases Year-Over-Year';
     AboutText = 'The Purchases Year-Over-Year report compares purchase amounts across multiple years. This report is essential for long-term planning and making informed decisions based on historical purchasing data.';
@@ -25,7 +23,7 @@ page 37015 "Purchases Year-Over-Year"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

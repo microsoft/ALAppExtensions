@@ -11,7 +11,7 @@ pageextension 8010 "Blanket Sales Order Arch. Sub." extends "Blanket Sales Order
             field("Service Commitments"; Rec."Subscription Lines")
             {
                 ApplicationArea = All;
-                ToolTip = 'Shows the number of Subscription Lines for the archived sales line.';
+                ToolTip = 'Specifies the number of Subscription Lines for the archived sales line.';
             }
         }
     }

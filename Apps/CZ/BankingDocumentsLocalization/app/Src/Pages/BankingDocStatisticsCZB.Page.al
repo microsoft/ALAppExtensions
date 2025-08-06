@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN27
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -11,6 +12,9 @@ page 31269 "Banking Doc. Statistics CZB"
     Caption = 'Banking Document Statistics';
     Editable = false;
     PageType = Card;
+    ObsoleteReason = 'The Banking Doc. Statistics CZB page will be replaced with the new four pages (Payment Order Statistics CZB, Iss. Pmt. Order Statistics CZB, Bank Statement Statistics CZB, Iss. Bank Stmt. Statistics CZB). The new pages are RunObject compatible and do not need to be run from code.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '27.0';
 
     layout
     {
@@ -62,3 +66,4 @@ page 31269 "Banking Doc. Statistics CZB"
         EndBalance := BegBalance + Amount;
     end;
 }
+#endif

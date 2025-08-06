@@ -274,6 +274,7 @@ page 6210 "Chart of Sustain. Accounts"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Financial Reporting';
+                    Image = CalculateBalanceAccount;
                     RunObject = page "Financial Reports";
                     Tooltip = 'Open the Financial Reporting page.';
                 }

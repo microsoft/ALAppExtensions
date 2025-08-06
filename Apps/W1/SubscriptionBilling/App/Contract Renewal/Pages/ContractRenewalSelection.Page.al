@@ -23,8 +23,9 @@ page 8006 "Contract Renewal Selection"
                 field(AddVendorServicesCtrl; AddVendorServices)
                 {
                     CaptionClass = GetAddVendorServicesCaption();
+#pragma warning disable AA0219                    
                     ToolTip = 'Selecting this Option will also select and add the related Vendor Subscription Contract Lines.';
-
+#pragma warning restore AA0219
                     trigger OnValidate()
                     begin
                         CurrPage.Update();
@@ -258,7 +259,7 @@ page 8006 "Contract Renewal Selection"
                         Editable = false;
                         Style = StandardAccent;
                         StyleExpr = true;
-                        ToolTip = 'Displays the result of a preliminary check to see if the line is valid for a Contract Renewal.';
+                        ToolTip = 'Specifies the result of a preliminary check to see if the line is valid for a Contract Renewal.';
                     }
                 }
             }
@@ -290,8 +291,8 @@ page 8006 "Contract Renewal Selection"
     var
         CustomerContractLine: Record "Cust. Sub. Contract Line";
         ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
-        DataIncompleteCloseAnywayQst: Label 'At least one check failed. Do you want to close the page and abort the process?\\The following error was found:\%1';
-        ErrorDuringProcessingMsg: Label 'The following  error occured while processing:\\%1';
+        DataIncompleteCloseAnywayQst: Label 'At least one check failed. Do you want to close the page and abort the process?\\The following error was found:\%1', Comment = '%1=Error Text';
+        ErrorDuringProcessingMsg: Label 'The following  error occured while processing:\\%1', Comment = '%1=Error Text';
     begin
         SalesQuoteCreated := false;
         if CloseAction = CloseAction::LookupOK then begin
@@ -315,7 +316,7 @@ page 8006 "Contract Renewal Selection"
         end;
     end;
 
-    local procedure SelectLinesWithRenewalTerm(var CustomerContractLine: Record "Cust. Sub. Contract Line")
+    procedure SelectLinesWithRenewalTerm(var CustomerContractLine: Record "Cust. Sub. Contract Line")
     begin
         CustomerContractLine.Reset();
         CustomerContractLine.Copy(Rec);
@@ -378,8 +379,8 @@ page 8006 "Contract Renewal Selection"
         ServiceCommitment: Record "Subscription Line";
         ContractRenewalMgt: Codeunit "Sub. Contract Renewal Mgt.";
         EmptyDateFormula: DateFormula;
-        ContractRenewalDocumentAlreadyExistsErr: Label 'A Sales document already exists for %1 %2, %3 %4.';
-        ContractRenewalLineAlreadyExistsErr: Label 'A Contract Renewal Line already exists for %1 %2, %3 %4.';
+        ContractRenewalDocumentAlreadyExistsErr: Label 'A Sales document already exists for %1 %2, %3 %4.', Comment = '%1=Table Caption, %2=Subscription Header No., %3=Field Caption, %4=Line No.';
+        ContractRenewalLineAlreadyExistsErr: Label 'A Contract Renewal Line already exists for %1 %2, %3 %4.', Comment = '%1=Table Caption, %2=Subscription Header No., %3=Field Caption, %4=Line No.';
     begin
         if CustomerContractLine.IsCommentLine() then
             exit;
@@ -462,7 +463,7 @@ page 8006 "Contract Renewal Selection"
 
     local procedure GetAddVendorServicesCaption(): Text
     var
-        AddVendorContractLinesLbl: Label 'Add Vendor Subscription Contract Lines (%1)';
+        AddVendorContractLinesLbl: Label 'Add Vendor Subscription Contract Lines (%1)', Comment = '%1=Number of Vendor Subscription Contract Lines';
     begin
         exit(StrSubstNo(AddVendorContractLinesLbl, TempServiceCommitmentVend.Count()))
     end;

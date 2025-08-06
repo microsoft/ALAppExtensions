@@ -11,6 +11,7 @@ using Microsoft.Inventory.Requisition;
 using Microsoft.Inventory.Setup;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Purchases.Document;
+using Microsoft.Sales.Setup;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Archive;
 using Microsoft.Sales.Customer;
@@ -22,7 +23,9 @@ using Microsoft.Utilities;
 using Microsoft.Warehouse.Activity;
 using Microsoft.Warehouse.Request;
 using Microsoft.Warehouse.Setup;
+using System.TestLibraries.Utilities;
 
+#pragma warning disable AA0210
 codeunit 139915 "Sales Service Commitment Test"
 {
     Subtype = Test;
@@ -50,10 +53,12 @@ codeunit 139915 "Sales Service Commitment Test"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryRandom: Codeunit "Library - Random";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySales: Codeunit "Library - Sales";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryWarehouse: Codeunit "Library - Warehouse";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
         SerialNo: array[10] of Code[50];
         NoOfServiceObjects: Integer;
         NotCreatedProperlyErr: Label 'Subscription Lines are not created properly.';
@@ -145,10 +150,7 @@ codeunit 139915 "Sales Service Commitment Test"
         Initialize();
 
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
-        LibrarySales.CreateCustomer(Customer);
-        LibrarySales.CreateCustomerPriceGroup(CustomerPriceGroup);
-        Customer.Validate("Customer Price Group", CustomerPriceGroup.Code);
-        Customer.Modify(false);
+        CreateCustomerWithAssignedPriceGroup(Customer, CustomerPriceGroup);
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
         CustomerReference := CopyStr(LibraryRandom.RandText(MaxStrLen(SalesHeader."Your Reference")), 1, MaxStrLen(SalesHeader."Your Reference"));
         SalesHeader."Your Reference" := CopyStr(CustomerReference, 1, MaxStrLen(SalesHeader."Your Reference"));
@@ -620,25 +622,32 @@ codeunit 139915 "Sales Service Commitment Test"
     procedure CheckSalesLineQtyToInvoiceOnCreateSalesOrder()
     var
         Item2: Record Item;
+        SalesLine2: Record "Sales Line";
     begin
+        // [SCENARIO] Create two sales line , one for Subscription item and one for item with subscription
         Initialize();
+        LibrarySetupStorage.Save(DATABASE::"Sales & Receivables Setup");
+
+        // [GIVEN] "Default Item Quantity is set to Yes in Sales & Receivables Setup""
+        UpdateDefaultItemQuantityOnSalesSetup(true);
+
+        // [GIVEN] Create Subscription item and Item with subscriptions
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item2, Enum::"Item Service Commitment Type"::"Sales with Service Commitment");
+
+        // [WHEN] Create new Sales order with two sales line referencing Subscription item and Item with subscription
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Quote, '');
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", LibraryRandom.RandInt(100));
-        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item2."No.", LibraryRandom.RandInt(100));
+        LibrarySales.CreateSalesLine(SalesLine2, SalesHeader, Enum::"Sales Line Type"::Item, Item2."No.", LibraryRandom.RandInt(100));
 
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-        SalesLine.SetRange(Type, SalesLine.Type::Item);
+        // [THEN] "Qty. to Invoice" must be 0 for Subscription Item
+        Assert.AreEqual(SalesLine."Qty. to Invoice", 0, '');
 
-        SalesLine.SetRange("No.", Item."No.");
-        SalesLine.SetRange("Qty. to Invoice", 0);
-        Assert.RecordIsNotEmpty(SalesLine);
+        // [THEN] "Qty. to Invoice" must be the same as Quantity for Item with subscription
+        Assert.AreEqual(SalesLine2."Qty. to Invoice", SalesLine2.Quantity, '');
 
-        SalesLine.SetRange("No.", Item2."No.");
-        SalesLine.SetRange("Qty. to Invoice", SalesLine.Quantity);
-        Assert.RecordIsNotEmpty(SalesLine);
+        LibrarySetupStorage.Restore();
+        Clear(LibrarySetupStorage);
     end;
 
     [Test]
@@ -1424,6 +1433,104 @@ codeunit 139915 "Sales Service Commitment Test"
                 TempSalesServiceCommitment.Next();
             until SalesServiceCommitment.Next() = 0;
         until SalesLine.Next() = 0;
+
+        //Test no sales service commitments are left hanging
+        SalesServiceCommitment.FilterOnDocument(SalesHeader."Document Type", SalesHeader."No.");
+        Assert.RecordIsEmpty(SalesServiceCommitment);
+    end;
+
+    [Test]
+    procedure SalesSrvCommBaseAmtCalcDocPriceAndDiscountWithLineDiscAmount()
+    var
+        ExpectedCalculationBaseAmount: Decimal;
+    begin
+        // [SCENARIO] Sales Service Commitment Base Amount Calculation for Document Price and Discount with Line Discount Amount
+        // [GIVEN] Creates Service Commitment Packages with Service Commitment Package Lines with Customer and Calculation Base Type Document Price and Discount
+        // [WHEN] Sales Line is created with a Line Discount Amount
+        // [THEN] The Calculation Base Amount and Discount Percentage are correctly calculated and validated
+
+        Initialize(); // Customer - Item Price
+        SetupAdditionalServiceCommPackageLine(Enum::"Service Partner"::Customer, Enum::"Calculation Base Type"::"Document Price And Discount");
+        SetupServiceCommitmentItemAndSalesLineWithServiceCommitments(Item);
+
+        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
+
+        // Customer
+        ExpectedCalculationBaseAmount := Item."Unit Price";
+
+        SalesLine.Validate("Line Discount Amount", LibraryRandom.RandDec(100, 2));
+        SalesLine.Modify(false);
+        ExpectedCalculationBaseAmount := SalesLine."Unit Price";
+
+        FilterSalesServiceCommForLineDisc(ExpectedCalculationBaseAmount);
+        Assert.RecordIsNotEmpty(SalesServiceCommitment);
+    end;
+
+    [Test]
+    procedure SalesSrvCommBaseAmtCalcDocPriceAndDiscountWithLineDiscPercentage()
+    var
+        ExpectedCalculationBaseAmount: Decimal;
+    begin
+        // [SCENARIO] Sales Service Commitment Base Amount Calculation for Document Price and Discount with Line Discount Percentage
+        // [GIVEN] Creates Service Commitment Packages with Service Commitment Package Lines with Customer and Calculation Base Type Document Price and Discount
+        // [WHEN] Sales Line is created with a Line Discount Percentage
+        // [THEN] The Calculation Base Amount and Discount Percentage are correctly calculated and validated
+
+        Initialize(); // Customer - Item Price
+        SetupAdditionalServiceCommPackageLine(Enum::"Service Partner"::Customer, Enum::"Calculation Base Type"::"Document Price And Discount");
+        SetupServiceCommitmentItemAndSalesLineWithServiceCommitments(Item);
+
+        SalesServiceCommitment.FilterOnSalesLine(SalesLine);
+
+        // Customer
+        ExpectedCalculationBaseAmount := Item."Unit Price";
+
+        SalesLine.Validate("Line Discount %", LibraryRandom.RandDec(100, 2));
+        SalesLine.Modify(false);
+        ExpectedCalculationBaseAmount := SalesLine."Unit Price";
+
+        FilterSalesServiceCommForLineDisc(ExpectedCalculationBaseAmount);
+        Assert.RecordIsNotEmpty(SalesServiceCommitment);
+    end;
+
+    [Test]
+    [HandlerFunctions('GetListOfProposedSrvCommitmentsModalPageHandler')]
+    procedure ServiceCommitmentPackageSelectionShowsPackagesWithNoPriceGroup()
+    var
+        CustomerPriceGroup: Record "Customer Price Group";
+        SubscriptionPackage: array[2] of Record "Subscription Package";
+    begin
+        // [SCENARIO] When an Item and Customer share the same Price Group, and the Item is assigned to a Service Commitment Package with that Price Group,
+        // then both that Package AND any Service Commitment Package without a specified Price Group should be available for selection when adding the item to a Sales Line.
+        Initialize();
+        SubscriptionPackage[1].DeleteAll(false);
+
+        // [GIVEN] Customer PriceGroup and a Customer
+        CreateCustomerWithAssignedPriceGroup(Customer, CustomerPriceGroup);
+
+        // [GIVEN] Sales with Service Commitment Item
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, "Item Service Commitment Type"::"Sales with Service Commitment");
+
+        // [GIVEN] Service Commitment Packages 1 and 2 where Package 1 has a PriceGroup and Package 2 has not, Item is assigned to both
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '12M', 100, "Invoicing Via"::Contract, "Calculation Base Type"::"Item Price", false);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, SubscriptionPackage[1]);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, SubscriptionPackage[2]);
+        ContractTestLibrary.UpdateServiceCommitmentPackageWithPriceGroup(SubscriptionPackage[1], CustomerPriceGroup.Code);
+
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, SubscriptionPackage[1].Code);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, SubscriptionPackage[2].Code);
+
+        // [GIVEN] SalesQuote created for Customer
+        LibrarySales.CreateSalesHeader(SalesHeader, "Sales Document Type"::Quote, Customer."No.");
+
+        // [WHEN] SalesLine created for the SalesQuote and Item is added
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, "Sales Line Type"::Item, Item."No.", 1); // GetListOfProposedSrvCommitmentsModalPageHandler
+
+        // [THEN] Service Commitment Package Selection shows both Service Commitment Packages, with and without PriceGroup
+        Assert.AreEqual(SubscriptionPackage[1].Code, LibraryVariableStorage.DequeueText(), 'Service Commitment Package with PriceGroup should be available for selection');
+        Assert.AreEqual(SubscriptionPackage[2].Code, LibraryVariableStorage.DequeueText(), 'Service Commitment Package without PriceGroup should be available for selection');
+
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
@@ -1602,12 +1709,14 @@ codeunit 139915 "Sales Service Commitment Test"
 
     local procedure Initialize()
     begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Sales Service Commitment Test");
         ClearAll();
         ContractTestLibrary.InitContractsApp();
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Invoicing Item");
         SetupServiceCommitmentTemplate();
         ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
         ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     local procedure CheckAssignedSalesServiceCommitmentValues(var SalesServiceCommitmentToTest: Record "Sales Subscription Line"; SourceSalesLine: Record "Sales Line")
@@ -1702,7 +1811,15 @@ codeunit 139915 "Sales Service Commitment Test"
     local procedure CreateComponentItemWithSalesServiceCommitments(Item2No: Code[20])
     begin
         ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Sales with Service Commitment", ServiceCommitmentPackage.Code);
-        ContractTestLibrary.CreateBOMComponentForItem(Item2No, Item."No.", 0, '');
+        ContractTestLibrary.CreateBOMComponentForItem(Item2No, Item."No.", 1, Item."Base Unit of Measure");
+    end;
+
+    local procedure CreateCustomerWithAssignedPriceGroup(var NewCustomer: Record Customer; var CustomerPriceGroup: Record "Customer Price Group")
+    begin
+        LibrarySales.CreateCustomerPriceGroup(CustomerPriceGroup);
+        LibrarySales.CreateCustomer(NewCustomer);
+        NewCustomer.Validate("Customer Price Group", CustomerPriceGroup.Code);
+        NewCustomer.Modify(true);
     end;
 
     local procedure CreateNoSeriesWithLine(): Code[20]
@@ -1759,6 +1876,13 @@ codeunit 139915 "Sales Service Commitment Test"
         Item."Subscription Option" := Enum::"Item Service Commitment Type"::"Sales with Service Commitment";
         Item.Modify(false);
         ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
+    end;
+
+    local procedure FilterSalesServiceCommForLineDisc(ExpectedCalculationBaseAmount: Decimal)
+    begin
+        SalesServiceCommitment.SetRange("Calculation Base Type", Enum::"Calculation Base Type"::"Document Price And Discount");
+        SalesServiceCommitment.SetRange("Calculation Base Amount", ExpectedCalculationBaseAmount);
+        SalesServiceCommitment.SetRange("Discount %", SalesLine."Line Discount %");
     end;
 
     local procedure FindAndUpdateWhseActivityPostingDate(var WarehouseActivityHeader: Record "Warehouse Activity Header"; var WarehouseActivityLine: Record "Warehouse Activity Line"; SourceType: Integer; SourceNo: Code[20]; ActivityType: Enum "Warehouse Activity Type"; PostingDate: Date)
@@ -1884,6 +2008,10 @@ codeunit 139915 "Sales Service Commitment Test"
     var
         EmptyDateFormula: DateFormula;
     begin
+        ServiceCommitmentPackage.Reset();
+        ServiceCommitmentPackage.DeleteAll(false);
+        ServiceCommPackageLine.Reset();
+        ServiceCommPackageLine.DeleteAll(false);
         ContractTestLibrary.CreateInventoryItem(Item);
         Item."Subscription Option" := ServiceCommitmentType;
         Item.Modify(false);
@@ -2108,6 +2236,15 @@ codeunit 139915 "Sales Service Commitment Test"
         Assert.RecordCount(ServiceObject, NoOfServiceObjects);
     end;
 
+    local procedure UpdateDefaultItemQuantityOnSalesSetup(DefaultItemQuantity: Boolean)
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup.Validate("Default Item Quantity", DefaultItemQuantity);
+        SalesReceivablesSetup.Modify(true);
+    end;
+
     local procedure VerifyServiceCommitmentUnitCostFromSalesServiceCommitment(ServiceCommitmentParam: Record "Subscription Line"; var TempSalesServiceCommitment: Record "Sales Subscription Line" temporary)
     var
         ValueNotCorrectTok: Label '%1 value is not correct.', Locked = true;
@@ -2139,6 +2276,15 @@ codeunit 139915 "Sales Service Commitment Test"
         ExchangeRateSelectionPage.OK().Invoke();
     end;
 
+    [ModalPageHandler]
+    procedure GetListOfProposedSrvCommitmentsModalPageHandler(var AssignServiceCommitments: TestPage "Assign Service Commitments")
+    begin
+        AssignServiceCommitments.First();
+        repeat
+            LibraryVariableStorage.Enqueue(AssignServiceCommitments.Code.Value);
+        until AssignServiceCommitments.Next() = false;
+    end;
+
     [MessageHandler]
     procedure MessageHandler(Message: Text[1024])
     begin
@@ -2163,3 +2309,4 @@ codeunit 139915 "Sales Service Commitment Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

@@ -12,6 +12,7 @@ using Microsoft.Utilities;
 using System.Globalization;
 using System.TestLibraries.Utilities;
 
+#pragma warning disable AA0210
 codeunit 148155 "Contracts Test"
 {
     Subtype = Test;
@@ -1116,9 +1117,10 @@ codeunit 148155 "Contracts Test"
         SalesLine: Record "Sales Line";
         SalesQuote: TestPage "Sales Quote";
     begin
+        // [SCENARIO] Sales Quote containing Items with "Subscription Option" = "Subscription Item" excludes such items from document totals
         Initialize();
 
-        // [GIVEN] Sales Document with Sales Line and Item with "Subscription Option" = "Subscription Item"
+        // [GIVEN] Sales Quote with Sales Line and Item with "Subscription Option" = "Subscription Item"
         LibrarySales.CreateSalesHeader(SalesHeader, Enum::"Sales Document Type"::Quote, '');
         ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
         ContractTestLibrary.UpdateItemUnitCostAndPrice(Item, LibraryRandom.RandDec(1000, 2), LibraryRandom.RandDec(1000, 2), true);
@@ -1134,6 +1136,38 @@ codeunit 148155 "Contracts Test"
         SalesQuote.GoToRecord(SalesHeader);
         SalesQuote.SalesLines."Total Amount Excl. VAT".AssertEquals(0);
         SalesQuote.Close();
+    end;
+
+    [Test]
+    procedure SalesInvoiceShowsSubtotalForServCommItem()
+    var
+        Item: Record Item;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SubContractsItemManagement: Codeunit "Sub. Contracts Item Management";
+        SalesInvoice: TestPage "Sales Invoice";
+    begin
+        // [SCENARIO] Sales Invoice containing Items with "Subscription Option" = "Subscription Item" excludes such items from document totals
+        Initialize();
+
+        // [GIVEN] Sales Invoice with Sales Line and Item with "Subscription Option" = "Subscription Item"
+        LibrarySales.CreateSalesHeader(SalesHeader, Enum::"Sales Document Type"::Invoice, '');
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.UpdateItemUnitCostAndPrice(Item, LibraryRandom.RandDec(1000, 2), LibraryRandom.RandDec(1000, 2), true);
+
+        SubContractsItemManagement.SetAllowInsertOfInvoicingItem(true);
+
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, Item."No.", LibraryRandom.RandDec(10, 2));
+
+        // [THEN] Total Amount should be filled in Sales Invoice page
+        SalesLine.TestField("Line Amount");
+        SalesLine.TestField("Exclude from Doc. Total", false);
+
+        // Sales Line Total in Sales Quote should not have a value
+        SalesInvoice.OpenView();
+        SalesInvoice.GoToRecord(SalesHeader);
+        SalesInvoice.SalesLines."Total Amount Excl. VAT".AssertEquals(Item."Unit Price" * SalesLine.Quantity);
+        SalesInvoice.Close();
     end;
 
     [Test]
@@ -2335,3 +2369,4 @@ codeunit 148155 "Contracts Test"
 
     #endregion Handlers
 }
+#pragma warning restore AA0210

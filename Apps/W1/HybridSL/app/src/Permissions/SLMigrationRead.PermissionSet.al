@@ -81,6 +81,7 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL SOType" = R,
                   tabledata "SL Terms" = R,
                   tabledata "SL Upgrade Settings" = R,
+                  tabledata "SL VendClass" = R,
                   tabledata "SL Vendor" = R,
                   tabledata SLGLAcctBalByPeriod = R;
 }

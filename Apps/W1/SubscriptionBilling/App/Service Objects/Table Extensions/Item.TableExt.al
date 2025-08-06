@@ -120,13 +120,18 @@ tableextension 8052 Item extends Item
     local procedure UpdateItemPriceList()
     var
 #if not CLEAN25
+#pragma warning disable AL0432
         SalesPrice: Record "Sales Price";
+#pragma warning restore AL0432
 #endif
         PriceListLine: Record "Price List Line";
 #if not CLEAN25
         PriceCalculationMgt: Codeunit "Price Calculation Mgt.";
 #endif
     begin
+        if Rec."Subscription Option" = xRec."Subscription Option" then
+            exit;
+
         if IsServiceCommitmentItem() then begin
             Rec.Validate("Allow Invoice Disc.", false);
 #if not CLEAN25

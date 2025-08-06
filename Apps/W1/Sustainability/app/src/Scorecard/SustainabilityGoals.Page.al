@@ -352,6 +352,7 @@ page 6234 "Sustainability Goals"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                PromotedOnly = true;
                 Caption = 'Show My Goals';
                 ToolTip = 'Executes the Show My Goals action.';
 
@@ -368,6 +369,7 @@ page 6234 "Sustainability Goals"
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                PromotedOnly = true;
                 Caption = 'Show All Goals';
                 ToolTip = 'Executes the Show All Goals action.';
 

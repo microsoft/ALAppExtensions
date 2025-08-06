@@ -36,7 +36,6 @@ tableextension 13612 VendorLedgerEntry extends "Vendor Ledger Entry"
                     Rec.TESTFIELD("Payment Method Code");
                     PaymentMethod.GET("Payment Method Code");
                     BEGIN
-                        PaymentMethod.TESTFIELD(PaymentTypeValidation);
                         CASE PaymentMethod.PaymentTypeValidation OF
                             PaymentMethod.PaymentTypeValidation::"FIK 01",
                         PaymentMethod.PaymentTypeValidation::"FIK 73":

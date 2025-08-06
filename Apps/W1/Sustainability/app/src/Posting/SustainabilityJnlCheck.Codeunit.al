@@ -62,6 +62,7 @@ codeunit 6216 "Sustainability Jnl.-Check"
         SustainabilityJournalMgt.CheckScopeMatchWithBatch(SustainabilityJnlLine);
 
         TestRequiredFieldsFromWaterOrWasteIntensityForJnlLine(SustainabilityJnlLine);
+        TestRequiredFieldsFromEnergyForJnlLine(SustainabilityJnlLine);
         TestEmissionCalculationAndAmount(SustainabilityJnlLine);
 
         TestDimensionsForJnlLine(SustainabilityJnlLine);
@@ -103,21 +104,13 @@ codeunit 6216 "Sustainability Jnl.-Check"
 
     local procedure AllEmissionsZeroCheck(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Boolean
     begin
-        if IsRenewableEnergyCheck(SustainabilityJnlLine) then
+        if SustainabilityJnlLine."Renewable Energy" then
             exit(false);
 
-        if (SustainabilityJnlLine."Emission CO2" = 0) and (SustainabilityJnlLine."Emission CH4" = 0) and (SustainabilityJnlLine."Emission N2O" = 0) and (SustainabilityJnlLine."Water Intensity" = 0) and (SustainabilityJnlLine."Discharged Into Water" = 0) and (SustainabilityJnlLine."Waste Intensity" = 0) then
+        if (SustainabilityJnlLine."Emission CO2" = 0) and (SustainabilityJnlLine."Emission CH4" = 0) and (SustainabilityJnlLine."Emission N2O" = 0) and (SustainabilityJnlLine."Water Intensity" = 0) and (SustainabilityJnlLine."Discharged Into Water" = 0) and (SustainabilityJnlLine."Waste Intensity" = 0) and (SustainabilityJnlLine."Energy Consumption" = 0) then
             exit(true);
 
         exit(false);
-    end;
-
-    local procedure IsRenewableEnergyCheck(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Boolean
-    var
-        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
-    begin
-        if SustainAccountSubcategory.Get(SustainabilityJnlLine."Account Category", SustainabilityJnlLine."Account Subcategory") then
-            exit(SustainAccountSubcategory."Renewable Energy");
     end;
 
     local procedure TestRequiredFieldsFromSetupForJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
@@ -141,6 +134,15 @@ codeunit 6216 "Sustainability Jnl.-Check"
                 SustainabilityJnlLine.TestField("Water/Waste Intensity Type");
                 SustainabilityJnlLine.Validate("Water/Waste Intensity Type");
             end;
+    end;
+
+    local procedure TestRequiredFieldsFromEnergyForJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Boolean
+    var
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    begin
+        if SustainAccountSubcategory.Get(SustainabilityJnlLine."Account Category", SustainabilityJnlLine."Account Subcategory") then
+            if SustainAccountSubcategory."Energy Value Required" then
+                SustainabilityJnlLine.TestField("Energy Consumption");
     end;
 
     local procedure TestDimensionsForJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")

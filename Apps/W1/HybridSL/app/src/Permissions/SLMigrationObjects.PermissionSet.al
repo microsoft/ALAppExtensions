@@ -81,6 +81,7 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL SOType" = X,
                   table "SL Terms" = X,
                   table "SL Upgrade Settings" = X,
+                  table "SL VendClass" = X,
                   table "SL Vendor" = X,
                   table SLGLAcctBalByPeriod = X,
                   codeunit "SL Account Migrator" = X,

@@ -46,7 +46,7 @@ page 8054 "Contract Types"
                 {
                     BlankZero = true;
                     Caption = 'No. of Translations';
-                    ToolTip = 'Shows the number of translations.';
+                    ToolTip = 'Specifies the number of translations.';
                     Editable = false;
 
                     trigger OnDrillDown()

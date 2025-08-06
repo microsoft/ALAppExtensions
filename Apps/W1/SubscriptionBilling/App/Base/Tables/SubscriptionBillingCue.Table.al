@@ -105,6 +105,7 @@ table 8070 "Subscription Billing Cue"
         {
             Caption = 'Last Updated On';
             Editable = false;
+            DataClassification = SystemMetadata;
         }
         field(20; "Date Filter"; Date)
         {

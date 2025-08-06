@@ -21,6 +21,9 @@
     }
   ],
   "target": "Cloud",
+  "features": [
+    "TranslationFile"
+  ],
   "resourceExposurePolicy": {
     "allowDebugging": false,
     "allowDownloadingSource": true,

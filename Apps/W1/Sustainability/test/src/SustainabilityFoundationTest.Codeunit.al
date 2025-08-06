@@ -1,3 +1,9 @@
+namespace Microsoft.Test.Sustainability;
+
+using System.Reflection;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Ledger;
+
 codeunit 148180 "Sustainability Foundation Test"
 {
     Subtype = Test;

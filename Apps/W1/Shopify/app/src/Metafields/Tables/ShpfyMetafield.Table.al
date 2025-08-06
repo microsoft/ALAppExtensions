@@ -20,13 +20,11 @@ table 30101 "Shpfy Metafield"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-#pragma warning disable AS0086 // false positive on extending the field length on internal table
         field(2; Namespace; Text[255])
         {
             Caption = 'Namespace';
             DataClassification = SystemMetadata;
         }
-#pragma warning restore AS0086
 
 #if not CLEANSCHEMA28
         field(3; "Owner Resource"; Text[50])
@@ -69,7 +67,6 @@ table 30101 "Shpfy Metafield"
             Caption = 'Key';
             DataClassification = CustomerContent;
         }
-#pragma warning restore AS0086
 
 #if not CLEANSCHEMA28
 #pragma warning disable AS0105
@@ -108,7 +105,6 @@ table 30101 "Shpfy Metafield"
                     CheckShopCurrency(Value);
             end;
         }
-#pragma warning restore AS0086
         field(8; Type; Enum "Shpfy Metafield Type")
         {
             Caption = 'Type';

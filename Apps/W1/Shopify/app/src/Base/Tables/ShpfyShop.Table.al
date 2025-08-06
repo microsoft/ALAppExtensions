@@ -353,7 +353,7 @@ table 30102 "Shpfy Shop"
         }
         field(44; "Allow Background Syncs"; Boolean)
         {
-            Caption = 'Allow Background Syncs';
+            Caption = 'Run Syncs in Background';
             DataClassification = CustomerContent;
             InitValue = true;
         }
@@ -987,7 +987,7 @@ table 30102 "Shpfy Shop"
         RetentionPolicySetup.Modify(true);
     end;
 
-    internal procedure GetB2BEnabled(): Boolean;
+    internal procedure GetShopSettings()
     var
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
@@ -995,16 +995,13 @@ table 30102 "Shpfy Shop"
         JItem: JsonToken;
     begin
         CommunicationMgt.SetShop(Rec);
-        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { name plan { displayName partnerDevelopment shopifyPlus } } }"}');
+        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { name plan { displayName partnerDevelopment shopifyPlus } weightUnit } }"}');
         if JResponse.SelectToken('$.data.shop.plan', JItem) then
-            if JItem.IsObject then begin
-                if JsonHelper.GetValueAsBoolean(JItem, 'shopifyPlus') then
-                    exit(true);
-                if JsonHelper.GetValueAsBoolean(JItem, 'partnerDevelopment') then
-                    exit(true);
-                if JsonHelper.GetValueAsText(JItem, 'displayName') = 'Plus Trial' then
-                    exit(true);
-            end;
+            if JItem.IsObject then
+                Rec."B2B Enabled" := JsonHelper.GetValueAsBoolean(JItem, 'partnerDevelopment') or
+                                      JsonHelper.GetValueAsBoolean(JItem, 'shopifyPlus') or
+                                        (JsonHelper.GetValueAsText(JItem, 'displayName') = 'Plus Trial');
+        Rec."Weight Unit" := ConvertToWeightUnit(JsonHelper.GetValueAsText(JResponse, 'data.shop.weightUnit'));
     end;
 
     internal procedure GetShopWeightUnit(): Enum "Shpfy Weight Unit"
@@ -1017,7 +1014,6 @@ table 30102 "Shpfy Shop"
         JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { weightUnit } }"}');
         exit(ConvertToWeightUnit(JsonHelper.GetValueAsText(JResponse, 'data.shop.weightUnit')));
     end;
-
 
     internal procedure SyncCountries()
     begin

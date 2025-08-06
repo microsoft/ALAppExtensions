@@ -4,12 +4,17 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocument.Processing.Import;
 using Microsoft.Purchases.History;
+using Microsoft.eServices.EDocument;
 using System.Reflection;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 page 6104 "E-Doc. Line Additional Fields"
 {
+    Caption = 'Additional fields';
     PageType = ListPart;
-    SourceTable = "EDoc. Purch. Line Field Setup";
+#pragma warning disable AS0035 // extensible = false, released in 26.2, changed for 26.3, this is breaking if someone uses Page.run(6104, Rec)
+    SourceTable = "ED Purchase Line Field Setup";
+#pragma warning restore AS0035
     InsertAllowed = false;
     DeleteAllowed = false;
     Extensible = false;
@@ -61,7 +66,7 @@ page 6104 "E-Doc. Line Additional Fields"
                 var
                     LocalEDocPurchaseLineField: Record "E-Document Line - Field";
                 begin
-                    LocalEDocPurchaseLineField.DeleteCustomizedRecords(CurrentEDocumentLineMapping);
+                    LocalEDocPurchaseLineField.DeleteCustomizedRecords(CurrentEDocumentPurchaseLine);
                     CurrPage.Update();
                 end;
             }
@@ -69,22 +74,26 @@ page 6104 "E-Doc. Line Additional Fields"
     }
 
     var
-        CurrentEDocumentLineMapping: Record "E-Document Line Mapping";
+        CurrentEDocumentPurchaseLine: Record "E-Document Purchase Line";
         CurrentPurchaseInvoiceLine: Record "Purch. Inv. Line";
         EDocPurchLineField: Record "E-Document Line - Field";
         FieldName, FieldValue : Text;
         HasCustomizations: Boolean;
 
     trigger OnOpenPage()
+    var
+        EDocument: Record "E-Document";
     begin
         Rec.DeleteOmittedFieldsIfConfigured();
+        EDocument.Get(CurrentEDocumentPurchaseLine."E-Document Entry No.");
+        Rec.SetRange("E-Document Service", EDocument.GetEDocumentService().Code);
     end;
 
     trigger OnAfterGetRecord()
     var
         Field: Record Field;
     begin
-        EDocPurchLineField.Get(CurrentEDocumentLineMapping, Rec);
+        EDocPurchLineField.Get(CurrentEDocumentPurchaseLine, Rec);
         FieldValue := EDocPurchLineField.GetValueAsText();
         if Field.Get(Database::"Purch. Inv. Line", Rec."Field No.") then
             this.FieldName := Field.FieldName;
@@ -94,12 +103,12 @@ page 6104 "E-Doc. Line Additional Fields"
     var
         LocalEDocPurchaseLineField: Record "E-Document Line - Field";
     begin
-        HasCustomizations := LocalEDocPurchaseLineField.HasCustomizedRecords(CurrentEDocumentLineMapping);
+        HasCustomizations := LocalEDocPurchaseLineField.HasCustomizedRecords(CurrentEDocumentPurchaseLine);
     end;
 
-    internal procedure SetEDocumentLine(EDocumentLineMapping: Record "E-Document Line Mapping"; PurchaseInvoiceLine: Record "Purch. Inv. Line")
+    internal procedure SetEDocumentLine(EDocumentPurchaseLine: Record "E-Document Purchase Line"; PurchaseInvoiceLine: Record "Purch. Inv. Line")
     begin
-        CurrentEDocumentLineMapping := EDocumentLineMapping;
+        CurrentEDocumentPurchaseLine := EDocumentPurchaseLine;
         CurrentPurchaseInvoiceLine := PurchaseInvoiceLine;
     end;
 

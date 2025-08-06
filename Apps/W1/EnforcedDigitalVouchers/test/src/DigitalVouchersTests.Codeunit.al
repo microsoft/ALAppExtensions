@@ -113,7 +113,7 @@ codeunit 139515 "Digital Vouchers Tests"
         EnableDigitalVoucherFeature();
         // [GIVEN] Digital voucher entry setup for purchase document is "Attachment"
         InitSetupCheckOnly("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment);
-        // [GIVEN] Purchase invoice and Incoming document with attachment is created for the purchase document        
+        // [GIVEN] Purchase invoice and Incoming document with attachment is created for the purchase document
         // [WHEN] Post the purchase document
         DocNo := ReceiveAndInvoicePurchaseInvoiceWithIncDoc();
         // [THEN] The document is posted with the digital voucher
@@ -163,7 +163,7 @@ codeunit 139515 "Digital Vouchers Tests"
         InitializeReportSelectionPurchaseInvoice();
         // [GIVEN] Digital voucher entry setup for purchase document is "Attachment", "Generate Automatically" is enabled, "Skip If Manually Added" is enabled
         InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment);
-        // [GIVEN] Purcnase invoice and Incoming document with attachment is created for the purchase document        
+        // [GIVEN] Purcnase invoice and Incoming document with attachment is created for the purchase document
         // [WHEN] Post purchase document
         DocNo := ReceiveAndInvoicePurchaseInvoiceWithIncDoc(PurchHeader);
         // [THEN] Incoming document with two attachments is connected to the posted purchase document
@@ -638,7 +638,7 @@ codeunit 139515 "Digital Vouchers Tests"
         EnableDigitalVoucherFeature();
         // [GIVEN] Digital voucher entry setup for sales document is "Attachment"
         InitSetupCheckOnly("Digital Voucher Entry Type"::"Sales Document", "Digital Voucher Check Type"::Attachment);
-        // [GIVEN] Service invoice with incoming document       
+        // [GIVEN] Service invoice with incoming document
         // [WHEN] Post the service document
         DocNo := PostServiceInvoiceWithIncDoc();
         // [THEN] The document is posted with the digital voucher
@@ -1309,14 +1309,6 @@ codeunit 139515 "Digital Vouchers Tests"
         SalesHeader: Record "Sales Header";
     begin
         LibrarySales.CreateSalesInvoice(SalesHeader);
-        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
-    end;
-
-    local procedure ReceiveAndInvoiceSalesInvoice(): Code[20]
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        LibrarySales.CreateSalesCreditMemo(SalesHeader);
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 

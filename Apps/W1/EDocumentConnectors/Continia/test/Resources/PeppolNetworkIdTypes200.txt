@@ -1,0 +1,756 @@
+<network_id_types xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <network_id_type>
+        <code_iso6523-1>0002</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>INSEE: National Institute for statistics and Economic studies</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>b79093d7-cada-415f-a6cd-b3b46b83528a</network_id_type_id>
+        <scheme_id>FR:SIRENE</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0007</code_iso6523-1>
+        <default_in_country_iso3166>SE</default_in_country_iso3166>
+        <description>The Swedish National Tax Board</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>780ec397-daaa-4ee8-bfcc-e4711b245b5e</network_id_type_id>
+        <scheme_id>SE:ORGNR</scheme_id>
+        <vat_in_country_iso3166>SE</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0009</code_iso6523-1>
+        <default_in_country_iso3166>FR</default_in_country_iso3166>
+        <description>DU PONT DE NEMOURS</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>d361dfeb-18a8-4c25-a627-f1a06be9cc83</network_id_type_id>
+        <scheme_id>FR:SIRET</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0037</code_iso6523-1>
+        <default_in_country_iso3166>FI</default_in_country_iso3166>
+        <description>Finnish tax board</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>bf97384d-456c-437c-8d1e-7662c0520fe8</network_id_type_id>
+        <scheme_id>FI:OVT</scheme_id>
+        <vat_in_country_iso3166>FI</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0060</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Dun and Bradstreet Ltd</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>d868eac3-8622-4c71-827e-9cc614a796fb</network_id_type_id>
+        <scheme_id>DUNS</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0088</code_iso6523-1>
+        <default_in_country_iso3166>NZ</default_in_country_iso3166>
+        <description>GS1</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>8419e851-11be-4f85-967d-9aa717856b49</network_id_type_id>
+        <scheme_id>GLN</scheme_id>
+        <vat_in_country_iso3166>NZ</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0096</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>The Danish Commerce and Companies Agency</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>a4afdd8e-b55a-4ace-9d32-1d59c5af9c90</network_id_type_id>
+        <scheme_id>DK:P</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0097</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Ediforum Italia</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>052693c4-089a-4604-89ef-ca4a3597c1a0</network_id_type_id>
+        <scheme_id>IT:FTI</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0106</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Vereniging van Kamers van Koophandel en Fabrieken in Nederland</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>b9915287-5a79-4fc9-b909-72d65aa3de84</network_id_type_id>
+        <scheme_id>NL:KVK</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0130</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Directorates of the European Commission</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>46ed3758-4660-4b1d-bd5c-160843b84616</network_id_type_id>
+        <scheme_id>EU:NAL</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0135</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Società Interbancaria per l Automazione</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>37d8adca-4ffb-4f7b-a6f7-e55caeb6060e</network_id_type_id>
+        <scheme_id>IT:SIA</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0142</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Servizi Centralizzati SECETI</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>b5430f75-2bd4-4f1b-897a-79f486e187d2</network_id_type_id>
+        <scheme_id>IT:SECETI</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0151</code_iso6523-1>
+        <default_in_country_iso3166>AU</default_in_country_iso3166>
+        <description>Australian Business Number (ABN) Scheme</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>c31c91fd-d8c4-4333-b207-de91bedbcac8</network_id_type_id>
+        <scheme_id>AU:ABN</scheme_id>
+        <vat_in_country_iso3166>AU</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0183</code_iso6523-1>
+        <default_in_country_iso3166>CH</default_in_country_iso3166>
+        <description>Swiss Unique Business Identification Number</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>2a385d10-9cd9-4eb3-bc4f-39f033c8e57a</network_id_type_id>
+        <scheme_id>CH:UIDB</scheme_id>
+        <vat_in_country_iso3166>CH</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0184</code_iso6523-1>
+        <default_in_country_iso3166>DK</default_in_country_iso3166>
+        <description>DIGSTORG</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>71e79c72-e470-4f32-90c2-dff4095b8632</network_id_type_id>
+        <scheme_id>DK:DIGST</scheme_id>
+        <vat_in_country_iso3166>DK</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0190</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Organisatie Indentificatie Nummer</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>de8b2bc7-2e35-48ee-bfff-1535f18546e5</network_id_type_id>
+        <scheme_id>NL:OINO</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0191</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Estonia company code</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>9229c644-b25f-4ac5-ad1a-36e086b93e00</network_id_type_id>
+        <scheme_id>EE:CC</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0192</code_iso6523-1>
+        <default_in_country_iso3166>NO</default_in_country_iso3166>
+        <description>The Brønnøysund Register Centre</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>eafbc3d8-0e6c-46d9-9398-06728a6e045a</network_id_type_id>
+        <scheme_id>NO:ORG</scheme_id>
+        <vat_in_country_iso3166>NO</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0193</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>UBL.BE</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>5559bc3d-fc35-4d26-8225-b68d979c6e5a</network_id_type_id>
+        <scheme_id>UBLBE</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0195</code_iso6523-1>
+        <default_in_country_iso3166>SG</default_in_country_iso3166>
+        <description>Singapore Nationwide elnvoice Framework</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>de823404-5df4-48a9-a7fb-91d47daf5a91</network_id_type_id>
+        <scheme_id>SG:UEN</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0196</code_iso6523-1>
+        <default_in_country_iso3166>IS</default_in_country_iso3166>
+        <description>Icelandic National Registry</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>43377426-aa8e-41a2-867f-4fdbddc3b60f</network_id_type_id>
+        <scheme_id>IS:KTNR</scheme_id>
+        <vat_in_country_iso3166>IS</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0198</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>The Danish Business Authority</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>423efc62-b6f6-43c7-abf0-4f109f7397e5</network_id_type_id>
+        <scheme_id>DK:ERST</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0199</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Legal Entity Identifier</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>35cc83fa-ba61-4400-93f9-affdda6f0c3e</network_id_type_id>
+        <scheme_id>LEI</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0200</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>State Enterprise Centre of Registers</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>619523ad-544e-4257-a1b8-4e74049e4667</network_id_type_id>
+        <scheme_id>LT:LEC</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0201</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Codice Univoco Unità Organizzativa iPA</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>42f4a083-59a3-4127-a7f2-9bf33af53cd3</network_id_type_id>
+        <scheme_id>IT:CUUO</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0204</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Koordinierungsstelle für IT-Standards (KoSIT)</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>172d13f3-8b2c-4428-b149-b9dd182c3773</network_id_type_id>
+        <scheme_id>DE:LWID</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0208</code_iso6523-1>
+        <default_in_country_iso3166>BE</default_in_country_iso3166>
+        <description>Numero entreprise / ondernemingsnummer / Unternehmensnummer</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>c7cd4c68-2cc7-488f-b718-368f9e517a68</network_id_type_id>
+        <scheme_id>BE:EN</scheme_id>
+        <vat_in_country_iso3166>BE</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>0216</code_iso6523-1>
+        <description>Finnish OVT code</description>
+        <icd_code>true</icd_code>
+        <network_id_type_id>88701712-0852-4538-9347-57f1f1a34245</network_id_type_id>
+        <scheme_id>FI:OVT2</scheme_id>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9901</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Danish Ministry of the Interior and Health</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>3f51d306-65de-4596-89cc-933543b0cb43</network_id_type_id>
+        <scheme_id>DK:CPR</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9902</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>The Danish Commerce and Companies Agency</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>43057922-16b4-4c11-b865-192717504d53</network_id_type_id>
+        <scheme_id>DK:CVR</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9904</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Danish Ministry of Taxation, Central Customs and Tax Administration</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>a2a3fc90-6aa2-4154-91dc-5ae96a0d40a4</network_id_type_id>
+        <scheme_id>DK:SE</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9905</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Danish VANS providers</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>226fb9db-4304-4b1d-8cbc-dac765d0f5ae</network_id_type_id>
+        <scheme_id>DK:VANS</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9906</code_iso6523-1>
+        <default_in_country_iso3166>IT</default_in_country_iso3166>
+        <description>Ufficio responsabile gestione partite IVA</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>c50e16a8-f170-4c4d-85eb-a4c3c4b4df6f</network_id_type_id>
+        <scheme_id>IT:VAT</scheme_id>
+        <vat_in_country_iso3166>IT</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9907</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>TAX Authority</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>85a0ab8e-538f-4b63-aef4-80e7530fd6b3</network_id_type_id>
+        <scheme_id>IT:CF</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9908</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Enhetsregisteret ved Brønnøysundregistrene</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>bdda76fd-0d59-488f-a953-a651f4560005</network_id_type_id>
+        <scheme_id>NO:ORGNR</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9909</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Enhetsregisteret ved Brønnøysundregistrene</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>82bfd4dc-3964-4bcc-8f2f-d734bb461f5d</network_id_type_id>
+        <scheme_id>NO:VAT</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9910</code_iso6523-1>
+        <default_in_country_iso3166>HU</default_in_country_iso3166>
+        <description>Hungarian Tax Board</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>14529f9c-fed4-4207-acdd-259394545eb6</network_id_type_id>
+        <scheme_id>HU:VAT</scheme_id>
+        <vat_in_country_iso3166>HU</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9912</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>National ministries of Economy</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>215639e8-5f88-49fc-bd1e-05e0b6ab91be</network_id_type_id>
+        <scheme_id>EU:VAT</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9913</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Business Registers Network</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>ef0febfa-154d-49ae-9b65-7c259ad831d8</network_id_type_id>
+        <scheme_id>EU:REID</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9914</code_iso6523-1>
+        <default_in_country_iso3166>AT</default_in_country_iso3166>
+        <description>Österreichische Umsatzsteuer-Identifikationsnummer</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>6aff0db7-4bda-4758-8457-f2f577de97d7</network_id_type_id>
+        <scheme_id>AT:VAT</scheme_id>
+        <vat_in_country_iso3166>AT</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9915</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Österreichisches Verwaltungs bzw. Organisationskennzeichen</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>fd2bb7cf-bd41-45ed-8f43-e80343d0a32a</network_id_type_id>
+        <scheme_id>AT:GOV</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9917</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Icelandic National Registry</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>796b2288-b9cf-4fc9-a269-1e7efb8b744e</network_id_type_id>
+        <scheme_id>IS:KT</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9918</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>S.W.I.F.T. Society for Worldwide Interbank Financial Telecommunications s.c.</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>9fd493dc-2dd0-414f-a2e4-c8211d37971c</network_id_type_id>
+        <scheme_id>IBAN</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9919</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Kennziffer des Unternehmensregisters</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>bb0b52f3-d73b-40d4-84c8-4522d745bbb7</network_id_type_id>
+        <scheme_id>AT:KUR</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9920</code_iso6523-1>
+        <default_in_country_iso3166>ES</default_in_country_iso3166>
+        <description>Agencia Española de Administración Tributaria</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>cb9ace3a-f4ad-4a4a-bb0e-c4ee0dd9f28e</network_id_type_id>
+        <scheme_id>ES:VAT</scheme_id>
+        <vat_in_country_iso3166>ES</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9921</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Indice delle Pubbliche Amministrazioni</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>1d3025ef-0dd1-4646-b57e-ac5c33b12b7e</network_id_type_id>
+        <scheme_id>IT:IPA</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9922</code_iso6523-1>
+        <default_in_country_iso3166>AD</default_in_country_iso3166>
+        <description>Andorra VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>d3741495-000e-4ca8-8c8f-2a430855942a</network_id_type_id>
+        <scheme_id>AD:VAT</scheme_id>
+        <vat_in_country_iso3166>AD</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9923</code_iso6523-1>
+        <default_in_country_iso3166>AL</default_in_country_iso3166>
+        <description>Albania VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>39d021bb-2de2-4b5e-b089-6a8a58410e4d</network_id_type_id>
+        <scheme_id>AL:VAT</scheme_id>
+        <vat_in_country_iso3166>AL</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9924</code_iso6523-1>
+        <default_in_country_iso3166>BA</default_in_country_iso3166>
+        <description>Bosnia and Herzegovina VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>65c36225-c262-46a8-991d-56c295391fa2</network_id_type_id>
+        <scheme_id>BA:VAT</scheme_id>
+        <vat_in_country_iso3166>BA</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9925</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Belgium VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>e4698d5e-d383-4355-8d9f-c068af7382f7</network_id_type_id>
+        <scheme_id>BE:VAT</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9926</code_iso6523-1>
+        <default_in_country_iso3166>BG</default_in_country_iso3166>
+        <description>Bulgaria VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>55c6f86c-a66b-4183-bac0-9560ffaf96f4</network_id_type_id>
+        <scheme_id>BG:VAT</scheme_id>
+        <vat_in_country_iso3166>BG</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9927</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Switzerland VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>4a75bbc5-b04d-4caa-9a65-6a25ef2e59d6</network_id_type_id>
+        <scheme_id>CH:VAT</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9928</code_iso6523-1>
+        <default_in_country_iso3166>CY</default_in_country_iso3166>
+        <description>Cyprus VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>6320f37d-90f9-446c-bbb7-e6a94b16ec83</network_id_type_id>
+        <scheme_id>CY:VAT</scheme_id>
+        <vat_in_country_iso3166>CY</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9929</code_iso6523-1>
+        <default_in_country_iso3166>CZ</default_in_country_iso3166>
+        <description>Czech Republic VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>89c378a7-5a70-44b8-8ff0-3894180adc4b</network_id_type_id>
+        <scheme_id>CZ:VAT</scheme_id>
+        <vat_in_country_iso3166>CZ</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9930</code_iso6523-1>
+        <default_in_country_iso3166>DE</default_in_country_iso3166>
+        <description>Germany VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>5649fa22-eec2-46aa-bc5a-c1cdaa545ce8</network_id_type_id>
+        <scheme_id>DE:VAT</scheme_id>
+        <vat_in_country_iso3166>DE</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9931</code_iso6523-1>
+        <default_in_country_iso3166>EE</default_in_country_iso3166>
+        <description>Estonia VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>6f456455-868a-424c-98df-27a4d19f11ed</network_id_type_id>
+        <scheme_id>EE:VAT</scheme_id>
+        <vat_in_country_iso3166>EE</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9932</code_iso6523-1>
+        <default_in_country_iso3166>GB</default_in_country_iso3166>
+        <description>United Kingdom VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>568c29e7-c2c8-49bb-b135-9199d5b791d1</network_id_type_id>
+        <scheme_id>GB:VAT</scheme_id>
+        <vat_in_country_iso3166>GB</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9933</code_iso6523-1>
+        <default_in_country_iso3166>EL</default_in_country_iso3166>
+        <description>Greece VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>8b1a902f-fae9-493b-b819-e4cb76090e08</network_id_type_id>
+        <scheme_id>GR:VAT</scheme_id>
+        <vat_in_country_iso3166>EL</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9934</code_iso6523-1>
+        <default_in_country_iso3166>HR</default_in_country_iso3166>
+        <description>Croatia VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>d6c04f97-5c99-4df3-b13f-93fe648c21d9</network_id_type_id>
+        <scheme_id>HR:VAT</scheme_id>
+        <vat_in_country_iso3166>HR</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9935</code_iso6523-1>
+        <default_in_country_iso3166>IE</default_in_country_iso3166>
+        <description>Ireland VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>28af06c1-1d77-4e37-a6d7-69bade0f9538</network_id_type_id>
+        <scheme_id>IE:VAT</scheme_id>
+        <vat_in_country_iso3166>IE</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9936</code_iso6523-1>
+        <default_in_country_iso3166>LI</default_in_country_iso3166>
+        <description>Liechtenstein VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>0f352343-81d1-4cf2-8790-6e840c99ce90</network_id_type_id>
+        <scheme_id>LI:VAT</scheme_id>
+        <vat_in_country_iso3166>LI</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9937</code_iso6523-1>
+        <default_in_country_iso3166>LT</default_in_country_iso3166>
+        <description>Lithuania VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>78423983-2d2d-47df-806d-f791e023eac6</network_id_type_id>
+        <scheme_id>LT:VAT</scheme_id>
+        <vat_in_country_iso3166>LT</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9938</code_iso6523-1>
+        <default_in_country_iso3166>LU</default_in_country_iso3166>
+        <description>Luxemburg VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>f115e641-e450-470c-a297-c6b0fc697578</network_id_type_id>
+        <scheme_id>LU:VAT</scheme_id>
+        <vat_in_country_iso3166>LU</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9939</code_iso6523-1>
+        <default_in_country_iso3166>LV</default_in_country_iso3166>
+        <description>Latvia VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>6ca660b7-dd32-4c22-80e0-631645589d2c</network_id_type_id>
+        <scheme_id>LV:VAT</scheme_id>
+        <vat_in_country_iso3166>LV</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9940</code_iso6523-1>
+        <default_in_country_iso3166>MC</default_in_country_iso3166>
+        <description>Monaco VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>afcb2d07-21f9-4fac-9bce-be0be031e8e0</network_id_type_id>
+        <scheme_id>MC:VAT</scheme_id>
+        <vat_in_country_iso3166>MC</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9941</code_iso6523-1>
+        <default_in_country_iso3166>ME</default_in_country_iso3166>
+        <description>Montenegro VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>1a0d34ca-ed0d-4281-b0a0-2596c1223275</network_id_type_id>
+        <scheme_id>ME:VAT</scheme_id>
+        <vat_in_country_iso3166>ME</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9942</code_iso6523-1>
+        <default_in_country_iso3166>MK</default_in_country_iso3166>
+        <description>Macedonia, the former Yugoslav Republic of VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>5057f795-caa9-46ad-bc29-819b634ddc79</network_id_type_id>
+        <scheme_id>MK:VAT</scheme_id>
+        <vat_in_country_iso3166>MK</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9943</code_iso6523-1>
+        <default_in_country_iso3166>MT</default_in_country_iso3166>
+        <description>Malta VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>eb80d76f-9dbb-4968-becd-ae8f0c39a6fe</network_id_type_id>
+        <scheme_id>MT:VAT</scheme_id>
+        <vat_in_country_iso3166>MT</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9944</code_iso6523-1>
+        <default_in_country_iso3166>NL</default_in_country_iso3166>
+        <description>Netherlands VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>ab776d27-39c5-4862-abc2-72f2207539ba</network_id_type_id>
+        <scheme_id>NL:VAT</scheme_id>
+        <vat_in_country_iso3166>NL</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9945</code_iso6523-1>
+        <default_in_country_iso3166>PL</default_in_country_iso3166>
+        <description>Poland VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>db6b318d-5ef5-4adb-9db5-35047bb70259</network_id_type_id>
+        <scheme_id>PL:VAT</scheme_id>
+        <vat_in_country_iso3166>PL</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9946</code_iso6523-1>
+        <default_in_country_iso3166>PT</default_in_country_iso3166>
+        <description>Portugal VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>325537ca-138f-4f39-8fd3-94248ee907eb</network_id_type_id>
+        <scheme_id>PT:VAT</scheme_id>
+        <vat_in_country_iso3166>PT</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9947</code_iso6523-1>
+        <default_in_country_iso3166>RO</default_in_country_iso3166>
+        <description>Romania VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>ed5e9ba9-f43b-4a47-8f14-e58b612a80fd</network_id_type_id>
+        <scheme_id>RO:VAT</scheme_id>
+        <vat_in_country_iso3166>RO</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9948</code_iso6523-1>
+        <default_in_country_iso3166>RS</default_in_country_iso3166>
+        <description>Serbia VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>01f159b0-af5c-4c9c-88c7-a3862f7e2f7d</network_id_type_id>
+        <scheme_id>RS:VAT</scheme_id>
+        <vat_in_country_iso3166>RS</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9949</code_iso6523-1>
+        <default_in_country_iso3166>SI</default_in_country_iso3166>
+        <description>Slovenia VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>3f51c8a4-a751-4a33-b14d-207e29400288</network_id_type_id>
+        <scheme_id>SI:VAT</scheme_id>
+        <vat_in_country_iso3166>SI</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9950</code_iso6523-1>
+        <default_in_country_iso3166>SK</default_in_country_iso3166>
+        <description>Slovakia VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>f71c7539-c5d8-4cb7-90a5-752820242d25</network_id_type_id>
+        <scheme_id>SK:VAT</scheme_id>
+        <vat_in_country_iso3166>SK</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9951</code_iso6523-1>
+        <default_in_country_iso3166>SM</default_in_country_iso3166>
+        <description>San Marino VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>e8be5fa5-8660-4b9d-a05b-c3b8ec4db342</network_id_type_id>
+        <scheme_id>SM:VAT</scheme_id>
+        <vat_in_country_iso3166>SM</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9952</code_iso6523-1>
+        <default_in_country_iso3166>TR</default_in_country_iso3166>
+        <description>Turkey VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>f689b509-b799-47ce-8c46-b4ac4bb849f4</network_id_type_id>
+        <scheme_id>TR:VAT</scheme_id>
+        <vat_in_country_iso3166>TR</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9953</code_iso6523-1>
+        <default_in_country_iso3166>VA</default_in_country_iso3166>
+        <description>Holy See (Vatican City State) VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>343fc230-a23c-4030-b71e-6884001dabec</network_id_type_id>
+        <scheme_id>VA:VAT</scheme_id>
+        <vat_in_country_iso3166>VA</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9954</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Dutch Originator's Identification Number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>b9f84d6a-55ed-4318-9dc4-964627c28d4a</network_id_type_id>
+        <scheme_id>NL:OIN</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9954</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Dutch OverheidsIdentificatieNummer</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>f590b0a1-2495-4e70-bc13-9a4f11f0bb8a</network_id_type_id>
+        <scheme_id>NL:OIN</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9955</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Swedish VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>bed3edf2-5342-4354-bc0e-95a899fe8578</network_id_type_id>
+        <scheme_id>SE:VAT</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9956</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>Belgian Crossroad Bank of Enterprises</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>627d455d-34bc-41e3-a773-f0828b8483ee</network_id_type_id>
+        <scheme_id>BE:CBE</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9957</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>France VAT number</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>4038e8fa-d334-4e4a-b981-6056ce50bf30</network_id_type_id>
+        <scheme_id>FR:VAT</scheme_id>
+        <vat_in_country_iso3166>FR</vat_in_country_iso3166>
+    </network_id_type>
+    <network_id_type>
+        <code_iso6523-1>9958</code_iso6523-1>
+        <default_in_country_iso3166></default_in_country_iso3166>
+        <description>German Leitweg ID</description>
+        <icd_code>false</icd_code>
+        <network_id_type_id>d3291252-4161-4468-8188-b02125b5b62a</network_id_type_id>
+        <scheme_id>DE:LID</scheme_id>
+        <vat_in_country_iso3166></vat_in_country_iso3166>
+    </network_id_type>
+</network_id_types>
