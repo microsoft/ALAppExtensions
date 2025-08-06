@@ -4,17 +4,17 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Format.FacturaE;
 
-using Microsoft.eServices.EDocument.Helpers;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Format;
+using Microsoft.eServices.EDocument.Helpers;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 using Microsoft.eServices.EDocument.Service.Participant;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Foundation.UOM;
-using System.Utilities;
+using Microsoft.Purchases.Vendor;
 using System.IO;
+using System.Utilities;
 
 codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
 {
@@ -37,9 +37,9 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
         FacturaEXML: XmlDocument;
         XmlNamespaces: XmlNamespaceManager;
         XmlElement: XmlElement;
-        FacturaENamespaceLbl: Label 'http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml';
-        DigitalSignatureNamespaceLbl: Label 'http://www.w3.org/2000/09/xmldsig#';
-        ETSINamespaceLbl: Label 'http://uri.etsi.org/01903/v1.2.2#';
+        FacturaENamespaceLbl: Label 'http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml', Locked = true;
+        DigitalSignatureNamespaceLbl: Label 'http://www.w3.org/2000/09/xmldsig#', Locked = true;
+        ETSINamespaceLbl: Label 'http://uri.etsi.org/01903/v1.2.2#', Locked = true;
         XMLNode: XmlNode;
     begin
         EDocumentPurchaseHeader.InsertForEDocument(EDocument);
@@ -107,7 +107,7 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
         NewLineXML: XmlDocument;
         LineXMLList: XmlNodeList;
         LineXMLNode: XmlNode;
-        InvoiceLinePathLbl: Label '/namespace:Facturae/Invoices/Invoice/Items/InvoiceLine';
+        InvoiceLinePathLbl: Label '/namespace:Facturae/Invoices/Invoice/Items/InvoiceLine', Locked = true;
     begin
         if not FacturaEXML.SelectNodes(InvoiceLinePathLbl, XmlNamespaces, LineXMLList) then
             exit;
