@@ -223,6 +223,7 @@ table 6613 "FS Customer Asset"
             Description = '';
             Caption = 'Latitude';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(39; Longitude; Decimal)
         {
@@ -231,6 +232,7 @@ table 6613 "FS Customer Asset"
             Description = '';
             Caption = 'Longitude';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(40; MasterAsset; GUID)
         {

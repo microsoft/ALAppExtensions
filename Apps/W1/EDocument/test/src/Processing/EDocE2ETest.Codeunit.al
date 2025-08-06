@@ -1,6 +1,7 @@
 codeunit 139624 "E-Doc E2E Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     EventSubscriberInstance = Manual;
 
     var
@@ -12,6 +13,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryWorkflow: codeunit "Library - Workflow";
         LibraryJobQueue: Codeunit "Library - Job Queue";
         LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryInventory: Codeunit "Library - Inventory";
         EDocImplState: Codeunit "E-Doc. Impl. State";
         LibraryLowerPermission: Codeunit "Library - Lower Permissions";
         IsInitialized: Boolean;
@@ -19,7 +21,6 @@ codeunit 139624 "E-Doc E2E Test"
         DocumentSendingProfileWithWorkflowErr: Label 'Workflow %1 defined for %2 in Document Sending Profile %3 is not found.', Comment = '%1 - The workflow code, %2 - Enum value set in Electronic Document, %3 - Document Sending Profile Code';
         FailedToGetBlobErr: Label 'Failed to get exported blob from EDocument %1', Comment = '%1 - E-Document No.';
         SendingErrStateErr: Label 'E-document is Pending response and can not be sent in this state.';
-        DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
         DeleteProcessedNotAllowedErr: Label 'The E-Document has already been processed and cannot be deleted.';
 
     [Test]
@@ -29,8 +30,8 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         Variant: Variant;
     begin
-        // [FEATURE] [E-Document] [Processing] 
-        // [SCENARIO] Check OnBeforeCreatedEDocument and OnAfterCreatedEDocument called successful 
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO] Check OnBeforeCreatedEDocument and OnAfterCreatedEDocument called successful
 
         // [GIVEN] SETUP
         Initialize(Enum::"Service Integration"::"Mock");
@@ -73,7 +74,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocProcessingPhaseInt: Integer;
         Variant: Variant;
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Check that CheckEDocument is successfull
 
         // [GIVEN] Creating a document and posting it with simple flow setup
@@ -106,7 +107,7 @@ codeunit 139624 "E-Doc E2E Test"
 
         Assert.AreEqual(EDocService.Code, EDocumentService.Code, IncorrectValueErr);
 
-        // [THEN] Sales Header that we created is the one that is provided by event            
+        // [THEN] Sales Header that we created is the one that is provided by event
         Assert.AreEqual(SalesHeader."No.", SalesHeader2."No.", IncorrectValueErr);
 
         // [THEN] "E-Document Processing Phase" is provided by event
@@ -125,7 +126,7 @@ codeunit 139624 "E-Doc E2E Test"
         Variant: Variant;
         EDocServiceA, EDocServiceB, WorkflowCode : Code[20];
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Check that CheckEDocument is successfull for multiple services
 
         // [GIVEN] Creating a document and posting it with multi service flow setup
@@ -180,7 +181,7 @@ codeunit 139624 "E-Doc E2E Test"
     var
         DocumentSendingProfile: Record "Document Sending Profile";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Check that error is thrown if Document sending profile is defined without Workflow Code
 
         // [GIVEN] E document is created when posting document with incorrectly setup document sending profile
@@ -194,7 +195,7 @@ codeunit 139624 "E-Doc E2E Test"
 
         LibraryLowerPermission.SetTeamMember();
         asserterror LibraryEDoc.PostInvoice(Customer);
-        // [THEN] Error is thrown when posting   
+        // [THEN] Error is thrown when posting
         //asserterror LibraryEDoc.CreateEDocumentFromSales(EDocument, Customer."No.");
         Assert.AreEqual(StrSubstNo(DocumentSendingProfileWithWorkflowErr, 'NON-WORKFLOW', Format(DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow"), DocumentSendingProfile.Code), GetLastErrorText(), IncorrectValueErr);
         IsInitialized := false;
@@ -203,7 +204,7 @@ codeunit 139624 "E-Doc E2E Test"
     [Test]
     procedure InterfaceCheckErrorE2ESuccess()
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] If an error is logged with Error Message in Check implementation, this will block posting
 
         // [GIVEN] That we log error in Check implementation
@@ -223,7 +224,7 @@ codeunit 139624 "E-Doc E2E Test"
     [Test]
     procedure InterfaceCheckRuntimeErrorE2ESuccess()
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] If an runtime error happens in Check implementation, this will block posting
 
         // [GIVEN] That we throw runtime error in Check implementation
@@ -244,7 +245,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] If an error is logged with Error Message in Create implementation, this will NOT block posting
 
         // [GIVEN] That we log error in Create implementation
@@ -299,20 +300,13 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual(Format(Logs), Factbox.Log.Value(), IncorrectValueErr);
     end;
 
-    local procedure VerifyInboundFactboxValues(Factbox: TestPage "Inbound E-Doc. Factbox"; Status: Enum "E-Document Service Status"; Logs: Integer);
-    begin
-        Assert.AreEqual(EDocumentService.Code, Factbox."E-Document Service".Value(), IncorrectValueErr);
-        Assert.AreEqual(Format(Status), Factbox.Status.Value(), IncorrectValueErr);
-        Assert.AreEqual(Logs, Factbox.Logs.Value(), IncorrectValueErr);
-    end;
-
     [Test]
     procedure InterfaceCreateRuntimeErrorE2ESuccess()
     var
         EDocument: Record "E-Document";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] If an error is thrown in Create implementation, this will NOT block posting
 
         // [GIVEN] That we log error in Create implementation
@@ -355,7 +349,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocLog: Record "E-Document Log";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Empty blob from creation will cause error when attempting to send
 
         // [GIVEN] That we log error in Create implementation
@@ -406,7 +400,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] If an error is logged with Error Message in CreateBatch implementation, this will NOT block posting
 
         // [GIVEN] That we log error in Create implementation
@@ -454,7 +448,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] If an error is logged with Error Message in CreateBatch implementation, this will NOT block posting
 
         // [GIVEN] That we log error in Create implementation
@@ -503,7 +497,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentPage: TestPage "E-Document";
         DocNoA: Code[20];
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post two documents for activating batch. Validate first edocument, before second is posted, then validate both.
 
         // [GIVEN] Edocument service using 'Threshold' batch mode
@@ -562,7 +556,7 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), IncorrectValueErr);
 
-        // [THEN] First edocument was also updated 
+        // [THEN] First edocument was also updated
         EDocumentPage.Filter.SetFilter("Document No.", DocNoA);
         EDocumentPage.First();
         Assert.AreEqual(Format(EDocument.Status::Processed), EDocumentPage."Electronic Document Status".Value(), IncorrectValueErr);
@@ -586,7 +580,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentServicePage: TestPage "E-Document Service";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post two documents for activating batch. Validate first edocument, before second is posted, then validate both.
 
         // [GIVEN] Edocument service using 'Threshold' batch mode
@@ -635,8 +629,8 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentServicePage: TestPage "E-Document Service";
     begin
-        // [FEATURE] [E-Document] [Processing] 
-        // [SCENARIO] Post document. Nothhing is exported to temp blob so sending fails 
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO] Post document. Nothhing is exported to temp blob so sending fails
 
         // [GIVEN] Edocument service using 'Recurrent' batch mode
         Initialize(Enum::"Service Integration"::"Mock Sync");
@@ -694,7 +688,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Send and GetResponse has been executed.
         // Check that document is pending response after posting and after get response job is run it is sent
 
@@ -742,7 +736,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Interface on-send synchronization success scenario
 
         // [GIVEN] Edocument service using 'Recurrent' batch mode
@@ -774,7 +768,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Verifies the system's response to a runtime error within the code implementing an interface for E-Document processing
 
         // [GIVEN] That we throw runtime error inside code that implements interface
@@ -806,8 +800,8 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
-        // [FEATURE] [E-Document] [Processing] 
-        // [SCENARIO] Log error in send and check logs is correct 
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO] Log error in send and check logs is correct
 
         // [GIVEN] That we log an error inside code that implements interface
         Initialize(Enum::"Service Integration"::"Mock Sync");
@@ -839,7 +833,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Runtime failure in Send when send is async and check that Get Response is not invoked
 
         // [GIVEN] That we throw runtime error inside code that implements interface
@@ -877,7 +871,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Logged error in Send when send is async and check that Get Response is not invoked
 
         // [GIVEN] That we log error inside code that implements interface
@@ -909,7 +903,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentLog: Record "E-Document Log";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Get Response implementation logs an error
 
         // [GIVEN] Setup
@@ -966,7 +960,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentLog: Record "E-Document Log";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Get Response implementation throws a runtime error
 
         // [GIVEN] Setup
@@ -1020,9 +1014,9 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Send and GetResponse has been executed.
-        // We return false from GetReponse, meaning that we did not get response yet, hence we should continue to have job queue to get response later 
+        // We return false from GetReponse, meaning that we did not get response yet, hence we should continue to have job queue to get response later
         // Finally we return true and document is marked Sent
 
         // [GIVEN] That IsASync is true, and OnGetReponse return false, then later true
@@ -1037,14 +1031,14 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         Assert.IsTrue(JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response"), IncorrectValueErr);
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
         // [THEN] Status is Pending Response on service, and document is in progress
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         Assert.IsTrue(JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response"), IncorrectValueErr);
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1053,7 +1047,7 @@ codeunit 139624 "E-Doc E2E Test"
 
         EDocImplState.SetOnGetResponseSuccess();
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         Assert.IsTrue(JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response"), IncorrectValueErr);
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1070,11 +1064,11 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Send and GetResponse has been executed.
         // We return true from GetReponse, meaning that we did get response yet, hence we should mark document as sent
 
-        // [GIVEN] That IsASync is true, and OnGetReponse return true 
+        // [GIVEN] That IsASync is true, and OnGetReponse return true
         Initialize(Enum::"Service Integration"::"Mock");
         BindSubscription(EDocImplState);
         EDocImplState.SetIsAsync();
@@ -1087,7 +1081,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1108,7 +1102,7 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed.
 
         // [GIVEN] That IsASync is true, and OnGetReponse return true and GetApproval returns Rejected
@@ -1126,7 +1120,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1157,7 +1151,7 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed.
         // Get approval returns Approved
 
@@ -1176,7 +1170,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1207,7 +1201,7 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed when approval returned false, aka no update was done
 
         // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true
@@ -1225,7 +1219,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1256,11 +1250,11 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed when a runtime error occured inside
         // Inside GetApproval an runtime error has been thrown by implementation
 
-        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true  
+        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true
         Initialize(Enum::"Service Integration"::"Mock");
         BindSubscription(EDocImplState);
         EDocImplState.SetIsAsync();
@@ -1274,7 +1268,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1309,11 +1303,11 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed.
-        // Inside GetApproval an error has been logged by implementation 
+        // Inside GetApproval an error has been logged by implementation
 
-        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true  
+        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true
         Initialize(Enum::"Service Integration"::"Mock");
         BindSubscription(EDocImplState);
         EDocImplState.SetIsAsync();
@@ -1326,7 +1320,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1361,7 +1355,7 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Cancel action has been executed.
 
         // [GIVEN] That IsASync is true, and OnGetReponse return true and Cancel returns Canceled
@@ -1379,7 +1373,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1411,7 +1405,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentPage: TestPage "E-Document";
         Logs: List of [Enum "E-Document Service Status"];
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Cancel action has been executed.
 
         // [GIVEN] That IsASync is true, and OnGetReponse return true and Cancel returns Canceled
@@ -1428,7 +1422,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1464,11 +1458,11 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed when a runtime error occured inside
         // Inside GetApproval an runtime error has been thrown by implementation
 
-        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true  
+        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true
         Initialize(Enum::"Service Integration"::"Mock");
         BindSubscription(EDocImplState);
         EDocImplState.SetIsAsync();
@@ -1482,7 +1476,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -1518,7 +1512,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Clicking Send on E-Document should only be allowed on "Sending Error" And "Exported".
 
         // [GIVEN]
@@ -1556,8 +1550,8 @@ codeunit 139624 "E-Doc E2E Test"
         DocumentBlob: Codeunit "Temp Blob";
         EDocumentLog: Codeunit "E-Document Log";
     begin
-        // [FEATURE] [E-Document] [Processing] 
-        // [SCENARIO] 
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO]
         Initialize(Enum::"Service Integration"::"Mock");
         BindSubscription(this.EDocImplState);
 
@@ -1580,13 +1574,92 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
+    internal procedure CreateEDocumentShipmentSuccessful()
+    var
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        EDocument: Record "E-Document";
+    begin
+        IsInitialized := false;
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when posting sales shipment
+        this.Initialize(Enum::"Service Integration"::"Mock");
+        this.LibraryEDoc.AddEDocServiceSupportedType(this.EDocumentService, Enum::"E-Document Type"::"Sales Shipment");
+
+        // [GIVEN] Setup E-Document service for sending shipment
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [WHEN] Create sales order and post shipment for it
+        SalesShipmentHeader := this.LibraryEDoc.PostSalesShipment(this.Customer);
+
+        // [THEN] Check that E-Document is created for posted shipment
+        EDocument.FindLast();
+        this.Assert.AreEqual(SalesShipmentHeader."No.", EDocument."Document No.", this.IncorrectValueErr);
+
+        // [WHEN] Export E-Document 
+        this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
+
+        // [THEN] Check that xml file was created
+        this.CheckXmlCreated(EDocument);
+    end;
+
+    [Test]
+    procedure CreateEDocumentTransferShipmentSuccess()
+    var
+        TransferHeader: Record "Transfer Header";
+        Item: Record Item;
+        FromLocation: Record Location;
+        ToLocation: Record Location;
+        InTransitLocation: Record Location;
+        DocumentSendingProfile: Record "Document Sending Profile";
+        InventoryPostingGroup: Record "Inventory Posting Group";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when posting transfer shipment
+        IsInitialized := false;
+        this.Initialize(Enum::"Service Integration"::"Mock");
+        DocumentSendingProfile.FindLast();
+        this.LibraryEDoc.AddEDocServiceSupportedType(this.EDocumentService, Enum::"E-Document Type"::"Transfer Shipment");
+
+        // [GIVEN] E-Document service with format peppol
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [GIVEN] Transfer locations with posting setup
+        LibraryEDoc.CreateLocationsWithPostingSetups(FromLocation, ToLocation, InTransitLocation, InventoryPostingGroup);
+        // [GIVEN] Item with inventory stock in from location
+        LibraryEDoc.CreateItemWIthInventoryStock(Item, FromLocation, InventoryPostingGroup);
+        // [GIVEN] Transfer-to location with Document Sending Profile set
+        ToLocation."Transfer Doc. Sending Profile" := DocumentSendingProfile.Code;
+        ToLocation.Modify(false);
+
+        // [WHEN] Create transfer shipment
+        LibraryInventory.CreateAndPostTransferOrder(
+            TransferHeader,
+            Item,
+            FromLocation,
+            ToLocation,
+            InTransitLocation,
+            '',
+            1,
+            Workdate(),
+            Workdate(),
+            true,
+            false);
+
+        // [THEN] Check that E-Document is created
+        VerifyIfEDocumentIsCreatedForTransferOrder(TransferHeader);
+    end;
+
+    [Test]
     procedure PostDocumentNoDefaultOrElectronicProfile()
     var
         DocumentSendingProfile: Record "Document Sending Profile";
         EDocument: Record "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document without having default or Electronic sending profile
+        IsInitialized := false;
         Initialize(Enum::"Service Integration"::"Mock");
 
         if EDocument.FindLast() then
@@ -1613,31 +1686,34 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
+    [HandlerFunctions('DeleteDocumentOk')]
     procedure DeleteLinkedPurchaseHeaderNoAllowedSuccess()
     var
+        EDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
-        NullGuid: Guid;
+        EDocImportParams: Record "E-Doc. Import Parameters";
     begin
-        // [FEATURE] [E-Document] [Processing] 
-        // [SCENARIO] 
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO]
         Initialize(Enum::"Service Integration"::"Mock");
+        EDocumentService."Read into Draft Impl." := "E-Doc. Read into Draft"::PEPPOL;
+        EDocumentService."Import Process" := Enum::"E-Document Import Process"::"Version 2.0";
+        EDocumentService.Modify();
 
-        // [GIVEN] PO with link
-        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
-        PurchaseHeader."E-Document Link" := CreateGuid();
-        PurchaseHeader.Modify();
-        Commit();
+        // [GIVEN] An inbound e-document is received and fully processed
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        Assert.IsTrue(LibraryEDoc.CreateInboundPEPPOLDocumentToState(EDocument, EDocumentService, 'peppol/peppol-invoice-0.xml', EDocImportParams), 'The e-document should be processed');
+        EDocument.SetRecFilter();
+        EDocument.FindLast();
+        Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, 'E-Document should be in Processed status.');
 
-        // [THEN] Fails to delete
-        asserterror PurchaseHeader.Delete(true);
-        Assert.ExpectedError(DeleteNotAllowedErr);
+        // [THEN] Delete
+        PurchaseHeader.Get(EDocument."Document Record ID");
+        if PurchaseHeader.Delete(true) then;
 
-        // [GIVEN] Reset link 
-        PurchaseHeader."E-Document Link" := NullGuid;
-        PurchaseHeader.Modify();
-
-        // [THEN] Delete ok
-        PurchaseHeader.Delete();
+        EDocument.SetRecFilter();
+        EDocument.FindLast();
+        Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be in In Progress status.');
     end;
 
     local procedure CheckPDFEmbedToXML(TempBlob: Codeunit "Temp Blob")
@@ -1659,8 +1735,8 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         VendorNo: Code[20];
     begin
-        // [FEATURE] [E-Document] [Deleting] 
-        // [SCENARIO] 
+        // [FEATURE] [E-Document] [Deleting]
+        // [SCENARIO]
         Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] Create duplicate e-document
@@ -1685,8 +1761,8 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         VendorNo: Code[20];
     begin
-        // [FEATURE] [E-Document] [Deleting] 
-        // [SCENARIO] 
+        // [FEATURE] [E-Document] [Deleting]
+        // [SCENARIO]
         Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] Create single e-document
@@ -1710,8 +1786,8 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         VendorNo: Code[20];
     begin
-        // [FEATURE] [E-Document] [Deleting] 
-        // [SCENARIO] 
+        // [FEATURE] [E-Document] [Deleting]
+        // [SCENARIO]
         Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] Create single e-document
@@ -1731,8 +1807,8 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         VendorNo: Code[20];
     begin
-        // [FEATURE] [E-Document] [Deleting] 
-        // [SCENARIO] 
+        // [FEATURE] [E-Document] [Deleting]
+        // [SCENARIO]
         Initialize(Enum::"Service Integration"::"Mock");
 
         // [GIVEN] Create duplicate e-document and set to processed
@@ -1750,6 +1826,137 @@ codeunit 139624 "E-Doc E2E Test"
         Assert.ExpectedError(this.DeleteProcessedNotAllowedErr);
     end;
 
+    [Test]
+    internal procedure PurchaseDocumentsCreatedFromEDocumentsUseDocumentTotalsValidation()
+    var
+        EDocument: Record "E-Document";
+        EDocImportParameters: Record "E-Doc. Import Parameters";
+        PurchaseHeader: Record "Purchase Header";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        EDocImport: Codeunit "E-Doc. Import";
+    begin
+        // [SCENARIO 566852] Purchase documents created from E-Documents use Document Totals validation, even if the feature is not configured in the Purchase & Payables Setup page.
+        Initialize(Enum::"Service Integration"::"Mock");
+        PurchasesPayablesSetup.GetRecordOnce();
+        PurchasesPayablesSetup."Check Doc. Total Amounts" := false;
+        PurchasesPayablesSetup.Modify();
+        SetV2EDocService();
+
+        // [GIVEN] An E-Document v2 with lines and totals
+        LibraryEDoc.CreateInboundEDocument(EDocument, EDocumentService);
+        LibraryEDoc.MockPurchaseDraftPrepared(EDocument);
+        // [WHEN] Processing into a purchase invoice
+        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
+        // [THEN] The purchase invoice should have the totals from the E-Document
+        PurchaseHeader.SetRange("E-Document Link", EDocument.SystemId);
+        PurchaseHeader.FindFirst();
+        Assert.AreNotEqual(0, PurchaseHeader."Doc. Amount VAT", 'Document Totals should be set correctly.');
+        Assert.AreNotEqual(0, PurchaseHeader."Doc. Amount Incl. VAT", 'Document Totals should be set correctly.');
+
+        SetV1EDocService();
+    end;
+
+    [Test]
+    internal procedure PurchaseDocumentsCreatedFromStructuredEDocumentCantEditTotals()
+    var
+        EDocument: Record "E-Document";
+        EDocImportParameters: Record "E-Doc. Import Parameters";
+        PurchaseHeader: Record "Purchase Header";
+        EDocImport: Codeunit "E-Doc. Import";
+        PurchaseInvoice: TestPage "Purchase Invoice";
+    begin
+        // [SCENARIO 566862] Purchase documents created from E-Documents coming from an structured format (e.g. XML) should not allow editing of the totals in the purchase invoice.
+        Initialize(Enum::"Service Integration"::"Mock");
+        SetV2EDocService();
+        // [GIVEN] An E-Document v2 with lines and totals
+        LibraryEDoc.CreateInboundEDocument(EDocument, EDocumentService);
+        LibraryEDoc.MockPurchaseDraftPrepared(EDocument);
+        // [WHEN] Processing into a purchase invoice
+        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
+        PurchaseHeader.SetRange("E-Document Link", EDocument.SystemId);
+        PurchaseHeader.FindFirst();
+        // [THEN] The purchase invoice page should not allow editing of the totals
+        PurchaseInvoice.Trap();
+        Page.Run(Page::"Purchase Invoice", PurchaseHeader);
+        Assert.IsFalse(PurchaseInvoice.DocAmount.Editable(), 'The totals should not be editable in the purchase invoice.');
+
+        SetV1EDocService();
+    end;
+
+    [Test]
+    procedure CreateEDocumentReminderSuccessful()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        IssuedReminderHeader: Record "Issued Reminder Header";
+        EDocument: Record "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when issuing reminder
+
+        // [GIVEN] Setup E-Document service for exporting reminder
+        IsInitialized := false;
+        this.Initialize(Enum::"Service Integration"::Mock);
+
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."Journal Templ. Name Mandatory" := false;
+        GeneralLedgerSetup.Modify();
+
+        this.LibraryEDoc.SetupReminderNoSeries();
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [WHEN] Issue reminder
+        IssuedReminderHeader := this.LibraryEDoc.IssueReminder(this.Customer);
+
+        // [THEN] Check that E-Document is created and status is "In Progress"
+#pragma warning disable AA0210
+        EDocument.SetRange("Document No.", IssuedReminderHeader."No.");
+#pragma warning restore AA0210
+        EDocument.FindLast();
+        this.Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, this.IncorrectValueErr);
+        // [THEN] Check that xml file was created
+        this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
+        this.CheckXmlCreated(EDocument);
+    end;
+
+    [Test]
+    procedure CreateEDocumentFinChargeMemoSuccessful()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header";
+        EDocument: Record "E-Document";
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] Check that E-Document is created when issuing finance charge memo
+
+        // [GIVEN] Setup E-Document service for exporting finance charge memo 
+        IsInitialized := false;
+        this.Initialize(Enum::"Service Integration"::"Mock");
+
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."Journal Templ. Name Mandatory" := false;
+        GeneralLedgerSetup.Modify();
+
+        this.LibraryEDoc.SetupFinChargeMemoNoSeries();
+        this.EDocumentService."Document Format" := Enum::"E-Document Format"::"PEPPOL BIS 3.0";
+        this.EDocumentService.Modify(false);
+
+        // [WHEN] Issue finance charge memo
+        IssuedFinChargeMemoHeader := this.LibraryEDoc.IssueFinChargeMemo(this.Customer);
+
+        // [THEN] Check that E-Document is created and status is "In Progress"
+#pragma warning disable AA0210
+        EDocument.SetRange("Document No.", IssuedFinChargeMemoHeader."No.");
+#pragma warning restore AA0210
+        EDocument.FindLast();
+        this.Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, this.IncorrectValueErr);
+        // [THEN] Check that xml file was created
+        this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
+        this.CheckXmlCreated(EDocument);
+    end;
+
     local procedure CreateIncomingEDocument(VendorNo: Code[20]; Status: Enum "E-Document Status")
     var
         EDocument: Record "E-Document";
@@ -1764,6 +1971,30 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument.Insert(false);
     end;
 
+    local procedure SetV2EDocService()
+    var
+        PreviousEDocService: Record "E-Document Service";
+    begin
+        PreviousEDocService.CopyFilters(EDocumentService);
+        EDocumentService.SetRecFilter();
+        EDocumentService.FindFirst();
+        EDocumentService."Import Process" := "E-Document Import Process"::"Version 2.0";
+        EDocumentService.Modify();
+        EDocumentService.CopyFilters(PreviousEDocService);
+    end;
+
+    local procedure SetV1EDocService()
+    var
+        PreviousEDocService: Record "E-Document Service";
+    begin
+        PreviousEDocService.CopyFilters(EDocumentService);
+        EDocumentService.SetRecFilter();
+        EDocumentService.FindFirst();
+        EDocumentService."Import Process" := "E-Document Import Process"::"Version 1.0";
+        EDocumentService.Modify();
+        EDocumentService.CopyFilters(PreviousEDocService);
+    end;
+
     [ModalPageHandler]
     internal procedure EDocServicesPageHandler(var EDocServicesPage: TestPage "E-Document Services")
     var
@@ -1776,11 +2007,22 @@ codeunit 139624 "E-Doc E2E Test"
         EDocServicesPage.OK().Invoke();
     end;
 
+    [ConfirmHandler]
+    internal procedure DeleteDocumentOk(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
+
     local procedure Initialize(Integration: Enum "Service Integration")
     var
         TransformationRule: Record "Transformation Rule";
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
+        EDocumentSetup: Record "E-Documents Setup";
+        Vendor: Record Vendor;
+        Currency: Record Currency;
+        LibraryERM: Codeunit "Library - ERM";
+        Date: Date;
     begin
         LibraryLowerPermission.SetOutsideO365Scope();
         LibraryVariableStorage.Clear();
@@ -1795,7 +2037,17 @@ codeunit 139624 "E-Doc E2E Test"
 
         LibraryEDoc.SetupStandardVAT();
         LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::Mock, Integration);
+        LibraryEDoc.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::Mock, Integration);
         EDocumentService.Modify();
+        EDocumentSetup.InsertNewExperienceSetup();
+
+        // Set a currency that can be used across all localizations
+        Currency.Init();
+        Currency.Validate(Code, 'XYZ');
+        if Currency.Insert(true) then begin
+            Date := DWY2Date(1, 1, 2025); // Ensure date is before any documents that are loaded in the tests.
+            LibraryERM.CreateExchangeRate(Currency.Code, Date, 1.0, 1.0);
+        end;
 
         TransformationRule.DeleteAll();
         TransformationRule.CreateDefaultTransformations();
@@ -1816,13 +2068,13 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
 
-    local procedure VerifyLogs(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; Logs: List of [Enum "E-Document Service Status"])
+    local procedure VerifyLogs(EDocument: Record "E-Document"; EDocumentService2: Record "E-Document Service"; Logs: List of [Enum "E-Document Service Status"])
     var
         EDocumentLog: Record "E-Document Log";
         Count: Integer;
     begin
         EDocumentLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
-        EDocumentLog.SetRange("Service Code", EDocumentService.Code);
+        EDocumentLog.SetRange("Service Code", EDocumentService2.Code);
 
         Count := 1;
         Assert.AreEqual(Logs.Count(), EDocumentLog.Count(), IncorrectValueErr);
@@ -1833,8 +2085,8 @@ codeunit 139624 "E-Doc E2E Test"
             until EDocumentLog.Next() = 0;
     end;
 
-
 #if not CLEAN26
+#pragma warning disable AL0432
     local procedure Initialize(Integration: Enum "E-Document Integration")
     var
         TransformationRule: Record "Transformation Rule";
@@ -1860,6 +2112,7 @@ codeunit 139624 "E-Doc E2E Test"
 
         IsInitialized := true;
     end;
+#pragma warning restore AL0432
 #endif
 
     local procedure VerifyStatusOnDocumentAndService(EDocument: Record "E-Document"; EDocStatus: Enum "E-Document Status"; EDocService: Record "E-Document Service"; EDocumentServiceStatus: Record "E-Document Service Status"; EDocServiceStatus: Enum "E-Document Service Status")
@@ -1881,8 +2134,30 @@ codeunit 139624 "E-Doc E2E Test"
         this.Assert.RecordIsEmpty(EDocument);
     end;
 
-#if not CLEAN26
+    local procedure CheckXmlCreated(EDocument: Record "E-Document")
+    var
+        EDocumentLog: Codeunit "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+    begin
+        EDocumentLog.GetDocumentBlobFromLog(EDocument, this.EDocumentService, TempBlob, "E-Document Service Status"::Exported);
+        Assert.IsTrue(TempBlob.HasValue(), 'XML not created.');
+    end;
 
+    local procedure VerifyIfEDocumentIsCreatedForTransferOrder(var TransferHeader: Record "Transfer Header")
+    var
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+        EDocument: Record "E-Document";
+    begin
+#pragma warning disable AA0210
+        TransferShipmentHeader.SetRange("Transfer Order No.", TransferHeader."No.");
+#pragma warning restore AA0210
+        TransferShipmentHeader.FindFirst();
+        EDocument.SetRange("Document Record ID", TransferShipmentHeader.RecordId);
+        Assert.IsFalse(EDocument.IsEmpty(), 'E-Document not created for Transfer Shipment Header');
+    end;
+
+#if not CLEAN26
+#pragma warning disable AL0432
     [Test]
     internal procedure InterfaceAsyncSendingSuccess26()
     var
@@ -1890,7 +2165,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Send and GetResponse has been executed.
         // Check that document is pending response after posting and after get response job is run it is sent
 
@@ -1930,15 +2205,13 @@ codeunit 139624 "E-Doc E2E Test"
         UnbindSubscription(EDocImplState);
     end;
 
-
-
     [Test]
     internal procedure InterfaceSyncSendingSuccess26()
     var
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Interface on-send synchronization success scenario
 
         // [GIVEN] Edocument service using 'Recurrent' batch mode
@@ -1969,7 +2242,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Verifies the system's response to a runtime error within the code implementing an interface for E-Document processing
 
         // [GIVEN] That we throw runtime error inside code that implements interface
@@ -2001,8 +2274,8 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
-        // [FEATURE] [E-Document] [Processing] 
-        // [SCENARIO] Log error in send and check logs is correct 
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO] Log error in send and check logs is correct
 
         // [GIVEN] That we log an error inside code that implements interface
         Initialize(Enum::"E-Document Integration"::"Mock");
@@ -2034,7 +2307,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Runtime failure in Send when send is async and check that Get Response is not invoked
 
         // [GIVEN] That we throw runtime error inside code that implements interface
@@ -2071,7 +2344,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Logged error in Send when send is async and check that Get Response is not invoked
 
         // [GIVEN] That we log error inside code that implements interface
@@ -2107,7 +2380,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentLog: Record "E-Document Log";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Get Response implementation logs an error
 
         // [GIVEN] Setup
@@ -2168,7 +2441,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentLog: Record "E-Document Log";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Get Response implementation throws a runtime error
 
         // [GIVEN] Setup
@@ -2226,9 +2499,9 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Send and GetResponse has been executed.
-        // We return false from GetReponse, meaning that we did not get response yet, hence we should continue to have job queue to get response later 
+        // We return false from GetReponse, meaning that we did not get response yet, hence we should continue to have job queue to get response later
         // Finally we return true and document is marked Sent
 
         // [GIVEN] That IsASync is true, and OnGetReponse return false, then later true
@@ -2243,14 +2516,14 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         Assert.IsTrue(JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response"), IncorrectValueErr);
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
         // [THEN] Status is Pending Response on service, and document is in progress
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         Assert.IsTrue(JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response"), IncorrectValueErr);
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -2259,7 +2532,7 @@ codeunit 139624 "E-Doc E2E Test"
 
         EDocImplState.SetOnGetResponseSuccess();
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         Assert.IsTrue(JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response"), IncorrectValueErr);
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -2276,11 +2549,11 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         JobQueueEntry: Record "Job Queue Entry";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Send and GetResponse has been executed.
         // We return true from GetReponse, meaning that we did get response yet, hence we should mark document as sent
 
-        // [GIVEN] That IsASync is true, and OnGetReponse return true 
+        // [GIVEN] That IsASync is true, and OnGetReponse return true
         Initialize(Enum::"E-Document Integration"::"Mock");
         BindSubscription(EDocImplState);
         EDocImplState.SetIsAsync();
@@ -2293,7 +2566,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -2314,7 +2587,7 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed.
 
         // [GIVEN] That IsASync is true, and OnGetReponse return true and GetApproval returns false
@@ -2330,7 +2603,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -2362,7 +2635,7 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed.
         // Get approval returns true. This means that document was approved
 
@@ -2380,7 +2653,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -2411,12 +2684,12 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed when a runtime error occured inside
         // Inside GetApproval an runtime error has been thrown by implementation
         // TODO: We fix that erros should do something
 
-        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true  
+        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true
         Initialize(Enum::"E-Document Integration"::"Mock");
         BindSubscription(EDocImplState);
         EDocImplState.SetIsAsync();
@@ -2430,7 +2703,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -2462,12 +2735,12 @@ codeunit 139624 "E-Doc E2E Test"
         JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document to async service. Test state after Get Approval has been executed.
-        // Inside GetApproval an error has been logged by implementation 
+        // Inside GetApproval an error has been logged by implementation
         // TODO: We fix that erros should do something
 
-        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true  
+        // [GIVEN] That IsASync is true, and OnGetReponse and GetApproval returns true
         Initialize(Enum::"E-Document Integration"::"Mock");
         BindSubscription(EDocImplState);
         EDocImplState.SetIsAsync();
@@ -2481,7 +2754,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         VerifyStatusOnDocumentAndService(EDocument, Enum::"E-Document Status"::"In Progress", EDocumentService, EDocumentServiceStatus, Enum::"E-Document Service Status"::"Pending Response");
 
-        // [WHEN] Executing Get Response succesfully 
+        // [WHEN] Executing Get Response succesfully
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -2504,7 +2777,6 @@ codeunit 139624 "E-Doc E2E Test"
         UnbindSubscription(EDocImplState);
     end;
 
-
     // UI Tests
 
     [Test]
@@ -2515,7 +2787,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentPage: TestPage "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Clicking Send on E-Document should only be allowed on "Sending Error" And "Exported".
 
         // [GIVEN]
@@ -2548,7 +2820,7 @@ codeunit 139624 "E-Doc E2E Test"
         DocumentSendingProfile: Record "Document Sending Profile";
         EDocument: Record "E-Document";
     begin
-        // [FEATURE] [E-Document] [Processing] 
+        // [FEATURE] [E-Document] [Processing]
         // [SCENARIO] Post document without having default or Electronic sending profile
         Initialize(Enum::"E-Document Integration"::"Mock");
 
@@ -2578,32 +2850,35 @@ codeunit 139624 "E-Doc E2E Test"
     end;
 
     [Test]
+    [HandlerFunctions('DeleteDocumentOk')]
     internal procedure DeleteLinkedPurchaseHeaderNoAllowedSuccess26()
     var
+        EDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
-        NullGuid: Guid;
+        EDocImportParams: Record "E-Doc. Import Parameters";
     begin
-        // [FEATURE] [E-Document] [Processing] 
-        // [SCENARIO] 
-        Initialize(Enum::"E-Document Integration"::"Mock");
+        // [FEATURE] [E-Document] [Processing]
+        // [SCENARIO]
+        Initialize(Enum::"Service Integration"::"Mock");
+        EDocumentService."Read into Draft Impl." := "E-Doc. Read into Draft"::PEPPOL;
+        EDocumentService."Import Process" := Enum::"E-Document Import Process"::"Version 2.0";
+        EDocumentService.Modify();
 
-        // [GIVEN] PO with link
-        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
-        PurchaseHeader."E-Document Link" := CreateGuid();
-        PurchaseHeader.Modify();
-        Commit();
+        // [GIVEN] An inbound e-document is received and fully processed
+        EDocImportParams."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        Assert.IsTrue(LibraryEDoc.CreateInboundPEPPOLDocumentToState(EDocument, EDocumentService, 'peppol/peppol-invoice-0.xml', EDocImportParams), 'The e-document should be processed');
+        EDocument.SetRecFilter();
+        EDocument.FindLast();
+        Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, 'E-Document should be in Processed status.');
 
-        // [THEN] Fails to delete
-        asserterror PurchaseHeader.Delete(true);
-        Assert.ExpectedError(DeleteNotAllowedErr);
+        // [THEN] Delete
+        PurchaseHeader.Get(EDocument."Document Record ID");
+        if PurchaseHeader.Delete(true) then;
 
-        // [GIVEN] Reset link 
-        PurchaseHeader."E-Document Link" := NullGuid;
-        PurchaseHeader.Modify();
-
-        // [THEN] Delete ok
-        PurchaseHeader.Delete();
+        EDocument.SetRecFilter();
+        EDocument.FindLast();
+        Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be in In Progress status.');
     end;
-
+#pragma warning restore AL0432
 #endif
 }

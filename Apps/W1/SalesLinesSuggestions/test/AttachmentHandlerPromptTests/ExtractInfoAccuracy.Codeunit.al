@@ -4,6 +4,7 @@ using System.TestTools.AITestToolkit;
 codeunit 133518 "Extract Info. Accuracy"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

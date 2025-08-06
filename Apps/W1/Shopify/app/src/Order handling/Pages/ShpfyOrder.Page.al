@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
@@ -189,19 +194,25 @@ page 30113 "Shpfy Order"
                     Importance = Additional;
                     ToolTip = 'Specifies the reason why the order was cancelled. Valid values are: customer, fraud, inventory, declined, other.';
                 }
+                field("Salesperson Code"; Rec."Salesperson Code")
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    ToolTip = 'Specifies the name of the salesperson who is assigned to the customer.';
+                }
                 field(AppName; Rec."App Name")
                 {
                     ApplicationArea = All;
                     Editable = false;
                     Importance = Additional;
-                    ToolTip = 'The name of the app used by the channel where you sell your products. A channel can be a platform or a marketplace such as an online store or POS.';
+                    ToolTip = 'Specifies the name of the app used by the channel where you sell your products. A channel can be a platform or a marketplace such as an online store or POS.';
                 }
                 field(ChannelName; Rec."Channel Name")
                 {
                     ApplicationArea = All;
                     Editable = false;
                     Importance = Additional;
-                    ToolTip = 'The name of the channel where you sell your products. A channel can be a platform or a marketplace such as an online store or POS.';
+                    ToolTip = 'Specifies the name of the channel where you sell your products. A channel can be a platform or a marketplace such as an online store or POS.';
                 }
                 field(SourceName; Rec."Source Name")
                 {
@@ -294,7 +305,7 @@ page 30113 "Shpfy Order"
             part(ShopifyOrderLines; "Shpfy Order Subform")
             {
                 ApplicationArea = All;
-                SubPageLink = "Shopify Order Id" = FIELD("Shopify Order Id");
+                SubPageLink = "Shopify Order Id" = field("Shopify Order Id");
                 UpdatePropagation = Both;
             }
             group(InvoiceDetails)
@@ -330,6 +341,12 @@ page 30113 "Shpfy Order"
                     ApplicationArea = All;
                     Editable = false;
                     ToolTip = 'Specifies the sum of all discount amount on all lines in the document.';
+                }
+                field(RoundingAmount; Rec."Payment Rounding Amount")
+                {
+                    ApplicationArea = All;
+                    Editable = false;
+                    ToolTip = 'Specifies the amount of rounding applied to the total amount of the document.';
                 }
                 field(VATIncluded; Rec."VAT Included")
                 {
@@ -472,6 +489,13 @@ page 30113 "Shpfy Order"
                 ApplicationArea = All;
                 Caption = 'Linked Documents';
                 SubPageLink = "Shopify Document Type" = const("Shpfy Shop Document Type"::"Shopify Shop Order"), "Shopify Document Id" = field("Shopify Order Id");
+            }
+            part(OrderTotals; "Shpfy Order Totals FactBox")
+            {
+                ApplicationArea = All;
+                Caption = 'Order Totals';
+                SubPageLink = "Shopify Order Id" = field("Shopify Order Id");
+                Visible = (Rec."Sales Order No." <> '') or (Rec."Sales Invoice No." <> '');
             }
             part(SalesHistory; "Sales Hist. Sell-to FactBox")
             {
@@ -811,7 +835,6 @@ page 30113 "Shpfy Order"
                     SalesHeader.Get(SalesHeader."Document Type"::Order, Rec."Sales Order No.");
                     SalesOrder.SetRecord(SalesHeader);
                     SalesOrder.Run();
-                    ;
                 end;
             }
             action(Refunds)
@@ -967,12 +990,12 @@ page 30113 "Shpfy Order"
 
     var
         CreateShopifyMsg: Label 'Create sales document from Shopify order %1?', Comment = '%1 = Order No.';
-        MarkAsPaidMsg: Label 'The order has been marked as paid.';
+        MarkAsPaidMsg: Label 'Specifies the order has been marked as paid.';
         ClearProcessedMsg: Label 'This order is already linked to a sales document in Business Central. Do you want to unlink it?';
         ClearProcessedErr: Label 'This order is already linked to a sales document in Business Central.';
-        MarkAsPaidFailedErr: Label 'The order could not be marked as paid. You can see the error message from Shopify Log Entries.';
+        MarkAsPaidFailedErr: Label 'Specifies the order could not be marked as paid. You can see the error message from Shopify Log Entries.';
         OrderCancelledMsg: Label 'Order has been cancelled successfully.';
-        OrderCancelFailedErr: Label 'The order could not be cancelled. You can see the error message from Shopify Log Entries.';
+        OrderCancelFailedErr: Label 'Specifies the order could not be cancelled. You can see the error message from Shopify Log Entries.';
         LogEntriesLbl: Label 'Log Entries';
         WorkDescription: Text;
 

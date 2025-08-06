@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+
 codeunit 134241 "Shpfy Catalog API Subscribers"
 {
     EventSubscriberInstance = Manual;
@@ -46,8 +56,9 @@ codeunit 134241 "Shpfy Catalog API Subscribers"
         Any: Codeunit Any;
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
+        CatalogResultLbl: Label '{"data": {"catalogCreate": {"catalog": {"id": %1}}}}', Comment = '%1 - catalogId', Locked = true;
     begin
-        Body := StrSubstNo('{"data": {"catalogCreate": {"catalog": {"id": %1}}}}', Any.IntegerInRange(100000, 999999));
+        Body := StrSubstNo(CatalogResultLbl, Any.IntegerInRange(100000, 999999));
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;

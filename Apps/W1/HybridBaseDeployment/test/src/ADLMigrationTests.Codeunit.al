@@ -1,6 +1,7 @@
 codeunit 139657 "ADL Migration Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

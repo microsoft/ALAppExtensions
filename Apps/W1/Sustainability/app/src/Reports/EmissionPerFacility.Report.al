@@ -92,7 +92,7 @@ report 6211 "Emission Per Facility"
     requestpage
     {
         AboutText = 'This report encompasses greenhouse gas (GHG) emission data documented across various facilities - Responsibility Centers.';
-        AboutTitle = 'Emission Per Facility';
+        AboutTitle = 'About Emission Per Facility';
     }
     rendering
     {
@@ -140,7 +140,6 @@ report 6211 "Emission Per Facility"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
-        TimezoneLabel = 'UTC';
     }
 
     trigger OnPreReport()

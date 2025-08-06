@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Finance.Currency;
@@ -21,12 +26,14 @@ page 30164 "Shpfy Metafield Assist Edit"
                 field(MoneyValue; MoneyValue)
                 {
                     Caption = 'Value';
-                    ToolTip = 'Enter the amount.';
+                    ToolTip = 'Specifies the amount.';
+                    AutoFormatType = 1;
+                    AutoFormatExpression = MoneyCurrency;
                 }
                 field(MoneyCurrency; MoneyCurrency)
                 {
                     Caption = 'Currency';
-                    ToolTip = 'Enter the currency code.';
+                    ToolTip = 'Specifies the currency code.';
                     TableRelation = Currency;
                 }
             }
@@ -38,12 +45,13 @@ page 30164 "Shpfy Metafield Assist Edit"
                 field(DimensionValue; DimensionValue)
                 {
                     Caption = 'Value';
-                    ToolTip = 'Enter the value.';
+                    ToolTip = 'Specifies the value.';
+                    AutoFormatType = 0;
                 }
                 field(DimensionUnit; DimensionUnit)
                 {
                     Caption = 'Unit';
-                    ToolTip = 'Enter the unit of measure.';
+                    ToolTip = 'Specifies the unit of measure.';
                 }
             }
             group(VolumeGroup)
@@ -54,12 +62,13 @@ page 30164 "Shpfy Metafield Assist Edit"
                 field(VolumeValue; VolumeValue)
                 {
                     Caption = 'Value';
-                    ToolTip = 'Enter the value.';
+                    ToolTip = 'Specifies the value.';
+                    AutoFormatType = 0;
                 }
                 field(VolumeUnit; VolumeUnit)
                 {
                     Caption = 'Unit';
-                    ToolTip = 'Enter the unit of measure.';
+                    ToolTip = 'Specifies the unit of measure.';
                 }
             }
             group(WeightGroup)
@@ -70,12 +79,13 @@ page 30164 "Shpfy Metafield Assist Edit"
                 field(WeightValue; WeightValue)
                 {
                     Caption = 'Value';
-                    ToolTip = 'Enter the value.';
+                    ToolTip = 'Specifies the value.';
+                    AutoFormatType = 0;
                 }
                 field(WeightUnit; WeightUnit)
                 {
                     Caption = 'Unit';
-                    ToolTip = 'Enter the unit of measure.';
+                    ToolTip = 'Specifies the unit of measure.';
                 }
             }
             group(MultiLineTextGroup)
@@ -86,7 +96,7 @@ page 30164 "Shpfy Metafield Assist Edit"
                 field(MultiLineText; MultiLineText)
                 {
                     Caption = 'Text';
-                    ToolTip = 'Enter the text.';
+                    ToolTip = 'Specifies the text.';
                     MultiLine = true;
                     ExtendedDatatype = RichContent;
 

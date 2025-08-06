@@ -6,6 +6,7 @@ using System.TestTools.TestRunner;
 codeunit 133516 "SLS Prompt Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

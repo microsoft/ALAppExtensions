@@ -6,9 +6,7 @@ page 36990 "Liabilities"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Liabilities';
     AboutTitle = 'About Liabilities';
     AboutText = 'The Liabilities report provides a snapshot of liability account balances as of a specific date. It also highlights key performance metrics influenced by liabilities, such as the Debt Ratio and Debt-to-Equity Ratio.';
@@ -25,7 +23,7 @@ page 36990 "Liabilities"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

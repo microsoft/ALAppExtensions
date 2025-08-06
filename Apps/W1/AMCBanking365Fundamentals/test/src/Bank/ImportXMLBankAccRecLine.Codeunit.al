@@ -2,6 +2,7 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
 {
     Permissions = TableData "Bank Export/Import Setup" = rimd;
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

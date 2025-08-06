@@ -1,10 +1,32 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Foundation.ExtendedText;
+using Microsoft.Inventory.Item.Attribute;
+using Microsoft.Sales.Pricing;
+using Microsoft.Purchases.Vendor;
+#if CLEAN25
+using Microsoft.Pricing.PriceList;
+using Microsoft.Sales.Customer;
+#endif
+
 /// <summary>
 /// Codeunit Shpfy Product Init Test (ID 139603).
 /// </summary>
 codeunit 139603 "Shpfy Product Init Test"
 {
     var
-        Any: codeunit Any;
+        Any: Codeunit Any;
         LastItemNo: Code[20];
 
     internal procedure CreateGenProdPostingGroup(Code: Code[20]) GenProdPostingGroup: Record "Gen. Product Posting Group";
@@ -69,15 +91,15 @@ codeunit 139603 "Shpfy Product Init Test"
     begin
         Any.SetDefaultSeed();
         Item.Init();
-        Item."No." := Any.AlphabeticText(MaxStrLen(Item."No."));
+        Item."No." := CopyStr(Any.AlphabeticText(MaxStrLen(Item."No.")), 1, MaxStrLen(Item."No."));
         Item.Insert(true);
         ItemTempl.Get(TemplateCode);
         ItemTemplMgt.ApplyItemTemplate(Item, ItemTempl);
         Item.Validate("Price/Profit Calculation", Enum::"Item Price Profit Calculation"::"Profit=Price-Cost");
         Item.Validate("Unit Price", InitPrice);
         Item.Validate("Unit Cost", InitUnitCost);
-        Item."Vendor No." := Any.AlphabeticText(MaxStrLen(Item."Vendor No."));
-        Item."Vendor Item No." := Any.AlphabeticText(MaxStrLen(Item."Vendor Item No."));
+        Item."Vendor No." := CopyStr(Any.AlphabeticText(MaxStrLen(Item."Vendor No.")), 1, MaxStrLen(Item."Vendor No."));
+        Item."Vendor Item No." := CopyStr(Any.AlphabeticText(MaxStrLen(Item."Vendor Item No.")), 1, MaxStrLen(Item."Vendor Item No."));
         Item.Modify();
         ItemVendor.Init();
         ItemVendor."Item No." := Item."No.";
@@ -98,11 +120,11 @@ codeunit 139603 "Shpfy Product Init Test"
     begin
         ItemVariant.Init();
         ItemVariant.Validate("Item No.", Item."No.");
-        ItemVariant.Code := Any.AlphabeticText(MaxStrLen(ItemVariant.Code));
-        ItemVariant.Description := Any.AlphanumericText(50);
+        ItemVariant.Code := CopyStr(Any.AlphabeticText(MaxStrLen(ItemVariant.Code)), 1, MaxStrLen(ItemVariant.Code));
+        ItemVariant.Description := CopyStr(Any.AlphanumericText(50), 1, MaxStrLen(ItemVariant.Description));
         ItemVariant.Insert();
         ItemReferenceMgt.CreateItemBarCode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure", Any.AlphabeticText(10));
-        ItemReferenceMgt.CreateItemReference(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure", "Item Reference Type"::Vendor, Item."Vendor No.", Any.AlphabeticText(10));
+        ItemReferenceMgt.CreateItemReference(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure", "Item Reference Type"::Vendor, Item."Vendor No.", CopyStr(Any.AlphabeticText(10), 1, 50));
     end;
 
     local procedure CreateExtendedText(Item: Record Item)
@@ -128,7 +150,7 @@ codeunit 139603 "Shpfy Product Init Test"
         ExtendedTextLine."Language Code" := ExtendedTextHeader."Language Code";
         ExtendedTextLine."Text No." := ExtendedTextHeader."Text No.";
         ExtendedTextLine."Line No." := LineNo;
-        ExtendedTextLine.Text := Any.AlphanumericText(Any.IntegerInRange(1, MaxStrLen(ExtendedTextLine.Text)));
+        ExtendedTextLine.Text := CopyStr(Any.AlphanumericText(Any.IntegerInRange(1, MaxStrLen(ExtendedTextLine.Text))), 1, MaxStrLen(ExtendedTextLine.Text));
         ExtendedTextLine.Insert();
     end;
 
@@ -153,7 +175,7 @@ codeunit 139603 "Shpfy Product Init Test"
     local procedure CreateItemAttribute() ItemAttribute: Record "Item Attribute"
     begin
         ItemAttribute.Init();
-        ItemAttribute.Name := Any.AlphabeticText(20);
+        ItemAttribute.Name := CopyStr(Any.AlphabeticText(20), 1, MaxStrLen(ItemAttribute.Name));
         ItemAttribute.Type := Any.IntegerInRange(0, 4);
         ItemAttribute.Insert();
     end;
@@ -164,7 +186,7 @@ codeunit 139603 "Shpfy Product Init Test"
         ItemAttributeValue."Attribute ID" := ItemAttribute.ID;
         case ItemAttribute.Type of
             ItemAttribute.Type::Text:
-                ItemAttributeValue.Value := Any.AlphanumericText(50);
+                ItemAttributeValue.Value := CopyStr(Any.AlphanumericText(50), 1, MaxStrLen(ItemAttributeValue.Value));
             ItemAttribute.Type::Integer,
             ItemAttribute.Type::Option:
                 ItemAttributeValue."Numeric Value" := Any.IntegerInRange(0, 5);
@@ -181,7 +203,9 @@ codeunit 139603 "Shpfy Product Init Test"
     internal procedure CreateSalesPrice(Code: Code[10]; ItemNo: Code[20]; Price: Decimal)
     var
         CustomerPriceGroup: Record "Customer Price Group";
+#pragma warning disable AL0432
         SalesPrice: Record "Sales Price";
+#pragma warning restore AL0432
     begin
         if not CustomerPriceGroup.Get(Code) then begin
             CustomerPriceGroup.Init();
@@ -199,7 +223,9 @@ codeunit 139603 "Shpfy Product Init Test"
 
     internal procedure CreateSalesLineDiscount(Code: Code[10]; ItemNo: Code[20]; DiscountPerc: Decimal) CustDiscGrp: Record "Customer Discount Group"
     var
+#pragma warning disable AL0432
         SalesLineDiscount: Record "Sales Line Discount";
+#pragma warning restore AL0432
     begin
         if not CustDiscGrp.get(Code) then begin
             CustDiscGrp.Init();
@@ -296,7 +322,7 @@ codeunit 139603 "Shpfy Product Init Test"
         ShopifyProduct: Record "Shpfy Product";
     begin
         ShopifyProduct := InitProduct(Shop);
-        ShopifyProduct."Has Variants" := (Shop."SKU Mapping" = Enum::"Shpfy SKU Mapping"::"Item No. + Variant Code");
+        ShopifyProduct."Has Variants" := Shop."SKU Mapping" in [Enum::"Shpfy SKU Mapping"::"Item No. + Variant Code", Enum::"Shpfy SKU Mapping"::"Variant Code"];
         ShopifyProduct.Insert();
         Clear(LastItemNo);
         exit(AddProductVariants(Shop, ShopifyProduct, Any.IntegerInRange(2, 5)));
@@ -328,7 +354,7 @@ codeunit 139603 "Shpfy Product Init Test"
             ShopifyVariant.SKU := CreateSKUValue(Shop);
             if ShopifyProduct."Has Variants" then begin
                 ShopifyVariant."Option 1 Name" := 'Test Option';
-                ShopifyVariant."Option 1 Value" := Any.AlphabeticText(5);
+                ShopifyVariant."Option 1 Value" := CopyStr(Any.AlphabeticText(5), 1, MaxStrLen(ShopifyVariant."Option 1 Value"));
             end;
             ShopifyVariant.Insert();
         end;
@@ -346,11 +372,11 @@ codeunit 139603 "Shpfy Product Init Test"
             "Shpfy SKU Mapping"::"Item No.",
             "Shpfy SKU Mapping"::"Variant Code",
             "Shpfy SKU Mapping"::"Vendor Item No.":
-                exit(Any.AlphabeticText(10));
+                exit(CopyStr(Any.AlphabeticText(10), 1, 50));
             "Shpfy SKU Mapping"::"Item No. + Variant Code":
                 begin
                     if LastItemNo = '' then
-                        LastItemNo := Any.AlphabeticText(10).ToUpper();
+                        LastItemNo := CopyStr(Any.AlphabeticText(10).ToUpper(), 1, MaxStrLen(LastItemNo));
                     exit(LastItemNo + Shop."SKU Field Separator" + ANy.AlphabeticText(5).ToUpper());
                 end;
         end;
@@ -365,10 +391,10 @@ codeunit 139603 "Shpfy Product Init Test"
         ShopifyProduct.Init();
         ShopifyProduct.Id := Any.IntegerInRange(10000, 99999);
         ShopifyProduct."Shop Code" := Shop.Code;
-        ShopifyProduct.Title := Any.AlphabeticText(100);
+        ShopifyProduct.Title := CopyStr(Any.AlphabeticText(100), 1, MaxStrLen(ShopifyProduct.Title));
         if ItemCategory.FindFirst() then
             if ItemCategory.Description <> '' then
-                ShopifyProduct."Product Type" := ItemCategory.Description
+                ShopifyProduct."Product Type" := CopyStr(ItemCategory.Description, 1, MaxStrLen(ShopifyProduct."Product Type"))
             else
                 ShopifyProduct."Product Type" := ItemCategory.Code;
         if Vendor.FindFirst() then

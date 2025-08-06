@@ -11,6 +11,7 @@ using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 codeunit 133519 "EDoc. Line Match Acc. Ground"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

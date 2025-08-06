@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -55,6 +60,7 @@ table 30117 "Shpfy Order Disc.Appl."
         {
             Caption = 'Value';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
     }
     keys

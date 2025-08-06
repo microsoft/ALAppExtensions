@@ -43,6 +43,15 @@
       "id": "ea130081-c669-460f-a5f4-5dde14f03131"
     }
   ],
+  "features": [
+    "TranslationFile"
+  ],
+  "idRanges": [
+    {
+      "from": 139683,
+      "to": 139683
+    }
+  ],
   "screenshots": [],
   "platform": "27.0.0.0",
   "resourceExposurePolicy": {

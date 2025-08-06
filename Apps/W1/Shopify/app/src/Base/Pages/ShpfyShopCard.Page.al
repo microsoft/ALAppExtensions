@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.Telemetry;
@@ -64,8 +69,7 @@ page 30101 "Shpfy Shop Card"
                             exit;
                         Rec.RequestAccessToken();
                         BulkOperationMgt.EnableBulkOperations(Rec);
-                        Rec."B2B Enabled" := Rec.GetB2BEnabled();
-                        Rec."Weight Unit" := Rec.GetShopWeightUnit();
+                        Rec.GetShopSettings();
                         Rec.SyncCountries();
                         FeatureTelemetry.LogUptake('0000HUT', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
                     end;
@@ -100,7 +104,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     Importance = Additional;
-                    ToolTip = 'Specifies whether background syncs are allowed.';
+                    ToolTip = 'Specifies whether synchronization runs in the background. When enabled, you can continue working while large data sets synchronize. Disable for demos or troubleshooting to see real-time progress and receive detailed error messages.';
                 }
                 field("Allow Outgoing Requests"; Rec."Allow Outgoing Requests")
                 {
@@ -825,6 +829,20 @@ page 30101 "Shpfy Shop Card"
                 RunPageLink = "Shop Code" = field(Code);
                 ToolTip = 'View a list of Shopify Bulk Operations for the shop.';
             }
+            action(StaffMembers)
+            {
+                ApplicationArea = All;
+                Caption = 'Staff Members Mapping';
+                Image = Users;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                RunObject = Page "Shpfy Staff Mapping";
+                RunPageLink = "Shop Code" = field(Code);
+                ToolTip = 'View a list of Shopify Staff Members for the shop.';
+                Visible = Rec."B2B Enabled";
+            }
         }
         area(Processing)
         {
@@ -1188,8 +1206,7 @@ page 30101 "Shpfy Shop Card"
             if AuthenticationMgt.CheckScopeChange(Rec) then
                 if Confirm(StrSubstNo(ScopeChangeConfirmLbl, Rec.Code)) then begin
                     Rec.RequestAccessToken();
-                    Rec."B2B Enabled" := Rec.GetB2BEnabled();
-                    Rec."Weight Unit" := Rec.GetShopWeightUnit();
+                    Rec.GetShopSettings();
                     Rec.Modify();
                 end else begin
                     Rec.Enabled := false;

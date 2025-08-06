@@ -87,6 +87,7 @@ page 31109 "VAT Ctrl. Report List CZL"
             group("&Report")
             {
                 Caption = '&Report';
+#if not CLEAN27
                 action(Statistics)
                 {
                     ApplicationArea = VAT;
@@ -94,11 +95,31 @@ page 31109 "VAT Ctrl. Report List CZL"
                     Image = Statistics;
                     ShortcutKey = 'F7';
                     ToolTip = 'View the statistics on the selected VAT Control Report.';
+                    ObsoleteReason = 'The statistics action will be replaced with the VATCtrlReportStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
 
                     trigger OnAction()
                     begin
                         Page.RunModal(Page::"VAT Ctrl. Report Stat. CZL", Rec);
                     end;
+                }
+#endif
+                action(VATCtrlReportStatistics)
+                {
+                    ApplicationArea = VAT;
+                    Caption = 'Statistics';
+                    Image = Statistics;
+                    ShortcutKey = 'F7';
+                    Enabled = Rec."No." <> '';
+                    ToolTip = 'View statistical information, such as the value of posted entries, for the record.';
+#if CLEAN27
+                    Visible = true;
+#else
+                    Visible = false;
+#endif
+                    RunObject = Page "VAT Ctrl. Report Stat. CZL";
+                    RunPageOnRec = true;
                 }
                 action(PrintToAttachment)
                 {
@@ -254,9 +275,18 @@ page 31109 "VAT Ctrl. Report List CZL"
                 actionref("Re&open_Promoted"; "Re&open")
                 {
                 }
+#if not CLEAN27
                 actionref(Statistics_Promoted; Statistics)
                 {
+                    ObsoleteReason = 'The statistics action will be replaced with the VATCtrlReportStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
                 }
+#else
+                actionref(VATCtrlReportStatistics_Promoted; VATCtrlReportStatistics)
+                {
+                }
+#endif
                 actionref("&Suggest Lines_Promoted"; "&Suggest Lines")
                 {
                 }

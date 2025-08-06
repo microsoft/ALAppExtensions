@@ -1,6 +1,17 @@
+namespace Microsoft.Test.Sustainability;
+
+using System.TestLibraries.Utilities;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Sustainability.Account;
+using Microsoft.Finance.Analysis;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Purchases.Document;
+
 codeunit 148186 "Sustainability Financial Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

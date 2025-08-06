@@ -39,7 +39,7 @@ codeunit 6374 "Authenticator"
         ConnectionSetup: Record "Connection Setup";
         Requests: Codeunit Requests;
         ExpiresIn: Integer;
-        ClientId, ClientSecret, TokenTxt, Response : SecretText;
+        ClientId, ClientSecret, TokenTxt : SecretText;
         TokenKey: Guid;
     begin
         ConnectionSetup.Get();
@@ -57,9 +57,7 @@ codeunit 6374 "Authenticator"
 
         Requests.Init();
         Requests.CreateAuthenticateRequest(ClientId, ClientSecret);
-        ExecuteResponse(Requests, Response);
-        if not ParseResponse(Response, TokenTxt, ExpiresIn) then
-            Error(AvalaraParseTokenErr);
+        ExecuteAndParseResponse(Requests, TokenTxt, ExpiresIn);
 
         // Save token for reuse
         SetIsolatedStorageValue(TokenKey, TokenTxt, DataScope::Company);
@@ -73,26 +71,30 @@ codeunit 6374 "Authenticator"
     end;
 
     [NonDebuggable]
-    local procedure ExecuteResponse(var Request: Codeunit Requests; var Response: SecretText)
+    local procedure ExecuteAndParseResponse(var Request: Codeunit Requests; var Token: SecretText; var ExpiresIn: Integer)
     var
         HttpExecutor: Codeunit "Http Executor";
+        TextResponse: Text;
     begin
-        Response := HttpExecutor.ExecuteHttpRequest(Request);
+        TextResponse := HttpExecutor.ExecuteHttpRequest(Request);
+        if not ParseResponse(TextResponse, Token, ExpiresIn) then
+            Error(AvalaraGetTokenErr);
     end;
 
     [NonDebuggable]
     [TryFunction]
-    local procedure ParseResponse(Response: SecretText; var Token: SecretText; var ExpiresIn: Integer)
+    local procedure ParseResponse(Response: Text; var Token: SecretText; var ExpiresIn: Integer)
     var
         ResponseJson: JsonObject;
         TokenJson, ExpiryJson : JsonToken;
     begin
-        ResponseJson.ReadFrom(Response.Unwrap());
+        ResponseJson.ReadFrom(Response);
         ResponseJson.Get('access_token', TokenJson);
         Token := TokenJson.AsValue().AsText();
         ResponseJson.Get('expires_in', ExpiryJson);
         ExpiresIn := ExpiryJson.AsValue().AsInteger();
     end;
+
 
     procedure IsClientCredsSet(var ClientId: Text; var ClientSecret: Text): Boolean
     var
@@ -134,5 +136,5 @@ codeunit 6374 "Authenticator"
         SandboxAPIURLTxt: Label 'https://api.sbx.avalara.com', Locked = true;
         AvalaraClientIdErr: Label 'Avalara Client Id is not set in %1', Comment = '%1 - Client id';
         AvalaraClientSecretErr: Label 'Avalara Client Secret is not set in %1', Comment = '%1 - Client secret';
-        AvalaraParseTokenErr: Label 'Failed to parse response for Avalara Access token request';
+        AvalaraGetTokenErr: Label 'Failed to parse response for Avalara Access token request';
 }

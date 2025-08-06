@@ -31,7 +31,6 @@ codeunit 13624 "OIOUBL-Initialize"
     var
         OIOUBLTxt: Label 'OIOUBL', Locked = true;
         OIOUBLFormatDescriptionTxt: Label 'OIOUBL Format (Offentlig Information Online Universal Business Language)', Locked = true;
-        OIOUBLProfileDescriptionTxt: Label 'OIOUBL Document Sending Profile', Locked = true;
         OIOUBLProfileCodeTxt: Label 'BILSIM', Locked = true;
         OIOUBLProfileIDTxt: Label 'Procurement-OrdSimR-BilSim-1.0', Locked = true;
 
@@ -41,7 +40,7 @@ codeunit 13624 "OIOUBL-Initialize"
         AppInfo: ModuleInfo;
 #endif
     begin
-#if not CLEAN26        
+#if not CLEAN26
         NavApp.GetCurrentModuleInfo(AppInfo);
         if AppInfo.DataVersion() = Version.Create('0.0.0.0') then
             CODEUNIT.Run(CODEUNIT::"OIOUBL-MigrateToExtV2");
@@ -235,20 +234,6 @@ codeunit 13624 "OIOUBL-Initialize"
         ElectronicDocumentFormat.InsertElectronicFormat(
             OIOUBLTxt, OIOUBLFormatDescriptionTxt,
             CODEUNIT::"OIOUBL-Check Sales Header", 0, ElectronicDocumentFormat.Usage::"Sales Validation");
-    end;
-
-    local procedure CreateDocumentSendingProfile();
-    var
-        DocumentSendingProfile: Record "Document Sending Profile";
-    begin
-        if DocumentSendingProfile.GET(OIOUBLTxt) then
-            exit;
-
-        DocumentSendingProfile.Validate(Code, OIOUBLTxt);
-        DocumentSendingProfile.Validate(Description, OIOUBLProfileDescriptionTxt);
-        DocumentSendingProfile.Validate(Disk, DocumentSendingProfile.Disk::"Electronic Document");
-        DocumentSendingProfile.Validate("Disk Format", OIOUBLTxt);
-        DocumentSendingProfile.Insert(true);
     end;
 
     local procedure CreateProfileCode()

@@ -1,6 +1,23 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Sales.Document;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Foundation.Address;
+
 codeunit 139608 "Shpfy Orders API Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -104,7 +121,7 @@ codeunit 139608 "Shpfy Orders API Test"
         JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, false);
 
         // [WHEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
 
         // [THEN] ShpfyOrdersToImport.Id = ShpfyOrderHeader."Shopify Order Id"
         LibraryAssert.AreEqual(OrdersToImport.Id, OrderHeader."Shopify Order Id", 'ShpfyOrdersToImport.Id = ShpfyOrderHeader."Shopify Order Id"');
@@ -142,7 +159,7 @@ codeunit 139608 "Shpfy Orders API Test"
         JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, true);
 
         // [WHEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
 
         // [THEN] ShpfyOrdersToImport.Id = ShpfyOrderHeader."Shopify Order Id"
         LibraryAssert.AreEqual(OrdersToImport.Id, OrderHeader."Shopify Order Id", 'ShpfyOrdersToImport.Id = ShpfyOrderHeader."Shopify Order Id"');
@@ -165,6 +182,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         OrderMapping: Codeunit "Shpfy Order Mapping";
         ImportOrder: Codeunit "Shpfy Import Order";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
         Result: Boolean;
     begin
         // [SCENARIO] Creating a random Shopify Order and try to map customer and product data.
@@ -179,7 +197,7 @@ codeunit 139608 "Shpfy Orders API Test"
         ImportOrder.SetShop(Shop.Code);
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
 
         // [WHEN] ShpfyOrderMapping.DoMapping(ShpfyOrderHeader)
         Result := OrderMapping.DoMapping(OrderHeader);
@@ -196,6 +214,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         OrderMapping: Codeunit "Shpfy Order Mapping";
         ImportOrder: Codeunit "Shpfy Import Order";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
         Result: Boolean;
     begin
         // [SCENARIO] Creating a random Shopify Order and try to map customer and product data.
@@ -210,7 +229,7 @@ codeunit 139608 "Shpfy Orders API Test"
         ImportOrder.SetShop(Shop.Code);
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, ImportOrder, true);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, ImportOrder, true);
 
         // [WHEN] ShpfyOrderMapping.DoMapping(ShpfyOrderHeader)
         Result := OrderMapping.DoMapping(OrderHeader);
@@ -228,6 +247,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ImportOrder: Codeunit "Shpfy Import Order";
         ProcessOrders: Codeunit "Shpfy Process Orders";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
     begin
         // [SCENARIO] Creating a random Shopify Order and try to map customer and product data.
         // [SCENARIO] When the sales document is created, everything will be mapped and the sales document must exist.
@@ -241,12 +261,12 @@ codeunit 139608 "Shpfy Orders API Test"
         ImportOrder.SetShop(Shop.Code);
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
         Commit();
 
         // [WHEN]
         ProcessOrders.ProcessShopifyOrder(OrderHeader);
-        OrderHeader.Find();
+        OrderHeader.GetBySystemId(OrderHeader.SystemId);
 
         // [THEN] Sales document is created from Shopify order
         SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
@@ -273,6 +293,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ImportOrder: Codeunit "Shpfy Import Order";
         ProcessOrders: Codeunit "Shpfy Process Orders";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
     begin
         // [SCENARIO] Creating a random Shopify Order and try to map customer and product data.
         // [SCENARIO] When the sales document is created, everything will be mapped and the sales document must exist.
@@ -286,12 +307,12 @@ codeunit 139608 "Shpfy Orders API Test"
         ImportOrder.SetShop(Shop.Code);
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, ImportOrder, true);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, ImportOrder, true);
         Commit();
 
         // [WHEN]
         ProcessOrders.ProcessShopifyOrder(OrderHeader);
-        OrderHeader.Find();
+        OrderHeader.GetBySystemId(OrderHeader.SystemId);
 
         // [THEN] Sales document is created from Shopify order
         SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
@@ -320,6 +341,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ImportOrder: Codeunit "Shpfy Import Order";
         ProcessOrders: Codeunit "Shpfy Process Orders";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
     begin
         // [SCENARIO] When the sales document is created, tax priority is taken from the shop.
         Initialize();
@@ -336,7 +358,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CreateTaxArea(TaxArea, ShopifyTaxArea, Shop);
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
         OrderHeader."Ship-to City" := ShopifyTaxArea.County;
         OrderHeader."Ship-to Country/Region Code" := ShopifyTaxArea."Country/Region Code";
         OrderHeader."Ship-to County" := ShopifyTaxArea."County Code";
@@ -345,7 +367,7 @@ codeunit 139608 "Shpfy Orders API Test"
 
         // [WHEN] Order is processed
         ProcessOrders.ProcessShopifyOrder(OrderHeader);
-        OrderHeader.Find();
+        OrderHeader.GetBySystemId(OrderHeader.SystemId);
 
         // [THEN] Sales document is created from Shopify order with correct tax area
         SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
@@ -364,6 +386,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ImportOrder: Codeunit "Shpfy Import Order";
         ProcessOrders: Codeunit "Shpfy Process Orders";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
     begin
         // [SCENARIO] When the sales document is created, tax priority is taken from the shop
         Initialize();
@@ -380,7 +403,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CreateTaxArea(TaxArea, ShopifyTaxArea, Shop);
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
         OrderHeader."Sell-to City" := ShopifyTaxArea.County;
         OrderHeader."Sell-to Country/Region Code" := ShopifyTaxArea."Country/Region Code";
         OrderHeader."Sell-to County" := CopyStr(ShopifyTaxArea.County, 1, MaxStrLen(OrderHeader."Sell-to County"));
@@ -389,7 +412,7 @@ codeunit 139608 "Shpfy Orders API Test"
 
         // [WHEN] Order is processed
         ProcessOrders.ProcessShopifyOrder(OrderHeader);
-        OrderHeader.Find();
+        OrderHeader.GetBySystemId(OrderHeader.SystemId);
 
         // [THEN] Sales document is created from Shopify order with correct tax area
         SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
@@ -408,6 +431,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ImportOrder: Codeunit "Shpfy Import Order";
         ProcessOrders: Codeunit "Shpfy Process Orders";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
     begin
         // [SCENARIO] When the sales document is created, tax area is empty if there is no mapping
         Initialize();
@@ -424,7 +448,7 @@ codeunit 139608 "Shpfy Orders API Test"
         CreateTaxArea(TaxArea, ShopifyTaxArea, Shop);
 
         // [GIVEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, ImportOrder, false);
         OrderHeader."Ship-to City" := ShopifyTaxArea.County;
         OrderHeader."Ship-to Country/Region Code" := ShopifyTaxArea."Country/Region Code";
         OrderHeader."Ship-to County" := ShopifyTaxArea."County Code";
@@ -436,7 +460,7 @@ codeunit 139608 "Shpfy Orders API Test"
 
         // [WHEN] Order is processed
         ProcessOrders.ProcessShopifyOrder(OrderHeader);
-        OrderHeader.Find();
+        OrderHeader.GetBySystemId(OrderHeader.SystemId);
 
         // [THEN] Sales document is created from Shopify order with correct tax area
         SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
@@ -536,7 +560,7 @@ codeunit 139608 "Shpfy Orders API Test"
         JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, false);
 
         // [WHEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
         CreateOrderRisk(OrderHeader."Shopify Order Id", RiskLevel::High);
 
         // [THEN] Order is high risk
@@ -571,7 +595,7 @@ codeunit 139608 "Shpfy Orders API Test"
         JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, false);
 
         // [WHEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
         CreateOrderRisk(OrderHeader."Shopify Order Id", RiskLevel::Low);
 
         // [THEN] Order is high risk
@@ -690,7 +714,7 @@ codeunit 139608 "Shpfy Orders API Test"
         JShopifyOrder.Replace('paymentTerms', OrderHandlingHelper.CreatePaymentTermsAsJson(CreateDateTime(DueDate, 120000T)));
 
         // [WHEN] ShpfyImportOrder.ImportOrder
-        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
 
         // [THEN] Due date is set
         TempTime := Format(CreateDateTime(DueDate, 120000T), 0, 9);
@@ -730,12 +754,12 @@ codeunit 139608 "Shpfy Orders API Test"
         JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, false);
         DueDate := LibraryRandom.RandDate(10);
         JShopifyOrder.Replace('paymentTerms', OrderHandlingHelper.CreatePaymentTermsAsJson(CreateDateTime(DueDate, 120000T)));
-        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
+        OrderHandlingHelper.ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
         Commit();
 
         // [WHEN] Order is processed
         ProcessOrders.ProcessShopifyOrder(OrderHeader);
-        OrderHeader.Find();
+        OrderHeader.GetBySystemId(OrderHeader.SystemId);
 
         // [THEN] Sales document is created from Shopify order with due date
         SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
@@ -767,26 +791,6 @@ codeunit 139608 "Shpfy Orders API Test"
         if ShopifyTaxArea.Insert() then;
         TaxArea.Code := CountyCode;
         if TaxArea.Insert() then;
-    end;
-
-    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var OrdersToImport: Record "Shpfy Orders to Import"; var ImportOrder: Codeunit "Shpfy Import Order"; var JShopifyOrder: JsonObject; var JShopifyLineItems: JsonArray)
-    var
-    begin
-        ImportOrder.ImportCreateAndUpdateOrderHeaderFromMock(Shop.Code, OrdersToImport.Id, JShopifyOrder);
-        ImportOrder.ImportCreateAndUpdateOrderLinesFromMock(OrdersToImport.Id, JShopifyLineItems);
-        Commit();
-        OrderHeader.Get(OrdersToImport.Id);
-    end;
-
-    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var ImportOrder: Codeunit "Shpfy Import Order"; B2B: Boolean)
-    var
-        OrdersToImport: Record "Shpfy Orders to Import";
-        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
-        JShopifyOrder: JsonObject;
-        JShopifyLineItems: JsonArray;
-    begin
-        JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, B2B);
-        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
     end;
 
     local procedure CreateOrderRisk(ShopifyOrderId: BigInteger; RiskLevel: Enum "Shpfy Risk Level")

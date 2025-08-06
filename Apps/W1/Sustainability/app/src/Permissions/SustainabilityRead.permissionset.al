@@ -3,6 +3,8 @@ namespace Microsoft.Sustainability;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.Energy;
+using Microsoft.Sustainability.ESGReporting;
 using Microsoft.Sustainability.FinancialReporting;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
@@ -36,5 +38,11 @@ permissionset 6211 "Sustainability Read"
         tabledata "Sustainability Cue" = R,
         tabledata "Sustainability Goal" = R,
         tabledata "Sustainability Goal Cue" = R,
-        tabledata "Sustainability Scorecard" = R;
+        tabledata "Sustainability Scorecard" = R,
+        tabledata "Sustainability Energy Source" = R,
+        tabledata "Sust. ESG Reporting Template" = R,
+        tabledata "Sust. ESG Reporting Name" = R,
+        tabledata "Sust. ESG Reporting Line" = R,
+        tabledata "Sust. Posted ESG Report Header" = R,
+        tabledata "Sust. Posted ESG Report Line" = R;
 }

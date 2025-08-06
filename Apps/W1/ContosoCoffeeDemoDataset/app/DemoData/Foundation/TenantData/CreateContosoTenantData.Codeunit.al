@@ -125,10 +125,8 @@ codeunit 5691 "Create Contoso Tenant Data"
     begin
         if FeatureKey.ID in ['PowerAutomateCopilot',
                              'CalcOnlyVisibleFlowFields',
-                             'ConcurrentInventoryPosting',
-                             'ConcurrentJobPosting',
-                             'ConcurrentResourcePosting',
-                             'SemanticMetadataSearch']
+                             'SemanticMetadataSearch',
+                             'AdvancedTellMe']
         then
             exit(true);
 

@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using Microsoft.Sales.Customer;
+using System.TestLibraries.Utilities;
+
 codeunit 139638 "Shpfy Company Initialize"
 {
     SingleInstance = true;
@@ -129,8 +140,10 @@ codeunit 139638 "Shpfy Company Initialize"
         JBillingAddress: JsonObject;
         JPaymentTerms: JsonObject;
         LocationResponse: Text;
+        CompanyLocationIdLbl: Label 'gid://shopify/CompanyLocation/%1', Comment = 'companyLocationId', Locked = true;
+        PaymentTermsTemplateIdLbl: Label '{"paymentTermsTemplate": {id: "gid://shopify/PaymentTermsTemplate/%1"}}', Comment = 'paymentTermsTemplateId', Locked = true;
     begin
-        JNode.Add('id', StrSubstNo('gid://shopify/CompanyLocation/%1', LocationValues.Get('id')));
+        JNode.Add('id', StrSubstNo(CompanyLocationIdLbl, LocationValues.Get('id')));
         JBillingAddress.Add('address1', LocationValues.Get('address1'));
         JBillingAddress.Add('address2', LocationValues.Get('address2'));
         JBillingAddress.Add('city', LocationValues.Get('city'));
@@ -141,7 +154,7 @@ codeunit 139638 "Shpfy Company Initialize"
         JBillingAddress.Add('province', LocationValues.Get('province'));
         JNode.Add('billingAddress', JBillingAddress);
         JNode.Add('taxRegistrationId', LocationValues.Get('taxRegistrationId'));
-        JPaymentTerms.ReadFrom(StrSubstNo('{"paymentTermsTemplate": {id: "gid://shopify/PaymentTermsTemplate/%1"}}', LocationValues.Get('paymentTermsTemplateId')));
+        JPaymentTerms.ReadFrom(StrSubstNo(PaymentTermsTemplateIdLbl, LocationValues.Get('paymentTermsTemplateId')));
         JNode.Add('buyerExperienceConfiguration', JPaymentTerms);
         JEdges.Add(JNode);
         JCompanyLocations.Add('edges', JEdges);
@@ -151,12 +164,16 @@ codeunit 139638 "Shpfy Company Initialize"
     end;
 
     internal procedure TaxIdGQLNode(CompanyLocation: Record "Shpfy Company Location"): Text
+    var
+        CompanyLocationIdLbl: Label 'locationId: \"gid://shopify/CompanyLocation/%1\", taxId: \"%2\"', Comment = '%1 - locationId, %2 - taxId', Locked = true;
     begin
-        exit(StrSubstNo('locationId: \"gid://shopify/CompanyLocation/%1\", taxId: \"%2\"', CompanyLocation.Id, CompanyLocation."Tax Registration Id"));
+        exit(StrSubstNo(CompanyLocationIdLbl, CompanyLocation.Id, CompanyLocation."Tax Registration Id"));
     end;
 
     internal procedure ExternalIdGQLNode(Customer: Record Customer): Text
+    var
+        ExternalIdLbl: Label 'externalId: \"%1\"', Comment = 'externalId', Locked = true;
     begin
-        exit(StrSubstNo('externalId: \"%1\"', Customer."No."));
+        exit(StrSubstNo(ExternalIdLbl, Customer."No."));
     end;
 }

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Customer;
@@ -90,9 +95,9 @@ report 30113 "Shpfy Add Company to Shopify"
     /// <summary> 
     /// Set Shop.
     /// </summary>
-    /// <param name="Shop">Parameter of type Code[20].</param>
-    internal procedure SetShop(Shop: Code[20])
+    /// <param name="ShopifyShop">Parameter of type Code[20].</param>
+    internal procedure SetShop(ShopifyShop: Code[20])
     begin
-        ShopCode := Shop;
+        ShopCode := ShopifyShop;
     end;
 }

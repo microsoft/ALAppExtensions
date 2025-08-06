@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -98,10 +103,10 @@ codeunit 30180 "Shpfy Product Import"
     /// <summary> 
     /// Set Product.
     /// </summary>
-    /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
-    internal procedure SetProduct(ShopifyProduct: Record "Shpfy Product")
+    /// <param name="Product">Parameter of type Record "Shopify Product".</param>
+    internal procedure SetProduct(Product: Record "Shpfy Product")
     begin
-        SetProduct(ShopifyProduct.Id);
+        SetProduct(Product.Id);
     end;
 
     /// <summary> 

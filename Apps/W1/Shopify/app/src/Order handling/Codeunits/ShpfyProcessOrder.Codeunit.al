@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
@@ -128,6 +133,8 @@ codeunit 30166 "Shpfy Process Order"
                 SalesHeader.Validate("Payment Method Code", ShopifyOrderHeader."Payment Method Code");
             if ShopifyOrderHeader."Payment Terms Type" <> '' then
                 UpdatePaymentTerms(SalesHeader, ShopifyOrderHeader."Payment Terms Type", ShopifyOrderHeader."Payment Terms Name");
+            if ShopifyOrderHeader."Salesperson Code" <> '' then
+                SalesHeader.Validate("Salesperson Code", ShopifyOrderHeader."Salesperson Code");
 
             SalesHeader.Modify(true);
 
@@ -197,7 +204,8 @@ codeunit 30166 "Shpfy Process Order"
         SuppressAsmWarning: Codeunit "Shpfy Suppress Asm Warning";
         IsHandled: Boolean;
         ShipmentChargeType: Boolean;
-        ShopfyOrderNoLbl: Label 'Shopify Order No.: %1', Comment = '%1 = Order No.';
+        ShopifyOrderNoLbl: Label 'Shopify Order No.: %1', Comment = '%1 = Order No.';
+        CashRoundingLbl: Label 'Cash rounding';
     begin
         BindSubscription(SuppressAsmWarning);
         if ShopifyShop."Shopify Order No. on Doc. Line" then begin
@@ -207,7 +215,7 @@ codeunit 30166 "Shpfy Process Order"
             SalesLine.Validate("Document No.", SalesHeader."No.");
             SalesLine.Validate("Line No.", GetNextLineNo(SalesHeader));
             SalesLine.Validate(Type, SalesLine.Type::" ");
-            SalesLine.Validate(Description, StrSubstNo(ShopfyOrderNoLbl, ShopifyOrderHeader."Shopify Order No."));
+            SalesLine.Validate(Description, StrSubstNo(ShopifyOrderNoLbl, ShopifyOrderHeader."Shopify Order No."));
             SalesLine.Insert(true);
         end;
         ShopifyOrderLine.SetRange("Shopify Order Id", ShopifyOrderHeader."Shopify Order Id");
@@ -298,6 +306,24 @@ codeunit 30166 "Shpfy Process Order"
                 end;
                 OrderEvents.OnAfterCreateShippingCostSalesLine(ShopifyOrderHeader, OrderShippingCharges, SalesHeader, SalesLine);
             until OrderShippingCharges.Next() = 0;
+
+        if ShopifyOrderHeader."Payment Rounding Amount" <> 0 then begin
+            SalesLine.Init();
+            SalesLine.SetHideValidationDialog(true);
+            SalesLine.Validate("Document Type", SalesHeader."Document Type");
+            SalesLine.Validate("Document No.", SalesHeader."No.");
+            SalesLine.Validate("Line No.", GetNextLineNo(SalesHeader));
+            SalesLine.Insert(true);
+
+            SalesLine.Validate(Type, SalesLine.Type::"G/L Account");
+            // SalesLine.Validate("No.", SalesLine.GetCPGInvRoundAcc(SalesHeader)); TODONAT
+            SalesLine.Validate("No.", ShopifyShop."Tip Account");
+            SalesLine.Validate(Quantity, 1);
+            SalesLine.Validate("Unit Price", ShopifyOrderHeader."Payment Rounding Amount");
+            SalesLine.Validate(Description, CashRoundingLbl);
+            SalesLine."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
+            SalesLine.Modify();
+        end;
     end;
 
     local procedure AssignItemCharges(SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")

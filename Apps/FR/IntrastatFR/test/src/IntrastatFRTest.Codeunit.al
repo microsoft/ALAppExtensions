@@ -1,6 +1,7 @@
 codeunit 144081 "Intrastat FR Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

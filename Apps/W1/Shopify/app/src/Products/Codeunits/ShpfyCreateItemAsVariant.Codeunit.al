@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
@@ -90,6 +95,7 @@ codeunit 30343 "Shpfy Create Item As Variant"
     local procedure UpdateProductOption(NewOptionName: Text)
     begin
         ProductApi.UpdateProductOption(ShopifyProduct.Id, OptionId, NewOptionName);
+        OptionName := NewOptionName;
     end;
 
     local procedure SetShop(ShopCode: Code[20])

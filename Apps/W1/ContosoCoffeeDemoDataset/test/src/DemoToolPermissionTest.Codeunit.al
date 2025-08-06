@@ -1,3 +1,7 @@
+namespace Microsoft.Test.DemoTool;
+
+using Microsoft.DemoTool;
+
 codeunit 148135 "Demo Tool Permission Test"
 {
     Subtype = Test;

@@ -119,6 +119,11 @@ page 18203 "GST Distribution"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the shortcut dimension code 2 defined in general ledger setup.';
                 }
+                field("ISD Interstate Posting"; Rec."ISD Interstate Posting")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the posting of distribution for Interstate transaction.';
+                }
             }
             part(Subform; "GST Distribution Lines")
             {
@@ -222,7 +227,7 @@ page 18203 "GST Distribution"
         else
             DetailedGSTLedgerEntry.SetRange("Document Type", DetailedGSTLedgerEntry."Document Type"::"Credit Memo");
         DetailedGSTLedgerEntry.SetRange("Location  Reg. No.", Rec."From GSTIN No.");
-        DetailedGSTLedgerEntry.SetRange(Type, DetailedGSTLedgerEntry.Type::"G/L Account");
+        DetailedGSTLedgerEntry.SetRange("GST Group Type", DetailedGSTLedgerEntry."GST Group Type"::Service);
         if Rec."Dist. Credit Type" = Rec."Dist. Credit Type"::Availment then
             DetailedGSTLedgerEntry.SetRange("GST Credit", DetailedGSTLedgerEntry."GST Credit"::Availment)
         else
@@ -231,6 +236,8 @@ page 18203 "GST Distribution"
         DetailedGSTLedgerEntry.SetRange("Input Service Distribution", true);
         DetailedGSTLedgerEntry.SetRange("GST Exempted Goods", false);
         DetailedGSTLedgerEntry.SetRange(Distributed, false);
+        if Rec."ISD Interstate Posting" then
+            DetailedGSTLedgerEntry.SetRange("GST Jurisdiction Type", DetailedGSTLedgerEntry."GST Jurisdiction Type"::Interstate);
         if DetailedGSTLedgerEntry.FindSet() then
             repeat
                 if not ((DetailedGSTLedgerEntry."ARN No." <> '') and (DetailedGSTLedgerEntry."Buyer/Seller Reg. No." = '')) then begin

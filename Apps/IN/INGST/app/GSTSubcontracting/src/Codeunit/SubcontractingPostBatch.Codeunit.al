@@ -197,7 +197,7 @@ codeunit 18467 "Subcontracting Post Batch"
 
         if ItemJnlLine."Value Entry Type" <> ItemJnlLine."Value Entry Type"::Revaluation then begin
             if not ItemJnlPostLine.RunWithCheck(ItemJnlLine) then
-                ItemJnlPostLine.CheckItemTracking();
+                ItemJnlPostLine.CheckItemTracking(ItemJnlLine);
             ItemJnlPostLine.CollectTrackingSpecification(TempTrackingSpecification);
             ItemJnlPostBatch.PostWhseJnlLine(ItemJnlLine, ItemJnlLine.Quantity, ItemJnlLine."Quantity (Base)", TempTrackingSpecification);
         end;
@@ -289,11 +289,12 @@ codeunit 18467 "Subcontracting Post Batch"
         SubOrderComponentList.FindSet();
 
         DeliveryChallanHeader."Quantity for rework" += PurchLine."Qty. to Reject (Rework)";
-        if DeliveryChallanLine.FindLast() then
-            NextlineNo := DeliveryChallanLine."Line No." + 10000
-        else
-            NextlineNo := 10000;
+
         repeat
+            if NextlineNo <> 0 then
+                NextlineNo += 10000
+            else
+                NextlineNo := 10000;
             // Update missing dimension set id from purchase line
             if (PurchLine."Dimension Set ID" <> 0) and (SubOrderComponentList."Dimension Set ID" = 0) then begin
                 SubOrderComponentList.Validate("Dimension Set ID", PurchLine."Dimension Set ID");
@@ -363,7 +364,6 @@ codeunit 18467 "Subcontracting Post Batch"
             DeliveryChallanLine."GST Amount Remaining" := DeliveryChallanLine."Total GST Amount";
 
             DeliveryChallanLine.Insert(true);
-            NextlineNo += 10000;
         until SubOrderComponentList.Next() = 0;
     end;
 

@@ -3,6 +3,7 @@ codeunit 139813 "APIV2 - Currencies E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

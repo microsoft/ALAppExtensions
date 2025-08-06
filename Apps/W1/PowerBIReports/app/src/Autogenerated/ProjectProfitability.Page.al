@@ -6,9 +6,7 @@ page 37035 "Project Profitability"
 {
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = All;
-#pragma warning disable AS0035 // Changed from Card to UserControlHost
     PageType = UserControlHost;
-#pragma warning restore AS0035
     Caption = 'Project Profitability';
     AboutTitle = 'About Project Profitability';
     AboutText = 'The Project Profitability report displays key metrics such as Actuals and Budgeted KPIs, compares actual profit to the initial profit target, and includes a table view of project ledger entries by type.';
@@ -25,7 +23,7 @@ page 37035 "Project Profitability"
                 begin
                     SetupHelper.InitializeEmbeddedAddin(CurrPage.PowerBIAddin, ReportId, ReportPageLbl);
                 end;
-                
+
                 trigger ReportLoaded(ReportFilters: Text; ActivePageName: Text; ActivePageFilters: Text; CorrelationId: Text)
                 begin
                     SetupHelper.LogReportLoaded(CorrelationId);

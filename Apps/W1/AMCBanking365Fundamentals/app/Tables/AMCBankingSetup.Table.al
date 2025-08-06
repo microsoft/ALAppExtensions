@@ -73,13 +73,14 @@ table 20101 "AMC Banking Setup"
             DataClassification = SystemMetadata;
             trigger OnValidate()
             var
+                AuditLog: Codeunit "Audit Log";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 AMCBankingConsentProvidedLbl: Label 'AMC Banking Fundamentals - consent provided by UserSecurityId %1.', Locked = true;
             begin
                 if not xRec."AMC Enabled" and Rec."AMC Enabled" then
                     Rec."AMC Enabled" := CustomerConsentMgt.ConfirmUserConsent();
                 if Rec."AMC Enabled" then
-                    Session.LogAuditMessage(StrSubstNo(AMCBankingConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
+                    AuditLog.LogAuditMessage(StrSubstNo(AMCBankingConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
             end;
         }
     }

@@ -8,6 +8,7 @@ codeunit 148021 "Payment Export Sunshine"
     // version Test,ERM,DK
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

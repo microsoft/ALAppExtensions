@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Finance.GeneralLedger.Journal;
@@ -211,37 +216,38 @@ report 30118 "Shpfy Suggest Payments"
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesCreditMemoHeader: Record "Sales Cr.Memo Header";
-        CustLedgerEntry: Record "Cust. Ledger Entry";
         RefundHeader: Record "Shpfy Refund Header";
+        DocLinkToDoc: Record "Shpfy Doc. Link To Doc.";
         AmountToApply: Decimal;
         Applied: Boolean;
     begin
-        AmountToApply := OrderTransaction.Amount;
+        AmountToApply := OrderTransaction.Amount + OrderTransaction."Rounding Amount";
 
         case OrderTransaction.Type of
             OrderTransaction.Type::Capture, OrderTransaction.Type::Sale:
                 begin
-                    SalesInvoiceHeader.SetLoadFields("No.", "Shpfy Order Id");
+                    SalesInvoiceHeader.SetLoadFields("No.", "Shpfy Order Id", Closed);
                     SalesInvoiceHeader.SetRange("Shpfy Order Id", OrderTransaction."Shopify Order Id");
                     SalesInvoiceHeader.SetRange(Closed, false);
-                    if SalesInvoiceHeader.FindSet() then begin
+                    if SalesInvoiceHeader.FindSet() then
                         repeat
-                            CustLedgerEntry.SetAutoCalcFields("Remaining Amount");
-                            CustLedgerEntry.SetRange("Open", true);
-                            CustLedgerEntry.SetRange("Applies-to ID", '');
-                            CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Invoice);
-                            CustLedgerEntry.SetRange("Document No.", SalesInvoiceHeader."No.");
-                            if CustLedgerEntry.FindSet() then begin
-                                Applied := true;
-                                repeat
-                                    CreateSuggestPaymentDocument(CustLedgerEntry, AmountToApply, true);
-                                until CustLedgerEntry.Next() = 0;
-                            end;
-                        until SalesInvoiceHeader.Next() = 0;
-
-                        if Applied and (AmountToApply > 0) then
-                            CreateSuggestPaymentGLAccount(AmountToApply, true);
+                            ApplyCustomerLedgerEntries(SalesInvoiceHeader."No.", "Gen. Journal Document Type"::Invoice, AmountToApply, Applied);
+                        until SalesInvoiceHeader.Next() = 0
+                    else begin
+                        DocLinkToDoc.SetRange("Shopify Document Type", DocLinkToDoc."Shopify Document Type"::"Shopify Shop Order");
+                        DocLinkToDoc.SetRange("Shopify Document Id", OrderTransaction."Shopify Order Id");
+                        DocLinkToDoc.SetRange("Document Type", DocLinkToDoc."Document Type"::"Posted Sales Invoice");
+                        if DocLinkToDoc.FindSet() then
+                            repeat
+                                SalesInvoiceHeader.Get(DocLinkToDoc."Document No.");
+                                if SalesInvoiceHeader.Closed then
+                                    continue;
+                                ApplyCustomerLedgerEntries(SalesInvoiceHeader."No.", "Gen. Journal Document Type"::Invoice, AmountToApply, Applied);
+                            until DocLinkToDoc.Next() = 0;
                     end;
+
+                    if Applied and (AmountToApply > 0) then
+                        CreateSuggestPaymentGLAccount(AmountToApply, true);
                 end;
             OrderTransaction.Type::Refund:
                 begin
@@ -254,17 +260,7 @@ report 30118 "Shpfy Suggest Payments"
                             SalesCreditMemoHeader.SetRange(Paid, false);
                             if SalesCreditMemoHeader.FindSet() then
                                 repeat
-                                    CustLedgerEntry.SetAutoCalcFields("Remaining Amount");
-                                    CustLedgerEntry.SetRange("Open", true);
-                                    CustLedgerEntry.SetRange("Applies-to ID", '');
-                                    CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::"Credit Memo");
-                                    CustLedgerEntry.SetRange("Document No.", SalesCreditMemoHeader."No.");
-                                    if CustLedgerEntry.FindSet() then begin
-                                        Applied := true;
-                                        repeat
-                                            CreateSuggestPaymentDocument(CustLedgerEntry, AmountToApply, false);
-                                        until CustLedgerEntry.Next() = 0;
-                                    end;
+                                    ApplyCustomerLedgerEntries(SalesCreditMemoHeader."No.", "Gen. Journal Document Type"::"Credit Memo", AmountToApply, Applied);
                                 until SalesCreditMemoHeader.Next() = 0;
                         until RefundHeader.Next() = 0;
 
@@ -272,6 +268,23 @@ report 30118 "Shpfy Suggest Payments"
                             CreateSuggestPaymentGLAccount(AmountToApply, false);
                     end;
                 end;
+        end;
+    end;
+
+    local procedure ApplyCustomerLedgerEntries(DocumentNo: Code[20]; DocumentType: Enum "Gen. Journal Document Type"; var AmountToApply: Decimal; var Applied: Boolean)
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        CustLedgerEntry.SetAutoCalcFields("Remaining Amount");
+        CustLedgerEntry.SetRange("Open", true);
+        CustLedgerEntry.SetRange("Applies-to ID", '');
+        CustLedgerEntry.SetRange("Document Type", DocumentType);
+        CustLedgerEntry.SetRange("Document No.", DocumentNo);
+        if CustLedgerEntry.FindSet() then begin
+            Applied := true;
+            repeat
+                CreateSuggestPaymentDocument(CustLedgerEntry, AmountToApply, DocumentType = "Gen. Journal Document Type"::Invoice);
+            until CustLedgerEntry.Next() = 0;
         end;
     end;
 

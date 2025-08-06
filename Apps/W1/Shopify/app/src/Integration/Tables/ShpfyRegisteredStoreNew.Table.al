@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -35,13 +40,11 @@ table 30138 "Shpfy Registered Store New"
         }
     }
 
-    [Scope('OnPrem')]
     internal procedure SetAccessToken(AccessToken: SecretText)
     begin
         IsolatedStorage.Set('AccessToken(' + Rec.SystemId + ')', AccessToken, DataScope::Module);
     end;
 
-    [Scope('OnPrem')]
     internal procedure GetAccessToken() Result: SecretText
     begin
         if not IsolatedStorage.Get('AccessToken(' + Rec.SystemId + ')', DataScope::Module, Result) then;

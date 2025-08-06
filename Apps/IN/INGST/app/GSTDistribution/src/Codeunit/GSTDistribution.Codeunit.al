@@ -6,6 +6,7 @@ namespace Microsoft.Finance.GST.Distribution;
 
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Inventory.Item;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.GST.Base;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
@@ -31,6 +32,7 @@ codeunit 18200 "GST Distribution"
         PostDistributionQst: Label 'Do you want to post Distribution?';
         PostDistributionReversalQst: Label 'Do you want to post Distribution Reversal?';
         DistRevPostDateErr: Label 'You cannot post Reversal before Reversal Invoice No. %1 Posting Date: %2. Current Posting Date is: %3.', Comment = '%1 = Reversal Invoice No , %2 = Posting Date , %3 = Posting Date';
+        DistDocumentTypeErr: Label 'Unsupported Document Type: %1', Comment = '%1 =Document Type';
 
     procedure PostGSTDistribution(DistributionNo: Code[20]; ReversalInvNo: Code[20]; DistReversal: Boolean): Boolean
     var
@@ -187,8 +189,11 @@ codeunit 18200 "GST Distribution"
                                 DistComponentAmount."No." := GSTPostingSetup."Receivable Account";
                             end else begin
                                 DistComponentAmount."GST Component Code" := '';
-                                DistComponentAmount.Type := DetailedGSTLedgerEntry.Type;
-                                DistComponentAmount."No." := DetailedGSTLedgerEntry."No.";
+                                DistComponentAmount.Type := DistComponentAmount.Type::"G/L Account";
+                                if DetailedGSTLedgerEntry.Type = DetailedGSTLedgerEntry.Type::Item then
+                                    DistComponentAmount."No." := GetGLAccountForItem(DetailedGSTLedgerEntry."No.", DetailedGSTLedgerEntry."Document Type", DetailedGSTLedgerEntry."Document No.")
+                                else
+                                    DistComponentAmount."No." := DetailedGSTLedgerEntry."No.";
                             end;
 
                             DistComponentAmount."GST Credit" := GSTDistributionLine."Rcpt. Credit Type";
@@ -229,6 +234,9 @@ codeunit 18200 "GST Distribution"
 
             until GSTDistributionLine.Next() = 0;
 
+        if not DistReversal then
+            ApplyDistComponentRoundingAmount(DistributionNo, DistComponentAmount);
+
         InsertDistComponentAmountBalancingAcc(DistributionNo, DistReversal);
     end;
 
@@ -237,6 +245,7 @@ codeunit 18200 "GST Distribution"
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         DistComponentAmount: Record "Dist. Component Amount";
         GSTDistributionHeader: Record "GST Distribution Header";
+        GSTDistributionLine: Record "GST Distribution Line";
         GSTPostingSetup: Record "GST Posting Setup";
         Location: Record "Location";
     begin
@@ -252,7 +261,7 @@ codeunit 18200 "GST Distribution"
             DetailedGSTLedgerEntry.SetRange(Distributed, true);
         end else
             DetailedGSTLedgerEntry.SetRange("Dist. Document No.", DistributionNo);
-
+        DetailedGSTLedgerEntry.SetRange("GST Credit", DetailedGSTLedgerEntry."GST Credit"::Availment);
         if DetailedGSTLedgerEntry.FindSet() then
             repeat
                 GSTPostingSetup.Get(Location."State Code", GetComponentID(DetailedGSTLedgerEntry."GST Component Code"));
@@ -297,6 +306,68 @@ codeunit 18200 "GST Distribution"
                     DistComponentAmount.Modify();
                 end;
             until DetailedGSTLedgerEntry.Next() = 0;
+
+        GSTDistributionLine.Reset();
+        GSTDistributionLine.SetRange("Distribution No.", DistributionNo);
+        GSTDistributionLine.SetRange("Rcpt. Credit Type", GSTDistributionLine."Rcpt. Credit Type"::"Non-Availment");
+        if GSTDistributionLine.FindSet() then
+            repeat
+                DetailedGSTLedgerEntry.Reset();
+                DetailedGSTLedgerEntry.SetCurrentKey("Dist. Document No.", "Dist. Input GST Credit");
+                if DistReversal then begin
+                    DetailedGSTLedgerEntry.SetRange("Dist. Reverse Document No.", DistributionNo);
+                    DetailedGSTLedgerEntry.SetRange(Distributed, true);
+                end else
+                    DetailedGSTLedgerEntry.SetRange("Dist. Document No.", DistributionNo);
+
+                if DetailedGSTLedgerEntry.FindSet() then
+                    repeat
+                        GSTPostingSetup.Get(Location."State Code", GetComponentID(DetailedGSTLedgerEntry."GST Component Code"));
+                        GSTPostingSetup.TestField("Expense Account");
+                        FilterDistComponentAmountforBalancingAcc(DistComponentAmount, GSTDistributionLine, DistributionNo, GSTPostingSetup."Expense Account");
+                        if not DistComponentAmount.FindFirst() then begin
+                            DistComponentAmount.Init();
+                            DistComponentAmount."Distribution No." := DistributionNo;
+                            DistComponentAmount."GST Component Code" := DetailedGSTLedgerEntry."GST Component Code";
+                            DistComponentAmount."To Location Code" := GSTDistributionLine."To Location Code";
+                            DistComponentAmount."GST Credit" := GSTDistributionHeader."Dist. Credit Type";
+                            DistComponentAmount.Type := DistComponentAmount.Type::"G/L Account";
+                            DistComponentAmount."No." := GSTPostingSetup."Expense Account";
+
+                            DistComponentAmount."GST Base Amount" := DetailedGSTLedgerEntry."GST Base Amount";
+                            DistComponentAmount."GST Amount" := DetailedGSTLedgerEntry."GST Amount";
+                            DistComponentAmount."GST Registration No." := GSTDistributionHeader."From GSTIN No.";
+                            DistComponentAmount."Distribution %" := GSTDistributionLine."Distribution %";
+                            if DistReversal then
+                                DistComponentAmount."Debit Amount" :=
+                                    Round(GSTDistributionLine."Distribution %" * DistComponentAmount."GST Amount" / 100,
+                                        GeneralLedgerSetup."Amount Rounding Precision")
+                            else
+                                DistComponentAmount."Credit Amount" :=
+                                    Round(GSTDistributionLine."Distribution %" * DistComponentAmount."GST Amount" / 100,
+                                        GeneralLedgerSetup."Amount Rounding Precision");
+                            DistComponentAmount.Insert();
+                        end else begin
+                            DistComponentAmount."GST Base Amount" += DetailedGSTLedgerEntry."GST Base Amount";
+                            DistComponentAmount."GST Amount" += DetailedGSTLedgerEntry."GST Amount";
+                            DistComponentAmount."Distribution %" := GSTDistributionLine."Distribution %";
+                            if DistReversal then
+                                DistComponentAmount."Debit Amount" +=
+                                  Round(GSTDistributionLine."Distribution %" * DetailedGSTLedgerEntry."GST Amount" / 100,
+                                    GeneralLedgerSetup."Amount Rounding Precision")
+                            else
+                                DistComponentAmount."Credit Amount" +=
+                                  Round(GSTDistributionLine."Distribution %" * DetailedGSTLedgerEntry."GST Amount" / 100,
+                                    GeneralLedgerSetup."Amount Rounding Precision");
+
+                            DistComponentAmount.Modify();
+                        end;
+                    until DetailedGSTLedgerEntry.Next() = 0;
+            until GSTDistributionLine.Next() = 0;
+
+        if not DistReversal then
+            ApplyDistBalComponentRoundingAmount(DistributionNo, DistComponentAmount);
+
     end;
 
     local procedure InsertPostedGSTDistHeader(GSTDistributionHeader: Record "GST Distribution Header"): Code[20]
@@ -375,6 +446,7 @@ codeunit 18200 "GST Distribution"
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
         PostedGSTDistributionHeader: Record "Posted GST Distribution Header";
         DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
+        PostedLocationDistNo: Code[20];
         Sign: Integer;
         Type: Enum "Distribution Type";
     begin
@@ -402,6 +474,7 @@ codeunit 18200 "GST Distribution"
                 if GSTDistributionLine.FindSet() then
                     repeat
                         Location.Get(GSTDistributionLine."To Location Code");
+                        PostedLocationDistNo := GetPostedDistLocationWiseNo(GSTDistributionLine, PostedDistributionNo);
 
                         DetailedGSTDistEntry.Init();
                         DetailedGSTDistEntry."Entry No." := 0;
@@ -428,6 +501,7 @@ codeunit 18200 "GST Distribution"
                         DetailedGSTDistEntry."GST %" := DetailedGSTLedgerEntry."GST %";
                         DetailedGSTDistEntry."GST Amount" := Sign * DetailedGSTLedgerEntry."GST Amount";
                         DetailedGSTDistEntry."Rcpt. Location Code" := GSTDistributionLine."To Location Code";
+                        DetailedGSTDistEntry."Location ISD document No." := PostedLocationDistNo;
                         DetailedGSTDistEntry."Rcpt. GST Reg. No." := GSTDistributionLine."To GSTIN No.";
                         DetailedGSTDistEntry."Rcpt. Location State Code" := Location."State Code";
                         DetailedGSTDistEntry."Rcpt. GST Credit" := GSTDistributionLine."Rcpt. Credit Type";
@@ -585,10 +659,12 @@ codeunit 18200 "GST Distribution"
     local procedure InsertPostedGSTDistLine(GSTDistributionLine: Record "GST Distribution Line"; DistributionNo: Code[20])
     var
         PostedGSTDistributionLine: Record "Posted GST Distribution Line";
+        NoSeries: Codeunit "No. Series";
     begin
         PostedGSTDistributionLine.Init();
         PostedGSTDistributionLine.TransferFields(GSTDistributionLine);
         PostedGSTDistributionLine."Distribution No." := DistributionNo;
+        PostedGSTDistributionLine."Location ISD Document No." := NoSeries.GetNextNo(GSTDistributionLine."Location Posting No. Series");
         PostedGSTDistributionLine.Insert(true);
     end;
 
@@ -678,8 +754,147 @@ codeunit 18200 "GST Distribution"
         end else begin
             DistComponentAmount.SetRange("GST Component Code");
             DistComponentAmount.SetRange("To Location Code");
-            DistComponentAmount.SetRange(Type, DetailedGSTLedgerEntry.Type);
-            DistComponentAmount.SetRange("No.", DetailedGSTLedgerEntry."No.");
+            DistComponentAmount.SetRange(Type, DistComponentAmount.Type::"G/L Account");
+            if DetailedGSTLedgerEntry.Type = DetailedGSTLedgerEntry.Type::Item then
+                DistComponentAmount.SetRange(
+                    "No.",
+                    GetGLAccountForItem(DetailedGSTLedgerEntry."No.", DetailedGSTLedgerEntry."Document Type", DetailedGSTLedgerEntry."Document No."))
+            else
+                DistComponentAmount.SetRange("No.", DetailedGSTLedgerEntry."No.");
+        end;
+    end;
+
+    local procedure GetPostedDistLocationWiseNo(GSTDistributionLine: Record "GST Distribution Line"; PostedDistributionNo: Code[20]): Code[20]
+    var
+        PostedGSTDistributionLine: Record "Posted GST Distribution Line";
+    begin
+        PostedGSTDistributionLine.SetLoadFields("Distribution No.", "Line No.", "To Location Code", "Location ISD Document No.");
+        PostedGSTDistributionLine.SetRange("Distribution No.", PostedDistributionNo);
+        PostedGSTDistributionLine.SetRange("Line No.", GSTDistributionLine."Line No.");
+        PostedGSTDistributionLine.SetRange("To Location Code", GSTDistributionLine."To Location Code");
+        if PostedGSTDistributionLine.FindFirst() then
+            exit(PostedGSTDistributionLine."Location ISD Document No.");
+    end;
+
+    local procedure ApplyDistComponentRoundingAmount(DistributionNo: Code[20]; DistComponentAmount: Record "Dist. Component Amount")
+    var
+        RoundingAmount: Decimal;
+    begin
+        GetDistComponentRoundingAmount(DistributionNo, DistComponentAmount, RoundingAmount);
+        if RoundingAmount = 0 then
+            exit;
+
+        if DistComponentAmount.FindFirst() then begin
+            DistComponentAmount."Debit Amount" += RoundingAmount;
+            DistComponentAmount.Modify();
+        end;
+    end;
+
+    local procedure GetDistComponentRoundingAmount(DistributionNo: Code[20]; var DistComponentAmount: Record "Dist. Component Amount"; var RoundingAmount: Decimal)
+    var
+        GSTDistributionLine: Record "GST Distribution Line";
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+    begin
+        GSTDistributionLine.SetLoadFields("Distribution No.");
+        GSTDistributionLine.SetRange("Distribution No.", DistributionNo);
+        if not GSTDistributionLine.FindFirst() then
+            exit;
+
+        DistComponentAmount.SetLoadFields("Distribution No.", "Debit Amount");
+        DistComponentAmount.SetRange("Distribution No.", DistributionNo);
+        DistComponentAmount.CalcSums("Debit Amount");
+
+        DetailedGSTLedgerEntry.SetLoadFields("Dist. Document No.", "GST Amount");
+        DetailedGSTLedgerEntry.SetRange("Dist. Document No.", DistributionNo);
+        DetailedGSTLedgerEntry.CalcSums("GST Amount");
+        RoundingAmount := DetailedGSTLedgerEntry."GST Amount" - DistComponentAmount."Debit Amount";
+        if not DetailedGSTLedgerEntry.FindFirst() then
+            exit;
+
+        FilterDistComponentAmount(DistComponentAmount, GSTDistributionLine, DetailedGSTLedgerEntry, DistributionNo);
+    end;
+
+    local procedure FilterDistComponentAmountforBalancingAcc(
+    var
+        DistComponentAmount: Record "Dist. Component Amount";
+        GSTDistributionLine: Record "GST Distribution Line";
+        DistributionNo: Code[20];
+        AccountNo: Code[20])
+    begin
+        DistComponentAmount.Reset();
+        DistComponentAmount.SetRange("Distribution No.", DistributionNo);
+        DistComponentAmount.SetRange("GST Credit", GSTDistributionLine."Rcpt. Credit Type");
+        DistComponentAmount.SetRange("No.", AccountNo);
+        DistComponentAmount.SetRange("To Location Code", GSTDistributionLine."To Location Code");
+    end;
+
+    local procedure GetGLAccountForItem(ItemNo: Code[20]; DocumentType: Enum "GST Document Type"; DocumentNo: Code[20]): Code[20]
+    var
+        GeneralPostingSetup: Record "General Posting Setup";
+        Item: Record Item;
+        PurchCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        PurchInvoiceHeader: Record "Purch. Inv. Header";
+        GenBusPostingGroup: code[20];
+    begin
+        Item.Get(ItemNo);
+        case DocumentType of
+            DocumentType::Invoice:
+                begin
+                    PurchInvoiceHeader.get(DocumentNo);
+                    GenBusPostingGroup := PurchInvoiceHeader."Gen. Bus. Posting Group";
+                end;
+            DocumentType::"Credit Memo":
+                begin
+                    PurchCrMemoHeader.get(DocumentNo);
+                    GenBusPostingGroup := PurchCrMemoHeader."Gen. Bus. Posting Group";
+                end;
+            else
+                Error(DistDocumentTypeErr, DocumentType);
+        end;
+        GeneralPostingSetup.Get(GenBusPostingGroup, Item."Gen. Prod. Posting Group");
+        exit(GeneralPostingSetup."Purch. Account");
+    end;
+
+    local procedure GetDistComponentBalRoundingAmount(DistributionNo: Code[20]; var DistComponentAmount: Record "Dist. Component Amount"; var RoundingAmount: Decimal)
+    var
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        GSTDistributionLine: Record "GST Distribution Line";
+        GSTPostingSetup: Record "GST Posting Setup";
+        Location: Record Location;
+    begin
+        GSTDistributionLine.SetLoadFields("Distribution No.", "From Location Code");
+        GSTDistributionLine.SetRange("Distribution No.", DistributionNo);
+        if not GSTDistributionLine.FindFirst() then
+            exit;
+
+        DistComponentAmount.SetLoadFields("Distribution No.", "Credit Amount");
+        DistComponentAmount.SetRange("Distribution No.", DistributionNo);
+        DistComponentAmount.CalcSums("Credit Amount");
+
+        DetailedGSTLedgerEntry.SetLoadFields("Dist. Document No.", "GST Amount", "GST Component Code");
+        DetailedGSTLedgerEntry.SetRange("Dist. Document No.", DistributionNo);
+        DetailedGSTLedgerEntry.CalcSums("GST Amount");
+        RoundingAmount := DetailedGSTLedgerEntry."GST Amount" - DistComponentAmount."Credit Amount";
+        if not DetailedGSTLedgerEntry.FindFirst() then
+            exit;
+
+        Location.Get(GSTDistributionLine."From Location Code");
+        GSTPostingSetup.Get(Location."State Code", GetComponentID(DetailedGSTLedgerEntry."GST Component Code"));
+        FilterDistComponentAmountforBalancingAcc(DistComponentAmount, GSTDistributionLine, DistributionNo, GSTPostingSetup."Expense Account");
+    end;
+
+    local procedure ApplyDistBalComponentRoundingAmount(DistributionNo: Code[20]; DistComponentAmount: Record "Dist. Component Amount")
+    var
+        RoundingAmount: Decimal;
+    begin
+        GetDistComponentBalRoundingAmount(DistributionNo, DistComponentAmount, RoundingAmount);
+
+        if RoundingAmount = 0 then
+            exit;
+
+        if DistComponentAmount.FindFirst() then begin
+            DistComponentAmount."Credit Amount" += RoundingAmount;
+            DistComponentAmount.Modify();
         end;
     end;
 }

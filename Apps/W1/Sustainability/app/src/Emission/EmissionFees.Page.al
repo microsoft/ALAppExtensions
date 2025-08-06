@@ -72,6 +72,7 @@ page 6245 "Emission Fees"
                 Image = UpdateShipment;
                 Promoted = true;
                 PromotedCategory = Process;
+                PromotedOnly = true;
                 RunObject = report "Batch Update Carbon Emission";
             }
         }

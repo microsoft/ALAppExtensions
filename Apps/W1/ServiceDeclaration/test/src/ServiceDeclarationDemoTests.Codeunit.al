@@ -1,6 +1,7 @@
 codeunit 139901 "Service Declaration Demo Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -21,7 +26,7 @@ page 30105 "Shpfy Customer Adresses"
                 {
                     ApplicationArea = All;
                     Visible = false;
-                    ToolTip = 'The Shopify id of this address record.';
+                    ToolTip = 'Specifies the Shopify id of this address record.';
                 }
                 field(Default; Rec.Default)
                 {

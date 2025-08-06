@@ -37,6 +37,7 @@ table 6211 "Sustain. Account Category"
         field(4; CO2; Boolean)
         {
             Caption = 'CO2';
+            CaptionClass = '102,4,1';
 
             trigger OnValidate()
             begin
@@ -51,6 +52,7 @@ table 6211 "Sustain. Account Category"
         field(5; CH4; Boolean)
         {
             Caption = 'CH4';
+            CaptionClass = '102,4,2';
 
             trigger OnValidate()
             begin
@@ -65,6 +67,7 @@ table 6211 "Sustain. Account Category"
         field(6; N2O; Boolean)
         {
             Caption = 'N2O';
+            CaptionClass = '102,4,3';
 
             trigger OnValidate()
             begin

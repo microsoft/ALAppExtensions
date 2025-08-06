@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -99,7 +104,7 @@ page 30121 "Shpfy Orders to Import"
                     ApplicationArea = All;
                     Editable = false;
                     Importance = Additional;
-                    ToolTip = 'The name of the channel where you sell your products. A channel can be a platform or a marketplace such as an online store or POS.';
+                    ToolTip = 'Specifies the name of the channel where you sell your products. A channel can be a platform or a marketplace such as an online store or POS.';
                 }
                 field(Confirmed; Rec.Confirmed)
                 {
@@ -168,7 +173,7 @@ page 30121 "Shpfy Orders to Import"
     {
         area(Processing)
         {
-            Action(GetOrdersToImport)
+            action(GetOrdersToImport)
             {
                 Caption = 'Get Orders to Import';
                 ApplicationArea = All;
@@ -185,7 +190,7 @@ page 30121 "Shpfy Orders to Import"
                 end;
             }
 
-            Action(StartImport)
+            action(StartImport)
             {
                 Caption = 'Import Selected Orders';
                 ApplicationArea = All;

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Bank.BankAccount;
@@ -53,6 +58,12 @@ table 30134 "Shpfy Payment Method Mapping"
 #endif
         }
 #endif
+        field(6; "Manual Payment Gateway"; Boolean)
+        {
+            Caption = 'Manual Payment Gateway';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
     keys
     {

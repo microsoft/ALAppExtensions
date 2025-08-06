@@ -1,8 +1,24 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+
 codeunit 139607 "Shpfy Order Handling Helper"
 {
     var
         Any: Codeunit Any;
-        JsonHelper: codeunit "Shpfy Json Helper";
+        JsonHelper: Codeunit "Shpfy Json Helper";
 
     internal procedure GetOrdersToImport(B2B: Boolean) JResult: JsonObject
     var
@@ -95,6 +111,9 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JCompany: JsonObject;
         JMainContact: JsonObject;
         JCustomer: JsonObject;
+        JStaffMember: JsonObject;
+        JDefaultEmailAddress: JsonObject;
+        JDefaultPhoneNumber: JsonObject;
         JArray: JsonArray;
         Price: Decimal;
         ItemPrice: Decimal;
@@ -134,8 +153,8 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('closedAt', JNull);
         JOrder.Add('test', true);
         JOrder.Add('email', Customer."E-Mail");
-        JOrder.Add('phone', Customer."Phone No.");
         JOrder.Add('customer', CreateCustomer(Customer, ShopifyCustomer));
+        JOrder.Add('phone', Customer."Phone No.");
         JOrder.Add('displayAddress', CreateAddress(Customer, AddressId, false, false));
         JOrder.Add('shippingAddress', CreateAddress(Customer, AddressId, true, true));
         JOrder.Add('billingAddressMatchesShippingAddress', true);
@@ -183,14 +202,18 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('totalTipReceivedSet', AddPriceSet(0));
         if B2B then begin
             JCustomer.Add('legacyResourceId', ShopifyCustomer.Id);
-            JCustomer.Add('email', ShopifyCustomer.Email);
-            JCustomer.Add('phone', ShopifyCustomer."Phone No.");
+            JDefaultEmailAddress.Add('emailAddress', ShopifyCustomer.Email);
+            JCustomer.Add('defaultEmailAddress', JDefaultEmailAddress);
+            JDefaultPhoneNumber.Add('phoneNumber', ShopifyCustomer."Phone No.");
+            JCustomer.Add('defaultPhoneNumber', JDefaultPhoneNumber);
             JMainContact.Add('id', 'gid://shopify/CompanyContact/1234567890');
             JMainContact.Add('customer', JCustomer);
             JCompany.Add('id', CreateCompany(Customer, ShopifyCustomer));
             JCompany.Add('mainContact', JMainContact);
             JPurchasingEntity.Add('company', JCompany);
             JOrder.Add('purchasingEntity', JPurchasingEntity);
+            JStaffMember.Add('id', 'gid://shopify/StaffMember/1234567890');
+            JOrder.Add('staffMember', JStaffMember);
         end else
             JOrder.Add('purchasingEntity', JPurchasingEntity);
 
@@ -207,7 +230,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         TempShopifyVariant: Record "Shpfy Variant" temporary;
         TempTag: Record "Shpfy Tag" temporary;
         CreateProduct: Codeunit "Shpfy Create Product";
-        ProductInitTest: codeunit "Shpfy Product Init Test";
+        ProductInitTest: Codeunit "Shpfy Product Init Test";
         Id: BigInteger;
         JLine: JsonObject;
         JNull: JsonValue;
@@ -291,6 +314,27 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JNodes.Add(JNode);
         JPaymentSchedules.Add('nodes', JNodes);
         JPaymentTerms.Add('paymentSchedules', JPaymentSchedules);
+    end;
+
+    internal procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var OrdersToImport: Record "Shpfy Orders to Import"; var ImportOrder: Codeunit "Shpfy Import Order"; var JShopifyOrder: JsonObject; var JShopifyLineItems: JsonArray)
+    var
+    begin
+        ImportOrder.SetShop(Shop.Code);
+        ImportOrder.ImportCreateAndUpdateOrderHeaderFromMock(Shop.Code, OrdersToImport.Id, JShopifyOrder);
+        ImportOrder.ImportCreateAndUpdateOrderLinesFromMock(OrdersToImport.Id, JShopifyLineItems);
+        Commit();
+        OrderHeader.Get(OrdersToImport.Id);
+    end;
+
+    internal procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var ImportOrder: Codeunit "Shpfy Import Order"; B2B: Boolean)
+    var
+        OrdersToImport: Record "Shpfy Orders to Import";
+        OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";
+        JShopifyOrder: JsonObject;
+        JShopifyLineItems: JsonArray;
+    begin
+        JShopifyOrder := OrderHandlingHelper.CreateShopifyOrderAsJson(Shop, OrdersToImport, JShopifyLineItems, B2B);
+        ImportShopifyOrder(Shop, OrderHeader, OrdersToImport, ImportOrder, JShopifyOrder, JShopifyLineItems);
     end;
 
     local procedure CreateTaxLines(TaxPrice: Decimal; TaxRate: Decimal) JTaxLines: JsonArray;
@@ -401,14 +445,18 @@ codeunit 139607 "Shpfy Order Handling Helper"
     var
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
         JNull: JsonValue;
+        JDefaultEmailAddress: JsonObject;
+        JDefaultPhoneNumber: JsonObject;
     begin
         CustomerInitTest.CreateShopifyCustomer(ShopifyCustomer);
         ShopifyCustomer."Customer SystemId" := Customer.SystemId;
         ShopifyCustomer.Modify();
         JNull.SetValueToNull();
         JCustomer.Add('legacyResourceId', ShopifyCustomer.Id);
-        JCustomer.Add('email', Customer."E-Mail");
-        JCustomer.Add('phone', Customer."Phone No.");
+        JDefaultEmailAddress.Add('emailAddress', Customer."E-Mail");
+        JCustomer.Add('defaultEmailAddress', JDefaultEmailAddress);
+        JDefaultPhoneNumber.Add('phoneNumber', Customer."Phone No.");
+        JCustomer.Add('defaultPhoneNumber', JDefaultPhoneNumber);
         JCustomer.Add('defaultAddress', CreateCustomerAddress(Customer));
     end;
 

@@ -1,6 +1,7 @@
 codeunit 139526 "VAT Group Mock Service Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

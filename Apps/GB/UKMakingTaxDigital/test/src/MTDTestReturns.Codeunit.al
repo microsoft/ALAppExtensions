@@ -6,6 +6,7 @@
 codeunit 148087 "MTDTestReturns"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

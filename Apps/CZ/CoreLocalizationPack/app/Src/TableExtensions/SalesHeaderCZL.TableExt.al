@@ -28,7 +28,7 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
             var
                 NeedUpdateAddCurrencyFactor: Boolean;
             begin
-                NeedUpdateAddCurrencyFactor := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+                NeedUpdateAddCurrencyFactor := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
                 OnValidatePostingDateOnBeforeCheckNeedUpdateAddCurrencyFactor(Rec, xRec, IsConfirmedCZL, NeedUpdateAddCurrencyFactor);
                 if NeedUpdateAddCurrencyFactor then begin
                     UpdateAddCurrencyFactorCZL();
@@ -47,6 +47,10 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
             begin
                 if not VATReportingDateMgt.IsVATDateEnabled() then
                     TestField("VAT Reporting Date", "Posting Date");
+                if Rec."VAT Reporting Date" = 0D then
+                    if (xRec."Document Date" <> Rec."Document Date") and (Rec."Document Type" = Rec."Document Type"::Quote) then
+                        Rec."VAT Reporting Date" := Rec."Document Date";
+
                 CheckCurrencyExchangeRateCZL("VAT Reporting Date");
 
                 NeedUpdateVATCurrencyFactor := ("Currency Code" <> '') and ("VAT Reporting Date" <> xRec."VAT Reporting Date");
@@ -223,11 +227,21 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
             ObsoleteReason = 'Replaced by VAT Reporting Date.';
         }
 #endif
+#if not CLEANSCHEMA30
         field(11781; "Registration No. CZL"; Text[20])
         {
-            Caption = 'Registration No.';
+            Caption = 'Registration No. (Obsolete)';
             DataClassification = CustomerContent;
+#if not CLEAN27
+            ObsoleteState = Pending;
+            ObsoleteTag = '27.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '30.0';
+#endif
+            ObsoleteReason = 'Replaced by standard "Registration Number" field.';
         }
+#endif
         field(11782; "Tax Registration No. CZL"; Text[20])
         {
             Caption = 'Tax Registration No.';
@@ -314,6 +328,7 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
 
         if ("Currency Factor" <> xRec."Currency Factor") and
            ("Currency Factor" <> "VAT Currency Factor CZL") and
+           ("VAT Reporting Date" = xRec."VAT Reporting Date") and
            ("VAT Reporting Date" = "Posting Date")
         then begin
             "VAT Currency Factor CZL" := "Currency Factor";
@@ -336,13 +351,13 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         if IsUpdated then
             exit;
 
-        if GeneralLedgerSetup.IsAdditionalCurrencyEnabled() then begin
+        if GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL() then begin
             if "Posting Date" <> 0D then
                 CurrencyDate := "Posting Date"
             else
                 CurrencyDate := WorkDate();
 
-            "Additional Currency Factor CZL" := CurrencyExchangeRate.ExchangeRate(CurrencyDate, GeneralLedgerSetup.GetAdditionalCurrencyCode());
+            "Additional Currency Factor CZL" := CurrencyExchangeRate.ExchangeRate(CurrencyDate, GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL());
         end else
             "Additional Currency Factor CZL" := 0;
 
@@ -417,6 +432,11 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         else
             "VAT Currency Factor CZL" := xRec."VAT Currency Factor CZL";
         exit(IsConfirmedCZL);
+    end;
+
+    internal procedure IsVATReportingDateChanged(): Boolean
+    begin
+        exit("VAT Reporting Date" <> xRec."VAT Reporting Date");
     end;
 
     procedure UpdateBankInfoCZL(BankAccountCode: Code[20]; BankAccountNo: Text[30]; BankBranchNo: Text[20]; BankName: Text[100]; TransitNo: Text[20]; IBANCode: Code[50]; SWIFTCode: Code[20])
@@ -542,6 +562,11 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
     begin
         IsAllowed := GuiAllowed();
         OnIsConfirmDialogAllowedCZL(IsAllowed);
+    end;
+
+    procedure GetRegistrationNoTrimmedCZL(): Text[20]
+    begin
+        exit(CopyStr("Registration Number", 1, 20));
     end;
 
     [IntegrationEvent(false, false)]

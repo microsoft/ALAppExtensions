@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
@@ -40,18 +45,23 @@ table 30119 "Shpfy Order Line"
             Caption = 'Quantity';
             DataClassification = SystemMetadata;
             DecimalPlaces = 0 : 5;
+            AutoFormatType = 0;
         }
         field(6; "Unit Price"; Decimal)
         {
             Caption = 'Unit Price';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 2;
+            AutoFormatExpression = OrderCurrencyCode();
         }
         field(7; "Discount Amount"; Decimal)
         {
             Caption = 'Discount Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderCurrencyCode();
         }
         field(8; "Shopify Variant Id"; BigInteger)
         {
@@ -95,6 +105,7 @@ table 30119 "Shpfy Order Line"
             DataClassification = SystemMetadata;
             DecimalPlaces = 0 : 5;
             Editable = false;
+            AutoFormatType = 0;
         }
         field(16; Tip; Boolean)
         {
@@ -113,18 +124,30 @@ table 30119 "Shpfy Order Line"
             Caption = 'Presentment Unit Price';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderPresentmentCurrencyCode();
         }
         field(19; "Presentment Discount Amount"; Decimal)
         {
             Caption = 'Presentment Discount Amount';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = OrderPresentmentCurrencyCode();
         }
         field(20; "Delivery Method Type"; Enum "Shpfy Delivery Method Type")
         {
             Caption = 'Delivery Method Type';
             DataClassification = SystemMetadata;
             Editable = false;
+        }
+        field(21; Weight; Decimal)
+        {
+            Caption = 'Weight';
+            DataClassification = SystemMetadata;
+            DecimalPlaces = 0 : 5;
+            Editable = false;
+            AutoFormatType = 0;
         }
         field(1000; "Item No."; Code[20])
         {
@@ -200,6 +223,22 @@ table 30119 "Shpfy Order Line"
     begin
         ShopifyOrderHeader.Get("Shopify Order Id");
         ShopifyOrderHeader.TestField("Sales Order No.", '');
+    end;
+
+    local procedure OrderCurrencyCode(): Code[10]
+    var
+        OrderHeader: Record "Shpfy Order Header";
+    begin
+        if OrderHeader.Get("Shopify Order Id") then
+            exit(OrderHeader."Currency Code");
+    end;
+
+    local procedure OrderPresentmentCurrencyCode(): Code[10]
+    var
+        OrderHeader: Record "Shpfy Order Header";
+    begin
+        if OrderHeader.Get("Shopify Order Id") then
+            exit(OrderHeader."Presentment Currency Code");
     end;
 }
 

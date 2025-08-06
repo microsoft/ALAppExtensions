@@ -6,6 +6,7 @@
 codeunit 148050 "OIOUBL-Check Sales and Service"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();

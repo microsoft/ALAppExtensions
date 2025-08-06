@@ -6,6 +6,7 @@
 codeunit 139533 "Connect. Apps Checklist Tests"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Restrictive;
 
     var

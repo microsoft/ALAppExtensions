@@ -20,6 +20,8 @@ tableextension 10557 "Purch. Cr. Memo Line" extends "Purch. Cr. Memo Line"
         {
             Caption = 'Reverse Charge';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
     }
 }

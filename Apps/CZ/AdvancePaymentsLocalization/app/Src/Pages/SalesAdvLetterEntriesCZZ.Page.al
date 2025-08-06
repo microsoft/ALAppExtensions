@@ -11,11 +11,12 @@ using Microsoft.Sales.Receivables;
 #pragma warning disable AL0604
 page 31173 "Sales Adv. Letter Entries CZZ"
 {
-    Caption = 'Sales Adv. Letter Entries';
+    Caption = 'Sales Advance Letter Entries';
     PageType = List;
     SourceTable = "Sales Adv. Letter Entry CZZ";
     Editable = false;
-    UsageCategory = None;
+    UsageCategory = Lists;
+    ApplicationArea = Basic, Suite;
 
     layout
     {
@@ -27,7 +28,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies sales advance letter no.';
-                    Visible = false;
+                    Visible = not IsAdvLetterNoFiltered;
                 }
                 field("Entry Type"; Rec."Entry Type")
                 {
@@ -168,6 +169,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies entry no.';
+                    Visible = not IsAdvLetterNoFiltered;
                 }
             }
         }
@@ -180,6 +182,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
             {
                 Caption = 'Posting';
                 Image = PostingEntries;
+                Visible = IsAdvLetterNoFiltered;
 
                 action(PostPaymentVAT)
                 {
@@ -280,6 +283,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
             {
                 Caption = 'Payment';
                 Image = Payment;
+                Visible = IsAdvLetterNoFiltered;
 
                 action(UnlinkAdvancePayment)
                 {
@@ -357,6 +361,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                 Enabled = ("Entry Type" = "Entry Type"::"VAT Payment") or ("Entry Type" = "Entry Type"::"VAT Usage") or ("Entry Type" = "Entry Type"::"VAT Close");
                 Image = Email;
                 ToolTip = 'Prepare to email the document. The Send Email window opens prefilled with the customer''s email address so you can add or edit information.';
+                Visible = IsAdvLetterNoFiltered;
 
                 trigger OnAction()
                 var
@@ -370,6 +375,17 @@ page 31173 "Sales Adv. Letter Entries CZZ"
         }
         area(Promoted)
         {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(AdvancedCardPromoted; AdvanceCard)
+                {
+                }
+                actionref(NavigatePromoted; Navigate)
+                {
+                }
+            }
             group(Category_Report)
             {
                 Caption = 'Reports';
@@ -380,17 +396,37 @@ page 31173 "Sales Adv. Letter Entries CZZ"
             }
         }
     }
+    views
+    {
+        view(BalanceEntries)
+        {
+            Caption = 'Balance Entries';
+            Filters = where("Entry Type" = filter('Payment|Usage|Closed'));
+            Visible = not IsAdvLetterNoFiltered;
+        }
+        view(VATEntries)
+        {
+            Caption = 'VAT Entries';
+            Filters = where("Entry Type" = filter('VAT Payment|VAT Usage|VAT Close|VAT Rate|VAT Adjustment'));
+            Visible = not IsAdvLetterNoFiltered;
+        }
+    }
 
-    var
-        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        SalesPostAdvanceLetter: Codeunit "Sales Post Advance Letter CZZ";
-        IsClosed: Boolean;
+    trigger OnOpenPage()
+    begin
+        IsAdvLetterNoFiltered := Rec.GetFilter("Sales Adv. Letter No.") <> '';
+    end;
 
     trigger OnAfterGetRecord()
     begin
         GetAdvanceLetter();
         IsClosed := SalesAdvLetterHeaderCZZ.Status = SalesAdvLetterHeaderCZZ.Status::Closed;
     end;
+
+    var
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        SalesPostAdvanceLetter: Codeunit "Sales Post Advance Letter CZZ";
+        IsClosed, IsAdvLetterNoFiltered : Boolean;
 
     local procedure GetAdvanceLetter()
     begin

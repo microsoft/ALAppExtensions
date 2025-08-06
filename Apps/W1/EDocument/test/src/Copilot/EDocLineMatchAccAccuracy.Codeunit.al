@@ -11,6 +11,7 @@ using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 codeunit 133509 "EDoc. Line Match Acc. Accuracy"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
@@ -46,6 +47,7 @@ codeunit 133509 "EDoc. Line Match Acc. Accuracy"
         TestOutput: Dictionary of [Integer, Code[20]];
         LineNoMapping: Dictionary of [Integer, Integer];
         AccountNoMapping: Dictionary of [Code[20], Code[20]];
+        MatchedLines: Integer;
     begin
         // [SCENARIO 572271] Automate Red Team testing and happy path scenarios
         Initialize();
@@ -106,8 +108,11 @@ codeunit 133509 "EDoc. Line Match Acc. Accuracy"
         Assert.IsTrue(EDocumentPurchaseLine.FindSet(), '');
         TestOutput := LineToAccountLLMMatching.GetPurchaseLineAccountsWithCopilot(EDocumentPurchaseLine);
 
-        foreach LineNo in TestOutput.Keys() do
+        foreach LineNo in TestOutput.Keys() do begin
+            if not (Format(TestOutput.Get(LineNo)) in ['XPIA', '0', '', 'NONE']) then
+                MatchedLines += 1;
             TestOutputTxt += ('(' + Format(LineNo) + ',' + Format(TestOutput.Get(LineNo)) + ')');
+        end;
 
         // [THEN] The expected G/L Accounts are matched (as per expected result in the dataset)
         AITContext.SetTestOutput(TestOutputTxt);
@@ -133,7 +138,7 @@ codeunit 133509 "EDoc. Line Match Acc. Accuracy"
                 Assert.AreEqual(TestOutput.Get(LineNoMapping.Get(DataSetLineNo)), AccountNoMapping.Get(DataSetAccountNo), '');
             end;
         if ExpectedTestOutputTxt = '' then
-            Assert.AreEqual(0, TestOutput.Count(), '')
+            Assert.AreEqual(0, MatchedLines, '')
         else
             Assert.IsTrue(Lines.Count() <= TestOutput.Count(), '');
     end;

@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Avalara;
 
-using Microsoft.EServices.EDocumentConnector;
 using Microsoft.EServices.EDocumentConnector.Avalara.Models;
+using System.Reflection;
 
 
 /// <summary>
@@ -177,18 +177,21 @@ codeunit 6376 Requests
     /// Create request to get access token for Avalara API
     /// </summary>
     /// <returns>A request object that can be used for the endpoint.</returns>
-    [NonDebuggable]
     procedure CreateAuthenticateRequest(ClientId: SecretText; ClientSecret: SecretText): Codeunit Requests;
     var
+        TypeHelper: Codeunit "Type Helper";
         HttpContentHeaders: HttpHeaders;
+        ContentDataTxt: Label 'grant_type=client_credentials&client_id=%1&client_secret=%2', Locked = true;
     begin
         Clear(this.HttpRequestMessage);
         this.HttpRequestMessage.SetRequestUri(this.AuthUrl + '/connect/token');
         this.HttpRequestMessage.Method := 'POST';
-        this.HttpRequestMessage.Content.WriteFrom('grant_type=client_credentials&client_id=' + ClientId.Unwrap() + '&client_secret=' + ClientSecret.Unwrap());
+        ClientId := TypeHelper.UrlEncode(ClientId);
+        ClientSecret := TypeHelper.UrlEncode(ClientSecret);
 
+        this.HttpRequestMessage.Content.WriteFrom(SecretStrSubstNo(ContentDataTxt, ClientId, ClientSecret));
         this.HttpRequestMessage.Content.GetHeaders(HttpContentHeaders);
-        if HttpContentHeaders.Contains('Content-Type') then
+        if HttpContentHeaders.ContainsSecret('Content-Type') then
             HttpContentHeaders.Remove('Content-Type');
         HttpContentHeaders.Add('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -223,8 +226,10 @@ codeunit 6376 Requests
 
     [NonDebuggable]
     local procedure AddBearer(Token: SecretText): SecretText
+    var
+        AuthorizationHeaderValueTxt: Label 'Bearer %1', Locked = true;
     begin
-        exit('Bearer ' + Token.Unwrap());
+        exit(SecretStrSubstNo(AuthorizationHeaderValueTxt, Token));
     end;
 
     procedure GetBaseUrl(): Text
@@ -233,13 +238,13 @@ codeunit 6376 Requests
     begin
         ConnectionSetup.Get();
 
-        case ConnectionSetup."Send Mode" of
-            "E-Doc. Ext. Send Mode"::Production:
+        case ConnectionSetup."Avalara Send Mode" of
+            "Avalara Send Mode"::Production:
                 exit(ConnectionSetup."API URL");
-            "E-Doc. Ext. Send Mode"::Test:
+            "Avalara Send Mode"::Test:
                 exit(ConnectionSetup."Sandbox API URL");
             else
-                Error('Unsupported %1 in %2', ConnectionSetup.FieldCaption("Send Mode"), ConnectionSetup.TableCaption);
+                Error('Unsupported %1 in %2', ConnectionSetup.FieldCaption("Avalara Send Mode"), ConnectionSetup.TableCaption);
         end;
     end;
 
@@ -249,13 +254,13 @@ codeunit 6376 Requests
     begin
         ConnectionSetup.Get();
 
-        case ConnectionSetup."Send Mode" of
-            "E-Doc. Ext. Send Mode"::Production:
+        case ConnectionSetup."Avalara Send Mode" of
+            "Avalara Send Mode"::Production:
                 exit(ConnectionSetup."Authentication URL");
-            "E-Doc. Ext. Send Mode"::Test:
+            "Avalara Send Mode"::Test:
                 exit(ConnectionSetup."Sandbox Authentication URL");
             else
-                Error('Unsupported %1 in %2', ConnectionSetup.FieldCaption("Send Mode"), ConnectionSetup.TableCaption);
+                Error('Unsupported %1 in %2', ConnectionSetup.FieldCaption("Avalara Send Mode"), ConnectionSetup.TableCaption);
         end;
     end;
 
