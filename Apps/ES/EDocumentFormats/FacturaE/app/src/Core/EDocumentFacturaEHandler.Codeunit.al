@@ -100,6 +100,7 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
             EDocumentPurchaseHeader."[BC] Vendor No." := VendorNo;
     end;
 #pragma warning restore AA0139
+
     local procedure InsertFacturaEPurchaseInvoiceLines(FacturaEXML: XmlDocument; XmlNamespaces: XmlNamespaceManager; EDocumentEntryNo: Integer)
     var
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
