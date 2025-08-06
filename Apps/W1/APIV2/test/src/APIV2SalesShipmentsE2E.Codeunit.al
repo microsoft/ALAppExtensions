@@ -3,7 +3,7 @@ codeunit 139847 "APIV2 - Sales Shipments E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

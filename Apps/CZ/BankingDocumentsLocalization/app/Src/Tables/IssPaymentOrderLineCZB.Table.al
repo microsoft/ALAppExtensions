@@ -252,6 +252,8 @@ table 31259 "Iss. Payment Order Line CZB"
                 exit(GenJournalLine."Account Type"::Vendor.AsInteger());
             Type::"Bank Account":
                 exit(GenJournalLine."Account Type"::"Bank Account".AsInteger());
+            Type::Employee:
+                exit(GenJournalLine."Account Type"::Employee.AsInteger());
         end;
     end;
 

@@ -13,7 +13,7 @@ using System.TestLibraries.Security.AccessControl;
 codeunit 139880 "PowerBI Purchases Test"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     Access = Internal;
 
     var

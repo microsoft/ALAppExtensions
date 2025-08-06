@@ -23,7 +23,7 @@ codeunit 17180 "Create Allocation Account NZ"
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
         ContosoAllocationAccount.InsertAllocationAccount(
-            Licenses(), YearlyLicenseFeeTok,
+            Licenses(), 'Yearly license fee, design',
             AllocationAccount."Account Type"::Fixed, AllocationAccount."Document Lines Split"::"Split Amount");
         ContosoAllocationAccount.InsertAllocationAccountDistribution(
             Licenses(), 10000, AllocAccountDistribution."Account Type"::Fixed, 1, 50,
@@ -35,10 +35,6 @@ codeunit 17180 "Create Allocation Account NZ"
 
     procedure Licenses(): Code[20]
     begin
-        exit(LicensesTok);
+        exit('LICENSES');
     end;
-
-    var
-        LicensesTok: Label 'LICENSES', MaxLength = 20;
-        YearlyLicenseFeeTok: Label 'Yearly license fee, design', MaxLength = 100;
 }

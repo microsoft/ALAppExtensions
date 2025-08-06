@@ -11,5 +11,5 @@ permissionset 6373 "Avalara Edit"
     IncludedPermissionSets = "Avalara Read";
     Caption = 'Avalara E-Document Connector - Edit';
 
-    Permissions = tabledata "Connection Setup" = imd;
+    Permissions = tabledata "Connection Setup" = IMD;
 }

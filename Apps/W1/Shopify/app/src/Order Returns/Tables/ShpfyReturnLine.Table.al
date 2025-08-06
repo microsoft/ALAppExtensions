@@ -128,6 +128,13 @@ table 30141 "Shpfy Return Line"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(105; "Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Unit of Measure Code';
+            FieldClass = FlowField;
+            CalcFormula = lookup("Shpfy Order Line"."Unit of Measure Code" where("Line Id" = field("Order Line Id")));
+            Editable = false;
+        }
     }
     keys
     {

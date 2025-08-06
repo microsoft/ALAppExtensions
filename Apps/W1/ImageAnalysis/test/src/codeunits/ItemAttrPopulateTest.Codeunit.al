@@ -12,7 +12,7 @@ using System.Text;
 codeunit 139592 "Item Attr Populate Test"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

@@ -42,9 +42,19 @@ page 30423 "API Buf IC Inbox Transaction"
                     Caption = 'Intercompany Partner Code';
                     Editable = true;
                 }
+#if not CLEAN27
                 field(sourceType; Rec."Source Type")
                 {
                     Caption = 'Source Type';
+                    Editable = true;
+                    ObsoleteReason = 'Replaced with IC Source Type for consistent naming.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
+                }
+#endif
+                field(icSourceType; Rec."IC Source Type")
+                {
+                    Caption = 'IC Source Type';
                     Editable = true;
                 }
                 field(sourceTypeIndex; SourceTypeIndex)
@@ -131,7 +141,11 @@ page 30423 "API Buf IC Inbox Transaction"
 
     trigger OnAfterGetRecord()
     begin
+#if not CLEAN27
         SourceTypeIndex := Rec."Source Type";
+#else
+        SourceTypeIndex := Rec."IC Source Type".AsInteger();
+#endif
         DocumentTypeOrdinal := Rec."Document Type".AsInteger();
         TransactionSourceIndex := Rec."Transaction Source";
         LineActionIndex := Rec."Line Action";

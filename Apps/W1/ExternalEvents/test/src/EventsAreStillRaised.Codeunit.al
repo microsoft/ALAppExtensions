@@ -1,7 +1,7 @@
 codeunit 139641 "Events Are Still Raised"
 {
     Subtype = Test;
-    TestType = IntegrationTest;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     [Test]
