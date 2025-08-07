@@ -1,13 +1,13 @@
 namespace Microsoft.eServices.EDocument.Format;
 
-using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.Helpers;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+using Microsoft.eServices.EDocument.Processing.Interfaces;
 using Microsoft.eServices.EDocument.Service.Participant;
-using Microsoft.eServices.EDocument.Helpers;
 using Microsoft.Purchases.Vendor;
 using System.Utilities;
-using Microsoft.eServices.EDocument;
 
 codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
 {
@@ -17,6 +17,8 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
 
     var
         EDocumentImportHelper: Codeunit "E-Document Import Helper";
+        GLNSchemeIdTok: Label '0088', Locked = true;
+
 
     /// <summary>
     /// Reads a PINT A-NZ format XML document and converts it into a draft purchase document.
@@ -31,18 +33,18 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         PINTANZXml: XmlDocument;
         XmlNamespaces: XmlNamespaceManager;
         XmlElement: XmlElement;
-        CommonAggregateComponentsLbl: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2';
-        CommonBasicComponentsLbl: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2';
-        DefaultInvoiceLbl: Label 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2';
-        DefaultCreditNoteLbl: Label 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2';
+        CommonAggregateComponentsTok: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2', Locked = true;
+        CommonBasicComponentsTok: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2', Locked = true;
+        DefaultInvoiceTok: Label 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2', Locked = true;
+        DefaultCreditNoteTok: Label 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2', Locked = true;
     begin
         EDocumentPurchaseHeader.InsertForEDocument(EDocument);
 
         XmlDocument.ReadFrom(TempBlob.CreateInStream(TextEncoding::UTF8), PINTANZXml);
-        XmlNamespaces.AddNamespace('cac', CommonAggregateComponentsLbl);
-        XmlNamespaces.AddNamespace('cbc', CommonBasicComponentsLbl);
-        XmlNamespaces.AddNamespace('inv', DefaultInvoiceLbl);
-        XmlNamespaces.AddNamespace('cn', DefaultCreditNoteLbl);
+        XmlNamespaces.AddNamespace('cac', CommonAggregateComponentsTok);
+        XmlNamespaces.AddNamespace('cbc', CommonBasicComponentsTok);
+        XmlNamespaces.AddNamespace('inv', DefaultInvoiceTok);
+        XmlNamespaces.AddNamespace('cn', DefaultCreditNoteTok);
 
         PINTANZXml.GetRoot(XmlElement);
         case UpperCase(XmlElement.LocalName()) of
@@ -127,7 +129,6 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         ABN: Code[11];
         XMLNode: XmlNode;
         ABNSchemeIdTok: Label '0151', Locked = true;
-        GLNSchemeIdTok: Label '0088', Locked = true;
         BasePathTxt: Text;
     begin
         BasePathTxt := '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party';
@@ -169,7 +170,7 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         if PINTANZXml.SelectSingleNode(BasePathTxt + '/cbc:EndpointID/@schemeID', XmlNamespaces, XMLNode) then begin
             SchemaId := XMLNode.AsXmlAttribute().Value();
             CompanyIdentifierValue := EDocumentXMLHelper.GetNodeValue(PINTANZXml, XmlNamespaces, BasePathTxt + '/cbc:EndpointID');
-            if SchemaId = '0088' then
+            if SchemaId = GLNSchemeIdTok then
                 EDocumentPurchaseHeader."Customer GLN" := CopyStr(CompanyIdentifierValue, 1, MaxStrLen(EDocumentPurchaseHeader."Customer GLN"));
             ReceivingId := CopyStr(SchemaId, 1, (MaxStrLen(EDocumentPurchaseHeader."Customer Company Id") - 1)) + ':';
             ReceivingId += CopyStr(CompanyIdentifierValue, 1, MaxStrLen(EDocumentPurchaseHeader."Customer Company Id") - StrLen(ReceivingId));
@@ -178,7 +179,7 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         if (EDocumentPurchaseHeader."Customer GLN" = '') and PINTANZXml.SelectSingleNode(BasePathTxt + '/cac:PartyIdentification/cbc:ID/@schemeID', XmlNamespaces, XMLNode) then begin
             SchemaId := XMLNode.AsXmlAttribute().Value();
             CompanyIdentifierValue := EDocumentXMLHelper.GetNodeValue(PINTANZXml, XmlNamespaces, BasePathTxt + '/cac:PartyIdentification/cbc:ID');
-            if SchemaId = '0088' then
+            if SchemaId = GLNSchemeIdTok then
                 EDocumentPurchaseHeader."Customer GLN" := CopyStr(CompanyIdentifierValue, 1, MaxStrLen(EDocumentPurchaseHeader."Customer GLN"));
         end;
     end;
@@ -190,15 +191,16 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         LineXMLList: XmlNodeList;
         LineXMLNode: XmlNode;
         i: Integer;
-        InvoiceLinePathLbl: Label '/inv:Invoice/cac:InvoiceLine';
-        CreditNoteLinePathLbl: Label '/cn:CreditNote/cac:CreditNoteLine';
+        InvoiceLinePathTok: Label '/inv:Invoice/cac:InvoiceLine', Locked = true;
+        CreditNoteLinePathTok: Label '/cn:CreditNote/cac:CreditNoteLine', Locked = true;
     begin
-        if not PINTANZXml.SelectNodes(InvoiceLinePathLbl, XmlNamespaces, LineXMLList) then
-            if not PINTANZXml.SelectNodes(CreditNoteLinePathLbl, XmlNamespaces, LineXMLList) then
+        if not PINTANZXml.SelectNodes(InvoiceLinePathTok, XmlNamespaces, LineXMLList) then
+            if not PINTANZXml.SelectNodes(CreditNoteLinePathTok, XmlNamespaces, LineXMLList) then
                 exit;
 
-        for i := 1 to LineXMLList.Count do begin
-            LineXMLList.Get(i, LineXMLNode);
+        i := 0;
+        foreach LineXMLNode in LineXMLList do begin
+            i += 1;
             Clear(EDocumentPurchaseLine);
             EDocumentPurchaseLine.Init();
             EDocumentPurchaseLine."E-Document Entry No." := EDocumentEntryNo;
