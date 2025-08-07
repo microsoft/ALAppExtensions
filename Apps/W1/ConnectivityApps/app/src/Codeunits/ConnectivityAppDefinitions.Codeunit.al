@@ -342,7 +342,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Yavrio Open Banking' to GB, US and DE
+            Add app 'Yavrio Open Banking' to GB, US, DE
         ***************************************************/
 
         AppId := '3d686c04-e1b1-435e-bea4-862c2c203ca7';
