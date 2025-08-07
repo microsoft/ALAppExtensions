@@ -142,7 +142,6 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
                 GLN := CopyStr(EDocumentXMLHelper.GetNodeValue(PINTANZXml, XmlNamespaces, BasePathTxt + '/cbc:EndpointID'), 1, MaxStrLen(GLN));
                 EDocumentPurchaseHeader."Vendor GLN" := GLN;
             end;
-
             VendorParticipantId := XMLNode.AsXmlAttribute().Value() + ':' + EDocumentXMLHelper.GetNodeValue(PINTANZXml, XmlNamespaces, BasePathTxt + '/cbc:EndpointID');
         end;
         VATRegistrationNo := EDocumentPurchaseHeader."Vendor VAT Id";
