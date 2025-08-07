@@ -117,6 +117,7 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         InsertPINTANZPurchaseInvoiceLines(PINTANZXml, XmlNamespaces, EDocumentPurchaseHeader."E-Document Entry No.");
     end;
 #pragma warning disable AA0139 // false positive: overflow handled by SetStringValueInField
+
     local procedure ParseAccountingSupplierPartyForPurchaseHeader(PINTANZXml: XmlDocument; XmlNamespaces: XmlNamespaceManager; var EDocumentPurchaseHeader: Record "E-Document Purchase Header"; var EDocument: Record "E-Document"; DocumentType: Text) VendorNo: Code[20]
     var
         EDocumentXMLHelper: Codeunit "EDocument XML Helper";
