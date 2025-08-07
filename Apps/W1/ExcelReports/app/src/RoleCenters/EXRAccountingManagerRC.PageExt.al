@@ -33,7 +33,7 @@ pageextension 4423 "EXR Accounting Manager RC" extends "Accounting Manager Role 
                 ToolTip = 'View a trial balance in comparison to a budget. You can choose to see a trial balance for selected dimensions. You can use the report at the close of an accounting period or fiscal year.';
             }
         }
-        addafter(Action115)
+        addafter("Cash Flow Date List")
         {
             action(EXRAgedAccountsRecExcel)
             {
