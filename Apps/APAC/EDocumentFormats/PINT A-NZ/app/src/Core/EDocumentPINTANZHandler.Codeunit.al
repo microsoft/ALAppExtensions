@@ -19,7 +19,6 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         EDocumentImportHelper: Codeunit "E-Document Import Helper";
         GLNSchemeIdTok: Label '0088', Locked = true;
 
-
     /// <summary>
     /// Reads a PINT A-NZ format XML document and converts it into a draft purchase document.
     /// This procedure processes both Invoice and CreditNote document types and populates the E-Document Purchase Header with the extracted data.
