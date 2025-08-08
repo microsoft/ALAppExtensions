@@ -685,7 +685,6 @@ codeunit 47023 "SL Helper Functions"
         ItemTrackingCode."Man. Warranty Date Entry Reqd." := false;
         ItemTrackingCode."Man. Expir. Date Entry Reqd." := true;
         ItemTrackingCode."Strict Expiration Posting" := false;
-        ItemTrackingCode."Strict Expiration Posting" := false;
         ItemTrackingCode."SN Specific Tracking" := false;
         ItemTrackingCode."SN Info. Inbound Must Exist" := false;
         ItemTrackingCode."SN Info. Outbound Must Exist" := false;
@@ -729,7 +728,6 @@ codeunit 47023 "SL Helper Functions"
         ItemTrackingCode."Man. Warranty Date Entry Reqd." := false;
         ItemTrackingCode."Man. Expir. Date Entry Reqd." := false;
         ItemTrackingCode."Strict Expiration Posting" := false;
-        ItemTrackingCode."Strict Expiration Posting" := false;
         ItemTrackingCode."SN Specific Tracking" := false;
         ItemTrackingCode."SN Info. Inbound Must Exist" := false;
         ItemTrackingCode."SN Info. Outbound Must Exist" := false;
@@ -772,7 +770,6 @@ codeunit 47023 "SL Helper Functions"
         ItemTrackingCode.Description := 'Lot When Used';
         ItemTrackingCode."Man. Warranty Date Entry Reqd." := false;
         ItemTrackingCode."Man. Expir. Date Entry Reqd." := false;
-        ItemTrackingCode."Strict Expiration Posting" := false;
         ItemTrackingCode."Strict Expiration Posting" := false;
         ItemTrackingCode."SN Specific Tracking" := false;
         ItemTrackingCode."SN Info. Inbound Must Exist" := false;
@@ -859,7 +856,6 @@ codeunit 47023 "SL Helper Functions"
         ItemTrackingCode.Description := 'SN When Received';
         ItemTrackingCode."Man. Warranty Date Entry Reqd." := false;
         ItemTrackingCode."Man. Expir. Date Entry Reqd." := false;
-        ItemTrackingCode."Strict Expiration Posting" := false;
         ItemTrackingCode."Strict Expiration Posting" := false;
         ItemTrackingCode."SN Specific Tracking" := true;
         ItemTrackingCode."SN Info. Inbound Must Exist" := false;
@@ -996,6 +992,46 @@ codeunit 47023 "SL Helper Functions"
             repeat
                 CustomerPostingGroup.Delete();
             until CustomerPostingGroup.Next() = 0;
+    end;
+
+    internal procedure DeleteExistingGeneralPostingSetups()
+    var
+        GeneralPostingSetup: Record "General Posting Setup";
+    begin
+        if GeneralPostingSetup.FindSet() then
+            repeat
+                GeneralPostingSetup.Delete();
+            until GeneralPostingSetup.Next() = 0;
+    end;
+
+    internal procedure DeleteExistingGenProductPostingGroups()
+    var
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
+    begin
+        if GenProductPostingGroup.FindSet() then
+            repeat
+                GenProductPostingGroup.Delete();
+            until GenProductPostingGroup.Next() = 0;
+    end;
+
+    internal procedure DeleteExistingInventoryPostingSetups()
+    var
+        InventoryPostingSetup: Record "Inventory Posting Setup";
+    begin
+        if InventoryPostingSetup.FindSet() then
+            repeat
+                InventoryPostingSetup.Delete();
+            until InventoryPostingSetup.Next() = 0;
+    end;
+
+    internal procedure DeleteExistingInventoryPostingGroups()
+    var
+        InventoryPostingGroup: Record "Inventory Posting Group";
+    begin
+        if InventoryPostingGroup.FindSet() then
+            repeat
+                InventoryPostingGroup.Delete();
+            until InventoryPostingGroup.Next() = 0;
     end;
 
     internal procedure DeleteExistingVendorPostingGroups()
