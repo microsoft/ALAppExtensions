@@ -77,11 +77,12 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
                 if EDocPurchaseHistMapping.FindRelatedPurchaseLineInHistory(EDocumentPurchaseHeader."[BC] Vendor No.", EDocumentPurchaseLine, EDocPurchaseLineHistory) then
                     EDocPurchaseHistMapping.UpdateMissingLineValuesFromHistory(EDocPurchaseLineHistory, EDocumentPurchaseLine);
 
+                if EDocumentPurchaseLine."[BC] Unit of Measure" = '' then
+                    EDocumentPurchaseLine."[BC] Unit of Measure" := IUnitOfMeasureProvider.GetDefaultUnitOfMeasure(EDocumentPurchaseLine."[BC] Purchase Line Type", EDocumentPurchaseLine."[BC] Purchase Type No.");
+                    
                 EDocumentPurchaseLine.Modify();
                 LogActivitySessionChanges(EDocActivityLogSession);
                 EDocActivityLogSession.CleanUpLogs();
-
-
             until EDocumentPurchaseLine.Next() = 0;
 
         // Ask Copilot to try to find fields that are suited to be matched
