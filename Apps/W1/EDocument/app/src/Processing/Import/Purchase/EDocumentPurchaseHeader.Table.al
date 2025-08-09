@@ -207,6 +207,11 @@ table 6100 "E-Document Purchase Header"
             Caption = 'Vendor Contact Name';
             DataClassification = CustomerContent;
         }
+        field(38; "E-Document Type"; Enum "E-Document Type")
+        {
+            Caption = 'E-Document Type';
+            DataClassification = CustomerContent;
+        }
         #endregion Purchase fields
 
         #region Business Central Data - Validated fields [101-200]
