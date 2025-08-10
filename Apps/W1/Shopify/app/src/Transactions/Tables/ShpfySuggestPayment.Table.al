@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Finance.Currency;
@@ -49,6 +54,8 @@ table 30154 "Shpfy Suggest Payment"
         field(7; "Amount"; Decimal)
         {
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(8; "Currency Code"; Code[10])
         {

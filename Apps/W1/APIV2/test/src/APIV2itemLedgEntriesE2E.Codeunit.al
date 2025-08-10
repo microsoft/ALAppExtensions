@@ -3,6 +3,7 @@ codeunit 139854 "APIV2 - Item Ledg. Entries E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

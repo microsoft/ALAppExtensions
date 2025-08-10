@@ -16,6 +16,7 @@ using Microsoft.Inventory.Item;
 codeunit 148210 "Sust. Item Chrg Assign. Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

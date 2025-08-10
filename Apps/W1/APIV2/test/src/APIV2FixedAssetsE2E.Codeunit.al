@@ -3,6 +3,7 @@ codeunit 139907 "APIV2 - Fixed Assets E2E"
     // version Test,W1,All
 
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

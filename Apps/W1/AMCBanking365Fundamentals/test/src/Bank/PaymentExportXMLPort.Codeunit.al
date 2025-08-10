@@ -2,6 +2,7 @@ codeunit 134423 "Payment Export XMLPort"
 {
     Permissions = TableData "Data Exch." = i;
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

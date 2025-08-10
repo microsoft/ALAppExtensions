@@ -6,6 +6,7 @@
 Codeunit 148034 "TestFIKImp.Pmt. Rec. Jnl."
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     VAR

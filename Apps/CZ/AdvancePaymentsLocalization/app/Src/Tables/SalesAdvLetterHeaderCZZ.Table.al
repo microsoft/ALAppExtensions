@@ -486,8 +486,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 ResultRecRef: RecordRef;
                 ApplicableCountryCode: Code[10];
                 IsHandled: Boolean;
-                ValidVATNoMsg: Label 'The VAT registration number is valid.';
-                InvalidVatRegNoMsg: Label 'The VAT registration number is not valid. Try entering the number again.';
+                ValidVATRegNoMsg: Label 'The VAT registration number is valid.';
+                InvalidVATRegNoMsg: Label 'The VAT registration number is not valid. Try entering the number again.';
             begin
                 IsHandled := false;
                 OnBeforeValidateVATRegistrationNo(Rec, IsHandled);
@@ -504,27 +504,35 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 if "VAT Registration No." = Customer."VAT Registration No." then
                     exit;
 
+                ApplicableCountryCode := Rec."VAT Country/Region Code";
+                if ApplicableCountryCode = '' then
+                    ApplicableCountryCode := Customer."Country/Region Code";
                 if not VATRegistrationNoFormat.Test("VAT Registration No.", Customer."Country/Region Code", Customer."No.", Database::Customer) then
                     exit;
 
-                Customer."VAT Registration No." := "VAT Registration No.";
                 ApplicableCountryCode := Customer."Country/Region Code";
                 if ApplicableCountryCode = '' then
                     ApplicableCountryCode := VATRegistrationNoFormat."Country/Region Code";
 
                 if not VATRegNoSrvConfig.VATRegNoSrvIsEnabled() then begin
-                    Customer.Modify(true);
+                    if UpdateVATRegNoInCust(Customer) then begin
+                        Customer."VAT Registration No." := "VAT Registration No.";
+                        Customer.Modify(true);
+                    end;
                     exit;
                 end;
 
-                VATRegistrationLogMgt.CheckVIESForVATNo(ResultRecRef, VATRegistrationLog, Customer, Customer."No.",
+                VATRegistrationLogMgt.CheckVIESForVATNo(ResultRecRef, VATRegistrationLog, Rec, Customer."No.",
                   ApplicableCountryCode, VATRegistrationLog."Account Type"::Customer.AsInteger());
 
                 if VATRegistrationLog.Status = VATRegistrationLog.Status::Valid then begin
-                    Message(ValidVATNoMsg);
-                    Customer.Modify(true);
+                    Message(ValidVATRegNoMsg);
+                    if UpdateVATRegNoInCust(Customer) then begin
+                        Customer."VAT Registration No." := "VAT Registration No.";
+                        Customer.Modify(true);
+                    end;
                 end else
-                    Message(InvalidVatRegNoMsg);
+                    Message(InvalidVATRegNoMsg);
             end;
         }
         field(48; "No. Printed"; Integer)
@@ -1830,6 +1838,16 @@ table 31004 "Sales Adv. Letter Header CZZ"
         CopyAdvLetterDocumentCZZ.RunModal();
     end;
 
+    procedure UpdateVATRegNoInCust(Customer: Record Customer) ShouldUpdate: Boolean
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeUpdateVATRegNoInCust(Rec, Customer, ShouldUpdate, IsHandled);
+        if IsHandled then
+            exit(ShouldUpdate);
+        exit(Customer."VAT Registration No." = '');
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateBillToPostCode(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var PostCodeRec: Record "Post Code")
     begin
@@ -2077,6 +2095,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCopyDocument(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateVATRegNoInCust(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; Customer: Record Customer; var ShouldUpdate: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

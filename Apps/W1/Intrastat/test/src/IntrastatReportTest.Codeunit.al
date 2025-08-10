@@ -1,6 +1,7 @@
 codeunit 139550 "Intrastat Report Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

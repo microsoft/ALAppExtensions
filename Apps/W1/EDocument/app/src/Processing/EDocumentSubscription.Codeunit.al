@@ -15,6 +15,7 @@ using Microsoft.Purchases.Posting;
 using Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.Service.Participant;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+using Microsoft.Inventory.Transfer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
@@ -88,17 +89,17 @@ codeunit 6103 "E-Document Subscription"
         RunEDocumentCheck(ReminderHeader, EDocumentProcessingPhase::Post);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterPostSalesDoc', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnAfterPostSalesDoc, '', false, false)]
     local procedure OnAfterPostSalesDoc(var SalesHeader: Record "Sales Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; SalesShptHdrNo: Code[20]; RetRcpHdrNo: Code[20]; SalesInvHdrNo: Code[20]; SalesCrMemoHdrNo: Code[20]; CommitIsSuppressed: Boolean; InvtPickPutaway: Boolean; var CustLedgerEntry: Record "Cust. Ledger Entry"; WhseShip: Boolean; WhseReceiv: Boolean; PreviewMode: Boolean)
     var
         SalesInvHeader: Record "Sales Invoice Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesShipmentHeader: Record "Sales Shipment Header";
         DocumentSendingProfile: Record "Document Sending Profile";
         EDocumentProcessing: Codeunit "E-Document Processing";
     begin
-        if (SalesInvHdrNo = '') and (SalesCrMemoHdrNo = '') then
+        if (SalesInvHdrNo = '') and (SalesCrMemoHdrNo = '') and (SalesShptHdrNo = '') then
             exit;
-
         if not EDocumentProcessing.GetDocSendingProfileForCust(SalesHeader."Bill-to Customer No.", DocumentSendingProfile) then
             exit;
 
@@ -108,10 +109,14 @@ codeunit 6103 "E-Document Subscription"
         end else
             if SalesCrMemoHeader.Get(SalesCrMemoHdrNo) then
                 CreateEDocumentFromPostedDocument(SalesCrMemoHeader, DocumentSendingProfile, Enum::"E-Document Type"::"Sales Credit Memo");
+
+        if SalesShptHdrNo <> '' then
+            if SalesShipmentHeader.Get(SalesShptHdrNo) then
+                CreateEDocumentFromPostedDocument(SalesShipmentHeader, DocumentSendingProfile, Enum::"E-Document Type"::"Sales Shipment");
     end;
 
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchaseDoc', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnAfterPostPurchaseDoc, '', false, false)]
     local procedure OnAfterPostPurchaseDoc(var PurchaseHeader: Record "Purchase Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; PurchRcpHdrNo: Code[20]; RetShptHdrNo: Code[20]; PurchInvHdrNo: Code[20]; PurchCrMemoHdrNo: Code[20]; CommitIsSupressed: Boolean)
     var
         PurchInvHeader: Record "Purch. Inv. Header";
@@ -127,6 +132,22 @@ codeunit 6103 "E-Document Subscription"
             if PurchCrMemoHdr.Get(PurchCrMemoHdrNo) then
                 PointEDocumentToPostedDocument(PurchaseHeader, PurchCrMemoHdr, PurchCrMemoHdrNo, Enum::"E-Document Type"::"Purchase Credit Memo");
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Shipment", OnAfterTransferOrderPostShipment, '', false, false)]
+    local procedure CreateEDocumentFromPostedTransferShipment(var TransferHeader: Record "Transfer Header"; CommitIsSuppressed: Boolean; var TransferShipmentHeader: Record "Transfer Shipment Header"; InvtPickPutaway: Boolean)
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+    begin
+        if TransferShipmentHeader."No." = '' then
+            exit;
+
+        if not EDocumentProcessing.GetDocSendingProfileForTransferShipment(DocumentSendingProfile, TransferShipmentHeader."Transfer-to Code") then
+            exit;
+
+        CreateEDocumentFromPostedDocument(TransferShipmentHeader, DocumentSendingProfile, Enum::"E-Document Type"::"Transfer Shipment");
+    end;
+
 
     [EventSubscriber(ObjectType::Table, Database::"Purchases & Payables Setup", OnAfterShouldDocumentTotalAmountsBeChecked, '', false, false)]
     local procedure OnShouldDocumentTotalAmountsBeChecked(PurchaseHeader: Record "Purchase Header"; var ShouldDocumentTotalAmountsBeChecked: Boolean)

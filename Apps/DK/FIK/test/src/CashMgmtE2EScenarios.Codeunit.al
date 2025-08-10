@@ -6,6 +6,7 @@
 codeunit 148031 "Cash Mgmt E2E Scenarios"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

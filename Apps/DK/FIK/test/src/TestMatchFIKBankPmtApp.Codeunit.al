@@ -7,6 +7,7 @@ Codeunit 148033 TestMatchFIKBankPmtApp
 {
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     VAR

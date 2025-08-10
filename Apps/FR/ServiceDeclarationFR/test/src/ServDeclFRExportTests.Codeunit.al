@@ -1,6 +1,7 @@
 codeunit 144080 "Serv. Decl. FR Export Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

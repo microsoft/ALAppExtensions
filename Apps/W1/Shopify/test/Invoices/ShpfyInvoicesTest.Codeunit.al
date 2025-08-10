@@ -1,6 +1,22 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using System.TestLibraries.Utilities;
+using Microsoft.Sales.History;
+using Microsoft.Utilities;
+
 codeunit 139695 "Shpfy Invoices Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -364,7 +380,7 @@ codeunit 139695 "Shpfy Invoices Test"
 
         // [GIVEN] Shopify order id and no
         OrderId := LibraryRandom.RandIntInRange(10000, 99999);
-        OrderNo := LibraryRandom.RandText(10);
+        OrderNo := CopyStr(LibraryRandom.RandText(10), 1, MaxStrLen(OrderNo));
 
         // [GIVEN] Posted sales invoice with fraction quantity
         InvoiceNo := CreateAndPostSalesInvoice(Item, Customer, 1, false, 0);
@@ -411,7 +427,7 @@ codeunit 139695 "Shpfy Invoices Test"
 
         // [GIVEN] Shopify order id and no
         OrderId := LibraryRandom.RandIntInRange(10000, 99999);
-        OrderNo := LibraryRandom.RandText(10);
+        OrderNo := CopyStr(LibraryRandom.RandText(10), 1, MaxStrLen(OrderNo));
 
         // [GIVEN] Posted sales invoice with fraction quantity
         InvoiceNo := CreateAndPostSalesInvoice(Item, Customer, 1, false, 0);
@@ -458,7 +474,7 @@ codeunit 139695 "Shpfy Invoices Test"
 
         // [GIVEN] Shopify order id and no
         OrderId := LibraryRandom.RandIntInRange(10000, 99999);
-        OrderNo := LibraryRandom.RandText(10);
+        OrderNo := CopyStr(LibraryRandom.RandText(10), 1, MaxStrLen(OrderNo));
 
         // [GIVEN] Posted sales invoice with fraction quantity
         InvoiceNo := CreateAndPostSalesInvoice(Item, Customer, 1, false, 0);
@@ -525,8 +541,8 @@ codeunit 139695 "Shpfy Invoices Test"
     end;
 
     local procedure CreateAndPostSalesInvoice(
-        Item: Record Item;
-        Customer: Record Customer;
+        LocalItem: Record Item;
+        LocalCustomer: Record Customer;
         Quantity: Decimal;
         AddComment: Boolean;
         OrderId: BigInteger
@@ -535,10 +551,10 @@ codeunit 139695 "Shpfy Invoices Test"
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
     begin
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, LocalCustomer."No.");
         SalesHeader."Shpfy Order Id" := OrderId;
         SalesHeader.Modify(false);
-        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, Item."No.", Quantity);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, LocalItem."No.", Quantity);
         if AddComment then begin
             LibrarySales.CreateSalesLineSimple(SalesLine, SalesHeader);
             SalesLine."Type" := SalesLine.Type::" ";
@@ -557,15 +573,15 @@ codeunit 139695 "Shpfy Invoices Test"
 
     local procedure CreateShopifyCustomer(CustomerNo: Code[20])
     var
-        Customer: Record Customer;
+        LocalCustomer: Record Customer;
         ShpfyCustomer: Record "Shpfy Customer";
     begin
-        Customer.Get(CustomerNo);
+        LocalCustomer.Get(CustomerNo);
 
-        if ShopifyCustomerEmpty(Customer.SystemId) then begin
+        if ShopifyCustomerEmpty(LocalCustomer.SystemId) then begin
             ShpfyCustomer.Init();
             ShpfyCustomer.Id := LibraryRandom.RandInt(99999);
-            ShpfyCustomer."Customer SystemId" := Customer.SystemId;
+            ShpfyCustomer."Customer SystemId" := LocalCustomer.SystemId;
             ShpfyCustomer.Insert(false);
         end;
     end;

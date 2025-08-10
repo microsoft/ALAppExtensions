@@ -67,25 +67,40 @@ page 6108 "Inbound E-Doc. Factbox"
                 Caption = 'Created By';
                 ToolTip = 'Specifies the user who created the document';
             }
+#if not CLEAN27
             group(PDF)
             {
+                ObsoleteReason = 'Replaced by "Inbound E-Doc. Picture"';
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+
                 Visible = false;
                 ShowCaption = false;
                 usercontrol(PDFViewer; "PDF Viewer")
                 {
+                    ObsoleteReason = 'Replaced by "Inbound E-Doc. Picture"';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
+
                     ApplicationArea = All;
                     Visible = false;
                 }
             }
+#endif
         }
     }
 
+#if not CLEAN27
     actions
     {
         area(Processing)
         {
             action(NextPdfPage)
             {
+                ObsoleteReason = 'Replaced by "Inbound E-Doc. Picture"';
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+
                 Caption = 'Next pdf page';
                 ToolTip = 'Next pdf page';
                 ApplicationArea = All;
@@ -100,6 +115,10 @@ page 6108 "Inbound E-Doc. Factbox"
             }
             action(PreviousPdfPage)
             {
+                ObsoleteReason = 'Replaced by "Inbound E-Doc. Picture"';
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
+
                 Caption = 'Previous pdf page';
                 ToolTip = 'Previous pdf page';
                 ApplicationArea = All;
@@ -114,6 +133,7 @@ page 6108 "Inbound E-Doc. Factbox"
             }
         }
     }
+#endif
 
     var
         ImportProcessingStatusVisible, Visible : Boolean;

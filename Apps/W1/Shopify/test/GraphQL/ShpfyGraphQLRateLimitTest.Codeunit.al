@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+
 /// <summary>
 /// Codeunit Shpfy GraphQL Rate Limit Test (ID 135611).
 /// </summary>
@@ -11,7 +21,7 @@ codeunit 139571 "Shpfy GraphQL Rate Limit Test"
     [Test]
     procedure UnitTestWaitForRequestAvailable()
     var
-        GraphQLRateLimit: codeunit "Shpfy GraphQL Rate Limit";
+        GraphQLRateLimit: Codeunit "Shpfy GraphQL Rate Limit";
         EndTime: DateTime;
         StartTime: DateTime;
         WaitTime: Duration;

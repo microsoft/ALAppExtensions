@@ -4,6 +4,7 @@ codeunit 139665 "GP Item Transaction Tests"
 
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     Permissions = tableData "Item Ledger Entry" = rimd;
     TestPermissions = Disabled;
 

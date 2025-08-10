@@ -51,6 +51,10 @@ codeunit 31302 IntrastatReportManagementCZ
         IntrastatReportSetup."Data Exch. Def. Code - Shpt." := DefaultDataExchDefCodeLbl;
         IntrastatReportSetup."Shipments Based On" := IntrastatReportSetup."Shipments Based On"::"Ship-to Country";
         IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Buy-from VAT";
+        IntrastatReportSetup."Project VAT No. Based On" := IntrastatReportSetup."Project VAT No. Based On"::"Sell-to Customer";
+        IntrastatReportSetup."Sales Intrastat Info Based On" := IntrastatReportSetup."Sales Intrastat Info Based On"::"Sell-to Customer";
+        IntrastatReportSetup."Purch. Intrastat Info Based On" := IntrastatReportSetup."Purch. Intrastat Info Based On"::"Buy-from Vendor";
         IntrastatReportSetup."Def. Private Person VAT No." := DefPrivatePersonVATNoLbl;
         IntrastatReportSetup."Def. 3-Party Trade VAT No." := Def3DPartyTradeVATNoLbl;
         IntrastatReportSetup."Def. VAT for Unknown State" := DefUnknowVATNoLbl;

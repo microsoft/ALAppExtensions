@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.Reflection;
@@ -58,34 +63,34 @@ table 30114 "Shpfy Data Capture"
         end;
     end;
 
-    internal procedure Add(TableNo: Integer; SystemId: Guid; Data: Text)
+    internal procedure Add(TableNo: Integer; RecSystemId: Guid; RecData: Text)
     var
         DataCapture: Record "Shpfy Data Capture";
         Hash: Codeunit "Shpfy Hash";
         HashNumber: Integer;
         OutStream: OutStream;
     begin
-        HashNumber := Hash.CalcHash(Data);
+        HashNumber := Hash.CalcHash(RecData);
         DataCapture.SetRange("Linked To Table", TableNo);
-        DataCapture.SetRange("Linked To Id", SystemId);
+        DataCapture.SetRange("Linked To Id", RecSystemId);
         if DataCapture.FindLast() and (DataCapture."Hash No." = HashNumber) then
             exit;
         Clear(DataCapture);
         DataCapture."Linked To Table" := TableNo;
-        DataCapture."Linked To Id" := SystemId;
+        DataCapture."Linked To Id" := RecSystemId;
         DataCapture."Hash No." := HashNumber;
         DataCapture.Data.CreateOutStream(OutStream, TextEncoding::UTF8);
-        OutStream.WriteText(Data);
+        OutStream.WriteText(RecData);
         DataCapture.Insert();
     end;
 
-    internal procedure Add(TableNo: Integer; SystemId: Guid; Data: JsonToken)
+    internal procedure Add(TableNo: Integer; RecSystemId: Guid; RecData: JsonToken)
     begin
-        Add(TableNo, SystemId, Format(Data));
+        Add(TableNo, RecSystemId, Format(RecData));
     end;
 
-    internal procedure Add(TableNo: Integer; SystemId: Guid; Data: JsonObject)
+    internal procedure Add(TableNo: Integer; RecSystemId: Guid; RecData: JsonObject)
     begin
-        Add(TableNo, SystemId, Format(Data));
+        Add(TableNo, RecSystemId, Format(RecData));
     end;
 }

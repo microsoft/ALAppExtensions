@@ -1,6 +1,7 @@
 codeunit 135087 "AMC CT E2E Web Service Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

@@ -13,6 +13,7 @@ using Microsoft.Finance.Dimension;
 codeunit 139777 "Bank Rec. With AI Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

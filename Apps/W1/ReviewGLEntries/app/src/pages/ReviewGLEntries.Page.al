@@ -101,6 +101,7 @@ page 22207 "Review G/L Entries"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Remaining Amount';
                     Editable = false;
+                    ToolTip = 'Specifies the remaining amount that can be applied to the entry.';
                 }
                 field("Review Id"; Rec."Reviewed Identifier")
                 {

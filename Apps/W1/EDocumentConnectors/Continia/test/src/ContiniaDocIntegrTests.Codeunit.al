@@ -16,6 +16,7 @@ using Microsoft.Finance.Currency;
 codeunit 148203 "Continia Doc. Integr. Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestHttpRequestPolicy = AllowOutboundFromHandler;
     Access = Internal;
 

@@ -4,9 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Avalara;
 
-#if not CLEANSCHEMA30
-using Microsoft.EServices.EDocumentConnector;
-#endif
 table 6372 "Connection Setup"
 {
     fields
@@ -93,7 +90,9 @@ table 6372 "Connection Setup"
 #endif
         }
 #if not CLEANSCHEMA30
+#pragma warning disable AL0432, AS0105
         field(13; "Send Mode"; Enum "E-Doc. Ext. Send Mode")
+#pragma warning restore AL0432, AS0105
         {
             Caption = 'Send Mode';
             DataClassification = EndUserIdentifiableInformation;

@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -27,7 +27,10 @@ table 6121 "E-Document"
 
     Permissions =
         tabledata "E-Document" = i,
-        tabledata "E-Document Service Status" = d;
+        tabledata "E-Document Service Status" = d,
+        tabledata "E-Document Log" = d,
+        tabledata "E-Document Integration Log" = d,
+        tabledata "E-Doc. Mapping Log" = d;
 
 
     fields

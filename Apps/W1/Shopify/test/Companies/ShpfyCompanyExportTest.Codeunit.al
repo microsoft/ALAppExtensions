@@ -1,6 +1,19 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Sales.Customer;
+using Microsoft.Foundation.PaymentTerms;
+
 codeunit 139636 "Shpfy Company Export Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -43,8 +56,9 @@ codeunit 139636 "Shpfy Company Export Test"
         // [GIVEN] Shop
         CompanyExport.SetShop(ShopifyShop);
 
-        // [WHEN] Invoke ShpfyCustomerExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation)
-        Result := CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation);
+        // [WHEN] Invoke ShpfyCustomerExport.FillInShopifyCompany(Customer, ShopifyCompany) and ShpfyCustomerExport.FillInShopifyCompanyLocation(Customer, CompanyLocation)
+        Result := CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany) and
+                  CompanyExport.FillInShopifyCompanyLocation(Customer, CompanyLocation);
 
         // [THEN] The result is true and the content of address fields can be found in the shpfy records.
         LibraryAssert.IsTrue(Result, 'Result');
@@ -82,8 +96,9 @@ codeunit 139636 "Shpfy Company Export Test"
         // [GIVEN] Company Location
         CreateCompanyLocation(CompanyLocation, ShopifyCompany.SystemId, ShopifyPaymentTermsId);
 
-        // [WHEN] Invoke FillInShopifyCompany
-        CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation);
+        // [WHEN] Invoke FillInShopifyCompany and FillInShopifyCompanyLocation
+        CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany);
+        CompanyExport.FillInShopifyCompanyLocation(Customer, CompanyLocation);
 
         // [THEN] The payment terms id is set in the company location record.
         LibraryAssert.AreEqual(ShopifyPaymentTermsId, CompanyLocation."Shpfy Payment Terms Id", 'Payment Terms Id');
@@ -93,7 +108,6 @@ codeunit 139636 "Shpfy Company Export Test"
     procedure UnitTestFillInShopifyCustomerDataCounty()
     var
         Customer: Record Customer;
-        ShopifyCompany: Record "Shpfy Company";
         CompanyLocation: Record "Shpfy Company Location";
         ShopifyShop: Record "Shpfy Shop";
         TaxArea: Record "Shpfy Tax Area";
@@ -118,15 +132,14 @@ codeunit 139636 "Shpfy Company Export Test"
         ShopifyShop."Contact Source" := Enum::"Shpfy Name Source"::None;
         ShopifyShop."County Source" := Enum::"Shpfy County Source"::Name;
         ShopifyShop."B2B Enabled" := true;
-        ShopifyCompany.Init();
         CompanyLocation.Init();
 
         // [GIVEN] Shop
         CompanyExport.SetShop(ShopifyShop);
 
         // [GIVEN] Customer record
-        // [WHEN] Invoke ShpfyCustomerExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation)
-        Result := CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation);
+        // [WHEN] Invoke ShpfyCustomerExport.FillInShopifyCompanyLocation(Customer, CompanyLocation)
+        Result := CompanyExport.FillInShopifyCompanyLocation(Customer, CompanyLocation);
 
         // [THEN] The result is true and the content of address fields can be found in the shpfy records.
         LibraryAssert.IsTrue(Result, 'Result');
@@ -137,8 +150,7 @@ codeunit 139636 "Shpfy Company Export Test"
         Customer."Country/Region Code" := 'DE';
         Customer.Modify();
         Clear(CompanyLocation);
-        Clear(ShopifyCompany);
-        Result := CompanyExport.FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation);
+        Result := CompanyExport.FillInShopifyCompanyLocation(Customer, CompanyLocation);
 
         // [THEN] The result is true and the province fields are empty.
         LibraryAssert.IsTrue(Result, 'Result');

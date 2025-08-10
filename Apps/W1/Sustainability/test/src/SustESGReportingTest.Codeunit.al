@@ -14,6 +14,7 @@ using Microsoft.Sustainability.Ledger;
 codeunit 148206 "Sust. ESG Reporting Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

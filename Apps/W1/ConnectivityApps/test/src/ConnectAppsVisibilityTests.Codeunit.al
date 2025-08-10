@@ -6,6 +6,7 @@
 codeunit 139534 "Connect. Apps Visibility Tests"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Restrictive;
 
     var

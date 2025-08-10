@@ -227,7 +227,7 @@ page 18203 "GST Distribution"
         else
             DetailedGSTLedgerEntry.SetRange("Document Type", DetailedGSTLedgerEntry."Document Type"::"Credit Memo");
         DetailedGSTLedgerEntry.SetRange("Location  Reg. No.", Rec."From GSTIN No.");
-        DetailedGSTLedgerEntry.SetRange(Type, DetailedGSTLedgerEntry.Type::"G/L Account");
+        DetailedGSTLedgerEntry.SetRange("GST Group Type", DetailedGSTLedgerEntry."GST Group Type"::Service);
         if Rec."Dist. Credit Type" = Rec."Dist. Credit Type"::Availment then
             DetailedGSTLedgerEntry.SetRange("GST Credit", DetailedGSTLedgerEntry."GST Credit"::Availment)
         else

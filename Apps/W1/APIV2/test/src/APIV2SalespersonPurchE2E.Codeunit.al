@@ -1,6 +1,7 @@
 codeunit 139882 "APIV2 - Salesperson/Purch E2E"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
 
     var
         Assert: Codeunit Assert;

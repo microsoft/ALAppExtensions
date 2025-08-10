@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Foundation.ExtendedText;
@@ -325,7 +330,7 @@ codeunit 30178 "Shpfy Product Export"
         Tab: Text[1];
     begin
         Tab[1] := 9;
-        Exit(Source.Replace(Tab, ' '));
+        exit(Source.Replace(Tab, ' '));
     end;
 
     /// <summary> 
@@ -447,7 +452,7 @@ codeunit 30178 "Shpfy Product Export"
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
-            ShopifyVariant.Title := RemoveTabChars(ItemVariant.Description);
+            ShopifyVariant.Title := CopyStr(RemoveTabChars(ItemVariant.Description), 1, MaxStrLen(ShopifyVariant.Title));
             ShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Bar Code":

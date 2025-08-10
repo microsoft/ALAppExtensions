@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.Environment;
@@ -77,7 +82,7 @@ page 30136 "Shpfy Connector Guide"
                 {
                     ApplicationArea = All;
                     Caption = 'I accept';
-                    ToolTip = 'Accept the terms and conditions.';
+                    ToolTip = 'Specifies your consent to the terms and conditions.';
 
                     trigger OnValidate()
                     begin
@@ -178,13 +183,13 @@ page 30136 "Shpfy Connector Guide"
                 {
                     Caption = 'Import Products From Shopify';
                     ApplicationArea = All;
-                    ToolTip = 'Import products from Shopify.';
+                    ToolTip = 'Specifies if products are imported from Shopify.';
                 }
                 field("Import Customers From Shopify"; ImportCustomers)
                 {
                     Caption = 'Import Customers From Shopify';
                     ApplicationArea = All;
-                    ToolTip = 'Import customers from Shopify.';
+                    ToolTip = 'Specifies if customers are imported from Shopify.';
                 }
             }
             group(Step4)
@@ -217,7 +222,7 @@ page 30136 "Shpfy Connector Guide"
                     {
                         Caption = 'Sync Item Images';
                         ApplicationArea = All;
-                        ToolTip = 'Import product images from Shopify.';
+                        ToolTip = 'Specifies if product images are imported from Shopify.';
                     }
                     field("Item Template Code"; ItemTemplateCode)
                     {
@@ -800,57 +805,57 @@ page 30136 "Shpfy Connector Guide"
         FeatureTelemetry.LogUptake('0000HUX', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
     end;
 
-    local procedure CreateShop(var Shop: Record "Shpfy Shop")
+    local procedure CreateShop(var ShopifyShop: Record "Shpfy Shop")
     begin
-        if Shop.Get(GetShopCode()) then begin
-            Shop.Validate("Shopify URL", ShopUrl);
+        if ShopifyShop.Get(GetShopCode()) then begin
+            ShopifyShop.Validate("Shopify URL", ShopUrl);
             if IsDemoCompany then
-                SetShopProperties(Shop);
-            Shop.Modify();
+                SetShopProperties(ShopifyShop);
+            ShopifyShop.Modify();
         end else begin
-            Shop.Init();
-            Shop.Validate(Code, GetShopCode());
-            Shop.Validate("Shopify URL", ShopUrl);
+            ShopifyShop.Init();
+            ShopifyShop.Validate(Code, GetShopCode());
+            ShopifyShop.Validate("Shopify URL", ShopUrl);
             if IsDemoCompany then
-                SetShopProperties(Shop);
-            Shop.Insert();
+                SetShopProperties(ShopifyShop);
+            ShopifyShop.Insert();
         end;
     end;
 
-    local procedure SetShopProperties(var Shop: Record "Shpfy Shop")
+    local procedure SetShopProperties(var ShopifyShop: Record "Shpfy Shop")
     begin
-        Shop.Validate("Allow Background Syncs", true);
-        Shop.Validate("Allow Outgoing Requests", false);
+        ShopifyShop.Validate("Allow Background Syncs", true);
+        ShopifyShop.Validate("Allow Outgoing Requests", false);
 
         // Item synchronization
         if IsDemoCompany then begin
-            Shop.Validate("Item Templ. Code", GetItemTemplCode());
-            Shop.Validate("Sync Item Images", Shop."Sync Item Images"::"From Shopify");
+            ShopifyShop.Validate("Item Templ. Code", GetItemTemplCode());
+            ShopifyShop.Validate("Sync Item Images", ShopifyShop."Sync Item Images"::"From Shopify");
         end else
             if ImportProducts then begin
-                Shop.Validate("Item Templ. Code", ItemTemplateCode);
+                ShopifyShop.Validate("Item Templ. Code", ItemTemplateCode);
                 if SyncItemImages then
-                    Shop.Validate("Sync Item Images", Shop."Sync Item Images"::"From Shopify");
+                    ShopifyShop.Validate("Sync Item Images", ShopifyShop."Sync Item Images"::"From Shopify");
             end;
-        Shop.Validate("Auto Create Unknown Items", true);
-        Shop.Validate("Sync Item", Shop."Sync Item"::"From Shopify");
+        ShopifyShop.Validate("Auto Create Unknown Items", true);
+        ShopifyShop.Validate("Sync Item", ShopifyShop."Sync Item"::"From Shopify");
 
         // Customer synchronization
         if IsDemoCompany then
-            Shop.Validate("Customer Templ. Code", GetCustomerTemplCode())
+            ShopifyShop.Validate("Customer Templ. Code", GetCustomerTemplCode())
         else
             if ImportCustomers then
-                Shop.Validate("Customer Templ. Code", CustomerTemplateCode);
-        Shop.Validate("Auto Create Unknown Customers", true);
-        Shop.Validate("Customer Import From Shopify", Shop."Customer Import From Shopify"::AllCustomers);
+                ShopifyShop.Validate("Customer Templ. Code", CustomerTemplateCode);
+        ShopifyShop.Validate("Auto Create Unknown Customers", true);
+        ShopifyShop.Validate("Customer Import From Shopify", ShopifyShop."Customer Import From Shopify"::AllCustomers);
 
         // Order synchronization
         if IsDemoCompany then begin
-            Shop.Validate("Shipping Charges Account", GetShippingChargesGLAccount());
-            Shop.Validate("Auto Create Orders", true);
+            ShopifyShop.Validate("Shipping Charges Account", GetShippingChargesGLAccount());
+            ShopifyShop.Validate("Auto Create Orders", true);
         end else begin
-            Shop.Validate("Shipping Charges Account", ShippingChargesAccountNo);
-            Shop.Validate("Auto Create Orders", AutoCreateOrders);
+            ShopifyShop.Validate("Shipping Charges Account", ShippingChargesAccountNo);
+            ShopifyShop.Validate("Auto Create Orders", AutoCreateOrders);
         end;
     end;
 
