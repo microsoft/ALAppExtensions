@@ -1,8 +1,8 @@
 namespace Microsoft.Finance.ExcelReports;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.Consolidation;
 using Microsoft.Finance.Dimension;
-using System.Utilities;
 
 codeunit 4410 "Trial Balance"
 {
@@ -127,16 +127,14 @@ codeunit 4410 "Trial Balance"
     local procedure InsertTrialBalanceDataForGLAccountWithFilters(var GLAccount: Record "G/L Account"; Dimension1ValueCode: Code[20]; Dimension2ValueCode: Code[20]; BusinessUnitCode: Code[20]; var TrialBalanceData: Record "EXR Trial Balance Buffer"; var Dimension1Values: Record "Dimension Value" temporary; var Dimension2Values: Record "Dimension Value" temporary)
     var
         GLAccount2: Record "G/L Account";
-        DateRec: Record Date;
+        GLEntry: Record "G/L Entry";
     begin
         Clear(TrialBalanceData);
         if GLAccount.GetFilter("Date Filter") <> '' then begin
-            DateRec.SetRange("Period Type", DateRec."Period Type"::Date);
-            DateRec.SetFilter("Period Start", GLAccount.GetFilter("Date Filter"));
-            DateRec.SetFilter("Period End", '%1..', 17530101D);
-            if DateRec.FindFirst() then begin
+            GLEntry.SetFilter("Posting Date", GLAccount.GetFilter("Date Filter"));
+            if GLEntry.FindFirst() then begin
                 GLAccount2.Copy(GLAccount);
-                GLAccount2.SetFilter("Date Filter", '..%1', DateRec."Period Start" - 1);
+                GLAccount2.SetFilter("Date Filter", '..%1', GLEntry."Posting Date" - 1);
                 GLAccount2.CalcFields("Balance at Date", "Add.-Currency Balance at Date");
                 TrialBalanceData.Validate("Starting Balance", GLAccount2."Balance at Date");
                 TrialBalanceData.Validate("Starting Balance (ACY)", GLAccount2."Add.-Currency Balance at Date");
