@@ -1,6 +1,7 @@
 codeunit 132558 "AMC Banking Credential UT"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

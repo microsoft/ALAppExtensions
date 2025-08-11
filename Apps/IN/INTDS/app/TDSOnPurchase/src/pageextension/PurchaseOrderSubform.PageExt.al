@@ -18,7 +18,7 @@ pageextension 18720 "PurchaseOrderSubform" extends "Purchase Order Subform"
                 ToolTip = 'Specifies the Section Codes as per the Income Tax Act 1961 for e tds returns';
                 trigger OnLookup(var Text: Text): Boolean
                 begin
-                    Rec.OnAfterTDSSectionCodeLookupPurchLine(Rec, Rec."Buy-from Vendor No.", true);
+                    Rec.OnAfterTDSSectionCodeLookupPurchLine(Rec, Rec."Pay-to Vendor No.", true);
                     UpdateTaxAmount();
                 end;
 

@@ -136,15 +136,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
             exit;
 
         // Generate OpenAI Completion
-#if not CLEAN27
-#pragma warning disable AS0105    
-#pragma warning disable AL0432
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
-#pragma warning restore AL0432
-#pragma warning restore AS0105            
-#else
         AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
-#endif     
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Sales Lines Suggestions");
 
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
@@ -220,15 +212,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
             exit;
 
         // Generate OpenAI Completion
-#if not CLEAN27
-#pragma warning disable AS0105
-#pragma warning disable AL0432
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
-#pragma warning restore AL0432
-#pragma warning restore AS0105            
-#else
         AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
-#endif
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Sales Lines Suggestions");
 
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());

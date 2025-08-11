@@ -11,6 +11,7 @@ using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 codeunit 133509 "EDoc. Line Match Acc. Accuracy"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

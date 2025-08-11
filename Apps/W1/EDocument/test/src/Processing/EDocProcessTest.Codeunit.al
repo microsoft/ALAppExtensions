@@ -1,6 +1,7 @@
 codeunit 139883 "E-Doc Process Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
 
     var
         Customer: Record Customer;
@@ -11,6 +12,7 @@ codeunit 139883 "E-Doc Process Test"
         LibraryEDoc: Codeunit "Library - E-Document";
         EDocImplState: Codeunit "E-Doc. Impl. State";
         LibraryLowerPermission: Codeunit "Library - Lower Permissions";
+        LibraryInventory: Codeunit "Library - Inventory";
         LibraryPurchase: Codeunit "Library - Purchase";
         IsInitialized: Boolean;
 
@@ -489,6 +491,122 @@ codeunit 139883 "E-Doc Process Test"
         Assert.AreNotEqual(Location.Code, PurchaseLine."Location Code", 'The location code should not be set on the purchase line.');
     end;
 
+    [Test]
+    procedure PreparingPurchaseDraftFindsItemReference()
+    var
+        EDocument: Record "E-Document";
+        EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+        EDocumentPurchaseLine: Record "E-Document Purchase Line";
+        EDocImportParameters: Record "E-Doc. Import Parameters";
+        Vendor2: Record Vendor;
+        Item: Record Item;
+        ItemReference: Record "Item Reference";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+        EDocImport: Codeunit "E-Doc. Import";
+    begin
+        // [GIVEN] An E-Doc received with Product code as an existing Item Reference
+        Initialize(Enum::"Service Integration"::"Mock");
+        LibraryEDoc.CreateInboundEDocument(EDocument, EDocumentService);
+
+        Vendor2."No." := 'EDOC005';
+        Vendor2."VAT Registration No." := 'EDOCTESTTAXID001';
+        Vendor2.Insert();
+        LibraryInventory.CreateItem(Item);
+        ItemReference := CreateItemReference(Vendor2, Item);
+
+        EDocumentPurchaseHeader."E-Document Entry No." := EDocument."Entry No";
+        EDocumentPurchaseHeader."Vendor VAT Id" := Vendor2."VAT Registration No.";
+        EDocumentPurchaseHeader.Insert();
+        EDocumentPurchaseLine."E-Document Entry No." := EDocument."Entry No";
+        EDocumentPurchaseLine."Product Code" := ItemReference."Reference No.";
+        EDocumentPurchaseLine.Description := 'Test description';
+        EDocumentPurchaseLine.Insert();
+
+        EDocumentProcessing.ModifyEDocumentProcessingStatus(EDocument, "Import E-Doc. Proc. Status"::"Ready for draft");
+        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Prepare draft";
+
+        // [WHEN] Filling in the draft
+        EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
+
+        EDocumentPurchaseLine.SetRecFilter();
+        EDocumentPurchaseLine.FindFirst();
+
+        EDocumentPurchaseHeader.SetRecFilter();
+        EDocumentPurchaseHeader.FindFirst();
+
+        // [THEN] The draft is populated with the information in the item reference
+        Assert.AreEqual(Vendor2."No.", EDocumentPurchaseHeader."[BC] Vendor No.", 'The vendor should be found when the tax id is specified and it matches the one in BC.');
+        Assert.AreEqual(Enum::"Purchase Line Type"::Item, EDocumentPurchaseLine."[BC] Purchase Line Type", 'The purchase line type should be set to Item.');
+        Assert.AreEqual(Item."No.", EDocumentPurchaseLine."[BC] Purchase Type No.", 'The item configured in the item reference should be found.');
+
+        Vendor2.SetRecFilter();
+        if Vendor2.Delete() then;
+        Item.SetRecFilter();
+        if Item.Delete() then;
+        ItemReference.SetRecFilter();
+        if ItemReference.Delete() then;
+    end;
+
+    [Test]
+    procedure ItemReferenceIsNotConsideredWhenOutsideOfDateValidity()
+    var
+        EDocument: Record "E-Document";
+        EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+        EDocumentPurchaseLine: Record "E-Document Purchase Line";
+        EDocImportParameters: Record "E-Doc. Import Parameters";
+        Vendor2: Record Vendor;
+        Item: Record Item;
+        ItemReference: Record "Item Reference";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+        EDocImport: Codeunit "E-Doc. Import";
+    begin
+        // [GIVEN] An E-Doc received with Product code as an existing Item Reference
+        Initialize(Enum::"Service Integration"::"Mock");
+        LibraryEDoc.CreateInboundEDocument(EDocument, EDocumentService);
+        Vendor2."No." := 'EDOC005';
+        Vendor2."VAT Registration No." := 'EDOCTESTTAXID001';
+        Vendor2.Insert();
+
+        LibraryInventory.CreateItem(Item);
+
+        ItemReference := CreateItemReference(Vendor2, Item);
+
+        EDocumentPurchaseHeader."E-Document Entry No." := EDocument."Entry No";
+        EDocumentPurchaseHeader."Vendor VAT Id" := Vendor2."VAT Registration No.";
+        EDocumentPurchaseHeader.Insert();
+        EDocumentPurchaseLine."E-Document Entry No." := EDocument."Entry No";
+        EDocumentPurchaseLine."Product Code" := ItemReference."Reference No.";
+        EDocumentPurchaseLine.Description := 'Test description';
+        EDocumentPurchaseLine.Insert();
+
+        // [GIVEN] The item reference is only valid in the future (not on the e-document's default posting date)
+        ItemReference."Starting Date" := CalcDate('<+1D>', WorkDate());
+        ItemReference.Modify();
+
+        EDocumentProcessing.ModifyEDocumentProcessingStatus(EDocument, "Import E-Doc. Proc. Status"::"Ready for draft");
+        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Prepare draft";
+
+        // [WHEN] Filling in the draft
+        EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
+
+        EDocumentPurchaseLine.SetRecFilter();
+        EDocumentPurchaseLine.FindFirst();
+
+        EDocumentPurchaseHeader.SetRecFilter();
+        EDocumentPurchaseHeader.FindFirst();
+
+        // [THEN] The line has no item match found
+        Assert.AreEqual(Vendor2."No.", EDocumentPurchaseHeader."[BC] Vendor No.", 'The vendor should be found when the tax id is specified and it matches the one in BC.');
+        Assert.AreNotEqual(Enum::"Purchase Line Type"::Item, EDocumentPurchaseLine."[BC] Purchase Line Type", 'The purchase line type should not be item (item reference doesn''t match).');
+
+        Vendor2.SetRecFilter();
+        if Vendor2.Delete() then;
+        Item.SetRecFilter();
+        if Item.Delete() then;
+        ItemReference.SetRecFilter();
+        if ItemReference.Delete() then;
+    end;
+
     local procedure Initialize(Integration: Enum "Service Integration")
     var
         TransformationRule: Record "Transformation Rule";
@@ -538,5 +656,15 @@ codeunit 139883 "E-Doc Process Test"
         IsInitialized := true;
     end;
 
+    local procedure CreateItemReference(Vendor: Record Vendor; Item: Record Item) ItemReference: Record "Item Reference"
+    begin
+        ItemReference."Item No." := Item."No.";
+        ItemReference."Variant Code" := '';
+        ItemReference."Unit of Measure" := '';
+        ItemReference."Reference Type" := "Item Reference Type"::Vendor;
+        ItemReference."Reference Type No." := Vendor."No.";
+        ItemReference."Reference No." := 'TESTITMREFNO';
+        ItemReference.Insert();
+    end;
 
 }

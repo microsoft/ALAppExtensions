@@ -1,6 +1,7 @@
 codeunit 10505 "Intrastat Report Test GB"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

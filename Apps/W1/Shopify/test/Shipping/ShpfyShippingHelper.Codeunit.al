@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using Microsoft.Sales.History;
+using System.TestLibraries.Utilities;
+
 codeunit 139559 "Shpfy Shipping Helper"
 {
     internal procedure CreateRandomShopifyOrder(LocationId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
@@ -87,9 +98,9 @@ codeunit 139559 "Shpfy Shipping Helper"
     begin
         Any.SetDefaultSeed();
         Clear(SalesShipmentHeader);
-        SalesShipmentHeader."No." := Any.AlphanumericText(MaxStrLen(SalesShipmentHeader."No."));
+        SalesShipmentHeader."No." := CopyStr(Any.AlphanumericText(MaxStrLen(SalesShipmentHeader."No.")), 1, MaxStrLen(SalesShipmentHeader."No."));
         SalesShipmentHeader."Shpfy Order Id" := ShopifyOrderId;
-        SalesShipmentHeader."Package Tracking No." := Any.AlphanumericText(MaxStrLen(SalesShipmentHeader."Package Tracking No."));
+        SalesShipmentHeader."Package Tracking No." := CopyStr(Any.AlphanumericText(MaxStrLen(SalesShipmentHeader."Package Tracking No.")), 1, MaxStrLen(SalesShipmentHeader."Package Tracking No."));
         SalesShipmentHeader.Insert();
 
         OrderLine.Reset();
@@ -100,7 +111,7 @@ codeunit 139559 "Shpfy Shipping Helper"
                 SalesShipmentLine."Document No." := SalesShipmentHeader."No.";
                 SalesShipmentLine."Line No." := OrderLine."Line Id";
                 SalesShipmentLine.Type := SalesShipmentLine.type::Item;
-                SalesShipmentLine."No." := Any.AlphanumericText(MaxStrLen(SalesShipmentLine."No."));
+                SalesShipmentLine."No." := CopyStr(Any.AlphanumericText(MaxStrLen(SalesShipmentLine."No.")), 1, MaxStrLen(SalesShipmentLine."No."));
                 SalesShipmentLine."Shpfy Order Line Id" := OrderLine."Line Id";
                 SalesShipmentLine.Quantity := OrderLine.Quantity;
                 SalesShipmentLine.Insert();

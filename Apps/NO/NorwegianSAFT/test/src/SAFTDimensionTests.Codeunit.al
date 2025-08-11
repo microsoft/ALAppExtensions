@@ -1,6 +1,7 @@
 codeunit 148108 "SAF-T Dimension Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

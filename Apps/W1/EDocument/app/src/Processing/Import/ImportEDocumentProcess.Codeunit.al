@@ -343,16 +343,6 @@ codeunit 6104 "Import E-Document Process"
         EDocAttachmentProcessor.Insert(EDocument, InStream, EDocument."File Name");
     end;
 
-    internal procedure AIGeneratedContentText(): Text
-    begin
-        exit(AIGeneratedContentTxt);
-    end;
-
-    internal procedure TermsAndConditionsText(): Text
-    begin
-        exit(TermsAndConditionsTxt);
-    end;
-
     internal procedure GetStep(): Enum "Import E-Document Steps"
     begin
         exit(Step);
@@ -374,8 +364,6 @@ codeunit 6104 "Import E-Document Process"
         EDocumentProcessing: Codeunit "E-Document Processing";
         Step: Enum "Import E-Document Steps";
         UndoStep: Boolean;
-        AIGeneratedContentTxt: Label 'Data was read from a PDF - check for accuracy. AI-generated content may be incorrect.​';
-        TermsAndConditionsTxt: Label 'Terms and Conditions';
         NoStructuredDataErr: Label 'No structured data is associated with this E-Document. Verify that the source document is in valid format.';
         TermsAndConditionsHyperlinkTxt: Label 'https://www.microsoft.com/en-us/business-applications/legal/supp-powerplatform-preview', Locked = true;
 }

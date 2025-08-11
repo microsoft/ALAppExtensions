@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 page 30137 "Shpfy Initial Import"
@@ -67,6 +72,5 @@ page 30137 "Shpfy Initial Import"
 
     var
         InitialImport: Codeunit "Shpfy Initial Import";
-        [InDataSet]
         JobStatusStyle: Text;
 }

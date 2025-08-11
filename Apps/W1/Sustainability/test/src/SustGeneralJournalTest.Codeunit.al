@@ -12,6 +12,7 @@ using Microsoft.Foundation.Navigate;
 codeunit 148188 "Sust. General Journal Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

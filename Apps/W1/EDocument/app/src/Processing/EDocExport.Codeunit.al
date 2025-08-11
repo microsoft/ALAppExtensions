@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Reporting;
+using Microsoft.Inventory.Transfer;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Sales.Document;
@@ -345,6 +346,10 @@ codeunit 6102 "E-Doc. Export"
                     EDocument."Amount Excl. VAT" := SourceDocumentHeader.Field(PurchHeader.FieldNo(Amount)).Value;
                     EDocument."Amount Incl. VAT" := SourceDocumentHeader.Field(PurchHeader.FieldNo("Amount Including VAT")).Value;
                 end;
+            Database::"Sales Shipment Header":
+                PopulateShipmentEDocument(EDocument, SourceDocumentHeader);
+            Database::"Transfer Shipment Header":
+                this.PopulateTransferShipmentEDocument(EDocument, SourceDocumentHeader);
         end;
     end;
 
@@ -367,6 +372,34 @@ codeunit 6102 "E-Doc. Export"
         // After interface call, reread the EDocument for the latest values.
         EDocument.Get(EDocument."Entry No");
         Telemetry.LogMessage('0000LBG', EDocTelemetryCreateScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
+    end;
+
+    local procedure PopulateShipmentEDocument(var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef)
+    var
+        SalesShipmentHeader: Record "Sales Shipment Header";
+    begin
+        EDocument."Document Type" := EDocument."Document Type"::"Sales Shipment";
+        EDocument."Document No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("No.")).Value;
+        EDocument."Order No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Order No.")).Value;
+        EDocument."Bill-to/Pay-to No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Bill-to Customer No.")).Value;
+        EDocument."Bill-to/Pay-to Name" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Bill-to Name")).Value;
+        EDocument."Posting Date" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Posting Date")).Value;
+        EDocument."Document Date" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Document Date")).Value;
+        EDocument."Due Date" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Due Date")).Value;
+        EDocument."Source Type" := EDocument."Source Type"::Customer;
+        EDocument."Currency Code" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Currency Code")).Value;
+    end;
+
+    local procedure PopulateTransferShipmentEDocument(var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef)
+    var
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+    begin
+        EDocument."Document Type" := EDocument."Document Type"::"Transfer Shipment";
+        EDocument."Document No." := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("No.")).Value;
+        EDocument."Posting Date" := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("Posting Date")).Value;
+        EDocument."Bill-to/Pay-to No." := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("Transfer-to Code")).Value;
+        EDocument."Bill-to/Pay-to Name" := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("Transfer-to Name")).Value;
+        EDocument."Source Type" := EDocument."Source Type"::Location;
     end;
 
     local procedure CreateEDocumentBatch(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
@@ -405,7 +438,6 @@ codeunit 6102 "E-Doc. Export"
         SalesDocumentType: Enum "Sales Document Type";
         ServiceDocumentType: Enum "Service Document Type";
         PurchDocumentType: Enum "Purchase Document Type";
-
     begin
         case SourceDocumentHeader.Number of
             Database::"Sales Header":

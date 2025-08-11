@@ -1,6 +1,7 @@
 codeunit 148015 "SIE Import Export Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

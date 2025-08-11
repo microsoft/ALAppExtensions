@@ -3,6 +3,7 @@ namespace Microsoft.Utility.ImageAnalysis;
 using System.Utilities;
 using System.Environment;
 using Microsoft.Inventory.Item;
+using System.Telemetry;
 #if not CLEAN25
 using Microsoft.CRM.Contact;
 #endif
@@ -379,6 +380,7 @@ page 2029 "Image Analyzer Wizard"
 
     local procedure FinishAndEnableAction()
     var
+        AuditLog: Codeunit "Audit Log";
         ItemAttrPopulate: Codeunit "Item Attr Populate";
 #if not CLEAN25
         ContactPictureAnalyze: Codeunit "Contact Picture Analyze";
@@ -401,7 +403,7 @@ page 2029 "Image Analyzer Wizard"
             if ContactPictureAnalyze.AnalyzePicture(ContactToFill) then
                 CurrPage.Close();
 #endif
-        Session.LogAuditMessage(StrSubstNo(ImageAnalyzerConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
+        AuditLog.LogAuditMessage(StrSubstNo(ImageAnalyzerConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
     end;
 
     local procedure ShowStartStep()

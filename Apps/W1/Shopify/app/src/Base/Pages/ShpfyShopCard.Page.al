@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.Telemetry;
@@ -823,6 +828,20 @@ page 30101 "Shpfy Shop Card"
                 RunObject = Page "Shpfy Bulk Operations";
                 RunPageLink = "Shop Code" = field(Code);
                 ToolTip = 'View a list of Shopify Bulk Operations for the shop.';
+            }
+            action(StaffMembers)
+            {
+                ApplicationArea = All;
+                Caption = 'Staff Members Mapping';
+                Image = Users;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                RunObject = Page "Shpfy Staff Mapping";
+                RunPageLink = "Shop Code" = field(Code);
+                ToolTip = 'View a list of Shopify Staff Members for the shop.';
+                Visible = Rec."B2B Enabled";
             }
         }
         area(Processing)

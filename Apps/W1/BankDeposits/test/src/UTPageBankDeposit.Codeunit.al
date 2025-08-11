@@ -1,6 +1,7 @@
 codeunit 139768 "UT Page Bank Deposit"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

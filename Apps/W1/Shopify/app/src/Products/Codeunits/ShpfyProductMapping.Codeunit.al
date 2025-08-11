@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
@@ -88,7 +93,7 @@ codeunit 30181 "Shpfy Product Mapping"
                         ShopifyVariant."Mapped By Item" := true;
                     end;
                     ShopifyVariant.Modify();
-                    exit(ShopifyVariant."Mapped By Item" or (not ShopifyProduct."Has Variants") OR (not IsNullGuid(ShopifyVariant."Item Variant SystemId")) or ((ShopifyVariant."UoM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')));
+                    exit(ShopifyVariant."Mapped By Item" or (not ShopifyProduct."Has Variants") or (not IsNullGuid(ShopifyVariant."Item Variant SystemId")) or ((ShopifyVariant."UoM Option Id" = 1) and (ShopifyVariant."Option 2 Name" = '')));
                 end;
         end else
             exit(true);
@@ -201,7 +206,7 @@ codeunit 30181 "Shpfy Product Mapping"
                             Shop."SKU Mapping"::"Item No. + Variant Code":
                                 begin
                                     Codes := ShopifyVariant.SKU.Split(Shop."SKU Field Separator");
-                                    Case Codes.Count of
+                                    case Codes.Count of
                                         1:
                                             begin
                                                 CodeNo := Codes.Get(1);

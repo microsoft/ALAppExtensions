@@ -3,6 +3,7 @@ codeunit 139598 "AAC Auto. Acc. Group Posting"
     // [FEATURE] [Automatic Account Group]
 
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

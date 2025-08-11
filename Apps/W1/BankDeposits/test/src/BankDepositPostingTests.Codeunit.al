@@ -1,6 +1,7 @@
 codeunit 139769 "Bank Deposit Posting Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

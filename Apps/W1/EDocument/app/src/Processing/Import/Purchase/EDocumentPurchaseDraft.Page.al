@@ -204,9 +204,8 @@ page 6181 "E-Document Purchase Draft"
                 ApplicationArea = All;
                 Caption = 'Documents';
                 UpdatePropagation = Both;
-                SubPageLink = "Table ID" = const(Database::"E-Document"),
-                            "E-Document Entry No." = field("Entry No"),
-                            "E-Document Attachment" = const(true);
+                SubPageLink = "E-Document Entry No." = field("Entry No"),
+                              "E-Document Attachment" = const(true);
             }
             part(InboundEDocPicture; "Inbound E-Doc. Picture")
             {
@@ -359,24 +358,21 @@ page 6181 "E-Document Purchase Draft"
     trigger OnOpenPage()
     var
         EDocumentsSetup: Record "E-Documents Setup";
-        ImportEDocumentProcess: Codeunit "Import E-Document Process";
         EDocumentNotification: Codeunit "E-Document Notification";
     begin
         if not EDocumentsSetup.IsNewEDocumentExperienceActive() then
             Error('');
 
-        if EDocumentPurchaseHeader.Get(Rec."Entry No") then
-            if Rec."Read into Draft Impl." = "E-Doc. Read into Draft"::ADI then begin
-                HasPDFSource := true;
-                AIGeneratedContentNotification.Message(ImportEDocumentProcess.AIGeneratedContentText());
-                AIGeneratedContentNotification.AddAction(ImportEDocumentProcess.TermsAndConditionsText(), Codeunit::"Import E-Document Process", 'OpenTermsAndConditions');
-                AIGeneratedContentNotification.Send();
-            end;
+        if EDocumentPurchaseHeader.Get(Rec."Entry No") then;
+        HasPDFSource := Rec."Read into Draft Impl." = "E-Doc. Read into Draft"::ADI;
         EDocumentServiceStatus := Rec.GetEDocumentServiceStatus();
         HasErrorsOrWarnings := false;
         HasErrors := false;
         PageEditable := IsEditable();
         EDocumentNotification.SendPurchaseDocumentDraftNotifications(Rec."Entry No");
+
+        if Rec."Entry No" <> 0 then
+            Rec.SetRecFilter(); // Filter the record to only this instance to avoid navigation 
     end;
 
     local procedure IsEditable(): Boolean
@@ -584,7 +580,6 @@ page 6181 "E-Document Purchase Draft"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocumentHelper: Codeunit "E-Document Helper";
         ErrorsAndWarningsNotification: Notification;
-        AIGeneratedContentNotification: Notification;
         RecordLinkTxt, StyleStatusTxt, ServiceStatusStyleTxt, VendorName, DataCaption : Text;
         HasErrorsOrWarnings, HasErrors : Boolean;
         ShowFinalizeDraftAction: Boolean;

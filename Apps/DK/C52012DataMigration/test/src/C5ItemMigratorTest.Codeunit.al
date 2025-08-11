@@ -7,6 +7,7 @@ codeunit 148005 "C5 Item Migrator Test"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

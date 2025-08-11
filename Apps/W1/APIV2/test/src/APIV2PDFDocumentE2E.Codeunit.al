@@ -1,6 +1,7 @@
 codeunit 139841 "APIV2 - PDF Document E2E"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

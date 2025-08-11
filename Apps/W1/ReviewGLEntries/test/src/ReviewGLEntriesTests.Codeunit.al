@@ -11,14 +11,8 @@ codeunit 139759 "Review G/L Entries Tests"
 
     var
         Assert: Codeunit Assert;
-        //LibraryDimension: Codeunit "Library - Dimension";
         LibraryERM: Codeunit "Library - ERM";
-        //LibraryERMCountryData: Codeunit "Library - ERM Country Data";
-        //LibraryInventory: Codeunit "Library - Inventory";
-        //LibraryPurchase: Codeunit "Library - Purchase";
-        //LibrarySales: Codeunit "Library - Sales";
         LibraryUtility: Codeunit "Library - Utility";
-        //LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryRandom: Codeunit "Library - Random";
         ReviewGLEntry: Codeunit "Review G/L Entry";
 
@@ -174,12 +168,11 @@ codeunit 139759 "Review G/L Entries Tests"
                         GLEntry."Amount to Review" := GLEntry."Debit Amount" * 0.1
                     else
                         GLEntry."Amount to Review" := GLEntry."Credit Amount" * -0.2;
-                end else begin
+                end else
                     if GLEntry."Debit Amount" <> 0 then
                         GLEntry."Amount to Review" := GLEntry."Debit Amount" * 0.1
                     else
                         GLEntry."Amount to Review" := GLEntry."Credit Amount" * -0.1;
-                end;
 
                 GLEntry.Modify();
             until GLEntry.Next() = 0;

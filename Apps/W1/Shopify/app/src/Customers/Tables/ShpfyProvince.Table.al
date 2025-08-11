@@ -1,3 +1,7 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEANSCHEMA25
 namespace Microsoft.Integration.Shopify;
 
@@ -47,6 +51,7 @@ table 30108 "Shpfy Province"
         {
             Caption = 'Tax';
             DataClassification = CustomerContent;
+            AutoFormatType = 0;
         }
 
         field(6; "Tax Name"; Code[10])
@@ -66,6 +71,7 @@ table 30108 "Shpfy Province"
         {
             Caption = 'Tax Percentage';
             DataClassification = CustomerContent;
+            AutoFormatType = 0;
         }
     }
 

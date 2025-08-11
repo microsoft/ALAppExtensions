@@ -1,6 +1,7 @@
 codeunit 148106 "SAF-T Performance Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

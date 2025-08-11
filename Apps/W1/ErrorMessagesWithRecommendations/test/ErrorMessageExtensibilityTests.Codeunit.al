@@ -5,6 +5,7 @@
 codeunit 139621 ErrorMessageExtensibilityTests
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

@@ -1,6 +1,7 @@
 codeunit 139515 "Digital Vouchers Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

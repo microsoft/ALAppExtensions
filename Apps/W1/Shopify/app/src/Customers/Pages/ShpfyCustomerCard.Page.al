@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Customer;
@@ -43,7 +48,7 @@ page 30106 "Shpfy Customer Card"
                 field(EMail; Rec.Email)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The unique email address of the customer. Attempting to assign the same e-mail address to multiple customers returns an error.';
+                    ToolTip = 'Specifies the unique email address of the customer. Attempting to assign the same e-mail address to multiple customers returns an error.';
                 }
                 field(Phone; Rec."Phone No.")
                 {
@@ -183,7 +188,7 @@ page 30106 "Shpfy Customer Card"
                 PromotedOnly = true;
                 PromotedCategory = Category4;
                 RunObject = Page "Shpfy Orders";
-                RunPageLink = "Customer Id" = Field(Id);
+                RunPageLink = "Customer Id" = field(Id);
                 ToolTip = 'View a list of Shopify orders for the customer.';
             }
             action(Metafields)

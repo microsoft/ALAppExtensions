@@ -2,6 +2,7 @@ codeunit 148105 "SAF-T Job Queue Tests"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()
