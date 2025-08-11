@@ -16,6 +16,8 @@ codeunit 139891 "E-Document Structured Tests"
         PEPPOLStructuredValidations: Codeunit "PEPPOL Structured Validations";
         IsInitialized: Boolean;
         EDocumentStatusNotUpdatedErr: Label 'The status of the EDocument was not updated to the expected status after the step was executed.';
+        MockCurrencyCode: Code[10];
+        MockDate: Date;
 
     #region CAPI JSON
     [Test]
@@ -75,10 +77,146 @@ codeunit 139891 "E-Document Structured Tests"
         Initialize(Enum::"Service Integration"::"Mock");
         SetupPEPPOLEDocumentService();
         CreateInboundEDocumentFromXML(EDocument, 'peppol/peppol-invoice-0.xml');
-        if ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Read into Draft") then
-            PEPPOLStructuredValidations.AssertFullEDocumentContentExtracted(EDocument."Entry No")
+        if ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Read into Draft") then begin
+            PEPPOLStructuredValidations.SetMockCurrencyCode(MockCurrencyCode);
+            PEPPOLStructuredValidations.SetMockDate(MockDate);
+            PEPPOLStructuredValidations.AssertFullEDocumentContentExtracted(EDocument."Entry No");
+        end
         else
             Assert.Fail(EDocumentStatusNotUpdatedErr);
+    end;
+
+    [Test]
+    [HandlerFunctions('EDocumentPurchaseHeaderPageHandler')]
+    procedure TestPEPPOLInvoice_ValidDocument_ViewExtractedData()
+    var
+        EDocument: Record "E-Document";
+        EDocImport: Codeunit "E-Doc. Import";
+    begin
+        // [FEATURE] [E-Document] [PEPPOL] [View Data]
+        // [SCENARIO] View extracted data from a valid PEPPOL invoice document
+        // ---------------------------------------------------------------------------
+        // [Expected Outcome]
+        // [1] E-Document is successfully processed to draft status
+        // [2] Extracted data page opens without errors
+        // [3] Page handler verifies the page can be closed properly
+
+        // [GIVEN] A valid PEPPOL XML invoice document is imported and processed
+        Initialize(Enum::"Service Integration"::"Mock");
+        SetupPEPPOLEDocumentService();
+        CreateInboundEDocumentFromXML(EDocument, 'peppol/peppol-invoice-0.xml');
+
+        // [WHEN] The document is processed to draft status
+        ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Read into Draft");
+        EDocument.Get(EDocument."Entry No");
+
+        // [WHEN] View extracted data is called
+        EDocImport.ViewExtractedData(EDocument);
+
+        // [THEN] The extracted data page opens and can be handled properly (verified by page handler)
+    end;
+
+    [Test]
+    procedure TestPEPPOLInvoice_ValidDocument_PurchaseInvoiceCreated()
+    var
+        EDocument: Record "E-Document";
+        PurchaseHeader: Record "Purchase Header";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+        DataTypeManagement: Codeunit "Data Type Management";
+        VariantRecord: Variant;
+        RecRef: RecordRef;
+    begin
+        // [FEATURE] [E-Document] [PEPPOL] [Purchase Invoice Creation]
+        // [SCENARIO] Create a purchase invoice from a valid PEPPOL invoice document
+        // ---------------------------------------------------------------------------
+        // [Expected Outcome]
+        // [1] E-Document is successfully processed through all import steps
+        // [2] A purchase header record is created and linked to the E-Document
+        // [3] Purchase header fields are correctly populated with PEPPOL data
+        // [4] All validation assertions pass for the created purchase document
+
+        // [GIVEN] A valid PEPPOL XML invoice document is imported
+        Initialize(Enum::"Service Integration"::"Mock");
+        SetupPEPPOLEDocumentService();
+        CreateInboundEDocumentFromXML(EDocument, 'peppol/peppol-invoice-0.xml');
+
+        // [WHEN] The document is processed through finish draft step
+        ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Finish draft");
+        EDocument.Get(EDocument."Entry No");
+
+        // [WHEN] The created purchase record is retrieved
+        EDocumentProcessing.GetRecord(EDocument, VariantRecord);
+        DataTypeManagement.GetRecordRef(VariantRecord, RecRef);
+        RecRef.SetTable(PurchaseHeader);
+
+        // [THEN] The purchase header is correctly created with PEPPOL data
+        PEPPOLStructuredValidations.SetMockCurrencyCode(MockCurrencyCode);
+        PEPPOLStructuredValidations.SetMockDate(MockDate);
+        PEPPOLStructuredValidations.AssertPurchaseHeader(Vendor."No.", PurchaseHeader);
+    end;
+
+    [Test]
+    procedure TestPEPPOLInvoice_ValidDocument_UpdateDraftAndFinalize()
+    var
+        EDocument: Record "E-Document";
+        PurchaseHeader: Record "Purchase Header";
+        Item: Record Item;
+        EDocImportParameters: Record "E-Doc. Import Parameters";
+        EDocImport: Codeunit "E-Doc. Import";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+        DataTypeManagement: Codeunit "Data Type Management";
+        EDocPurchaseDraftSubform: TestPage "E-Doc. Purchase Draft Subform";
+        EDocPurchaseDraft: TestPage "E-Document Purchase Draft";
+        VariantRecord: Variant;
+        RecRef: RecordRef;
+    begin
+        // [FEATURE] [E-Document] [PEPPOL] [Draft Update] [Manual Intervention]
+        // [SCENARIO] Update draft purchase document data and finalize processing
+        // ---------------------------------------------------------------------------
+        // [Expected Outcome]
+        // [1] E-Document is processed to prepare draft status
+        // [2] Draft document can be opened and modified through UI
+        // [3] Item number can be manually assigned to purchase lines
+        // [4] Document processing can be completed after manual updates
+        // [5] Final purchase header contains both imported and manually updated data
+
+        // [GIVEN] A valid PEPPOL XML invoice document is imported and processed to draft preparation
+        Initialize(Enum::"Service Integration"::"Mock");
+        SetupPEPPOLEDocumentService();
+        CreateInboundEDocumentFromXML(EDocument, 'peppol/peppol-invoice-0.xml');
+        ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Prepare draft");
+
+        // [GIVEN] A generic item is created for manual assignment
+        LibraryEDoc.CreateGenericItem(Item);
+
+        // [WHEN] The draft document is opened and modified through UI
+        EDocPurchaseDraft.OpenEdit();
+        EDocPurchaseDraft.GoToRecord(EDocument);
+        EDocPurchaseDraft.Lines.First();
+        EDocPurchaseDraft.Lines."No.".SetValue(Item."No.");
+        EDocPurchaseDraft.Lines.Next();
+
+        // [WHEN] The processing is completed to finish draft step
+        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
+        EDocument.Get(EDocument."Entry No");
+
+        // [WHEN] The final purchase record is retrieved
+        EDocumentProcessing.GetRecord(EDocument, VariantRecord);
+        DataTypeManagement.GetRecordRef(VariantRecord, RecRef);
+        RecRef.SetTable(PurchaseHeader);
+
+        // [THEN] The purchase header contains both imported PEPPOL data and manual updates
+        PEPPOLStructuredValidations.SetMockCurrencyCode(MockCurrencyCode);
+        PEPPOLStructuredValidations.SetMockDate(MockDate);
+        PEPPOLStructuredValidations.SetItem(Item);
+        PEPPOLStructuredValidations.AssertPurchaseHeader(Vendor."No.", PurchaseHeader);
+    end;
+
+    [PageHandler]
+    procedure EDocumentPurchaseHeaderPageHandler(var EDocReadablePurchaseDoc: TestPage "E-Doc. Readable Purchase Doc.")
+    begin
+        EDocReadablePurchaseDoc.Close();
     end;
     #endregion
 
@@ -119,9 +257,13 @@ codeunit 139891 "E-Document Structured Tests"
         EDocumentsSetup.InsertNewExperienceSetup();
 
         // Set a currency that can be used across all localizations
+        MockCurrencyCode := 'XYZ';
         Currency.Init();
-        Currency.Validate(Code, 'XYZ');
+        Currency.Validate(Code, MockCurrencyCode);
         if Currency.Insert(true) then;
+        CreateCurrencyExchangeRate();
+
+        MockDate := DMY2Date(22, 01, 2026);
 
         TransformationRule.DeleteAll();
         TransformationRule.CreateDefaultTransformations();
@@ -181,6 +323,29 @@ codeunit 139891 "E-Document Structured Tests"
         EDocImportParameters."Step to Run" := ProcessingStep;
         EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
         EDocument.CalcFields("Import Processing Status");
-        exit(EDocument."Import Processing Status" = Enum::"Import E-Doc. Proc. Status"::"Ready for draft");
+
+        // Update the exit condition to handle different processing steps
+        case ProcessingStep of
+            "Import E-Document Steps"::"Read into Draft":
+                exit(EDocument."Import Processing Status" = Enum::"Import E-Doc. Proc. Status"::"Ready for draft");
+            "Import E-Document Steps"::"Finish draft":
+                exit(EDocument."Import Processing Status" = Enum::"Import E-Doc. Proc. Status"::Processed);
+            "Import E-Document Steps"::"Prepare draft":
+                exit(EDocument."Import Processing Status" = Enum::"Import E-Doc. Proc. Status"::"Draft Ready");
+            else
+                exit(EDocument."Import Processing Status" = Enum::"Import E-Doc. Proc. Status"::"Ready for draft");
+        end;
+    end;
+
+    local procedure CreateCurrencyExchangeRate()
+    var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+    begin
+        CurrencyExchangeRate.Init();
+        CurrencyExchangeRate."Currency Code" := MockCurrencyCode;
+        CurrencyExchangeRate."Starting Date" := WorkDate();
+        CurrencyExchangeRate."Exchange Rate Amount" := 10;
+        CurrencyExchangeRate."Relational Exch. Rate Amount" := 1.23;
+        CurrencyExchangeRate.Insert(true);
     end;
 }
