@@ -33,7 +33,6 @@ page 6183 "E-Doc. Purchase Draft Subform"
                 {
                     ApplicationArea = All;
                     Lookup = true;
-Lookup = true;
 
                     trigger OnValidate()
                     begin
