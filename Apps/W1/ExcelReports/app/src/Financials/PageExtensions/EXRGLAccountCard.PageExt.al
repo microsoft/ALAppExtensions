@@ -6,7 +6,7 @@
 namespace Microsoft.Finance.ExcelReports;
 using Microsoft.Finance.GeneralLedger.Account;
 
-pageextension 4430 "G/L Account Card" extends "G/L Account Card"
+pageextension 4430 "EXR G/L Account Card" extends "G/L Account Card"
 {
     actions
     {

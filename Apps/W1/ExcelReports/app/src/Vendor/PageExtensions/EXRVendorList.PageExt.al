@@ -8,7 +8,7 @@ namespace Microsoft.Purchases.ExcelReports;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.ExcelReports;
 
-pageextension 4418 "Vendor List" extends "Vendor List"
+pageextension 4418 "EXR Vendor List" extends "Vendor List"
 {
     actions
     {

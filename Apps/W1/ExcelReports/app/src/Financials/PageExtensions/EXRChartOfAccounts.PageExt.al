@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace Microsoft.Finance.ExcelReports;
-using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Account;
 
-pageextension 4429 "General Journal Batches" extends "General Journal Batches"
+pageextension 4427 "EXR Chart of Accounts" extends "Chart of Accounts"
 {
     actions
     {
@@ -14,14 +14,14 @@ pageextension 4429 "General Journal Batches" extends "General Journal Batches"
         {
             action("Trial Balance - Excel")
             {
-                ApplicationArea = Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Trial Balance (Excel)';
                 Image = "Report";
                 RunObject = Report "EXR Trial Balance Excel";
-                ToolTip = 'Print or save the chart of accounts that have balances and net changes.';
+                ToolTip = 'View the chart of accounts that have balances and net changes.';
             }
         }
-        addlast(Category_Report)
+        addafter("Detail Trial Balance_Promoted")
         {
             actionref(TrialBalanceExcel_Promoted; "Trial Balance - Excel")
             {

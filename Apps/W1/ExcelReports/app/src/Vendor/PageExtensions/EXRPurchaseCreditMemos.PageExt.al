@@ -8,7 +8,7 @@ namespace Microsoft.Purchases.ExcelReports;
 using Microsoft.Purchases.Document;
 using Microsoft.Finance.ExcelReports;
 
-pageextension 4419 "Purchase Credit Memos" extends "Purchase Credit Memos"
+pageextension 4419 "EXR Purchase Credit Memos" extends "Purchase Credit Memos"
 {
     actions
     {

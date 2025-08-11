@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace Microsoft.Finance.ExcelReports;
-using Microsoft.Foundation.Period;
+using Microsoft.Finance.GeneralLedger.Ledger;
 
-pageextension 4425 "Accounting Periods" extends "Accounting Periods"
+pageextension 4432 "EXR G/L Registers" extends "G/L Registers"
 {
     actions
     {
-        addafter("Trial Balance by Period")
+        addafter("Detail Trial Balance")
         {
             action("Trial Balance - Excel")
             {

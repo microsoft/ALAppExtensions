@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace Microsoft.Finance.ExcelReports;
-using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.Period;
 
-pageextension 4431 "G/L Account List" extends "G/L Account List"
+pageextension 4425 "EXR Accounting Periods" extends "Accounting Periods"
 {
     actions
     {
-        addfirst(reporting)
+        addafter("Trial Balance by Period")
         {
             action("Trial Balance - Excel")
             {
@@ -18,13 +18,7 @@ pageextension 4431 "G/L Account List" extends "G/L Account List"
                 Caption = 'Trial Balance (Excel)';
                 Image = "Report";
                 RunObject = Report "EXR Trial Balance Excel";
-                ToolTip = 'View general ledger account balances and activities for all the selected accounts, one transaction per line.';
-            }
-        }
-        addfirst(Category_Report)
-        {
-            actionref(TrialBalanceExcel_Promoted; "Trial Balance - Excel")
-            {
+                ToolTip = 'Show the chart of accounts with balances and net changes. You can use the report at the close of an accounting period or fiscal year.';
             }
         }
     }

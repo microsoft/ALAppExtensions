@@ -6,22 +6,22 @@
 namespace Microsoft.Finance.ExcelReports;
 using Microsoft.Finance.GeneralLedger.Account;
 
-pageextension 4427 "Chart of Accounts" extends "Chart of Accounts"
+pageextension 4431 "EXR G/L Account List" extends "G/L Account List"
 {
     actions
     {
-        addafter("Detail Trial Balance")
+        addfirst(reporting)
         {
             action("Trial Balance - Excel")
             {
-                ApplicationArea = Basic, Suite;
+                ApplicationArea = Suite;
                 Caption = 'Trial Balance (Excel)';
                 Image = "Report";
                 RunObject = Report "EXR Trial Balance Excel";
-                ToolTip = 'View the chart of accounts that have balances and net changes.';
+                ToolTip = 'View general ledger account balances and activities for all the selected accounts, one transaction per line.';
             }
         }
-        addafter("Detail Trial Balance_Promoted")
+        addfirst(Category_Report)
         {
             actionref(TrialBalanceExcel_Promoted; "Trial Balance - Excel")
             {

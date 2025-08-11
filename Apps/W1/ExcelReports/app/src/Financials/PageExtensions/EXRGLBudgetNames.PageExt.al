@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace Microsoft.Finance.ExcelReports;
-using Microsoft.Finance.Analysis;
+using Microsoft.Finance.GeneralLedger.Budget;
 
-pageextension 4433 Budget extends Budget
+pageextension 4434 "EXR G/L Budget Names" extends "G/L Budget Names"
 {
     actions
     {
@@ -21,7 +21,7 @@ pageextension 4433 Budget extends Budget
                 ToolTip = 'View budget details for the specified period.';
             }
         }
-        addafter(ReportBudget_Promoted)
+        addafter(EditBudget_Promoted)
         {
             actionref(TrialBalanceBudgetExcel_Promoted; "Trial Balance/Budget - Excel")
             {

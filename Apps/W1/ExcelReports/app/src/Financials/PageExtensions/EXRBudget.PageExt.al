@@ -4,21 +4,27 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace Microsoft.Finance.ExcelReports;
-using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Analysis;
 
-pageextension 4426 "Bank Account List" extends "Bank Account List"
+pageextension 4433 "EXR Budget" extends Budget
 {
     actions
     {
-        addafter("Receivables-Payables")
+        addfirst(ReportGroup)
         {
-            action("Trial Balance - Excel")
+            action("Trial Balance/Budget - Excel")
             {
                 ApplicationArea = Suite;
-                Caption = 'Trial Balance (Excel)';
+                Caption = 'Trial Balance/Budget (Excel)';
                 Image = "Report";
-                RunObject = Report "EXR Trial Balance Excel";
-                ToolTip = 'View a detailed trial balance for the selected bank account.';
+                RunObject = Report "EXR Trial BalanceBudgetExcel";
+                ToolTip = 'View budget details for the specified period.';
+            }
+        }
+        addafter(ReportBudget_Promoted)
+        {
+            actionref(TrialBalanceBudgetExcel_Promoted; "Trial Balance/Budget - Excel")
+            {
             }
         }
     }

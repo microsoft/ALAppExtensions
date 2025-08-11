@@ -7,7 +7,7 @@ namespace Microsoft.Sales.ExcelReports;
 using Microsoft.Sales.Document;
 using Microsoft.Finance.ExcelReports;
 
-pageextension 4414 "Sales Invoice List" extends "Sales Invoice List"
+pageextension 4414 "EXR Sales Invoice List" extends "Sales Invoice List"
 {
     actions
     {
