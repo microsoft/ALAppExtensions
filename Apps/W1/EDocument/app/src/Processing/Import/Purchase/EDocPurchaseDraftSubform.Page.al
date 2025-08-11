@@ -33,6 +33,8 @@ page 6183 "E-Doc. Purchase Draft Subform"
                 {
                     ApplicationArea = All;
                     Lookup = true;
+Lookup = true;
+
                     trigger OnValidate()
                     begin
                         if Rec."[BC] Purchase Type No." <> xRec."[BC] Purchase Type No." then begin
