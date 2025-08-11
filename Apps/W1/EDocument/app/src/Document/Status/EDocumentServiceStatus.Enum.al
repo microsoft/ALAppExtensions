@@ -14,7 +14,7 @@ enum 6106 "E-Document Service Status" implements IEDocumentStatus
     value(1; "Exported")
     {
         Caption = 'Exported';
-        Implementation = IEDocumentStatus = "E-Doc Processed Status";
+        Implementation = IEDocumentStatus = "E-Doc Exported Status";
     }
     value(2; "Sending Error")
     {
