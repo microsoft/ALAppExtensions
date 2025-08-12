@@ -4,7 +4,7 @@ using System.TestTools.AITestToolkit;
 codeunit 133523 "Magic Function Attmt. Prompt"
 {
     Subtype = Test;
-    TestType = Uncategorized;
+    TestType = AITest;
     TestPermissions = Disabled;
 
     var

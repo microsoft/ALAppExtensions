@@ -122,7 +122,7 @@ codeunit 31465 "Contoso Compensations CZC"
         case Module of
             Enum::"Contoso Demo Data Module"::Sales:
                 SalesModule(ContosoDemoDataLevel);
-            Enum::"Contoso Demo Data Module"::Finance:
+            Enum::"Contoso Demo Data Module"::Purchase:
                 PurchaseModule(ContosoDemoDataLevel);
         end;
     end;

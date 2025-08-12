@@ -7,7 +7,7 @@ using System.Utilities;
 codeunit 133521 "Load Mappings from csv"
 {
     Subtype = Test;
-    TestType = Uncategorized;
+    TestType = AITest;
     TestPermissions = Disabled;
 
     var
