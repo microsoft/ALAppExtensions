@@ -95,9 +95,8 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
             Error(DraftLineDoesNotConstantTypeAndNumberErr);
         end;
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");
-        PurchaseHeader.SetRange("Buy-from Vendor No.", EDocumentPurchaseHeader."[BC] Vendor No."); // Setting the filter, so that the insert trigger assigns the right vendor to the purchase header
-        PurchaseHeader."Document Type" := "Purchase Document Type"::Invoice;
-        PurchaseHeader."Pay-to Vendor No." := EDocumentPurchaseHeader."[BC] Vendor No.";
+        PurchaseHeader.Validate("Document Type", "Purchase Document Type"::Invoice);
+        PurchaseHeader.Validate("Buy-from Vendor No.", EDocumentPurchaseHeader."[BC] Vendor No.");
 
         VendorInvoiceNo := CopyStr(EDocumentPurchaseHeader."Sales Invoice No.", 1, MaxStrLen(PurchaseHeader."Vendor Invoice No."));
         VendorLedgerEntry.SetLoadFields("Entry No.");
@@ -109,6 +108,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         end;
 
         PurchaseHeader.Validate("Vendor Invoice No.", VendorInvoiceNo);
+        PurchaseHeader.Validate("Vendor Order No.", EDocumentPurchaseHeader."Purchase Order No.");
         PurchaseHeader.Insert(true);
 
         if EDocumentPurchaseHeader."Document Date" <> 0D then
@@ -193,5 +193,4 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         until EDocumentPurchaseLine.Next() = 0;
         exit(true);
     end;
-
 }
