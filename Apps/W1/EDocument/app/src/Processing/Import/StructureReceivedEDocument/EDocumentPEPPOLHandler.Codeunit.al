@@ -156,8 +156,8 @@ codeunit 6173 "E-Document PEPPOL Handler" implements IStructuredFormatReader
         XmlNamespaces.AddNamespace('cn', CreditNoteNamespaceLbl);
 
         EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Sales Invoice No."), EDocumentPurchaseHeader."Sales Invoice No.");
-        EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:OrderReference/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Purchase Order No."), EDocumentPurchaseHeader."Applies-to Doc. No.");
-        EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Applies-to Doc. No."), EDocumentPurchaseHeader."Purchase Order No.");
+        EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:OrderReference/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Purchase Order No."), EDocumentPurchaseHeader."Purchase Order No.");
+        EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Applies-to Doc. No."), EDocumentPurchaseHeader."Applies-to Doc. No.");
         EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name', MaxStrLen(EDocumentPurchaseHeader."Vendor Company Name"), EDocumentPurchaseHeader."Vendor Company Name");
         // Line below, using PayeeParty, shall be used when the Payee is different from the Seller. Otherwise, it will not be shown in the XML.
         EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:PayeeParty/cac:PartyName/cbc:Name', MaxStrLen(EDocumentPurchaseHeader."Vendor Company Name"), EDocumentPurchaseHeader."Vendor Company Name");
