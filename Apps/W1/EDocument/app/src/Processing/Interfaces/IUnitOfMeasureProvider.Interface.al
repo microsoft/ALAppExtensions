@@ -21,12 +21,4 @@ interface IUnitOfMeasureProvider
     /// <param name="ExternalUnitOfMeasure">The external unit of measure reference.</param>
     /// <returns>A Unit of Measure record corresponding to the provided details.</returns>
     procedure GetUnitOfMeasure(EDocument: Record "E-Document"; EDocumentLineId: Integer; ExternalUnitOfMeasure: Text): Record "Unit of Measure";
-
-    /// <summary>
-    /// Retrieves the default unit of measure for a given purchase line type and number.
-    /// </summary>
-    /// <param name="PurchaseLineType">The type of the purchase line.</param>
-    /// <param name="PurchaseLineTypeNo">The number associated with the purchase line type.</param>
-    /// <returns>The default unit of measure code for the specified purchase line type and number.</returns>
-    procedure GetDefaultUnitOfMeasure(PurchaseLineType: Enum "Purchase Line Type"; PurchaseLineTypeNo: Code[20]) UnitOfMeasureCode: Code[20];
 }

@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Format;
 
+using Microsoft.EServices.EDocument.Processing.Import.Purchase;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Helpers;
 using Microsoft.eServices.EDocument.Processing.Import;
-using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 using System.Utilities;
 
@@ -91,7 +91,6 @@ codeunit 6173 "E-Document PEPPOL Handler" implements IStructuredFormatReader
         NewLineXML: XmlDocument;
         LineXMLList: XmlNodeList;
         LineXMLNode: XmlNode;
-        i: Integer;
         CreditNoteLinePathLbl: Label '/cn:CreditNote/cac:CreditNoteLine';
         CreditNoteNamespaceLbl: Label 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2';
     begin
@@ -157,7 +156,8 @@ codeunit 6173 "E-Document PEPPOL Handler" implements IStructuredFormatReader
         XmlNamespaces.AddNamespace('cn', CreditNoteNamespaceLbl);
 
         EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Sales Invoice No."), EDocumentPurchaseHeader."Sales Invoice No.");
-        EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Purchase Order No."), EDocumentPurchaseHeader."Purchase Order No.");
+        EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:OrderReference/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Purchase Order No."), EDocumentPurchaseHeader."Applies-to Doc. No.");
+        EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Applies-to Doc. No."), EDocumentPurchaseHeader."Purchase Order No.");
         EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name', MaxStrLen(EDocumentPurchaseHeader."Vendor Company Name"), EDocumentPurchaseHeader."Vendor Company Name");
         // Line below, using PayeeParty, shall be used when the Payee is different from the Seller. Otherwise, it will not be shown in the XML.
         EDocumentXMLHelper.SetStringValueInField(PeppolXML, XMLNamespaces, '/cn:CreditNote/cac:PayeeParty/cac:PartyName/cbc:Name', MaxStrLen(EDocumentPurchaseHeader."Vendor Company Name"), EDocumentPurchaseHeader."Vendor Company Name");
@@ -232,5 +232,25 @@ codeunit 6173 "E-Document PEPPOL Handler" implements IStructuredFormatReader
         EDocPurchaseLine.SetRange("E-Document Entry No.", EDocPurchaseHeader."E-Document Entry No.");
         EDocReadablePurchaseDoc.SetBuffer(EDocPurchaseHeader, EDocPurchaseLine);
         EDocReadablePurchaseDoc.Run();
+    end;
+
+    procedure ResetDraft(EDocument: Record "E-Document")
+    var
+        EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+        EDocumentPurchaseLine: Record "E-Document Purchase Line";
+        EDocumentHeaderMapping: Record "E-Document Header Mapping";
+        EDocumentLineField: Record "E-Document Line - Field";
+    begin
+        EDocumentPurchaseHeader.GetFromEDocument(EDocument);
+        EDocumentPurchaseHeader.Delete(true);
+
+        EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocument."Entry No");
+        EDocumentPurchaseLine.DeleteAll(true);
+
+        EDocumentHeaderMapping.SetRange("E-Document Entry No.", EDocument."Entry No");
+        EDocumentHeaderMapping.DeleteAll(true);
+
+        EDocumentLineField.SetRange("E-Document Entry No.", EDocument."Entry No");
+        EDocumentLineField.DeleteAll(true);
     end;
 }

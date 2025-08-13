@@ -212,6 +212,11 @@ table 6100 "E-Document Purchase Header"
             Caption = 'E-Document Type';
             DataClassification = CustomerContent;
         }
+        field(39; "Applies-to Doc. No."; Text[20])
+        {
+            Caption = 'Applies-to Doc. No.';
+            DataClassification = CustomerContent;
+        }
         #endregion Purchase fields
 
         #region Business Central Data - Validated fields [101-200]

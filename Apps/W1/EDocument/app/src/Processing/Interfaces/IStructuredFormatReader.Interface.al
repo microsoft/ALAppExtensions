@@ -14,7 +14,6 @@ using System.Utilities;
 /// </summary>
 interface IStructuredFormatReader
 {
-
     /// <summary>
     /// Read the data into the E-Document data structures.
     /// </summary>
@@ -23,7 +22,6 @@ interface IStructuredFormatReader
     /// <returns>The data process to run on the structured data.</returns>
     procedure ReadIntoDraft(EDocument: Record "E-Document"; TempBlob: Codeunit "Temp Blob"): Enum "E-Doc. Process Draft";
 
-
     /// <summary>
     /// Presents a view of the data 
     /// </summary>
@@ -31,4 +29,9 @@ interface IStructuredFormatReader
     /// <param name="TempBlob">The temporary blob that contains the data to read</param>
     procedure View(EDocument: Record "E-Document"; TempBlob: Codeunit "Temp Blob");
 
+    /// <summary>
+    /// Resets draft by removing all the created lines associated with the E-Document.
+    /// </summary>
+    /// <param name="EDocument">The E-Document record for which to remove the created draft lines.</param>
+    procedure ResetDraft(EDocument: Record "E-Document");
 }

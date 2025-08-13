@@ -174,8 +174,8 @@ codeunit 6104 "Import E-Document Process"
     local procedure UndoProcessingStep(EDocument: Record "E-Document"; Step: Enum "Import E-Document Steps")
     var
         EDocumentHeaderMapping: Record "E-Document Header Mapping";
-        EDocumentPurchaseLine: Record "E-Document Purchase Line";
         IEDocumentFinishDraft: Interface IEDocumentFinishDraft;
+        IStructuredFormatReader: Interface IStructuredFormatReader;
     begin
         case Step of
             Step::"Finish draft":
@@ -187,8 +187,8 @@ codeunit 6104 "Import E-Document Process"
                 end;
             Step::"Read into Draft":
                 begin
-                    EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocument."Entry No");
-                    EDocumentPurchaseLine.DeleteAll(false);
+                    IStructuredFormatReader := EDocument."Read into Draft Impl.";
+                    IStructuredFormatReader.ResetDraft(EDocument);
                 end;
             Step::"Prepare draft":
                 begin

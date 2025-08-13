@@ -12,7 +12,6 @@ using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.Service.Participant;
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
-using Microsoft.Projects.Resources.Resource;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using System.Log;
@@ -109,7 +108,10 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
         if GetPurchaseLineItemRef(EDocumentPurchaseLine, ItemReference) then begin
             EDocumentPurchaseLine."[BC] Purchase Line Type" := "Purchase Line Type"::Item;
             EDocumentPurchaseLine.Validate("[BC] Purchase Type No.", ItemReference."Item No.");
-            EDocumentPurchaseLine.Validate("[BC] Unit of Measure", ItemReference."Unit of Measure");
+            if ItemReference."Unit of Measure" <> '' then
+                EDocumentPurchaseLine.Validate("[BC] Unit of Measure", ItemReference."Unit of Measure")
+            else
+                EDocumentPurchaseLine.Validate("[BC] Unit of Measure", GetDefaultUnitOfMeasure(ItemReference."Item No."));
             EDocumentPurchaseLine.Validate("[BC] Variant Code", ItemReference."Variant Code");
             EDocumentPurchaseLine.Validate("[BC] Item Reference No.", ItemReference."Reference No.");
             EDocImpSessionTelemetry.SetLineBool(EDocumentPurchaseLine.SystemId, 'Item Reference ', true);
@@ -184,25 +186,14 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
                 exit(true);
     end;
 
-    procedure GetDefaultUnitOfMeasure(PurchaseLineType: Enum "Purchase Line Type"; PurchaseLineTypeNo: Code[20]) UnitOfMeasureCode: Code[20];
+    local procedure GetDefaultUnitOfMeasure(ItemNo: Code[20]) UnitOfMeasureCode: Code[20];
     var
         Item: Record Item;
-        Resource: Record Resource;
     begin
-        case PurchaseLineType of
-            "Purchase Line Type"::Item:
-                begin
-                    if Item.Get(PurchaseLineTypeNo) then
-                        if Item."Purch. Unit of Measure" <> '' then
-                            UnitOfMeasureCode := Item."Purch. Unit of Measure"
-                        else
-                            UnitOfMeasureCode := Item."Base Unit of Measure";
-                end;
-            "Purchase Line Type"::Resource:
-                begin
-                    if Resource.Get(PurchaseLineTypeNo) then
-                        UnitOfMeasureCode := Resource."Base Unit of Measure";
-                end;
-        end;
+        if Item.Get(ItemNo) then
+            if Item."Purch. Unit of Measure" <> '' then
+                UnitOfMeasureCode := Item."Purch. Unit of Measure"
+            else
+                UnitOfMeasureCode := Item."Base Unit of Measure";
     end;
 }

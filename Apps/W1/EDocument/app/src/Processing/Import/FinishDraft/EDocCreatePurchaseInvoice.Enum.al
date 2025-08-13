@@ -13,6 +13,8 @@ enum 6105 "E-Doc. Create Purchase Invoice" implements IEDocumentCreatePurchaseIn
 {
     Extensible = true;
     DefaultImplementation = IEDocumentCreatePurchaseInvoice = "E-Doc. Create Purchase Invoice";
-    
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by enum 6110 "E-Doc. Proc. Customizations';
+
     value(0; "Default") { }
 }
