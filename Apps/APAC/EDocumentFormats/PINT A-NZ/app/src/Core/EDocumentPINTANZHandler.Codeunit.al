@@ -82,6 +82,7 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         EDocumentXMLHelper: Codeunit "EDocument XML Helper";
         VendorNo: Code[20];
     begin
+        EDocumentPurchaseHeader."E-Document Type" := "E-Document Type"::"Purchase Invoice";
         EDocumentXMLHelper.SetStringValueInField(PINTANZXml, XmlNamespaces, '/inv:Invoice/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Sales Invoice No."), EDocumentPurchaseHeader."Sales Invoice No.");
         EDocumentXMLHelper.SetStringValueInField(PINTANZXml, XmlNamespaces, '/inv:Invoice/cac:OrderReference/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Purchase Order No."), EDocumentPurchaseHeader."Purchase Order No.");
         EDocumentXMLHelper.SetDateValueInField(PINTANZXml, XmlNamespaces, '/inv:Invoice/cbc:IssueDate', EDocumentPurchaseHeader."Document Date");
@@ -103,6 +104,7 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         EDocumentXMLHelper: Codeunit "EDocument XML Helper";
         VendorNo: Code[20];
     begin
+        EDocumentPurchaseHeader."E-Document Type" := "E-Document Type"::"Purchase Credit Memo";
         EDocumentXMLHelper.SetStringValueInField(PINTANZXml, XmlNamespaces, '/cn:CreditNote/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Sales Invoice No."), EDocumentPurchaseHeader."Sales Invoice No.");
         EDocumentXMLHelper.SetStringValueInField(PINTANZXml, XmlNamespaces, '/cn:CreditNote/cac:OrderReference/cbc:ID', MaxStrLen(EDocumentPurchaseHeader."Purchase Order No."), EDocumentPurchaseHeader."Purchase Order No.");
         EDocumentXMLHelper.SetDateValueInField(PINTANZXml, XmlNamespaces, '/cn:CreditNote/cbc:IssueDate', EDocumentPurchaseHeader."Document Date");
