@@ -181,7 +181,6 @@ codeunit 13913 "E-Document OIOUBL Handler" implements IStructuredFormatReader
         // Parse parties
         VendorNo := ParseAccountingSupplierParty(OIOUBLXml, XmlNamespaces, EDocumentPurchaseHeader, EDocument, 'rem:Reminder');
         ParseAccountingCustomerParty(OIOUBLXml, XmlNamespaces, EDocumentPurchaseHeader, 'rem:Reminder');
-
         if VendorNo <> '' then
             EDocumentPurchaseHeader."[BC] Vendor No." := VendorNo;
 
