@@ -37,6 +37,8 @@ codeunit 6212 "Sustainability Post Mgt"
 
         SustainabilityLedgerEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
         UpdateCarbonFeeEmission(SustainabilityLedgerEntry);
+
+        OnBeforeInsertSustainabilityLedgerEntry(SustainabilityLedgerEntry, SustainabilityJnlLine);
         SustainabilityLedgerEntry.Insert(true);
     end;
 
@@ -322,4 +324,9 @@ codeunit 6212 "Sustainability Post Mgt"
         PostConfirmLbl: Label 'Do you want to post the journal lines?';
         SustainabilityLbl: Label 'Sustainability', Locked = true;
         SustainabilityValueEntryAddedLbl: Label 'Sustainability Value Entry Added', Locked = true;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertSustainabilityLedgerEntry(var SustainabilityLedgerEntry: Record "Sustainability Ledger Entry"; SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    begin
+    end;
 }

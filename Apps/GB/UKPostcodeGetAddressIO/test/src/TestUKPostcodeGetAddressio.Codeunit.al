@@ -21,7 +21,7 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
     begin
         Initialize();
         LibraryLowerPermissions.SetO365Basic();
-        GeneralTestGetAddressIO('CM129UR', '', 22);
+        GeneralTestGetAddressIO('CM129UR', '', 29);
     end;
 
     [Test]
@@ -280,7 +280,7 @@ codeunit 148018 "Test UK Postcode GetAddress.io"
         // [WHEN]
         PostcodeServiceManager.GetAddressList(TempAutocompleteAddress, TempAddressListNameValueBuffer);
 
-        // [THEN] number of records retrieved should be 21
+        // [THEN] number of records retrieved should be ExpectedResultCount
         Assert.RecordCount(TempAddressListNameValueBuffer, ExpectedResultCount);
     end;
 

@@ -432,13 +432,13 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
         view(BalanceEntries)
         {
             Caption = 'Balance Entries';
-            Filters = where("Entry Type" = filter('Payment|Usage|Closed'));
+            Filters = where("Entry Type" = filter(Payment | Usage | Close));
             Visible = not IsAdvLetterNoFiltered;
         }
         view(VATEntries)
         {
             Caption = 'VAT Entries';
-            Filters = where("Entry Type" = filter('VAT Payment|VAT Usage|VAT Close|VAT Rate|VAT Adjustment'));
+            Filters = where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close" | "VAT Rate" | "VAT Adjustment"));
             Visible = not IsAdvLetterNoFiltered;
         }
     }

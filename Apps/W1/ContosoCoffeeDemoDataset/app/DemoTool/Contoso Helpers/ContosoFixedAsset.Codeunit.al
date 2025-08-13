@@ -95,6 +95,30 @@ codeunit 4776 "Contoso Fixed Asset"
             FADepreciationBook.Insert(true);
     end;
 
+    procedure InsertFADepreciationBook(FixedAssetNo: Code[20]; DepreciationBookCode: Code[20]; DepreciationStartingDate: Date; NoOfDepreciationYears: Decimal; FAPostingGroup: Code[20])
+    var
+        FADepreciationBook: Record "FA Depreciation Book";
+        Exists: Boolean;
+    begin
+        if FADepreciationBook.Get(FixedAssetNo, DepreciationBookCode) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        FADepreciationBook.Validate("FA No.", FixedAssetNo);
+        FADepreciationBook.Validate("Depreciation Book Code", DepreciationBookCode);
+        FADepreciationBook.Validate("Depreciation Starting Date", DepreciationStartingDate);
+        FADepreciationBook.Validate("No. of Depreciation Years", NoOfDepreciationYears);
+        FADepreciationBook.Validate("FA Posting Group", FAPostingGroup);
+
+        if Exists then
+            FADepreciationBook.Modify(true)
+        else
+            FADepreciationBook.Insert(true);
+    end;
+
     procedure InsertFAClass(ClassCode: Code[10]; Name: Text[50])
     var
         FAClass: Record "FA Class";

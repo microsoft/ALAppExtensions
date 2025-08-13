@@ -1,1 +1,0 @@
-{ "data" : { "product" : { "variants" : { "edges" : [ { "node" : { "legacyResourceId" : %1 } } ] } } } }'

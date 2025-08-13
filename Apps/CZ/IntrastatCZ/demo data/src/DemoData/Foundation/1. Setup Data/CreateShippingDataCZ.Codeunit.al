@@ -3,10 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace Microsoft.DemoData.Localization;
+namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.DemoData.Foundation;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.Intrastat;
 
 codeunit 31491 "Create Shipping Data CZ"
 {

@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.ESGReporting;
 
+using Microsoft.Sustainability.Reports;
+
 page 6257 "Sust. Posted ESG Report"
 {
     Caption = 'Posted ESG Report';
@@ -35,15 +37,25 @@ page 6257 "Sust. Posted ESG Report"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a description of the ESG reporting name.';
                 }
-                field("Standard Type"; Rec."Standard Type")
+                field("Standard"; Rec."Standard")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies a Standard Type of the ESG reporting name.';
+                    ToolTip = 'Specifies a Standard of the ESG reporting name.';
                 }
-                field(Period; Rec.Period)
+                field("Period Name"; Rec."Period Name")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a period of the ESG reporting name.';
+                }
+                field("Period Starting Date"; Rec."Period Starting Date")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies a period starting date of the ESG reporting name.';
+                }
+                field("Period Ending Date"; Rec."Period Ending Date")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies a period ending date of the ESG reporting name.';
                 }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {
@@ -68,6 +80,28 @@ page 6257 "Sust. Posted ESG Report"
             {
                 ApplicationArea = Notes;
                 Visible = false;
+            }
+        }
+    }
+    actions
+    {
+        area(Reporting)
+        {
+            action("CSRD Preparation Report")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'CSRD Preparation Report';
+                Image = "Report";
+                ToolTip = 'Executes the CSRD Preparation Report action.';
+
+                trigger OnAction()
+                var
+                    PostedESGReportHeader: Record "Sust. Posted ESG Report Header";
+                begin
+                    PostedESGReportHeader.SetRange("No.", Rec."No.");
+
+                    Report.RunModal(Report::"Sust. CSRD Preparation", true, false, PostedESGReportHeader);
+                end;
             }
         }
     }

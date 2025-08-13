@@ -785,7 +785,7 @@ codeunit 18430 "GST Application Handler"
                                     Abs(GSTApplicationBuffer."Applied Base Amount") * AppliedBase;
                                 GSTApplicationBuffer.Modify();
 
-                                if (not ApplyDetailedGSTLedgerEntry."Reverse Charge") then begin
+                                if (not ApplyDetailedGSTLedgerEntry."Reverse Charge") or (ApplyDetailedGSTLedgerEntry."GST Vendor Type" in ["GST Vendor Type"::Import, "GST Vendor Type"::Unregistered]) then begin
                                     AppliedBaseAmountInvoiceLCY := Round(
                                         Abs(AppliedBaseAmountInvoiceLCY * GSTApplicationBuffer."Amt to Apply (Applied)" / GSTApplicationBuffer."Amt to Apply"));
                                     AppliedAmountInvoiceLCY := Round(AppliedBaseAmountInvoiceLCY * GSTApplicationBuffer."GST %" / 100);
@@ -2010,7 +2010,7 @@ codeunit 18430 "GST Application Handler"
         end else begin
             if (GSTApplicationBuffer."Currency Factor" <> PaymentCurrencyFactor) and (GSTApplicationBuffer."Currency Code" <> '') then
                 if GSTApplicationBuffer."Currency Factor" < PaymentCurrencyFactor then
-                    AppliedBaseAmountInvoiceLCY := Round(Abs(GSTApplicationBuffer."Applied Base Amount") * PaymentCurrencyFactor / GSTApplicationBuffer."Currency Factor")
+                    AppliedBaseAmountInvoiceLCY := Round(Abs(GSTApplicationBuffer."Applied Base Amount") * GSTApplicationBuffer."Currency Factor" / PaymentCurrencyFactor)
                 else
                     if GSTApplicationBuffer."Currency Factor" > PaymentCurrencyFactor then
                         AppliedBaseAmountInvoiceLCY := Round(GSTApplicationBuffer."Applied Base Amount" * GSTApplicationBuffer."Currency Factor" / PaymentCurrencyFactor);
