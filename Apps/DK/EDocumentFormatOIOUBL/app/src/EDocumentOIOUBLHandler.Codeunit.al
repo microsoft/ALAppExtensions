@@ -236,7 +236,6 @@ codeunit 13913 "E-Document OIOUBL Handler" implements IStructuredFormatReader
         VATRegistrationNo := CopyStr(EDocumentPurchaseHeader."Vendor VAT Id", 1, 20);
         VendorName := EDocumentPurchaseHeader."Vendor Company Name";
         VendorAddress := EDocumentPurchaseHeader."Vendor Address";
-
         if not FindVendorByVATRegNoOrGLN(VendorNo, VATRegistrationNo, GLN) then
             if not FindVendorByParticipantId(VendorNo, EDocument, VendorParticipantId) then
                 VendorNo := EDocumentImportHelper.FindVendorByNameAndAddress(VendorName, VendorAddress);
