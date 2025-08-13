@@ -107,4 +107,20 @@ codeunit 6177 "EDocument XML Helper"
         if XMLNode.AsXmlElement().InnerText() <> '' then
             Evaluate(DateValue, XMLNode.AsXmlElement().InnerText(), 9);
     end;
+
+    /// <summary>
+    /// Retrieves the inner text value of an XML node using XPath expression.
+    /// </summary>
+    /// <param name="XmlDoc">The XML document to search in.</param>
+    /// <param name="XmlNamespaces">The XML namespace manager for XPath queries.</param>
+    /// <param name="XPath">The XPath expression to locate the node.</param>
+    /// <returns>The inner text value of the found node, or empty string if node not found.</returns>
+    internal procedure GetNodeValue(XmlDoc: XmlDocument; XmlNamespaces: XmlNamespaceManager; XPath: Text): Text
+    var
+        XMLNode: XmlNode;
+    begin
+        if XmlDoc.SelectSingleNode(XPath, XmlNamespaces, XMLNode) then
+            exit(XMLNode.AsXmlElement().InnerText());
+        exit('');
+    end;
 }
