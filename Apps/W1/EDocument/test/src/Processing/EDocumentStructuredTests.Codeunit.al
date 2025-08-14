@@ -96,7 +96,7 @@ codeunit 139891 "E-Document Structured Tests"
         // [FEATURE] [E-Document] [PEPPOL] [View Data]
         // [SCENARIO] View extracted data from a valid PEPPOL invoice document
 
-        // [GIVEN] A valid PEPPOL XML invoice document is imported and processed
+        // [GIVEN] A valid PEPPOL XML invoice document is imported
         Initialize(Enum::"Service Integration"::"Mock");
         SetupPEPPOLEDocumentService();
         CreateInboundEDocumentFromXML(EDocument, 'peppol/peppol-invoice-0.xml');
