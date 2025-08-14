@@ -95,11 +95,6 @@ codeunit 139891 "E-Document Structured Tests"
     begin
         // [FEATURE] [E-Document] [PEPPOL] [View Data]
         // [SCENARIO] View extracted data from a valid PEPPOL invoice document
-        // ---------------------------------------------------------------------------
-        // [Expected Outcome]
-        // [1] E-Document is successfully processed to draft status
-        // [2] Extracted data page opens without errors
-        // [3] Page handler verifies the page can be closed properly
 
         // [GIVEN] A valid PEPPOL XML invoice document is imported and processed
         Initialize(Enum::"Service Integration"::"Mock");
