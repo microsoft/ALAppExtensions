@@ -124,12 +124,6 @@ codeunit 139891 "E-Document Structured Tests"
     begin
         // [FEATURE] [E-Document] [PEPPOL] [Purchase Invoice Creation]
         // [SCENARIO] Create a purchase invoice from a valid PEPPOL invoice document
-        // ---------------------------------------------------------------------------
-        // [Expected Outcome]
-        // [1] E-Document is successfully processed through all import steps
-        // [2] A purchase header record is created and linked to the E-Document
-        // [3] Purchase header fields are correctly populated with PEPPOL data
-        // [4] All validation assertions pass for the created purchase document
 
         // [GIVEN] A valid PEPPOL XML invoice document is imported
         Initialize(Enum::"Service Integration"::"Mock");
