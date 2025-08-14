@@ -493,16 +493,20 @@ table 6121 "E-Document"
         EDocumentLineField: Record "E-Document Line - Field";
     begin
         EDocumentPurchaseHeader.GetFromEDocument(Rec);
-        EDocumentPurchaseHeader.Delete(true);
+        if not EDocumentPurchaseHeader.IsEmpty() then
+            EDocumentPurchaseHeader.Delete(true);
 
         EDocumentPurchaseLine.SetRange("E-Document Entry No.", Rec."Entry No");
-        EDocumentPurchaseLine.DeleteAll(true);
+        if not EDocumentPurchaseLine.IsEmpty() then
+            EDocumentPurchaseLine.DeleteAll(true);
 
         EDocumentHeaderMapping.SetRange("E-Document Entry No.", Rec."Entry No");
-        EDocumentHeaderMapping.DeleteAll(true);
+        if not EDocumentHeaderMapping.IsEmpty() then
+            EDocumentHeaderMapping.DeleteAll(true);
 
         EDocumentLineField.SetRange("E-Document Entry No.", Rec."Entry No");
-        EDocumentLineField.DeleteAll(true);
+        if not EDocumentLineField.IsEmpty() then
+            EDocumentLineField.DeleteAll(true);
     end;
 
     internal procedure ToString(): Text
