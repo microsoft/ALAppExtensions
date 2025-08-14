@@ -27,11 +27,7 @@ pageextension 4403 "EXT Company Detail" extends "Company Detail"
             action(EXRTrialBalanceExcel)
             {
                 ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                Caption = 'Trial Balance (Preview)';
-#else
                 Caption = 'Trial Balance (Excel)';
-#endif
                 Image = "Report";
                 RunObject = report "EXR Trial Balance Excel";
                 ToolTip = 'Open a spreadsheet that shows Trial Balance Excel data.';
@@ -55,11 +51,7 @@ pageextension 4403 "EXT Company Detail" extends "Company Detail"
             action(EXRAgedAccountsRecExcel)
             {
                 ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                Caption = 'Aged Accounts Receivable (Preview)';
-#else
                 Caption = 'Aged Accounts Receivable (Excel)';
-#endif
                 Image = "Report";
                 RunObject = report "EXR Aged Accounts Rec Excel";
                 ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
@@ -83,11 +75,7 @@ pageextension 4403 "EXT Company Detail" extends "Company Detail"
             action(EXRAgedAccPayableExcel)
             {
                 ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                Caption = 'Aged Accounts Payable (Preview)';
-#else
                 Caption = 'Aged Accounts Payable (Excel)';
-#endif
                 Image = "Report";
                 RunObject = report "EXR Aged Acc Payable Excel";
                 ToolTip = 'Open a spreadsheet that shows the Aged Accounts Payable data.';
