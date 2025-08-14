@@ -8,7 +8,7 @@ codeunit 139896 "PEPPOL Structured Validations"
         PurchaseorderNoTok: Label '2';
         MockDate: Date;
         MockCurrencyCode: Code[10];
-        MockDataMismatchLbl: Label 'The %1 in %2 does not align with the mock data. Expected: %3, Actual: %4', Locked = true;
+        MockDataMismatchErr: Label 'The %1 in %2 does not align with the mock data. Expected: %3, Actual: %4';
 
     internal procedure AssertFullEDocumentContentExtracted(EDocumentEntryNo: Integer)
     var
