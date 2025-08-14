@@ -168,13 +168,6 @@ codeunit 139891 "E-Document Structured Tests"
     begin
         // [FEATURE] [E-Document] [PEPPOL] [Draft Update] [Manual Intervention]
         // [SCENARIO] Update draft purchase document data and finalize processing
-        // ---------------------------------------------------------------------------
-        // [Expected Outcome]
-        // [1] E-Document is processed to prepare draft status
-        // [2] Draft document can be opened and modified through UI
-        // [3] Item number can be manually assigned to purchase lines
-        // [4] Document processing can be completed after manual updates
-        // [5] Final purchase header contains both imported and manually updated data
 
         // [GIVEN] A valid PEPPOL XML invoice document is imported and processed to draft preparation
         Initialize(Enum::"Service Integration"::"Mock");
