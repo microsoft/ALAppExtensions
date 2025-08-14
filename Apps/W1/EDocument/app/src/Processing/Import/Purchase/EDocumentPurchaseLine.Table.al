@@ -158,7 +158,7 @@ table 6101 "E-Document Purchase Line"
             TableRelation = "Dimension Value".Code where("Global Dimension No." = const(2),
                                                           Blocked = const(false));
         }
-        field(107; "[BC] Item Reference No."; Code[20])
+        field(107; "[BC] Item Reference No."; Code[50])
         {
             Caption = 'Item Reference No.';
             ToolTip = 'Specifies the item reference number.';
