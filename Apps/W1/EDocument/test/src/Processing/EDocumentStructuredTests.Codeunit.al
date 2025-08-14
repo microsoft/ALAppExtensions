@@ -166,7 +166,7 @@ codeunit 139891 "E-Document Structured Tests"
         VariantRecord: Variant;
         RecRef: RecordRef;
     begin
-        // [FEATURE] [E-Document] [PEPPOL] [Draft Update] [Manual Intervention]
+        // [FEATURE] [E-Document] [PEPPOL] [Draft Update]
         // [SCENARIO] Update draft purchase document data and finalize processing
 
         // [GIVEN] A valid PEPPOL XML invoice document is imported and processed to draft preparation
