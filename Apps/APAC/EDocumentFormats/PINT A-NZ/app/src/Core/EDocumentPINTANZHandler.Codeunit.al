@@ -95,7 +95,6 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         ParseAccountingCustomerPartyForPurchaseHeader(PINTANZXml, XmlNamespaces, EDocumentPurchaseHeader, 'inv:Invoice');
         if VendorNo <> '' then
             EDocumentPurchaseHeader."[BC] Vendor No." := VendorNo;
-
         InsertPINTANZPurchaseInvoiceLines(PINTANZXml, XmlNamespaces, EDocumentPurchaseHeader."E-Document Entry No.");
     end;
 
