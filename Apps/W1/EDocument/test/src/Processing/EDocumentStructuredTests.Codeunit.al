@@ -186,8 +186,7 @@ codeunit 139891 "E-Document Structured Tests"
         EDocPurchaseDraft.Lines.Next();
 
         // [WHEN] The processing is completed to finish draft step
-        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
-        EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
+        EDocImport.ProcessIncomingEDocument(EDocument, "Import E-Document Steps"::"Finish draft");
         EDocument.Get(EDocument."Entry No");
 
         // [WHEN] The final purchase record is retrieved
