@@ -27,18 +27,17 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
     var
         EDocumentImportHelper: Codeunit "E-Document Import Helper";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        FeatureNameTok: Label 'E-document XRechnung Format', Locked = true;
-        StartEventNameTok: Label 'E-document XRechnung import started. Parsing basic information.', Locked = true;
-        InvoiceLbl: Label 'INVOICE', Locked = true;
-        CreditNoteLbl: Label 'CREDITNOTE', Locked = true;
+        SchemeIDGLNTok: Label '0088', Locked = true;
+        InvoiceLineTok: Label 'cac:InvoiceLine', Locked = true;
+        CreditNoteLineTok: Label 'cac:CreditNoteLine', Locked = true;
 
     /// <summary>
-    /// Reads an XRechnung electronic document into a draft purchase document.
-    /// Parses XML content and populates purchase header and lines based on document type (Invoice or Credit Note).
+    /// Reads an XRechnung format XML document and converts it into a draft purchase document.
+    /// This procedure processes both Invoice and CreditNote document types and populates the E-Document Purchase Header with the extracted data.
     /// </summary>
-    /// <param name="EDocument">The E-Document record to process.</param>
-    /// <param name="TempBlob">The temporary blob containing the XML content to parse.</param>
-    /// <returns>Returns the process draft type indicating a Purchase Document was created.</returns>
+    /// <param name="EDocument">The E-Document record that contains the document metadata and information.</param>
+    /// <param name="TempBlob">A temporary blob containing the XML document stream to be processed.</param>
+    /// <returns>Returns an enum indicating that the process resulted in a purchase document draft.</returns>
     internal procedure ReadIntoDraft(EDocument: Record "E-Document"; TempBlob: Codeunit "Temp Blob"): Enum "E-Doc. Process Draft"
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
@@ -49,6 +48,8 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
         CommonBasicComponentsTok: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2', Locked = true;
         DefaultInvoiceTok: Label 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2', Locked = true;
         DefaultCreditNoteTok: Label 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2', Locked = true;
+        FeatureNameTok: Label 'E-document XRechnung Format', Locked = true;
+        StartEventNameTok: Label 'E-document XRechnung import started. Parsing basic information.', Locked = true;
     begin
         FeatureTelemetry.LogUsage('0000EXH', FeatureNameTok, StartEventNameTok);
         EDocumentPurchaseHeader.InsertForEDocument(EDocument);
@@ -63,9 +64,9 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
 
         XRechnungXml.GetRoot(XmlElement);
         case UpperCase(XmlElement.LocalName()) of
-            InvoiceLbl:
+            'INVOICE':
                 PopulateEDocumentForInvoice(XRechnungXml, XmlNamespaces, EDocumentPurchaseHeader, EDocument);
-            CreditNoteLbl:
+            'CREDITNOTE':
                 PopulateEDocumentForCreditNote(XRechnungXml, XmlNamespaces, EDocumentPurchaseHeader, EDocument);
         end;
 
@@ -75,11 +76,11 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
     end;
 
     /// <summary>
-    /// Opens a page to view the readable purchase document content for the specified E-Document.
-    /// Displays purchase header and line information in a user-friendly format.
+    /// Displays a readable view of the processed E-Document purchase information.
+    /// This procedure opens a page showing the purchase header and lines in a user-friendly format for review.
     /// </summary>
-    /// <param name="EDocument">The E-Document record to view.</param>
-    /// <param name="TempBlob">The temporary blob containing the document content (not used in current implementation).</param>
+    /// <param name="EDocument">The E-Document record that contains the document to be displayed.</param>
+    /// <param name="TempBlob">A temporary blob containing the document data (not used in current implementation).</param>
     internal procedure View(EDocument: Record "E-Document"; TempBlob: Codeunit "Temp Blob")
     var
         EDocPurchaseHeader: Record "E-Document Purchase Header";
@@ -143,6 +144,9 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
     local procedure ParseAccountingSupplierParty(XRechnungXml: XmlDocument; XmlNamespaces: XmlNamespaceManager; var EDocumentPurchaseHeader: Record "E-Document Purchase Header"; var EDocument: Record "E-Document"; DocumentType: Text) VendorNo: Code[20]
     var
         EDocumentXMLHelper: Codeunit "EDocument XML Helper";
+        EMTok: Label 'EM', Locked = true;
+        "0198Tok": Label '0198', Locked = true;
+        "9930Tok": Label '9930', Locked = true;
         VendorName, VendorAddress, VendorParticipantId : Text;
         VATRegistrationNo: Text[20];
         EndpointID, SchemeID : Text;
@@ -162,9 +166,9 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
             SchemeID := XMLNode.AsXmlAttribute().Value();
             EndpointID := EDocumentXMLHelper.GetNodeValue(XRechnungXml, XmlNamespaces, BasePathTxt + '/cbc:EndpointID');
             case SchemeID of
-                'EM', '0198', '9930':
+                EMTok, "0198Tok", "9930Tok":
                     VATRegistrationNo := CopyStr(EndpointID, 1, MaxStrLen(VATRegistrationNo));
-                '0088':
+                SchemeIDGLNTok:
                     begin
                         GLN := CopyStr(EndpointID, 1, MaxStrLen(GLN));
                         EDocumentPurchaseHeader."Vendor GLN" := GLN;
@@ -198,7 +202,7 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
         if XRechnungXml.SelectSingleNode(BasePathTxt + '/cbc:EndpointID/@schemeID', XmlNamespaces, XMLNode) then begin
             SchemeID := XMLNode.AsXmlAttribute().Value();
             EndpointID := EDocumentXMLHelper.GetNodeValue(XRechnungXml, XmlNamespaces, BasePathTxt + '/cbc:EndpointID');
-            if SchemeID = '0088' then
+            if SchemeID = SchemeIDGLNTok then
                 EDocumentPurchaseHeader."Customer GLN" := CopyStr(EndpointID, 1, MaxStrLen(EDocumentPurchaseHeader."Customer GLN"));
         end;
     end;
@@ -215,12 +219,12 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
         case DocumentType of
             "E-Document Type"::"Purchase Invoice":
                 begin
-                    LineElementName := 'cac:InvoiceLine';
+                    LineElementName := InvoiceLineTok;
                     LineXPath := '//inv:Invoice/cac:InvoiceLine';
                 end;
             "E-Document Type"::"Purchase Credit Memo":
                 begin
-                    LineElementName := 'cac:CreditNoteLine';
+                    LineElementName := CreditNoteLineTok;
                     LineXPath := '//cn:CreditNote/cac:CreditNoteLine';
                 end;
         end;
@@ -245,9 +249,9 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
     begin
 #pragma warning disable AA0139 // false positive: overflow handled by SetStringValueInField
         case LineElementName of
-            'cac:InvoiceLine':
+            InvoiceLineTok:
                 QuantityFieldName := 'cac:InvoiceLine/cbc:InvoicedQuantity';
-            'cac:CreditNoteLine':
+            CreditNoteLineTok:
                 QuantityFieldName := 'cac:CreditNoteLine/cbc:CreditedQuantity';
         end;
         EDocumentXMLHelper.SetStringValueInField(LineXML, XmlNamespaces, LineElementName + '/cbc:ID', MaxStrLen(EDocumentPurchaseLine."Product Code"), EDocumentPurchaseLine."Product Code");
