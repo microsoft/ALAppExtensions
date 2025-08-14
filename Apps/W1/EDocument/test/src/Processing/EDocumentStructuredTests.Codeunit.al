@@ -114,6 +114,7 @@ codeunit 139891 "E-Document Structured Tests"
         EDocImport.ViewExtractedData(EDocument);
 
         // [THEN] The extracted data page opens and can be handled properly (verified by page handler)
+       // EDocumentPurchaseHeaderPageHandler
     end;
 
     [Test]
