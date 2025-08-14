@@ -84,6 +84,7 @@ enum 6121 "E-Document Type" implements IEDocumentFinishDraft
     value(17; "Issued Reminder")
     {
         Caption = 'Issued Reminder';
+        Implementation = IEDocumentFinishDraft = "E-Doc. Create Purchase Invoice";
     }
     value(18; "General Journal")
     {
