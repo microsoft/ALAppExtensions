@@ -109,7 +109,7 @@ codeunit 139891 "E-Document Structured Tests"
         EDocImport.ViewExtractedData(EDocument);
 
         // [THEN] The extracted data page opens and can be handled properly (verified by page handler)
-       // EDocumentPurchaseHeaderPageHandler
+        // EDocumentPurchaseHeaderPageHandler
     end;
 
     [Test]
@@ -117,10 +117,11 @@ codeunit 139891 "E-Document Structured Tests"
     var
         EDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
+        DummyItem: Record Item;
         EDocumentProcessing: Codeunit "E-Document Processing";
         DataTypeManagement: Codeunit "Data Type Management";
-        VariantRecord: Variant;
         RecRef: RecordRef;
+        VariantRecord: Variant;
     begin
         // [FEATURE] [E-Document] [PEPPOL] [Purchase Invoice Creation]
         // [SCENARIO] Create a purchase invoice from a valid PEPPOL invoice document
@@ -142,7 +143,7 @@ codeunit 139891 "E-Document Structured Tests"
         // [THEN] The purchase header is correctly created with PEPPOL data
         PEPPOLStructuredValidations.SetMockCurrencyCode(MockCurrencyCode);
         PEPPOLStructuredValidations.SetMockDate(MockDate);
-        PEPPOLStructuredValidations.AssertPurchaseHeader(Vendor."No.", PurchaseHeader);
+        PEPPOLStructuredValidations.AssertPurchaseDocument(Vendor."No.", PurchaseHeader, DummyItem);
     end;
 
     [Test]
@@ -151,14 +152,12 @@ codeunit 139891 "E-Document Structured Tests"
         EDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
         Item: Record Item;
-        EDocImportParameters: Record "E-Doc. Import Parameters";
         EDocImport: Codeunit "E-Doc. Import";
         EDocumentProcessing: Codeunit "E-Document Processing";
         DataTypeManagement: Codeunit "Data Type Management";
-        EDocPurchaseDraftSubform: TestPage "E-Doc. Purchase Draft Subform";
+        RecRef: RecordRef;
         EDocPurchaseDraft: TestPage "E-Document Purchase Draft";
         VariantRecord: Variant;
-        RecRef: RecordRef;
     begin
         // [FEATURE] [E-Document] [PEPPOL] [Draft Update]
         // [SCENARIO] Update draft purchase document data and finalize processing
@@ -191,8 +190,7 @@ codeunit 139891 "E-Document Structured Tests"
         // [THEN] The purchase header contains both imported PEPPOL data and manual updates
         PEPPOLStructuredValidations.SetMockCurrencyCode(MockCurrencyCode);
         PEPPOLStructuredValidations.SetMockDate(MockDate);
-        PEPPOLStructuredValidations.SetItem(Item);
-        PEPPOLStructuredValidations.AssertPurchaseHeader(Vendor."No.", PurchaseHeader);
+        PEPPOLStructuredValidations.AssertPurchaseDocument(Vendor."No.", PurchaseHeader, Item);
     end;
 
     [PageHandler]
