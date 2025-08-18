@@ -213,6 +213,12 @@ codeunit 18019 "GST Use Case Labels"
         CaseList.Add('{F0AB5767-48C9-4F01-A346-D6CAA74EFCED}');
         CaseList.Add('{7C76E97A-E248-4CFE-82A9-18EB754ED886}');
         CaseList.Add('{A5676558-7FDC-4CEC-B562-37829B285BE3}');
+        CaseList.Add('{e2d6e80e-d1e5-43fc-a060-2dee839cbba8}');
+        CaseList.Add('{c246affb-b99e-4d9b-8278-39a30cc7e26f}');
+        CaseList.Add('{486c52cb-591d-4538-9b21-505cb3f7ad9a}');
+        CaseList.Add('{687fe3eb-c604-4e95-a9a8-c231edb2d269}');
+        CaseList.Add('{f5f82273-fcf2-4165-a7a8-c46d44f45d4b}');
+        CaseList.Add('{1dd2dee4-08e3-42a8-b120-d28fc546f0a3}');
     end;
 
     procedure GetConfig(CaseID: Guid; var Handled: Boolean): Text
@@ -367,6 +373,12 @@ codeunit 18019 "GST Use Case Labels"
         "{F0AB5767-48C9-4F01-A346-D6CAA74EFCED}Lbl": Label 'GST Use Cases';
         "{7C76E97A-E248-4CFE-82A9-18EB754ED886}Lbl": Label 'GST Use Cases';
         "{A5676558-7FDC-4CEC-B562-37829B285BE3}Lbl": Label 'GST Use Cases';
+        "{e2d6e80e-d1e5-43fc-a060-2dee839cbba8}Lbl": Label 'GST Use Cases';
+        "{c246affb-b99e-4d9b-8278-39a30cc7e26f}Lbl": Label 'GST Use Cases';
+        "{486c52cb-591d-4538-9b21-505cb3f7ad9a}Lbl": Label 'GST Use Cases';
+        "{687fe3eb-c604-4e95-a9a8-c231edb2d269}Lbl": Label 'GST Use Cases';
+        "{f5f82273-fcf2-4165-a7a8-c46d44f45d4b}Lbl": Label 'GST Use Cases';
+        "{1dd2dee4-08e3-42a8-b120-d28fc546f0a3}Lbl": Label 'GST Use Cases';
     begin
         Handled := true;
 
@@ -704,6 +716,18 @@ codeunit 18019 "GST Use Case Labels"
                 exit("{7C76E97A-E248-4CFE-82A9-18EB754ED886}Lbl");
             '{A5676558-7FDC-4CEC-B562-37829B285BE3}':
                 exit("{A5676558-7FDC-4CEC-B562-37829B285BE3}Lbl");
+            '{e2d6e80e-d1e5-43fc-a060-2dee839cbba8}':
+                exit("{e2d6e80e-d1e5-43fc-a060-2dee839cbba8}Lbl");
+            '{c246affb-b99e-4d9b-8278-39a30cc7e26f}':
+                exit("{c246affb-b99e-4d9b-8278-39a30cc7e26f}Lbl");
+            '{486c52cb-591d-4538-9b21-505cb3f7ad9a}':
+                exit("{486c52cb-591d-4538-9b21-505cb3f7ad9a}Lbl");
+            '{687fe3eb-c604-4e95-a9a8-c231edb2d269}':
+                exit("{687fe3eb-c604-4e95-a9a8-c231edb2d269}Lbl");
+            '{f5f82273-fcf2-4165-a7a8-c46d44f45d4b}':
+                exit("{f5f82273-fcf2-4165-a7a8-c46d44f45d4b}Lbl");
+            '{1dd2dee4-08e3-42a8-b120-d28fc546f0a3}':
+                exit("{1dd2dee4-08e3-42a8-b120-d28fc546f0a3}Lbl");
         end;
 
         Handled := false;

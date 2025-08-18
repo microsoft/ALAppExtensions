@@ -1,0 +1,32 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DemoData.Localization;
+
+using Microsoft.DemoTool.Helpers;
+
+codeunit 31496 "Create Statistic Indication CZ"
+{
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
+    trigger OnRun()
+    begin
+        ImportFromXml();
+    end;
+
+    local procedure ImportFromXml()
+    begin
+        NavApp.GetResource(XmlFileTok, FileInStream);
+        ImportStatIndicationsCZ.SetSource(FileInStream);
+        ImportStatIndicationsCZ.SetThresholdDate(WorkDate());
+        ImportStatIndicationsCZ.Import();
+    end;
+
+    var
+        ImportStatIndicationsCZ: XmlPort "Import Stat. Indications CZ";
+        FileInStream: InStream;
+        XmlFileTok: Label 'stazna_i_004.xml', Locked = true;
+}

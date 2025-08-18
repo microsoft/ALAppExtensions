@@ -10,6 +10,7 @@ using Microsoft.Purchases.Payables;
 codeunit 148019 "IRS 1099 Liable Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

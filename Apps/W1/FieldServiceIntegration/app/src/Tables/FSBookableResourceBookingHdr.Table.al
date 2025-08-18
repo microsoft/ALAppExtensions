@@ -254,6 +254,7 @@ table 6612 "FS BookableResourceBookingHdr"
             Description = 'Exchange rate for the currency associated with the bookableresourcebookingheader with respect to the base currency.';
             Caption = 'ExchangeRate';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(41; TransactionCurrencyId; GUID)
         {

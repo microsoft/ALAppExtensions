@@ -1,6 +1,7 @@
 codeunit 139904 "Service Declaration Posting"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

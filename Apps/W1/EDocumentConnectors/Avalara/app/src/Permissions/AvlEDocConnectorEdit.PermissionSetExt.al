@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Avalara;
 
-using Microsoft.EServices.EDocumentConnector;
+using Microsoft.eServices.EDocument;
 
-permissionsetextension 6374 "Avl. EDoc. Connector - Edit" extends "EDocConnector - Edit"
+permissionsetextension 6374 "Avl. EDoc. Connector - Edit" extends "E-Doc. Core - Admin"
 {
     IncludedPermissionSets = "Avalara Edit";
 }

@@ -1,6 +1,7 @@
 codeunit 135084 "Bank Name Lookup E2E"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

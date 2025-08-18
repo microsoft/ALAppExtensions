@@ -129,7 +129,6 @@ table 31257 "Payment Order Line CZB"
                             end;
                         Type::Employee:
                             begin
-                                Testfield("Currency Code", '');
                                 if not Employee.Get("No.") then
                                     Employee.Init();
                                 Employee.Testfield("Privacy Blocked", false);

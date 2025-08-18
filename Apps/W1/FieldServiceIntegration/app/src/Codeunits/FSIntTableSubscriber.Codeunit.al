@@ -1091,7 +1091,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
         ServiceLine.SetRange(Type, ServiceLine.Type::Item);
-        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Inventory);
+        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Inventory, ServiceLine."Item Type"::"Non-Inventory");
         if ServiceLine.FindSet() then
             repeat
                 CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
@@ -1146,7 +1146,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
         ServiceLine.SetRange(Type, ServiceLine.Type::Item);
-        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Service, ServiceLine."Item Type"::"Non-Inventory");
+        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Service);
         if ServiceLine.FindSet() then
             repeat
                 CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);

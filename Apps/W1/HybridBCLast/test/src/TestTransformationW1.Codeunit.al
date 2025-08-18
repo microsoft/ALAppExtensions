@@ -1,6 +1,7 @@
 codeunit 139666 "Test Transformation W1"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

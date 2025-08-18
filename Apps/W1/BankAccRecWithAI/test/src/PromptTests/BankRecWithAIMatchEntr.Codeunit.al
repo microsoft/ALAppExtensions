@@ -11,6 +11,7 @@ using System.Reflection;
 codeunit 133574 "Bank Rec. With AI Match Entr."
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

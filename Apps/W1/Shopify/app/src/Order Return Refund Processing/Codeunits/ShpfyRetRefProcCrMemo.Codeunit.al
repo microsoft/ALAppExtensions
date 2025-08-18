@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Document;
@@ -83,8 +88,11 @@ codeunit 30243 "Shpfy RetRefProc Cr.Memo" implements "Shpfy IReturnRefund Proces
         if CreateSalesDocRefund.Run() then begin
             SalesHeader := CreateSalesDocRefund.GetSalesHeader();
             IDocumentSource.SetErrorInfo(SourceDocumentId, '');
-        end else
+        end else begin
             IDocumentSource.SetErrorInfo(SourceDocumentId, GetLastErrorText(false));
+            if IDocumentSource is "Shpfy Extended IDocument Source" then
+                (IDocumentSource as "Shpfy Extended IDocument Source").SetErrorCallStack(SourceDocumentId, GetLastErrorCallStack());
+        end;
         Commit();
     end;
 }

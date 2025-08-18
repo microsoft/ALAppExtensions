@@ -548,9 +548,11 @@ codeunit 18970 "Check Management Subscriber"
         GLSetup: Record "General Ledger Setup";
     begin
         GLSetup.Get();
+
         if not GLSetup."Activate Cheque No." then
-            GenJournalLine2."Document No." := ''
-        else begin
+            exit;
+
+        if GLSetup."Activate Cheque No." then begin
             GenJournalLine2."Cheque No." := '';
             GenJournalLine2."Cheque Date" := 0D;
         end;

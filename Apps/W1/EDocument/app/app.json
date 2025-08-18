@@ -19,13 +19,13 @@
       "publisher": "Microsoft"
     },
     {
-      "id": "de0dddf3-9917-430d-8d20-6e7679a08500",
-      "name": "E-Document Core Demo Data",
+      "id": "9bdb0f21-7daf-4ee2-bd73-6e0a2da02a18",
+      "name": "E-Document AI Tests",
       "publisher": "Microsoft"
     },
     {
-      "id": "d67591a4-895c-4d2e-8e94-402badd1a5c6",
-      "name": "E-Document Core Demo Data (US)",
+      "id": "de0dddf3-9917-430d-8d20-6e7679a08500",
+      "name": "E-Document Core Demo Data",
       "publisher": "Microsoft"
     },
     {
@@ -36,16 +36,6 @@
     {
       "id": "967eceac-106e-4102-b76a-fe5dc3d799e5",
       "name": "Payables Agent Tests",
-      "publisher": "Microsoft"
-    },
-    {
-      "id": "74af2bd0-01ca-4bfe-aeca-75bc389cb11a",
-      "name": "New E-Doc Experience Helper",
-      "publisher": "Microsoft"
-    },
-    {
-      "id": "9767f7d7-43ce-4416-a2b7-93e3f2d57eeb",
-      "name": "ADI Json Content",
       "publisher": "Microsoft"
     }
   ],

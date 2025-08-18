@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Customer;
@@ -37,10 +42,10 @@ codeunit 30124 "Shpfy Update Customer"
     /// <summary> 
     /// Do Update Customer.
     /// </summary>
-    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
     /// <param name="Customer">Parameter of type Record Customer.</param>
-    local procedure DoUpdateCustomer(Shop: Record "Shpfy Shop"; var ShopifyCustomer: Record "Shpfy Customer"; var Customer: Record Customer);
+    local procedure DoUpdateCustomer(ShopifyShop: Record "Shpfy Shop"; var ShopifyCustomer: Record "Shpfy Customer"; var Customer: Record Customer);
     var
         CustomerAddress: Record "Shpfy Customer Address";
         CustContUpdate: Codeunit "CustCont-Update";
@@ -51,7 +56,7 @@ codeunit 30124 "Shpfy Update Customer"
         if not CustomerAddress.FindFirst() then
             Error(NoDefaltAddressErr, ShopifyCustomer.Id);
 
-        FillInCustomerFields(Customer, Shop, ShopifyCustomer, CustomerAddress);
+        FillInCustomerFields(Customer, ShopifyShop, ShopifyCustomer, CustomerAddress);
         Customer.Modify();
         CustContUpdate.OnModify(Customer);
     end;
@@ -61,26 +66,26 @@ codeunit 30124 "Shpfy Update Customer"
     /// Description for FillInCustomerFields.
     /// </summary>
     /// <param name="Customer">Parameter of type Record Customer.</param>
-    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     /// <param name="ShopifyCustomer">Parameter of type Record "Shopify Customer".</param>
     /// <param name="CustomerAddress">Parameter of type Record "Shopify Customer Address".</param>
-    internal procedure FillInCustomerFields(var Customer: Record Customer; Shop: Record "Shpfy Shop"; ShopifyCustomer: Record "Shpfy Customer"; CustomerAddress: Record "Shpfy Customer Address")
+    internal procedure FillInCustomerFields(var Customer: Record Customer; ShopifyShop: Record "Shpfy Shop"; ShopifyCustomer: Record "Shpfy Customer"; CustomerAddress: Record "Shpfy Customer Address")
     var
         CountryRegion: Record "Country/Region";
         ShopifyTaxArea: Record "Shpfy Tax Area";
         IName: Interface "Shpfy ICustomer Name";
         ICounty: interface "Shpfy ICounty";
     begin
-        IName := Shop."Name Source";
+        IName := ShopifyShop."Name Source";
         Customer.Validate(Name, IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company));
 
-        IName := Shop."Name 2 Source";
+        IName := ShopifyShop."Name 2 Source";
         if Customer.Name = '' then
             Customer.Validate(Name, IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company))
         else
             Customer.Validate("Name 2", CopyStr(IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company), 1, MaxStrLen(Customer."Name 2")));
 
-        IName := Shop."Contact Source";
+        IName := ShopifyShop."Contact Source";
         Customer.Validate(Contact, IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company));
 
         if Customer.Name = '' then begin
@@ -97,7 +102,7 @@ codeunit 30124 "Shpfy Update Customer"
         else
             Customer."Country/Region Code" := CustomerAddress."Country/Region Code";
 
-        ICounty := Shop."County Source";
+        ICounty := ShopifyShop."County Source";
         Customer.Validate(County, ICounty.County((CustomerAddress)));
 
         Customer.Validate("Post Code", CustomerAddress.Zip);

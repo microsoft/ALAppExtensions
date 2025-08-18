@@ -14,6 +14,9 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
+    Permissions =
+        tabledata "Sales Invoice Header" = rm,
+        tabledata "Sales Cr.Memo Header" = rm;
 
     var
         EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";

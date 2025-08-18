@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Customer;
@@ -266,11 +271,11 @@ codeunit 30114 "Shpfy Customer API"
                 if JItem.IsObject then begin
                     if ShopifyCustomer.Id <> CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id')) then
                         Error(UpdateCustIdErr);
-                    if JsonHelper.GetValueAsText(JItem, 'emailMarketingConsent.marketingState') = 'SUBSCRIBED' then
+                    if JsonHelper.GetValueAsText(JItem, 'defaultEmailAddress.marketingState') = 'SUBSCRIBED' then
                         ShopifyCustomer."Accepts Marketing" := true
                     else
                         ShopifyCustomer."Accepts Marketing" := false;
-                    ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JItem, 'emailMarketingConsent.consentUpdatedAt');
+                    ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JItem, 'defaultEmailAddress.marketingUpdatedAt');
                     ShopifyCustomer."Tax Exempt" := JsonHelper.GetValueAsBoolean(JItem, 'taxExempt');
                     ShopifyCustomer."Updated At" := JsonHelper.GetValueAsDateTime(JItem, 'updatedAt');
                     ShopifyCustomer."Verified Email" := JsonHelper.GetValueAsBoolean(JItem, 'verifiedEmail');
@@ -344,7 +349,7 @@ codeunit 30114 "Shpfy Customer API"
 
         if HasChange then begin
             GraphQuery.Remove(GraphQuery.Length - 1, 2);
-            GraphQuery.Append('}}) {customer {id, tags, updatedAt, verifiedEmail, emailMarketingConsent {consentUpdatedAt marketingState}, defaultAddress {id, province, country}}, userErrors {field, message}}}"}');
+            GraphQuery.Append('}}) {customer {id, tags, updatedAt, verifiedEmail, defaultEmailAddress {marketingState marketingUpdatedAt}, defaultAddress {id, province, country}}, userErrors {field, message}}}"}');
             exit(GraphQuery.ToText());
         end;
     end;
@@ -381,16 +386,16 @@ codeunit 30114 "Shpfy Customer API"
 #pragma warning disable AA0139
         ShopifyCustomer."First Name" := JsonHelper.GetValueAsText(JCustomer, 'firstName', MaxStrLen(ShopifyCustomer."First Name"));
         ShopifyCustomer."Last Name" := JsonHelper.GetValueAsText(JCustomer, 'lastName', MaxStrLen(ShopifyCustomer."Last Name"));
-        ShopifyCustomer.Email := JsonHelper.GetValueAsText(JCustomer, 'email', MaxStrLen(ShopifyCustomer.Email));
+        ShopifyCustomer.Email := JsonHelper.GetValueAsText(JCustomer, 'defaultEmailAddress.emailAddress', MaxStrLen(ShopifyCustomer.Email));
 #pragma warning restore AA0139
-        PhoneNo := JsonHelper.GetValueAsText(JCustomer, 'phone');
+        PhoneNo := JsonHelper.GetValueAsText(JCustomer, 'defaultPhoneNumber.phoneNumber');
         PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
         ShopifyCustomer."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(ShopifyCustomer."Phone No."));
-        if JsonHelper.GetValueAsText(JCustomer, 'emailMarketingConsent.marketingState') = 'SUBSCRIBED' then
+        if JsonHelper.GetValueAsText(JCustomer, 'defaultEmailAddress.marketingState') = 'SUBSCRIBED' then
             ShopifyCustomer."Accepts Marketing" := true
         else
             ShopifyCustomer."Accepts Marketing" := false;
-        ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JCustomer, 'emailMarketingConsent.consentUpdatedAt');
+        ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JCustomer, 'defaultEmailAddress.marketingUpdatedAt');
         ShopifyCustomer."Tax Exempt" := JsonHelper.GetValueAsBoolean(JCustomer, 'taxExempt');
         ShopifyCustomer."Verified Email" := JsonHelper.GetValueAsBoolean(JCustomer, 'verifiedEmail');
         StateString := JsonHelper.GetValueAsText(JCustomer, 'state').ToLower();

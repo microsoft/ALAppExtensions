@@ -1,6 +1,7 @@
 codeunit 148110 "SAF-T XML Tests 1.3"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

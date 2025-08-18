@@ -31,7 +31,6 @@ codeunit 11377 "Create DE Currency"
         UpdateCurrency(CreateCurrency.CZK(), CreateDEGLAccount.CurrencyGains(), CreateDEGLAccount.CurrencyLosses());
         UpdateCurrency(CreateCurrency.DKK(), CreateDEGLAccount.CurrencyGains(), CreateDEGLAccount.CurrencyLosses());
         UpdateCurrency(CreateCurrency.DZD(), CreateDEGLAccount.CurrencyGains(), CreateDEGLAccount.CurrencyLosses());
-        UpdateCurrency(CreateCurrency.EUR(), CreateDEGLAccount.CurrencyGains(), CreateDEGLAccount.CurrencyLosses());
         UpdateCurrency(CreateCurrency.FJD(), CreateDEGLAccount.CurrencyGains(), CreateDEGLAccount.CurrencyLosses());
         UpdateCurrency(CreateCurrency.HKD(), CreateDEGLAccount.CurrencyGains(), CreateDEGLAccount.CurrencyLosses());
         UpdateCurrency(CreateCurrency.HRK(), CreateDEGLAccount.CurrencyGains(), CreateDEGLAccount.CurrencyLosses());

@@ -1,6 +1,7 @@
 codeunit 139741 "VAT Group Sub. Status Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

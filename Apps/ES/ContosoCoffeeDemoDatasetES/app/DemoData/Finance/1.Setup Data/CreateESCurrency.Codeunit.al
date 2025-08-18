@@ -27,7 +27,6 @@ codeunit 10831 "Create ES Currency"
         UpdateCurrency(CreateCurrency.CZK(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.DKK(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.DZD(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
-        UpdateCurrency(CreateCurrency.EUR(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.FJD(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.GBP(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());
         UpdateCurrency(CreateCurrency.HKD(), CreateESGLAccount.ExchangeGainPosting(), CreateESGLAccount.RealizedLossesOnExchange());

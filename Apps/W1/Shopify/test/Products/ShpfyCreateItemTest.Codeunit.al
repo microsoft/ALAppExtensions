@@ -1,14 +1,28 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using Microsoft.Inventory.Item;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Item.Catalog;
+
 /// <summary>
 /// Codeunit Shpfy Create Item Test (ID 139567).
 /// </summary>
 codeunit 139567 "Shpfy Create Item Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
-        LibraryAssert: codeunit "Library Assert";
-        LibraryRandom: codeunit "Library - Random";
+        LibraryAssert: Codeunit "Library Assert";
+        LibraryRandom: Codeunit "Library - Random";
 
     [Test]
     procedure UnitTestCreateItemSKUIsItemNo()
@@ -74,7 +88,7 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [GIVEN] Item template with unit of measure
         ItemTempl.Get(Shop."Item Templ. Code");
-        UnitOfMeasure.Code := LibraryRandom.RandText(MaxStrLen(UnitOfMeasure.Code));
+        UnitOfMeasure.Code := CopyStr(LibraryRandom.RandText(MaxStrLen(UnitOfMeasure.Code)), 1, MaxStrLen(UnitOfMeasure.Code));
         UnitOfMeasure.Insert();
         ItemTempl."Base Unit of Measure" := UnitOfMeasure.Code;
         ItemTempl.Modify();
@@ -84,7 +98,7 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [WHEN] Executing the report "Shpfy Create Item" for each record of the "Shpfy Variant" Records filtered on "Product Id".
         ShopifyVariant.SetRange("Product Id", ShopifyVariant."Product Id");
-        if ShopifyVariant.FindSet(false, false) then
+        if ShopifyVariant.FindSet(false) then
             repeat
                 Codeunit.Run(Codeunit::"Shpfy Create Item", ShopifyVariant);
 
@@ -178,7 +192,7 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [WHEN] Executing the report "Shpfy Create Item" for each record of the "Shpfy Variant" Records filtered on "Product Id".
         ShopifyVariant.SetRange("Product Id", ShopifyVariant."Product Id");
-        if ShopifyVariant.FindSet(false, false) then begin
+        if ShopifyVariant.FindSet(false) then begin
             FirstVariant := true;
             repeat
                 Codeunit.Run(Codeunit::"Shpfy Create Item", ShopifyVariant);
@@ -273,7 +287,7 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [WHEN] Executing the report "Shpfy Create Item" for each record of the "Shpfy Variant" Records filtered on "Product Id".
         ShopifyVariant.SetRange("Product Id", ShopifyVariant."Product Id");
-        if ShopifyVariant.FindSet(false, false) then
+        if ShopifyVariant.FindSet(false) then
             repeat
                 Codeunit.Run(Codeunit::"Shpfy Create Item", ShopifyVariant);
 
@@ -361,7 +375,7 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [WHEN] Executing the report "Shpfy Create Item" for each record of the "Shpfy Variant" Records filtered on "Product Id".
         ShopifyVariant.SetRange("Product Id", ShopifyVariant."Product Id");
-        if ShopifyVariant.FindSet(false, false) then
+        if ShopifyVariant.FindSet(false) then
             repeat
                 Codeunit.Run(Codeunit::"Shpfy Create Item", ShopifyVariant);
 
@@ -451,7 +465,7 @@ codeunit 139567 "Shpfy Create Item Test"
 
         // [WHEN] Executing the report "Shpfy Create Item" for each record of the "Shpfy Variant" Records filtered on "Product Id".
         ShopifyVariant.SetRange("Product Id", ShopifyVariant."Product Id");
-        if ShopifyVariant.FindSet(false, false) then
+        if ShopifyVariant.FindSet(false) then
             repeat
                 Codeunit.Run(Codeunit::"Shpfy Create Item", ShopifyVariant);
 

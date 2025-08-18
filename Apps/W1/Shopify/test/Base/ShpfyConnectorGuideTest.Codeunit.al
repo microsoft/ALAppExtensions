@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Environment.Configuration;
+using System.Environment;
+
 codeunit 139588 "Shpfy Connector Guide Test"
 {
     Subtype = Test;
@@ -70,7 +82,7 @@ codeunit 139588 "Shpfy Connector Guide Test"
         ConnectorGuide.ActionNext.Invoke();
 
         //Exercise
-        AssertError ConnectorGuide.ShopUrl.SetValue('https://NotAValidShopifyUrl.OurShopify.com');
+        asserterror ConnectorGuide.ShopUrl.SetValue('https://NotAValidShopifyUrl.OurShopify.com');
 
         // Verify
         LibraryAssert.ExpectedError('The URL must refer to the internal shop location at myshopify.com');
@@ -102,8 +114,6 @@ codeunit 139588 "Shpfy Connector Guide Test"
         LibrarySignupContext.SetSignupContext('name', 'shopify');
         LibrarySignupContext.SetSignupContext('shop', DummyShopUrlTxt);
 
-#pragma warning disable AL0432
         CompanyTriggers.OnCompanyOpen();
-#pragma warning restore AL0432
     end;
 }

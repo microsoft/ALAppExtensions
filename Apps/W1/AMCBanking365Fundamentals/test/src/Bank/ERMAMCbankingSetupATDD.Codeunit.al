@@ -1,6 +1,7 @@
 codeunit 134410 "ERM AMC banking Setup ATDD"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

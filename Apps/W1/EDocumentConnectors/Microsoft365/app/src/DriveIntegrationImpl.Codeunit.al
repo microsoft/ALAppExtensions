@@ -46,19 +46,11 @@ codeunit 6382 "Drive Integration Impl." implements IDocumentReceiver, IDocumentS
     var
         OutlookSetup: Record "Outlook Setup";
         CustomerConsentMgt: codeunit "Customer Consent Mgt.";
-        OutlookSetupExists: Boolean;
     begin
-        OutlookSetupExists := OutlookSetup.FindFirst();
-        if OutlookSetupExists then
+        if OutlookSetup.FindFirst() then
             if OutlookSetup."Consent Received" then
                 exit(true);
-        if not CustomerConsentMgt.ConfirmUserConsentToMicrosoftService() then
-            exit(false);
-        if not OutlookSetupExists then
-            OutlookSetup.Insert();
-        OutlookSetup."Consent Received" := true;
-        OutlookSetup.Modify();
-        exit(true);
+        exit(CustomerConsentMgt.ConfirmUserConsentToMicrosoftService());
     end;
 
     internal procedure PreviewContent(var EDocument: Record "E-Document")

@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -13,7 +18,7 @@ codeunit 30302 "Shpfy GQL Company" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{company(id: \"gid://shopify/Company/{{CompanyId}}\") {name id externalId note createdAt updatedAt mainContact { id customer { id firstName lastName email phone}} metafields(first: 50) {edges {node {id namespace ownerType legacyResourceId key value type}}}}}"}');
+        exit('{"query":"{company(id: \"gid://shopify/Company/{{CompanyId}}\") {name id externalId note createdAt updatedAt mainContact { id customer { id firstName lastName defaultPhoneNumber { phoneNumber } defaultEmailAddress { emailAddress }}} metafields(first: 50) {edges {node {id namespace ownerType legacyResourceId key value type}}}}}"}');
     end;
 
     /// <summary>

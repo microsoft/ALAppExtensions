@@ -13,7 +13,7 @@ using Microsoft.eServices.EDocument.Integration.Action;
 
 codeunit 6134 "E-Doc. Integration Management"
 {
-    Permissions = tabledata "E-Document" = m;
+    Permissions = tabledata "E-Document" = im;
 
     #region Send
 

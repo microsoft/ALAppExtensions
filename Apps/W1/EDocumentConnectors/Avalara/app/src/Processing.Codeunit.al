@@ -123,7 +123,7 @@ codeunit 6379 Processing
         SendContext.Http().SetHttpResponseMessage(HttpExecutor.GetResponse());
 
         EDocument.Get(EDocument."Entry No");
-        EDocument."Document Id" := ParseDocumentId(ResponseContent);
+        EDocument."Avalara Document Id" := ParseDocumentId(ResponseContent);
         EDocument.Modify(true);
     end;
 
@@ -138,10 +138,10 @@ codeunit 6379 Processing
         HttpExecutor: Codeunit "Http Executor";
         ResponseContent: Text;
     begin
-        EDocument.TestField("Document Id");
+        EDocument.TestField("Avalara Document Id");
 
         Request.Init();
-        Request.Authenticate().CreateGetDocumentStatusRequest(EDocument."Document Id");
+        Request.Authenticate().CreateGetDocumentStatusRequest(EDocument."Avalara Document Id");
         ResponseContent := HttpExecutor.ExecuteHttpRequest(Request);
         SendContext.Http().SetHttpRequestMessage(Request.GetRequest());
         SendContext.Http().SetHttpResponseMessage(HttpExecutor.GetResponse());
@@ -245,7 +245,7 @@ codeunit 6379 Processing
             exit;
         end;
 
-        EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
+        EDocument."Avalara Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Avalara Document Id"));
         EDocument.Modify();
 
         Request.Init();
@@ -282,7 +282,7 @@ codeunit 6379 Processing
     var
         EDocument: Record "E-Document";
     begin
-        EDocument.SetRange("Document Id", DocumentId);
+        EDocument.SetRange("Avalara Document Id", DocumentId);
         exit(not EDocument.IsEmpty());
     end;
 
@@ -423,7 +423,7 @@ codeunit 6379 Processing
     begin
         ResponseJson.ReadFrom(ResponseMsg);
         ResponseJson.Get('id', ValueJson);
-        if EDocument."Document Id" <> ValueJson.AsValue().AsText() then
+        if EDocument."Avalara Document Id" <> ValueJson.AsValue().AsText() then
             Error(IncorrectDocumentIdInResponseErr);
 
         if ResponseJson.Get('events', ValueJson) then

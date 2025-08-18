@@ -10,5 +10,5 @@ permissionset 6374 "Avalara Read"
     Assignable = true;
     Caption = 'Avalara E-Document Connector - Read';
 
-    Permissions = tabledata "Connection Setup" = r;
+    Permissions = tabledata "Connection Setup" = R;
 }

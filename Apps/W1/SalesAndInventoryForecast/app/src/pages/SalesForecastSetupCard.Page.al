@@ -4,6 +4,8 @@ using System.Threading;
 using System.AI;
 using System.Privacy;
 using System.Security.User;
+using System.Telemetry;
+
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -34,6 +36,7 @@ page 1853 "Sales Forecast Setup Card"
                     ToolTip = 'Specifies if the forecasting feature is enabled.';
                     trigger OnValidate();
                     var
+                        AuditLog: Codeunit "Audit Log";
                         CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                         UserPermissions: Codeunit "User Permissions";
                         SalesInvForceastConsentProvidedLbl: Label 'Sales and Inventory Forecast application - consent provided by UserSecurityId %1.', Locked = true;
@@ -45,7 +48,7 @@ page 1853 "Sales Forecast Setup Card"
                             Rec.Enabled := CustomerConsentMgt.ConsentToMicrosoftServiceWithAI();
 
                         if Rec.Enabled then
-                            Session.LogAuditMessage(StrSubstNo(SalesInvForceastConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
+                            AuditLog.LogAuditMessage(StrSubstNo(SalesInvForceastConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                     end;
                 }
                 field("Period Type"; Rec."Period Type")

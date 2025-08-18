@@ -8,6 +8,7 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.Foundation.UOM;
+using System.Log;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using System.AI;
@@ -29,6 +30,7 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         EDocVendorAssignmentHistory: Record "E-Doc. Vendor Assign. History";
         EDocPurchaseLineHistory: Record "E-Doc. Purchase Line History";
         EDocPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
+        EDocActivityLogSession: Codeunit "E-Doc. Activity Log Session";
         IUnitOfMeasureProvider: Interface IUnitOfMeasureProvider;
         IPurchaseLineProvider: Interface IPurchaseLineProvider;
         IPurchaseOrderProvider: Interface IPurchaseOrderProvider;
@@ -36,6 +38,8 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         IUnitOfMeasureProvider := EDocImportParameters."Processing Customizations";
         IPurchaseLineProvider := EDocImportParameters."Processing Customizations";
         IPurchaseOrderProvider := EDocImportParameters."Processing Customizations";
+
+        if EDocActivityLogSession.CreateSession() then;
 
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");
@@ -74,13 +78,36 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
                     EDocPurchaseHistMapping.UpdateMissingLineValuesFromHistory(EDocPurchaseLineHistory, EDocumentPurchaseLine);
 
                 EDocumentPurchaseLine.Modify();
+                LogActivitySessionChanges(EDocActivityLogSession);
+                EDocActivityLogSession.CleanUpLogs();
+
+
             until EDocumentPurchaseLine.Next() = 0;
 
         // Ask Copilot to try to find fields that are suited to be matched
         if EDocumentPurchaseHeader."[BC] Vendor No." <> '' then
             CopilotLineMatching(EDocument."Entry No");
 
+        if EDocActivityLogSession.EndSession() then;
         exit("E-Document Type"::"Purchase Invoice");
+    end;
+
+    local procedure LogActivitySessionChanges(EDocActivityLogSession: Codeunit "E-Doc. Activity Log Session")
+    begin
+        Log(EDocActivityLogSession, EDocActivityLogSession.AccountNumberTok());
+        Log(EDocActivityLogSession, EDocActivityLogSession.DeferralTok());
+        Log(EDocActivityLogSession, EDocActivityLogSession.ItemRefTok());
+        Log(EDocActivityLogSession, EDocActivityLogSession.TextToAccountMappingTok());
+    end;
+
+    local procedure Log(EDocActivityLogSession: Codeunit "E-Doc. Activity Log Session"; ActivityLogName: Text)
+    var
+        ActivityLog: Codeunit "Activity Log Builder";
+        Found: Boolean;
+    begin
+        EDocActivityLogSession.Get(ActivityLogName, ActivityLog, Found);
+        if Found then
+            ActivityLog.Log();
     end;
 
     local procedure CopilotLineMatching(EDocumentEntryNo: Integer)
@@ -113,6 +140,7 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
     var
         EDocumentPurchaseDraft: Page "E-Document Purchase Draft";
     begin
+        EDocumentPurchaseDraft.Editable(true);
         EDocumentPurchaseDraft.SetRecord(EDocument);
         EDocumentPurchaseDraft.Run();
     end;

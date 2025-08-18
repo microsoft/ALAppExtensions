@@ -35,7 +35,7 @@ codeunit 13919 "Import ZUGFeRD Document"
         DocumentNamespace: Text;
         PDFInStream: InStream;
         PdfAttachmentStream: InStream;
-        DocumentElementLbl: Label '%1:%2', Comment = '%1 = Namespace, %2 = Document';
+        DocumentElementLbl: Label '%1:%2', Comment = '%1 = Namespace, %2 = Document', Locked = true;
         NoXMLFileErr: Label 'No invoice attachment found in the PDF file. Please check the PDF file.';
         CrossIndustryInvoiceLbl: Label 'CrossIndustryInvoice', Locked = true;
         UnsupportedDocumentTypeErr: Label 'Unsupported document type: %1', Comment = '%1 = Document type';
@@ -45,7 +45,7 @@ codeunit 13919 "Import ZUGFeRD Document"
         TempBlob.CreateInStream(PdfInStream);
         Clear(TempBlob);
         if not PDFDocument.GetDocumentAttachmentStream(PdfInStream, TempBlob) then
-            Message(NoXMLFileErr);
+            Error(NoXMLFileErr);
 
         TempBlob.CreateInStream(PdfAttachmentStream);
         TempXMLBuffer.LoadFromStream(PdfAttachmentStream);
@@ -56,14 +56,14 @@ codeunit 13919 "Import ZUGFeRD Document"
         case UpperCase(DocumentType) of
             '380', '384', '751', '877':
                 if DocumentNamespace <> '' then
-                    ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentElementLbl, DocumentNamespace, CrossIndustryInvoiceLbl))
+                    ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentElementLbl, DocumentNamespace, CrossIndustryInvoiceLbl), PdfInStream)
                 else
-                    ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, CrossIndustryInvoiceLbl);
+                    ParseInvoiceBasicInfo(EDocument, TempXMLBuffer, CrossIndustryInvoiceLbl, PdfInStream);
             '381', '261':
                 if DocumentNamespace <> '' then
-                    ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentElementLbl, DocumentNamespace, CrossIndustryInvoiceLbl))
+                    ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, StrSubstNo(DocumentElementLbl, DocumentNamespace, CrossIndustryInvoiceLbl), PdfInStream)
                 else
-                    ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, CrossIndustryInvoiceLbl)
+                    ParseCreditMemoBasicInfo(EDocument, TempXMLBuffer, CrossIndustryInvoiceLbl, PdfInStream)
             else begin
                 FeatureTelemetry.LogUsage('0000EXE', FeatureNameTok, StrSubstNo(UnsupportedDocumentTypeErr, DocumentType));
                 Error(UnsupportedDocumentTypeErr, DocumentType);
@@ -77,7 +77,7 @@ codeunit 13919 "Import ZUGFeRD Document"
         DocumentType: Text;
         DocumentNamespace: Text;
         PdfAttachmentStream: InStream;
-        DocumentElementLbl: Label '%1:%2', Comment = '%1 = Namespace, %2 = Document';
+        DocumentElementLbl: Label '%1:%2', Comment = '%1 = Namespace, %2 = Document', Locked = true;
         CrossIndustryInvoiceLbl: Label 'CrossIndustryInvoice', Locked = true;
     begin
         FeatureTelemetry.LogUsage('0000EXS', FeatureNameTok, ContinueEventNameTok);
@@ -164,6 +164,27 @@ codeunit 13919 "Import ZUGFeRD Document"
         TempXMLBuffer.SetFilter(Path, XPath);
         if TempXMLBuffer.FindFirst() then
             exit(TempXMLBuffer.Value);
+    end;
+
+    local procedure CreateDocumentAttachment(var EDocument: Record "E-Document"; PdfAttachmentStream: InStream)
+    var
+        DocumentAttachment: Record "Document Attachment";
+        EDocumentService: Record "E-Document Service";
+        EDocumentHelper: Codeunit "E-Document Helper";
+        EDocumentAttachmentGen: Codeunit "E-Doc. Attachment Processor";
+        FileNameTok: Label '%1_%2', Comment = '1: Document Type, 2: Document No', Locked = true;
+    begin
+        if PdfAttachmentStream.Length = 0 then
+            exit;
+
+        EDocumentHelper.GetEdocumentService(EDocument, EDocumentService);
+        if not EDocumentService."Embed PDF in export" then
+            exit;
+
+        DocumentAttachment."No." := CopyStr(EDocument."Incoming E-Document No.", 1, MaxStrLen(DocumentAttachment."No."));
+        DocumentAttachment.Validate("File Extension", 'pdf');
+        DocumentAttachment."File Name" := StrSubstNo(FileNameTok, EDocument."Document Type", EDocument."Incoming E-Document No.");
+        EDocumentAttachmentGen.Insert(EDocument, PdfAttachmentStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
     end;
 
     local procedure CreateAllowanceChargeLines(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentType: Text)
@@ -253,7 +274,7 @@ codeunit 13919 "Import ZUGFeRD Document"
     end;
 
     #region Invoice
-    procedure ParseInvoiceBasicInfo(var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentElement: Text)
+    procedure ParseInvoiceBasicInfo(var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentElement: Text; PdfInStream: InStream)
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         DueDate, IssueDate : Text;
@@ -279,6 +300,8 @@ codeunit 13919 "Import ZUGFeRD Document"
         GeneralLedgerSetup.Get();
         if CurrencyCode <> GeneralLedgerSetup."LCY Code" then
             EDocument."Currency Code" := CurrencyCode;
+
+        CreateDocumentAttachment(EDocument, PdfInStream);
     end;
 
     local procedure CreateInvoice(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentElement: Text)
@@ -399,7 +422,7 @@ codeunit 13919 "Import ZUGFeRD Document"
     #endregion
 
     #region Credit Memo
-    local procedure ParseCreditMemoBasicInfo(var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentElement: Text)
+    local procedure ParseCreditMemoBasicInfo(var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentElement: Text; PdfInStream: InStream)
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         DueDate, IssueDate : Text;
@@ -425,6 +448,8 @@ codeunit 13919 "Import ZUGFeRD Document"
         GeneralLedgerSetup.Get();
         if CurrencyCode <> GeneralLedgerSetup."LCY Code" then
             EDocument."Currency Code" := CurrencyCode;
+
+        CreateDocumentAttachment(EDocument, PdfInStream);
     end;
 
     local procedure CreateCreditMemo(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentElement: Text)

@@ -221,7 +221,13 @@ table 11756 "Registration Log CZL"
         ConfigValidateManagement: Codeunit "Config. Validate Management";
         DataTypeManagement: Codeunit "Data Type Management";
         FieldRef: FieldRef;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeValidateField(RecordRef, FieldName, Value, Validate, IsHandled);
+        if IsHandled then
+            exit;
+
         if DataTypeManagement.FindFieldByName(RecordRef, FieldRef, FieldName) then
             if Validate then
                 ConfigValidateManagement.EvaluateValueWithValidate(FieldRef, CopyStr(Value, 1, FieldRef.Length()), false)
@@ -344,6 +350,11 @@ table 11756 "Registration Log CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterApplyDetailChanges(var RecordRef: RecordRef; var Result: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateField(var RecordRef: RecordRef; FieldName: Text; var Value: Text; var Validate: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

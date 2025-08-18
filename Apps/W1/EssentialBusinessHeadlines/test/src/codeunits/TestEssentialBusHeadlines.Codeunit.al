@@ -6,6 +6,7 @@
 codeunit 139600 "Test Essential Bus. Headlines"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

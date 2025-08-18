@@ -1,9 +1,20 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Integration.Shopify;
+using System.TestLibraries.Utilities;
+
 /// <summary>
 /// Codeunit Shpfy Test Locations (ID 139577).
 /// </summary>
 codeunit 139577 "Shpfy Test Locations"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

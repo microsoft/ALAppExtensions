@@ -13,6 +13,7 @@ using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.HumanResources.Employee;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using System.Utilities;
@@ -356,6 +357,7 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
     local procedure OnBeforePostDtldCVLedgEntry(sender: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line"; var DetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer"; var AccNo: Code[20]; var IsHandled: Boolean; AddCurrencyCode: Code[10]; MultiplePostingGroups: Boolean)
     var
         CustomerPostingGroup: Record "Customer Posting Group";
+        EmployeePostingGroup: Record "Employee Posting Group";
         VendorPostingGroup: Record "Vendor Posting Group";
         PostingGroupAccountNo: Code[20];
         OldCorrection: Boolean;
@@ -376,6 +378,11 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
                     begin
                         VendorPostingGroup.Get(GenJournalLine."Posting Group");
                         PostingGroupAccountNo := VendorPostingGroup.GetPayablesAccount();
+                    end;
+                GenJournalLine."Account Type"::Employee:
+                    begin
+                        EmployeePostingGroup.Get(GenJournalLine."Posting Group");
+                        PostingGroupAccountNo := EmployeePostingGroup.GetPayablesAccount();
                     end;
                 else
                     exit;

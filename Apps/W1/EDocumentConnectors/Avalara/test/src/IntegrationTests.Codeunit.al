@@ -19,6 +19,7 @@ codeunit 148191 "Integration Tests"
 {
 
     Subtype = Test;
+    TestType = Uncategorized;
     Permissions = tabledata "Connection Setup" = rimd,
                   tabledata "E-Document" = r;
     TestHttpRequestPolicy = AllowOutboundFromHandler;
@@ -48,7 +49,7 @@ codeunit 148191 "Integration Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response.
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Avalara integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Avalara Document Id", 'Avalara integration failed to set Document Id on E-Document');
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
         // [THEN] Open E-Document page
@@ -127,7 +128,7 @@ codeunit 148191 "Integration Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Avalara integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Avalara Document Id", 'Avalara integration failed to set Document Id on E-Document');
 
         // [Then] E-Document is pending response as Avalara is async
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -241,7 +242,7 @@ codeunit 148191 "Integration Tests"
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Avalara integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Avalara Document Id", 'Avalara integration failed to set Document Id on E-Document');
 
         // [Then] E-Document is pending response as Avalara is async
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
@@ -400,7 +401,7 @@ codeunit 148191 "Integration Tests"
         EDocument.FindLast();
 
         Assert.AreEqual(Enum::"E-Document Status"::Error, EDocument.Status, 'E-Document should be set to error state when service is down.');
-        Assert.AreEqual('', EDocument."Document Id", 'Document Id on E-Document should not be set.');
+        Assert.AreEqual('', EDocument."Avalara Document Id", 'Document Id on E-Document should not be set.');
 
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);

@@ -1,6 +1,18 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Integration.Shopify.Test;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Document;
+
 codeunit 139609 "Shpfy Order Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -24,20 +36,19 @@ codeunit 139609 "Shpfy Order Test"
         ShpfyOrderNo: Code[50];
     begin
         Initialize();
-        ShpfyOrderNo := LibraryRandom.RandText(MaxStrLen(ShpfyOrderNo));
+        ShpfyOrderNo := CopyStr(LibraryRandom.RandText(MaxStrLen(ShpfyOrderNo)), 1, MaxStrLen(ShpfyOrderNo));
         Assert.AreEqual(ShpfyOrderNo, CreateSalesOrder(ShpfyOrderNo), 'Shpfy Order No. must be the same as on the order');
         ShpfyOrderNo := '';
         Assert.AreEqual(ShpfyOrderNo, CreateSalesOrder(ShpfyOrderNo), 'Shpfy Order No. must be blank');
 
     end;
 
-    Local procedure CreateSalesOrder(ShpfyOrderNo: Code[50]): Code[50]
+    local procedure CreateSalesOrder(ShpfyOrderNo: Code[50]): Code[50]
     var
         Customer: Record Customer;
         SalesShipmentHeader: Record "Sales Shipment Header";
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        PostDocumentNo: code[50];
         OrderNo: Code[50];
     begin
         LibrarySales.CreateCustomer(Customer);
@@ -45,7 +56,7 @@ codeunit 139609 "Shpfy Order Test"
         OrderNo := SalesHeader."No.";
         LibrarySales.CreateSalesLineSimple(SalesLine, SalesHeader);
         SalesHeader."Shpfy Order No." := ShpfyOrderNo;
-        PostDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
         SalesShipmentHeader.SetRange("Order No.", OrderNo);
         SalesShipmentHeader.FindFirst();
         exit(SalesShipmentHeader."Shpfy Order No.");

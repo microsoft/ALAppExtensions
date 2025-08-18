@@ -44,6 +44,13 @@ page 6181 "E-Document Purchase Draft"
                         CurrPage.Update();
                     end;
                 }
+                field(DraftType; Rec."Read into Draft Impl.")
+                {
+                    Caption = 'Draft Type';
+                    ToolTip = 'Specifies the type of draft document.';
+                    Visible = false;
+                    Editable = false;
+                }
                 group("Buy-from")
                 {
                     ShowCaption = false;
@@ -351,43 +358,26 @@ page 6181 "E-Document Purchase Draft"
     trigger OnOpenPage()
     var
         EDocumentsSetup: Record "E-Documents Setup";
-        ImportEDocumentProcess: Codeunit "Import E-Document Process";
         EDocumentNotification: Codeunit "E-Document Notification";
     begin
         if not EDocumentsSetup.IsNewEDocumentExperienceActive() then
             Error('');
 
-        if EDocumentPurchaseHeader.Get(Rec."Entry No") then
-            if Rec."Read into Draft Impl." = "E-Doc. Read into Draft"::ADI then begin
-                HasPDFSource := true;
-                AIGeneratedContentNotification.Message(ImportEDocumentProcess.AIGeneratedContentText());
-                AIGeneratedContentNotification.AddAction(ImportEDocumentProcess.TermsAndConditionsText(), Codeunit::"Import E-Document Process", 'OpenTermsAndConditions');
-                AIGeneratedContentNotification.Send();
-            end;
+        if EDocumentPurchaseHeader.Get(Rec."Entry No") then;
+        HasPDFSource := Rec."Read into Draft Impl." = "E-Doc. Read into Draft"::ADI;
         EDocumentServiceStatus := Rec.GetEDocumentServiceStatus();
         HasErrorsOrWarnings := false;
         HasErrors := false;
-        PageEditable := ConditionallyEditable();
+        PageEditable := IsEditable();
         EDocumentNotification.SendPurchaseDocumentDraftNotifications(Rec."Entry No");
+
+        if Rec."Entry No" <> 0 then
+            Rec.SetRecFilter(); // Filter the record to only this instance to avoid navigation 
     end;
 
-    local procedure ConditionallyEditable(): Boolean
-    var
-        RecRef: RecordRef;
+    local procedure IsEditable(): Boolean
     begin
-        if Rec."Document Record ID".TableNo() = 0 then
-            exit(true);
-
-        if not TryOpen(RecRef, Rec."Document Record ID".TableNo()) then
-            exit(true);
-
-        exit(not RecRef.Get(Rec."Document Record ID"));
-    end;
-
-    [TryFunction]
-    local procedure TryOpen(var RecRef: RecordRef; TableNo: Integer)
-    begin
-        RecRef.Open(TableNo);
+        exit(Rec.Status <> Rec.Status::Processed);
     end;
 
     trigger OnAfterGetRecord()
@@ -408,6 +398,8 @@ page 6181 "E-Document Purchase Draft"
         ShowAnalyzeDocumentAction :=
             (Rec."Import Processing Status" = Enum::"Import E-Document Steps"::"Structure received data") and
             (Rec.Status = Enum::"E-Document Status"::Error);
+
+        PageEditable := IsEditable();
     end;
 
     local procedure SetPageCaption()
@@ -499,7 +491,7 @@ page 6181 "E-Document Purchase Draft"
         if EDocumentErrorHelper.HasErrors(Rec) then
             exit;
 
-        PageEditable := ConditionallyEditable();
+        PageEditable := IsEditable();
         CurrPage.Lines.Page.Update();
         CurrPage.Update();
         Session.LogMessage('0000PCP', FinalizeDraftPerformedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocPOCopilotMatching.FeatureName());
@@ -588,7 +580,6 @@ page 6181 "E-Document Purchase Draft"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocumentHelper: Codeunit "E-Document Helper";
         ErrorsAndWarningsNotification: Notification;
-        AIGeneratedContentNotification: Notification;
         RecordLinkTxt, StyleStatusTxt, ServiceStatusStyleTxt, VendorName, DataCaption : Text;
         HasErrorsOrWarnings, HasErrors : Boolean;
         ShowFinalizeDraftAction: Boolean;

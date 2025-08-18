@@ -20,6 +20,8 @@ tableextension 10564 "Sales Cr.Memo Line" extends "Sales Cr.Memo Line"
         {
             Caption = 'Reverse Charge';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
     }
 }

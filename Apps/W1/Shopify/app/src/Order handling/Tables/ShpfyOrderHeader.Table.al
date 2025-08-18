@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 using System.IO;
@@ -181,6 +186,8 @@ table 30118 "Shpfy Order Header"
             Caption = 'Total Tip Received';
             DataClassification = SystemMetadata;
             Editable = false;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
 #if not CLEANSCHEMA25
         field(27; "Session Hash"; Text[50])
@@ -243,12 +250,14 @@ table 30118 "Shpfy Order Header"
             Caption = 'Ship-to Latitude';
             DataClassification = CustomerContent;
             Editable = false;
+            AutoFormatType = 0;
         }
         field(58; "Ship-to Longitude"; Decimal)
         {
             Caption = 'Ship-to Longitude';
             DataClassification = CustomerContent;
             Editable = false;
+            AutoFormatType = 0;
         }
         field(60; "Bill-to Name"; Text[50])
         {
@@ -294,21 +303,28 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Total Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(69; "Subtotal Amount"; Decimal)
         {
             Caption = 'Subtotal Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(70; "Total Weight"; Decimal)
         {
             Caption = 'Total Weight';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(71; "VAT Amount"; Decimal)
         {
             Caption = 'VAT Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(72; "VAT Included"; Boolean)
         {
@@ -341,11 +357,15 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Discount Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(77; "Total Items Amount"; Decimal)
         {
             Caption = 'Total Items Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(78; "Fulfillment Status"; Enum "Shpfy Order Fulfill. Status")
         {
@@ -427,6 +447,8 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Shipping Charges Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(95; "Document Date"; Date)
         {
@@ -519,31 +541,43 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Presentment Total Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Presentment Currency Code";
         }
         field(110; "Presentment Subtotal Amount"; Decimal)
         {
             Caption = 'Presentment Subtotal Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Presentment Currency Code";
         }
         field(111; "Presentment VAT Amount"; Decimal)
         {
             Caption = 'Presentment VAT Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Presentment Currency Code";
         }
         field(112; "Presentment Discount Amount"; Decimal)
         {
             Caption = 'Discount Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Presentment Currency Code";
         }
         field(113; "Presentment Total Tip Received"; Decimal)
         {
             Caption = 'Presentment Total Tip Received';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Presentment Currency Code";
         }
         field(114; "Pres. Shipping Charges Amount"; Decimal)
         {
             Caption = 'Presentment Shipping Charges Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Presentment Currency Code";
         }
         field(115; Edited; Boolean)
         {
@@ -590,6 +624,8 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Current Total Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(124; "Current Total Items Quantity"; Integer)
         {
@@ -622,6 +658,34 @@ table 30118 "Shpfy Order Header"
             Caption = 'Due Date';
             DataClassification = CustomerContent;
         }
+        field(130; "Pres. Payment Rounding Amount"; Decimal)
+        {
+            Caption = 'Presentment Payment Rounding Amount';
+            DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Presentment Currency Code";
+        }
+        field(131; "Payment Rounding Amount"; Decimal)
+        {
+            Caption = 'Payment Rounding Amount';
+            DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
+        }
+        field(132; "Pres. Refund Rounding Amount"; Decimal)
+        {
+            Caption = 'Presentment Refund Rounding Amount';
+            DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Presentment Currency Code";
+        }
+        field(133; "Refund Rounding Amount"; Decimal)
+        {
+            Caption = 'Refund Rounding Amount';
+            DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
+        }
         field(500; "Shop Code"; Code[20])
         {
             Caption = 'Shop Code';
@@ -650,12 +714,13 @@ table 30118 "Shpfy Order Header"
             Caption = 'Total Quantity of Items';
             FieldClass = FlowField;
             CalcFormula = sum("Shpfy Order Line".Quantity where("Shopify Order Id" = field("Shopify Order Id"), "Gift Card" = const(false), Tip = const(false)));
+            AutoFormatType = 0;
         }
         field(602; "Number of Lines"; Integer)
         {
             Caption = 'Number of Lines';
             FieldClass = FlowField;
-            CalcFormula = Count("Shpfy Order Line" where("Shopify Order Id" = field("Shopify Order Id")));
+            CalcFormula = count("Shpfy Order Line" where("Shopify Order Id" = field("Shopify Order Id")));
         }
         field(1000; "Sell-to Customer No."; Code[20])
         {
@@ -802,6 +867,11 @@ table 30118 "Shpfy Order Header"
             DataClassification = CustomerContent;
             Caption = 'Payment Terms Name';
         }
+        field(1050; "Salesperson Code"; Code[20])
+        {
+            Caption = 'Salesperson Code';
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {
@@ -811,7 +881,9 @@ table 30118 "Shpfy Order Header"
         }
         key(Key2; "Shop Code", Processed)
         {
-
+        }
+        key(Key3; "Created At")
+        {
         }
     }
     var

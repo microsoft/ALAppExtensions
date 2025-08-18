@@ -1,3 +1,8 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Integration.Shopify;
 
 codeunit 30238 "Shpfy Fulfillment Orders API"
@@ -19,20 +24,6 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
 
         Shop."Fulfillment Service Activated" := true;
         Shop.Modify();
-    end;
-
-    internal procedure GetShopifyFulfillmentOrders()
-    var
-        Shop: Record "Shpfy Shop";
-    begin
-        Shop.Reset();
-        if Shop.FindSet() then
-            repeat
-                if not Shop."Fulfillment Service Activated" then
-                    RegisterFulfillmentService(Shop);
-
-                GetShopifyFulFillmentOrders(Shop);
-            until Shop.Next() = 0;
     end;
 
     internal procedure GetShopifyFulFillmentOrders(Shop: Record "Shpfy Shop")
@@ -221,8 +212,9 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
 
         CommunicationMgt.SetShop(Shop);
 
-        if not Shop."Fulfillment Service Activated" then
-            RegisterFulfillmentService(Shop);
+        if Shop."Allow Outgoing Requests" then
+            if not Shop."Fulfillment Service Activated" then
+                RegisterFulfillmentService(Shop);
 
         GraphQLType := "Shpfy GraphQL Type"::GetFulfillmentOrdersFromOrder;
         repeat
