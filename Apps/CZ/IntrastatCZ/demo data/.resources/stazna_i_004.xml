@@ -1,0 +1,1366 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ciselnik>
+<nazev>stazna_i</nazev>
+<data>
+  <radek>
+    <KN>22071000</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ehtylalkohol nedenaturovaný s obsahem alkoholu 80 % obj. nebo více pro výrobu směsí paliv pro pohon  motorů</POPIS>
+    <POPISAN>Undenatured ethyl alcohol of an alcoholic strength by volume of 80 % vol. or higher for production of mixed motor fuels</POPISAN>
+  </radek>
+  <radek>
+    <KN>22071000</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ehtylalkohol nedenaturovaný s obsahem alkoholu 80 % obj. nebo více pro jiné použití než pro výrobu směsí paliv pro pohon  motorů</POPIS>
+    <POPISAN>Undenatured ethyl alcohol of an alcoholic strength by volume of 80 % vol. or higher for other usage than for production of mixed motor fuels</POPISAN>
+  </radek>
+  <radek>
+    <KN>22072000</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ethylalkohol a destiláty denaturované, s jakýmkoliv obsahem alkoholu pro výrobu směsí paliv pro pohon motorů</POPIS>
+    <POPISAN>Ethyl alcohol and other spirits, denatured, of any strength for production of mixed motor fuels</POPISAN>
+  </radek>
+  <radek>
+    <KN>22072000</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Směs 70 - 85% objemových kvasného lihu bezvodého zvláště nebo obecně denaturovaného a motorového benzinu, bez aditiv, pro pohon motorů (např. Ethanol E85)</POPIS>
+    <POPISAN>Mixtures of denatured ethyl alcohol of an alcoholic strength by volume of 70 - 85 % vol. with motor spirit, without additives, for propulsion (e.g. Flexifuel - E85)</POPISAN>
+  </radek>
+  <radek>
+    <KN>22072000</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ethylalkohol a destiláty denaturované, s jakýmkoliv obsahem alkoholu pro jiné použití než pro pohon nebo výrobu směsí paliv pro pohon motorů</POPIS>
+    <POPISAN>Ethyl alcohol and other spirits, denatured, of any strength for other usage than for production of mixed motor fuels</POPISAN>
+  </radek>
+  <radek>
+    <KN>27079999</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje a jiné produkty, ve kterých hmotnost aromatických složek převažuje nad hmotností nearomatických složek, jinde neuvedené ani nezahrnuté (zde jako produkt rafinérského zpracování ropy), o obsahu síry do 1% hmotnostních, tj. charakteru t</POPIS>
+    <POPISAN>Oils and other products in which the weight of the aromatic constituents exceeds that of the non-aromatic constituents, n.e.s. (here as a product of oil refining), with a sulfur content of &lt; 1% by weight, ie the nature of low-sulfur fuel oi</POPISAN>
+  </radek>
+  <radek>
+    <KN>27079999</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje a jiné produkty, ve kterých hmotnost aromatických složek převažuje nad hmotností nearomatických složek, jinde neuvedené ani nezahrnuté (zde jako produkt rafinérského zpracování ropy), o obsahu síry  &gt;=1% hmotnostních, tj. charakteru t</POPIS>
+    <POPISAN>Oils and other products in which the weight of the aromatic constituents exceeds that of the non-aromatic constituents, n.e.s. (here as a product of oil refining), with a sulfur content of &gt;= 1% by weight, ie the nature of high-sulfur fuel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27079999</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje a jiné produkty destilace vysokotepelných černouhelných dehtů; podobné produkty, ve kterých hmotnost aromatických složek převažuje nad hmotností nearomatických složek, jinde neuvedené ani nezahrnuté, ostatní (ne 2707999910 a 270799992</POPIS>
+    <POPISAN>Oils and other products of the distillation of high temperature coal tars and similar products in which the weight of the aromatic constituents exceeds that of the non-aromatic constituents, n.e.s. (other than 2707999910 a 2707999920 and 27</POPISAN>
+  </radek>
+  <radek>
+    <KN>27079999</KN>
+    <STAZNA>40</STAZNA>
+    <OD>2024-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje a jiné produkty , ve kterých hmotnost aromatických složek převažuje nad hmotností nearomatických složek, jinde neuvedené ani nezahrnuté (zde jako produkt rafinérského zpracování ropy), ostatní, tj. charakteru ostatních produktů</POPIS>
+    <POPISAN>Oils and other products in which the weight of the aromatic constituents exceeds that of the non-aromatic constituents, n.e.s. (here as a product of oil refining), other, ie the nature of other products</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101221</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Lakový benzin jako komponenta pro výrobu motorových benzinů</POPIS>
+    <POPISAN>Special petrol - white spirit as a component for production of gasoline</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101221</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Lakový benzin jako komponenta pro výrobu motorové nafty</POPIS>
+    <POPISAN>Special petrol - white spirit as a component for production of diesel oil</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101221</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Lakový benzin pro jiné použití než jako komponenta pro výrobu motorových paliv</POPIS>
+    <POPISAN>Special petrol - white spirit for different application than as a component for production of motor fuels</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101225</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Benzin speciální - ostatní pro jiné použití než jako komponenta pro výrobu motorových paliv</POPIS>
+    <POPISAN>Special petrol - other for different application than as a component for production of motor fuels</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101225</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Benzin speciální - ostatní jako komponenta pro výrobu motorových benzinů</POPIS>
+    <POPISAN>Special petrol - other as a component for production of gasoline</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101225</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Benzin speciální - ostatní jako komponenta pro výrobu motorové nafty</POPIS>
+    <POPISAN>Special petrol - other as a component for production of diesel oil</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101241</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Motorový benzin ostatní, s obsahem olova do 0,013 g/l, s oktanovým číslem do 95 bez přísad proti zatloukání ventilů</POPIS>
+    <POPISAN>Motor petrol, lead content up to 0.013 g/l, octane index to 95, free of additives against valves driving</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101241</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Motorový benzin ostatní, s obsahem olova do 0,013 g/l, s oktanovým číslem do 95 s přísadami proti zatloukání ventilů</POPIS>
+    <POPISAN>Motor petrol, lead content up to 0.013 g/l, octane index to 95, with additives against valves driving</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101290</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní lehké oleje jako komponenta pro výrobu motorových benzinů</POPIS>
+    <POPISAN>Other petrol as a component for production of motor petrol</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101290</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní lehké oleje jako komponenta pro výrobu motorové nafty</POPIS>
+    <POPISAN>Other petrol as a component for production of diesel oil</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101290</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní lehké oleje pro jiné použití než jako komponenta pro výrobu motorových paliv</POPIS>
+    <POPISAN>Other petrol for different application than as a component for production of motor fuels</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101915</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní střední oleje pro chemickou přeměnu, jinak než dle 27101911 jako rafinérské suroviny (rafinérský vstup)</POPIS>
+    <POPISAN>Other medium oils for undergoing chemical transformation by a process other than those in 27101911 as refinery feedstock (refinery intake)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101915</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní střední oleje pro chemickou přeměnu, jinak než dle 27101911, jako ropné produkty (rafinérský výstup)</POPIS>
+    <POPISAN>Other medium oils for undergoing chemical transformation by a process other than those in 27101911 as petroleum products (refinery output)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101929</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Střední oleje pro pohon nebo výrobu směsí paliv pro pohon motorů, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Medium oils for other purposes, other, for production of motor fuels, other than thouse containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101929</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Střední oleje pro výrobu tepla bez ohledu na způsob spotřeby tepla, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Medium oils for other purposes, other, for heat production, other than thouse containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101929</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Střední oleje s funkčními přísadami, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Medium oils for other purposes, other,with special additives, other than thouse containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101929</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Střední oleje pro jiné použití než pro pohon, výrobu motorových paliv nebo výrobu tepla, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Medium oils for other purposes, other, for different applications than for production of motor fuels or heat production, other than thouse containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101931</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro specifické procesy jako rafinérské suroviny</POPIS>
+    <POPISAN>Heavy gas oils for undergoing a specific process as refinery feedstock</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101931</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro specifické procesy jako topný a ostatní plynový olej</POPIS>
+    <POPISAN>Heavy gas oils for undergoing a specific process as heating and other gasoil</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101943</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2024-12-31</DO>
+    <POPIS>Těžké oleje plynové pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry do 0,001 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content not exceeding 0,001 % by weight, for heat production, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101943</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2024-12-31</DO>
+    <POPIS>Těžké oleje plynové pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry do 0,001 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content not exceeding 0,001 % by weight, for production of motor fuels, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101943</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2024-12-31</DO>
+    <POPIS>Těžké oleje plynové s funkčními přísadami, obsah síry do 0,001 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content not exceeding 0,001 % by weight, with special additives, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101943</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2024-12-31</DO>
+    <POPIS>Těžké oleje plynové pro jiné použití než pro pohon, výrobu motorových paliv nebo výrobu tepla, obsah síry do 0,001 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content not exceeding 0,001 % by weight, other, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101943</KN>
+    <STAZNA>55</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2024-12-31</DO>
+    <POPIS>Těžké oleje plynové pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry do 0,001 % hmotnostních, ve směsi s  hydrogenovaným rostlinným olejem (HVO) &gt;=30 %</POPIS>
+    <POPISAN>Heavy gas oils for propulsion or production of fuel mixtures for engine propulsion, sulfur content up to 0,001% by weight, mixed with hydrogenated vegetable oil (HVO)&gt;=30%</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101943</KN>
+    <STAZNA>56</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2024-12-31</DO>
+    <POPIS>Těžké oleje plynové pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry do 0,001 % hmotnostních, ve směsi s  hydrogenovaným rostlinným olejem (HVO) &lt;30 %</POPIS>
+    <POPISAN>Heavy gas oils for propulsion or production of fuel mixtures for engine propulsion, sulfur content up to 0,001% by weight, mixed with hydrogenated vegetable oil (HVO)&lt;30%</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101943</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2024-12-31</DO>
+    <POPIS>Biosložky čisté  - 100% hydrogenovaný rostlinný olej (HVO)  jako přísada do těžkého plynového oleje z minerálních nebo živičných nerostů o obsahu síry &lt;= 0,001 % hmotnostních</POPIS>
+    <POPISAN>Pure bio-components - 100% hydrogenated vegetable oil (HVO) as an additive to heavy gas oil from petroleum or bituminous minerals with a sulfur content &lt;= 0.001% by weight</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101944</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2025-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Biosložky čisté - 100% hydrogenovaný rostlinný olej (HVO) jako přísada do těžkého plynového oleje z minerálních nebo živičných nerostů o obsahu síry &lt;= 0,001 % hmotnostních a bez obsahu uhlíku pocházejícího z biomasy =&gt; 80% hmotnostních</POPIS>
+    <POPISAN>Pure bio-components - 100% hydrogenated vegetable oil (HVO) as an additive to heavy gas oil from petroleum or bituminous minerals with a sulfur content &lt;= 0.001% by weight and without bio-based carbon content =&gt; 80 % by weight</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101944</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2025-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry do 0,001 % hmotnostních, neobsahující bionaftu (biosložky) a bez obsahu uhlíku pocházejícího z biomasy =&gt; 80% hmotnostních</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content not exceeding 0,001 % by weight, for heat production, other than those containing biodiesel and without bio-based carbon content =&gt; 80 % by weight</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101944</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2025-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry do 0,001 % hmotnostních, neobsahující bionaftu (biosložky) a bez obsahu uhlíku pocházejícího z biomasy =&gt; 80% hmotnostních</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content not exceeding 0,001 % by weight, for production of motor fuels, other than those containing biodiesel and without bio-based carbon content =&gt; 80 % by weight</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101944</KN>
+    <STAZNA>55</STAZNA>
+    <OD>2025-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry do 0,001 % hmotnostních, ve směsi s hydrogenovaným rostlinným olejem (HVO) &gt;=30 % a bez obsahu uhlíku pocházejícího z biomasy =&gt; 80% hmotnostních</POPIS>
+    <POPISAN>Heavy gas oils for propulsion or production of fuel mixtures for engine propulsion, sulfur content up to 0,001% by weight, mixed with hydrogenated vegetable oil (HVO)&gt;=30% and without bio-based carbon content =&gt; 80 % by weight</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101944</KN>
+    <STAZNA>56</STAZNA>
+    <OD>2025-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry do 0,001 % hmotnostních, ve směsi s hydrogenovaným rostlinným olejem (HVO) &lt;30 % a bez obsahu uhlíku pocházejícího z biomasy =&gt; 80% hmotnostních</POPIS>
+    <POPISAN>Heavy gas oils for propulsion or production of fuel mixtures for engine propulsion, sulfur content up to 0,001% by weight, mixed with hydrogenated vegetable oil (HVO)&lt;30% and without bio-based carbon content =&gt; 80 % by weight</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101944</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2025-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové s funkčními přísadami, obsah síry do 0,001 % hmotnostních, neobsahující bionaftu (biosložky) a bez obsahu uhlíku pocházejícího z biomasy =&gt; 80% hmotnostních</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content not exceeding 0,001 % by weight, with special additives, other than those containing biodiesel and without bio-based carbon content =&gt; 80 % by weight</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101944</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2025-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro jiné použití než pro pohon, výrobu motorových paliv nebo výrobu tepla, obsah síry do 0,001 % hmotnostních, neobsahující bionaftu (biosložky) a bez obsahu uhlíku pocházejícího z biomasy =&gt; 80% hmotnostních</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content not exceeding 0,001 % by weight, other, other than those containing biodiesel and without bio-based carbon content =&gt; 80 % by weight</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101946</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry nad 0,001 % hmotnostních, ale nepřesahující 0,002 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content exceeding 0,001 % by weight but not exceeding 0,002 % by weight, for heat production, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101946</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry nad 0,001 % hmotnostních, ale nepřesahující 0,002 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes  with a sulphur content exceeding 0,001 % by weight but not exceeding 0,002 % by weight, for production of motor fuels, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101946</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové s funkčními přísadami, obsah síry nad 0,001 % hmotnostních, ale nepřesahující 0,002 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes  with a sulphur content exceeding 0,001 % by weight but not exceeding 0,002 % by weight, with special additives, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101946</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro jiné použití než pro pohon, výrobu motorových paliv nebo výrobu tepla, obsah síry nad 0,001 %, ale nepřesahující  0,002 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes  with a sulphur content exceeding 0,001 % by weight but not exceeding 0,002 % by weight, other, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101947</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry nad 0,002 % hmotnostních, ale nepřesahující  0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content exceeding 0,002 % by weight but not exceeding 0,1 % by weight, for heat production, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101947</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro výrobu směsí paliv pro pohon motorů, obsah síry nad 0,002 % hmotnostních, ale nepřesahující 0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes  with a sulphur content exceeding 0,002 % by weight but not exceeding 0,1 % by weight, for production of motor fuels, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101947</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové s funkčními přísadami, obsah síry nad 0,002 % hmotnostních, ale nepřesahující 0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes  with a sulphur content exceeding 0,002 % by weight but not exceeding 0,1 % by weight, with special additives, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101947</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro jiné použití než pro výrobu motorových paliv nebo výrobu tepla, obsah síry nad 0,002 % hmotnostních, ale nepřesahující  0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes  with a sulphur content exceeding 0,002 % by weight but not exceeding 0,1 % by weight, other, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101948</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry nad 0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content exceeding 0,1 % by weight, for heat production, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101948</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro výrobu směsí paliv pro pohon motorů, obsah síry nad 0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content exceeding 0,1 % by weight, for production of motor fuels, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101948</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové s funkčními přísadami, obsah síry nad 0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content exceeding 0,1 % by weight, with special additives, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101948</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje plynové pro jiné použití než pro výrobu motorových paliv nebo výrobu tepla, obsah síry nad 0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy gas oils for other purposes with a sulphur content exceeding 0,1 % by weight, other, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101951</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Vakuový destilát - těžké topné oleje pro specifické procesy jako rafinérské suroviny (rafinérský vstup)</POPIS>
+    <POPISAN>Vacuum distillate - heavy fuel oils for undergoing a specific process as refinery feedstock (refinery intake)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101951</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Vakuový destilát - těžké topné oleje pro specifické procesy jako ostatní ropné produkty (rafinérský výstup)</POPIS>
+    <POPISAN>Vacuum distillate - heavy fuel oils for undergoing a specific process as other petroleum products (refinery output)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101955</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Vakuový destilát - těžké topné oleje pro chemickou přeměnu jiným postupem, než který je stanoven pro podpoložku 27101951 jako rafinérské suroviny (rafinérský vstup)</POPIS>
+    <POPISAN>Vacuum distillate - heavy fuel oils for undergoing chemical transformation by a process other than those specified in subheading 27101951 as refinery feedstock (refinery intake)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101955</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Vakuový destilát - těžké topné oleje pro chemickou přeměnu jiným postupem, než který je stanoven pro podpoložku 27101951 jako ostatní ropné produkty (rafinérský výstup)</POPIS>
+    <POPISAN>Vacuum distillate - heavy fuel oils for undergoing chemical transformation by a process other than those specified in subheading 27101951 as petroleum products (refinery output)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101962</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje topné pro výrobu tepla, obsah síry do 0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for other purposes with a sulphur content not exceeding 0,1 % by weight, for heat production, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101962</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje topné pro jiné použití než pro výrobu tepla, obsah síry do 0,1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for other purposes with a sulphur content not exceeding 0,1 % by weight, other, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101964</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Těžké oleje topné pro výrobu tepla, obsah síry nad 0,1 %, ale nepřesahující 1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for other purposes with a sulphur content exceeding 0,01 % by weight but not exceeding 1 % by weight, for heat production, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101964</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Těžké oleje topné pro jiné použití než pro výrobu tepla, obsah síry nad 0,1 %, ale nepřesahující 1 % hmotnostních, neobsahující bionaftu (biosložku)</POPIS>
+    <POPISAN>Heavy fuel oils for other purposes with a sulphur content exceeding 0,01 % by weight but not exceeding 1 % by weight, other, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101966</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje topné pro výrobu tepla, obsah síry nad 0,1 % hmotnostních, ale nepřesahující 0,5 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for production of heat, with a sulphur content exceeding 0,1 % by weight but not exceeding 0,5 % by weight, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101966</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje topné pro jiné použití než pro výrobu tepla, obsah síry nad 0,1 % hmotnostních, ale nepřesahující 0,5 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for other purposes, with a sulphur content exceeding 0,1 % by weight but not exceeding 0,5 % by weight, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101967</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje topné pro výrobu tepla, obsah síry nad 0,5 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for production of heat, with a sulphur content exceeding 0,5 % by weight, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101967</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje topné pro jiné použití než pro výrobu tepla, obsah síry nad 0,5 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for other purposes (other than 2710196710 and 2710196790), with a sulphur content exceeding 0,5 % by weight, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101967</KN>
+    <STAZNA>95</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Těžké oleje topné, ostatní (např. atmosférický zbytek apod.), obsah síry nad 0,5 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for other purposes, else (eg atmospheric residue, etc.), with a sulphur content exceeding 0,5 % by weight, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101968</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Těžké oleje topné pro výrobu tepla, obsah síry nad 1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for other purposes with a sulphur content exceeding 1 % by weight, for heat production, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101968</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Těžké oleje topné pro jiné použití než pro výrobu tepla, obsah síry nad 1 % hmotnostních, neobsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Heavy fuel oils for other purposes with a sulphur content exceeding 1 % by weight, other, other than those containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101971</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Mazací oleje; ostatní oleje pro specifické procesy jako rafinérské suroviny (rafinérský vstup)</POPIS>
+    <POPISAN>Lubricating oils; other oils for undergoing a specific process as refinery feedstock (refinery intake)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101971</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Mazací oleje; ostatní oleje pro specifické procesy jako suroviny pro výrobu maziv a mazacích olejů (rafinérský výstup)</POPIS>
+    <POPISAN>Lubricating oils; other oils for undergoing a specific process as refinery feedstock for manufacture of lubricants and lubricating oils (refinery output)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101971</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Mazací oleje; ostatní oleje pro specifické procesy jako ostatní ropné produkty (rafinérský výstup) jinak než 2710197110 a 2710197120</POPIS>
+    <POPISAN>Lubricating oils; other petroleum for undergoing a specific process as other petroleum products (refinery output), other than 2710197110 and 2710197120</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101981</KN>
+    <STAZNA>11</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Motorové oleje automobilové</POPIS>
+    <POPISAN>Motor oils for cars</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101981</KN>
+    <STAZNA>12</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Motorové oleje letecké</POPIS>
+    <POPISAN>Motor oils for aircrafts</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101981</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Motorové oleje ostatní; ne: automobilové, letecké</POPIS>
+    <POPISAN>Other Motor oils; not for cars or aircrafts</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101981</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Mazací oleje pro chladící kompresory</POPIS>
+    <POPISAN>Oils for cooling compressors</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101981</KN>
+    <STAZNA>40</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Mazací oleje pro plynové a vzduchové kompresory</POPIS>
+    <POPISAN>Oils for gas and pneumatic compressors</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101981</KN>
+    <STAZNA>50</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Mazací oleje turbínové</POPIS>
+    <POPISAN>Turbine oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101981</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje kompresorové a turbínové, ostatní</POPIS>
+    <POPISAN>Compressors and turbine oils, other</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101983</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje hydraulické</POPIS>
+    <POPISAN>Hydraulic oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101983</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Kapaliny pro hydraulické účely, ostatní</POPIS>
+    <POPISAN>Liquids for hydraulic applications, other</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101985</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje bílé technické</POPIS>
+    <POPISAN>White technical oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101985</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje medicinální (paraffinum liquidum)</POPIS>
+    <POPISAN>Medicinal oils (paraffinum liquidum)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101987</KN>
+    <STAZNA>11</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje převodové automobilové</POPIS>
+    <POPISAN>Gear oils for cards</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101987</KN>
+    <STAZNA>12</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje převodové letecké</POPIS>
+    <POPISAN>Gear oils for aircrafts</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101987</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje převodové průmyslové</POPIS>
+    <POPISAN>Industrial gear oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101987</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje převodové pro reduktory</POPIS>
+    <POPISAN>Gear oils for reducers</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101991</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje pro obrábění kovů</POPIS>
+    <POPISAN>Oils for metal cutting</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101991</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje pro uvolňování odlitků</POPIS>
+    <POPISAN>Oils for release of castings from moulds</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101991</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje antikorozní</POPIS>
+    <POPISAN>Anticorrosion oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101993</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje transformátorové</POPIS>
+    <POPISAN>Transformer oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101993</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje elektroizolační, ostatní</POPIS>
+    <POPISAN>Electric-insulation oils, other</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje ložiskové</POPIS>
+    <POPISAN>Bearing oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje mazací ostatní pro technologické účely</POPIS>
+    <POPISAN>Lubricating oils for technological purposes</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje pro přenos tepla, kalení</POPIS>
+    <POPISAN>Oils for heat transmission, hardening</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje ostatní</POPIS>
+    <POPISAN>Other oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>41</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Maziva plastická automobilová, obsahující nad 70% minerálních olejů</POPIS>
+    <POPISAN>Plastic lubricants for cars, containing above 70 % mineral oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>42</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Maziva plastická ostatní, obsahující nad 70% minerálních olejů</POPIS>
+    <POPISAN>Other plastic lubricants containing above 70 % mineral oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>50</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje textilní</POPIS>
+    <POPISAN>Textile oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>60</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje postřikové</POPIS>
+    <POPISAN>Spray oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>70</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje formové</POPIS>
+    <POPISAN>Mould oils</POPISAN>
+  </radek>
+  <radek>
+    <KN>27101999</KN>
+    <STAZNA>95</STAZNA>
+    <OD>2024-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Oleje ostatní, charakteru ostatních produktů</POPIS>
+    <POPISAN>Other oils of the nature of other products</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102011</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry do 0,001 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content not exceeding 0,001 % by weight, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102011</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry do 0,001 % hmotnostních, obsahující bionaftu (biosložky), tj. FAME (MEŘO), bez hydrogenovaného rostlinného oleje (HVO)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content not exceeding 0,001 % by weight, for production of motor fuels, containing biodiesel, ie FAME, without hydrogenated vegetable oil (HVO)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102011</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, s funkčními přísadami, obsah síry do 0,001 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content not exceeding 0,001 % by weight, with special additives, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102011</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro jiné použití než pro pohon, výrobu motorových paliv nebo výrobu tepla, obsah síry do 0,001 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content not exceeding 0,001 % by weight, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102011</KN>
+    <STAZNA>55</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry do 0,001 % hmotnostních, ve směsi s bionaftou (biosložkami), tj. s FAME (MEŘO) a hydrogenovaným rostlinným olejem (HVO) apod.</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content not exceeding 0,001 % by weight, for production of motor fuels, in mixture containing biodiesel, ie FAME and hydrogenated vegetable oil (HVO) etc.</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102011</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Biosložky čisté - 100 %  hydrogenovaný rostlinný olej (HVO) jako přísada do plynového oleje jinde neuvedeného z minerálních nebo živičných nerostů o obsahu síry &lt;= 0,001 % hmotnostních</POPIS>
+    <POPISAN>Pure bio-components - 100% hydrogenated vegetable oil (HVO) as an additive to gas oil not elsewhere specified from mineral or bituminous minerals with a sulfur content &lt;= 0.001% by weight</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102015</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry nad 0,001 %, ale nepřesahující  0,002 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,001 % by weight but not exceeding 0,002 %, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102015</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry nad 0,001 %, ale nepřesahující 0,002 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,001 % by weight but not exceeding 0,002 %, for production of motor fuels, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102015</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, s funkčními přísadami, obsah síry nad 0,001 %, ale nepřesahující 0,002 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,001 % by weight but not exceeding 0,002 %, with special additives, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102015</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro jiné použití než pro pohon, výrobu motorových paliv nebo výrobu tepla, obsah síry nad 0,001 %, ale nepřesahující  0,002 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,001 % by weight but not exceeding 0,002 %, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102016</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry nad 0,001 % hmotnostních, ale nepřesahující 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,001 % by weight but not exceeding 0,1 % by weight, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102016</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro pohon nebo výrobu směsí paliv pro pohon motorů, obsah síry nad 0,001 % hmotnostních, ale nepřesahující 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceedimg 0,001 % by weight but not exceeding 0,1 % by weight, for production of motor fuels, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102016</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, s funkčními přísadami, obsah síry nad 0,001 % hmotnostních, ale nepřesahující 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,001 % by weight but not exceeding 0,1 % by weight, with special additives, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102016</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro jiné použití než pro pohon, výrobu motorových paliv nebo výrobu tepla, obsah síry nad 0,001 % hmotnostních, ale nepřesahující 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,001 % by weight but not exceeding 0,1 % by weight, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102017</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry nad 0,002 %, ale nepřesahující  0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,002 % by weight but not exceeding 0,1 % by weight, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102017</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro výrobu směsí paliv pro pohon motorů, obsah síry nad 0,002 %, ale nepřesahující 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,002 % by weight but not exceeding 0,1 % by weight, for production of motor fuels, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102017</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, s funkčními přísadami, obsah síry nad 0,002 %, ale nepřesahující 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,002 % by weight but not exceeding 0,1 % by weight, with special additives, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102017</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro jiné použití než pro výrobu motorových paliv nebo výrobu tepla, obsah síry nad 0,002 %, ale nepřesahující  0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,002 % by weight but not exceeding 0,1 % by weight, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102019</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro výrobu tepla bez ohledu na způsob spotřeby tepla, obsah síry nad 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,1 % by weight, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102019</KN>
+    <STAZNA>51</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro výrobu směsí paliv pro pohon motorů, obsah síry nad 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,1 % by weight, for production of motor fuels, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102019</KN>
+    <STAZNA>91</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, s funkčními přísadami, obsah síry nad 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,1 % by weight, with special additives, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102019</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Plynové oleje, jinde neuvedené, pro jiné použití než pro výrobu motorových paliv nebo výrobu tepla, obsah síry nad 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Gas oils not elsewhere specified or included, with a sulphur content exceeding 0,1 % by weight, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102031</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro výrobu tepla, obsah síry do 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content not exceeding 0,1 % by weight, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102031</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro jiné použití než pro výrobu tepla, obsah síry do 0,1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content not exceeding 0,1 % by weight, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102032</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro výrobu tepla, obsah síry do 0,5 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content not exceeding 0,5 % by weight, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102032</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro jiné použití než pro výrobu tepla, obsah síry do 0,5 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content not exceeding 0,5 % by weight, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102035</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro výrobu tepla, obsah síry nad 0,1 %, ale nepřesahující 1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content exceeding 0,01 % by weight but not exceeding 1 % by weight, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102035</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro jiné použití než pro výrobu tepla, obsah síry nad 0,1 %, ale nepřesahující 1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content exceeding 0,01 % by weight but not exceeding 1 % by weight, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102038</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro výrobu tepla, o obsahu síry převyšujícím 0,5 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content exceeding 0,5 % by weight, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102038</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2020-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro jiné použití než pro výrobu tepla, o obsahu síry převyšujícím 0,5 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content exceeding 0,5 % by weight, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102039</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro výrobu tepla, o obsahu síry převyšujícím 1 % hmotnostních, obsahující bionaftu</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content exceeding 1 % by weight, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102039</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2019-12-31</DO>
+    <POPIS>Topné oleje, jinde neuvedené, pro jiné použití než pro výrobu tepla, o obsahu síry převyšujícím 1 % hmotnostních, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Fuel oils not elsewhere specified or included, with a sulphur content exceeding 1 % by weight, other, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102090</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní minerální oleje a oleje ze živičných nerostů, jinde neuvedené, ostatní oleje jako komponenta pro výrobu motorové nafty, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Other petroleum oils and oils obtained from bituminous minerals not elsewhere specified or included, as a component for production of diesel oil, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102090</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní minerální oleje a oleje ze živičných nerostů, jinde neuvedené, ostatní oleje pro výrobu tepla, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Other petroleum oils and oils obtained from bituminous minerals not elsewhere specified or included, for heat production, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102090</KN>
+    <STAZNA>40</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní minerální oleje a oleje ze živičných nerostů, jinde neuvedené, ostatní oleje jako komponenta pro výrobu mazacích látek, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Other petroleum oils and oils obtained from bituminous minerals not elsewhere specified or included, as a component for production of lubricants, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27102090</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní minerální oleje a oleje ze živičných nerostů, jinde neuvedené, ostatní oleje (kromě odpadních olejů), pro jiné použití než jako komponenta pro výrobu motorových paliv, tepla a mazacích látek, obsahující bionaftu (biosložky)</POPIS>
+    <POPISAN>Other petroleum oils and oils obtained from bituminous minerals not elsewhere specified or included, other than waste oils,  for different applications than for production of motor fuels, heat or lubricants, containing biodiesel</POPISAN>
+  </radek>
+  <radek>
+    <KN>27111291</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Propan o čistotě &lt; 99 % zkapalněný, ostatní, pro specifické procesy jako rafinérská surovina (rafinérský vstup)</POPIS>
+    <POPISAN>Propane of purity &lt;99%, liquefied, other, for undergoing a specific process as refinery feedstock (refinery intake)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27111291</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Propan o čistotě &lt; 99 % zkapalněný, ostatní, pro specifické procesy jako ropný produkt (rafinérský výstup), jiné než uvedené pod 2711129110</POPIS>
+    <POPISAN>Propane of purity &lt;99%, liquefied, other, for undergoing a specific process as refinery feedstock (refinery intake) other than those specified in 2711129110</POPISAN>
+  </radek>
+  <radek>
+    <KN>27111310</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Butany zkapalněné pro specifické procesy jako ropné produkty (rafinérský výstup), jiné než uvedené pod 2711131010</POPIS>
+    <POPISAN>Butanes, liquefied,for undergoing a specific process as refinery products (refinery output),other than those specified in 2711131010</POPISAN>
+  </radek>
+  <radek>
+    <KN>27111310</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Butany zkapalněné pro specifické procesy jako rafinérské suroviny (rafinérský vstup)</POPIS>
+    <POPISAN>Butanes, liquefied for undergoing a specific process as refinery feedstock (refinery intake)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27111900</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ropné plyny a jiné plynné uhlovodíky - zkapalněné - ostatní, jako rafinérské suroviny (rafinérský vstup)</POPIS>
+    <POPISAN>Petroleum gases and other gaseous hydrocarbons,liquefied, other, as refinery feedstock (refinery intake)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27111900</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ropné plyny a jiné plynné uhlovodíky - zkapalněné - ostatní, jako ropné produkty - LPG, PB(rafinérský výstup)</POPIS>
+    <POPISAN>Petroleum gases and other gaseous hydrocarbons,liquefied, other, as petroleum products (refinery output)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27112900</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ropné plyny a jiné plynné uhlovodíky, v plynném stavu, ostatní, jako rafinérské suroviny (rafinérský vstup)</POPIS>
+    <POPISAN>Petroleum gases and other gaseous hydrocarbons, in gaseous state, other, as refinery feedstock (refinery intake)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27112900</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ropné plyny a jiné plynné uhlovodíky, v plynném stavu, ostatní (bez zemního plynu) jako rafinérský plyn nezkapalněný (rafinérský výstup)</POPIS>
+    <POPISAN>Petroleum gases and other gaseous hydrocarbons, in gaseous state, other (excluding natural gas) as refinery gas  not liquefied (refinery output)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27129031</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní surové vosky pro specifické procesy jako rafinérské suroviny (rafinérský vstup)</POPIS>
+    <POPISAN>Other crude wax for undergoing a specific process as refinery feedstock (refinery intake)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27129031</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní surové vosky pro specifické procesy jako ropné produkty (rafinérský výstup)</POPIS>
+    <POPISAN>Other crude wax for undergoing a specific process as petroleum products (refinery output)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27132000</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Asfalty ropné silniční (pro stavbu silnic a úpravy vozovek)</POPIS>
+    <POPISAN>Petroleum road asphalts (for roads construction and treatment)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27132000</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Asfalty ropné stavebně izolační (zálivky, nátěry apod.)</POPIS>
+    <POPISAN>Petroleum insulating structural asphalts (sealing, coats, etc.)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27132000</KN>
+    <STAZNA>30</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Asfalty ropné průmyslové (pro výrobu lepenek, krytin apod.)</POPIS>
+    <POPISAN>Industrial petroleum asphalts (for production of cardboards,  covering, etc.)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27132000</KN>
+    <STAZNA>40</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Asfalty ropné modifikované (speciální, s polymery a kopolymery)</POPIS>
+    <POPISAN>Modified petroleum asphalts (special, with polymers and  a copolymers)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27132000</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Živice petrolejové ostatní</POPIS>
+    <POPISAN>Petroleum bitumen, other</POPISAN>
+  </radek>
+  <radek>
+    <KN>27139090</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2024-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní zbytky minerálních olejů nebo olejů ze živičných nerostů (kromě těch pro výrobu produktů čísla 2803, ropného koksu a ropných živic); bez 27139010 (vakuový, visbreakingový zbytek), tj. charakteru ropného asfaltu a asfaltových směsí</POPIS>
+    <POPISAN>Other residues of petroleum oil or oil obtained from bituminous minerals (excl. for the manufacture of carbon of heading 2803, petroleum coke and petroleum bitumen); without 27139010 (vacuum, visbreaking residue), i.e. the nature of petrole</POPISAN>
+  </radek>
+  <radek>
+    <KN>27139090</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2024-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní zbytky minerálních olejů nebo olejů ze živičných nerostů (kromě těch pro výrobu produktů čísla 2803, ropného koksu a ropných živic); tj. charakteru ostatních produktů</POPIS>
+    <POPISAN>Other residues of petroleum oil or oil obtained from bituminous minerals (excl. for the manufacture of carbon of heading 2803, petroleum coke and petroleum bitumen); i.e. the nature of other products</POPISAN>
+  </radek>
+  <radek>
+    <KN>27150000</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Asfaltové emulze (asfalt s vodou a emulgátory)</POPIS>
+    <POPISAN>Asphaltic emulsions (asphalt with water and emulsifiers)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27150000</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Asfaltové výrobky s rozpustidlem (ředěné asfalty)</POPIS>
+    <POPISAN>Asphalt product with solvent strippers (diluted asphalts)</POPISAN>
+  </radek>
+  <radek>
+    <KN>27150000</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Směsi živičné na bázi přírodní ropné živice, dehtu, smoly apod., ostatní</POPIS>
+    <POPISAN>Bituminous mixtures based on natural oil bitumen, tar, resin etc., other</POPISAN>
+  </radek>
+  <radek>
+    <KN>29011000</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Acyklické uhlovodíky, nasycené, charakteru zkapalněného ropného plynu (LPG, PB), např. n-butan, izobutan apod.</POPIS>
+    <POPISAN>Acyclic hydrocarbons, saturated, of a liquefied petroleum gas (LPG, PB) character, eg n-butane, isobutane, etc.</POPISAN>
+  </radek>
+  <radek>
+    <KN>29011000</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Acyklické uhlovodíky, nasycené, ostatní, ne 2901100010</POPIS>
+    <POPISAN>Acyclic hydrocarbons, saturated, other, other than 2901100010</POPISAN>
+  </radek>
+  <radek>
+    <KN>29091990</KN>
+    <STAZNA>40</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní acyklické ethery a jejich halogen-, sulfo-, nitro- nebo nitrosoderiváty jako komponenta pro výrobu motorových benzinů</POPIS>
+    <POPISAN>Methyl-tertio-butyl-ether (MTBE) as a component for motor spirits production</POPISAN>
+  </radek>
+  <radek>
+    <KN>29091990</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní acyklické ethery a jejich halogen-, sulfo-, nitro- nebo nitrosoderiváty, pro jiné použití než jako komponenta pro výrobu motorových paliv</POPIS>
+    <POPISAN>Other acyclic ethers and their halogenated, sulphonated, nitrated or nitrosated derivatives for other usage than as a component for production of motor petrol</POPISAN>
+  </radek>
+  <radek>
+    <KN>38249992</KN>
+    <STAZNA>10</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Směs 70 - 85% objemových kvasného lihu bezvodého zvláště nebo obecně denaturovaného a automobilového benzinu, s aditivy, pro pohon motorů nebo pro výrobu směsí paliv pro pohon motorů (např. palivo ethanol E85)</POPIS>
+    <POPISAN>Mixtures of denatured ethyl alcohol of an alcoholic strength by volume of 70 - 85 % vol. with motor spirit, with additives, for propulsion or for production of motor fuels mixtures (e.g. Flexifuel - E85)</POPISAN>
+  </radek>
+  <radek>
+    <KN>38249992</KN>
+    <STAZNA>20</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Směs bioethanolu obsahujícího min. 92,2% hmotnostních ethanolu vyrobeného z biomasy a vyšších nasycených alkoholů s aditivy (např. palivo ethanol E95 pro vznětové motory) pro pohon motorů nebo pro výrobu směsí paliv pro pohon motorů</POPIS>
+    <POPISAN>Mixtures of ethyl alcohol of an alcoholic strength by weight of 92,2 % vol. or higher with additives, for propulsion or for production of motor fuels mixtures (e.g. fuel E95)</POPISAN>
+  </radek>
+  <radek>
+    <KN>38249992</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní chemické výrobky a přípravky, sestávající převážně z organických sloučenin, jinde neuvedené, kromě směsí bioethanolu pro pohon motorů nebo pro výrobu směsí paliv pro pohon motorů</POPIS>
+    <POPISAN>Other chemical products and preparations, other than mixtures of petroleum oils with ethyl alcohol for propulsion</POPISAN>
+  </radek>
+  <radek>
+    <KN>38260010</KN>
+    <STAZNA>70</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Monoalkylestery mastných kyselin, obsahující 96,5 % hmotnostních nebo více esterů (FAMAE, např. MEŘO), pro pohon motorů nebo pro výrobu směsí paliv pro pohon motorů</POPIS>
+    <POPISAN>Fatty-acid mono-alkyl esters, containing by weight 96,5 % or more of esters (FAMAE), for propulsion or for production of fuels mixtures for engines propulsion</POPISAN>
+  </radek>
+  <radek>
+    <KN>38260010</KN>
+    <STAZNA>99</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Monoalkylestery mastných kyselin, obsahující 96,5 % hmotnostních nebo více esterů FAMAE), pro jiné použití než pro pohon motorů nebo pro výrobu směsí paliv pro pohon motorů</POPIS>
+    <POPISAN>Fatty-acid mono-alkyl esters, containing by weight 96,5 % or more of esters (FAMAE), for other use than for propulsion or for production of fuels mixtures for engines propulsion</POPISAN>
+  </radek>
+  <radek>
+    <KN>38260090</KN>
+    <STAZNA>80</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Bionafta a její směsi, též obsahující méně než 70 % hmotnostních minerálních olejů nebo olejů ze živičných nerostů, ostatní (kromě monoalkylesterů mastných kyselin obsahujících &gt;= 96,5 % hmotnostních esterů (FAMAE)), pro pohon motorů nebo p</POPIS>
+    <POPISAN>Biodiesel and mixtures thereof, not containing or containing less than 70 % by weight of petroleum oils or oils obtained from bituminous minerals, other, (excluding Fatty-acid mono-alkyl esters, containing by weight 96,5 % or more of esters</POPISAN>
+  </radek>
+  <radek>
+    <KN>38260090</KN>
+    <STAZNA>90</STAZNA>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Bionafta a její směsi, též obsahující méně než 70 % hmotnostních minerálních olejů nebo olejů ze živičných nerostů, ostatní, (kromě monoalkylesterů mastných kyselin obsahujících &gt;= 96,5 % hmotnostních esterů (FAMAE)) pro jiné použití než pr</POPIS>
+    <POPISAN>Biodiesel and mixtures thereof, not containing or containing less than 70 % by weight of petroleum oils or oils obtained from bituminous minerals, other, (excluding Fatty-acid mono-alkyl esters, containing by weight 96,5 % or more of esters</POPISAN>
+  </radek>
+  <radek>
+    <KN>38260090</KN>
+    <STAZNA>95</STAZNA>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Bionafta a její směsi, ostatní (ne jako produkt rafinérského zpracování ropy), např. destilační zbytek vzniklý při výrobě FAME z kafilátu apod.</POPIS>
+    <POPISAN>Biodiesel and mixtures thereof, other (not as a product of refinery processing of crude oil), eg. distillation residue from the production of FAME from waste rendering grease, etc.</POPISAN>
+  </radek>
+</data>
+</ciselnik>

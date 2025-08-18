@@ -124,7 +124,6 @@ report 4404 "EXR Vendor Top List"
         RunOnLabel = 'Run on';
         ReportNameLabel = 'Report name';
         DocumentationLabel = 'Documentation';
-        TimezoneLabel = 'UTC';
     }
 
     var
@@ -235,7 +234,7 @@ report 4404 "EXR Vendor Top List"
         EXTTopVendorBalance.Open();
         if EXTTopVendorBalance.Read() then
             repeat
-                TopVendorData.SetFilter(TopVendorData."Vendor No.", EXTTopVendorBalance.Vendor_No);
+                TopVendorData.SetFilter(TopVendorData."Vendor No.", EscapeVendorNoFilter(EXTTopVendorBalance.Vendor_No)); //Neelesh
                 if TopVendorData.FindFirst() then begin
                     TopVendorData."Amount 2 (LCY)" := EXTTopVendorBalance.Balance_LCY;
                     if Vendor.Get(TopVendorData."Vendor No.") then

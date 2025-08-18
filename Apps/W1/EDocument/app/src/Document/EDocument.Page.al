@@ -428,9 +428,13 @@ page 6121 "E-Document"
                 trigger OnAction()
                 var
                     EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+                    EDocumentPurchaseLine: Record "E-Document Purchase Line";
+                    EDocReadablePurchaseDoc: Page "E-Doc. Readable Purchase Doc.";
                 begin
                     EDocumentPurchaseHeader.GetFromEDocument(Rec);
-                    Page.Run(Page::"E-Doc. Readable Purchase Doc.", EDocumentPurchaseHeader);
+                    EDocumentPurchaseLine.SetRange("E-Document Entry No.", Rec."Entry No");
+                    EDocReadablePurchaseDoc.SetBuffer(EDocumentPurchaseHeader, EDocumentPurchaseLine);
+                    EDocReadablePurchaseDoc.Run();
                 end;
             }
         }
@@ -486,6 +490,9 @@ page 6121 "E-Document"
         HasErrors := false;
         IsProcessed := false;
         NewEDocumentExperienceActive := EDocumentsSetup.IsNewEDocumentExperienceActive();
+
+        if Rec."Entry No" <> 0 then
+            Rec.SetRecFilter(); // Filter the record to only this instance to avoid navigation 
     end;
 
     trigger OnAfterGetRecord()
@@ -504,6 +511,7 @@ page 6121 "E-Document"
         SetStyle();
         ResetActionVisiability();
         SetIncomingDocActions();
+        FillLineBuffer();
 
         EDocImport.V1_ProcessEDocPendingOrderMatch(Rec);
     end;
@@ -588,6 +596,14 @@ page 6121 "E-Document"
         ShowRelink := false;
     end;
 
+    local procedure FillLineBuffer()
+    var
+        EDocumentPurchaseLine: Record "E-Document Purchase Line";
+    begin
+        EDocumentPurchaseLine.SetRange("E-Document Entry No.", Rec."Entry No");
+        CurrPage.Lines.Page.SetBuffer(EDocumentPurchaseLine);
+    end;
+
     var
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
         EDocIntegrationManagement: Codeunit "E-Doc. Integration Management";
@@ -597,7 +613,7 @@ page 6121 "E-Document"
         ErrorsAndWarningsNotification: Notification;
         NewEDocumentExperienceActive: Boolean;
         RecordLinkTxt, StyleStatusTxt : Text;
-        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotVisible : Boolean;
+        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed : Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
         DocNotCreatedMsg: Label 'Failed to create new %1 from E-Document. Please review errors below.', Comment = '%1 - E-Document Document Type';
 

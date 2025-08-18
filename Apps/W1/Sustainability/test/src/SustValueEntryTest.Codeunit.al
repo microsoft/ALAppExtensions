@@ -1,6 +1,32 @@
+namespace Microsoft.Test.Sustainability;
+
+using System.TestLibraries.Utilities;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Purchases.Document;
+using Microsoft.Foundation.Address;
+using Microsoft.Purchases.History;
+using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Foundation.Navigate;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Inventory.Item;
+using Microsoft.Sustainability.Setup;
+using Microsoft.Manufacturing.Routing;
+using Microsoft.Manufacturing.WorkCenter;
+using Microsoft.Manufacturing.MachineCenter;
+using Microsoft.Manufacturing.ProductionBOM;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Manufacturing.Journal;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Inventory.Journal;
+using Microsoft.Manufacturing.Capacity;
+
 codeunit 148190 "Sust. Value Entry Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -606,6 +632,7 @@ codeunit 148190 "Sust. Value Entry Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the PurchaseOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '26.0')]
     [Test]
     [HandlerFunctions('PurchaseOrderStatisticsPageHandler')]
@@ -722,6 +749,7 @@ codeunit 148190 "Sust. Value Entry Test"
         OpenPurchaseOrderStatistics(PurchaseHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
 
     [Test]
@@ -1607,6 +1635,7 @@ codeunit 148190 "Sust. Value Entry Test"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('The statistics action will be replaced with the SalesStatistics action. The new action uses RunObject and does not run the action trigger.', '26.0')]
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandler')]
@@ -1701,6 +1730,7 @@ codeunit 148190 "Sust. Value Entry Test"
         OpenSalesOrderStatistics(SalesHeader."No.");
         LibraryVariableStorage.Clear();
     end;
+#pragma warning restore AL0432
 #endif
     [Test]
     [HandlerFunctions('SalesOrderStatisticsPageHandlerNM')]

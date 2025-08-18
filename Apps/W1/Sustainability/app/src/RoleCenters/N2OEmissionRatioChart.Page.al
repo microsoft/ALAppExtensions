@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.RoleCenters;
 
-using System.Visualization;
 using System.Integration;
+using System.Visualization;
 
 page 6247 "N2O Emission Ratio Chart"
 {
@@ -35,7 +35,7 @@ page 6247 "N2O Emission Ratio Chart"
 
     local procedure UpdateChartData()
     begin
-        SustainabilityChartMgmt.GenerateChartByEmissionGas(Rec, 'N2O');
+        SustainabilityChartMgmt.GenerateChartByEmissionGas(Rec, SustainabilityChartMgmt.GetN2O());
         Rec.UpdateChart(CurrPage.BusinessChart);
     end;
 }

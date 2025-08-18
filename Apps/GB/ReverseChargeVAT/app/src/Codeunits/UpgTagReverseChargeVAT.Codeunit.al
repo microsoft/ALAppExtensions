@@ -7,7 +7,7 @@ namespace Microsoft.Finance.VAT.Setup;
 
 using System.Upgrade;
 
-codeunit 10555 "Upg. Tag Reverse Charge VAT"
+codeunit 10556 "Upg. Tag Reverse Charge VAT"
 {
     ObsoleteReason = 'Feature Reverse Charge VAT will be enabled by default in version 30.0.';
     ObsoleteState = Pending;

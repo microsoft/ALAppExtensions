@@ -6,6 +6,7 @@
 codeunit 139600 "Test Essential Bus. Headlines"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
@@ -33,10 +34,6 @@ codeunit 139600 "Test Essential Bus. Headlines"
         HeadlineRcOrderProcessorPage: TestPage "Headline RC Order Processor";
         HeadlineRcAccountantPage: TestPage "Headline RC Accountant";
         IsInitialized: Boolean;
-        VATReturnQualifierLbl: Label 'VAT Return';
-        OverdueVATReturnPeriodTxt: Label 'Your VAT return is overdue since %1 (%2 days)', Comment = '%1 - date; %2 - days count';
-        OpenVATReturnPeriodTxt: Label 'Your VAT return is due %1 (in %2 days)', Comment = '%1 - date; %2 - days count';
-
 
     [Test]
     procedure TestMostPopularItemHeadline()
@@ -941,7 +938,11 @@ codeunit 139600 "Test Essential Bus. Headlines"
     local procedure VerifyOverdueVATReturnPeriodHeadlineIsVisible(DueDate: Date; DaysCount: Integer)
     var
         HeadlineMgt: Codeunit Headlines;
+        OverdueVATReturnPeriodTxt: Text;
+        VATReturnQualifierLbl: Text;
     begin
+        OverdueVATReturnPeriodTxt := EssentialBusHeadlineMgt.GetOverdueVATReturnPeriodText();
+        VATReturnQualifierLbl := EssentialBusHeadlineMgt.GetVATReturnQualifierText();
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::OverdueVATReturn), 'OverdueVATReturn headline should be visible');
         Assert.AreEqual(
             StrSubstNo(
@@ -970,7 +971,11 @@ codeunit 139600 "Test Essential Bus. Headlines"
     local procedure VerifyUpcomingVATReturnPeriodHeadlineIsVisible(DueDate: Date; DaysCount: Integer)
     var
         HeadlineMgt: Codeunit Headlines;
+        OpenVATReturnPeriodTxt: Text;
+        VATReturnQualifierLbl: Text;
     begin
+        OpenVATReturnPeriodTxt := EssentialBusHeadlineMgt.GetOpenVATReturnPeriodText();
+        VATReturnQualifierLbl := EssentialBusHeadlineMgt.GetVATReturnQualifierText();
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::OpenVATReturn), 'OpenVATReturn headline should be visible');
         Assert.AreEqual(
             StrSubstNo(

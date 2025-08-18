@@ -82,6 +82,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         GenJournalLine.Correction := true;
         GenJournalLine.Amount := -Amount;
         GenJournalLine."Amount (LCY)" := -AmountLCY;
+        GenJournalLine."Source Currency Amount" := -Amount;
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
             VendorLedgerEntry.SetApplication(PurchAdvLetterHeaderCZZ."Advance Letter Code", '');
             GenJournalLine."Applies-to ID" := VendorLedgerEntry."Applies-to ID";
@@ -100,6 +101,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         GenJournalLine."Use Advance G/L Account CZZ" := true;
         GenJournalLine.Amount := Amount;
         GenJournalLine."Amount (LCY)" := AmountLCY;
+        GenJournalLine."Source Currency Amount" := Amount;
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
             OnPostAdvancePaymentOnBeforePostAdvancePayment(PurchAdvLetterHeaderCZZ, PostedGenJournalLine, AdvancePostingParametersCZZ, GenJnlPostLine, GenJournalLine);
             GLEntryNo := RunGenJnlPostLine(GenJournalLine, GenJnlPostLine, false, false, false);
@@ -185,6 +187,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             PurchAdvLetterEntryCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor");
         GenJournalLine.Amount := -PurchAdvLetterEntryCZZ.Amount;
         GenJournalLine."Amount (LCY)" := -PurchAdvLetterEntryCZZ."Amount (LCY)";
+        GenJournalLine."Source Currency Amount" := -PurchAdvLetterEntryCZZ.Amount;
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
             VendorLedgerEntryAdv.SetApplication('', PurchAdvLetterHeaderCZZ."No.");
             GenJournalLine."Applies-to ID" := VendorLedgerEntryAdv."Applies-to ID";
@@ -215,6 +218,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             PurchAdvLetterEntryCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor");
         GenJournalLine.Amount := PurchAdvLetterEntryCZZ.Amount;
         GenJournalLine."Amount (LCY)" := PurchAdvLetterEntryCZZ."Amount (LCY)";
+        GenJournalLine."Source Currency Amount" := PurchAdvLetterEntryCZZ.Amount;
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
             VendorLedgerEntryPay.SetApplication('', '');
             GenJournalLine."Applies-to ID" := VendorLedgerEntryPay."Applies-to ID";
@@ -240,6 +244,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ")
     var
+        AdvancePostingBufferCZZ2: Record "Advance Posting Buffer CZZ";
         AdvancePostingParametersCZZ2: Record "Advance Posting Parameters CZZ";
         GenJournalLine: Record "Gen. Journal Line";
         PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
@@ -291,6 +296,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
 
         if AdvancePostingBufferCZZ.FindSet() then
             repeat
+                AdvancePostingBufferCZZ2 := AdvancePostingBufferCZZ;
                 GLEntryNo := 0;
                 VATEntryNo := 0;
 
@@ -305,7 +311,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                     OnPostAdvancePaymentVATOnBeforePost(
                         PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingBufferCZZ,
                         AdvancePostingParametersCZZ, GenJnlPostLine, GenJournalLine);
-                    GLEntryNo := RunGenJnlPostLine(GenJournalLine, GenJnlPostLine, true, true, false);
+                    GLEntryNo := RunGenJnlPostLine(GenJournalLine, GenJnlPostLine, true, true, true);
                     VATEntryNo := GenJnlPostLine.GetNextVATEntryNo() - 1;
                     OnPostAdvancePaymentVATOnAfterPost(
                         PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingBufferCZZ,
@@ -328,6 +334,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 InitGenJournalLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
                 GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
                 AdvancePostingBufferCZZ.ReverseAmounts();
+                AdvancePostingBufferCZZ."VAT Amount" := 0;
+                AdvancePostingBufferCZZ."VAT Base Amount" := 0;
                 GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
                 if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
                     OnPostAdvancePaymentVATOnBeforePostBalance(
@@ -338,6 +346,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                         PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingBufferCZZ,
                         AdvancePostingParametersCZZ, GLEntryNo, GenJnlPostLine, GenJournalLine);
                 end;
+                AdvancePostingBufferCZZ := AdvancePostingBufferCZZ2;
 
                 // Post non-deductible VAT
                 if (not AdvancePostingParametersCZZ."Temporary Entries Only") and
@@ -418,6 +427,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         AdvancePostingParametersCZZ2."Document Type" := "Gen. Journal Document Type"::" ";
         InitGenJournalLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
         GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
+        AdvancePostingBufferCZZ."VAT Amount" := 0;
+        AdvancePostingBufferCZZ."VAT Base Amount" := 0;
         GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
         if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
             OnPostAdvancePaymentVATUnlinkingOnBeforePostBalance(
@@ -648,6 +659,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 PurchAdvLetterEntryCZZ2."Entry Type"::"VAT Usage":
                     begin
                         AdvancePostingParametersCZZ2.InitNew(AdvancePostingParametersCZZ);
+                        AdvancePostingParametersCZZ2."External Document No." := PurchAdvLetterEntryCZZ2."External Document No.";
                         AdvancePostingParametersCZZ2."Currency Code" := PurchAdvLetterEntryCZZ2."Currency Code";
                         AdvancePostingParametersCZZ2."Currency Factor" := PurchAdvLetterEntryCZZ2."Currency Factor";
 
@@ -687,6 +699,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                         InitGenJournalLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
                         GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
                         GenJournalLine.Correction := true;
+                        AdvancePostingBufferCZZ."VAT Amount" := 0;
+                        AdvancePostingBufferCZZ."VAT Base Amount" := 0;
                         GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
                         if not AdvancePostingParametersCZZ2."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
                             OnPostAdvancePaymentUsageVATCancellationOnBeforePostBalance(
@@ -716,6 +730,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ")
     var
+        AdvancePostingBufferCZZ2: Record "Advance Posting Buffer CZZ";
         AdvancePostingParametersCZZ2: Record "Advance Posting Parameters CZZ";
         GenJournalLine: Record "Gen. Journal Line";
         RelatedPurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
@@ -749,6 +764,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
 
         AdvancePostingBufferCZZ.FindSet();
         repeat
+            AdvancePostingBufferCZZ2 := AdvancePostingBufferCZZ;
             GLEntryNo := 0;
             VATEntryNo := 0;
 
@@ -823,6 +839,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             AdvancePostingParametersCZZ2."Document Type" := "Gen. Journal Document Type"::" ";
             InitGenJournalLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
             GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
+            AdvancePostingBufferCZZ."VAT Amount" := 0;
+            AdvancePostingBufferCZZ."VAT Base Amount" := 0;
             GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
             if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
                 OnPostAdvanceCreditMemoVATOnBeforePostBalance(
@@ -833,6 +851,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                     PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingBufferCZZ,
                     AdvancePostingParametersCZZ, GLEntryNo, GenJnlPostLine, GenJournalLine);
             end;
+            AdvancePostingBufferCZZ := AdvancePostingBufferCZZ2;
 
             // Post non-deductible VAT
             if (not AdvancePostingParametersCZZ."Temporary Entries Only") and
@@ -1035,6 +1054,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         InitGenJournalLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
         GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
         GenJournalLine.Correction := true;
+        AdvancePostingBufferCZZ."VAT Amount" := 0;
+        AdvancePostingBufferCZZ."VAT Base Amount" := 0;
         GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
         if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
             OnPostAdvanceLetterEntryVATUsageUnapplyingOnBeforePostBalance(
@@ -1086,6 +1107,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             PurchAdvLetterEntryCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor");
         GenJournalLine.Amount := -PurchAdvLetterEntryCZZ.Amount;
         GenJournalLine."Amount (LCY)" := -PurchAdvLetterEntryCZZ."Amount (LCY)";
+        GenJournalLine."Source Currency Amount" := -PurchAdvLetterEntryCZZ.Amount;
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
             VendorLedgerEntry.SetApplication('', '');
             GenJournalLine."Applies-to ID" := VendorLedgerEntry."Applies-to ID";
@@ -1116,6 +1138,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             PurchAdvLetterEntryCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor");
         GenJournalLine.Amount := PurchAdvLetterEntryCZZ.Amount;
         GenJournalLine."Amount (LCY)" := PurchAdvLetterEntryCZZ."Amount (LCY)";
+        GenJournalLine."Source Currency Amount" := -PurchAdvLetterEntryCZZ.Amount;
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
             VendorLedgerEntryInv."Advance Letter No. CZZ" := '';
             VendorLedgerEntryInv.SetApplication('', '');
@@ -1241,6 +1264,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 AdvancePostingParametersCZZ."Currency Code", AdvancePostingParametersCZZ."Currency Factor");
             GenJournalLine.Amount := -RemainingAmount;
             GenJournalLine."Amount (LCY)" := -Round(RemainingAmount / GenJournalLine."Currency Factor");
+            GenJournalLine."Source Currency Amount" := -RemainingAmount;
             if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
                 VendorLedgerEntry.SetApplication('', PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
                 GenJournalLine."Applies-to ID" := VendorLedgerEntry."Applies-to ID";
@@ -1270,7 +1294,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
 
         BufferAdvanceVATLines(PurchAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ, 0D);
         SuggestUsageVAT(PurchAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ, VendorLedgerEntry."Document No.",
-            0, AdvancePostingParametersCZZ."Currency Factor", AdvancePostingParametersCZZ2."Temporary Entries Only");
+            0, AdvancePostingParametersCZZ."Currency Factor", AdvancePostingParametersCZZ."Additional Currency Factor", AdvancePostingParametersCZZ2."Temporary Entries Only");
 
         ReverseAdvancePaymentVAT(PurchAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ, EntryNo,
             "Advance Letter Entry Type CZZ"::"VAT Close", GenJnlPostLine, AdvancePostingParametersCZZ2);
@@ -1289,6 +1313,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 AdvancePostingParametersCZZ."Currency Code", AdvancePostingParametersCZZ."Currency Factor");
             GenJournalLine.Amount := RemainingAmount;
             GenJournalLine."Amount (LCY)" := Round(RemainingAmount / GenJournalLine."Currency Factor");
+            GenJournalLine."Source Currency Amount" := RemainingAmount;
             GenJournalLine."Variable Symbol CZL" := PurchAdvLetterHeaderCZZ."Variable Symbol";
             if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
                 OnPostAdvanceLetterEntryClosingOnBeforePostBalance(
@@ -1350,6 +1375,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         GenJournalLine.Correction := true;
         GenJournalLine.Amount := ReverseAmount;
         GenJournalLine."Amount (LCY)" := ReverseAmountLCY;
+        GenJournalLine."Source Currency Amount" := ReverseAmount;
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
             VendorLedgerEntry.SetApplication(PurchAdvLetterHeaderCZZ."Advance Letter Code", '');
             GenJournalLine."Applies-to ID" := VendorLedgerEntry."Applies-to ID";
@@ -1369,6 +1395,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         GenJournalLine."Use Advance G/L Account CZZ" := true;
         GenJournalLine.Amount := -ReverseAmount;
         GenJournalLine."Amount (LCY)" := -ReverseAmountLCY;
+        GenJournalLine."Source Currency Amount" := -ReverseAmount;
 
         VendorLedgerEntry2.Get(PurchAdvLetterEntryCZZ."Vendor Ledger Entry No.");
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
@@ -1406,7 +1433,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
 
             BufferAdvanceVATLines(PurchAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ, 0D);
             SuggestUsageVAT(PurchAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ, VendorLedgerEntry."Document No.",
-                ReverseAmount, PurchInvHeader."VAT Currency Factor CZL", AdvancePostingParametersCZZ2."Temporary Entries Only");
+                ReverseAmount, PurchInvHeader."VAT Currency Factor CZL", PurchInvHeader."Additional Currency Factor CZL", AdvancePostingParametersCZZ2."Temporary Entries Only");
 
             ReverseAdvancePaymentVAT(PurchAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ, EntryNo,
                 "Advance Letter Entry Type CZZ"::"VAT Usage", GenJnlPostLine, AdvancePostingParametersCZZ2);
@@ -1430,6 +1457,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ")
     var
+        AdvancePostingBufferCZZ2: Record "Advance Posting Buffer CZZ";
         AdvancePostingParametersCZZ2: Record "Advance Posting Parameters CZZ";
         TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
         GenJournalLine: Record "Gen. Journal Line";
@@ -1479,6 +1507,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
 
         AdvancePostingBufferCZZ.FindSet();
         repeat
+            AdvancePostingBufferCZZ2 := AdvancePostingBufferCZZ;
             GLEntryNo := 0;
             VATEntryNo := 0;
 
@@ -1504,6 +1533,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             end;
 
             if AdvancePostingBufferCZZ."VAT Calculation Type" = AdvancePostingBufferCZZ."VAT Calculation Type"::"Reverse Charge VAT" then begin
+                GenJournalLine."Source Curr. VAT Amount" := 0;
                 GenJournalLine."VAT Amount" := 0;
                 GenJournalLine."VAT Amount (LCY)" := 0;
             end;
@@ -1530,8 +1560,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                     AdvancePostingParametersCZZ2."Currency Code" := '';
                     AdvancePostingParametersCZZ2."Currency Factor" := 0;
 
-                    CalcAmountLCY := Round(TempAdvancePostingBufferCZZ."Amount (ACY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
-                    CalcVATAmountLCY := Round(TempAdvancePostingBufferCZZ."VAT Amount (ACY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
+                    CalcAmountLCY := Round(TempAdvancePostingBufferCZZ."Amount (LCY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
+                    CalcVATAmountLCY := Round(TempAdvancePostingBufferCZZ."VAT Amount (LCY)" * AdvancePostingBufferCZZ.Amount / TempAdvancePostingBufferCZZ.Amount);
 
                     ExchRateAmount := CalcAmountLCY + GenJournalLine."Amount (LCY)";
                     ExchRateVATAmount := CalcVATAmountLCY + GenJournalLine."VAT Amount (LCY)";
@@ -1550,6 +1580,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             AdvancePostingParametersCZZ2."Document Type" := "Gen. Journal Document Type"::" ";
             InitGenJournalLine(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
             GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
+            AdvancePostingBufferCZZ."VAT Amount" := 0;
+            AdvancePostingBufferCZZ."VAT Base Amount" := 0;
             GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
             if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
                 OnReverseAdvancePaymentVATOnBeforePostBalance(
@@ -1560,6 +1592,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                     PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, VATPostingSetup, AdvancePostingBufferCZZ,
                     AdvancePostingParametersCZZ, GLEntryNo, GenJnlPostLine, GenJournalLine);
             end;
+            AdvancePostingBufferCZZ2 := AdvancePostingBufferCZZ;
 
             // Post non-deductible VAT
             if (not AdvancePostingParametersCZZ."Temporary Entries Only") and
@@ -1654,6 +1687,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             GenJournalLine.Correction := Correction;
             GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
             GenJournalLine.Validate(Amount, Amount - VATAmount);
+            GenJournalLine."Source Currency Code" := '';
             if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
                 OnPostExchangeRateOnBeforePostVATBase(
                     PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, VATPostingSetup, Amount, VATAmount,
@@ -1675,6 +1709,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             else
                 GenJournalLine."Account No." := CurrencyGlob.GetRealizedGainsAccount();
             GenJournalLine.Validate(Amount, VATAmount);
+            GenJournalLine."Source Currency Code" := '';
             if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
                 OnPostExchangeRateOnBeforePostVATAmount(
                     PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, VATPostingSetup, Amount, VATAmount,
@@ -1690,6 +1725,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             GenJournalLine.Correction := Correction;
             GenJournalLine."Account No." := VATPostingSetup.GetPurchAdvLetterAccountCZZ();
             GenJournalLine.Validate(Amount, -Amount);
+            GenJournalLine."Source Currency Code" := '';
             if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
                 OnPostExchangeRateOnBeforePostBalance(
                     PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ, VATPostingSetup, Amount, VATAmount,
@@ -1857,7 +1893,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         GenJournalLine.Correction := true;
         GenJournalLine.CopyFromAdvancePostingBufferCZZ(AdvancePostingBufferCZZ);
         if (AdvancePostingBufferCZZ."VAT Calculation Type" = AdvancePostingBufferCZZ."VAT Calculation Type"::"Reverse Charge VAT") and
-           (AdvancePostingBufferCZZ."VAT Amount (ACY)" <> 0)
+           (AdvancePostingBufferCZZ."VAT Amount (LCY)" <> 0)
         then
             GenJournalLine."VAT Posting" := GenJournalLine."VAT Posting"::"Manual VAT Entry";
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then begin
@@ -1876,7 +1912,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         AdvancePostingBufferCZZ.ReverseAmounts();
         GenJournalLine.CopyFromAdvancePostingBufferCZZ(AdvancePostingBufferCZZ);
         if (AdvancePostingBufferCZZ."VAT Calculation Type" = AdvancePostingBufferCZZ."VAT Calculation Type"::"Reverse Charge VAT") and
-           (AdvancePostingBufferCZZ."VAT Amount (ACY)" <> 0)
+           (AdvancePostingBufferCZZ."VAT Amount (LCY)" <> 0)
         then begin
             NonDeductibleVATCZZ.Calculate(AdvancePostingBufferCZZ);
             NonDeductibleVATCZZ.Copy(GenJournalLine, AdvancePostingBufferCZZ);
@@ -1970,11 +2006,11 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
 
                     VATAmountRemainder += VATAmount;
                     TempAdvancePostingBufferCZZ."VAT Amount" := Round(VATAmountRemainder, CurrencyGlob."Amount Rounding Precision");
-                    TempAdvancePostingBufferCZZ."VAT Amount (ACY)" := TempAdvancePostingBufferCZZ."VAT Amount";
+                    TempAdvancePostingBufferCZZ."VAT Amount (LCY)" := TempAdvancePostingBufferCZZ."VAT Amount";
                     VATAmountRemainder -= TempAdvancePostingBufferCZZ."VAT Amount";
 
                     if CurrencyCode <> '' then
-                        TempAdvancePostingBufferCZZ."VAT Amount (ACY)" :=
+                        TempAdvancePostingBufferCZZ."VAT Amount (LCY)" :=
                             Round(
                                 CurrExchRate.ExchangeAmtFCYToLCY(
                                     PostingDate, CurrencyCode, TempAdvancePostingBufferCZZ."VAT Amount", CurrencyFactor));
@@ -1989,6 +2025,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         InvoiceNo: Code[20];
         UsedAmount: Decimal;
         CurrencyFactor: Decimal;
+        AddCurrencyFactor: Decimal;
         TemporaryEntriesOnly: Boolean)
     var
         PurchInvLine: Record "Purch. Inv. Line";
@@ -2151,6 +2188,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         if AdvancePostingBufferCZZ.FindSet() then
             repeat
                 AdvancePostingBufferCZZ.UpdateLCYAmounts(PurchAdvLetterEntryCZZ."Currency Code", CurrencyFactor);
+                AdvancePostingBufferCZZ.UpdateACYAmounts(AddCurrencyFactor);
                 AdvancePostingBufferCZZ.Modify();
             until AdvancePostingBufferCZZ.Next() = 0;
     end;

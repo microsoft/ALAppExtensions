@@ -4,28 +4,32 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
+using System.Utilities;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Foundation.Company;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using System.Threading;
 using Microsoft.eServices.EDocument.Service;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.VAT.Setup;
 
 codeunit 139780 "Integration Tests"
 {
 
     Subtype = Test;
+    TestType = IntegrationTest;
+    RequiredTestIsolation = Disabled;
     Permissions = tabledata "Logiq Connection Setup" = rimd,
                   tabledata "Logiq Connection User Setup" = rimd,
-                    tabledata "E-Document" = rd;
+                  tabledata "E-Document" = rd;
+    TestHttpRequestPolicy = AllowOutboundFromHandler;
 
-
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure CreateLogiqUserSetup()
     var
         ConnectionUserSetup: Record "Logiq Connection User Setup";
@@ -41,12 +45,12 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreNotEqual('', ConnectionUserSetup."Refresh Token - Key", 'Refresh token is not updated');
         this.Assert.AreNotEqual(0DT, ConnectionUserSetup."Access Token Expiration", 'Access token expiration date time is not updated');
         this.Assert.AreNotEqual(0DT, ConnectionUserSetup."Refresh Token Expiration", 'Refresh token expiration date time is not updated');
+
+        this.TearDown();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure ChangeLogiqCredentials()
     var
         ConnectionUserSetup: Record "Logiq Connection User Setup";
@@ -66,11 +70,10 @@ codeunit 139780 "Integration Tests"
         ConnectionUserSetup.Get(UserId());
         this.Assert.AreNotEqual(OldAccessTokenExpires, ConnectionUserSetup."Access Token Expiration", 'Access token expiration date time is not updated');
         this.Assert.AreNotEqual(OldRefreshTokenExpires, ConnectionUserSetup."Refresh Token Expiration", 'Refresh token expiration date time is not updated');
+
+        this.TearDown();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
     procedure DeleteLogiqUserSetup()
     var
@@ -91,12 +94,12 @@ codeunit 139780 "Integration Tests"
         //[Then] Check if access tokens were deleted
         this.Assert.AreEqual(false, IsolatedStorage.Contains(OldAccessTokenGuid), 'Access token is not deleted');
         this.Assert.AreEqual(false, IsolatedStorage.Contains(OldRefreshTokenGuid), 'Refresh token is not deleted');
+
+        this.TearDown();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiq()
     var
         EDocument: Record "E-Document";
@@ -104,9 +107,6 @@ codeunit 139780 "Integration Tests"
         EDocumentPage: TestPage "E-Document";
     begin
         this.Initialize(true);
-
-        // [Given] Set mock endpoint to return 200 OK
-        this.SetTransferResponseCode('200');
 
         // [Given] Team member 
         LibraryPermission.SetTeamMember();
@@ -131,7 +131,7 @@ codeunit 139780 "Integration Tests"
 
         EDocumentPage.Close();
         //[When] Get the document status
-        this.SetReturnedStatus('distributed');
+        this.SetReturnedStatus(DocumentStatus::Distributed);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -148,12 +148,12 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
         EDocumentPage.Close();
+
+        this.TearDown();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiqInProgress()
     var
         EDocument: Record "E-Document";
@@ -162,9 +162,6 @@ codeunit 139780 "Integration Tests"
         EDocumentPage: TestPage "E-Document";
     begin
         this.Initialize(true);
-
-        //[Given] Set mock endpoint to return 200 OK
-        this.SetTransferResponseCode('200');
 
         //[When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -186,7 +183,7 @@ codeunit 139780 "Integration Tests"
         EDocumentPage.Close();
 
         //[When] Get the failed document status
-        this.SetReturnedStatus('received');
+        this.SetReturnedStatus(DocumentStatus::Received);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -202,12 +199,12 @@ codeunit 139780 "Integration Tests"
         // Tear down
         EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
         EDocumentServiceStatus.Delete();
+
+        this.TearDown();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SendDocumentToLogiqFailed()
     var
         EDocument: Record "E-Document";
@@ -215,9 +212,6 @@ codeunit 139780 "Integration Tests"
         EDocumentPage: TestPage "E-Document";
     begin
         this.Initialize(true);
-
-        //[Given] Set mock endpoint to return 200 OK
-        this.SetTransferResponseCode('200');
 
         //[When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -239,7 +233,7 @@ codeunit 139780 "Integration Tests"
         EDocumentPage.Close();
 
         //[When] Get the failed document status
-        this.SetReturnedStatus('failed');
+        this.SetReturnedStatus(DocumentStatus::Failed);
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
@@ -257,21 +251,18 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('Logiq rejected the sent file', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
         EDocumentPage.Close();
+
+        this.TearDown();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('ServerDownHandler')]
     procedure SendDocumentToLogiqServerDown()
     var
         EDocument: Record "E-Document";
         EDocumentPage: TestPage "E-Document";
     begin
         this.Initialize(true);
-
-        //[Given] Set mock endpoint to return 500 server error
-        this.SetTransferResponseCode('500');
 
         //[When] Post an invoice and E-Document is created
         this.LibraryEDocument.PostInvoice(this.Customer);
@@ -294,12 +285,12 @@ codeunit 139780 "Integration Tests"
         //[Then] Check if correct error is shown in E-Document page
         this.Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Error message type is not correct');
         this.Assert.AreEqual('Sending document failed with HTTP Status code 500. Error message: Internal Server Error', EDocumentPage.ErrorMessagesPart.Description.Value(), 'Error message is not correct');
+
+        this.TearDown();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('DownloadSingleDocumentHandler')]
     procedure DownloadOneDocument()
     var
         EDocument: Record "E-Document";
@@ -307,9 +298,6 @@ codeunit 139780 "Integration Tests"
         EDocServicePage: TestPage "E-Document Service";
     begin
         this.Initialize(true);
-
-        //[Given] Set mock endpoint
-        this.SetDownloadDocumentsMode('one');
 
         //[Then] Open E-Doc page and receive file
         EDocServicePage.OpenView();
@@ -324,12 +312,12 @@ codeunit 139780 "Integration Tests"
         EDocument.FindLast();
         PurchaseHeader.Get(EDocument."Document Record ID");
         this.Assert.AreEqual(this.Vendor."No.", PurchaseHeader."Buy-from Vendor No.", 'Wrong Vendor');
+
+        this.TearDown();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('DownloadMultipleDocumentsHandler')]
     procedure DownloadMultipleDocuments()
     var
         EDocument: Record "E-Document";
@@ -337,9 +325,6 @@ codeunit 139780 "Integration Tests"
         EDocServicePage: TestPage "E-Document Service";
     begin
         this.Initialize(true);
-
-        //[Given] Set mock endpoint to download 2 documents
-        this.SetDownloadDocumentsMode('multiple');
 
         //[Then] Open E-Doc page and receive 2 files
         EDocServicePage.OpenView();
@@ -356,6 +341,8 @@ codeunit 139780 "Integration Tests"
             PurchaseHeader.Get(EDocument."Document Record ID");
             this.Assert.AreEqual(this.Vendor."No.", PurchaseHeader."Buy-from Vendor No.", 'Wrong Vendor');
         until EDocument.Next() = 0;
+
+        this.TearDown();
     end;
 
     local procedure VerifyOutboundFactboxValuesForSingleService(EDocument: Record "E-Document"; Status: Enum "E-Document Service Status"; Logs: Integer);
@@ -378,6 +365,10 @@ codeunit 139780 "Integration Tests"
 
     //Setup mock values
     local procedure Initialize(CreateUserCredentials: Boolean)
+    var
+        Currency: Record Currency;
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         this.LibraryPermission.SetOutsideO365Scope();
 
@@ -385,6 +376,16 @@ codeunit 139780 "Integration Tests"
         this.SetMockConnectionSetups(CreateUserCredentials);
         //clear E-Documents table for every run
         this.ClearEDocuments();
+
+        GeneralLedgerSetup.Get();
+        this.PrevVATReportingDateValue := GeneralLedgerSetup."VAT Reporting Date Usage";
+        GeneralLedgerSetup."VAT Reporting Date Usage" := Enum::"VAT Reporting Date Usage"::Disabled;
+        GeneralLedgerSetup.Modify();
+
+        this.CompanyInformation.Get();
+        this.CompanyInformation."VAT Registration No." := 'NO 777 777 778';
+        this.CompanyInformation.Name := 'Logiq Test Company';
+        this.CompanyInformation.Modify();
 
         if this.IsInitialized then
             exit;
@@ -397,21 +398,26 @@ codeunit 139780 "Integration Tests"
         this.Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
         this.Vendor.Modify();
 
-        this.CompanyInformation.Get();
-        this.CompanyInformation."VAT Registration No." := 'NO 777 777 778';
-        this.CompanyInformation.Modify();
+        Currency.Get(this.CurrencyTok);
+        CurrencyExchangeRate.SetCurrentCurrencyFactor(Currency.Code, 1.0);
+        if CurrencyExchangeRate.Get(Currency.Code, Today()) then
+            CurrencyExchangeRate.Rename(Currency.Code, 0D);
 
         this.IsInitialized := true;
     end;
 
-    local procedure GetMockBaseUrl(): Text[100]
+    local procedure TearDown()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
     begin
-        exit('https://localhost:8080/logiq/');
-    end;
+        this.CompanyInformation.Get();
+        this.CompanyInformation."VAT Registration No." := '';
+        this.CompanyInformation.Name := '';
+        this.CompanyInformation.Modify();
 
-    local procedure GetMockAuthUrl(): Text[100]
-    begin
-        exit('https://localhost:8080/logiq/auth');
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."VAT Reporting Date Usage" := this.PrevVATReportingDateValue;
+        GeneralLedgerSetup.Modify();
     end;
 
     local procedure GetMockDocumentId(): Text
@@ -439,8 +445,6 @@ codeunit 139780 "Integration Tests"
 
         ConnectionSetup.Init();
         ConnectionSetup.Insert(true);
-        ConnectionSetup."Base URL" := this.GetMockBaseUrl();
-        ConnectionSetup."Authentication URL" := this.GetMockAuthUrl();
         ConnectionSetup."Client ID" := 'ClientID';
         IsolatedStorageKey := Auth.GetConnectionSetupClientSecretKey();
         Auth.SetIsolatedStorageValue(IsolatedStorageKey, this.GetRandomSecret(30), DataScope::Company);
@@ -491,33 +495,9 @@ codeunit 139780 "Integration Tests"
         ConnectionUserSetupPage.Close();
     end;
 
-    local procedure SetReturnedStatus(Status: Text)
-    var
-        ConnectionUserSetup: Record "Logiq Connection User Setup";
+    local procedure SetReturnedStatus(NewDocumentStatus: Option Distributed,Received,Failed)
     begin
-        if ConnectionUserSetup.Get(UserId()) then begin
-            ConnectionUserSetup."Document Status Endpoint" += Status;
-            ConnectionUserSetup.Modify(true);
-        end;
-    end;
-
-    local procedure SetTransferResponseCode(Code: Text)
-    var
-        ConnectionUserSetup: Record "Logiq Connection User Setup";
-    begin
-        if ConnectionUserSetup.Get(UserId()) then begin
-            ConnectionUserSetup."Document Transfer Endpoint" += '/' + Code;
-            ConnectionUserSetup.Modify(true);
-        end;
-    end;
-
-    local procedure SetDownloadDocumentsMode(Endpoint: Text)
-    var
-        ConnectionSetup: Record "Logiq Connection Setup";
-    begin
-        ConnectionSetup.Get();
-        ConnectionSetup."File List Endpoint" += '/' + Endpoint;
-        ConnectionSetup.Modify(true);
+        this.DocumentStatus := NewDocumentStatus;
     end;
 
     [ModalPageHandler]
@@ -525,6 +505,91 @@ codeunit 139780 "Integration Tests"
     begin
         EDocumentServices.GoToRecord(this.EDocumentService);
         EDocumentServices.OK().Invoke();
+    end;
+
+    [HttpClientHandler]
+    internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+        DocumentSentFileTok: Label 'DocumentSent.txt', Locked = true;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/auth/realms/connect-api/protocol/openid-connect/token'):
+                LoadResourceIntoHttpResponse(AccessTokenFileTok, Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/2.0/transfer-status/externalId/\d+'):
+                this.GetTransferStatus(Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/2.0/transfer'):
+                LoadResourceIntoHttpResponse(DocumentSentFileTok, Response);
+        end;
+    end;
+
+    [HttpClientHandler]
+    internal procedure ServerDownHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/auth/realms/connect-api/protocol/openid-connect/token'):
+                LoadResourceIntoHttpResponse(AccessTokenFileTok, Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/2.0/transfer'):
+                begin
+                    LoadResourceIntoHttpResponse('ServerError.txt', Response);
+                    Response.HttpStatusCode := 500;
+                end;
+        end;
+    end;
+
+    [HttpClientHandler]
+    internal procedure DownloadSingleDocumentHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/1.0/listfiles'):
+                LoadResourceIntoHttpResponse('OneDocumentResponse.txt', Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
+                LoadResourceIntoHttpResponse(TestFile1Tok, Response);
+        end;
+    end;
+
+    [HttpClientHandler]
+    internal procedure DownloadMultipleDocumentsHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/edi/connect/1.0/listfiles'):
+                LoadResourceIntoHttpResponse(MultipleDocumentsResponseFileTok, Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile1.xml'):
+                LoadResourceIntoHttpResponse(TestFile1Tok, Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/logiq/1.0/getfile/testfile2.xml'):
+                LoadResourceIntoHttpResponse(TestFile2Tok, Response);
+        end;
+    end;
+
+    local procedure LoadResourceIntoHttpResponse(ResourceText: Text; var Response: TestHttpResponseMessage)
+    begin
+        Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
+    end;
+
+    local procedure GetTransferStatus(var Response: TestHttpResponseMessage)
+    begin
+        case this.DocumentStatus of
+            DocumentStatus::Distributed:
+                LoadResourceIntoHttpResponse('DocumentStatusDistributed.txt', Response);
+
+            DocumentStatus::Received:
+                LoadResourceIntoHttpResponse('DocumentStatusReceived.txt', Response);
+
+            DocumentStatus::Failed:
+                LoadResourceIntoHttpResponse('DocumentStatusFailed.txt', Response);
+        end;
     end;
 
     var
@@ -538,4 +603,12 @@ codeunit 139780 "Integration Tests"
         LibraryJobQueue: Codeunit "Library - Job Queue";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value';
+        AccessTokenFileTok: Label 'AccessToken.txt', Locked = true;
+        MultipleDocumentsResponseFileTok: Label 'MultipleDocumentsResponse.txt', Locked = true;
+        TestFile1Tok: Label 'testfile1.xml', Locked = true;
+        TestFile2Tok: Label 'testfile2.xml', Locked = true;
+        // currency code must be matched with the one used in the mocked responses
+        CurrencyTok: Label 'RSD', Locked = true;
+        PrevVATReportingDateValue: Enum "VAT Reporting Date Usage";
+        DocumentStatus: Option Distributed,Received,Failed;
 }

@@ -18,6 +18,7 @@ using Microsoft.Bank.Setup;
 codeunit 148004 "PINT A-NZ XML"
 {
     Subtype = Test;
+    TestType = Uncategorized;
 
     var
         Assert: Codeunit Assert;

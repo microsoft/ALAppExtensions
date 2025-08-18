@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ciselnik>
+<nazev>drudo_i</nazev>
+<data>
+  <radek>
+    <DRUDO>2</DRUDO>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Železniční (vč. kamionů na vagónu)</POPIS>
+    <POPISAN>Rail transport</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>2</DRUDO>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Železniční doprava (včetně kamionů na nákladním va</POPIS>
+    <POPISAN>Rail transport</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>3</DRUDO>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Silniční</POPIS>
+    <POPISAN>Road transport</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>3</DRUDO>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Silniční doprava</POPIS>
+    <POPISAN>Road transport</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>4</DRUDO>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Letecká</POPIS>
+    <POPISAN>Air transport</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>4</DRUDO>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Letecká doprava</POPIS>
+    <POPISAN>Air transport</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>5</DRUDO>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Poštovní, kurýrní a speciální zásilkové služby</POPIS>
+    <POPISAN>Postal consignment, mail, courier and special mail</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>5</DRUDO>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Poštovní zásilky</POPIS>
+    <POPISAN>Postal consignment, mail, courier and special mail</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>7</DRUDO>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Zabudované zařízení (potrubí a vedení)</POPIS>
+    <POPISAN>Fixed transport installations</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>7</DRUDO>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Pevná přepravní zařízení (např. potrubí a vedení)</POPIS>
+    <POPISAN>Fixed transport installations</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>8</DRUDO>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Vnitrozemská říční</POPIS>
+    <POPISAN>Inland waterway transport</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>8</DRUDO>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Vnitrozemská říční doprava</POPIS>
+    <POPISAN>Inland waterway transport</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>9</DRUDO>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Vlastní pohon (po vlastní ose)</POPIS>
+    <POPISAN>Own propulsion</POPISAN>
+  </radek>
+  <radek>
+    <DRUDO>9</DRUDO>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Vlastní pohon</POPIS>
+    <POPISAN>Own propulsion</POPISAN>
+  </radek>
+</data>
+</ciselnik>

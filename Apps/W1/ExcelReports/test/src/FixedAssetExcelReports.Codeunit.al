@@ -8,6 +8,7 @@ using Microsoft.Finance.ExcelReports;
 codeunit 139545 "Fixed Asset Excel Reports"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     var

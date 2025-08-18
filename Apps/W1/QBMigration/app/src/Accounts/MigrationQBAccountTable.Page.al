@@ -15,16 +15,16 @@ page 1911 "MigrationQB AccountTable"
             group(General)
             {
 #pragma warning disable AA0218
-                field(AcctNum; AcctNum) { ApplicationArea = All; }
-                field(Name; Name) { ApplicationArea = All; }
-                field(SubAccount; SubAccount) { ApplicationArea = All; }
-                field(FullyQualifiedName; FullyQualifiedName) { ApplicationArea = All; }
-                field(Active; Active) { ApplicationArea = All; }
-                field(Classification; Classification) { ApplicationArea = All; }
-                field(AccountType; AccountType) { ApplicationArea = All; }
-                field(AccountSubType; AccountSubType) { ApplicationArea = All; }
-                field(CurrentBalance; CurrentBalance) { ApplicationArea = All; }
-                field(CurrentBalanceWithSubAccounts; CurrentBalanceWithSubAccounts) { ApplicationArea = All; }
+                field(AcctNum; Rec.AcctNum) { ApplicationArea = All; }
+                field(Name; Rec.Name) { ApplicationArea = All; }
+                field(SubAccount; Rec.SubAccount) { ApplicationArea = All; }
+                field(FullyQualifiedName; Rec.FullyQualifiedName) { ApplicationArea = All; }
+                field(Active; Rec.Active) { ApplicationArea = All; }
+                field(Classification; Rec.Classification) { ApplicationArea = All; }
+                field(AccountType; Rec.AccountType) { ApplicationArea = All; }
+                field(AccountSubType; Rec.AccountSubType) { ApplicationArea = All; }
+                field(CurrentBalance; Rec.CurrentBalance) { ApplicationArea = All; }
+                field(CurrentBalanceWithSubAccounts; Rec.CurrentBalanceWithSubAccounts) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

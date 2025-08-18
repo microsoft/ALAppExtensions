@@ -2,6 +2,7 @@ codeunit 139530 "MigrationQBO Tests"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var
@@ -140,43 +141,6 @@ codeunit 139530 "MigrationQBO Tests"
         Assert.IsFalse(GetDataFromFile('Account', GetGetAllBadResponse(), JArray), JsonErr);
         Assert.IsTrue(JArray.Count() = 0, JsonErr);
     end;
-
-    /*[Test]
-    procedure TestQBOAccountsImportPaging()
-    var
-        //MSQBOTableManagement: Codeunit "MS - QBO Table Management";
-        //WriteFromToUse: DotNet WriteFrom;
-    begin
-        // [SCENARIO] QBO contains more accounts than the size of a single request. All acounnts are queried from QBO, and make sure the paging was handled correctly.
-        Initialize();
-        
-
-        // [WHEN] The codeunit is initialized
-        InitConsumerKeySecret(MSQBOTableManagement);
-        MSQBOTableManagement.Initialize();
-
-        WriteFromToUse := HttpMessageHandler.WriteFrom('');
-        WriteFromToUse.AddUriResponseFileMapping(
-          'https://quickbooks.api.intuit.com/v3/company/realmid/query' +
-          '?query=Select+*+from+Account+STARTPOSITION+1+MAXRESULTS+50&minorversion=4',
-          GetInetroot + GetGetFirstPageOfAccountsResponse);
-        WriteFromToUse.AddUriResponseFileMapping(
-          'https://quickbooks.api.intuit.com/v3/company/realmid/query' +
-          '?query=Select+*+from+Account+STARTPOSITION+101+MAXRESULTS+50&minorversion=4',
-          GetInetroot + GetGetRemainingPageOfAccountsResponse);
-        MSQBOTableManagement.SetMessageHandler(WriteFromToUse);
-
-        // MigrationQBAccount.GetAll(MSQBOTableManagement);
-
-        // [then] Then the correct number of accounts are imported
-        // one page of 50 and one page of 39
-        // Assert.AreEqual(89,MigrationQBAccount.Count(),'Wrong number of accounts read');
-
-        // [then] Then Name of the Account with Id 10 is correct
-        // MigrationQBAccount.SetRange(AcctNum,'350');
-        // MigrationQBAccount.FindFirst();
-        // Assert.AreEqual('Dues & Subscriptions',MigrationQBAccount.Name,'Name of Account is wrong');
-    end; */
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -584,44 +548,39 @@ codeunit 139530 "MigrationQBO Tests"
         Assert.IsTrue(JArray.Count() = 0, JsonErr);
     end;
 
-    local procedure GetInetroot(): Text[170]
-    begin
-        exit(ApplicationPath() + '\..\..\');
-    end;
-
     local procedure GetGetEmtpyAcctNumResponse(): Text[250]
     begin
-        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllAccountsEmptyAcctNumResponse.txt');
+        exit('QBOResponse/GetAllAccountsEmptyAcctNumResponse.txt');
     end;
 
     local procedure GetGetAllAccountsResponse(): Text[100]
     begin
-        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllAccountsResponse.txt');
+        exit('QBOResponse/GetAllAccountsResponse.txt');
     end;
 
     local procedure GetGetAllEmptyResponse(): Text[100]
     begin
-        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllEmptyResponse.txt');
+        exit('QBOResponse/GetAllEmptyResponse.txt');
     end;
 
     local procedure GetGetAllBadResponse(): Text[100]
     begin
-        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllBadResponse.txt');
+        exit('QBOResponse/GetAllBadResponse.txt');
     end;
 
     local procedure GetGetAllCustomersResponse(): Text[100]
     begin
-        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllCustomersResponse.txt');
+        exit('QBOResponse/GetAllCustomersResponse.txt');
     end;
 
     local procedure GetGetAllItemsResponse(): Text[100]
     begin
-        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllItemsResponse.txt');
+        exit('QBOResponse/GetAllItemsResponse.txt');
     end;
 
     local procedure GetGetAllVendorsResponse(): Text[100]
     begin
-        exit('\App\Apps\W1\QBMigration\test\resources\QBOResponse\GetAllVendorsResponse.txt');
+        exit('QBOResponse/GetAllVendorsResponse.txt');
     end;
 
     [Normal]
@@ -651,7 +610,7 @@ codeunit 139530 "MigrationQBO Tests"
         JObject: JsonObject;
         JToken: JsonToken;
     begin
-        if JObject.ReadFrom(GetFileContent(GetInetroot() + TestDataFile)) then
+        if JObject.ReadFrom(GetResource(TestDataFile)) then
             if JObject.SelectToken('QueryResponse.' + EntityName, JToken) then
                 if JToken.IsArray() then begin
                     JArray := JToken.AsArray();
@@ -661,61 +620,19 @@ codeunit 139530 "MigrationQBO Tests"
         exit(false);
     end;
 
-    /* [Test]
-    [HandlerFunctions('DataMigratorsPageHandler')]
-    procedure TestQBOGivesWarningIfUsingSpecificValuation()
+    local procedure GetResource(FileName: Text): Text
     var
-        InventorySetup: Record "Inventory Setup";
-        DataMigrationWizard: TestPage "Data Migration Wizard";
-        CostingMethod: Option FIFO,LIFO,Specific,"Average",Standard;
-    begin
-        // [SCENARIO] The extension returns correctly, whether it is set up or not
-        // [GIVEN] A newly installed QBO Data Migration extension
-        // [GIVEN] Inventory Setup has a Default Costing Method of 'Specific'
-        Initialize();
-        if InventorySetup.Get then begin
-          InventorySetup."Default Costing Method" := CostingMethod::Specific;
-          InventorySetup.Modify;
-        end else begin
-          InventorySetup.Init;
-          InventorySetup."Default Costing Method" := CostingMethod::Specific;
-          InventorySetup.Insert;
-        end;
-
-        DataMigrationWizard.TRAP;
-        PAGE.RUN(PAGE::"Data Migration Wizard");
-
-        WITH DataMigrationWizard DO begin
-          ActionNext.INVOKE; // Choose Data Source page
-          // [WHEN] User chooses the Quickbooks Online Data Migrator
-          Description.LOOKUP;
-          // [then] Warning about this migrator not supporting the 'Specific' costing method is given
-          ASSERTERROR ActionNext.INVOKE; // Go to the instructions page, should give a warning about 'Specific' costing method
-        end;
-    end;
-
-    [ModalPageHandler]
-    procedure DataMigratorsPageHandler(var DataMigrators: TestPage "Data Migrators")
-    begin
-        DataMigrators.GOTOKEY(CODEUNIT::"MS - QBO Data Migrator");
-        DataMigrators.OK.INVOKE;
-    end; */
-
-    local procedure GetFileContent(FileName: Text): Text
-    var
-        TempFile: File;
-        FileContent: Text;
-        Line: Text;
+        ResLine: Text;
+        Res: TextBuilder;
+        ResInStream: InStream;
     begin
         if FileName <> '' then begin
-            TempFile.TextMode(true);
-            TempFile.WriteMode(false);
-            TempFile.Open(FileName);
-            repeat
-                TempFile.Read(Line);
-                FileContent := FileContent + Line;
-            until (TempFile.Pos() = TempFile.Len());
-            exit(FileContent);
+            NavApp.GetResource(FileName, ResInStream, TextEncoding::UTF8);
+            while not ResInStream.EOS do begin
+                ResInStream.ReadText(ResLine);
+                Res.AppendLine(ResLine);
+            end;
+            exit(Res.ToText());
         end;
     end;
 

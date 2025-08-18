@@ -90,6 +90,16 @@
       "justification": "The 'application' property must be specified in the app.json file."
     },
     {
+      "id": "AS0138",
+      "action": "None",
+      "justification": "TODO(#572306) - This will require a multi-release effort."
+    },
+    {
+      "id": "AS0139",
+      "action": "None",
+      "justification": "TODO(#595767) - This will be enabled after branching to BC 27."
+    },
+    {
       "id": "PTE0001",
       "action": "None",
       "justification": "Object ID must be in free range."
@@ -123,6 +133,11 @@
       "id": "PTE0024",
       "action": "None",
       "justification": "We allow moved symbols for Microsoft apps because we run PTECop on the entire codebase which includes global apps."
+    },
+    {
+      "id": "PTE0026",
+      "action": "None",
+      "justification": "A similar rule (i.e. AS0138) is defined in AppSourceCop."
     },
     {
       "id": "AW0006",

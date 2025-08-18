@@ -4,6 +4,7 @@ using System.TestTools.AITestToolkit;
 codeunit 133524 "Red Teaming Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

@@ -269,6 +269,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         QueryParameters := QueryParameters + '$top=' + Format(Filters."Max No. of Emails") + '&';
         QueryParameters := QueryParameters + '$select=' + RetrieveEmailSelectedFieldsTxt + '&';
         QueryParameters := QueryParameters + '$count=true&';
+        QueryParameters := QueryParameters + '$orderby=receivedDateTime asc&';
 
         FilterParameters := '$filter=';
         if Filters."Unread Emails" then

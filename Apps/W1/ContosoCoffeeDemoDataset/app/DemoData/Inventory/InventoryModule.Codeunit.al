@@ -13,8 +13,10 @@ codeunit 5680 "Inventory Module" implements "Contoso Demo Data Module"
     InherentPermissions = X;
 
     procedure RunConfigurationPage()
+    var
+        ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
-        exit;
+        Message(ContosoDemoTool.GetNoConfiguirationMsg());
     end;
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"]
@@ -30,14 +32,17 @@ codeunit 5680 "Inventory Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Item Journal Template");
         Codeunit.Run(Codeunit::"Create Requisition Wksh. Name");
         Codeunit.Run(Codeunit::"Create Order Promising Setup");
-        Codeunit.Run(Codeunit::"Create Location");
         Codeunit.Run(Codeunit::"Create Inventory Posting Setup");
         Codeunit.Run(Codeunit::"Create Assembly Setup");
         Codeunit.Run(Codeunit::"Create Territory");
     end;
 
     procedure CreateMasterData()
+    var
+        CreateInvPostingSetup: Codeunit "Create Inventory Posting Setup";
     begin
+        Codeunit.Run(Codeunit::"Create Location");
+        CreateInvPostingSetup.UpdateInventoryPostingSetup();
         Codeunit.Run(Codeunit::"Create Manufacturer");
         Codeunit.Run(Codeunit::"Create Item Category");
         Codeunit.Run(Codeunit::"Create Item Template");

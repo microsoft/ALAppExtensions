@@ -99,4 +99,22 @@ codeunit 148042 "Library - MX DIOT"
         for i := 1 to StepNo do
             DIOTSetupWizard.ActionNext.Invoke();
     end;
+
+    procedure UpdateColumnTypeOnConcept(ConceptNo: Integer; ColumnType: Option)
+    var
+        DIOTConcept: Record "DIOT Concept";
+    begin
+        DIOTConcept.Get(ConceptNo);
+        DIOTConcept.Validate("Column Type", ColumnType);
+        DIOTConcept.Modify(true);
+    end;
+
+    procedure UpdateNonDeductiblePctOnConcept(ConceptNo: Integer; NonDeductiblePct: Decimal)
+    var
+        DIOTConcept: Record "DIOT Concept";
+    begin
+        DIOTConcept.Get(ConceptNo);
+        DIOTConcept.Validate("Non-Deductible Pct", NonDeductiblePct);
+        DIOTConcept.Modify(true);
+    end;
 }

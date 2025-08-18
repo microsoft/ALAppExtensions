@@ -3,6 +3,7 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -1337,12 +1338,10 @@ codeunit 139809 "APIV2 - Sales Invoices E2E"
 
     local procedure CreateShipmentMethod(var ShipmentMethod: Record "Shipment Method")
     begin
-        with ShipmentMethod do begin
-            Init();
-            Code := LibraryUtility.GenerateRandomCode(FieldNo(Code), Database::"Shipment Method");
-            Description := Code;
-            Insert(true);
-        end;
+        ShipmentMethod.Init();
+        ShipmentMethod.Code := LibraryUtility.GenerateRandomCode(ShipmentMethod.FieldNo(Code), Database::"Shipment Method");
+        ShipmentMethod.Description := ShipmentMethod.Code;
+        ShipmentMethod.Insert(true);
     end;
 
     local procedure VerifyGettingAgainKeepsETag(JSONText: Text; TargetURL: Text)

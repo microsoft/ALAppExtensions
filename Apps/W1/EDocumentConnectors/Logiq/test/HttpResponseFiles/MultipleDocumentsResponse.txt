@@ -1,0 +1,1 @@
+[{"fileName" : "http://localhost:8080/logiq/1.0/getfile/testfile1.xml"},{"fileName" : "http://localhost:8080/logiq/1.0/getfile/testfile2.xml"}]

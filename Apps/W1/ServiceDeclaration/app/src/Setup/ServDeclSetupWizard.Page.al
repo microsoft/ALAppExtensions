@@ -324,10 +324,10 @@ page 5021 "Serv. Decl. Setup Wizard"
     var
         ConfirmManagement: Codeunit "Confirm Management";
     begin
-        if (Not Backwards) and Step2Visible and (Rec."Declaration No. Series" = '') then
+        if (not Backwards) and Step2Visible and (Rec."Declaration No. Series" = '') then
             exit(ConfirmManagement.GetResponse(
                 StrSubstNo(FieldValueIsNotSpecifiedQst, Rec.FieldCaption("Declaration No. Series"), Rec.TableCaption()), false));
-        if (Not Backwards) and Step2Visible and (Rec."Data Exch. Def. Code" = '') then
+        if (not Backwards) and Step2Visible and (Rec."Data Exch. Def. Code" = '') then
             exit(ConfirmManagement.GetResponse(
                 StrSubstNo(FieldValueIsNotSpecifiedQst, Rec.FieldCaption("Data Exch. Def. Code"), Rec.TableCaption()), false));
         exit(true);

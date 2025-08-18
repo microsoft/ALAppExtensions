@@ -3417,9 +3417,6 @@ End Function
         <Field Name="CompanyName">
           <DataField>CompanyName</DataField>
         </Field>
-        <Field Name="UseAmtsInAddCurr">
-          <DataField>UseAmtsInAddCurr</DataField>
-        </Field>
         <Field Name="PrintVATEntries">
           <DataField>PrintVATEntries</DataField>
         </Field>
@@ -3591,30 +3588,6 @@ End Function
         <Field Name="UserID_VATEntry">
           <DataField>UserID_VATEntry</DataField>
         </Field>
-        <Field Name="AddCurrUnrlzdAmt_VATEntry">
-          <DataField>AddCurrUnrlzdAmt_VATEntry</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdAmt_VATEntryFormat">
-          <DataField>AddCurrUnrlzdAmt_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdBas_VATEntry">
-          <DataField>AddCurrUnrlzdBas_VATEntry</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdBas_VATEntryFormat">
-          <DataField>AddCurrUnrlzdBas_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="AdditionlCurrAmt_VATEntry">
-          <DataField>AdditionlCurrAmt_VATEntry</DataField>
-        </Field>
-        <Field Name="AdditionlCurrAmt_VATEntryFormat">
-          <DataField>AdditionlCurrAmt_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="AdditinlCurrBase_VATEntry">
-          <DataField>AdditinlCurrBase_VATEntry</DataField>
-        </Field>
-        <Field Name="AdditinlCurrBase_VATEntryFormat">
-          <DataField>AdditinlCurrBase_VATEntryFormat</DataField>
-        </Field>
         <Field Name="VATRegistrationNo_VATEntry">
           <DataField>VATRegistrationNo_VATEntry</DataField>
         </Field>
@@ -3654,9 +3627,6 @@ End Function
         <Field Name="VATEntryTotalCaption">
           <DataField>VATEntryTotalCaption</DataField>
         </Field>
-        <Field Name="VATEntryTotalWithRevChrgVATCaption">
-          <DataField>VATEntryTotalWithRevChrgVATCaption</DataField>
-        </Field>
         <Field Name="VATEntrySumCalculatedBase">
           <DataField>VATEntrySumCalculatedBase</DataField>
         </Field>
@@ -3680,18 +3650,6 @@ End Function
         </Field>
         <Field Name="VATEntrySumOriginalAmountFormat">
           <DataField>VATEntrySumOriginalAmountFormat</DataField>
-        </Field>
-        <Field Name="VATEntrySumAddCurrBase">
-          <DataField>VATEntrySumAddCurrBase</DataField>
-        </Field>
-        <Field Name="VATEntrySumAddCurrBaseFormat">
-          <DataField>VATEntrySumAddCurrBaseFormat</DataField>
-        </Field>
-        <Field Name="VATEntrySumAddCurrAmount">
-          <DataField>VATEntrySumAddCurrAmount</DataField>
-        </Field>
-        <Field Name="VATEntrySumAddCurrAmountFormat">
-          <DataField>VATEntrySumAddCurrAmountFormat</DataField>
         </Field>
       </Fields>
       <Query>

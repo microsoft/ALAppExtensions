@@ -1,8 +1,12 @@
 namespace Microsoft.Sustainability.Setup;
 
+using Microsoft.Integration.D365Sales;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.CRM;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
+using System.Telemetry;
+using System.Utilities;
 
 page 6221 "Sustainability Setup"
 {
@@ -25,6 +29,7 @@ page 6221 "Sustainability Setup"
                 field("Emission Unit of Measure Code"; Rec."Emission Unit of Measure Code")
                 {
                     ToolTip = 'Specifies the unit of measure code that is used to register emission.';
+                    Editable = CanEditEmissionUnitOfMeasure;
                 }
                 field("Waste Unit of Measure Code"; Rec."Waste Unit of Measure Code")
                 {
@@ -37,6 +42,10 @@ page 6221 "Sustainability Setup"
                 field("Disch. Into Water Unit of Meas"; Rec."Disch. Into Water Unit of Meas")
                 {
                     ToolTip = 'Specifies the value of the Discharged Into Water Unit of Measure Code field.';
+                }
+                field("Energy Unit of Measure Code"; Rec."Energy Unit of Measure Code")
+                {
+                    ToolTip = 'Specifies the value of the Energy Unit of Measure Code field.';
                 }
                 field("Emission Decimal Places"; Rec."Emission Decimal Places")
                 {
@@ -57,6 +66,10 @@ page 6221 "Sustainability Setup"
                 field("Enable Background Error Check"; Rec."Enable Background Error Check")
                 {
                     ToolTip = 'Specifies if the background error check of sustainability journal lines is enabled.';
+                }
+                field("Is Dataverse Int. Enabled"; Rec."Is Dataverse Int. Enabled")
+                {
+                    ToolTip = 'Specifies if the connection to Dynamics 365 Dataverse is enabled.';
                 }
             }
             group(Procurement)
@@ -89,6 +102,9 @@ page 6221 "Sustainability Setup"
                 field("Enable Value Chain Tracking"; Rec."Enable Value Chain Tracking")
                 {
                     ToolTip = 'Specifies the enablement of sustainability value entries postings through value chain operations and the visibility of these fields in operational documents and journals.';
+                }
+                field("Use All Gases As CO2e"; Rec."Use All Gases As CO2e")
+                {
                 }
             }
             group(Calculations)
@@ -131,6 +147,17 @@ page 6221 "Sustainability Setup"
                     ToolTip = 'Specifies the Corporate Sustainability Reporting Directive link to report emission.';
                     Visible = false;
                 }
+                field("Energy Reporting UOM Code"; Rec."Energy Reporting UOM Code")
+                {
+                    ToolTip = 'Specifies the unit of measure code that is used to report Energy.';
+                }
+                field("Energy Reporting UOM Factor"; Rec."Energy Reporting UOM Factor")
+                {
+                    ToolTip = 'Specifies the unit of measure factor that is used to register Energy.';
+                }
+                field("Posted ESG Reporting Nos."; Rec."Posted ESG Reporting Nos.")
+                {
+                }
             }
         }
 
@@ -151,6 +178,30 @@ page 6221 "Sustainability Setup"
 
     actions
     {
+        area(Processing)
+        {
+            action(ResetConfiguration)
+            {
+                ApplicationArea = Suite;
+                Caption = 'Use Default Synchronization Setup';
+                Enabled = Rec."Is Dataverse Int. Enabled";
+                Image = ResetStatus;
+                ToolTip = 'Reset the integration table mappings and synchronization jobs to the default values. All current mappings are deleted.';
+
+                trigger OnAction()
+                var
+                    CRMProductName: Codeunit "CRM Product Name";
+                    SustSetupDefaults: Codeunit "Sust. Setup Defaults";
+                    ConfirmManagement: Codeunit "Confirm Management";
+                begin
+                    if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(ResetIntegrationTableMappingConfirmQst, CRMProductName.CDSServiceName()), false) then
+                        exit;
+
+                    SustSetupDefaults.ResetConfiguration(Rec);
+                    Message(SetupSuccessfulMsg, CRMProductName.CDSServiceName());
+                end;
+            }
+        }
         area(navigation)
         {
             action(SustainAccountCategory)
@@ -183,7 +234,50 @@ page 6221 "Sustainability Setup"
         }
     }
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
     begin
+        FeatureTelemetry.LogUptake('0000PH2', SustainabilityLbl, Enum::"Feature Uptake Status"::Discovered);
         Rec.InitRecord();
+
+        xSustainabilitySetup := Rec;
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        SetControlAppearance();
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        SetControlAppearance();
+    end;
+
+    trigger OnClosePage()
+    var
+        SessionSettings: SessionSettings;
+    begin
+        if IsUnitOfMeasureModified() then
+            SessionSettings.RequestSessionUpdate(false);
+    end;
+
+    var
+        xSustainabilitySetup: Record "Sustainability Setup";
+        CanEditEmissionUnitOfMeasure: Boolean;
+        ResetIntegrationTableMappingConfirmQst: Label 'This will restore the default integration table mappings and synchronization jobs for %1. All custom mappings and jobs will be deleted. The default mappings and jobs will be used the next time data is synchronized. Do you want to continue?', Comment = '%1 = CRM product name';
+        SetupSuccessfulMsg: Label 'The default setup for %1 synchronization has completed successfully.', Comment = '%1 = CRM product name';
+
+    local procedure IsUnitOfMeasureModified(): Boolean
+    begin
+        exit(
+          (Rec."Emission Unit of Measure Code" <> xSustainabilitySetup."Emission Unit of Measure Code") or
+          (Rec."Energy Unit of Measure Code" <> xSustainabilitySetup."Energy Unit of Measure Code") or
+          (Rec."Use All Gases As CO2e" <> xSustainabilitySetup."Use All Gases As CO2e"));
+    end;
+
+    local procedure SetControlAppearance()
+    begin
+        CanEditEmissionUnitOfMeasure := not Rec.ExistSustainabilityLedgerEntryWithUnitOfMeasure(Rec."Emission Unit of Measure Code");
     end;
 }
