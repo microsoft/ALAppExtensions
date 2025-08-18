@@ -31,7 +31,6 @@ codeunit 5151 "Service Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Svc No Series");
         Codeunit.Run(Codeunit::"Create Svc Location");
         Codeunit.Run(Codeunit::"Create Svc Setup");
-        Codeunit.Run(Codeunit::"Create Svc Item Category");
         Codeunit.Run(Codeunit::"Create Svc Item Journal");
     end;
 
@@ -40,6 +39,7 @@ codeunit 5151 "Service Module" implements "Contoso Demo Data Module"
         ServiceModuleSetup: Record "Service Module Setup";
     begin
         ServiceModuleSetup.InitServiceDemoDataSetup();
+        Codeunit.Run(Codeunit::"Create Svc Item Category");
         Codeunit.Run(Codeunit::"Create Svc Contract Template");
         Codeunit.Run(Codeunit::"Create Svc Loaner");
         Codeunit.Run(Codeunit::"Create Svc Item");

@@ -8,17 +8,21 @@ using System.Utilities;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Foundation.Company;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using System.Threading;
 using Microsoft.eServices.EDocument.Service;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.VAT.Setup;
 
 codeunit 139780 "Integration Tests"
 {
 
     Subtype = Test;
-    TestType = Uncategorized;
+    TestType = IntegrationTest;
+    RequiredTestIsolation = Disabled;
     Permissions = tabledata "Logiq Connection Setup" = rimd,
                   tabledata "Logiq Connection User Setup" = rimd,
                   tabledata "E-Document" = rd;
@@ -41,6 +45,8 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreNotEqual('', ConnectionUserSetup."Refresh Token - Key", 'Refresh token is not updated');
         this.Assert.AreNotEqual(0DT, ConnectionUserSetup."Access Token Expiration", 'Access token expiration date time is not updated');
         this.Assert.AreNotEqual(0DT, ConnectionUserSetup."Refresh Token Expiration", 'Refresh token expiration date time is not updated');
+
+        this.TearDown();
     end;
 
     [Test]
@@ -64,6 +70,8 @@ codeunit 139780 "Integration Tests"
         ConnectionUserSetup.Get(UserId());
         this.Assert.AreNotEqual(OldAccessTokenExpires, ConnectionUserSetup."Access Token Expiration", 'Access token expiration date time is not updated');
         this.Assert.AreNotEqual(OldRefreshTokenExpires, ConnectionUserSetup."Refresh Token Expiration", 'Refresh token expiration date time is not updated');
+
+        this.TearDown();
     end;
 
     [Test]
@@ -86,6 +94,8 @@ codeunit 139780 "Integration Tests"
         //[Then] Check if access tokens were deleted
         this.Assert.AreEqual(false, IsolatedStorage.Contains(OldAccessTokenGuid), 'Access token is not deleted');
         this.Assert.AreEqual(false, IsolatedStorage.Contains(OldRefreshTokenGuid), 'Refresh token is not deleted');
+
+        this.TearDown();
     end;
 
     [Test]
@@ -138,6 +148,8 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
         EDocumentPage.Close();
+
+        this.TearDown();
     end;
 
     [Test]
@@ -187,6 +199,8 @@ codeunit 139780 "Integration Tests"
         // Tear down
         EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
         EDocumentServiceStatus.Delete();
+
+        this.TearDown();
     end;
 
     [Test]
@@ -237,6 +251,8 @@ codeunit 139780 "Integration Tests"
         this.Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), this.IncorrectValueErr);
         this.Assert.AreEqual('Logiq rejected the sent file', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
         EDocumentPage.Close();
+
+        this.TearDown();
     end;
 
     [Test]
@@ -269,6 +285,8 @@ codeunit 139780 "Integration Tests"
         //[Then] Check if correct error is shown in E-Document page
         this.Assert.AreEqual('Error', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Error message type is not correct');
         this.Assert.AreEqual('Sending document failed with HTTP Status code 500. Error message: Internal Server Error', EDocumentPage.ErrorMessagesPart.Description.Value(), 'Error message is not correct');
+
+        this.TearDown();
     end;
 
     [Test]
@@ -294,6 +312,8 @@ codeunit 139780 "Integration Tests"
         EDocument.FindLast();
         PurchaseHeader.Get(EDocument."Document Record ID");
         this.Assert.AreEqual(this.Vendor."No.", PurchaseHeader."Buy-from Vendor No.", 'Wrong Vendor');
+
+        this.TearDown();
     end;
 
     [Test]
@@ -321,6 +341,8 @@ codeunit 139780 "Integration Tests"
             PurchaseHeader.Get(EDocument."Document Record ID");
             this.Assert.AreEqual(this.Vendor."No.", PurchaseHeader."Buy-from Vendor No.", 'Wrong Vendor');
         until EDocument.Next() = 0;
+
+        this.TearDown();
     end;
 
     local procedure VerifyOutboundFactboxValuesForSingleService(EDocument: Record "E-Document"; Status: Enum "E-Document Service Status"; Logs: Integer);
@@ -343,6 +365,10 @@ codeunit 139780 "Integration Tests"
 
     //Setup mock values
     local procedure Initialize(CreateUserCredentials: Boolean)
+    var
+        Currency: Record Currency;
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         this.LibraryPermission.SetOutsideO365Scope();
 
@@ -350,6 +376,16 @@ codeunit 139780 "Integration Tests"
         this.SetMockConnectionSetups(CreateUserCredentials);
         //clear E-Documents table for every run
         this.ClearEDocuments();
+
+        GeneralLedgerSetup.Get();
+        this.PrevVATReportingDateValue := GeneralLedgerSetup."VAT Reporting Date Usage";
+        GeneralLedgerSetup."VAT Reporting Date Usage" := Enum::"VAT Reporting Date Usage"::Disabled;
+        GeneralLedgerSetup.Modify();
+
+        this.CompanyInformation.Get();
+        this.CompanyInformation."VAT Registration No." := 'NO 777 777 778';
+        this.CompanyInformation.Name := 'Logiq Test Company';
+        this.CompanyInformation.Modify();
 
         if this.IsInitialized then
             exit;
@@ -362,11 +398,26 @@ codeunit 139780 "Integration Tests"
         this.Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Invoice";
         this.Vendor.Modify();
 
-        this.CompanyInformation.Get();
-        this.CompanyInformation."VAT Registration No." := 'NO 777 777 778';
-        this.CompanyInformation.Modify();
+        Currency.Get(this.CurrencyTok);
+        CurrencyExchangeRate.SetCurrentCurrencyFactor(Currency.Code, 1.0);
+        if CurrencyExchangeRate.Get(Currency.Code, Today()) then
+            CurrencyExchangeRate.Rename(Currency.Code, 0D);
 
         this.IsInitialized := true;
+    end;
+
+    local procedure TearDown()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        this.CompanyInformation.Get();
+        this.CompanyInformation."VAT Registration No." := '';
+        this.CompanyInformation.Name := '';
+        this.CompanyInformation.Modify();
+
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."VAT Reporting Date Usage" := this.PrevVATReportingDateValue;
+        GeneralLedgerSetup.Modify();
     end;
 
     local procedure GetMockDocumentId(): Text
@@ -556,5 +607,8 @@ codeunit 139780 "Integration Tests"
         MultipleDocumentsResponseFileTok: Label 'MultipleDocumentsResponse.txt', Locked = true;
         TestFile1Tok: Label 'testfile1.xml', Locked = true;
         TestFile2Tok: Label 'testfile2.xml', Locked = true;
+        // currency code must be matched with the one used in the mocked responses
+        CurrencyTok: Label 'RSD', Locked = true;
+        PrevVATReportingDateValue: Enum "VAT Reporting Date Usage";
         DocumentStatus: Option Distributed,Received,Failed;
 }

@@ -4,7 +4,7 @@ using System.TestTools.AITestToolkit;
 codeunit 133520 "Extract Info. from csv Prompt"
 {
     Subtype = Test;
-    TestType = Uncategorized;
+    TestType = AITest;
     TestPermissions = Disabled;
 
     var

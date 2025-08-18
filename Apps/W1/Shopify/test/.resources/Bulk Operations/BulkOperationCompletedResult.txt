@@ -1,1 +1,0 @@
-{ "data": { "node": { "status": "COMPLETED", "errorCode": null, "completedAt": "2021-01-28T19:11:09Z", "url": "", "partialDataUrl": null } }, "extensions": { "cost": { "requestedQueryCost": 1, "actualQueryCost": 1 } } }

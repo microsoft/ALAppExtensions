@@ -148,6 +148,28 @@ tableextension 6220 "Sust. Item" extends Item
                     ValidateEmissionsForItemOfConcern();
             end;
         }
+        field(6231; "Recyclability Percentage"; Decimal)
+        {
+            Caption = 'Recyclability Percentage';
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies % of recyclable content.';
+            MinValue = 0;
+            MaxValue = 100;
+        }
+        field(6232; "Energy Efficiency Rating"; Code[10])
+        {
+            Caption = 'Energy Efficiency Rating';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies energy efficiency information, e.g. product category, or label (A-G rating).';
+        }
+        field(6233; "End-of-Life Information"; Text[50])
+        {
+            Caption = 'End-of-Life Information';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies instructions about disposal methods, recycling facilities, return schemes, or environmental impact.';
+        }
     }
 
     var

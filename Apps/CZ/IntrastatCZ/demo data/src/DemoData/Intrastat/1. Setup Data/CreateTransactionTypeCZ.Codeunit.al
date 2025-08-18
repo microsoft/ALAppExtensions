@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace Microsoft.DemoData.Localization;
+namespace Microsoft.DemoData.Intrastat;
 
 using Microsoft.DemoTool.Helpers;
 
@@ -30,26 +30,26 @@ codeunit 31493 "Create Transaction Type CZ"
     var
         ContosoIntrastatCZ: Codeunit "Contoso Intrastat CZ";
     begin
-        ContosoIntrastatCZ.InsertTransactionType(Type11(), Type11DescriptionLbl);
-        ContosoIntrastatCZ.InsertTransactionType(Type21(), Type21DescriptionLbl);
+        ContosoIntrastatCZ.InsertTransactionType(No11(), No11DescriptionLbl);
+        ContosoIntrastatCZ.InsertTransactionType(No21(), No21DescriptionLbl);
     end;
 
-    procedure Type11(): Code[10]
+    procedure No11(): Code[10]
     begin
-        exit(Type11Tok);
+        exit(No11Tok);
     end;
 
-    procedure Type21(): Code[10]
+    procedure No21(): Code[10]
     begin
-        exit(Type21Tok);
+        exit(No21Tok);
     end;
 
     var
         ImportTransactionTypesCZ: XmlPort "Import Transaction Types CZ";
         FileInStream: InStream;
         XmlFileTok: Label 'trans_i_004.xml', Locked = true;
-        Type11Tok: Label '11', Locked = true;
-        Type11DescriptionLbl: Label 'Přímý prodej/nákup s výjimkou přímého obchodu se soukromými spotřebiteli/ze stra', MaxLength = 80;
-        Type21Tok: Label '21', Locked = true;
-        Type21DescriptionLbl: Label 'Vrácení zboží', MaxLength = 80;
+        No11Tok: Label '11', Locked = true;
+        No11DescriptionLbl: Label 'Přímý prodej/nákup s výjimkou přímého obchodu se soukromými spotřebiteli/ze stra', MaxLength = 80, Locked = true;
+        No21Tok: Label '21', Locked = true;
+        No21DescriptionLbl: Label 'Vrácení zboží', MaxLength = 80, Locked = true;
 }
