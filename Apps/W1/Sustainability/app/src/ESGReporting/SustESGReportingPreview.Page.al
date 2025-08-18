@@ -6,7 +6,6 @@ namespace Microsoft.Sustainability.ESGReporting;
 
 using Microsoft.Foundation.Address;
 using System.Text;
-using System.Utilities;
 
 page 6254 "Sust. ESG Reporting Preview"
 {
@@ -104,15 +103,10 @@ page 6254 "Sust. ESG Reporting Preview"
     local procedure SetDateAndCountryFilter()
     var
         ESGReportingName: Record "Sust. ESG Reporting Name";
-        Period: Record Date;
     begin
         ESGReportingName.Get(Rec."ESG Reporting Template Name", Rec.Name);
 
-        Period.SetRange("Period Type", Period."Period Type"::Year);
-        Period.SetRange("Period No.", ESGReportingName.Period);
-        if Period.FindFirst() then
-            Rec.SetRange("Date Filter", Period."Period Start", CalcDate('<CY>', Period."Period Start"));
-
+        Rec.SetRange("Date Filter", ESGReportingName."Period Starting Date", ESGReportingName."Period Ending Date");
         CountryRegionFilter := ESGReportingName."Country/Region Code";
     end;
 }

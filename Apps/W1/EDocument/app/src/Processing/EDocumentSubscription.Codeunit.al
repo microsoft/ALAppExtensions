@@ -275,7 +275,8 @@ codeunit 6103 "E-Document Subscription"
         if not ConfirmDialogMgt.GetResponseOrDefault(StrSubstNo(DeleteDocumentQst, EDocument."Entry No")) then
             Error('');
 
-        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Prepare draft";
+        EDocImportParameters."Step to Run / Desired Status" := EDocImportParameters."Step to Run / Desired Status"::"Desired E-Document Status";
+        EDocImportParameters."Desired E-Document Status" := "Import E-Doc. Proc. Status"::"Draft Ready";
         EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
     end;
 

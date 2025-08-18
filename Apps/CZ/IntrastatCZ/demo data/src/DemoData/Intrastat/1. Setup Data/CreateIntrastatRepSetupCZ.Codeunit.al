@@ -2,9 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace Microsoft.Inventory.Intrastat;
 
-using Microsoft.DemoData.Localization;
+namespace Microsoft.DemoData.Intrastat;
+
+using Microsoft.Inventory.Intrastat;
 
 codeunit 31497 "Create Intrastat Rep. Setup CZ"
 {
@@ -24,8 +25,8 @@ codeunit 31497 "Create Intrastat Rep. Setup CZ"
     begin
         IntrastatReportManagement.InitSetup(IntrastatReportSetup);
 
-        IntrastatReportSetup.Validate("Default Trans. - Purchase", CreateTransactionTypeCZ.Type11());
-        IntrastatReportSetup.Validate("Default Trans. - Return", CreateTransactionTypeCZ.Type21());
+        IntrastatReportSetup.Validate("Default Trans. - Purchase", CreateTransactionTypeCZ.No11());
+        IntrastatReportSetup.Validate("Default Trans. - Return", CreateTransactionTypeCZ.No21());
         IntrastatReportSetup.Modify(true);
     end;
 }

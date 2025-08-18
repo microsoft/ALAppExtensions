@@ -5,6 +5,14 @@
 namespace Microsoft.Finance.VAT.Setup;
 
 using System.Environment.Configuration;
+using Microsoft.Sales.History;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Document;
+using Microsoft.FixedAssets.Reports;
+using Microsoft.Sales.FinanceCharge;
+using Microsoft.CashFlow.Reports;
+using Microsoft.Bank.Reports;
+using Microsoft.Sales.Reminder;
 using System.Reflection;
 using Microsoft.Sales.Reports;
 using Microsoft.Foundation.Reporting;
@@ -86,6 +94,14 @@ codeunit 10580 "Feature - Reports GB" implements "Feature Data Update"
     begin
         SetDefaultReportLayout(Report::"Sales Document - Test");
         SetDefaultReportLayout(Report::"Purchase Document - Test");
+        SetDefaultReportLayout(Report::Reminder);
+        SetDefaultReportLayout(Report::"Bank Account - List");
+        SetDefaultReportLayout(Report::"Cash Flow Dimensions - Detail");
+        SetDefaultReportLayout(Report::"Finance Charge Memo");
+        SetDefaultReportLayout(Report::"Fixed Asset - Projected Value");
+        SetDefaultReportLayout(Report::"Purchase - Quote");
+        SetDefaultReportLayout(Report::"Purchase - Receipt");
+        SetDefaultReportLayout(Report::"Sales - Shipment");
     end;
 
     local procedure SetDefaultReportLayout(ReportID: Integer)

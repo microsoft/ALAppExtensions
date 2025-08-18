@@ -7,7 +7,7 @@ using System.TestTools.TestRunner;
 codeunit 133514 "Item Entity Search"
 {
     Subtype = Test;
-    TestType = Uncategorized;
+    TestType = AITest;
     TestPermissions = Disabled;
 
     var

@@ -29,6 +29,9 @@ codeunit 5210 "Create Job Setup"
         if JobsSetup."Job Nos." = '' then
             JobsSetup.Validate("Job Nos.", JobNoSeries.Job());
 
+        if JobsSetup."Job WIP Nos." = '' then
+            JobsSetup.Validate("Job WIP Nos.", JobNoSeries.JobWIP());
+
         JobsSetup.Validate("Apply Usage Link by Default", true);
         JobsSetup.Validate("Allow Sched/Contract Lines Def", true);
         JobsSetup.Validate("Document No. Is Job No.", true);

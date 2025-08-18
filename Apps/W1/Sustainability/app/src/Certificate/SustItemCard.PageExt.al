@@ -69,6 +69,18 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the Item Of Concern field.';
                 }
+                field("Recyclability Percentage"; Rec."Recyclability Percentage")
+                {
+                    ApplicationArea = Basic, Suite;
+                }
+                field("Energy Efficiency Rating"; Rec."Energy Efficiency Rating")
+                {
+                    ApplicationArea = Basic, Suite;
+                }
+                field("End-of-Life Information"; Rec."End-of-Life Information")
+                {
+                    ApplicationArea = Basic, Suite;
+                }
             }
         }
     }

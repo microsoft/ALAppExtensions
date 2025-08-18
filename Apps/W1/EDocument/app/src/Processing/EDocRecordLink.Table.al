@@ -9,13 +9,14 @@ namespace Microsoft.EServices.EDocument.Processing;
 /// Used by purchase draft historical mapping algorithm:
 /// - EDocPurchaseHistMappping.Codeunit.al
 /// 
-/// To link a draft purchase line to a purchase line. 
+/// To link a draft purchase line to a purchase line, or draft purchase header to a purchase header. 
+/// When posting the invoice the link is removed and the history stored in "E-Doc. Purchase Line History"
 /// </summary>
 table 6141 "E-Doc. Record Link"
 {
 
     DataClassification = CustomerContent;
-    Caption = 'E-Doc. Purchase Line Matches';
+    Caption = 'E-Doc. Record Link';
     InherentEntitlements = RIMDX;
     InherentPermissions = RIMDX;
     Access = Internal;
