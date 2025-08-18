@@ -480,35 +480,6 @@ table 6121 "E-Document"
     end;
 #endif
 
-    /// <summary>
-    /// Resets the draft data associated with the E-Document by removing all created lines and mappings.
-    /// This procedure cleans up all purchase-related draft data including purchase header, lines, 
-    /// header mappings, and additional line fields that were created during the import process.
-    /// </summary>
-    procedure ResetDraft()
-    var
-        EDocumentPurchaseHeader: Record "E-Document Purchase Header";
-        EDocumentPurchaseLine: Record "E-Document Purchase Line";
-        EDocumentHeaderMapping: Record "E-Document Header Mapping";
-        EDocumentLineField: Record "E-Document Line - Field";
-    begin
-        EDocumentPurchaseHeader.GetFromEDocument(Rec);
-        if not EDocumentPurchaseHeader.IsEmpty() then
-            EDocumentPurchaseHeader.Delete(true);
-
-        EDocumentPurchaseLine.SetRange("E-Document Entry No.", Rec."Entry No");
-        if not EDocumentPurchaseLine.IsEmpty() then
-            EDocumentPurchaseLine.DeleteAll(true);
-
-        EDocumentHeaderMapping.SetRange("E-Document Entry No.", Rec."Entry No");
-        if not EDocumentHeaderMapping.IsEmpty() then
-            EDocumentHeaderMapping.DeleteAll(true);
-
-        EDocumentLineField.SetRange("E-Document Entry No.", Rec."Entry No");
-        if not EDocumentLineField.IsEmpty() then
-            EDocumentLineField.DeleteAll(true);
-    end;
-
     internal procedure ToString(): Text
     begin
         exit(StrSubstNo(ToStringLbl, SystemId, "Document Record ID", "Workflow Step Instance ID", "Job Queue Entry ID"));

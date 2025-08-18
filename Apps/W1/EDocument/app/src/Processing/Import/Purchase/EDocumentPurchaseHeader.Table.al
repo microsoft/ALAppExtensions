@@ -6,9 +6,10 @@ namespace Microsoft.EServices.EDocument.Processing.Import.Purchase;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
-using System.Telemetry;
+using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
+using System.Telemetry;
 
 table 6100 "E-Document Purchase Header"
 {
@@ -260,6 +261,29 @@ table 6100 "E-Document Purchase Header"
             Rec."E-Document Entry No." := EDocument."Entry No";
             Rec.Insert();
         end;
+    end;
+
+    /// <summary>
+    /// Resets the draft data associated with the E-Document Purchase Header by removing all created lines and mappings.
+    /// This procedure cleans up all purchase-related draft data including purchase header, lines, 
+    /// header mappings, and additional line fields that were created during the import process.
+    /// </summary>
+    procedure ResetDraft()
+    var
+        EDocumentPurchaseLine: Record "E-Document Purchase Line";
+        EDocumentHeaderMapping: Record "E-Document Header Mapping";
+        EDocumentLineField: Record "E-Document Line - Field";
+    begin
+        Rec.Delete(true);
+
+        EDocumentPurchaseLine.SetRange("E-Document Entry No.", Rec."E-Document Entry No.");
+        EDocumentPurchaseLine.DeleteAll(true);
+
+        EDocumentHeaderMapping.SetRange("E-Document Entry No.", Rec."E-Document Entry No.");
+        EDocumentHeaderMapping.DeleteAll(true);
+
+        EDocumentLineField.SetRange("E-Document Entry No.", Rec."E-Document Entry No.");
+        EDocumentLineField.DeleteAll(true);
     end;
 
     var

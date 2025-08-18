@@ -132,8 +132,11 @@ codeunit 6174 "E-Document ADI Handler" implements IStructureReceivedEDocument, I
     end;
 
     procedure ResetDraft(EDocument: Record "E-Document")
+    var
+        EDocPurchaseHeader: Record "E-Document Purchase Header";
     begin
-        EDocument.ResetDraft();
+        EDocPurchaseHeader.GetFromEDocument(EDocument);
+        EDocPurchaseHeader.ResetDraft();
     end;
 
     local procedure PopulateEDocumentPurchaseLines(ItemsArray: JsonArray; EDocumentEntryNo: Integer; var TempEDocPurchaseLine: Record "E-Document Purchase Line" temporary)
