@@ -6,6 +6,7 @@
 codeunit 139510 "Delegated Admin Config. Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

@@ -23,12 +23,12 @@ codeunit 10038 "IRS Forms Feature"
         AssistedSetupDescriptionTxt: Label 'Setup 1099 forms to transmit the tax data to the IRS in the United States';
         AssistedSetupHelpTxt: Label 'https://learn.microsoft.com/en-us/dynamics365/business-central/localfunctionality/unitedstates/set-up-use-irs1099-form', Locked = true;
 
-    procedure IsEnabled() IsEnabled: Boolean
+    procedure IsEnabled() Result: Boolean
     var
         FeatureManagementFacade: Codeunit "Feature Management Facade";
     begin
-        IsEnabled := FeatureManagementFacade.IsEnabled(FeatureKeyIdTok);
-        OnAfterCheckFeatureEnabled(IsEnabled);
+        Result := FeatureManagementFacade.IsEnabled(FeatureKeyIdTok);
+        OnAfterCheckFeatureEnabled(Result);
     end;
 
     procedure GetFeatureKeyId(): Text

@@ -1,1 +1,0 @@
-{ "data": { "fulfillmentCreate": { "fulfillment": null, "userErrors": [ { "field": [ "fulfillment" ], "message": "Fulfillment order does not exist." } ] } }, "extensions": { "cost": { "requestedQueryCost": 24, "actualQueryCost": 10, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1990, "restoreRate": 100 } } } }

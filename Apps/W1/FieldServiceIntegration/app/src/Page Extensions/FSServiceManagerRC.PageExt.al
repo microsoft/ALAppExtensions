@@ -22,12 +22,14 @@ pageextension 6621 "FS Service Manager RC" extends "Service Manager Role Center"
                     ApplicationArea = Suite;
                     Caption = 'Bookable Resources - Dynamics 365 Field Service';
                     RunObject = Page "FS Bookable Resource List";
+                    ToolTip = 'View and manage bookable resources in Dynamics 365 Field Service.';
                 }
                 action("Customer Assets - Field Service")
                 {
                     ApplicationArea = Suite;
                     Caption = 'Customer Assets - Dynamics 365 Field Service';
                     RunObject = Page "FS Customer Asset List";
+                    ToolTip = 'View and manage customer assets in Dynamics 365 Field Service.';
                 }
                 action("Records Skipped For Synch.")
                 {
@@ -35,6 +37,7 @@ pageextension 6621 "FS Service Manager RC" extends "Service Manager Role Center"
                     Caption = 'Coupled Data Synchronization Errors';
                     RunObject = Page "CRM Skipped Records";
                     AccessByPermission = TableData "CRM Integration Record" = R;
+                    ToolTip = 'View records that were skipped during synchronization with Dynamics 365 Field Service.';
                 }
             }
         }

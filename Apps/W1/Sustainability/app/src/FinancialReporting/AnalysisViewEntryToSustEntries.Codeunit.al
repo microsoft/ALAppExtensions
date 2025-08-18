@@ -113,8 +113,7 @@ codeunit 6235 AnalysisViewEntryToSustEntries
                 exit(CalcDate('<+1Y-1D>', AnalysisViewEntry."Posting Date"));
             AnalysisView2."Date Compression"::Period:
                 begin
-                    AccountingPeriod."Starting Date" := AnalysisViewEntry."Posting Date";
-                    if AccountingPeriod.Next() <> 0 then
+                    if AccountingPeriod.Get(AnalysisViewEntry."Posting Date") then
                         exit(CalcDate('<-1D>', AccountingPeriod."Starting Date"));
 
                     exit(DMY2Date(31, 12, 9999));

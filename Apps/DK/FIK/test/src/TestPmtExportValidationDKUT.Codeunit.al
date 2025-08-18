@@ -7,6 +7,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

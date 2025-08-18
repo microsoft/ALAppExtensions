@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "properties": {
+        "lineId": {
+            "type": "number",
+            "description": "The identifier of the line item being analyzed."
+        },
+        "deferralReasoning": {
+            "type": "string",
+            "description": "Explanation for the deferral decision and selected code, or why the expense is not deferrable."
+        },
+        "deferralCode": {
+            "type": "string",
+            "description": "The best-matching deferral code from the provided list, or empty string if none apply or not deferrable."
+        }
+    },
+    "required": [
+        "lineId",
+        "deferralReasoning",
+        "deferralCode"
+    ]
+}

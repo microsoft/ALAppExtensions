@@ -1,0 +1,59 @@
+{
+  "id": "0dfa4b30-d517-4bbb-84e7-ec5eecabdf17",
+  "name": "Reverse Charge VAT GB Tests",
+  "publisher": "Microsoft",
+  "version": "27.0.0.0",
+  "brief": "Tests for Reverse Charge VAT GB extension.",
+  "description": "Tests for Reverse Charge VAT GB extension.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2222658",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2141039",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "a78b53ce-d24d-4e49-a526-63bed5f48009",
+      "name": "Reverse Charge VAT GB",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+      "name": "System Application Test Library",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "27.0.0.0",
+  "application": "27.0.0.0",
+  "idRanges": [
+    {
+      "from": 144012,
+      "to": 144017
+    }
+  ],
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith",
+    "TranslationFile"
+  ]
+}

@@ -67,6 +67,8 @@ codeunit 17131 "AU Contoso Localization"
     end;
 
     local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    var
+        CreateAUInvPostingSetup: Codeunit "Create AU Inv Posting Setup";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
@@ -75,7 +77,10 @@ codeunit 17131 "AU Contoso Localization"
                     Codeunit.Run(Codeunit::"Create AU Inv Posting Setup");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create AU Item Template");
+                begin
+                    CreateAUInvPostingSetup.UpdateInventoryPosting();
+                    Codeunit.Run(Codeunit::"Create AU Item Template");
+                end;
         end;
     end;
 
@@ -159,7 +164,10 @@ codeunit 17131 "AU Contoso Localization"
                     Codeunit.Run(Codeunit::"Create VAT Setup Post.Grp. AU");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create Currency Ex. Rate AU");
+                begin
+                    Codeunit.Run(Codeunit::"Create Currency Ex. Rate AU");
+                    Codeunit.Run(Codeunit::"Create Allocation Account AU");
+                end;
         end;
     end;
 

@@ -1,0 +1,68 @@
+{
+    "id": "b6c85849-fe8a-46f4-930f-2f026571678a",
+    "name": "E-Document Connector - B2Brouter Tests",
+    "publisher": "Microsoft",
+    "version": "27.0.0.0",
+    "brief": "E-Document Connector - B2Brouter Tests",
+    "description": "E-Document Connector - B2Brouter Tests",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206603",
+    "logo": "ExtensionLogo.png",
+    "dependencies": [
+        {
+            "id": "b4305a63-f987-425b-8520-ca9ccf7b22b6",
+            "name": "E-Document Connector - B2Brouter",
+            "version": "27.0.0.0",
+            "publisher": "Microsoft"
+        },
+        {
+            "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+            "name": "E-Document Core",
+            "version": "27.0.0.0",
+            "publisher": "Microsoft"
+        },
+        {
+            "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+            "name": "Library Assert",
+            "version": "27.0.0.0",
+            "publisher": "Microsoft"
+        },
+        {
+            "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8c",
+            "name": "E-Document Core Tests",
+            "version": "27.0.0.0",
+            "publisher": "Microsoft"
+        },
+        {
+            "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+            "name": "Tests-TestLibraries",
+            "publisher": "Microsoft",
+            "version": "27.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "27.0.0.0",
+    "application": "27.0.0.0",
+    "idRanges": [
+        {
+            "from": 148199,
+            "to": 148200
+        }
+    ],
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "features": [
+        "NoImplicitWith",
+        "TranslationFile"
+    ],
+    "target": "OnPrem",
+    "resourceFolders": [
+        ".resources"
+    ]
+}

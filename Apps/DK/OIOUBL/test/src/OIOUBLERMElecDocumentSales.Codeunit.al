@@ -6,6 +6,7 @@
 codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();
@@ -1550,6 +1551,49 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         assert.AreNotEqual(CountryRegionErr, GetLastErrorText, ErrorMustMatchErr);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler')]
+    procedure PostPrePaymentFromSalesOrderOIOUBL();
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        DocumentSendingProfile: Record "Document Sending Profile";
+        ElectronicDocumentFormat: Record "Electronic Document Format";
+        OIOUBLDocumentEncode: Codeunit "OIOUBL-Document Encode";
+        SalesOrder: TestPage "Sales Order";
+    begin
+        // [SCENARIO 575524] Electronic XML has Unit of Measure and Sales Order No. when invoice has prepayment no.
+        Initialize();
+
+        // [GIVEN] OIOUBL Country/Region Code, Create Electronic Document Format
+        UpdateOIOUBLCountryRegionCode();
+        CreateElectronicDocumentFormat(OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", CODEUNIT::"OIOUBL-Export Sales Invoice");
+
+        // [GIVEN] Default DocumentSendingProfile Disk::"Electronic Document"; Sales Order;
+        CreateSalesDocumentWithPrepayment(SalesLine, SalesHeader."Document Type"::Order);
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+        SetDefaultDocumentSendingProfile(DocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
+
+        // [WHEN] Post Prepayment.
+        SalesOrder.OpenEdit();
+        SalesOrder.Filter.SetFilter("No.", SalesHeader."No.");
+        SalesOrder.PostPrepaymentInvoice.Invoke();
+
+        // [THEN] Find Sales Invoice Header of Prepayment
+        FindSalesInvoiceHeaderofPrepayment(SalesInvoiceHeader, SalesHeader."No.");
+
+        // [THEN] Find Sales Invoice Line of Prepayment
+        FindSalesInvoiceLineofPrepayment(SalesInvoiceLine, SalesInvoiceHeader."No.");
+
+        // [THEN] Run Electronic Sales Invoice Report with PrePayment
+        RunReportCreateElecSalesInvoices(SalesInvoiceHeader."No.");
+
+        // [VERIFY] Verify Electronic Sales Prepayment Order No
+        VerifyElectronicSalesOrderNo(SalesInvoiceHeader."Prepayment Order No.", OIOUBLDocumentEncode.GetUoMCode(SalesInvoiceLine."Unit of Measure Code"));
+    end;
+
     local procedure Initialize();
     var
         SalesHeader: Record "Sales Header";
@@ -2244,6 +2288,64 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     begin
         ElectronicDocumentFormat.SendElectronically(TempBlob, ClientFileName, DocumentVariant, FormatCode);
         exit(ClientFileName);
+    end;
+
+    local procedure CreateCustomerWith100PercentPrepayment(): Code[20];
+    var
+        Customer: Record Customer;
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.Get();
+        LibrarySales.CreateCustomer(Customer);
+        Customer.Validate("Country/Region Code", CompanyInformation."Country/Region Code");
+        Customer.Validate("VAT Registration No.", CompanyInformation."VAT Registration No.");
+        Customer.Validate(GLN, GLNNoTxt);
+        Customer.Validate("Prepayment %", 100);
+        Customer.Modify(true);
+        exit(Customer."No.")
+    end;
+
+    local procedure CreateSalesDocumentWithPrepayment(var SalesLine: Record "Sales Line"; DocumentType: Enum "Sales Document Type");
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        CreateSalesHeaderWithPrePayment(SalesHeader, DocumentType);
+        CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, LibraryInventory.CreateItemNo());
+    end;
+
+    local procedure CreateSalesHeaderWithPrePayment(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type");
+    var
+        PostCode: Record "Post Code";
+    begin
+        LibraryERM.FindPostCode(PostCode);
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CreateCustomerWith100PercentPrepayment());
+        SalesHeader.Validate("Sell-to Contact", SalesHeader."No.");
+        SalesHeader.Validate("Bill-to Address", LibraryUtility.GenerateGUID());
+        SalesHeader.Validate("Bill-to City", PostCode.City);
+        SalesHeader.Validate("Ship-to Address", LibraryUtility.GenerateGUID());
+        SalesHeader.Validate("Ship-to City", PostCode.City);
+        SalesHeader.Validate("Your Reference", LibraryUtility.GenerateGUID());
+        SalesHeader.Modify(true);
+        ClearVATRegistrationForCustomer(SalesHeader."Sell-to Customer No.");
+    end;
+
+    local procedure FindSalesInvoiceHeaderofPrepayment(var SalesInvoiceHeader: Record "Sales Invoice Header"; PrePaymentNo: Code[20])
+    begin
+        SalesInvoiceHeader.SetRange("Prepayment Order No.", PrePaymentNo);
+        SalesInvoiceHeader.FindFirst();
+    end;
+
+    local procedure FindSalesInvoiceLineofPrepayment(var SalesInvoiceLine: Record "Sales Invoice Line"; DocumentNo: Code[20])
+    begin
+        SalesInvoiceLine.SetRange("Document No.", DocumentNo);
+        SalesInvoiceLine.FindFirst();
+    end;
+
+    local procedure VerifyElectronicSalesOrderNo(OrderNo: Code[20]; UnitOfMeasure: Text);
+    begin
+        LibraryXMLReadOnServer.Initialize(OIOUBLNewFileMock.PopFilePath());
+        LibraryXMLReadOnServer.VerifyNodeValue('cbc:SalesOrderID', OrderNo);
+        LibraryXMLReadOnServer.VerifyAttributeValueInSubtree('cac:Price', 'cbc:BaseQuantity', 'unitCode', UnitOfMeasure);
     end;
 
     [ConfirmHandler]

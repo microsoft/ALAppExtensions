@@ -3,6 +3,8 @@ namespace Microsoft.Finance.Latepayment;
 using System.AI;
 using System.Utilities;
 using System.Privacy;
+using System.Telemetry;
+
 table 1950 "LP Machine Learning Setup"
 {
     DataClassification = CustomerContent;
@@ -71,13 +73,14 @@ table 1950 "LP Machine Learning Setup"
             Caption = 'Use My Azure Subscription';
             trigger OnValidate()
             var
+                AuditLog: Codeunit "Audit Log";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 LatePaymentPredictionConsentProvidedLbl: Label 'Late Payment Prediction - consent provided by UserSecurityId %1.', Locked = true;
             begin
                 if not xRec."Use My Model Credentials" and Rec."Use My Model Credentials" then
                     Rec."Use My Model Credentials" := CustomerConsentMgt.ConfirmUserConsentToMicrosoftService();
                 if Rec."Use My Model Credentials" then
-                    Session.LogAuditMessage(StrSubstNo(LatePaymentPredictionConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
+                    AuditLog.LogAuditMessage(StrSubstNo(LatePaymentPredictionConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
             end;
         }
 

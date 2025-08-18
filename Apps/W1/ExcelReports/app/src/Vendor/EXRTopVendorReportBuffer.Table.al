@@ -32,11 +32,15 @@ table 4404 "EXR Top Vendor Report Buffer"
         {
             Caption = 'Amount (LCY)';
             CaptionClass = '3,' + GetAmount1Caption();
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(12; "Amount 2 (LCY)"; Decimal)
         {
             Caption = 'Amount 2 (LCY)';
             CaptionClass = '3,' + GetAmount2Caption();
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(13; "Ranking Based On"; Option)
         {

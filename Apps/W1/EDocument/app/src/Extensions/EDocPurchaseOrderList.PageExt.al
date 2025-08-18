@@ -6,7 +6,6 @@ namespace Microsoft.Purchases.Document;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.OrderMatch;
-using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 
 pageextension 6137 "E-Doc. Purchase Order List" extends "Purchase Order List"
 {
@@ -58,7 +57,7 @@ pageextension 6137 "E-Doc. Purchase Order List" extends "Purchase Order List"
                 ToolTip = 'Map received E-Document to the Purchase Order';
                 ApplicationArea = All;
                 Image = SparkleFilled;
-                Visible = ShowMapToEDocument and CopilotVisible;
+                Visible = ShowMapToEDocument;
 
                 trigger OnAction()
                 var
@@ -85,14 +84,7 @@ pageextension 6137 "E-Doc. Purchase Order List" extends "Purchase Order List"
 
 
     var
-        ShowMapToEDocument, CopilotVisible : Boolean;
-
-    trigger OnOpenPage()
-    var
-        EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
-    begin
-        CopilotVisible := EDocPOMatching.IsCopilotVisible();
-    end;
+        ShowMapToEDocument: Boolean;
 
     trigger OnAfterGetCurrRecord()
     var

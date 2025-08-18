@@ -6,6 +6,7 @@
 codeunit 148030 "Payment Exp Mgt Unit Test DK"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

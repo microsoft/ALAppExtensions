@@ -6,6 +6,7 @@
 codeunit 148055 "OIOUBL-Elec. Service Document"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();

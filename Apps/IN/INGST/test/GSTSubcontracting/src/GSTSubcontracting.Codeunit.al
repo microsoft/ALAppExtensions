@@ -954,6 +954,53 @@ codeunit 18479 "GST Subcontracting"
         Assert.RecordIsEmpty(ReqLine);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,DeliveryChallanSentMsgHandler,ItemTrackingPageHandlerToSelectEntries,ItemTrackingSummaryPageHandler')]
+    procedure SubconOrderToRegVendIntraStateSendItemWithLotTrackingAndExpiryDate()
+    var
+        ProductionOrder: Record "Production Order";
+        PurchaseLine: Record "Purchase Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        // [SCENARIO] [573717] Check if the system sned on subcontracting order for Registered  Vendor and FG Received from Subcon Vendor Location with Item Tracking.
+
+        // [GIVEN] Setups created
+        CreateGSTSubconSetupsWithLotTracking(GSTVendorType::Registered, GSTGroupType::Goods, true);
+
+        // [WHEN] Create Subcontracting Order from Released Purchase Order, Send Subcon Components
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrder, PurchaseLine);
+        DeliverSubconComponentsForLot(PurchaseLine, 0);
+
+        // [THEN] Delivery Challan, Item ledger entries and G/L Entries are Verified
+        VerifyDeliveryChallanLine(PurchaseLine);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,DeliveryChallanSentMessageHdlr')]
+    procedure SubconOrderMultipleToRegVendSendItem()
+    var
+        ProductionOrderFirst: Record "Production Order";
+        ProductionOrderSecond: Record "Production Order";
+        PurchaseLineFirst: Record "Purchase Line";
+        PurchaseLineSecond: Record "Purchase Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        MultipleSubconOrderDetailsNo: Code[20];
+    begin
+        // [SCENARIO] [579721] Line No on Delivery Challan Line not starting with 10000 when Order subcon send through batch
+        // [GIVEN] Setups created
+        CreateGSTSubconSetups(GSTVendorType::Registered, GSTGroupType::Goods, true);
+
+        // [WHEN] Create Multiple Subcontracting Order from Released Purchase Order, Send Subcon Components
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrderFirst, PurchaseLineFirst);
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrderSecond, PurchaseLineSecond);
+        DeliverSubconComponentsMultiple(PurchaseLineFirst, PurchaseLineSecond, MultipleSubconOrderDetailsNo);
+
+        // [THEN] Delivery Challan is Verified
+        VerifyDeliveryChallanLineDetails(PurchaseLineFirst);
+    end;
+
     local procedure CreateGSTSubconSetups(
         GSTVendorType: Enum "GST Vendor Type";
                            GSTGroupType: Enum "GST Group Type";
@@ -1581,7 +1628,7 @@ codeunit 18479 "GST Subcontracting"
         ProdOrderLine.FindFirst();
         for i := 1 to ProdOrderLine.Quantity do begin
             SlNo := NoSeries.GetNextNo(MainItem."Serial Nos.");
-            LibraryItemTracking.CreateProdOrderItemTracking(ReservationEntry, ProdOrderLine, SlNo, '', 1);
+            LibraryMfg.CreateProdOrderItemTracking(ReservationEntry, ProdOrderLine, SlNo, '', 1);
         end;
     end;
 
@@ -2373,6 +2420,150 @@ codeunit 18479 "GST Subcontracting"
         RequisitionLine.SetRange("No.", ItemNo);
     end;
 
+    local procedure UpdateItemTrackingCodeWithExpiry()
+    var
+        Item: Record Item;
+        ItemTrackingCode: Record "Item Tracking Code";
+        ChildItemNo: Code[20];
+        MainItemNo: Code[20];
+        LotNos: Code[20];
+    begin
+        LotNos := LibraryUtility.GetGlobalNoSeriesCode();
+        MainItemNo := (Storage.Get(XMainItemNoTok));
+        Item.Get(MainItemNo);
+        LibraryItemTracking.CreateItemTrackingCodeWithExpirationDate(ItemTrackingCode, false, true);
+        Item.Validate("Item Tracking Code", ItemTrackingCode.Code);
+        Item.Validate("Lot Nos.", LotNos);
+        Item.Modify(true);
+
+        ChildItemNo := (Storage.Get(XComponentItemNoTok));
+        Item.Get(ChildItemNo);
+        Item.Validate("Item Tracking Code", ItemTrackingCode.Code);
+        Item.Validate("Lot Nos.", LotNos);
+        Item.Modify(true);
+    end;
+
+    local procedure CreateGSTSubconSetupsWithLotTracking(
+    GSTVendorType: Enum "GST Vendor Type";
+                       GSTGroupType: Enum "GST Group Type";
+                       IntraState: Boolean)
+    begin
+        // Source Codes
+        UpdateSourceCodes();
+
+        // General Ledger Setup
+        UpdateGLSetup();
+
+        // Purchases and Payables Setup
+        UpdatePurchSetup();
+
+        // Company Information
+        UpdateCompanyInformation();
+
+        // Inventory Setup
+        UpdateInventorySetup();
+
+        // GST Group and HSN Code
+        CreateGSTGroupHSNCode(GSTGroupType);
+
+        // Subcontracting Vendor
+        CreateSubconVendor(GSTVendorType, IntraState);
+
+        // Work Center
+        CreateWorkCenter();
+
+        // Main Item with Production BOM and Routing
+        CreateMainItemWithProdBOMAndRouting();
+
+        //Update Item Tracking Code with Expiry
+        UpdateItemTrackingCodeWithExpiry();
+
+        // Create Inventory for Components
+        CreateComponentInventoryWithLotTracking();
+
+        // Tax Rate and Posting Setup
+        CreateTaxRateAndPostingSetup(IntraState);
+    end;
+
+    local procedure CreateComponentInventoryWithLotTracking()
+    var
+        ComponentItemNo: Code[20];
+        CompanyLocationCode: Code[10];
+    begin
+        ComponentItemNo := (Storage.Get(XComponentItemNoTok));
+        CompanyLocationCode := (Storage.Get(XCompanyLocationCodeTok));
+        CreateInventoryForLotTracking(ComponentItemNo, CompanyLocationCode, LibraryRandom.RandIntInRange(100, 1000));
+    end;
+
+    local procedure CreateInventoryForLotTracking(ItemNo: Code[20]; LocationCode: Code[10]; Quantity: Decimal)
+    var
+        Item: Record Item;
+        ItemJournalLine: Record "Item Journal Line";
+        ReservationEntry: Record "Reservation Entry";
+        NoSeries: Codeunit "No. Series";
+        LotNo: Code[20];
+    begin
+        Item.Get(ItemNo);
+        LotNo := NoSeries.GetNextNo(Item."Lot Nos.");
+        LibraryInventory.CreateItemJournalLineInItemTemplate(ItemJournalLine, ItemNo, LocationCode, '', Quantity);
+        LibraryItemTracking.CreateItemJournalLineItemTracking(ReservationEntry, ItemJournalLine, '', LotNo, ItemJournalLine.Quantity);
+        UpdateLotExpirationDate(ItemNo, LotNo, WorkDate() + 30);
+        Codeunit.Run(Codeunit::"Item Jnl.-Post Batch", ItemJournalLine);
+    end;
+
+    local procedure UpdateLotExpirationDate(ItemNo: Code[20]; LotNo: Code[50]; NewExpirationDate: Date)
+    var
+        ReservationEntry: Record "Reservation Entry";
+    begin
+        ReservationEntry.SetRange("Item No.", ItemNo);
+        ReservationEntry.SetRange("Lot No.", LotNo);
+        ReservationEntry.ModifyAll("Expiration Date", NewExpirationDate, true);
+    end;
+
+    local procedure DeliverSubconComponentsForLot(var PurchaseLine: Record "Purchase Line"; ReworkQty: Decimal)
+    var
+        SubOrderComponentList: Record "Sub Order Component List";
+    begin
+        PurchaseLine.FindFirst();
+
+        PurchaseLine.Validate("Deliver Comp. For", PurchaseLine.Quantity);
+        PurchaseLine.Validate("Qty. to Receive", (PurchaseLine.Quantity - ReworkQty));
+        if ReworkQty > 0 then
+            PurchaseLine.Validate("Qty. to Reject (Rework)", ReworkQty);
+        PurchaseLine.Validate("Posting Date", WorkDate());
+        PurchaseLine.Validate("Delivery Challan Date", WorkDate());
+        PurchaseLine.SubConSend := true;
+        PurchaseLine.Modify();
+
+        SubOrderComponentList.Reset();
+        SubOrderComponentList.SetRange("Document No.", PurchaseLine."Document No.");
+        SubOrderComponentList.SetRange("Document Line No.", PurchaseLine."Line No.");
+        SubOrderComponentList.SetRange("Parent Item No.", PurchaseLine."No.");
+        if SubOrderComponentList.FindFirst() then
+            SubOrderComponentList.OpenItemTrackingLinesSubcon();
+
+        Codeunit.Run(Codeunit::"Subcontracting Post", PurchaseLine);
+    end;
+
+    local procedure VerifyDeliveryChallanLineDetails(PurchaseLine: Record "Purchase Line")
+    var
+        SubOrderComponentList: Record "Sub Order Component List";
+        DeliveryChallanLine: Record "Delivery Challan Line";
+    begin
+        SubOrderComponentList.Reset();
+        SubOrderComponentList.SetRange("Document No.", PurchaseLine."Document No.");
+        SubOrderComponentList.SetRange("Document Line No.", PurchaseLine."Line No.");
+        SubOrderComponentList.SetRange("Parent Item No.", PurchaseLine."No.");
+        if SubOrderComponentList.FindFirst() then begin
+            DeliveryChallanLine.SetRange("Document No.", PurchaseLine."Document No.");
+            DeliveryChallanLine.SetRange("Document Line No.", PurchaseLine."Line No.");
+            DeliveryChallanLine.SetRange("Parent Item No.", PurchaseLine."No.");
+            DeliveryChallanLine.SetRange("Prod. Order Comp. Line No.", SubOrderComponentList."Line No.");
+            DeliveryChallanLine.FindFirst();
+            DeliveryChallanLine.TestField("Line No.", 10000);
+        end;
+    end;
+
     [PageHandler]
     procedure TaxRatePageHandler(var TaxRates: TestPage "Tax Rates")
     begin
@@ -2422,5 +2613,26 @@ codeunit 18479 "GST Subcontracting"
     procedure PostConfirmation(Question: Text; var Reply: Boolean)
     begin
         Reply := true;
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure ItemTrackingPageHandlerToSelectEntries(var ItemTrackingLines: TestPage "Item Tracking Lines")
+    var
+    begin
+        ItemTrackingLines."Select Entries".Invoke();
+        ItemTrackingLines.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure ItemTrackingSummaryPageHandler(var ItemTrackingSummary: TestPage "Item Tracking Summary")
+    begin
+        ItemTrackingSummary.OK().Invoke();
+    end;
+
+    [MessageHandler]
+    procedure DeliveryChallanSentMessageHdlr(MsgTxt: Text[1024])
+    begin
     end;
 }

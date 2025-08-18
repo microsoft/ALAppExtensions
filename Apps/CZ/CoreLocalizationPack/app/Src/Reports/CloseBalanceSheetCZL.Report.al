@@ -544,6 +544,8 @@ report 11754 "Close Balance Sheet CZL"
     var
         NoSeriesBatch: Codeunit "No. Series - Batch";
     begin
+        OnBeforeHandleGenJnlLine(GenJournalLine);
+
         GenJournalLine."Additional-Currency Posting" :=
           GenJournalLine."Additional-Currency Posting"::None;
         if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
@@ -650,5 +652,10 @@ report 11754 "Close Balance Sheet CZL"
     local procedure GroupSum(): Boolean
     begin
         exit(ClosePerGlobalDimOnly and (ClosePerBusUnit or ClosePerGlobalDim1));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeHandleGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
+    begin
     end;
 }

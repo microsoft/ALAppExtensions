@@ -16,6 +16,11 @@
       "id": "c471774f-4b9e-45eb-9619-e7e0b96a8b98",
       "name": "Contoso Coffee Demo Dataset Tests",
       "publisher": "Microsoft"
+    },
+    {
+      "id": "50af3c4b-fa1f-4290-83a7-726b3534feaf",
+      "name": "CostAdjustmentPerformance",
+      "publisher": "Microsoft"
     }
   ],
   "screenshots": [],

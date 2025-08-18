@@ -10,7 +10,7 @@ codeunit 1913 "MigrationQB Vendor Migrator"
         PostingGroupDescriptionTxt: Label 'Migrated from QB', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
-    local procedure OnMigrateVendor(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         MigrationQBVendor: Record "MigrationQB Vendor";
     begin
@@ -168,7 +168,7 @@ codeunit 1913 "MigrationQB Vendor Migrator"
     var
         name: Text[50];
     begin
-        if (MigrationQBVendor.CompanyName = '') And (MigrationQBVendor.GivenName = '') And (MigrationQBVendor.FamilyName = '') then begin
+        if (MigrationQBVendor.CompanyName = '') and (MigrationQBVendor.GivenName = '') and (MigrationQBVendor.FamilyName = '') then begin
             name := CopyStr(MigrationQBVendor.DisplayName, 1, 50);
             exit(name);
         end;
@@ -234,12 +234,12 @@ codeunit 1913 "MigrationQB Vendor Migrator"
     begin
         i := 0;
 
-        WHILE JArray.Get(i, ChildJToken) do begin
+        while JArray.Get(i, ChildJToken) do begin
             EntityId := CopyStr(HelperFunctions.TrimStringQuotes(HelperFunctions.GetTextFromJToken(ChildJToken, 'Id')), 1, 15);
 
             if not MigrationQBVendor.Get(EntityId) then begin
                 MigrationQBVendor.Init();
-                MigrationQBVendor.VALIDATE(MigrationQBVendor.Id, EntityId);
+                MigrationQBVendor.Validate(MigrationQBVendor.Id, EntityId);
                 MigrationQBVendor.Insert(true);
             end;
 
@@ -257,27 +257,27 @@ codeunit 1913 "MigrationQB Vendor Migrator"
         MigrationQBVendor: Record "MigrationQB Vendor";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
     begin
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNO(GivenName), JToken.AsObject(), 'GivenName');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNO(FamilyName), JToken.AsObject(), 'FamilyName');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNO(CompanyName), JToken.AsObject(), 'CompanyName');
-        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNO(DisplayName), JToken.AsObject(), 'DisplayName');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(BillAddrLine1), JToken.AsObject(), 'BillAddr.Line1');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(BillAddrLine2), JToken.AsObject(), 'BillAddr.Line2');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(BillAddrCity), JToken.AsObject(), 'BillAddr.City');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(BillAddrCountry), JToken.AsObject(), 'BillAddr.Country');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(BillAddrPostalCode), JToken.AsObject(), 'BillAddr.PostalCode');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(BillAddrCountrySubDivCode), JToken.AsObject(), 'BillAddr.CountrySubDivisionCode');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(PrimaryPhone), JToken.AsObject(), 'PrimaryPhone.FreeFormNumber');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(PrimaryEmailAddr), JToken.AsObject(), 'PrimaryEmailAddr.Address');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(WebAddr), JToken.AsObject(), 'WebAddr.URI');
-        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(Fax), JToken.AsObject(), 'Fax.FreeFormNumber');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNo(GivenName), JToken.AsObject(), 'GivenName');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNo(FamilyName), JToken.AsObject(), 'FamilyName');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNo(CompanyName), JToken.AsObject(), 'CompanyName');
+        HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNo(DisplayName), JToken.AsObject(), 'DisplayName');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(BillAddrLine1), JToken.AsObject(), 'BillAddr.Line1');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(BillAddrLine2), JToken.AsObject(), 'BillAddr.Line2');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(BillAddrCity), JToken.AsObject(), 'BillAddr.City');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(BillAddrCountry), JToken.AsObject(), 'BillAddr.Country');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(BillAddrPostalCode), JToken.AsObject(), 'BillAddr.PostalCode');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(BillAddrCountrySubDivCode), JToken.AsObject(), 'BillAddr.CountrySubDivisionCode');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(PrimaryPhone), JToken.AsObject(), 'PrimaryPhone.FreeFormNumber');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(PrimaryEmailAddr), JToken.AsObject(), 'PrimaryEmailAddr.Address');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(WebAddr), JToken.AsObject(), 'WebAddr.URI');
+        HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(Fax), JToken.AsObject(), 'Fax.FreeFormNumber');
 
         if HelperFunctions.IsOnlineData() then begin
-            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNO(ListId), JToken.AsObject(), 'Id');
-            HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(BillAddrState), JToken.AsObject(), 'BillAddr.CountrySubDivisionCode');
+            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNo(ListId), JToken.AsObject(), 'Id');
+            HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(BillAddrState), JToken.AsObject(), 'BillAddr.CountrySubDivisionCode');
         end else begin
-            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNO(ListId), JToken.AsObject(), 'ListId');
-            HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNO(BillAddrState), JToken.AsObject(), 'BillAddr.State');
+            HelperFunctions.UpdateFieldValue(RecordVariant, MigrationQBVendor.FieldNo(ListId), JToken.AsObject(), 'ListId');
+            HelperFunctions.UpdateFieldValueByPath(RecordVariant, MigrationQBVendor.FieldNo(BillAddrState), JToken.AsObject(), 'BillAddr.State');
         end;
     end;
 
@@ -314,7 +314,7 @@ codeunit 1913 "MigrationQB Vendor Migrator"
     begin
         i := 0;
 
-        WHILE JArray.Get(i, ChildJToken) do begin
+        while JArray.Get(i, ChildJToken) do begin
             EntityId := CopyStr(HelperFunctions.TrimStringQuotes(HelperFunctions.GetTextFromJToken(ChildJToken, 'Id')), 1, 15);
 
             if not MigrationQBVendTrans.Get(EntityId) then begin

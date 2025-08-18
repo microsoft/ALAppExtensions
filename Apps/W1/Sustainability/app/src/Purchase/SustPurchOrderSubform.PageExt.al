@@ -15,9 +15,21 @@ pageextension 6211 "Sust. Purch. Order Subform" extends "Purchase Order Subform"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the value of the Sustainability Account No. field.';
             }
+            field("Energy Source Code"; Rec."Energy Source Code")
+            {
+                Visible = SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the Energy Source Code field.';
+            }
         }
         addafter("Quantity Invoiced")
         {
+            field("Renewable Energy"; Rec."Renewable Energy")
+            {
+                Visible = SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the Renewable Energy field.';
+            }
             field("Emission CO2"; Rec."Emission CO2")
             {
                 Visible = SustainabilityVisible;
@@ -35,6 +47,12 @@ pageextension 6211 "Sust. Purch. Order Subform" extends "Purchase Order Subform"
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the value of the Emission N2O field.';
+            }
+            field("Energy Consumption"; Rec."Energy Consumption")
+            {
+                Visible = SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the Energy Consumption field.';
             }
         }
     }

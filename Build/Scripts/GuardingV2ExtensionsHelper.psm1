@@ -175,14 +175,13 @@ function Update-AppSourceCopVersion
 
     $appSourceCopJsonPath = Join-Path $AppProjectFolder AppSourceCop.json
 
-    if (!(Test-Path $appSourceCopJsonPath)) {
-        Write-Host "Creating AppSourceCop.json with version $BaselineVersion in path $appSourceCopJsonPath" -ForegroundColor Yellow
-        New-Item $appSourceCopJsonPath -type file
-        $appSourceJson = @{version = '' }
+    if ((Test-Path $appSourceCopJsonPath)) {
+        Remove-Item -Path $appSourceCopJsonPath -Force
     }
-    else {
-        $appSourceJson = Get-Content $appSourceCopJsonPath -Raw | ConvertFrom-Json
-    }
+
+    Write-Host "Creating AppSourceCop.json with version $BaselineVersion in path $appSourceCopJsonPath" -ForegroundColor Yellow
+    New-Item $appSourceCopJsonPath -type file
+    $appSourceJson = @{version = '' }
 
     Write-Host "Setting 'version:$BaselineVersion' in AppSourceCop.json" -ForegroundColor Yellow
     $appSourceJson["version"] = $BaselineVersion

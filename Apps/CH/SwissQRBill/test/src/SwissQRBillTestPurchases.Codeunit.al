@@ -1,6 +1,7 @@
 codeunit 148096 "Swiss QR-Bill Test Purchases"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -1704,6 +1705,72 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         LibraryVariableStorage.AssertEmpty();
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    procedure OrderWithQRCodePostReceiveAllPartiallyInvoice()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+    begin
+        // [SCENARIO 574339] Post purchase order with QR code with receiving all and invoicing partially 
+        Initialize();
+
+        // [GIVEN] Purchase order with Quantity = 2 and = 100.
+        CreatePurchaseDocument(PurchaseHeader, PurchaseLine, PurchaseHeader."Document Type"::Order, 2, 100);
+
+        // [GIVEN] QR-Bill text with Amount Incl. VAT= 110.
+        UpdatePurchDoc(PurchaseHeader, true, 'CHF', 110);
+
+        // [GIVEN] Receive all items in the purchase order
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
+
+        // [GIVEN] Update Qty. to Invoice = 1.
+        PurchaseLine.Find();
+        PurchaseLine.Validate("Qty. to Invoice", PurchaseLine.Quantity / 2);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Post purchase order -invoice partially
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true);
+
+        // [THEN] QR-Bill related fields are empty in the purchase order.
+        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '');
+
+        // tear down
+        SwissQRBillTestLibrary.ClearVendor(PurchaseHeader."Buy-from Vendor No.");
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    procedure OrderWithQRCodePostPartiallyReceiveAndInvoice()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+    begin
+        // [SCENARIO 574339] Post purchase order with QR code - receive and invoice partially 
+        Initialize();
+
+        // [GIVEN] Purchase order with Quantity = 2 and = 100.
+        CreatePurchaseDocument(PurchaseHeader, PurchaseLine, PurchaseHeader."Document Type"::Order, 2, 100);
+
+        // [GIVEN] QR-Bill text with Amount Incl. VAT= 110.
+        UpdatePurchDoc(PurchaseHeader, true, 'CHF', 110);
+
+        // [GIVEN] Update Qty. to Receive and Qty. to Invoice = 1.
+        PurchaseLine.Find();
+        PurchaseLine.Validate("Qty. to Receive", PurchaseLine.Quantity / 2);
+        PurchaseLine.Validate("Qty. to Invoice", PurchaseLine.Quantity / 2);
+        PurchaseLine.Modify(true);
+
+        // [GIVEN] Post partially - receive and invoice 
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] QR-Bill related fields are empty in the purchase order.
+        VerifyPurchDoc(PurchaseHeader, false, '', '', 0, '', '', '', '');
+
+        // tear down
+        SwissQRBillTestLibrary.ClearVendor(PurchaseHeader."Buy-from Vendor No.");
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
@@ -1774,6 +1841,23 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         PurchaseHeader."Payment Reference" := PmtRef;
         PurchaseHeader."Posting Description" := PostingDescription;
         PurchaseHeader.Modify();
+    end;
+
+    local procedure CreatePurchaseDocument(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; DocumentType: Enum "Purchase Document Type"; Quantity: Decimal; DirectUnitCost: Decimal)
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        GLAccount: Record "G/L Account";
+        VendorNo: Code[20];
+        GLAccountNo: Code[20];
+    begin
+        LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
+        VendorNo := LibraryPurchase.CreateVendorWithVATBusPostingGroup(VATPostingSetup."VAT Bus. Posting Group");
+        GLAccountNo := LibraryERM.CreateGLAccountWithVATPostingSetup(VATPostingSetup, GLAccount."Gen. Posting Type"::Purchase);
+
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, VendorNo);
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::"G/L Account", GLAccountNo, Quantity);
+        PurchaseLine.Validate("Direct Unit Cost", DirectUnitCost);
+        PurchaseLine.Modify(true);
     end;
 
     local procedure CreateJournalLine(var GenJournalLine: Record "Gen. Journal Line"; VendorNo: Code[20]; QRBill: Boolean; PmtRef: Code[50])

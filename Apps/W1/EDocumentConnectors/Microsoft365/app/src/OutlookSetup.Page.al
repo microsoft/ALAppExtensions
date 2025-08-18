@@ -19,7 +19,7 @@ page 6384 "Outlook Setup"
     LinksAllowed = false;
     ShowFilter = false;
     SourceTable = "Outlook Setup";
-    UsageCategory = Administration;
+    UsageCategory = None;
     InherentPermissions = X;
     InherentEntitlements = X;
 
@@ -53,6 +53,7 @@ page 6384 "Outlook Setup"
                     trigger OnAssistEdit()
                     var
                         OutlookIntegrationImpl: Codeunit "Outlook Integration Impl.";
+                        OrigEmailAccountId: Guid;
                     begin
                         if Rec.Enabled then
                             Error(DisableToConfigErr);
@@ -67,8 +68,11 @@ page 6384 "Outlook Setup"
                         if MailboxName <> TempEmailAccount."Email Address" then begin
                             MailboxName := TempEmailAccount."Email Address";
                             ConfigUpdated();
+                            OrigEmailAccountId := Rec."Email Account ID";
                             Rec."Email Account ID" := TempEmailAccount."Account Id";
                             Rec."Email Connector" := TempEmailAccount.Connector;
+                            if OrigEmailAccountId <> Rec."Email Account ID" then
+                                Rec."Last Sync At" := 0DT;
                             Rec.Modify();
                             CurrPage.Update();
                         end;
@@ -99,6 +103,10 @@ page 6384 "Outlook Setup"
     begin
         Rec.Reset();
         if not Rec.Get() then begin
+            if not Rec.WritePermission() then begin
+                UpdateBasedOnEnable();
+                exit;
+            end;
             Rec.Init();
             Rec.Insert(true);
             FeatureTelemetry.LogUptake('0000OGX', DriveProcessing.FeatureName(), Enum::"Feature Uptake Status"::Discovered);

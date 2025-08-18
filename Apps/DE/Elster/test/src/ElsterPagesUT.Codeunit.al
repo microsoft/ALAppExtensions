@@ -6,6 +6,7 @@
 codeunit 148166 "Elster Pages UT"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

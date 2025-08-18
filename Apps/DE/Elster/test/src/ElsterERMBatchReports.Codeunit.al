@@ -6,6 +6,7 @@
 codeunit 148170 "Elster ERM Batch Reports"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

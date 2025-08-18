@@ -9,7 +9,10 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
 {
     Permissions = TableData "G/L Entry" = rm,
                   TableData "G/L Entry Review Setup" = ri,
-                  TableData "G/L Entry Review Entry" = rid;
+#if not CLEAN27
+                  TableData "G/L Entry Review Entry" = rid,
+#endif
+                  TableData "G/L Entry Review Log" = rid;
 
     var
         NoEntriesSelectedLbl: Label 'No entries were selected';
@@ -19,7 +22,10 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
 
     procedure ReviewEntries(var GLEntry: Record "G/L Entry");
     var
+        GLEntryReviewLog: Record "G/L Entry Review Log";
+#if not CLEAN27
         GLEntryReviewEntry: Record "G/L Entry Review Entry";
+#endif
         FeatureTelemetry: Codeunit "Feature Telemetry";
         UserName: Code[50];
         Identifier: Integer;
@@ -27,14 +33,24 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
         ValidateEntries(GLEntry);
         Identifier := GetNextIdentifier();
         UserName := CopyStr(Database.UserId(), 1, MaxStrLen(UserName));
+        GLEntry.FindSet();
         repeat
-            GLEntryReviewEntry."G/L Entry No." := GLEntry."Entry No.";
-            GLEntryReviewEntry."Reviewed Identifier" := Identifier;
-            GLEntryReviewEntry."Reviewed By" := UserName;
-            GLEntryReviewEntry.Insert(true);
-        until GLEntry.Next() = 0;
+            GLEntryReviewLog.Init();
+            GLEntryReviewLog."G/L Entry No." := GLEntry."Entry No.";
+            GLEntryReviewLog."Reviewed Identifier" := Identifier;
+            GLEntryReviewLog."Reviewed By" := UserName;
+            GLEntryReviewLog."Reviewed Amount" := GLEntry."Amount to Review";
+            GLEntryReviewLog."G/L Account No." := GLEntry."G/L Account No.";
+            GLEntryReviewLog.Insert(true);
 
+            GLEntry."Amount to Review" := 0;
+            GLEntry.Modify(true);
+        until GLEntry.Next() = 0;
+#if not CLEAN27
         OnAfterReviewEntries(GLEntry, GLEntryReviewEntry);
+#endif
+
+        OnAfterReviewEntriesLog(GLEntry, GLEntryReviewLog);
 
         FeatureTelemetry.LogUptake('0000J2W', 'Review G/L Entries', "Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000KQJ', 'Review G/L Entries', 'Review G/L Entries');
@@ -42,12 +58,12 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
 
     procedure UnreviewEntries(var GLEntry: Record "G/L Entry");
     var
-        GLEntryReviewEntry: Record "G/L Entry Review Entry";
+        GLEntryReviewLog: Record "G/L Entry Review Log";
     begin
         ValidateEntries(GLEntry);
         repeat
-            if GLEntryReviewEntry.Get(GLEntry."Entry No.") then
-                GLEntryReviewEntry.Delete(true);
+            GLEntryReviewLog.SetRange("G/L Entry No.", GLEntry."Entry No.");
+            GLEntryReviewLog.DeleteAll(true);
         until GLEntry.Next() = 0;
     end;
 
@@ -75,16 +91,20 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
     var
         Balance: Decimal;
     begin
-        if not GLEntry.IsEmpty() then begin
+        if not GLEntry.IsEmpty() and (GLEntry."Amount to Review" = 0) then begin
             GLEntry.CalcSums("Debit Amount", "Credit Amount");
             Balance := GLEntry."Credit Amount" - GLEntry."Debit Amount";
-        end;
+        end else
+            repeat
+                Balance := Balance + GLEntry."Amount to Review";
+            until GLEntry.Next() = 0;
+
         exit(Balance = 0);
     end;
 
     local procedure GetNextIdentifier(): Integer
     var
-        GLEntry: Record "G/L Entry Review Entry";
+        GLEntry: Record "G/L Entry Review Log";
     begin
         GLEntry.SetCurrentKey("Reviewed Identifier");
         GLEntry.SetAscending("Reviewed Identifier", false);
@@ -104,8 +124,16 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
         end;
     end;
 
+#if not CLEAN27
+    [Obsolete('Use the event OnAfterReviewEntriesLog instead.', '27.0')]
     [IntegrationEvent(false, false)]
     local procedure OnAfterReviewEntries(var GLEntry: Record "G/L Entry"; var GLEntryReviewEntry: Record "G/L Entry Review Entry")
+    begin
+    end;
+#endif
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterReviewEntriesLog(var GLEntry: Record "G/L Entry"; var GLEntryReviewLog: Record "G/L Entry Review Log")
     begin
     end;
 }

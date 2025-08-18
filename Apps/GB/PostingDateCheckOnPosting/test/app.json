@@ -1,0 +1,60 @@
+{
+  "id": "2b29e999-b295-42de-b631-e2666334233d",
+  "name": "Posting Date Check On Posting Tests",
+  "publisher": "Microsoft",
+  "version": "27.0.0.0",
+  "brief": "Tests for Posting Date Check On Posting extension.",
+  "description": "Tests for Posting Date Check On Posting extension.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/ui-extensions",
+  "application": "27.0.0.0",
+  "dependencies": 
+  [
+    {
+      "id": "2a11a180-3b8e-481f-a90c-7e5f78773b9f",
+      "name": "Posting Date Check On Posting",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+      "name": "System Application Test Library",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "27.0.0.0",
+  "idRanges": [
+    {
+      "from": 144000,
+      "to": 144000
+    }
+  ],
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith",
+    "TranslationFile"
+  ]
+}

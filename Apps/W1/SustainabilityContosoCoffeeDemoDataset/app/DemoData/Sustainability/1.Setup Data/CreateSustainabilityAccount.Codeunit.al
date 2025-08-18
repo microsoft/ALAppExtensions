@@ -98,6 +98,32 @@ codeunit 5215 "Create Sustainability Account"
         ContosoSustainability.InsertSustainabilityAccount(CarbonCreditScope3(), CarbonCreditScope3Lbl, SustainCategory.Credit3(), SustainSubcategory.Credit(), Enum::"Sustainability Account Type"::Posting, '', true);
         ContosoSustainability.InsertSustainabilityAccount(TotalCarbonCredits(), TotalCarbonCreditsLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", CarbonCredits() + '..' + TotalCarbonCredits(), false);
 
+        ContosoSustainability.InsertSustainabilityAccount(Water(), WaterLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
+        ContosoSustainability.InsertSustainabilityAccount(ConsumedWater(), ConsumedWaterLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
+        ContosoSustainability.InsertSustainabilityAccount(GreenWater(), GreenWaterLbl, SustainCategory.Water(), SustainSubcategory.WaterGreen(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(BlueWater(), BlueWaterLbl, SustainCategory.Water(), SustainSubcategory.WaterBlue(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(GreyWater(), GreyWaterLbl, SustainCategory.Water(), SustainSubcategory.WaterGrey(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(TotalConsumedWater(), TotalConsumedWaterLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", ConsumedWater() + '..' + TotalConsumedWater(), false);
+        ContosoSustainability.InsertSustainabilityAccount(DischargedWater(), DischargedWaterLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
+        ContosoSustainability.InsertSustainabilityAccount(DischargedWater1(), DischargedWater1Lbl, SustainCategory.DischargedWater(), SustainSubcategory.DischargedWater(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(TotalDischargedWater(), TotalDischargedWaterLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", DischargedWater() + '..' + TotalDischargedWater(), false);
+        ContosoSustainability.InsertSustainabilityAccount(TotalWater(), TotalWaterLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", Water() + '..' + TotalWater(), false);
+
+        ContosoSustainability.InsertSustainabilityAccount(Waste(), WasteLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
+        ContosoSustainability.InsertSustainabilityAccount(ReusableWaste(), ReusableWasteLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
+        ContosoSustainability.InsertSustainabilityAccount(RecyclableWaste(), RecyclableWasteLbl, SustainCategory.WasteM(), SustainSubcategory.WasteRecyclable(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(CompostableWaste(), CompostableWasteLbl, SustainCategory.WasteM(), SustainSubcategory.WasteCompostable(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(TotalReusableWaste(), TotalReusableWasteLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", ReusableWaste() + '..' + TotalReusableWaste(), false);
+        ContosoSustainability.InsertSustainabilityAccount(ManufacturingWaste(), ManufacturingWasteLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
+        ContosoSustainability.InsertSustainabilityAccount(PlasticWaste(), PlasticWasteLbl, SustainCategory.WasteM(), SustainSubcategory.WastePlastic(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(SteelWaste(), SteelWasteLbl, SustainCategory.WasteM(), SustainSubcategory.WasteSteel(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(WoodWaste(), WoodWasteLbl, SustainCategory.WasteM(), SustainSubcategory.WasteWood(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(TotalManufacturingWaste(), TotalManufacturingWasteLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", ManufacturingWaste() + '..' + TotalManufacturingWaste(), false);
+        ContosoSustainability.InsertSustainabilityAccount(OrganicWaste(), OrganicWasteLbl, '', '', Enum::"Sustainability Account Type"::"Begin-Total", '', false);
+        ContosoSustainability.InsertSustainabilityAccount(FoodWaste(), FoodWasteLbl, SustainCategory.WasteM(), SustainSubcategory.WasteFood(), Enum::"Sustainability Account Type"::Posting, '', true);
+        ContosoSustainability.InsertSustainabilityAccount(TotalOrganicWaste(), TotalOrganicWasteLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", OrganicWaste() + '..' + TotalOrganicWaste(), false);
+        ContosoSustainability.InsertSustainabilityAccount(TotalWaste(), TotalWasteLbl, '', '', Enum::"Sustainability Account Type"::"End-Total", Waste() + '..' + TotalWaste(), false);
+
         ContosoGLAccount.InsertGLAccount(UtilitiesExpensePowerPlant(), UtilitiesExpensePowerPlantLbl, "G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, '', Enum::"G/L Account Type"::Posting, CreatePostingGroup.DomesticPostingGroup(), CreatePostingGroup.RetailPostingGroup(), 0, '', Enum::"G/L Account Type"::Posting, '', '', true, false, false);
 
         SustainabilityAccountMgt.IndentChartOfSustainabilityAccounts(true);
@@ -478,6 +504,126 @@ codeunit 5215 "Create Sustainability Account"
         exit('14999');
     end;
 
+    procedure Water(): Code[20]
+    begin
+        exit('20000');
+    end;
+
+    procedure ConsumedWater(): Code[20]
+    begin
+        exit('21000');
+    end;
+
+    procedure GreenWater(): Code[20]
+    begin
+        exit('21100');
+    end;
+
+    procedure BlueWater(): Code[20]
+    begin
+        exit('21200');
+    end;
+
+    procedure GreyWater(): Code[20]
+    begin
+        exit('21300');
+    end;
+
+    procedure TotalConsumedWater(): Code[20]
+    begin
+        exit('21999');
+    end;
+
+    procedure DischargedWater(): Code[20]
+    begin
+        exit('22000');
+    end;
+
+    procedure DischargedWater1(): Code[20]
+    begin
+        exit('22100');
+    end;
+
+    procedure TotalDischargedWater(): Code[20]
+    begin
+        exit('22999');
+    end;
+
+    procedure TotalWater(): Code[20]
+    begin
+        exit('29999');
+    end;
+
+    procedure Waste(): Code[20]
+    begin
+        exit('30000');
+    end;
+
+    procedure ReusableWaste(): Code[20]
+    begin
+        exit('31000');
+    end;
+
+    procedure RecyclableWaste(): Code[20]
+    begin
+        exit('31100');
+    end;
+
+    procedure CompostableWaste(): Code[20]
+    begin
+        exit('31200');
+    end;
+
+    procedure TotalReusableWaste(): Code[20]
+    begin
+        exit('31999');
+    end;
+
+    procedure ManufacturingWaste(): Code[20]
+    begin
+        exit('32000');
+    end;
+
+    procedure PlasticWaste(): Code[20]
+    begin
+        exit('32100');
+    end;
+
+    procedure SteelWaste(): Code[20]
+    begin
+        exit('32200');
+    end;
+
+    procedure WoodWaste(): Code[20]
+    begin
+        exit('32300');
+    end;
+
+    procedure TotalManufacturingWaste(): Code[20]
+    begin
+        exit('32999');
+    end;
+
+    procedure OrganicWaste(): Code[20]
+    begin
+        exit('33000');
+    end;
+
+    procedure FoodWaste(): Code[20]
+    begin
+        exit('33100');
+    end;
+
+    procedure TotalOrganicWaste(): Code[20]
+    begin
+        exit('33999');
+    end;
+
+    procedure TotalWaste(): Code[20]
+    begin
+        exit('39999');
+    end;
+
     var
         GasEmissionsLbl: Label 'Gas Emissions', MaxLength = 100;
         Scope1BeginTotalLbl: Label 'Scope 1 - Direct Emission', MaxLength = 100;
@@ -550,4 +696,28 @@ codeunit 5215 "Create Sustainability Account"
         CarbonCreditScope3Lbl: Label 'Carbon Credit - Scope 3', MaxLength = 100;
         TotalCarbonCreditsLbl: Label 'TOTAL - CARBON CREDITS', MaxLength = 100;
         UtilitiesExpensePowerPlantLbl: Label 'Utilities Expense - Power Plant', MaxLength = 100;
+        WaterLbl: Label 'Water Management', MaxLength = 100;
+        ConsumedWaterLbl: Label 'Consumed Water', MaxLength = 100;
+        GreenWaterLbl: Label 'Green Water Footprint - consumed during the production process', MaxLength = 100;
+        BlueWaterLbl: Label 'Blue Water Footprint - extracted from groundwater or surface water', MaxLength = 100;
+        GreyWaterLbl: Label 'Grey Water Footprint - freshwater required to assimilate the contaminants', MaxLength = 100;
+        TotalConsumedWaterLbl: Label 'Total - Consumed Water', MaxLength = 100;
+        DischargedWaterLbl: Label 'Discharged Water', MaxLength = 100;
+        DischargedWater1Lbl: Label 'Discharged water include wastewater', MaxLength = 100;
+        TotalDischargedWaterLbl: Label 'Total - Discharged Water', MaxLength = 100;
+        TotalWaterLbl: Label 'TOTAL WATER', MaxLength = 100;
+        WasteLbl: Label 'Waste Management', MaxLength = 100;
+        ReusableWasteLbl: Label 'Reusable Waste', MaxLength = 100;
+        RecyclableWasteLbl: Label 'Recyclable waste', MaxLength = 100;
+        CompostableWasteLbl: Label 'Compostable waste', MaxLength = 100;
+        TotalReusableWasteLbl: Label 'Total - Reusable Waste', MaxLength = 100;
+        ManufacturingWasteLbl: Label 'Manufacturing Waste', MaxLength = 100;
+        PlasticWasteLbl: Label 'Plastic waste', MaxLength = 100;
+        SteelWasteLbl: Label 'Steel waste', MaxLength = 100;
+        WoodWasteLbl: Label 'Wood waste', MaxLength = 100;
+        TotalManufacturingWasteLbl: Label 'Total - Manufacturing Waste', MaxLength = 100;
+        OrganicWasteLbl: Label 'Organic Waste', MaxLength = 100;
+        FoodWasteLbl: Label 'Food Waste', MaxLength = 100;
+        TotalOrganicWasteLbl: Label 'Total - Organic Waste', MaxLength = 100;
+        TotalWasteLbl: Label 'Total Waste', MaxLength = 100;
 }

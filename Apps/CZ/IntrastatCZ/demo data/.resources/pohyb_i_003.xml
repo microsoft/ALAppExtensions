@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ciselnik>
+<nazev>pohyb_i</nazev>
+<data>
+  <radek>
+    <POHYB>MZ</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Malé zásilky uvedené pod kódem 99500000</POPIS>
+    <POPISAN>Small shipments with goods given under code number 99 50 00 00</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>NN</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Negativní deklarace</POPIS>
+    <POPISAN>Negative declaration</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ST</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Běžný typ věty</POPIS>
+    <POPISAN>Standard record</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZH</POHYB>
+    <OD>2024-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Zjednodušené hlášení</POPIS>
+    <POPISAN>Simplified reporting</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZH</POHYB>
+    <OD>2022-01-01</OD>
+    <DO>2023-12-31</DO>
+    <POPIS>Zjednodušené hlášení při dosažení prahu 12 mil. Kč</POPIS>
+    <POPISAN>Simplified reporting on reaching the 12 million threshold. CZK and not reaching 20 million CZK when trading in non-inter</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZI</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Průmyslové celky (investiční celky)</POPIS>
+    <POPISAN>Industrial units (investment units ), if the Czech Statistic Office allows for simplified classification</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZK</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Kosmické lodi</POPIS>
+    <POPISAN>Space vehicle</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZL</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Letadla (převod vlastnictví)</POPIS>
+    <POPISAN>Airplanes (transfer of ownership)</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZM</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Mořské produkty</POPIS>
+    <POPISAN>Sea products</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZO</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Odpady (s opačným směrem úhrady)</POPIS>
+    <POPISAN>Waste (with compensation in opposite direction)</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZP</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Lodě (převod vlastnictví)</POPIS>
+    <POPISAN>Ships (transfer of ownership)</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZR</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Rozložené zásilky (zboží v rozebraném stavu)</POPIS>
+    <POPISAN>Split shipments (goods in split conditions)</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZT</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Zařízení na moři</POPIS>
+    <POPISAN>Facility on sea</POPISAN>
+  </radek>
+  <radek>
+    <POHYB>ZZ</POHYB>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Zboží dodávané do lodí a letadel</POPIS>
+    <POPISAN>Goods delivered into ships and planes</POPISAN>
+  </radek>
+</data>
+</ciselnik>

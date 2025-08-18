@@ -1,6 +1,7 @@
 codeunit 139511 "SAF-T Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

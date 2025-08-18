@@ -60,6 +60,6 @@ codeunit 6222 "RC Headline Page Sust."
         ShowFootPrintText: Boolean;
         MoreTxt: Label '+';
         LessTxt: Label '-';
-        CarbonFootprintLbl: Label 'Today carbon footprint is %1 %2 (%3%4 % from yesterday)', Comment = '%1 - Todays Emission,%2 - UOM ,%3 - More or less, %3 - yesterdays comparison';
+        CarbonFootprintLbl: Label 'Today carbon footprint is %1 %2 (%3%4 % from yesterday)', Comment = '%1 - Todays Emission,%2 - UOM ,%3 - More or less, %4 - yesterdays comparison';
         CarbonFootprintTxt: Text;
 }

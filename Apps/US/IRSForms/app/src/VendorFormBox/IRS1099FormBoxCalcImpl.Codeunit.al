@@ -148,6 +148,7 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
             IRS1099VendEntryBuffer."Vendor No." := InvDtldVendLedgEntry."Vendor No.";
             IRS1099VendEntryBuffer."IRS 1099 Form No." := InvVendLedgEntry."IRS 1099 Form No.";
             IRS1099VendEntryBuffer."IRS 1099 Form Box No." := InvVendLedgEntry."IRS 1099 Form Box No.";
+            IRS1099VendEntryBuffer."Currency Code" := InvDtldVendLedgEntry."Currency Code";
             InvVendLedgEntry.CalcFields(Amount);
             IRS1099VendEntryBuffer.Amount := InvVendLedgEntry.Amount;
             IRS1099VendEntryBuffer."Amount to Apply" := AmountToApply;
@@ -246,6 +247,7 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
         VendFormBoxBuffer."Vendor No." := IRS1099VendEntryBuffer."Vendor No.";
         VendFormBoxBuffer."Form No." := IRS1099VendEntryBuffer."IRS 1099 Form No.";
         VendFormBoxBuffer."Form Box No." := IRS1099VendEntryBuffer."IRS 1099 Form Box No.";
+        VendFormBoxBuffer."Currency Code" := IRS1099VendEntryBuffer."Currency Code";
         VendFormBoxBuffer.CalcFields("Adjustment Amount");
         VendFormBoxBuffer."Reporting Amount" += VendFormBoxBuffer."Adjustment Amount";
         VendFormBoxBuffer.Insert();

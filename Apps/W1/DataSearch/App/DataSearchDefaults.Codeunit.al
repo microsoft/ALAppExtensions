@@ -28,12 +28,6 @@ using Microsoft.Projects.RoleCenters;
 using Microsoft.Inventory.Intrastat;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Location;
-using Microsoft.Manufacturing.Document;
-using Microsoft.Manufacturing.ProductionBOM;
-using Microsoft.Manufacturing.RoleCenters;
-using Microsoft.Manufacturing.Routing;
-using Microsoft.Manufacturing.WorkCenter;
-using Microsoft.Manufacturing.MachineCenter;
 using Microsoft.Projects.Project.Job;
 using Microsoft.Projects.Project.Planning;
 using Microsoft.Projects.Project.Ledger;
@@ -114,7 +108,7 @@ codeunit 2681 "Data Search Defaults"
                 GetTableListForBusinessManager(TableList);
             Page::"Service Dispatcher Role Center", Page::"Service Manager Role Center":
                 GetTableListForServiceManager(TableList);
-            Page::"Production Planner Role Center":
+            9010: // Page::"Production Planner Role Center"
                 GetTableListForManufacturingManager(TableList);
             Page::"Project Manager Role Center", Page::"Job Project Manager RC":
                 GetTableListForProjectManager(TableList);
@@ -241,17 +235,26 @@ codeunit 2681 "Data Search Defaults"
     local procedure GetTableListForManufacturingManager(var TableList: List of [Integer])
     begin
         TableList.Add(Database::Item);
-        TableList.Add(Database::"Production Order");
-        TableList.Add(Database::"Prod. Order Line");
-        TableList.Add(Database::"Production BOM Header");
-        TableList.Add(Database::"Production BOM Line");
-        TableList.Add(Database::"Routing Header");
-        TableList.Add(Database::"Routing Line");
+        TableList.Add(Database::Resource);
         TableList.Add(Database::"Assembly Header");
         TableList.Add(Database::"Assembly Line");
-        TableList.Add(Database::"Work Center");
-        TableList.Add(Database::"Machine Center");
-        TableList.Add(Database::Resource);
+
+        if TableExist(5405) then
+            TableList.Add(5405); // Database::"Production Order"
+        if TableExist(5406) then
+            TableList.Add(5406); // Database::"Prod. Order Line"
+        if TableExist(99000771) then
+            TableList.Add(99000771); // Database::"Production BOM Header"
+        if TableExist(99000772) then
+            TableList.Add(99000772); // Database::"Production BOM Line"
+        if TableExist(99000763) then
+            TableList.Add(99000763); // Database::"Routing Header"
+        if TableExist(99000764) then
+            TableList.Add(99000764); // Database::"Routing Line"
+        if TableExist(99000754) then
+            TableList.Add(99000754); // Database::"Work Center"
+        if TableExist(99000785) then
+            TableList.Add(99000758); // Database::"Machine Center"
     end;
 
     local procedure GetTableListForProjectManager(var TableList: List of [Integer])
@@ -488,6 +491,12 @@ codeunit 2681 "Data Search Defaults"
             until AllProfile.Next() = 0;
     end;
 
+    local procedure TableExist(TableID: Integer): Boolean
+    var
+        AllObj: Record AllObj;
+    begin
+        exit(AllObj.Get(AllObj."Object Type"::Table, TableID));
+    end;
 
     /// <summary>
     /// Enables adding and removing tables from the default initial setup for tables to search.

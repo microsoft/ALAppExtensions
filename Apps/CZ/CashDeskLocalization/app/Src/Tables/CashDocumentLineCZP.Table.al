@@ -84,6 +84,8 @@ table 11733 "Cash Document Line CZP"
                 "Document Type" := CashDocumentHeaderCZP."Document Type";
                 "Account Type" := TempCashDocumentLineCZP."Account Type";
                 "Cash Desk Event" := TempCashDocumentLineCZP."Cash Desk Event";
+                OnValidateAccountTypeOnAfterInitRec(Rec, xRec, TempCashDocumentLineCZP);
+
                 UpdateAmounts();
                 UpdateDocumentType();
             end;
@@ -117,6 +119,7 @@ table 11733 "Cash Document Line CZP"
                     CashDeskEventCZP.TestField("Account No.", "Account No.");
 
                 GetCashDocumentHeaderCZP();
+                OnValidateAccountNoOnBeforeUpdateCashDocumentHeader(Rec, CashDocumentHeaderCZP);
                 if ("Account Type" in ["Account Type"::Customer, "Account Type"::Vendor]) and ("Account No." <> '') then
                     if CashDocumentHeaderCZP."Partner No." = '' then begin
                         case "Account Type" of
@@ -1298,7 +1301,7 @@ table 11733 "Cash Document Line CZP"
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Cash Desk Event CZP", Rec."Cash Desk Event", FieldNo = Rec.FieldNo("Cash Desk Event"));
 
-        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource);
+        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource, FieldNo);
     end;
 
     procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
@@ -1836,7 +1839,8 @@ table 11733 "Cash Document Line CZP"
         Validate("VAT Bus. Posting Group", PostedGLAccount."VAT Bus. Posting Group");
         Validate("VAT Prod. Posting Group", PostedGLAccount."VAT Prod. Posting Group");
     end;
-
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the CashDocumentStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
     procedure ExtStatistics()
     var
         CashDocumentLineCZP: Record "Cash Document Line CZP";
@@ -1855,6 +1859,7 @@ table 11733 "Cash Document Line CZP"
         CashDocumentLineCZP.SetRange("Line No.", "Line No.");
         Page.RunModal(Page::"Cash Document Statistics CZP", CashDocumentLineCZP);
     end;
+#endif
 
     procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)
     begin
@@ -2148,6 +2153,26 @@ table 11733 "Cash Document Line CZP"
         exit(("Account Type" = "Account Type"::" ") and ("Attached to Line No." <> 0) and (Amount = 0));
     end;
 
+    procedure AccountTypeToNetChangeAccountType(): Enum "Net Change Account Type CZL"
+    begin
+        case "Account Type" of
+            "Account Type"::"G/L Account":
+                exit("Net Change Account Type CZL"::"G/L Account");
+            "Account Type"::Customer:
+                exit("Net Change Account Type CZL"::Customer);
+            "Account Type"::Vendor:
+                exit("Net Change Account Type CZL"::Vendor);
+            "Account Type"::Employee:
+                exit("Net Change Account Type CZL"::Employee);
+            "Account Type"::"Bank Account":
+                exit("Net Change Account Type CZL"::"Bank Account");
+            "Account Type"::"Fixed Asset":
+                exit("Net Change Account Type CZL"::"Fixed Asset");
+            "Account Type"::"Allocation Account":
+                exit("Net Change Account Type CZL"::"Allocation Account");
+        end;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsEETTransaction(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETTransaction: Boolean; var IsHandled: Boolean)
     begin
@@ -2181,7 +2206,7 @@ table 11733 "Cash Document Line CZP"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterInitDefaultDimensionSources(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    local procedure OnAfterInitDefaultDimensionSources(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
     begin
     end;
 
@@ -2304,4 +2329,15 @@ table 11733 "Cash Document Line CZP"
     local procedure OnDeleteOnAfterSetCashDocumentLineFilters(var CashDocumentLineCZP: Record "Cash Document Line CZP")
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateAccountNoOnBeforeUpdateCashDocumentHeader(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP");
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnValidateAccountTypeOnAfterInitRec(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary);
+    begin
+    end;
+
 }

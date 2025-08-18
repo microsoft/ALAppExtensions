@@ -24,8 +24,8 @@ codeunit 5683 "Create Cont Job Responsibility"
     begin
         if Customer.FindSet() then
             repeat
-                Contact.Get(Customer."Primary Contact No.");
-                ContosoCRM.InsertContactJobResponsibility(Contact."No.", CreateJobResponsibility.Purchase());
+                if Contact.Get(Customer."Primary Contact No.") then
+                    ContosoCRM.InsertContactJobResponsibility(Contact."No.", CreateJobResponsibility.Purchase());
             until Customer.Next() = 0;
     end;
 
@@ -38,8 +38,8 @@ codeunit 5683 "Create Cont Job Responsibility"
     begin
         if Vendor.FindSet() then
             repeat
-                Contact.Get(Vendor."Primary Contact No.");
-                ContosoCRM.InsertContactJobResponsibility(Contact."No.", CreateJobResponsibility.Sale());
+                if Contact.Get(Vendor."Primary Contact No.") then
+                    ContosoCRM.InsertContactJobResponsibility(Contact."No.", CreateJobResponsibility.Sale());
             until Vendor.Next() = 0;
     end;
 }

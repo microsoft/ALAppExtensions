@@ -6,6 +6,7 @@
 codeunit 148083 "MTDTestLiabilitiesWebService"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

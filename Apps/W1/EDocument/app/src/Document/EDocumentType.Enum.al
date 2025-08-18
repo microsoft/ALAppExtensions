@@ -10,7 +10,7 @@ using Microsoft.eServices.EDocument.Processing.Interfaces;
 enum 6121 "E-Document Type" implements IEDocumentFinishDraft
 {
     Extensible = true;
-    DefaultImplementation = IEDocumentFinishDraft = "E-Doc. Default Implementation";
+    DefaultImplementation = IEDocumentFinishDraft = "E-Doc. Unspecified Impl.";
 
     value(0; "None")
     {
@@ -92,5 +92,13 @@ enum 6121 "E-Document Type" implements IEDocumentFinishDraft
     value(19; "G/L Entry")
     {
         Caption = 'G/L Entry';
+    }
+    value(20; "Sales Shipment")
+    {
+        Caption = 'Sales Shipment';
+    }
+    value(21; "Transfer Shipment")
+    {
+        Caption = 'Transfer Shipment';
     }
 }

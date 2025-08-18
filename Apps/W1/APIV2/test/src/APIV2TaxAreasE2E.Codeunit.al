@@ -3,6 +3,8 @@ codeunit 139826 "APIV2 - Tax Areas E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = IntegrationTest;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

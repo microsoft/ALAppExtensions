@@ -1,6 +1,7 @@
 codeunit 135085 "Bank Name Conv Serv Lookup"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
 
     trigger OnRun()

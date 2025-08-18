@@ -31,6 +31,11 @@ page 18212 "Posted GST Dist. Subform"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the entry''s posting date.';
                 }
+                field("Location ISD Document No."; Rec."Location ISD Document No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the location wise ISD document number of the transaction that created the input service distribution entry.';
+                }
                 field("From GSTIN No."; Rec."From GSTIN No.")
                 {
                     ApplicationArea = Basic, Suite;
