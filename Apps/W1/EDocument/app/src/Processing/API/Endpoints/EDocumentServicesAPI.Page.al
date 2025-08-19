@@ -10,9 +10,12 @@ page 6113 "E-Document Services API"
 {
     PageType = API;
 
-    APIGroup = 'automate';
+    APIGroup = 'edocument';
     APIPublisher = 'microsoft';
-    APIVersion = 'v2.0';
+    APIVersion = 'v1.0';
+
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     EntityCaption = 'E-Document Service';
     EntitySetCaption = 'E-Document Services';
@@ -25,6 +28,7 @@ page 6113 "E-Document Services API"
     Extensible = false;
     Editable = false;
     DataAccessIntent = ReadOnly;
+    DelayedInsert = true;
 
     layout
     {
@@ -32,7 +36,7 @@ page 6113 "E-Document Services API"
         {
             repeater(General)
             {
-                field(id; Rec.SystemId)
+                field(systemId; Rec.SystemId)
                 {
                 }
                 field(code; Rec.Code)

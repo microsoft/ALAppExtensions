@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
@@ -18,13 +19,18 @@ using Microsoft.Sales.Reminder;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.Reflection;
-using Microsoft.eServices.EDocument.Processing.Import;
 
 codeunit 6108 "E-Document Processing"
 {
     Access = Internal;
     Permissions = tabledata "E-Document Service Status" = rim,
                 tabledata "E-Document" = m;
+
+    var
+        RelatedRecordCaptionWithDashTxt: Label '%1 - %2', Comment = '%1 - Record Text, %2 - Record Caption', Locked = true;
+        EDocTelemetryCategoryLbl: Label 'E-Document', Locked = true;
+        EDocTelemetryIdLbl: Label 'E-Doc %1', Locked = true;
+        EDocTok: Label 'W1 E-Document', Locked = true;
 
     /// <summary>
     /// Inserts E-Document Service Status record. Throws runtime error if record does exists.
@@ -38,7 +44,7 @@ codeunit 6108 "E-Document Processing"
         EDocumentServiceStatus.Validate(Status, EDocumentStatus);
         EDocumentServiceStatus.Insert();
 
-        OnAfterInsertServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
+        OnAfterModifyServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
     end;
 
     /// <summary>
@@ -455,23 +461,13 @@ codeunit 6108 "E-Document Processing"
         exit(RecCaption);
     end;
 
-    var
-        RelatedRecordCaptionWithDashTxt: Label '%1 - %2', Comment = '%1 - Record Text, %2 - Record Caption', Locked = true;
-        EDocTelemetryCategoryLbl: Label 'E-Document', Locked = true;
-        EDocTelemetryIdLbl: Label 'E-Doc %1', Locked = true;
-        EDocTok: Label 'W1 E-Document', Locked = true;
 
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false, false)]
     local procedure OnAfterModifyEDocumentStatus(var EDocument: Record "E-Document"; var EDocumentServiceStatus: Record "E-Document Service Status")
     begin
     end;
 
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterInsertServiceStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
+    [InternalEvent(false, false)]
     local procedure OnAfterModifyServiceStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
     begin
     end;

@@ -6,20 +6,23 @@ namespace Microsoft.eServices.EDocument.API;
 
 using Microsoft.eServices.EDocument;
 
-page 6112 "Receive E-Documents API"
+page 6112 "E-Documents API"
 {
     PageType = API;
 
-    APIVersion = 'v2.0';
+    APIGroup = 'edocument';
     APIPublisher = 'microsoft';
-    APIGroup = 'automate';
+    APIVersion = 'v1.0';
+
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     EntityCaption = 'E-Document';
     EntitySetCaption = 'E-Documents';
     EntityName = 'eDocument';
     EntitySetName = 'eDocuments';
 
-    ODataKeyFields = "Entry No";
+    ODataKeyFields = SystemId;
     SourceTable = "E-Document";
 
     Extensible = false;
@@ -27,12 +30,16 @@ page 6112 "Receive E-Documents API"
     DataAccessIntent = ReadOnly;
     DelayedInsert = true;
 
+
     layout
     {
         area(content)
         {
             repeater(Group)
             {
+                field(systemId; Rec.SystemId)
+                {
+                }
                 field(entryNumber; Rec."Entry No")
                 {
                 }
@@ -45,8 +52,9 @@ page 6112 "Receive E-Documents API"
                 field(documentNo; Rec."Document No.")
                 {
                 }
-                field(documentType; Rec."Document Type")
+                field(documentType; Format(Rec."Document Type"))
                 {
+                    Caption = 'Document Type';
                 }
                 field(documentDate; Rec."Document Date")
                 {
@@ -69,11 +77,12 @@ page 6112 "Receive E-Documents API"
                 field(direction; Rec.Direction)
                 {
                 }
-                field(incommingEDocumentNumber; Rec."Incoming E-Document No.")
+                field(incomingEDocumentNumber; Rec."Incoming E-Document No.")
                 {
                 }
-                field(status; Rec.Status)
+                field(status; Format(Rec.Status))
                 {
+                    Caption = 'Electronic Document Status';
                 }
                 field(sourceType; Rec."Source Type")
                 {
@@ -93,36 +102,20 @@ page 6112 "Receive E-Documents API"
                 field(currencyCode; Rec."Currency Code")
                 {
                 }
-                field(service; Rec.Service)
-                {
-                }
                 field(workflowCode; Rec."Workflow Code")
                 {
                 }
                 field(fileName; Rec."File Name")
                 {
                 }
-                field(fileType; Rec."File Type")
+                part(edocumentServiceStatus; "E-Document Service Status API")
                 {
-                }
-                field(fileByteSize; this.FileSize)
-                {
-                }
-                field(fileContent; this.FileContent)
-                {
+                    Caption = 'E-Document Service Status';
+                    EntityName = 'eDocumentServiceStatus';
+                    EntitySetName = 'eDocumentServiceStatuses';
+                    SubPageLink = "E-Document Entry No" = field("Entry No");
                 }
             }
         }
     }
-
-    var
-        FileContent: Text;
-        FileSize: Integer;
-
-    trigger OnAfterGetCurrRecord()
-    var
-        EDocumentsAPIHelper: Codeunit "E-Documents API Helper";
-    begin
-        EDocumentsAPIHelper.LoadEDocumentFile(Rec."Entry No", this.FileContent, this.FileSize);
-    end;
 }
