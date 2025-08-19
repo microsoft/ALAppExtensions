@@ -56,6 +56,6 @@ codeunit 6193 "E-Doc. Empty Draft" implements IStructureReceivedEDocument, IStru
         EDocPurchaseHeader: Record "E-Document Purchase Header";
     begin
         EDocPurchaseHeader.GetFromEDocument(EDocument);
-        EDocPurchaseHeader.ResetDraft();
+        EDocPurchaseHeader.Delete(true);
     end;
 }

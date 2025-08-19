@@ -239,6 +239,6 @@ codeunit 6173 "E-Document PEPPOL Handler" implements IStructuredFormatReader
         EDocPurchaseHeader: Record "E-Document Purchase Header";        
     begin
         EDocPurchaseHeader.GetFromEDocument(EDocument);
-        EDocPurchaseHeader.ResetDraft();
+        EDocPurchaseHeader.Delete(true);
     end;
 }

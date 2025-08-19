@@ -135,20 +135,13 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
     end;
 
     procedure GetPurchaseOrder(EDocumentPurchaseHeader: Record "E-Document Purchase Header") PurchaseHeader: Record "Purchase Header"
-    var
-        Vendor: Record Vendor;
-        VendorReceiveEDocumentErr: Label 'The %1 = %2 has an invalid %3 value: %4. Please correct the vendor setup.', Comment = '%1 = Vendor Table Caption, %2 = Vendor No., %3 = Receive E-Document To Field Caption, %4 = Receive E-Document To Value';
     begin
-        Vendor.SetLoadFields("Receive E-Document To");
-        Vendor.Get(EDocumentPurchaseHeader."[BC] Vendor No.");
-        case Vendor."Receive E-Document To" of
-            Vendor."Receive E-Document To"::"Purchase Invoice":
-                if PurchaseHeader.Get("Purchase Document Type"::Invoice, EDocumentPurchaseHeader."Purchase Order No.") then;
-            Vendor."Receive E-Document To"::"Purchase Order":
-                if PurchaseHeader.Get("Purchase Document Type"::Order, EDocumentPurchaseHeader."Purchase Order No.") then;
-            else
-                Error(VendorReceiveEDocumentErr, Vendor.TableCaption(), Vendor."No.", Vendor.FieldCaption("Receive E-Document To"), Format(Vendor."Receive E-Document To"));
-        end;
+        if PurchaseHeader.Get("Purchase Document Type"::Order, EDocumentPurchaseHeader."Purchase Order No.") then;
+    end;
+
+    procedure GetPurchaseInvoice(EDocumentPurchaseHeader: Record "E-Document Purchase Header") PurchaseHeader: Record "Purchase Header"
+    begin
+        if PurchaseHeader.Get("Purchase Document Type"::Invoice, EDocumentPurchaseHeader."Purchase Order No.") then;
     end;
 
     local procedure GetPurchaseLineItemRef(EDocumentPurchaseLine: Record "E-Document Purchase Line"; var ItemReference: Record "Item Reference"): Boolean

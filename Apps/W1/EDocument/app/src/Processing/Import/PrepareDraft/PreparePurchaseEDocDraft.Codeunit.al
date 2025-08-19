@@ -26,7 +26,7 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
         UnitOfMeasure: Record "Unit of Measure";
         Vendor: Record Vendor;
-        PurchaseOrder: Record "Purchase Header";
+        PurchaseHeader: Record "Purchase Header";
         EDocVendorAssignmentHistory: Record "E-Doc. Vendor Assign. History";
         EDocPurchaseLineHistory: Record "E-Doc. Purchase Line History";
         EDocPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
@@ -48,11 +48,16 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
             EDocumentPurchaseHeader."[BC] Vendor No." := Vendor."No.";
         end;
 
-        PurchaseOrder := IPurchaseOrderProvider.GetPurchaseOrder(EDocumentPurchaseHeader);
+        case Vendor."Receive E-Document To" of
+            Vendor."Receive E-Document To"::"Purchase Invoice":
+                PurchaseHeader := IPurchaseOrderProvider.GetPurchaseInvoice(EDocumentPurchaseHeader);
+            Vendor."Receive E-Document To"::"Purchase Order":
+                PurchaseHeader := IPurchaseOrderProvider.GetPurchaseOrder(EDocumentPurchaseHeader);
+        end;
 
-        if PurchaseOrder."No." <> '' then begin
-            PurchaseOrder.TestField("Document Type", "Purchase Document Type"::Order);
-            EDocumentPurchaseHeader."[BC] Purchase Order No." := PurchaseOrder."No.";
+        if PurchaseHeader."No." <> '' then begin
+            PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Order);
+            EDocumentPurchaseHeader."[BC] Purchase Order No." := PurchaseHeader."No.";
             EDocumentPurchaseHeader.Modify();
             exit("E-Document Type"::"Purchase Order");
         end;
