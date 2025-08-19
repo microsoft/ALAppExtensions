@@ -248,8 +248,7 @@ codeunit 47018 "SL Customer Migrator"
                 if not SLCompanyAdditionalSettings."Migrate Inactive Customers" then begin
                     DecrementMigratedCount();
                     exit;
-                end
-                else
+                end else
                     CustomerBlocked := true;
 
         if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(SLCustomer.CustId, CopyStr(SLHelperFunctions.NameFlip(SLCustomer.Name), 1, 50)) then
