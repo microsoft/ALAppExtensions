@@ -36,11 +36,9 @@ page 6183 "E-Doc. Purchase Draft Subform"
 
                     trigger OnValidate()
                     begin
-                        if Rec."[BC] Purchase Type No." <> xRec."[BC] Purchase Type No." then begin
+                        if Rec."[BC] Purchase Type No." <> xRec."[BC] Purchase Type No." then 
                             Clear(Rec."[BC] Item Reference No.");
-                            CurrPage.Update(false);
-                        end;
-                    end;
+                   end;
                 }
                 field("Item Reference No."; Rec."[BC] Item Reference No.")
                 {
