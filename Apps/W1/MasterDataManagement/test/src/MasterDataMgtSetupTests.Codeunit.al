@@ -1,6 +1,7 @@
 codeunit 139770 "Master Data Mgt. Setup Tests"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

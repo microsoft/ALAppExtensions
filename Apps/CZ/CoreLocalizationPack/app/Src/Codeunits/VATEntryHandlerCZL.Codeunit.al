@@ -40,5 +40,6 @@ codeunit 11741 "VAT Entry Handler CZL"
     local procedure EditEU3PartyIntermedRoleOnBeforeVATEntryModify(var VATEntry: Record "VAT Entry"; FromVATEntry: Record "VAT Entry")
     begin
         VATEntry."EU 3-Party Intermed. Role CZL" := FromVATEntry."EU 3-Party Intermed. Role CZL";
+        VATEntry."External Document No." := FromVATEntry."External Document No.";
     end;
 }

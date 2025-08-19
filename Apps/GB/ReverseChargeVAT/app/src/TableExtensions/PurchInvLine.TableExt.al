@@ -20,6 +20,8 @@ tableextension 10558 "Purch. Inv. Line" extends "Purch. Inv. Line"
         {
             Caption = 'Reverse Charge';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
     }
 }

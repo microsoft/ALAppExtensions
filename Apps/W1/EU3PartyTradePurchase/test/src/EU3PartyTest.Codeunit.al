@@ -2,6 +2,7 @@ codeunit 139614 "EU 3-Party Test"
 {
     // [FEATURE] [EU 3-Party] [Purchase]
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

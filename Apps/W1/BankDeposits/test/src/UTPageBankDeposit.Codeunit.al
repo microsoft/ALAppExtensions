@@ -1,6 +1,7 @@
 codeunit 139768 "UT Page Bank Deposit"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -24,6 +25,7 @@ codeunit 139768 "UT Page Bank Deposit"
         PostingDateErr: Label 'Validation error for Field: Posting Date,  Message = ', Comment = 'Label contains error message for invalid posting date''Posting Date must have a value in Bank Deposit Header: No.=%1. It cannot be zero or empty. (Select Refresh to discard errors)''';
         FeatureKeyIdTok: Label 'StandardizedBankReconciliationAndDeposits', Locked = true;
         SourceCodeErr: Label 'Source Code are not equal.';
+        AppliesToIDErr: Label 'Applies-to ID must contain Bank Deposit No. and Line No.';
 
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
@@ -762,6 +764,41 @@ codeunit 139768 "UT Page Bank Deposit"
         // [THEN] The default values for the lines are as expected.
         Assert.AreEqual(BankDepositHeader."No.", BankDeposit.Subform."Document No.".Value(), 'The default value of Document No. for the Deposit Line should be the Bank Deposit No.');
         Assert.AreEqual('', BankDeposit.Subform."External Document No.".Value(), 'The default value of External Document No. for the Deposit Line should be empty.');
+    end;
+
+    [Test]
+    procedure AppliesToIDForNewLine()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        GenJournalLine: Record "Gen. Journal Line";
+        BankDeposit: TestPage "Bank Deposit";
+        VendorNo: Code[20];
+    begin
+        // [SCENARIO 578444] Applies-to ID value when a new deposit line is created.
+        Initialize();
+
+        // [GIVEN] Bank Deposit with No. "BD001".
+        VendorNo := LibraryPurchase.CreateVendorNo();
+        CreateBankDepositHeader(BankDepositHeader, '');
+        OpenDepositPage(BankDeposit, BankDepositHeader);
+
+        // [WHEN] Create two new lines for Bank Deposit.
+        BankDeposit.Subform.New();
+        BankDeposit.Subform."Account Type".SetValue(Enum::"Gen. Journal Account Type"::Vendor);
+        BankDeposit.Subform."Account No.".SetValue(VendorNo);
+        BankDeposit.Subform.New();
+        BankDeposit.Subform."Account Type".SetValue(Enum::"Gen. Journal Account Type"::Vendor);
+        BankDeposit.Subform."Account No.".SetValue(VendorNo);
+        BankDeposit.Subform.New();
+
+        // [THEN] Applies-to ID is set to <Bank Deposit No.>-<Line No.> for each line: BD001-10000 and BD001-20000.
+        GenJournalLine.SetRange("Journal Template Name", BankDepositHeader."Journal Template Name");
+        GenJournalLine.SetRange("Journal Batch Name", BankDepositHeader."Journal Batch Name");
+        GenJournalLine.FindFirst();
+        Assert.AreEqual(StrSubstNo('%1-%2', BankDepositHeader."No.", GenJournalLine."Line No."), GenJournalLine."Applies-to ID", AppliesToIDErr);
+
+        GenJournalLine.Next();
+        Assert.AreEqual(StrSubstNo('%1-%2', BankDepositHeader."No.", GenJournalLine."Line No."), GenJournalLine."Applies-to ID", AppliesToIDErr);
     end;
 
     local procedure GetBankDepositsFeature(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; ID: Text[50])

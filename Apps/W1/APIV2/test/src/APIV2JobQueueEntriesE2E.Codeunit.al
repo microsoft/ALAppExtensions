@@ -1,6 +1,7 @@
 codeunit 139862 "APIV2JobQueueEntriesE2E"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

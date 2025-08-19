@@ -15,27 +15,6 @@ pageextension 6614 "FS Service Order" extends "Service Order"
         {
             ShowMandatory = FSIntegrationTypeServiceEnabled;
         }
-        addafter(Status)
-        {
-            group("Work Description")
-            {
-                Caption = 'Work Description';
-                field(WorkDescription; WorkDescription)
-                {
-                    ApplicationArea = Service;
-                    Caption = 'Work Description';
-                    ShowCaption = false;
-                    ToolTip = 'Specifies the products or service being offered.';
-                    MultiLine = true;
-                    Importance = Additional;
-
-                    trigger OnValidate()
-                    begin
-                        Rec.SetWorkDescription(WorkDescription);
-                    end;
-                }
-            }
-        }
     }
 
     actions
@@ -198,16 +177,10 @@ pageextension 6614 "FS Service Order" extends "Service Order"
     }
 
     var
-        WorkDescription: Text;
         FSIntegrationEnabled: Boolean;
         FSIntegrationTypeServiceEnabled: Boolean;
         CRMIsCoupledToRecord: Boolean;
         CRMIntegrationEnabled: Boolean;
-
-    trigger OnAfterGetRecord()
-    begin
-        WorkDescription := Rec.GetWorkDescription();
-    end;
 
     trigger OnAfterGetCurrRecord()
     var

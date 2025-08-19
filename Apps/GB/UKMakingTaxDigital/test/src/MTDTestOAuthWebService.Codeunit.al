@@ -6,6 +6,7 @@
 codeunit 148081 "MTDTestOAuthWebService"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

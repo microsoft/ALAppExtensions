@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.VAT.Calculation;
 
 codeunit 31109 "Gen.Jnl.-Check Ln. Handler CZZ"
 {
@@ -20,6 +21,15 @@ codeunit 31109 "Gen.Jnl.-Check Ln. Handler CZZ"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnBeforeCheckPurchDocNoIsNotUsed', '', false, false)]
     local procedure GenJnlCheckLineOnBeforeCheckPurchDocNoIsNotUsed(var IsHandled: Boolean)
     begin
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnBeforeCheckVATDate', '', false, false)]
+    local procedure ThrowErrorOnBeforeCheckVATDate(GenJournalLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    var
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+    begin
+        VATReportingDateMgt.IsValidDate(GenJournalLine, GenJournalLine.FieldNo("VAT Reporting Date"), true);
         IsHandled := true;
     end;
 

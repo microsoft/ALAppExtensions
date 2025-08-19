@@ -45,6 +45,11 @@ codeunit 6141 "E-Document Create"
         EDocument2.Copy(EDocument);
     end;
 
+    procedure GetBlob(var TempBlob2: Codeunit "Temp Blob")
+    begin
+        TempBlob2 := TempBlob;
+    end;
+
     var
         EDocService: Record "E-Document Service";
         EDocument: Record "E-Document";

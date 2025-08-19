@@ -11,6 +11,7 @@ using System.TestLibraries.Utilities;
 codeunit 133513 "Search Item Test"
 {
     Subtype = Test;
+    TestType = AITest;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

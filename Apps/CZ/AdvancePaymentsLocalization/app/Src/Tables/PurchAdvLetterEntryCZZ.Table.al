@@ -88,6 +88,14 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             DecimalPlaces = 0 : 15;
             MinValue = 0;
         }
+        field(27; "Additional Currency Factor"; Decimal)
+        {
+            Caption = 'Additional Currency Factor';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 0 : 15;
+            Editable = false;
+            MinValue = 0;
+        }
         field(28; "User ID"; Code[50])
         {
             Caption = 'User ID';
@@ -367,6 +375,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         "VAT Calculation Type" := GenJournalLine."VAT Calculation Type";
         "Currency Code" := GenJournalLine."Currency Code";
         "Currency Factor" := GenJournalLine."Currency Factor";
+        "Additional Currency Factor" := GenJournalLine."Additional Currency Factor CZL";
         Amount := GenJournalLine.Amount;
         "Amount (LCY)" := GenJournalLine."Amount (LCY)";
         "VAT Amount" := GenJournalLine."VAT Amount";

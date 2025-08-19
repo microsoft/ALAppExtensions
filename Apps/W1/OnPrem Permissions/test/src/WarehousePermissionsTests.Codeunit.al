@@ -1,6 +1,7 @@
 codeunit 139872 "Warehouse Permissions Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Restrictive;
 
     var

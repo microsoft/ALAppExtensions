@@ -7,6 +7,7 @@ namespace Microsoft.Finance.AdvancePayments;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
@@ -322,6 +323,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
     var
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
         TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
@@ -370,7 +372,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         AdvanceLetterTemplateCZZ.TestField("Advance Letter Invoice Nos.");
 
         InitVATAmountLine(TempAdvancePostingBufferCZZ, PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.",
-            PurchAdvLetterEntryCZZ.Amount, PurchAdvLetterEntryCZZ."Currency Factor");
+            PurchAdvLetterEntryCZZ.Amount, PurchAdvLetterEntryCZZ."Currency Factor", GeneralLedgerSetup.GetAdditionalCurrencyFactorCZL(PostingDate));
 
         TempAdvancePostingBufferCZZ.Reset();
         TempAdvancePostingBufferCZZ.SetRange("Auxiliary Entry", false);
@@ -472,7 +474,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             Message(NonDeductVATPostedMsg);
     end;
 
-    local procedure InitVATAmountLine(var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ"; PurchAdvanceNo: Code[20]; Amount: Decimal; CurrencyFactor: Decimal)
+    local procedure InitVATAmountLine(var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ"; PurchAdvanceNo: Code[20]; Amount: Decimal; CurrencyFactor: Decimal; AddCurrencyFactor: Decimal)
     var
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
         TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
@@ -501,6 +503,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                 AdvancePostingBufferCZZ.Amount := AmountRemainder;
                 AdvancePostingBufferCZZ.UpdateVATAmounts();
                 AdvancePostingBufferCZZ.UpdateLCYAmounts(PurchAdvLetterHeaderCZZ."Currency Code", CurrencyFactor);
+                AdvancePostingBufferCZZ.UpdateACYAmounts(AddCurrencyFactor);
                 AdvancePostingBufferCZZ.Insert();
                 AmountRemainder -= AdvancePostingBufferCZZ.Amount;
             until TempAdvancePostingBufferCZZ.Next() = 0;
@@ -689,6 +692,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         OriginalDocumentVATDate: Date;
         ExternalDocumentNo: Code[35];
         CurrencyFactor: Decimal;
+        AddCurrencyFactor: Decimal;
         UsedAmount: Decimal;
     begin
         PurchAdvLetterEntryCZZ.TestField("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::Usage);
@@ -706,19 +710,20 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
         VendorLedgerEntry.Get(PurchAdvLetterEntryCZZ."Vendor Ledger Entry No.");
 
-        if PurchInvHeader.Get(VendorLedgerEntry."Document No.") then
-            CurrencyFactor := PurchInvHeader."VAT Currency Factor CZL"
-        else
+        if PurchInvHeader.Get(VendorLedgerEntry."Document No.") then begin
+            CurrencyFactor := PurchInvHeader."VAT Currency Factor CZL";
+            AddCurrencyFactor := PurchInvHeader."Additional Currency Factor CZL";
+        end else
             CurrencyFactor := VendorLedgerEntry."Original Currency Factor";
 
         UsedAmount := -PurchAdvLetterEntryCZZ.Amount;
         PurchAdvLetterPostCZZ.BufferAdvanceVATLines(PurchAdvLetterEntryCZZ2, TempAdvancePostingBufferCZZ, 0D);
         PurchAdvLetterPostCZZ.SuggestUsageVAT(PurchAdvLetterEntryCZZ2, TempAdvancePostingBufferCZZ, VendorLedgerEntry."Document No.",
-            UsedAmount, CurrencyFactor, false);
+            UsedAmount, CurrencyFactor, AddCurrencyFactor, false);
 
         VATDocumentCZZ.InitDocument('', VendorLedgerEntry."Document No.", VendorLedgerEntry."Posting Date",
             VendorLedgerEntry."Document Date", VendorLedgerEntry."VAT Date CZL", PurchInvHeader."Original Doc. VAT Date CZL",
-            VendorLedgerEntry."Currency Code", CurrencyFactor, VendorLedgerEntry."External Document No.",
+            VendorLedgerEntry."Currency Code", CurrencyFactor, AddCurrencyFactor, VendorLedgerEntry."External Document No.",
             TempAdvancePostingBufferCZZ);
         if VATDocumentCZZ.RunModal() <> Action::OK then
             exit;
@@ -875,6 +880,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         PostingDate: Date;
         VATDate: Date;
         CurrencyFactor: Decimal;
+        AddCurrencyFactor: Decimal;
     begin
         if PurchAdvLetterHeaderCZZ.Status = PurchAdvLetterHeaderCZZ.Status::Closed then
             exit;
@@ -888,17 +894,23 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         if AdvPaymentCloseDialogCZZ.RunModal() <> Action::OK then
             exit;
 
-        AdvPaymentCloseDialogCZZ.GetValues(PostingDate, VATDate, OriginalDocumentVATDate, CurrencyFactor);
+        AdvPaymentCloseDialogCZZ.GetValues(PostingDate, VATDate, OriginalDocumentVATDate, CurrencyFactor, AddCurrencyFactor);
         if (PostingDate = 0D) or (VATDate = 0D) then
             Error(DateEmptyErr);
 
-        CloseAdvanceLetter(PurchAdvLetterHeaderCZZ, PostingDate, VATDate, OriginalDocumentVATDate, CurrencyFactor, AdvPaymentCloseDialogCZZ.GetExternalDocumentNo());
+        CloseAdvanceLetter(PurchAdvLetterHeaderCZZ, PostingDate, VATDate, OriginalDocumentVATDate, CurrencyFactor, AddCurrencyFactor, AdvPaymentCloseDialogCZZ.GetExternalDocumentNo());
     end;
 
     procedure CloseAdvanceLetter(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostingDate: Date; VATDate: Date; OriginalDocumentVATDate: Date; CurrencyFactor: Decimal; ExternalDocumentNo: Code[35])
+    begin
+        CloseAdvanceLetter(PurchAdvLetterHeaderCZZ, PostingDate, VATDate, OriginalDocumentVATDate, CurrencyFactor, 0, ExternalDocumentNo);
+    end;
+
+    procedure CloseAdvanceLetter(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; PostingDate: Date; VATDate: Date; OriginalDocumentVATDate: Date; CurrencyFactor: Decimal; AddCurrencyFactor: Decimal; ExternalDocumentNo: Code[35])
     var
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
     begin
@@ -918,6 +930,8 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
             OriginalDocumentVATDate := WorkDate();
         if CurrencyFactor = 0 then
             CurrencyFactor := CurrencyExchangeRate.ExchangeRate(PostingDate, PurchAdvLetterHeaderCZZ."Currency Code");
+        if AddCurrencyFactor = 0 then
+            AddCurrencyFactor := GeneralLedgerSetup.GetAdditionalCurrencyFactorCZL(PostingDate);
         PurchasesPayablesSetup.Get();
         if PurchasesPayablesSetup."Ext. Doc. No. Mandatory" and (ExternalDocumentNo = '') then
             Error(ExternalDocumentNoEmptyErr);
@@ -930,6 +944,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         AdvancePostingParametersCZZ."Original Document VAT Date" := OriginalDocumentVATDate;
         AdvancePostingParametersCZZ."Currency Code" := PurchAdvLetterHeaderCZZ."Currency Code";
         AdvancePostingParametersCZZ."Currency Factor" := CurrencyFactor;
+        AdvancePostingParametersCZZ."Additional Currency Factor" := AddCurrencyFactor;
 
         PurchAdvLetterPostCZZ.PostAdvanceLetterClosing(PurchAdvLetterHeaderCZZ, GenJnlPostLine, AdvancePostingParametersCZZ);
     end;
@@ -982,7 +997,8 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
         VATDocumentCZZ.InitDocument(AdvanceLetterTemplateCZZ."Advance Letter Cr. Memo Nos.", DocumentNo, PurchAdvLetterEntryCZZ."Posting Date",
           PurchAdvLetterEntryCZZ."Posting Date", PurchAdvLetterEntryCZZ."VAT Date", PurchAdvLetterEntryCZZ."Original Document VAT Date",
-          PurchAdvLetterHeaderCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor", PurchAdvLetterEntryCZZ."External Document No.", TempAdvancePostingBufferCZZ1);
+          PurchAdvLetterEntryCZZ."Currency Code", PurchAdvLetterEntryCZZ."Currency Factor", PurchAdvLetterEntryCZZ."Additional Currency Factor",
+          PurchAdvLetterEntryCZZ."External Document No.", TempAdvancePostingBufferCZZ1);
         if VATDocumentCZZ.RunModal() <> Action::OK then
             exit;
 

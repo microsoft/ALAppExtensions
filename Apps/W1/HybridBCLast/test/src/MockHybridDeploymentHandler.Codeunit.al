@@ -10,12 +10,12 @@ codeunit 139679 "Mock Hybrid Deployment Handler"
     var
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         SourceProduct: Text;
-        ReplicationStatusJsonTxt: Label '{ "ReplicationRunId": "%1", "Status": "%2"}';
+        ReplicationStatusJsonTxt: Label '{ "ReplicationRunId": "%1", "Status": "%2"}', Comment = '%1 = "Run" + Guid, %2 status text';
         TestInstanceIDTok: Label 'TestInstanceID';
         TestRuntimeNameTxt: Label 'TestRuntime';
-        CreatedRuntimeJsonTxt: Label '{"Name":"%1","PrimaryKey":"%2"}';
-        DeployedLatestVersionJsonTxt: Label '{"DeployedVersion":"%1","LatestVersion":"%2"}';
-        RunIDStatusJsonTxt: Label '{"RunId":"TestRun%1"}';
+        CreatedRuntimeJsonTxt: Label '{"Name":"%1","PrimaryKey":"%2"}', Comment = '%1 is the name of the runtime, %2 is a Guid';
+        DeployedLatestVersionJsonTxt: Label '{"DeployedVersion":"%1","LatestVersion":"%2"}', Comment = '%1 and %2 are version numbers';
+        RunIDStatusJsonTxt: Label '{"RunId":"TestRun%1"}', Comment = '%1 is a Guid';
         CompletedTok: Label 'Completed';
 
     local procedure CanHandle(): Boolean

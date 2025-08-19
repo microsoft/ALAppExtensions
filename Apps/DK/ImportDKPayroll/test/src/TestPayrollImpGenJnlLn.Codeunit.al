@@ -6,6 +6,7 @@
 codeunit 148045 "Test Payroll Imp. Gen. Jnl. Ln"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

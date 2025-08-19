@@ -14,6 +14,7 @@ using System.Utilities;
 codeunit 139881 "PowerBI Sales Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     Access = Internal;
 
     var

@@ -21,6 +21,7 @@ table 7276 "Search API Response"
         field(2; Score; Decimal)
         {
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
     }
 

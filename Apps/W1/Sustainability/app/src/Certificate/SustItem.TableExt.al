@@ -77,12 +77,16 @@ tableextension 6220 "Sust. Item" extends Item
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Default CO2 Emission';
+            CaptionClass = '102,10,1';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
             begin
                 if Rec."Default CO2 Emission" <> 0 then
                     Rec.TestField("Default Sust. Account");
+
+                if Rec."Item Of Concern" then
+                    ValidateEmissionsForItemOfConcern();
             end;
         }
         field(6216; "Default CH4 Emission"; Decimal)
@@ -90,12 +94,16 @@ tableextension 6220 "Sust. Item" extends Item
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Default CH4 Emission';
+            CaptionClass = '102,10,2';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
             begin
                 if Rec."Default CH4 Emission" <> 0 then
                     Rec.TestField("Default Sust. Account");
+
+                if Rec."Item Of Concern" then
+                    ValidateEmissionsForItemOfConcern();
             end;
         }
         field(6217; "Default N2O Emission"; Decimal)
@@ -103,12 +111,16 @@ tableextension 6220 "Sust. Item" extends Item
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Default N2O Emission';
+            CaptionClass = '102,10,3';
             DataClassification = CustomerContent;
 
             trigger OnValidate()
             begin
                 if Rec."Default N2O Emission" <> 0 then
                     Rec.TestField("Default Sust. Account");
+
+                if Rec."Item Of Concern" then
+                    ValidateEmissionsForItemOfConcern();
             end;
         }
         field(6218; "CO2e per Unit"; Decimal)
@@ -125,10 +137,44 @@ tableextension 6220 "Sust. Item" extends Item
             Editable = false;
             DataClassification = CustomerContent;
         }
+        field(6230; "Item Of Concern"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Item of Concern';
+
+            trigger OnValidate()
+            begin
+                if Rec."Item Of Concern" then
+                    ValidateEmissionsForItemOfConcern();
+            end;
+        }
+        field(6231; "Recyclability Percentage"; Decimal)
+        {
+            Caption = 'Recyclability Percentage';
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies % of recyclable content.';
+            MinValue = 0;
+            MaxValue = 100;
+        }
+        field(6232; "Energy Efficiency Rating"; Code[10])
+        {
+            Caption = 'Energy Efficiency Rating';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies energy efficiency information, e.g. product category, or label (A-G rating).';
+        }
+        field(6233; "End-of-Life Information"; Text[50])
+        {
+            Caption = 'End-of-Life Information';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies instructions about disposal methods, recycling facilities, return schemes, or environmental impact.';
+        }
     }
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
+        AtLeastOneNonZeroEmissionValueErr: Label '%1, %2, %3 cannot all be zero. Please provide at least one non-zero value.', Comment = '%1, %2 , %3 = Field Caption';
 
     local procedure UpdateCertificateInformation()
     var
@@ -139,6 +185,16 @@ tableextension 6220 "Sust. Item" extends Item
 
         if SustCertificate.Get(SustCertificate.Type::Item, Rec."Sust. Cert. No.") then
             Rec.Validate("Sust. Cert. Name", SustCertificate.Name);
+    end;
+
+    local procedure ValidateEmissionsForItemOfConcern()
+    begin
+        if (Rec."Default CO2 Emission" = 0) and (Rec."Default CH4 Emission" = 0) and (Rec."Default N2O Emission" = 0) then
+            Error(
+                AtLeastOneNonZeroEmissionValueErr,
+                Rec.FieldCaption("Default CO2 Emission"),
+                Rec.FieldCaption("Default CH4 Emission"),
+                Rec.FieldCaption("Default N2O Emission"));
     end;
 
     procedure ClearDefaultEmissionInformation(var Item: Record Item)

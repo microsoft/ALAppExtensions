@@ -78,7 +78,7 @@ codeunit 148106 "Reconciliation CZL"
         Reconciliation.ReturnGLAccountNetChange(TempGLAccountNetChange);
 
         // [THEN] G/L account will be reconciliated
-        TempGLAccountNetChange.SetRange("Account Type CZL", Enum::"Gen. Journal Account Type"::"G/L Account");
+        TempGLAccountNetChange.SetRange("Acc. Type CZL", Enum::"Net Change Account Type CZL"::"G/L Account");
         TempGLAccountNetChange.SetRange("Account No. CZL", GLAccountNo);
         TempGLAccountNetChange.FindFirst();
 
@@ -86,7 +86,7 @@ codeunit 148106 "Reconciliation CZL"
         GenJournalLine.TestField(Amount, TempGLAccountNetChange."Net Change in Jnl.");
 
         // [THEN] bank account will be reconciliated
-        TempGLAccountNetChange.SetRange("Account Type CZL", Enum::"Gen. Journal Account Type"::"Bank Account");
+        TempGLAccountNetChange.SetRange("Acc. Type CZL", Enum::"Net Change Account Type CZL"::"Bank Account");
         TempGLAccountNetChange.SetRange("Account No. CZL", BankAccount."No.");
         TempGLAccountNetChange.FindFirst();
 
@@ -94,7 +94,7 @@ codeunit 148106 "Reconciliation CZL"
         GenJournalLine.TestField(Amount, -TempGLAccountNetChange."Net Change in Jnl.");
     end;
 
-    local procedure CreateGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; AccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20])
+    local procedure CreateGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; AccountType: Enum "Net Change Account Type CZL"; AccountNo: Code[20])
     var
         GenJournalBatch: Record "Gen. Journal Batch";
     begin
@@ -105,7 +105,7 @@ codeunit 148106 "Reconciliation CZL"
           AccountType, AccountNo, LibraryRandom.RandDec(1000, 2));
     end;
 
-    local procedure CreateGenJnlLineWithBank(var GenJournalLine: Record "Gen. Journal Line"; BankAccountNo: Code[20]; AccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20]; Amount: Decimal)
+    local procedure CreateGenJnlLineWithBank(var GenJournalLine: Record "Gen. Journal Line"; BankAccountNo: Code[20]; AccountType: Enum "Net Change Account Type CZL"; AccountNo: Code[20]; Amount: Decimal)
     var
         GenJournalBatch: Record "Gen. Journal Batch";
     begin

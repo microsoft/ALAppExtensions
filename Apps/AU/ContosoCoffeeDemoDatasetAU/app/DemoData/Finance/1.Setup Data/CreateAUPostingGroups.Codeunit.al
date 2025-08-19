@@ -40,8 +40,10 @@ codeunit 17138 "Create AU Posting Groups"
     local procedure UpdateGenProductPostingGroup()
     var
         GenProductPostingGroup: Record "Gen. Product Posting Group";
+        GLAccount: Record "G/L Account";
         CreatePostingGroups: Codeunit "Create Posting Groups";
         CreateAUVATPostingGroups: Codeunit "Create AU VAT Posting Groups";
+        CreateGLAccount: Codeunit "Create G/L Account";
     begin
         GenProductPostingGroup.Get(CreatePostingGroups.ServicesPostingGroup());
         GenProductPostingGroup.Validate("Def. VAT Prod. Posting Group", CreateAUVATPostingGroups.Gst10());
@@ -66,6 +68,14 @@ codeunit 17138 "Create AU Posting Groups"
         UpdateVATProdPostingGroupOnGLAccount(CreatePostingGroups.ZeroPostingGroup(), '');
 
         UpdateVATProdPostingGroupOnGLAccount(CreatePostingGroups.FreightPostingGroup(), '');
+
+        GLAccount.Get(CreateGLAccount.Software());
+        GLAccount.Validate("VAT Prod. Posting Group", CreateAUVATPostingGroups.Gst10());
+        GLAccount.Modify(true);
+
+        GLAccount.Get(CreateGLAccount.ConsultantServices());
+        GLAccount.Validate("VAT Prod. Posting Group", CreateAUVATPostingGroups.Gst10());
+        GLAccount.Modify(true);
     end;
 
     local procedure UpdateGenBusinessPostingGroup()

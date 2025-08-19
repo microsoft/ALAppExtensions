@@ -1,10 +1,12 @@
 namespace Microsoft.Sustainability.Journal;
 
-using Microsoft.Sustainability.Posting;
-using Microsoft.Sustainability.Ledger;
+using Microsoft.Finance.Dimension;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Calculation;
-using Microsoft.Finance.Dimension;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Posting;
+using Microsoft.Sustainability.Workflow;
+using System.Automation;
 
 page 6219 "Sustainability Journal"
 {
@@ -51,6 +53,7 @@ page 6219 "Sustainability Journal"
 
                         if Page.RunModal(Page::"Sustainability Jnl. Batches", SustainabilityJnlBatch) = Action::LookupOK then begin
                             ResetFilterOnLinesWithNewBatch(SustainabilityJnlBatch);
+                            SetControlAppearanceFromBatch();
                             CurrPage.Update(false);
                         end;
                     end;
@@ -62,8 +65,17 @@ page 6219 "Sustainability Journal"
                         CurrPage.SaveRecord();
                         SustainabilityJnlBatch.Get(Rec.GetRangeMax("Journal Template Name"), CurrentJournalBatchName);
                         ResetFilterOnLinesWithNewBatch(SustainabilityJnlBatch);
+                        SetControlAppearanceFromBatch();
                         CurrPage.Update(false);
                     end;
+                }
+                field(SustJnlBatchApprovalStatus; SustJnlBatchApprovalStatus)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Approval Status';
+                    Editable = false;
+                    Visible = EnabledSustJnlBatchWorkflowsExist;
+                    ToolTip = 'Specifies the approval status for Sustainability journal batch.';
                 }
             }
             repeater(repeater)
@@ -131,9 +143,17 @@ page 6219 "Sustainability Journal"
                 {
                     ToolTip = 'Specifies the sustainability account subcategory.';
                 }
+                field("Energy Source Code"; Rec."Energy Source Code")
+                {
+                    ToolTip = 'Specifies the Energy Source Code.';
+                }
                 field("Manual Input"; Rec."Manual Input")
                 {
                     ToolTip = 'Specifies whether the amounts will be input manually.';
+                }
+                field("Renewable Energy"; Rec."Renewable Energy")
+                {
+                    ToolTip = 'Specifies the Renewable Energy.';
                 }
                 field("Unit of Measure"; Rec."Unit of Measure")
                 {
@@ -222,6 +242,10 @@ page 6219 "Sustainability Journal"
                 {
                     Editable = Rec."Manual Input";
                     ToolTip = 'Specifies the Waste Intensity of the entry.';
+                }
+                field("Energy Consumption"; Rec."Energy Consumption")
+                {
+                    ToolTip = 'Specifies the Energy Consumption.';
                 }
                 field("Water/Waste Intensity Type"; Rec."Water/Waste Intensity Type")
                 {
@@ -380,6 +404,15 @@ page 6219 "Sustainability Journal"
             {
                 SubPageLink = Code = field("Account Subcategory");
             }
+            part(WorkflowStatusBatch; "Workflow Status FactBox")
+            {
+                ApplicationArea = Suite;
+                Caption = 'Batch Workflows';
+                Editable = false;
+                Enabled = false;
+                ShowFilter = false;
+                Visible = ShowWorkflowStatusOnBatch;
+            }
         }
     }
 
@@ -442,6 +475,24 @@ page 6219 "Sustainability Journal"
                         CurrPage.SaveRecord();
                     end;
                 }
+                action(Approvals)
+                {
+                    AccessByPermission = TableData "Approval Entry" = R;
+                    ApplicationArea = Suite;
+                    Caption = 'Approvals';
+                    Image = Approvals;
+                    ToolTip = 'View a list of the records that are waiting to be approved. For example, you can see who requested the record to be approved, when it was sent, and when it is due to be approved.';
+
+                    trigger OnAction()
+                    var
+                        [SecurityFiltering(SecurityFilter::Filtered)]
+                        SustJournalLine: Record "Sustainability Jnl. Line";
+                        SustApprovalsMgmt: Codeunit "Sust. Approvals Mgmt.";
+                    begin
+                        GetCurrentlySelectedLines(SustJournalLine);
+                        SustApprovalsMgmt.ShowJournalApprovalEntries(SustJournalLine);
+                    end;
+                }
             }
         }
         area(Processing)
@@ -477,6 +528,119 @@ page 6219 "Sustainability Journal"
                         until Rec.Next() = 0;
                 end;
             }
+            group("Request Approval")
+            {
+                Caption = 'Request Approval';
+                group(SendApprovalRequest)
+                {
+                    Caption = 'Send Approval Request';
+                    Image = SendApprovalRequest;
+                    action(SendApprovalRequestJournalBatch)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Journal Batch';
+                        Enabled = not OpenApprovalEntriesOnBatchOrAnyJnlLineExist and EnabledSustJnlBatchWorkflowsExist;
+                        Image = SendApprovalRequest;
+                        ToolTip = 'Send all journal lines for approval, also those that you may not see because of filters.';
+
+                        trigger OnAction()
+                        var
+                            ApprovalsMgmt: Codeunit "Sust. Approvals Mgmt.";
+                        begin
+                            ApprovalsMgmt.TrySendJournalBatchApprovalRequest(Rec);
+                            SetControlAppearanceFromBatch();
+                        end;
+                    }
+                }
+                group(CancelApprovalRequest)
+                {
+                    Caption = 'Cancel Approval Request';
+                    Image = Cancel;
+                    action(CancelApprovalRequestJournalBatch)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Journal Batch';
+                        Enabled = CanCancelApprovalForJnlBatch;
+                        Image = CancelApprovalRequest;
+                        ToolTip = 'Cancel sending all journal lines for approval, also those that you may not see because of filters.';
+
+                        trigger OnAction()
+                        var
+                            SustApprovalsMgmt: Codeunit "Sust. Approvals Mgmt.";
+                        begin
+                            SustApprovalsMgmt.TryCancelJournalBatchApprovalRequest(Rec);
+                            SetControlAppearanceFromBatch();
+                        end;
+                    }
+                }
+            }
+            group(Approval)
+            {
+                Caption = 'Approval';
+                action(Approve)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Approve';
+                    Image = Approve;
+                    ToolTip = 'Approve the requested changes.';
+                    Visible = OpenApprovalEntriesExistForCurrUser;
+
+                    trigger OnAction()
+                    var
+                        SustApprovalsMgmt: Codeunit "Sust. Approvals Mgmt.";
+                    begin
+                        SustApprovalsMgmt.ApproveSustJournalLineRequest(Rec);
+                    end;
+                }
+                action(Reject)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Reject';
+                    Image = Reject;
+                    ToolTip = 'Reject the approval request.';
+                    Visible = OpenApprovalEntriesExistForCurrUser;
+
+                    trigger OnAction()
+                    var
+                        SustApprovalsMgmt: Codeunit "Sust. Approvals Mgmt.";
+                    begin
+                        SustApprovalsMgmt.RejectSustJournalLineRequest(Rec);
+                    end;
+                }
+                action(Delegate)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Delegate';
+                    Image = Delegate;
+                    ToolTip = 'Delegate the approval to a substitute approver.';
+                    Visible = OpenApprovalEntriesExistForCurrUser;
+
+                    trigger OnAction()
+                    var
+                        SustApprovalsMgmt: Codeunit "Sust. Approvals Mgmt.";
+                    begin
+                        SustApprovalsMgmt.DelegateSustJournalLineRequest(Rec);
+                    end;
+                }
+                action(Comments)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Comments';
+                    Image = ViewComments;
+                    ToolTip = 'View or add comments for the record.';
+                    Visible = OpenApprovalEntriesExistForCurrUser or ApprovalEntriesExistSentByCurrentUser;
+
+                    trigger OnAction()
+                    var
+                        SustJournalBatch: Record "Sustainability Jnl. Batch";
+                        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
+                    begin
+                        if OpenApprovalEntriesOnJnlBatchExist then
+                            if SustJournalBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name") then
+                                ApprovalsMgmt.GetApprovalComment(SustJournalBatch);
+                    end;
+                }
+            }
         }
         area(Promoted)
         {
@@ -489,15 +653,63 @@ page 6219 "Sustainability Journal"
                 Caption = 'Line';
                 actionref(CollectAmountFromGL_Promoted; CollectAmountFromGL) { }
                 actionref(Dimension_Promoted; Dimension) { }
+                actionref(Approvals_Promoted; Approvals) { }
+            }
+            group("Category_Request Approval")
+            {
+                Caption = 'Request Approval';
+
+                group("Category_Send Approval Request")
+                {
+                    Caption = 'Send Approval Request';
+
+                    actionref(SendApprovalRequestJournalBatch_Promoted; SendApprovalRequestJournalBatch)
+                    {
+                    }
+                }
+                group("Category_Cancel Approval Request")
+                {
+                    Caption = 'Cancel Approval Request';
+
+                    actionref(CancelApprovalRequestJournalBatch_Promoted; CancelApprovalRequestJournalBatch)
+                    {
+                    }
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Approve', Comment = 'Generated from the PromotedActionCategories property index 6.';
+
+                actionref(Approve_Promoted; Approve)
+                {
+                }
+                actionref(Reject_Promoted; Reject)
+                {
+                }
+                actionref(Comments_Promoted; Comments)
+                {
+                }
+                actionref(Delegate_Promoted; Delegate)
+                {
+                }
             }
         }
     }
 
     var
+        SustApprovalMgmt: Codeunit "Sust. Approvals Mgmt.";
         CurrentJournalBatchName: Code[10];
         ShortcutDimCode: array[8] of Code[20];
         DimVisible1, DimVisible2, DimVisible3, DimVisible4, DimVisible5, DimVisible6, DimVisible7, DimVisible8 : Boolean;
         IsRecurringView, EnableWater, EnableWaste : Boolean;
+        OpenApprovalEntriesOnBatchOrAnyJnlLineExist: Boolean;
+        EnabledSustJnlBatchWorkflowsExist: Boolean;
+        ShowWorkflowStatusOnBatch: Boolean;
+        OpenApprovalEntriesExistForCurrUser: Boolean;
+        OpenApprovalEntriesOnJnlBatchExist: Boolean;
+        CanCancelApprovalForJnlBatch: Boolean;
+        ApprovalEntriesExistSentByCurrentUser: Boolean;
+        SustJnlBatchApprovalStatus: Text[20];
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
@@ -506,17 +718,26 @@ page 6219 "Sustainability Journal"
         Clear(ShortcutDimCode);
     end;
 
+    trigger OnModifyRecord(): Boolean
+    begin
+        SustApprovalMgmt.CleanSustJournalApprovalStatus(Rec, SustJnlBatchApprovalStatus);
+    end;
+
     trigger OnAfterGetRecord()
     var
         DimMgt: Codeunit DimensionManagement;
     begin
         DimMgt.GetShortcutDimensions(Rec."Dimension Set ID", ShortcutDimCode);
         InitializeAndEnableIntensityControl();
+        SetControlAppearanceFromBatch();
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
         InitializeAndEnableIntensityControl();
+        SetControlAppearanceFromBatch();
+
+        SustApprovalMgmt.GetSustJnlBatchApprovalStatus(Rec, SustJnlBatchApprovalStatus, EnabledSustJnlBatchWorkflowsExist);
     end;
 
     trigger OnInit()
@@ -530,10 +751,19 @@ page 6219 "Sustainability Journal"
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
         SustainabilityJournalMgt: Codeunit "Sustainability Journal Mgt.";
     begin
+        if Rec."Journal Template Name" <> '' then
+            if SustainabilityJnlTemplate.Get(Rec."Journal Template Name") then
+                if SustainabilityJnlTemplate.Recurring then
+                    SetRecurringView();
+
+        if Rec."Journal Batch Name" <> '' then
+            CurrentJournalBatchName := Rec."Journal Batch Name";
+
         SustainabilityJnlTemplate := SustainabilityJournalMgt.SelectTemplate(IsRecurringView);
         SustainabilityJnlBatch := SustainabilityJournalMgt.SelectBatch(SustainabilityJnlTemplate, CurrentJournalBatchName);
 
         ResetFilterOnLinesWithNewBatch(SustainabilityJnlBatch);
+        SetControlAppearanceFromBatch();
     end;
 
     // The "current" batch and template is "saved" in the filters
@@ -581,5 +811,38 @@ page 6219 "Sustainability Journal"
     begin
         EnableWater := false;
         EnableWaste := false;
+    end;
+
+    local procedure SetControlAppearanceFromBatch()
+    var
+        SustJournalBatch: Record "Sustainability Jnl. Batch";
+    begin
+        if not SustJournalBatch.Get(Rec.GetRangeMax("Journal Template Name"), CurrentJournalBatchName) then
+            exit;
+
+        ShowWorkflowStatusOnBatch := CurrPage.WorkflowStatusBatch.Page.SetFilterOnWorkflowRecord(SustJournalBatch.RecordId);
+        SetApprovalStateForBatch(SustJournalBatch, Rec, OpenApprovalEntriesExistForCurrUser, OpenApprovalEntriesOnJnlBatchExist, OpenApprovalEntriesOnBatchOrAnyJnlLineExist, CanCancelApprovalForJnlBatch, ApprovalEntriesExistSentByCurrentUser, EnabledSustJnlBatchWorkflowsExist);
+    end;
+
+    local procedure GetCurrentlySelectedLines(var SustJournalLine: Record "Sustainability Jnl. Line"): Boolean
+    begin
+        CurrPage.SetSelectionFilter(SustJournalLine);
+        exit(SustJournalLine.FindSet());
+    end;
+
+    internal procedure SetApprovalStateForBatch(SustJournalBatch: Record "Sustainability Jnl. Batch"; SustJournalLine: Record "Sustainability Jnl. Line"; var OpenApprovalEntriesExistForCurrentUser: Boolean; var OpenApprovalEntriesOnJournalBatchExist: Boolean; var OpenApprovalEntriesOnBatchOrAnyJournalLineExist: Boolean; var CanCancelApprovalForJournalBatch: Boolean; var LocalApprovalEntriesExistSentByCurrentUser: Boolean; var EnabledSustJournalBatchWorkflowsExist: Boolean)
+    var
+        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
+        SustApprovalsMgmt: Codeunit "Sust. Approvals Mgmt.";
+        WorkflowEventHandling: Codeunit "Sust. Workflow Event Handling";
+        WorkflowManagement: Codeunit "Workflow Management";
+    begin
+        OpenApprovalEntriesExistForCurrentUser := OpenApprovalEntriesExistForCurrentUser or ApprovalsMgmt.HasOpenApprovalEntriesForCurrentUser(SustJournalBatch.RecordId);
+        OpenApprovalEntriesOnJournalBatchExist := ApprovalsMgmt.HasOpenApprovalEntries(SustJournalBatch.RecordId);
+        OpenApprovalEntriesOnBatchOrAnyJournalLineExist := OpenApprovalEntriesOnJournalBatchExist or SustApprovalsMgmt.HasAnyOpenJournalLineApprovalEntries(SustJournalLine."Journal Template Name", SustJournalLine."Journal Batch Name");
+        CanCancelApprovalForJournalBatch := ApprovalsMgmt.CanCancelApprovalForRecord(SustJournalBatch.RecordId);
+        LocalApprovalEntriesExistSentByCurrentUser := ApprovalsMgmt.HasApprovalEntriesSentByCurrentUser(SustJournalBatch.RecordId) or ApprovalsMgmt.HasApprovalEntriesSentByCurrentUser(SustJournalLine.RecordId);
+
+        EnabledSustJournalBatchWorkflowsExist := WorkflowManagement.EnabledWorkflowExist(Database::"Sustainability Jnl. Batch", WorkflowEventHandling.RunWorkflowOnSendSustJournalBatchForApprovalCode());
     end;
 }

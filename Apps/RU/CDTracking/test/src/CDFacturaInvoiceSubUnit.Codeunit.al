@@ -128,14 +128,6 @@ codeunit 147106 "CD FacturaInvoiceSubUnit"
         IsInitialized := true;
     end;
 
-    local procedure GenerateKPPCode(): Code[10]
-    var
-        Customer: Record Customer;
-    begin
-        exit(
-          LibraryUtility.GenerateRandomCode(Customer.FieldNo("KPP Code"), DATABASE::Customer));
-    end;
-
     local procedure CreateCountryRegion(): Code[10]
     var
         CountryRegion: Record "Country/Region";
@@ -233,14 +225,6 @@ codeunit 147106 "CD FacturaInvoiceSubUnit"
         end;
     end;
 
-    local procedure UpdateSalesHeaderAddSheet(var SalesHeader: Record "Sales Header"; PostingDate: Date; CorrectedDocDate: Date; AddVATLedger: Boolean)
-    begin
-        SalesHeader."Posting Date" := PostingDate;
-        SalesHeader."Additional VAT Ledger Sheet" := AddVATLedger;
-        SalesHeader."Corrected Document Date" := CorrectedDocDate;
-        SalesHeader.Modify(true);
-    end;
-
     local procedure UpdateCompanyInformation()
     var
         CompanyInformation: Record "Company Information";
@@ -288,4 +272,3 @@ codeunit 147106 "CD FacturaInvoiceSubUnit"
         LibraryRUReports.VerifyFactura_GTD(FileName, CDNo, Offset);
     end;
 }
-

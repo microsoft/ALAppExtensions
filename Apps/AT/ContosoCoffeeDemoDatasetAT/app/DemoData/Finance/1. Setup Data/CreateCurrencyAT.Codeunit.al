@@ -27,7 +27,6 @@ codeunit 11180 "Create Currency AT"
         UpdateCurrency(CreateCurrency.CZK(), CreateATGLAccount.FCYRealizedExchangeGains(), CreateATGLAccount.FCYRealizedExchangeLosses());
         UpdateCurrency(CreateCurrency.DKK(), CreateATGLAccount.FCYRealizedExchangeGains(), CreateATGLAccount.FCYRealizedExchangeLosses());
         UpdateCurrency(CreateCurrency.DZD(), CreateATGLAccount.FCYRealizedExchangeGains(), CreateATGLAccount.FCYRealizedExchangeLosses());
-        UpdateCurrency(CreateCurrency.EUR(), CreateATGLAccount.FCYRealizedExchangeGains(), CreateATGLAccount.FCYRealizedExchangeLosses());
         UpdateCurrency(CreateCurrency.FJD(), CreateATGLAccount.FCYRealizedExchangeGains(), CreateATGLAccount.FCYRealizedExchangeLosses());
         UpdateCurrency(CreateCurrency.GBP(), CreateATGLAccount.FCYRealizedExchangeGains(), CreateATGLAccount.FCYRealizedExchangeLosses());
         UpdateCurrency(CreateCurrency.HKD(), CreateATGLAccount.FCYRealizedExchangeGains(), CreateATGLAccount.FCYRealizedExchangeLosses());

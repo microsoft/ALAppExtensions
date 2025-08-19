@@ -2,6 +2,7 @@ namespace Microsoft.Finance.GeneralLedger.Review;
 
 using Microsoft.Finance.GeneralLedger.Ledger;
 using System.Telemetry;
+using System.Utilities;
 using Microsoft.Finance.GeneralLedger.Account;
 
 page 22207 "Review G/L Entries"
@@ -81,6 +82,26 @@ page 22207 "Review G/L Entries"
                     ToolTip = 'Specifies the time when the ledger entries were reviewed.';
                     AboutTitle = 'About Reviewed Date?';
                     AboutText = 'When an entry has been marked as reviewed, you can see the date on which it was done';
+                }
+                field("Amount to Review"; Rec."Amount to Review")
+                {
+                    ApplicationArea = Basic, Suite;
+
+                    trigger OnValidate()
+                    begin
+                        if AreOppositeSign(Rec."Amount to Review", RemainingAmount) then
+                            Error(MustHavetheSameSignErr);
+
+                        if Abs(Rec."Amount to Review") > Abs(RemainingAmount) then
+                            Error(MustNotBelargerErr);
+                    end;
+                }
+                field(RemainingAmount; RemainingAmount)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Remaining Amount';
+                    Editable = false;
+                    ToolTip = 'Specifies the remaining amount that can be applied to the entry.';
                 }
                 field("Review Id"; Rec."Reviewed Identifier")
                 {
@@ -199,18 +220,18 @@ page 22207 "Review G/L Entries"
                 {
                     ApplicationArea = Dimensions;
                     Image = Filter;
-                    ToolTip = 'Show reviewed entries, hides all the unreviewed entries on the page';
+                    ToolTip = 'Shows all the reviewed entries on the page';
                     Caption = 'Show reviewed entries';
                     ShortCutKey = 'Ctrl+Alt+E';
 
                     trigger OnAction()
                     var
-                        GLEntry: Record "G/L Entry";
+                        GLEntryReviewLog: Record "G/L Entry Review Log";
+                        ReviewedGLEntries: Page "Reviewed G/L Entries";
                     begin
-                        GLEntry.Reset();
-                        GLEntry.SetView(InitialRecordsLoaded);
-                        GLEntry.SetRange(Reviewed, true);
-                        CurrPage.SetTableView(GLEntry);
+                        GLEntryReviewLog.SetRange("G/L Account No.", Rec."G/L Account No.");
+                        ReviewedGLEntries.SetTableView(GLEntryReviewLog);
+                        ReviewedGLEntries.RunModal();
                     end;
                 }
                 action("Hide Reviewed Entries")
@@ -281,10 +302,13 @@ page 22207 "Review G/L Entries"
         GLEntryReviewer: Interface "G/L Entry Reviewer";
         Debit: Decimal;
         Credit: Decimal;
+        RemainingAmount: Decimal;
         Balance: Decimal;
         ReviewPolicy: Enum "Review Policy Type";
         InitialRecordsLoaded: Text;
         CaptionLbl: Label '%1 %2', Comment = '%1 is the G/L Account No. and %2 is the G/L Account Name';
+        MustHavetheSameSignErr: Label 'Amount to Review must have the same sign as Remaining Amount';
+        MustNotBelargerErr: Label 'Amount to Review must not be larger than Remaining Amount';
 
 
     trigger OnOpenPage()
@@ -303,11 +327,24 @@ page 22207 "Review G/L Entries"
         GLEntryReviewer := GLEntryReviewSetup.GLEntryReviewer;
         InitialRecordsLoaded := Rec.GetView();
         FeatureTelemetry.LogUptake('0000J2Y', 'Review G/L Entries', "Feature Uptake Status"::Discovered);
+
+        CalcBalance();
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        Rec.CalcFields("Reviewed Amount");
+        RemainingAmount := Rec.Amount - Rec."Reviewed Amount";
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
         CalcAmount();
+    end;
+
+    trigger OnModifyRecord(): Boolean
+    begin
+        Balance := Balance + Rec."Amount to Review" - xRec."Amount to Review";
     end;
 
     local procedure SetSelectedRecordsAsReviewed()
@@ -334,7 +371,6 @@ page 22207 "Review G/L Entries"
         GLEntry.CalcSums("Debit Amount", "Credit Amount");
         Debit := GLEntry."Debit Amount";
         Credit := GLEntry."Credit Amount";
-        Balance := Credit - Debit;
         CurrPage.Update(false);
     end;
 
@@ -354,5 +390,26 @@ page 22207 "Review G/L Entries"
         exit(StrSubstNo(CaptionLbl, GLAccount."No.", GLAccount.Name));
     end;
 
+    local procedure CalcBalance()
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        Balance := 0;
+        GLEntry.Copy(Rec);
+        if GLEntry.FindSet() then
+            repeat
+                Balance += GLEntry."Amount to Review";
+            until GLEntry.Next() = 0;
+    end;
+
+    local procedure AreOppositeSign(Amount1: Decimal; Amount2: Decimal): Boolean
+    var
+        Math: Codeunit "Math";
+    begin
+        if (Amount1 = 0) or (Amount2 = 0) then
+            exit(false);
+
+        exit(Math.Sign(Amount1) <> Math.Sign(Amount2));
+    end;
 }
 

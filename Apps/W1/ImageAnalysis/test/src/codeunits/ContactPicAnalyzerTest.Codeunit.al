@@ -13,6 +13,7 @@ using System.Text;
 codeunit 139593 "Contact Pic Analyzer Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
     ObsoleteReason = 'Image analyzer for contacts is being removed.';
     ObsoleteState = Pending;

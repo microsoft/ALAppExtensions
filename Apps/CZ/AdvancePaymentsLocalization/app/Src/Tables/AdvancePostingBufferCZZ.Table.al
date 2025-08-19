@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
 
@@ -43,16 +44,37 @@ table 31013 "Advance Posting Buffer CZZ"
         {
             Caption = 'VAT Base Amount';
         }
+        field(20; "Amount (LCY)"; Decimal)
+        {
+            AutoFormatType = 1;
+            Caption = 'Amount (LCY)';
+        }
+        field(21; "VAT Amount (LCY)"; Decimal)
+        {
+            AutoFormatType = 1;
+            Caption = 'VAT Amount (LCY)';
+        }
+        field(22; "VAT Base Amount (LCY)"; Decimal)
+        {
+            AutoFormatType = 1;
+            Caption = 'VAT Base Amount (LCY)';
+        }
         field(25; "Amount (ACY)"; Decimal)
         {
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
+            AutoFormatType = 1;
             Caption = 'Amount (ACY)';
         }
         field(26; "VAT Amount (ACY)"; Decimal)
         {
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
+            AutoFormatType = 1;
             Caption = 'VAT Amount (ACY)';
         }
         field(29; "VAT Base Amount (ACY)"; Decimal)
         {
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
+            AutoFormatType = 1;
             Caption = 'VAT Base Amount (ACY)';
         }
         field(32; "VAT %"; Decimal)
@@ -100,6 +122,14 @@ table 31013 "Advance Posting Buffer CZZ"
         }
     }
 
+    protected var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+
+    local procedure GetAdditionalReportingCurrencyCode(): Code[10]
+    begin
+        exit(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL())
+    end;
+
     procedure PrepareForPurchAdvLetterEntry(var PurchAdvLetterEntry: Record "Purch. Adv. Letter Entry CZZ")
     begin
         Clear(Rec);
@@ -110,9 +140,12 @@ table 31013 "Advance Posting Buffer CZZ"
         Amount := PurchAdvLetterEntry.Amount;
         "VAT Base Amount" := PurchAdvLetterEntry."VAT Base Amount";
         "VAT Amount" := PurchAdvLetterEntry."VAT Amount";
-        "Amount (ACY)" := PurchAdvLetterEntry."Amount (LCY)";
-        "VAT Base Amount (ACY)" := PurchAdvLetterEntry."VAT Base Amount (LCY)";
-        "VAT Amount (ACY)" := PurchAdvLetterEntry."VAT Amount (LCY)";
+        "Amount (LCY)" := PurchAdvLetterEntry."Amount (LCY)";
+        "VAT Base Amount (LCY)" := PurchAdvLetterEntry."VAT Base Amount (LCY)";
+        "VAT Amount (LCY)" := PurchAdvLetterEntry."VAT Amount (LCY)";
+        "Amount (ACY)" := "Amount (LCY)" * PurchAdvLetterEntry."Additional Currency Factor";
+        "VAT Base Amount (ACY)" := "VAT Base Amount (LCY)" * PurchAdvLetterEntry."Additional Currency Factor";
+        "VAT Amount (ACY)" := "VAT Amount (LCY)" * PurchAdvLetterEntry."Additional Currency Factor";
         "Auxiliary Entry" := PurchAdvLetterEntry."Auxiliary Entry";
         "Non-Deductible VAT %" := PurchAdvLetterEntry."Non-Deductible VAT %";
         OnAfterPrepareForPurchAdvLetterEntry(PurchAdvLetterEntry, Rec);
@@ -128,9 +161,9 @@ table 31013 "Advance Posting Buffer CZZ"
         Amount := PurchAdvLetterLine."Amount Including VAT";
         "VAT Base Amount" := PurchAdvLetterLine.Amount;
         "VAT Amount" := PurchAdvLetterLine."VAT Amount";
-        "Amount (ACY)" := PurchAdvLetterLine."Amount Including VAT (LCY)";
-        "VAT Base Amount (ACY)" := PurchAdvLetterLine."Amount (LCY)";
-        "VAT Amount (ACY)" := PurchAdvLetterLine."VAT Amount (LCY)";
+        "Amount (LCY)" := PurchAdvLetterLine."Amount Including VAT (LCY)";
+        "VAT Base Amount (LCY)" := PurchAdvLetterLine."Amount (LCY)";
+        "VAT Amount (LCY)" := PurchAdvLetterLine."VAT Amount (LCY)";
         OnAfterPrepareForPurchAdvLetterLine(PurchAdvLetterLine, Rec);
     end;
 
@@ -144,9 +177,12 @@ table 31013 "Advance Posting Buffer CZZ"
         Amount := SalesAdvLetterEntry.Amount;
         "VAT Base Amount" := SalesAdvLetterEntry."VAT Base Amount";
         "VAT Amount" := SalesAdvLetterEntry."VAT Amount";
-        "Amount (ACY)" := SalesAdvLetterEntry."Amount (LCY)";
-        "VAT Base Amount (ACY)" := SalesAdvLetterEntry."VAT Base Amount (LCY)";
-        "VAT Amount (ACY)" := SalesAdvLetterEntry."VAT Amount (LCY)";
+        "Amount (LCY)" := SalesAdvLetterEntry."Amount (LCY)";
+        "VAT Base Amount (LCY)" := SalesAdvLetterEntry."VAT Base Amount (LCY)";
+        "VAT Amount (LCY)" := SalesAdvLetterEntry."VAT Amount (LCY)";
+        "Amount (ACY)" := "Amount (LCY)" * SalesAdvLetterEntry."Additional Currency Factor";
+        "VAT Base Amount (ACY)" := "VAT Base Amount (LCY)" * SalesAdvLetterEntry."Additional Currency Factor";
+        "VAT Amount (ACY)" := "VAT Amount (LCY)" * SalesAdvLetterEntry."Additional Currency Factor";
         "Auxiliary Entry" := SalesAdvLetterEntry."Auxiliary Entry";
         OnAfterPrepareForSalesAdvLetterEntry(SalesAdvLetterEntry, Rec);
     end;
@@ -161,9 +197,9 @@ table 31013 "Advance Posting Buffer CZZ"
         Amount := SalesAdvLetterLine."Amount Including VAT";
         "VAT Base Amount" := SalesAdvLetterLine.Amount;
         "VAT Amount" := SalesAdvLetterLine."VAT Amount";
-        "Amount (ACY)" := SalesAdvLetterLine."Amount Including VAT (LCY)";
-        "VAT Base Amount (ACY)" := SalesAdvLetterLine."Amount (LCY)";
-        "VAT Amount (ACY)" := SalesAdvLetterLine."VAT Amount (LCY)";
+        "Amount (LCY)" := SalesAdvLetterLine."Amount Including VAT (LCY)";
+        "VAT Base Amount (LCY)" := SalesAdvLetterLine."Amount (LCY)";
+        "VAT Amount (LCY)" := SalesAdvLetterLine."VAT Amount (LCY)";
         OnAfterPrepareForSalesAdvLetterLine(SalesAdvLetterLine, Rec);
     end;
 
@@ -176,6 +212,9 @@ table 31013 "Advance Posting Buffer CZZ"
             Amount += AdvancePostingBuffer.Amount;
             "VAT Base Amount" += AdvancePostingBuffer."VAT Base Amount";
             "VAT Amount" += AdvancePostingBuffer."VAT Amount";
+            "Amount (LCY)" += AdvancePostingBuffer."Amount (LCY)";
+            "VAT Base Amount (LCY)" += AdvancePostingBuffer."VAT Base Amount (LCY)";
+            "VAT Amount (LCY)" += AdvancePostingBuffer."VAT Amount (LCY)";
             "Amount (ACY)" += AdvancePostingBuffer."Amount (ACY)";
             "VAT Base Amount (ACY)" += AdvancePostingBuffer."VAT Base Amount (ACY)";
             "VAT Amount (ACY)" += AdvancePostingBuffer."VAT Amount (ACY)";
@@ -193,22 +232,42 @@ table 31013 "Advance Posting Buffer CZZ"
         CurrencyExchangeRate: Record "Currency Exchange Rate";
     begin
         if (CurrencyCode = '') or (CurrencyFactor = 0) then begin
-            Rec."VAT Base Amount (ACY)" := Rec."VAT Base Amount";
-            Rec."VAT Amount (ACY)" := Rec."VAT Amount";
-            Rec."Amount (ACY)" := Rec.Amount;
+            Rec."VAT Base Amount (LCY)" := Rec."VAT Base Amount";
+            Rec."VAT Amount (LCY)" := Rec."VAT Amount";
+            Rec."Amount (LCY)" := Rec.Amount;
         end else begin
-            Rec."Amount (ACY)" :=
+            Rec."Amount (LCY)" :=
               Round(
                 CurrencyExchangeRate.ExchangeAmtFCYToLCY(
                   0D, CurrencyCode,
                   Rec.Amount, CurrencyFactor));
-            Rec."VAT Amount (ACY)" :=
+            Rec."VAT Amount (LCY)" :=
               Round(
                 CurrencyExchangeRate.ExchangeAmtFCYToLCY(
                   0D, CurrencyCode,
                   Rec."VAT Amount", CurrencyFactor));
-            Rec."VAT Base Amount (ACY)" := Rec."Amount (ACY)" - Rec."VAT Amount (ACY)";
+            Rec."VAT Base Amount (LCY)" := Rec."Amount (LCY)" - Rec."VAT Amount (LCY)";
         end;
+    end;
+
+    procedure UpdateACYAmounts(AddCurrencyFactor: Decimal)
+    var
+        AddCurrency: Record Currency;
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        AddCurrencyCode: Code[20];
+    begin
+        AddCurrencyCode := GetAdditionalReportingCurrencyCode();
+        if AddCurrencyCode = '' then
+            exit;
+
+        if not AddCurrency.Get(AddCurrencyCode) then
+            exit;
+
+        Rec."Amount (ACY)" :=
+            Round(CurrencyExchangeRate.ExchangeAmtLCYToFCYOnlyFactor(Rec."Amount (LCY)", AddCurrencyFactor), AddCurrency."Amount Rounding Precision");
+        Rec."VAT Amount (ACY)" :=
+            Round(CurrencyExchangeRate.ExchangeAmtLCYToFCYOnlyFactor(Rec."VAT Amount (LCY)", AddCurrencyFactor), AddCurrency."Amount Rounding Precision");
+        Rec."VAT Base Amount (ACY)" := Rec."Amount (ACY)" - Rec."VAT Amount (ACY)";
     end;
 
     procedure UpdateVATAmounts()
@@ -228,6 +287,9 @@ table 31013 "Advance Posting Buffer CZZ"
         Amount := -Amount;
         "VAT Base Amount" := -"VAT Base Amount";
         "VAT Amount" := -"VAT Amount";
+        "Amount (LCY)" := -Rec."Amount (LCY)";
+        "VAT Base Amount (LCY)" := -Rec."VAT Base Amount (LCY)";
+        "VAT Amount (LCY)" := -Rec."VAT Amount (LCY)";
         "Amount (ACY)" := -"Amount (ACY)";
         "VAT Base Amount (ACY)" := -"VAT Base Amount (ACY)";
         "VAT Amount (ACY)" := -"VAT Amount (ACY)";

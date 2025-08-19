@@ -6,6 +6,7 @@
 codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();

@@ -9,6 +9,7 @@ using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.AuditCodes;
 using System.Security.AccessControl;
 using Microsoft.Sustainability.Setup;
+using Microsoft.Sustainability.Energy;
 
 table 6216 "Sustainability Ledger Entry"
 {
@@ -110,18 +111,21 @@ table 6216 "Sustainability Ledger Entry"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CO2';
+            CaptionClass = '102,6,1';
         }
         field(20; "Emission CH4"; Decimal)
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CH4';
+            CaptionClass = '102,6,2';
         }
         field(21; "Emission N2O"; Decimal)
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission N2O';
+            CaptionClass = '102,6,3';
         }
         field(22; "Country/Region Code"; Code[10])
         {
@@ -216,6 +220,18 @@ table 6216 "Sustainability Ledger Entry"
         {
             Caption = 'Water Type';
         }
+        field(40; "Energy Source Code"; Code[20])
+        {
+            Caption = 'Energy Source Code';
+            TableRelation = "Sustainability Energy Source";
+        }
+        field(42; "Energy Consumption"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Energy Consumption';
+            CaptionClass = '102,13,4';
+        }
         field(5146; "Emission Scope"; Enum "Emission Scope")
         {
             Caption = 'Emission Scope';
@@ -223,14 +239,17 @@ table 6216 "Sustainability Ledger Entry"
         field(5147; CO2; Boolean)
         {
             Caption = 'CO2';
+            CaptionClass = '102,4,1';
         }
         field(5148; CH4; Boolean)
         {
             Caption = 'CH4';
+            CaptionClass = '102,4,2';
         }
         field(5149; N2O; Boolean)
         {
             Caption = 'N2O';
+            CaptionClass = '102,4,3';
         }
         field(5150; "Calculation Foundation"; Enum "Calculation Foundation")
         {
@@ -239,14 +258,17 @@ table 6216 "Sustainability Ledger Entry"
         field(5151; "Emission Factor CO2"; Decimal)
         {
             Caption = 'Emission Factor CO2';
+            CaptionClass = '102,5,1';
         }
         field(5152; "Emission Factor CH4"; Decimal)
         {
             Caption = 'Emission Factor CH4';
+            CaptionClass = '102,5,2';
         }
         field(5153; "Emission Factor N2O"; Decimal)
         {
             Caption = 'Emission Factor N2O';
+            CaptionClass = '102,5,3';
         }
         field(5154; "Renewable Energy"; Boolean)
         {
@@ -317,6 +339,12 @@ table 6216 "Sustainability Ledger Entry"
         key(SummaryOnChartPage; "Account No.", "Posting Date", "Dimension Set ID", "Global Dimension 1 Code", "Global Dimension 2 Code", "Responsibility Center")
         {
             SumIndexFields = "Emission CO2", "Emission CH4", "Emission N2O";
+        }
+        key(Key2; "Document Type", "Document No.")
+        {
+        }
+        key(Key3; "Journal Template Name", "Journal Batch Name")
+        {
         }
     }
 

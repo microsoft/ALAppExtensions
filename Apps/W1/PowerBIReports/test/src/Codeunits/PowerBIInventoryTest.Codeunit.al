@@ -32,6 +32,7 @@ using Microsoft.PowerBIReports.Test;
 codeunit 139877 "PowerBI Inventory Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     Access = Internal;
 
     var

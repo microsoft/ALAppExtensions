@@ -256,6 +256,11 @@ table 18200 "Detailed GST Dist. Entry"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(51; "Location ISD document No."; Code[20])
+        {
+            Caption = 'Location ISD document No.';
+            DataClassification = CustomerContent;
+        }
     }
 
     keys

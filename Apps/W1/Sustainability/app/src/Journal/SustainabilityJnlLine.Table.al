@@ -1,13 +1,15 @@
 namespace Microsoft.Sustainability.Journal;
 
-using Microsoft.Foundation.UOM;
 using Microsoft.Foundation.Address;
-using Microsoft.Inventory.Location;
-using Microsoft.Finance.Dimension;
-using Microsoft.Sustainability.Account;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.UOM;
+using Microsoft.Finance.Dimension;
+using Microsoft.Inventory.Location;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Calculation;
+using Microsoft.Sustainability.Energy;
 using Microsoft.Sustainability.Setup;
+using System.Automation;
 
 table 6214 "Sustainability Jnl. Line"
 {
@@ -105,6 +107,16 @@ table 6214 "Sustainability Jnl. Line"
         {
             Caption = 'Account Subcategory';
             TableRelation = "Sustain. Account Subcategory".Code where("Category Code" = field("Account Category"));
+
+            trigger OnValidate()
+            begin
+                if Rec."Account Subcategory" <> '' then
+                    UpdateJournalLineFromAccountSubcategory()
+                else begin
+                    Rec.Validate("Energy Source Code", '');
+                    Rec.Validate("Renewable Energy", false);
+                end;
+            end;
         }
         field(11; Description; Text[100])
         {
@@ -201,6 +213,7 @@ table 6214 "Sustainability Jnl. Line"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CO2';
+            CaptionClass = '102,6,1';
 
             trigger OnValidate()
             begin
@@ -212,6 +225,7 @@ table 6214 "Sustainability Jnl. Line"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CH4';
+            CaptionClass = '102,6,2';
 
             trigger OnValidate()
             begin
@@ -223,6 +237,7 @@ table 6214 "Sustainability Jnl. Line"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission N2O';
+            CaptionClass = '102,6,3';
 
             trigger OnValidate()
             begin
@@ -367,6 +382,34 @@ table 6214 "Sustainability Jnl. Line"
             Caption = 'CO2e Emission';
             DecimalPlaces = 2 : 5;
         }
+        field(40; "Energy Source Code"; Code[20])
+        {
+            Caption = 'Energy Source Code';
+            TableRelation = "Sustainability Energy Source";
+
+            trigger OnValidate()
+            begin
+                if Rec."Energy Source Code" <> xRec."Energy Source Code" then
+                    Rec.Validate("Energy Consumption", 0);
+            end;
+        }
+        field(42; "Energy Consumption"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Energy Consumption';
+            CaptionClass = '102,13,4';
+
+            trigger OnValidate()
+            begin
+                if Rec."Energy Consumption" <> 0 then
+                    Rec.TestField("Energy Source Code");
+            end;
+        }
+        field(5154; "Renewable Energy"; Boolean)
+        {
+            Caption = 'Renewable Energy';
+        }
     }
 
     keys
@@ -380,6 +423,19 @@ table 6214 "Sustainability Jnl. Line"
         }
     }
 
+    trigger OnDelete()
+    var
+        SustJournalBatch: Record "Sustainability Jnl. Batch";
+        SustJournalLine: Record "Sustainability Jnl. Line";
+    begin
+        SustJournalLine.SetRange("Journal Template Name", "Journal Template Name");
+        SustJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
+        SustJournalLine.SetFilter("Line No.", '<>%1', "Line No.");
+        if SustJournalLine.IsEmpty() then
+            if SustJournalBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name") then
+                ApprovalsMgmt.PreventDeletingRecordWithOpenApprovalEntry(SustJournalBatch);
+    end;
+
     trigger OnInsert()
     var
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
@@ -387,11 +443,24 @@ table 6214 "Sustainability Jnl. Line"
     begin
         SustainabilityJnlTemplate.Get("Journal Template Name");
         SustainabilityJnlBatch.Get("Journal Template Name", "Journal Batch Name");
+
+        ApprovalsMgmt.PreventInsertRecIfOpenApprovalEntryExist(SustainabilityJnlBatch);
+    end;
+
+    trigger OnModify()
+    begin
+        CheckOpenApprovalEntryExistForCurrentUser();
+    end;
+
+    trigger OnRename()
+    begin
+        ApprovalsMgmt.OnRenameRecordInApprovalRequest(xRec.RecordId, RecordId);
     end;
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
         DimMgt: Codeunit DimensionManagement;
+        ApprovalsMgmt: Codeunit "Approvals Mgmt.";
         JnlRecRefLbl: Label '%1 %2 %3', Locked = true;
         ValuesMustBeZeroErr: Label '%1, %2, %3 must be Zero.', Comment = '%1,%2,%3 = Field Caption';
         CanBeUsedOnlyForWaterErr: Label '%1 can be used only for water.', Comment = '%1 = Field Value';
@@ -465,6 +534,7 @@ table 6214 "Sustainability Jnl. Line"
         SustainabilityJnlLine.Validate("Water Intensity", SignFactor * SustainabilityJnlLine."Water Intensity");
         SustainabilityJnlLine.Validate("Waste Intensity", SignFactor * SustainabilityJnlLine."Waste Intensity");
         SustainabilityJnlLine.Validate("Discharged Into Water", SignFactor * SustainabilityJnlLine."Discharged Into Water");
+        SustainabilityJnlLine.Validate("Energy Consumption", SignFactor * SustainabilityJnlLine."Energy Consumption");
     end;
 
     internal procedure ShowDimensions() IsChanged: Boolean
@@ -604,6 +674,30 @@ table 6214 "Sustainability Jnl. Line"
                 Error(CanBeUsedOnlyForWaterErr, SustainabilityJnlLine."Water/Waste Intensity Type");
     end;
 
+    local procedure CheckOpenApprovalEntryExistForCurrentUser()
+    var
+        SustJournalBatch: Record "Sustainability Jnl. Batch";
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckOpenApprovalEntryExistForCurrentUser(Rec, CurrFieldNo, IsHandled);
+        if IsHandled then
+            exit;
+
+        ApprovalsMgmt.PreventModifyRecIfOpenApprovalEntryExistForCurrentUser(Rec);
+        if SustJournalBatch.Get("Journal Template Name", "Journal Batch Name") then
+            ApprovalsMgmt.PreventModifyRecIfOpenApprovalEntryExistForCurrentUser(SustJournalBatch);
+    end;
+
+    local procedure UpdateJournalLineFromAccountSubcategory()
+    var
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    begin
+        SustainAccountSubcategory.Get(Rec."Account Category", Rec."Account Subcategory");
+
+        Rec.Validate("Energy Source Code", SustainAccountSubcategory."Energy Source Code");
+        Rec.Validate("Renewable Energy", SustainAccountSubcategory."Renewable Energy");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitDefaultDimensionSources(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
     begin
@@ -614,4 +708,8 @@ table 6214 "Sustainability Jnl. Line"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckOpenApprovalEntryExistForCurrentUser(SustJnlLine: Record "Sustainability Jnl. Line"; CurrFieldNo: Integer; var IsHandled: Boolean)
+    begin
+    end;
 }

@@ -44,6 +44,8 @@ tableextension 10040 "IRS 1099 Gen. Jnl. Line" extends "Gen. Journal Line"
         field(10054; "IRS 1099 Reporting Amount"; Decimal)
         {
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
     }
 }

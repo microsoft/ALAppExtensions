@@ -6,7 +6,6 @@ using System.Integration;
 using System.Telemetry;
 using System.Security.Encryption;
 using System.Privacy;
-
 table 1450 "MS - Yodlee Bank Service Setup"
 {
     ReplicateData = false;
@@ -81,6 +80,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
 
             trigger OnValidate();
             var
+                AuditLog: Codeunit "Audit Log";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 FeatureTelemetry: Codeunit "Feature Telemetry";
                 MSYodleeBankServiceConsentProvidedLbl: Label 'MS Yodlee Bank Service - consent provided by UserSecurityId %1.', Locked = true;
@@ -102,7 +102,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
                     end;
                     TESTFIELD("User Profile Email Address");
                     FeatureTelemetry.LogUptake('0000GY2', 'Yodlee', Enum::"Feature Uptake Status"::"Set up");
-                    Session.LogAuditMessage(StrSubstNo(MSYodleeBankServiceConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
+                    AuditLog.LogAuditMessage(StrSubstNo(MSYodleeBankServiceConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                 end;
             end;
         }

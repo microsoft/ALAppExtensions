@@ -14,7 +14,7 @@ table 6140 "E-Doc. Purchase Line History"
 {
 
     DataClassification = CustomerContent;
-    Caption = 'E-Doc. Purchase Line Matches';
+    Caption = 'E-Doc. Purchase Line History';
     InherentEntitlements = RIMDX;
     InherentPermissions = RIMDX;
     Access = Internal;

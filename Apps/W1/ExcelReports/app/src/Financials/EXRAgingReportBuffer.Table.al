@@ -45,10 +45,14 @@ table 4401 "EXR Aging Report Buffer"
         field(13; "Remaining Amount"; Decimal)
         {
             Caption = 'Remaining Amount';
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(14; "Remaining Amount (LCY)"; Decimal)
         {
             Caption = 'Remaining Amount (LCY)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(15; "Dimension 1 Code"; Code[20])
         {
@@ -63,10 +67,14 @@ table 4401 "EXR Aging Report Buffer"
         field(20; "Original Amount"; Decimal)
         {
             Caption = 'Original Amount';
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(21; "Original Amount (LCY)"; Decimal)
         {
             Caption = 'Original Amount (LCY)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(22; "Due Date"; Date)
         {

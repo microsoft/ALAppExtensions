@@ -4,6 +4,7 @@ using Microsoft.CRM.Outlook;
 using System.Environment;
 using System.Integration;
 using System.Text;
+using System.Telemetry;
 
 codeunit 4014 "Notification Handler"
 {
@@ -114,6 +115,7 @@ codeunit 4014 "Notification Handler"
         HybridMessageManagement: Codeunit "Hybrid Message Management";
         JsonManagement: Codeunit "JSON Management";
         OutlookSynchTypeConv: Codeunit "Outlook Synch. Type Conv";
+        AuditLog: Codeunit "Audit Log";
         Value: Text;
         Details: Text;
         MessageCode: Text;
@@ -218,7 +220,7 @@ codeunit 4014 "Notification Handler"
                     TelemetryDictionary.Add('SourceProduct', IntelligentCloudSetup."Product ID");
 
                 Session.LogMessage('0000K0H', DataReplicationCompletedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDictionary);
-                Session.LogAuditMessage(DataReplicationCompletedLbl, SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0);
+                AuditLog.LogAuditMessage(DataReplicationCompletedLbl, SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0);
                 HasFailures := HybridReplicationSummary."Tables Failed" > 0;
 
                 if HasFailures then begin
@@ -226,7 +228,7 @@ codeunit 4014 "Notification Handler"
                     TelemetryDictionary.Add('NumberOfFailedTables', Format(HybridReplicationSummary."Tables Failed", 0, 9));
                     TelemetryDictionary.Add('Details', HybridReplicationSummary.GetDetails());
                     Session.LogMessage('0000K0I', DataReplicationHadFailedTablesLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDictionary);
-                    Session.LogAuditMessage(DataReplicationHadFailedTablesLbl, SecurityOperationResult::Failure, AuditCategory::ApplicationManagement, 6, 0);
+                    AuditLog.LogAuditMessage(DataReplicationHadFailedTablesLbl, SecurityOperationResult::Failure, AuditCategory::ApplicationManagement, 6, 0);
                 end;
             end;
 

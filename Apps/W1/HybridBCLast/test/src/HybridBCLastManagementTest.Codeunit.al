@@ -27,12 +27,10 @@ codeunit 139672 "Hybrid BC Last Management Test"
 
         // [THEN] A Hybrid Replication Summary record is created
         HybridReplicationSummary.Get(RunId);
-        with HybridReplicationSummary do begin
-            Assert.AreEqual(Source, HybridBCLastWizard.ProductName(), 'Unexpected value in summary for source.');
-            Assert.AreEqual("Run ID", RunId, 'Unexpected value in summary for Run ID.');
-            Assert.AreEqual("Synced Version", SyncedVersion, 'Synced Version did not get set.');
-            Assert.AreEqual("Trigger Type", "Trigger Type"::Scheduled, 'Unexpected value in summary for Replication Type.');
-        end;
+        Assert.AreEqual(HybridReplicationSummary.Source, HybridBCLastWizard.ProductName(), 'Unexpected value in summary for source.');
+        Assert.AreEqual(HybridReplicationSummary."Run ID", RunId, 'Unexpected value in summary for Run ID.');
+        Assert.AreEqual(HybridReplicationSummary."Synced Version", SyncedVersion, 'Synced Version did not get set.');
+        Assert.AreEqual(HybridReplicationSummary."Trigger Type", HybridReplicationSummary."Trigger Type"::Scheduled, 'Unexpected value in summary for Replication Type.');
     end;
 
     [Test]
@@ -54,13 +52,11 @@ codeunit 139672 "Hybrid BC Last Management Test"
 
         // [THEN] A Hybrid Replication Summary record is created
         HybridReplicationSummary.Get(RunId);
-        with HybridReplicationSummary do begin
-            Assert.AreEqual(Source, HybridBCLastWizard.ProductName(), 'Unexpected value in summary for source.');
-            Assert.AreEqual("Run ID", RunId, 'Unexpected value in summary for Run ID.');
-            Assert.AreEqual("Trigger Type", "Trigger Type"::Scheduled, 'Unexpected value in summary for Replication Type.');
-            Assert.AreEqual("Synced Version", SyncedVersion, 'Synced Version did not get set.');
-            Assert.IsTrue(Details.HasValue(), 'Details should contain text.');
-        end;
+        Assert.AreEqual(HybridReplicationSummary.Source, HybridBCLastWizard.ProductName(), 'Unexpected value in summary for source.');
+        Assert.AreEqual(HybridReplicationSummary."Run ID", RunId, 'Unexpected value in summary for Run ID.');
+        Assert.AreEqual(HybridReplicationSummary."Trigger Type", HybridReplicationSummary."Trigger Type"::Scheduled, 'Unexpected value in summary for Replication Type.');
+        Assert.AreEqual(HybridReplicationSummary."Synced Version", SyncedVersion, 'Synced Version did not get set.');
+        Assert.IsTrue(HybridReplicationSummary.Details.HasValue(), 'Details should contain text.');
     end;
 
     [Test]
@@ -242,7 +238,7 @@ codeunit 139672 "Hybrid BC Last Management Test"
         Assert.AreEqual(1, TargetVersions.Count(), 'Incorrect number of target versions returned.');
         TargetVersions.RemoveRange(1, 1);
 
-        // [GIVEN] Migration is set up with BC 21.0 as source 
+        // [GIVEN] Migration is set up with BC 21.0 as source
         Initialize(21.0);
 
         // [WHEN] A call to get upgrade versions is called

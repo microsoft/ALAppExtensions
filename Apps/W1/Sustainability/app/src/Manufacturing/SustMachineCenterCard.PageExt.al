@@ -50,12 +50,27 @@ pageextension 6232 "Sust. Machine Center Card" extends "Machine Center Card"
             action("Calculate CO2e")
             {
                 Caption = 'Calculate CO2e';
-                Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible and not SustainabilityAllGasesAsCO2eVisible;
                 Image = Calculate;
                 Promoted = true;
                 PromotedCategory = Process;
                 ToolTip = 'Executes the Calculate CO2e action.';
+
+                trigger OnAction()
+                begin
+                    RunCalculateCO2e();
+                end;
+            }
+            action("Calculate Total CO2e")
+            {
+                Caption = 'Calculate Total CO2e';
+                ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible and SustainabilityAllGasesAsCO2eVisible;
+                Image = Calculate;
+                Promoted = true;
+                PromotedCategory = Process;
+                ToolTip = 'Executes the Calculate Total CO2e action.';
 
                 trigger OnAction()
                 begin
@@ -75,6 +90,7 @@ pageextension 6232 "Sust. Machine Center Card" extends "Machine Center Card"
         SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Work/Machine Center Emissions" and SustainabilitySetup."Enable Value Chain Tracking";
+        SustainabilityAllGasesAsCO2eVisible := SustainabilitySetup."Use All Gases As CO2e";
     end;
 
     local procedure RunCalculateCO2e()
@@ -91,4 +107,5 @@ pageextension 6232 "Sust. Machine Center Card" extends "Machine Center Card"
     var
         SustainabilitySetup: Record "Sustainability Setup";
         SustainabilityVisible: Boolean;
+        SustainabilityAllGasesAsCO2eVisible: Boolean;
 }

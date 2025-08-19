@@ -16,6 +16,7 @@ pageextension 6240 "Sust. Sales Invoice Stats." extends "Sales Invoice Statistic
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Total CO2e';
+                    ToolTip = 'Specifies the total CO2e emissions.';
                 }
             }
         }

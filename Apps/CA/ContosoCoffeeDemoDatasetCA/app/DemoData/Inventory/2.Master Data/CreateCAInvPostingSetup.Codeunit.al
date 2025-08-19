@@ -18,6 +18,17 @@ codeunit 27060 "Create CA Inv. Posting Setup"
 
     trigger OnRun()
     var
+        CreateCAInvPostingGroup: Codeunit "Create CA Inv. Posting Group";
+        CreateGLAccount: Codeunit "Create G/L Account";
+        CreateCAGLAccounts: Codeunit "Create CA GL Accounts";
+        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
+    begin
+        ContosoPostingSetup.InsertInventoryPostingSetup('', CreateCAInvPostingGroup.Finished(), CreateGLAccount.FinishedGoods(), CreateGLAccount.FinishedGoodsInterim(), CreateCAGLAccounts.WipAccountFinishedGoods(), CreateCAGLAccounts.MaterialVariance(), CreateCAGLAccounts.CapacityVariance(), CreateCAGLAccounts.SubcontractedVariance(), CreateCAGLAccounts.CapOverheadVariance(), CreateCAGLAccounts.MfgOverheadVariance());
+        ContosoPostingSetup.InsertInventoryPostingSetup('', CreateCAInvPostingGroup.RawMaterial(), CreateGLAccount.RawMaterials(), CreateGLAccount.RawMaterialsInterim(), CreateCAGLAccounts.WipAccountFinishedGoods(), CreateCAGLAccounts.MaterialVariance(), CreateCAGLAccounts.CapacityVariance(), CreateCAGLAccounts.SubcontractedVariance(), CreateCAGLAccounts.CapOverheadVariance(), CreateCAGLAccounts.MfgOverheadVariance());
+    end;
+
+    procedure UpdateInventoryPosting()
+    var
         CreateLocation: Codeunit "Create Location";
         CreateCAInvPostingGroup: Codeunit "Create CA Inv. Posting Group";
         CreateGLAccount: Codeunit "Create G/L Account";

@@ -506,6 +506,8 @@ report 11755 "Open Balance Sheet CZL"
 
     local procedure HandleGenJnlLine()
     begin
+        OnBeforeHandleGenJnlLine(GenJournalLine);
+
         GenJournalLine."Additional-Currency Posting" :=
           GenJournalLine."Additional-Currency Posting"::None;
         if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
@@ -658,5 +660,10 @@ report 11755 "Open Balance Sheet CZL"
         if ErrorText <> '' then
             ErrorText := CopyStr(ErrorText + SelectPostingDimTxt + DimText, 1, MaxStrLen(ErrorText));
         exit(ErrorText);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeHandleGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
+    begin
     end;
 }
