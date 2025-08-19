@@ -6,7 +6,7 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Finance.RoleCenters;
 
-pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
+pageextension 6105 "E-Doc. A/P Admin Activities" extends "Acc. Payable Activities"
 {
     layout
     {
@@ -16,7 +16,7 @@ pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
             {
                 Caption = 'Incoming E-Document';
 
-                field(IncomingEDocumentProcessedCount; this.IncomingEDocumentProcessedCount)
+                field(IncomingEDocumentProcessedCount; IncomingEDocumentProcessedCount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Processed';
@@ -27,7 +27,7 @@ pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
                         EDocumentHelper.OpenEDocuments(Enum::"E-Document Status"::Processed, Enum::"E-Document Direction"::Incoming);
                     end;
                 }
-                field(IncomingEDocumentInProgressCount; this.IncomingEDocumentInProgressCount)
+                field(IncomingEDocumentInProgressCount; IncomingEDocumentInProgressCount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'In Progress';
@@ -38,7 +38,7 @@ pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
                         EDocumentHelper.OpenEDocuments(Enum::"E-Document Status"::"In Progress", Enum::"E-Document Direction"::Incoming);
                     end;
                 }
-                field(IncomingEDocumentErrorCount; this.IncomingEDocumentErrorCount)
+                field(IncomingEDocumentErrorCount; IncomingEDocumentErrorCount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Error';
@@ -49,7 +49,7 @@ pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
                         EDocumentHelper.OpenEDocuments(Enum::"E-Document Status"::Error, Enum::"E-Document Direction"::Incoming);
                     end;
                 }
-                field(MatchedPurchaseOrderCount; this.MatchedPurchaseOrderCount)
+                field(MatchedPurchaseOrderCount; MatchedPurchaseOrderCount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Linked Purchase Orders';
@@ -60,7 +60,7 @@ pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
                         EDocumentHelper.OpenMatchedPurchaseOrders();
                     end;
                 }
-                field(WaitingPurchaseOrderCount; this.WaitingPurchaseEDocCount)
+                field(WaitingPurchaseOrderCount; WaitingPurchaseEDocCount)
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Waiting Purchase E-Invoices';
@@ -82,10 +82,10 @@ pageextension 6103 "E-Doc. A/P Admin Activities" extends "A/P Admin Activities"
 
     trigger OnOpenPage()
     begin
-        this.IncomingEDocumentInProgressCount := EDocumentHelper.GetEDocumentCount(Enum::"E-Document Status"::"In Progress", Enum::"E-Document Direction"::Incoming);
-        this.IncomingEDocumentProcessedCount := EDocumentHelper.GetEDocumentCount(Enum::"E-Document Status"::Processed, Enum::"E-Document Direction"::Incoming);
-        this.IncomingEDocumentErrorCount := EDocumentHelper.GetEDocumentCount(Enum::"E-Document Status"::Error, Enum::"E-Document Direction"::Incoming);
-        this.MatchedPurchaseOrderCount := EDocumentHelper.MatchedPurchaseOrdersCount();
-        this.WaitingPurchaseEDocCount := EDocumentHelper.WaitingPurchaseEDocCount();
+        IncomingEDocumentInProgressCount := EDocumentHelper.GetEDocumentCount(Enum::"E-Document Status"::"In Progress", Enum::"E-Document Direction"::Incoming);
+        IncomingEDocumentProcessedCount := EDocumentHelper.GetEDocumentCount(Enum::"E-Document Status"::Processed, Enum::"E-Document Direction"::Incoming);
+        IncomingEDocumentErrorCount := EDocumentHelper.GetEDocumentCount(Enum::"E-Document Status"::Error, Enum::"E-Document Direction"::Incoming);
+        MatchedPurchaseOrderCount := EDocumentHelper.MatchedPurchaseOrdersCount();
+        WaitingPurchaseEDocCount := EDocumentHelper.WaitingPurchaseEDocCount();
     end;
 }
