@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
-using Microsoft.eServices.EDocument.API;
-
 page 6122 "E-Documents"
 {
     ApplicationArea = Basic, Suite;
