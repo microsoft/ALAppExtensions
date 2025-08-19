@@ -4,6 +4,7 @@ codeunit 139662 "GP Item Tests"
 
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

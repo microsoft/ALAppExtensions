@@ -48,7 +48,6 @@ codeunit 9092 "Postcode Service GetAddress.io"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Postcode Service Manager", 'OnRetrieveAddressList', '', false, false)]
     procedure GetAddressListOnAddressListRetrieved(ServiceKey: Text; TempEnteredAutocompleteAddress: Record "Autocomplete Address" temporary; var TempAddressListNameValueBuffer: Record "Name/Value Buffer" temporary; var IsSuccessful: Boolean; var ErrorMsg: Text)
     var
-        CountryRec: Record "Country/Region";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         HttpClientInstance: HttpClient;
         HttpResponse: HttpResponseMessage;
@@ -60,6 +59,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
         ResponseText: Text;
         TempJsonToken: JsonToken;
         Line1: Text;
+        AddressID: Text;
     begin
         FeatureTelemetry.LogUptake('0000FW5', UKPostCodeFeatureNameTxt, Enum::"Feature Uptake Status"::Used);
 
@@ -74,7 +74,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
         GetConfigAndIfNecessaryCreate();
 
         // Build URL and include property number if provided
-        Url := PostcodeGetAddressIoConfig.EndpointURL + TempEnteredAutocompleteAddress.Postcode;
+        Url := PostcodeGetAddressIoConfig.EndpointURL + UrlEncodeSimple(TempEnteredAutocompleteAddress.Postcode);
         Url := Url + '?api-key=' + PostcodeGetAddressIoConfig.GetAPIPasswordAsSecret(PostcodeGetAddressIoConfig.APIKey).Unwrap();
         Url := Url + '&expand=true';
 
@@ -98,62 +98,48 @@ codeunit 9092 "Postcode Service GetAddress.io"
         HttpResponse.Content().ReadAs(ResponseText);
         JsonObjectInstance.ReadFrom(ResponseText);
 
-        if JsonObjectInstance.SelectToken('addresses', JsonArrayToken) then begin
+        if JsonObjectInstance.SelectToken('suggestions', JsonArrayToken) then
             AddressJsonArray := JsonArrayToken.AsArray();
+        IsSuccessful := false;
 
-            foreach AddressJsonToken in AddressJsonArray do
-                if AddressJsonToken.SelectToken('line_1', TempJsonToken) then begin
-                    Line1 := TempJsonToken.AsValue().AsText();
+        foreach AddressJsonToken in AddressJsonArray do begin
+            Line1 := '';
+            AddressId := '';
 
-                    if AddressJsonToken.SelectToken('line_2', TempJsonToken) then
-                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
+            if AddressJsonToken.SelectToken('address', TempJsonToken) then
+                Line1 := TempJsonToken.AsValue().AsText();
 
-                    if AddressJsonToken.SelectToken('line_3', TempJsonToken) then
-                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
+            if AddressJsonToken.SelectToken('id', TempJsonToken) then
+                AddressId := TempJsonToken.AsValue().AsText();
 
-                    if AddressJsonToken.SelectToken('locality', TempJsonToken) then
-                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
+            if (Line1 <> '') and (AddressId <> '') then
+                if (StrPos(Line1, TempEnteredAutocompleteAddress.Address) > 0) or
+                   (TempEnteredAutocompleteAddress.Address = '') then
+                    PostcodeServiceManager.AddSelectionAddress(TempAddressListNameValueBuffer, AddressId, Line1);
+        end;
 
-                    if AddressJsonToken.SelectToken('town_or_city', TempJsonToken) then
-                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
+        IsSuccessful := true;
 
-                    if AddressJsonToken.SelectToken('county', TempJsonToken) then
-                        Line1 := Line1 + ', ' + TempJsonToken.AsValue().AsText();
-
-                    if AddressJsonToken.SelectToken('country', TempJsonToken) then begin
-                        CountryRec.SetRange(Name, TempJsonToken.AsValue().AsText());
-                        if CountryRec.FindFirst() then
-                            Line1 := Line1 + ', ' + CountryRec.Code
-                        else
-                            Line1 := Line1 + ', ' + 'GB';
-                    end;
-
-                    // If Address was entered by user, then we only insert maching addresses
-                    if (StrPos(Line1, TempEnteredAutocompleteAddress.Address) > 0) or (TempEnteredAutocompleteAddress.Address = '') then
-                        PostcodeServiceManager.AddSelectionAddress(TempAddressListNameValueBuffer, Line1, Line1);
-
-                end;
-
-            IsSuccessful := true;
-            FeatureTelemetry.LogUsage('0000BU7', UKPostCodeFeatureNameTxt, 'List of addresses created');
-            exit;
-        end else begin
-            // show a general error message to user but send a technical error message in telemetry
+        if IsSuccessful then
+            FeatureTelemetry.LogUsage('0000BU7', UKPostCodeFeatureNameTxt, 'List of addresses created')
+        else begin
             ErrorMsg := GeneralHttpErr;
-            IsSuccessful := false;
-            FeatureTelemetry.LogError('0000BU4', UKPostCodeFeatureNameTxt, 'Getting list of addresses', JsonParseErr);
-            exit
+            FeatureTelemetry.LogError('0000BU4', UKPostCodeFeatureNameTxt, 'No valid addresses in list', JsonParseErr);
         end;
     end;
 
+    [NonDebuggable]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Postcode Service Manager", 'OnRetrieveAddress', '', false, false)]
     procedure GetFullAddressOnGetAddress(ServiceKey: Text; TempEnteredAutocompleteAddress: Record "Autocomplete Address" temporary; TempSelectedAddressNameValueBuffer: Record "Name/Value Buffer" temporary; var TempAutocompleteAddress: Record "Autocomplete Address" temporary; var IsSuccessful: Boolean; var ErrorMsg: Text)
+    var
+        FullAddressString: Text;
     begin
         if ServiceKey <> ServiceIdentifierMsg then
             exit;
 
-        ParseAddress(TempAutocompleteAddress, TempSelectedAddressNameValueBuffer.Value, TempEnteredAutocompleteAddress.Postcode);
+        GetFullAddressStringByID(TempSelectedAddressNameValueBuffer.Name, FullAddressString, IsSuccessful, ErrorMsg);
 
+        ParseAddress(TempAutocompleteAddress, FullAddressString, TempEnteredAutocompleteAddress.Postcode);
         IsSuccessful := true;
     end;
 
@@ -192,7 +178,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
             exit;
 
         PostcodeGetAddressIoConfig.Init();
-        PostcodeGetAddressIoConfig.EndpointURL := 'https://api.getAddress.io/find/';
+        PostcodeGetAddressIoConfig.EndpointURL := 'https://api.getAddress.io/autocomplete/';
         PostcodeGetAddressIoConfig.Insert();
         Commit();
     end;
@@ -262,4 +248,104 @@ codeunit 9092 "Postcode Service GetAddress.io"
         TempAutocompleteAddress."Country / Region" := COPYSTR(TrimStart(SELECTSTR(7, AddressString)), 1, MaxStrLen(TempAutocompleteAddress."Country / Region"));
     end;
 
+    procedure UrlEncodeSimple(Input: Text): Text
+    begin
+        Input := DelStr(Input, 1, 0);
+        Input := StrSubstNo(Input, ' ', '%20');
+        exit(Input);
+    end;
+
+    local procedure GetFullAddressStringByID(AddressID: Text; var FullAddressString: Text; var IsSuccessful: Boolean; var ErrorMsg: Text)
+    var
+        CountryRec: Record "Country/Region";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        JsonObject: JsonObject;
+        Token: JsonToken;
+        Line1, Line2, Line3, Locality, City, County, Country, ResponseText : Text;
+    begin
+        FeatureTelemetry.LogUptake('0000FW6', UKPostCodeFeatureNameTxt, Enum::"Feature Uptake Status"::Used);
+
+        GetConfigAndIfNecessaryCreate();
+
+        if not CallGetAddressIo(AddressID, ResponseText, ErrorMsg) then begin
+            ErrorMsg := GeneralHttpErr;
+            FullAddressString := AddressID;
+            IsSuccessful := false;
+            FeatureTelemetry.LogError('0000BU8', UKPostCodeFeatureNameTxt, 'Calling GetAddress.io failed', ErrorMsg);
+            exit;
+        end;
+
+        JsonObject.ReadFrom(ResponseText);
+
+        if JsonObject.SelectToken('line_1', Token) then
+            Line1 := Token.AsValue().AsText();
+        if JsonObject.SelectToken('line_2', Token) then
+            Line2 := Token.AsValue().AsText();
+        if JsonObject.SelectToken('line_3', Token) then
+            Line3 := Token.AsValue().AsText();
+        if JsonObject.SelectToken('locality', Token) then
+            Locality := Token.AsValue().AsText();
+        if JsonObject.SelectToken('town_or_city', Token) then
+            City := Token.AsValue().AsText();
+        if JsonObject.SelectToken('county', Token) then
+            County := Token.AsValue().AsText();
+        if JsonObject.SelectToken('country', Token) then begin
+            CountryRec.SetRange(Name, Token.AsValue().AsText());
+            if CountryRec.FindFirst() then
+                Country := CountryRec.Code
+            else
+                Country := 'GB';
+        end;
+
+        FullAddressString :=
+            Line1 + ', ' +
+            Line2 + ', ' +
+            Line3 + ', ' +
+            Locality + ', ' +
+            City + ', ' +
+            County + ', ' +
+            Country;
+
+        IsSuccessful := true;
+
+        if IsSuccessful then
+            FeatureTelemetry.LogUsage('0000BU9', UKPostCodeFeatureNameTxt, 'Full address string retrieved')
+        else begin
+            ErrorMsg := 'Could not build full address string.';
+            FeatureTelemetry.LogError('0000BUA', UKPostCodeFeatureNameTxt, 'JSON parsing or formatting failed', ErrorMsg);
+        end;
+    end;
+
+    [NonDebuggable]
+    local procedure CallGetAddressIo(AddressID: Text; var ResponseText: Text; var ErrorMsg: Text): Boolean
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        Url, Endpoint : Text;
+        HttpClient: HttpClient;
+        HttpResponse: HttpResponseMessage;
+    begin
+        GetConfigAndIfNecessaryCreate();
+
+        Endpoint := PostcodeGetAddressIoConfig.EndpointURL.Replace('/autocomplete/', '/get/');
+        Url := Endpoint +
+               UrlEncodeSimple(AddressID) +
+               '?api-key=' + PostcodeGetAddressIoConfig.GetAPIPasswordAsSecret(PostcodeGetAddressIoConfig.APIKey).Unwrap();
+
+        PrepareWebRequest(HttpClient);
+
+        if not HttpClient.Get(Url, HttpResponse) then begin
+            ErrorMsg := TechnicalErr;
+            FeatureTelemetry.LogError('0000BU2', UKPostCodeFeatureNameTxt, 'Sending HTTP request', ErrorMsg);
+            exit(false);
+        end;
+
+        ErrorMsg := HandleHttpErrors(HttpResponse);
+        if ErrorMsg <> '' then begin
+            FeatureTelemetry.LogError('0000BU3', UKPostCodeFeatureNameTxt, 'HTTP response contained error', ErrorMsg);
+            exit(false);
+        end;
+
+        HttpResponse.Content().ReadAs(ResponseText);
+        exit(true);
+    end;
 }

@@ -87,7 +87,7 @@ table 47061 "SL Company Additional Settings"
         field(5; "Migrate Customer Classes"; Boolean)
         {
             Caption = 'Customer Classes';
-            ToolTip = 'Specify whether to migrate customer classes. This is a future feature.';
+            ToolTip = 'Specify whether to migrate customer classes.';
             InitValue = false;
 
             trigger OnValidate()
@@ -103,7 +103,7 @@ table 47061 "SL Company Additional Settings"
         field(6; "Migrate Item Classes"; Boolean)
         {
             Caption = 'Product Classes';
-            ToolTip = 'Specify whether to migrate item classes. This is a future feature.';
+            ToolTip = 'Specify whether to migrate item classes.';
             InitValue = false;
 
             trigger OnValidate()

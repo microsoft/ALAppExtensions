@@ -1,3 +1,7 @@
+namespace Microsoft.Test.DemoTool;
+
+using Microsoft.DemoTool;
+
 codeunit 148049 "Demo Tool Language Test"
 {
     Subtype = Test;

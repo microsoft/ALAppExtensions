@@ -988,6 +988,26 @@ codeunit 47023 "SL Helper Functions"
         SetProjectDataCreated();
     end;
 
+    internal procedure DeleteExistingCustomerPostingGroups()
+    var
+        CustomerPostingGroup: Record "Customer Posting Group";
+    begin
+        if CustomerPostingGroup.FindSet() then
+            repeat
+                CustomerPostingGroup.Delete();
+            until CustomerPostingGroup.Next() = 0;
+    end;
+
+    internal procedure DeleteExistingVendorPostingGroups()
+    var
+        VendorPostingGroup: Record "Vendor Posting Group";
+    begin
+        if VendorPostingGroup.FindSet() then
+            repeat
+                VendorPostingGroup.Delete();
+            until VendorPostingGroup.Next() = 0;
+    end;
+
     internal procedure CheckAndLogErrors()
     var
         LastError: Text;

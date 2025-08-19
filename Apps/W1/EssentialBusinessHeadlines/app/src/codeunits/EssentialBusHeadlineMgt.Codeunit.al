@@ -36,6 +36,21 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         RecentlyOverdueInvoicesPayloadTxt: Label 'Overdue invoices up by %1. You can collect %2', Comment = '%1 is the number of recently overdue invoices, %2 is the total amount of the recently overdue invoices', MaxLength = 60; // support up to 3-digit number of overdue invoices and currencies up to 12 chars: '1,234,567 kr'
         NoDaysAgoFilterTxt: Label '<-%1D>', Locked = true;
 
+    procedure GetVATReturnQualifierText(): Text
+    begin
+        exit(VATReturnQualifierTxt);
+    end;
+
+    procedure GetOverdueVATReturnPeriodText(): Text
+    begin
+        exit(OverdueVATReturnPeriodTxt);
+    end;
+
+    procedure GetOpenVATReturnPeriodText(): Text
+    begin
+        exit(OpenVATReturnPeriodTxt);
+    end;
+
     local procedure ChooseQualifier(QualifierWeek: Text; QualifierMonth: Text; Qualifier3Months: Text; DaysSearch: Integer): Text
     begin
         case DaysSearch of

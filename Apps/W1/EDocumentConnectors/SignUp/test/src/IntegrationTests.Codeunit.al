@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-
+using System.Utilities;
 using System.Threading;
 using System.Environment.Configuration;
 using System.Apps;
@@ -19,9 +19,10 @@ using Microsoft.eServices.EDocument.Integration;
 codeunit 148193 IntegrationTests
 {
     Subtype = Test;
+    TestType = Uncategorized;
 
     Permissions = tabledata "SignUp Connection Setup" = rimd,
-                    tabledata "E-Document" = r;
+                  tabledata "E-Document" = r;
 
     var
         Customer: Record Customer;
@@ -36,13 +37,12 @@ codeunit 148193 IntegrationTests
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Wrong value', Locked = true;
+        GetAccessTokenFileTok: Label 'GetAccessToken.txt', Locked = true;
+        DocumentStatus: Option Processing,Error;
 
     #region tests
-
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument()
     var
         EDocument: Record "E-Document";
@@ -126,10 +126,8 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('HttpSubmitHandler')]
     procedure SubmitDocument_Pending_Sent()
     var
         EDocument: Record "E-Document";
@@ -141,7 +139,6 @@ codeunit 148193 IntegrationTests
         // Steps:
         // Pending response -> Pending response -> Sent 
         this.Initialize();
-        this.IntegrationHelpers.SetAPIWith200Code();
 
         // [Given] Team member
         this.LibraryLowerPermissions.SetTeamMember();
@@ -184,7 +181,7 @@ codeunit 148193 IntegrationTests
 
         // [WHEN] Executing Get Response succesfully
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
-        this.IntegrationHelpers.SetAPICode('/signup/200/response-pending');
+        this.SetDocumentStatus(DocumentStatus::Processing);
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -220,7 +217,7 @@ codeunit 148193 IntegrationTests
 
         // [WHEN] Executing Get Response succesfully
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
-        this.IntegrationHelpers.SetAPIWith200Code();
+        this.SetDocumentStatus(DocumentStatus::Processing);
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -256,11 +253,8 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
-    [HandlerFunctions('EDocServicesPageHandler')]
+    [HandlerFunctions('EDocServicesPageHandler,HttpSubmitHandler')]
     procedure SubmitDocument_Error_Sent()
     var
         EDocument: Record "E-Document";
@@ -272,7 +266,6 @@ codeunit 148193 IntegrationTests
         // Steps:
         // Pending response -> Error -> Pending response -> Sent 
         this.Initialize();
-        this.IntegrationHelpers.SetAPIWith200Code();
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
@@ -316,7 +309,7 @@ codeunit 148193 IntegrationTests
 
         // [WHEN] Executing Get Response succesfully
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
-        this.IntegrationHelpers.SetAPICode('/signup/200/response-error');
+        this.SetDocumentStatus(DocumentStatus::Error);
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         this.LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
@@ -353,12 +346,12 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
 
         // Then user manually send 
-        this.IntegrationHelpers.SetAPIWith200Code();
         EDocument.FindLast();
 
         // [THEN] Open E-Document page and resend
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
+        this.SetDocumentStatus(DocumentStatus::Processing);
         EDocumentPage.Send_Promoted.Invoke();
         EDocumentPage.Close();
 
@@ -391,7 +384,6 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
 
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Edit');
-        this.IntegrationHelpers.SetAPIWith200Code();
         this.LibraryLowerPermissions.AddPermissionSet('SignUp E-Doc Read');
 
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
@@ -429,10 +421,8 @@ codeunit 148193 IntegrationTests
         EDocumentPage.Close();
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('ServiceDownHandler')]
     procedure SubmitDocumentServiceDown()
     var
         EDocument: Record "E-Document";
@@ -441,7 +431,6 @@ codeunit 148193 IntegrationTests
         EDocLogList: List of [Enum "E-Document Service Status"];
     begin
         this.Initialize();
-        this.IntegrationHelpers.SetAPIWith500Code();
 
         // [Given] Team member 
         this.LibraryLowerPermissions.SetTeamMember();
@@ -482,10 +471,8 @@ codeunit 148193 IntegrationTests
         this.Assert.AreEqual('There was an error sending the request. Response code: 500 and error message: Internal Server Error', EDocumentPage.ErrorMessagesPart.Description.Value(), this.IncorrectValueErr);
     end;
 
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
     [Test]
+    [HandlerFunctions('ReceiveDocumentHandler')]
     procedure SubmitGetDocuments()
     var
         EDocument: Record "E-Document";
@@ -510,31 +497,28 @@ codeunit 148193 IntegrationTests
         this.LibraryEDocument.RunImportJob();
 
         // Assert that we have Purchase Invoice created
-        this.Assert.AreEqual(EDocument.Count(), TmpDocCount + 1, 'The document was not imported!');
+        this.Assert.AreEqual(TmpDocCount + 1, EDocument.Count(), 'The document was not imported!');
     end;
 
-    /// Enable test when migrated to HTTP client handler
-    /// <summary>
-    /// Test needs MockService running to work. 
-    /// </summary>
-    // [Test]
-    // procedure GetMetadataProfiles()
-    // var
-    //     SignUpMetadataProfile: Record "SignUp Metadata Profile";
-    //     EDocServiceSupportedTypes: TestPage "E-Doc Service Supported Types";
-    // begin
-    //     this.Initialize();
+    [Test]
+    [HandlerFunctions('GetMetadataProfileHandler')]
+    procedure GetMetadataProfiles()
+    var
+        SignUpMetadataProfile: Record "SignUp Metadata Profile";
+        EDocServiceSupportedTypes: TestPage "E-Doc Service Supported Types";
+    begin
+        this.Initialize();
 
-    //     SignUpMetadataProfile.Reset();
-    //     SignUpMetadataProfile.DeleteAll();
+        SignUpMetadataProfile.Reset();
+        SignUpMetadataProfile.DeleteAll();
 
-    //     // Populate metadata profiles
-    //     EDocServiceSupportedTypes.OpenView();
-    //     EDocServiceSupportedTypes.PopulateMetaData.Invoke();
-    //     EDocServiceSupportedTypes.Close();
+        // Populate metadata profiles
+        EDocServiceSupportedTypes.OpenView();
+        EDocServiceSupportedTypes.PopulateMetaData.Invoke();
+        EDocServiceSupportedTypes.Close();
 
-    //     this.Assert.TableIsNotEmpty(Database::"SignUp Metadata Profile");
-    // end;
+        this.Assert.TableIsNotEmpty(Database::"SignUp Metadata Profile");
+    end;
 
     #endregion
 
@@ -547,6 +531,65 @@ codeunit 148193 IntegrationTests
         EDocumentServicesPage.OK().Invoke();
     end;
 
+    [HttpClientHandler]
+    internal procedure HttpSubmitHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+        GetSentDocumentStatusFileTok: Label 'GetSentDocumentStatus.txt', Locked = true;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
+                LoadResourceIntoHttpResponse(GetAccessTokenFileTok, Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions/[0-9a-zA-Z-]+/status'):
+                GetStatusResponse(Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/outbox/transactions'):
+                LoadResourceIntoHttpResponse(GetSentDocumentStatusFileTok, Response);
+        end;
+    end;
+
+    [HttpClientHandler]
+    internal procedure ReceiveDocumentHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+        GetTargetDocumentRequestFileTok: Label 'GetTargetDocumentRequest.txt', Locked = true;
+        GetRecievedDocumentsRequestFileTok: Label 'GetReceivedDocumentsRequest.txt', Locked = true;
+    begin
+        case true of
+            Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token'):
+                LoadResourceIntoHttpResponse(GetAccessTokenFileTok, Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/inbox/transactions/[0-9a-zA-Z-]+'):
+                LoadResourceIntoHttpResponse(GetTargetDocumentRequestFileTok, Response);
+
+            Regex.IsMatch(Request.Path, 'https?://.+/api/v2/Peppol/inbox/transactions'):
+                LoadResourceIntoHttpResponse(GetRecievedDocumentsRequestFileTok, Response);
+        end;
+    end;
+
+    [HttpClientHandler]
+    internal procedure ServiceDownHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+    begin
+        if Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token') then
+            LoadResourceIntoHttpResponse(GetAccessTokenFileTok, Response)
+        else
+            Response.HttpStatusCode := 500;
+    end;
+
+    [HttpClientHandler]
+    internal procedure GetMetadataProfileHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        Regex: Codeunit Regex;
+        GetMetadataProfileFileTok: Label 'GetMetadataProfile.txt', Locked = true;
+    begin
+        if Regex.IsMatch(Request.Path, 'https?://.+/.+/oauth2/token') then
+            LoadResourceIntoHttpResponse(GetAccessTokenFileTok, Response)
+        else
+            LoadResourceIntoHttpResponse(GetMetadataProfileFileTok, Response);
+    end;
     #endregion
 
     #region local methods
@@ -563,8 +606,6 @@ codeunit 148193 IntegrationTests
 
         SignUpConnectionSetup.DeleteAll();
         SignUpAuthentication.InitConnectionSetup();
-        this.IntegrationHelpers.SetCommonConnectionSetup();
-        this.IntegrationHelpers.SetAPIWith200Code();
 
         if this.IsInitialized then
             exit;
@@ -687,5 +728,27 @@ codeunit 148193 IntegrationTests
         exit(EDocumentLog.Count());
     end;
 
+    local procedure LoadResourceIntoHttpResponse(ResourceText: Text; var Response: TestHttpResponseMessage)
+    begin
+        Response.Content.WriteFrom(NavApp.GetResourceAsText(ResourceText, TextEncoding::UTF8));
+    end;
+
+    local procedure SetDocumentStatus(NewDocumentStatus: Option Processing,Error)
+    begin
+        this.DocumentStatus := NewDocumentStatus;
+    end;
+
+    local procedure GetStatusResponse(var Response: TestHttpResponseMessage)
+    var
+        GetSentDocumentStatusInProgressFileTok: Label 'GetSentDocumentStatusInProgress.txt', Locked = true;
+        GetSentDocumentStatusErrorFileTok: Label 'GetSentDocumentStatusError.txt', Locked = true;
+    begin
+        case this.DocumentStatus of
+            this.DocumentStatus::Processing:
+                LoadResourceIntoHttpResponse(GetSentDocumentStatusInProgressFileTok, Response);
+            this.DocumentStatus::Error:
+                LoadResourceIntoHttpResponse(GetSentDocumentStatusErrorFileTok, Response);
+        end;
+    end;
     #endregion
 }

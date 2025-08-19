@@ -3,6 +3,7 @@ codeunit 139707 "APIV1 - Item Categories E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

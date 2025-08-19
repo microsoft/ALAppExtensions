@@ -192,6 +192,36 @@ codeunit 18127 "GST Purch RCM Charge Item"
         VerifyGSTEntries(DocumentNo);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromPurchInvToRegVendorWithoutRCMChargeItemNonITCInterState()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        InventorySetup: Record "Inventory Setup";
+        PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocumentNo: Code[20];
+    begin
+        //[SCENARIO] Check if the system is adding GST for Charge (Item) on Purchase Invoice for a Registered Vendor In Costing Entries with Interstate and ITC is Non-Availment with Automatic Cost Posting True.
+        //[GIVEN] Created GST Setup with GST Credit Non Availment and Set Inventory Setup value
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, false, false);
+        InitializeSharedStep(false, false, false);
+        InventorySetup."Automatic Cost Posting" := true;
+        InventorySetup."Automatic Cost Adjustment" := InventorySetup."Automatic Cost Adjustment"::Always;
+
+        // [WHEN] Create Purchase Invoice with GST and Line type as Item for InterState Transactions.
+        CreatePurchaseDocument(PurchaseHeader, PurchaseLine, LineType::Item, DocumentType::Invoice);
+
+        // [THEN] New Purchase Line Created With Charge Item and assigned with Item
+        DocumentNo := CreateAndPostPurchaseDocWithChargeItem(PurchaseHeader);
+
+        //[THEN] GL Entries, GST Ledger Entries and Detailed GST Ledger Entries are created and Verified
+        LibraryGST.VerifyGLEntries(PurchaseHeader."Document Type"::Invoice, DocumentNo, 5);
+    end;
+
     local procedure CreateAndPostPurchaseDocWithChargeItem(var PurchaseHeader: Record "Purchase Header"): Code[20]
     var
         NewPurchaseLine: Record "Purchase Line";

@@ -94,7 +94,7 @@ codeunit 7330 "Item Subst. Suggestion Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oPreview());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Preview());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Create Product Information");
 
         AOAIChatCompletionParams.SetMaxTokens(ItemSubstSuggestUtility.GetMaxTokens());

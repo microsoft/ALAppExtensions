@@ -4,6 +4,7 @@ using System.TestTools.AITestToolkit;
 codeunit 133525 "RedT XPIA Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

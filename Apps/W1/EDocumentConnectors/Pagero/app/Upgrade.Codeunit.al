@@ -5,9 +5,9 @@
 namespace Microsoft.EServices.EDocumentConnector;
 using System.Upgrade;
 
+using Microsoft.eServices.EDocument;
 #if not CLEAN26
 using Microsoft.eServices.EDocument.Integration;
-using Microsoft.eServices.EDocument;
 #endif
 
 #pragma warning disable AS0130
@@ -18,6 +18,7 @@ codeunit 6370 Upgrade
 {
     Access = Internal;
     Subtype = Upgrade;
+    Permissions = tabledata "E-Document Service" = rm;
 
     trigger OnUpgradePerCompany()
     var

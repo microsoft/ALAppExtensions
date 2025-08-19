@@ -5,12 +5,11 @@
 namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
+using Microsoft.Integration.Dataverse;
 
-#pragma warning disable AS0130
-#pragma warning disable PTE0025
+#pragma warning disable AS0130, PTE0025
 table 6610 "FS Bookable Resource"
-#pragma warning restore AS0130
-#pragma warning restore PTE0025
+#pragma warning restore AS0130, PTE0025
 {
     ExternalName = 'bookableresource';
     TableType = CRM;
@@ -278,6 +277,7 @@ table 6610 "FS Bookable Resource"
             Description = 'Exchange rate for the currency associated with the bookableresource with respect to the base currency.';
             Caption = 'ExchangeRate';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(45; TransactionCurrencyId; GUID)
         {
@@ -414,6 +414,8 @@ table 6610 "FS Bookable Resource"
             Description = '';
             Caption = 'Hourly Rate';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(82; HourlyRate_Base; Decimal)
         {
@@ -423,6 +425,8 @@ table 6610 "FS Bookable Resource"
             Description = 'Value of the Hourly Rate in base currency.';
             Caption = 'Hourly Rate (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 2;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(83; TimeOffApprovalRequired; Boolean)
         {
@@ -459,6 +463,7 @@ table 6610 "FS Bookable Resource"
             Description = 'The location latitude.';
             Caption = 'Latitude';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(91; Longitude; Decimal)
         {
@@ -467,6 +472,7 @@ table 6610 "FS Bookable Resource"
             Description = 'The location longitude.';
             Caption = 'Longitude';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(92; LocationTimestamp; Datetime)
         {
@@ -502,4 +508,20 @@ table 6610 "FS Bookable Resource"
         {
         }
     }
+
+    local procedure GetCurrencyCode(): Code[10]
+    var
+        CRMSyncHelper: Codeunit "CRM Synch. Helper";
+    begin
+        exit(CRMSyncHelper.GetNavCurrencyCode(Rec.TransactionCurrencyId));
+    end;
+
+    local procedure GetBaseCurrencyCode(): Code[10]
+    var
+        CRMConnectionSetup: Record "CRM Connection Setup";
+        CRMSyncHelper: Codeunit "CRM Synch. Helper";
+    begin
+        CRMConnectionSetup.Get();
+        exit(CRMSyncHelper.GetNavCurrencyCode(CRMConnectionSetup.BaseCurrencyId));
+    end;
 }

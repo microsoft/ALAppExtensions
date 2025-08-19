@@ -51,11 +51,26 @@ pageextension 6230 "Sust. Resource Card" extends "Resource Card"
             {
                 Caption = 'Calculate CO2e';
                 ApplicationArea = Basic, Suite;
-                Visible = SustainabilityVisible;
+                Visible = SustainabilityVisible and not SustainabilityAllGasesAsCO2eVisible;
                 Image = Calculate;
                 Promoted = true;
                 PromotedCategory = Process;
                 ToolTip = 'Executes the Calculate CO2e action.';
+
+                trigger OnAction()
+                begin
+                    RunCalculateCO2e();
+                end;
+            }
+            action("Calculate Total CO2e")
+            {
+                Caption = 'Calculate Total CO2e';
+                ApplicationArea = Basic, Suite;
+                Visible = SustainabilityVisible and SustainabilityAllGasesAsCO2eVisible;
+                Image = Calculate;
+                Promoted = true;
+                PromotedCategory = Process;
+                ToolTip = 'Executes the Calculate Total CO2e action.';
 
                 trigger OnAction()
                 begin
@@ -77,6 +92,7 @@ pageextension 6230 "Sust. Resource Card" extends "Resource Card"
         SustainabilitySetup.Get();
 
         SustainabilityVisible := SustainabilitySetup."Resource Emissions";
+        SustainabilityAllGasesAsCO2eVisible := SustainabilitySetup."Use All Gases As CO2e";
     end;
 
     local procedure RunCalculateCO2e()
@@ -91,4 +107,5 @@ pageextension 6230 "Sust. Resource Card" extends "Resource Card"
 
     var
         SustainabilityVisible: Boolean;
+        SustainabilityAllGasesAsCO2eVisible: Boolean;
 }

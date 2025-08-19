@@ -4,137 +4,36 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Journal;
 
-using Microsoft.Bank.BankAccount;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.HumanResources.Employee;
-using Microsoft.Intercompany.Partner;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Sales.Customer;
-
 codeunit 31431 "Reconciliation Handler CZL"
 {
     [EventSubscriber(ObjectType::Page, Page::Reconciliation, 'OnAfterSetGenJnlLine', '', false, false)]
     local procedure OnAfterSetGenJnlLine(var GLAccountNetChange: Record "G/L Account Net Change"; var GenJnlLine: Record "Gen. Journal Line")
     var
         GenJnlAlloccation: Record "Gen. Jnl. Allocation";
+        TempGenJournalLine: Record "Gen. Journal Line" temporary;
     begin
         GLAccountNetChange.DeleteAll();
         if GenJnlLine.FindSet() then
             repeat
-                SaveNetChange(GLAccountNetChange, GenJnlLine,
-                  GenJnlLine."Account Type", GenJnlLine."Account No.",
-                  GenJnlLine."Amount (LCY)", GenJnlLine."VAT Amount (LCY)", GenJnlLine."Amount", GenJnlLine."VAT Amount");
-                SaveNetChange(GLAccountNetChange, GenJnlLine,
-                  GenJnlLine."Bal. Account Type", GenJnlLine."Bal. Account No.",
-                  -GenJnlLine."Amount (LCY)", GenJnlLine."Bal. VAT Amount (LCY)", -GenJnlLine."Amount", GenJnlLine."Bal. VAT Amount");
-                GenJnlAlloccation.SetRange("Journal Template Name", GenJnlLine."Journal Template Name");
-                GenJnlAlloccation.SetRange("Journal Batch Name", GenJnlLine."Journal Batch Name");
-                GenJnlAlloccation.SetRange("Journal Line No.", GenJnlLine."Line No.");
+                TempGenJournalLine := GenJnlLine;
+                GLAccountNetChange.SaveNetChangeCZL(TempGenJournalLine);
+                Codeunit.Run(Codeunit::"Exchange Acc. G/L Journal Line", TempGenJournalLine);
+                GLAccountNetChange.SaveNetChangeCZL(TempGenJournalLine);
+
+                GenJnlAlloccation.SetRange("Journal Template Name", TempGenJournalLine."Journal Template Name");
+                GenJnlAlloccation.SetRange("Journal Batch Name", TempGenJournalLine."Journal Batch Name");
+                GenJnlAlloccation.SetRange("Journal Line No.", TempGenJournalLine."Line No.");
                 if GenJnlAlloccation.FindSet() then
                     repeat
-                        SaveNetChange(GLAccountNetChange, GenJnlLine,
-                          GenJnlLine."Account Type"::"G/L Account", GenJnlAlloccation."Account No.",
-                          GenJnlAlloccation.Amount, GenJnlAlloccation."VAT Amount", GenJnlAlloccation."Amount", GenJnlAlloccation."VAT Amount");
+                        TempGenJournalLine.Init();
+                        TempGenJournalLine."Account Type" := GenJnlLine."Account Type"::"G/L Account";
+                        TempGenJournalLine.CopyFromGenJnlAllocation(GenJnlAlloccation);
+                        GLAccountNetChange.SaveNetChangeCZL(TempGenJournalLine);
                     until GenJnlAlloccation.Next() = 0;
             until GenJnlLine.Next() = 0;
 
         GLAccountNetChange.Reset();
-        GLAccountNetChange.SetCurrentKey("Account Type CZL", "Account No. CZL");
-    end;
-
-    local procedure SaveNetChange(var GLAccountNetChange: Record "G/L Account Net Change"; GenJournalLine: Record "Gen. Journal Line";
-                                  GenJournalAccountType: Enum "Gen. Journal Account Type"; AccNo: Code[20]; AmountLCY: Decimal; VATAmountLCY: Decimal; Amount: Decimal; VATAmount: Decimal)
-    var
-        GLAccount: Record "G/L Account";
-        Customer: Record Customer;
-        Vendor: Record Vendor;
-        BankAccount: Record "Bank Account";
-        FixedAsset: Record "Fixed Asset";
-        ICPartner: Record "IC Partner";
-        Employee: Record Employee;
-        NetChangeLCY: Decimal;
-        NetChange: Decimal;
-    begin
-        if AccNo = '' then
-            exit;
-        NetChangeLCY := AmountLCY - VATAmountLCY;
-        NetChange := Amount - VATAmount;
-
-        GLAccountNetChange.SetCurrentKey("Account Type CZL", "Account No. CZL");
-        GLAccountNetChange.SetRange("Account Type CZL", GenJournalAccountType);
-        GLAccountNetChange.SetRange("Account No. CZL", AccNo);
-        if GLAccountNetChange.FindFirst() then begin
-            GLAccountNetChange."Net Change in Jnl." += NetChangeLCY;
-            GLAccountNetChange."Balance after Posting" += NetChangeLCY;
-            if (GenJournalAccountType = GenJournalAccountType::"Bank Account") and (GenJournalLine."Currency Code" <> '') then begin
-                GLAccountNetChange."Net Change in Jnl. Curr. CZL" += NetChange;
-                GLAccountNetChange."Balance after Posting Curr.CZL" += NetChange;
-            end;
-            OnSetSaveNetChangeBeforeModifyGLAccountNetChange(GLAccountNetChange, GenJournalLine, NetChangeLCY, NetChange);
-            GLAccountNetChange.Modify();
-        end else begin
-            GLAccountNetChange.Reset();
-            GLAccountNetChange.Init();
-            GLAccountNetChange."No." := Format(GLAccountNetChange.Count() + 1);
-            GLAccountNetChange."Account Type CZL" := GenJournalAccountType;
-            GLAccountNetChange."Account No. CZL" := AccNo;
-            GLAccountNetChange."Net Change in Jnl." := NetChangeLCY;
-            case GenJournalAccountType of
-                GenJournalLine."Account Type"::"G/L Account":
-                    begin
-                        GLAccount.Get(AccNo);
-                        GLAccountNetChange.Name := GLAccount.Name;
-                        GLAccount.CalcFields("Balance at Date");
-                        GLAccountNetChange."Balance after Posting" := GLAccount."Balance at Date" + NetChangeLCY;
-                    end;
-                GenJournalLine."Account Type"::Customer:
-                    begin
-                        Customer.Get(AccNo);
-                        GLAccountNetChange.Name := Customer.Name;
-                        Customer.CalcFields("Balance (LCY)");
-                        GLAccountNetChange."Balance after Posting" := Customer."Balance (LCY)" + NetChangeLCY;
-                    end;
-                GenJournalLine."Account Type"::Vendor:
-                    begin
-                        Vendor.Get(AccNo);
-                        GLAccountNetChange.Name := Vendor.Name;
-                        Vendor.CalcFields("Balance (LCY)");
-                        GLAccountNetChange."Balance after Posting" := -Vendor."Balance (LCY)" + NetChangeLCY;
-                    end;
-                GenJournalLine."Account Type"::"Bank Account":
-                    begin
-                        BankAccount.Get(AccNo);
-                        GLAccountNetChange.Name := BankAccount.Name;
-                        BankAccount.CalcFields("Balance (LCY)", Balance);
-                        GLAccountNetChange."Balance after Posting" := BankAccount."Balance (LCY)" + NetChangeLCY;
-                        if (GenJournalLine."Currency Code" <> '') then begin
-                            GLAccountNetChange."Currency Code CZL" := BankAccount."Currency Code";
-                            GLAccountNetChange."Balance after Posting Curr.CZL" := BankAccount.Balance + NetChange;
-                            GLAccountNetChange."Net Change in Jnl. Curr. CZL" := NetChange;
-                        end;
-                    end;
-                GenJournalLine."Account Type"::"Fixed Asset":
-                    begin
-                        FixedAsset.Get(AccNo);
-                        GLAccountNetChange.Name := FixedAsset.Description;
-                    end;
-                GenJournalLine."Account Type"::"IC Partner":
-                    begin
-                        ICPartner.Get(AccNo);
-                        GLAccountNetChange.Name := ICPartner.Name;
-                    end;
-                GenJournalLine."Account Type"::Employee:
-                    begin
-                        Employee.Get(AccNo);
-                        GLAccountNetChange.Name := CopyStr(Employee.FullName(), 1, MaxStrLen(GLAccountNetChange.Name));
-                        Employee.CalcFields(Balance);
-                        GLAccountNetChange."Balance after Posting" := -Employee.Balance + NetChangeLCY;
-                    end;
-            end;
-            OnSetSaveNetChangeBeforeInsertGLAccountNetChange(GLAccountNetChange, GenJournalLine, NetChangeLCY, NetChange);
-            GLAccountNetChange.Insert();
-        end;
+        GLAccountNetChange.SetCurrentKey("Acc. Type CZL", "Account No. CZL");
     end;
 
     [EventSubscriber(ObjectType::Page, Page::Reconciliation, 'OnBeforeSaveNetChange', '', false, false)]
@@ -142,14 +41,27 @@ codeunit 31431 "Reconciliation Handler CZL"
     begin
         IsHandled := true;
     end;
+#if not CLEAN27
+    internal procedure RaiseOnSetSaveNetChangeBeforeModifyGLAccountNetChange(var GLAccountNetChange: Record "G/L Account Net Change"; GenJournalLine: Record "Gen. Journal Line"; NetChangeLCY: Decimal; NetChange: Decimal)
+    begin
+        OnSetSaveNetChangeBeforeModifyGLAccountNetChange(GLAccountNetChange, GenJournalLine, NetChangeLCY, NetChange);
+    end;
 
+    internal procedure RaiseOnSetSaveNetChangeBeforeInsertGLAccountNetChange(var GLAccountNetChange: Record "G/L Account Net Change"; GenJournalLine: Record "Gen. Journal Line"; NetChangeLCY: Decimal; NetChange: Decimal)
+    begin
+        OnSetSaveNetChangeBeforeInsertGLAccountNetChange(GLAccountNetChange, GenJournalLine, NetChangeLCY, NetChange);
+    end;
+
+    [Obsolete('Replaced by OnSaveNetChangeCZLOnBeforeModify event in tableextension 31047 "G/L Account Net Change CZL"', '27.0')]
     [IntegrationEvent(false, false)]
     local procedure OnSetSaveNetChangeBeforeModifyGLAccountNetChange(var GLAccountNetChange: Record "G/L Account Net Change"; GenJournalLine: Record "Gen. Journal Line"; NetChangeLCY: Decimal; NetChange: Decimal)
     begin
     end;
 
+    [Obsolete('Replaced by OnSaveNetChangeCZLOnBeforeInsert event in tableextension 31047 "G/L Account Net Change CZL"', '27.0')]
     [IntegrationEvent(false, false)]
     local procedure OnSetSaveNetChangeBeforeInsertGLAccountNetChange(var GLAccountNetChange: Record "G/L Account Net Change"; GenJournalLine: Record "Gen. Journal Line"; NetChangeLCY: Decimal; NetChange: Decimal)
     begin
     end;
+#endif
 }

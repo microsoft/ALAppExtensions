@@ -35,5 +35,6 @@
   },
   "features": [
     "NoImplicitWith"
-  ]
+  ],
+  "target": "Cloud"
 }

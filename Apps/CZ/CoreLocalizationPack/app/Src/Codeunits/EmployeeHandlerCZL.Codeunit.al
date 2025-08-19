@@ -12,6 +12,15 @@ codeunit 11750 "Employee Handler CZL"
     var
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
 
+    [EventSubscriber(ObjectType::Table, Database::Employee, 'OnAfterInsertEvent', '', false, false)]
+    local procedure InitValueOnAfterInsertEvent(var Rec: Record Employee)
+    begin
+        if not Rec."Allow Multiple Posting Groups" then begin
+            Rec."Allow Multiple Posting Groups" := true;
+            Rec.Modify();
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::Employee, 'OnAfterModifyEvent', '', false, false)]
     local procedure UpdateCompOfficalCZLOnAfterModify(var Rec: Record Employee; var xRec: Record Employee)
     var

@@ -63,7 +63,7 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
         }
         addafter("Currency Code")
         {
-            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCode())
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL())
             {
                 ApplicationArea = Suite;
                 Editable = false;
@@ -73,7 +73,7 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
 
                 trigger OnAssistEdit()
                 begin
-                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCodeCZL(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
                     ChangeExchangeRate.Editable(false);
                     ChangeExchangeRate.RunModal();
                 end;
@@ -241,7 +241,7 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
 
     trigger OnOpenPage()
     begin
-        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
     end;
 
     trigger OnAfterGetCurrRecord()

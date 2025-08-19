@@ -21,12 +21,14 @@
     "includeSourceInSymbolFile": true
   },
   "features": [
-    "NoImplicitWith"
+    "NoImplicitWith",
+    "TranslationFile"
   ],
   "idRanges": [
     {
       "from": 22200,
       "to": 22220
     }
-  ]
+  ],
+  "target": "Cloud"
 }

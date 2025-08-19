@@ -6,7 +6,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Security.AccessControl;
 
-permissionsetextension 23569 "D365 BUS PREMIUM - DIOT - Localization for Mexico" extends "D365 BUS PREMIUM"
+permissionsetextension 27033 "D365 BUS PREMIUM - DIOT - Localization for Mexico" extends "D365 BUS PREMIUM"
 {
     Permissions = tabledata "DIOT Concept" = RIMD,
                   tabledata "DIOT Concept Link" = RIMD,

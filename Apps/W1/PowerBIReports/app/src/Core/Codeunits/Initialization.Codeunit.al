@@ -7,6 +7,7 @@ using Microsoft.Foundation.AuditCodes;
 using System.Environment.Configuration;
 using System.Media;
 using Microsoft.Finance.PowerBIReports;
+using System.Telemetry;
 
 /// <summary>
 /// Creates the setup required to have the basic scenarios of the Power BI Reports working.
@@ -236,6 +237,7 @@ codeunit 36951 Initialization
     local procedure OnInsertLogEntryOnBeforeChangeLogEntryValidateChangedRecordSystemId(var ChangeLogEntry: Record "Change Log Entry"; RecRef: RecordRef; FldRef: FieldRef)
     var
         PowerBIReportsSetup: Record "PowerBI Reports Setup";
+        AuditLog: Codeunit "Audit Log";
         PowerBIReportConfiguredLbl: Label 'Power BI report configured by UserSecurityId %1.', Locked = true;
     begin
         if RecRef.Number() <> Database::"PowerBI Reports Setup" then
@@ -252,7 +254,7 @@ codeunit 36951 Initialization
         ]) then
             exit;
         ChangeLogEntry."Field Log Entry Feature" := "Field Log Entry Feature"::"Monitor Sensitive Fields";
-        Session.LogAuditMessage(StrSubstNo(PowerBIReportConfiguredLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 1, 0);
+        AuditLog.LogAuditMessage(StrSubstNo(PowerBIReportConfiguredLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 1, 0);
     end;
 
 }

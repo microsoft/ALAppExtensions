@@ -30,7 +30,6 @@ codeunit 11629 "Create CH Currency"
             CreateCurrency.CZK(),
             CreateCurrency.DKK(),
             CreateCurrency.DZD(),
-            CreateCurrency.EUR(),
             CreateCurrency.FJD(),
             CreateCurrency.HKD(),
             CreateCurrency.HRK(),

@@ -6,6 +6,7 @@
 codeunit 139528 "Connectivity Apps Tests"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     var

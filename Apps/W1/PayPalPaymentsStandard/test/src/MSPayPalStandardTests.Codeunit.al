@@ -3,6 +3,7 @@ codeunit 139500 "MS - PayPal Standard Tests"
     // version Test,ERM,W1,AT,AU,BE,CA,CH,DE,DK,ES,FI,FR,GB,IS,IT,MX,NL,NO,NZ,SE,US
 
     Subtype = Test;
+    TestType = Uncategorized;
 
     TestPermissions = Disabled;
 

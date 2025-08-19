@@ -6,6 +6,7 @@
 codeunit 148031 "Cash Mgmt E2E Scenarios"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -15,6 +16,7 @@ codeunit 148031 "Cash Mgmt E2E Scenarios"
         LibraryTextFileValidation: Codeunit "Library - Text File Validation";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryPurchase: Codeunit "Library - Purchase";
         FileLineValueIsWrongErr: Label 'Unexpected file value at position %1, length %2.', Locked = true;
         ImportLineTxt: Label 'CMKV,%1,%2,%3,%4,%5,%6,%7,%8', Locked = true;
 
@@ -206,6 +208,68 @@ codeunit 148031 "Cash Mgmt E2E Scenarios"
         // [GIVEN] A vendor with domestic payment method
         LibraryPaymentExportDK.CreateVendorWithBankAccount(Vendor);
         LibraryPaymentExportDK.AddPaymentTypeInfoToVendor(Vendor, PaymentMethod.PaymentTypeValidation::Domestic, '');
+        LibraryERM.SelectGenJnlBatch(GenJournalBatch);
+        // [GIVEN] Posted invoice
+        PostVendorInvoice(Vendor, InvGenJournalLine, GenJournalBatch);
+
+        // [GIVEN] Payment journal line with "Payment Reference" = "X"
+        LibraryPaymentExportDK.CreateGenJournalBatch(PmtGenJournalBatch, GenJournalBatch."Bal. Account Type"::"Bank Account", LibraryERM.CreateBankAccountNo(), true);
+        LibraryPaymentExportDK.CreateVendorPmtJnlLine(PmtGenJournalLine, PmtGenJournalBatch, Vendor."No.");
+        PmtGenJournalLine.Validate("Payment Reference", LibraryUtility.GenerateGUID());
+        PmtGenJournalLine.Modify(true);
+        // [WHEN] Apply payment to posted invoice
+        ApplyVendorInvoiceToPmt(InvGenJournalLine, PmtGenJournalLine);
+        // [THEN] Payment is applied to the invoice
+        PmtGenJournalLine.TestField("Applies-to Doc. No.");
+    end;
+
+    [Test]
+    procedure ApplyInternationalFIKToInvoiceWithCopyInvNoToPmtRef();
+    var
+        Vendor: Record Vendor;
+        InvGenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        PmtGenJournalBatch: Record "Gen. Journal Batch";
+        PaymentMethod: Record "Payment Method";
+        PmtGenJournalLine: Record "Gen. Journal Line";
+    begin
+        // [GIVEN] "Copy Invoice No. To Payment Reference" is enabled in Purchase & Payables setup
+        SetCopyInvNoToPmtRef(true);
+
+        // [GIVEN] A vendor with International payment method
+        LibraryPaymentExportDK.CreateVendorWithBankAccount(Vendor);
+        LibraryPaymentExportDK.AddPaymentTypeInfoToVendor(Vendor, PaymentMethod.PaymentTypeValidation::International, '');
+        LibraryERM.SelectGenJnlBatch(GenJournalBatch);
+        // [GIVEN] Posted invoice
+        PostVendorInvoice(Vendor, InvGenJournalLine, GenJournalBatch);
+
+        // [GIVEN] Payment journal line with "Payment Reference" = "X"
+        LibraryPaymentExportDK.CreateGenJournalBatch(PmtGenJournalBatch, GenJournalBatch."Bal. Account Type"::"Bank Account", LibraryERM.CreateBankAccountNo(), true);
+        LibraryPaymentExportDK.CreateVendorPmtJnlLine(PmtGenJournalLine, PmtGenJournalBatch, Vendor."No.");
+        PmtGenJournalLine.Validate("Payment Reference", LibraryUtility.GenerateGUID());
+        PmtGenJournalLine.Modify(true);
+        // [WHEN] Apply payment to posted invoice
+        ApplyVendorInvoiceToPmt(InvGenJournalLine, PmtGenJournalLine);
+        // [THEN] Payment is applied to the invoice
+        PmtGenJournalLine.TestField("Applies-to Doc. No.");
+    end;
+
+    [Test]
+    procedure ApplyBlankFIKToInvoiceWithCopyInvNoToPmtRef();
+    var
+        Vendor: Record Vendor;
+        InvGenJournalLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        PmtGenJournalBatch: Record "Gen. Journal Batch";
+        PaymentMethod: Record "Payment Method";
+        PmtGenJournalLine: Record "Gen. Journal Line";
+    begin
+        // [GIVEN] "Copy Invoice No. To Payment Reference" is enabled in Purchase & Payables setup
+        SetCopyInvNoToPmtRef(true);
+
+        // [GIVEN] A vendor with blank payment method
+        LibraryPurchase.CreateVendor(Vendor);
+        LibraryPaymentExportDK.AddPaymentTypeInfoToVendor(Vendor, PaymentMethod.PaymentTypeValidation::" ", '');
         LibraryERM.SelectGenJnlBatch(GenJournalBatch);
         // [GIVEN] Posted invoice
         PostVendorInvoice(Vendor, InvGenJournalLine, GenJournalBatch);

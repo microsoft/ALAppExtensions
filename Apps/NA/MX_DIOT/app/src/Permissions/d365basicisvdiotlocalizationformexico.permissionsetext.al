@@ -6,7 +6,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Security.AccessControl;
 
-permissionsetextension 35551 "D365 BASIC ISV - DIOT - Localization for Mexico" extends "D365 BASIC ISV"
+permissionsetextension 27031 "D365 BASIC ISV - DIOT - Localization for Mexico" extends "D365 BASIC ISV"
 {
     Permissions = tabledata "DIOT Concept" = RIMD,
                   tabledata "DIOT Concept Link" = RIMD,

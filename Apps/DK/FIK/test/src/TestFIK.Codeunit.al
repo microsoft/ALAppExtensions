@@ -7,6 +7,7 @@ Codeunit 148029 TestFIK
 {
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     VAR
@@ -35,6 +36,7 @@ Codeunit 148029 TestFIK
         PaddingErr: Label 'Field value is not padded correctly.', Locked = true;
         LengthErr: Label 'Padded value does not have correct length.', Locked = true;
         BankCreditorNoLbl: Label '12345678';
+        PaymentReferenceSetMsg: Label 'Payment Reference set correctly';
 
     trigger OnRun();
     begin
@@ -706,7 +708,7 @@ Codeunit 148029 TestFIK
     END;
 
     [Test]
-    PROCEDURE TestFieldPaymentTypeValidationGenJnlLineError();
+    PROCEDURE TestPaymentReferenceUpdateWithFieldPaymentValidationTypeBlankGenJnlLineError();
     VAR
         PaymentMethod: Record "Payment Method";
         GenJnlBatch: Record "Gen. Journal Batch";
@@ -727,10 +729,10 @@ Codeunit 148029 TestFIK
         PaymentMethod.MODIFY();
 
         // Exercise
-        ASSERTERROR GenJnlLine.VALIDATE("Payment Reference", CorrectFIK71);
+        GenJnlLine.VALIDATE("Payment Reference", CorrectFIK71);
 
         // Verify
-        Assert.ExpectedTestFieldError(PaymentMethod.FieldCaption(PaymentTypeValidation), Format(PaymentMethod.PaymentTypeValidation::" "));
+        Assert.IsTrue(GenJnlLine."Payment Reference" <> '', PaymentReferenceSetMsg);
     END;
 
     [Test]
@@ -765,7 +767,7 @@ Codeunit 148029 TestFIK
     END;
 
     [Test]
-    PROCEDURE TestFieldPaymentValidationTypeVendorLedgerEntryError();
+    PROCEDURE TestPaymentReferenceUpdateWithFieldPaymentValidationTypeBlankVendorLedgerEntry();
     VAR
         PaymentMethod: Record "Payment Method";
         GenJnlBatch: Record "Gen. Journal Batch";
@@ -792,10 +794,10 @@ Codeunit 148029 TestFIK
         PaymentMethod.MODIFY();
 
         // Exercise
-        ASSERTERROR VendorLedgerEntry.VALIDATE("Payment Reference", CorrectFIK71);
+        VendorLedgerEntry.VALIDATE("Payment Reference", CorrectFIK71);
 
         // Verify
-        Assert.ExpectedTestFieldError(PaymentMethod.FIELDCAPTION(PaymentTypeValidation), Format(PaymentMethod.PaymentTypeValidation::" "));
+        Assert.IsTrue(VendorLedgerEntry."Payment Reference" <> '', PaymentReferenceSetMsg);
     END;
 
     [Test]

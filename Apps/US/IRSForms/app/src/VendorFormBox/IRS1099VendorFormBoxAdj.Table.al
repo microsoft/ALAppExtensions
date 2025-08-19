@@ -35,6 +35,8 @@ table 10045 "IRS 1099 Vendor Form Box Adj."
         }
         field(10; Amount; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(100; "Vendor Name"; Text[100])
         {

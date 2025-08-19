@@ -9,12 +9,22 @@ using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.EServices.EDocument.OrderMatch;
 using Microsoft.EServices.EDocument.OrderMatch.Copilot;
 using Microsoft.eServices.EDocument.Service.Participant;
+using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+using Microsoft.eServices.EDocument.Service;
+using Microsoft.eServices.EDocument.Integration.Receive;
+using Microsoft.eServices.EDocument.Integration.Action;
+using Microsoft.eServices.EDocument.Format;
+using Microsoft.eServices.EDocument.Integration.Send;
+using Microsoft.eServices.EDocument.Integration;
+
 permissionset 6100 "E-Doc. Core - Objects"
 {
     Assignable = false;
     Access = Internal;
-    Caption = 'E-Document Core - Objects';
-    Permissions = table "E-Document" = X,
+    Caption = 'E-Document - Objects';
+
+    Permissions =
         table "E-Doc. Data Storage" = X,
         table "E-Document Log" = X,
         table "E-Document Integration Log" = X,
@@ -28,6 +38,14 @@ permissionset 6100 "E-Doc. Core - Objects"
         table "E-Doc. Imported Line" = X,
         table "E-Doc. PO Match Prop. Buffer" = X,
         table "Service Participant" = X,
+        table "E-Doc. Import Parameters" = X,
+        table "E-Document Header Mapping" = X,
+        table "E-Document Line Mapping" = X,
+        table "E-Document Purchase Header" = X,
+        table "E-Document Purchase Line" = X,
+        table "E-Documents Setup" = X,
+        table "E-Document Line - Field" = X,
+        table "ED Purchase Line Field Setup" = X,
         codeunit "E-Document Import Job" = X,
         codeunit "E-Doc. Integration Management" = X,
         codeunit "E-Doc. Mapping" = X,
@@ -91,5 +109,40 @@ permissionset 6100 "E-Doc. Core - Objects"
         page "E-Doc. PO Copilot Prop" = X,
         page "E-Doc. PO Match Prop. Sub" = X,
         page "E-Doc. Order Match Act." = X,
-        page "Service Participants" = X;
+        page "Service Participants" = X,
+        page "E-Doc. Create Purch Order Line" = X,
+        page "E-Doc. Purchase Draft Subform" = X,
+        page "E-Doc. Read. Purch. Lines" = X,
+        page "E-Doc. Readable Purchase Doc." = X,
+        page "E-Document Purchase Draft" = X,
+        page "Inbound E-Doc. Factbox" = X,
+        page "Inbound E-Documents" = X,
+        page "Outbound E-Doc. Factbox" = X,
+        page "Outbound E-Documents" = X,
+        codeunit ActionContext = X,
+        codeunit "Consent Manager Default Impl." = X,
+        codeunit "Download Document" = X,
+        codeunit "E-Doc Error Status" = X,
+        codeunit "E-Doc In Progress Status" = X,
+        codeunit "E-Doc Processed Status" = X,
+        codeunit "E-Doc. Create Purchase Invoice" = X,
+        codeunit "E-Doc. Providers" = X,
+        codeunit "E-Document Action Runner" = X,
+        codeunit "E-Document ADI Handler" = X,
+        codeunit "E-Document PEPPOL Handler" = X,
+        codeunit "E-Document Upgrade" = X,
+        codeunit "EDoc Import PEPPOL BIS 3.0" = X,
+        codeunit "Empty Integration Action" = X,
+        codeunit "Get Response Runner" = X,
+        codeunit "Http Message State" = X,
+        codeunit "Import E-Document Process" = X,
+        codeunit "Integration Action Status" = X,
+        codeunit "Mark Fetched" = X,
+        codeunit "Prepare Purchase E-Doc. Draft" = X,
+        codeunit "Receive Documents" = X,
+        codeunit ReceiveContext = X,
+        codeunit "Send Runner" = X,
+        codeunit SendContext = X,
+        codeunit "Sent Document Approval" = X,
+        codeunit "Sent Document Cancellation" = X;
 }

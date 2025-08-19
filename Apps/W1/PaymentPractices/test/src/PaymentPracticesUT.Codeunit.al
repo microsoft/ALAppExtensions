@@ -1,6 +1,7 @@
 codeunit 134197 "Payment Practices UT"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

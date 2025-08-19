@@ -29,7 +29,11 @@ codeunit 31305 "Item Jnl-Post Line Handler CZA"
         ItemJnlLine.CheckInventoryPostingGroupCZA();
     end;
 
+#if not CLEAN27
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnPostFlushedConsumpOnAfterCopyProdOrderFieldsToItemJnlLine', '', false, false)]
+#else
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Mfg. Item Jnl.-Post Line", 'OnPostFlushedConsumpOnAfterCopyProdOrderFieldsToItemJnlLine', '', false, false)]
+#endif
     local procedure UpdateGenBusPostingGroupOnPostFlushedConsumpOnAfterCopyProdOrderFieldsToItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; var OldItemJournalLine: Record "Item Journal Line")
     begin
         ItemJournalLine."Gen. Bus. Posting Group" := OldItemJournalLine."Gen. Bus. Posting Group";

@@ -1,5 +1,10 @@
+#if not CLEAN27
 controladdin "PDF Viewer"
 {
+    ObsoleteReason = 'Replaced by platform support';
+    ObsoleteTag = '27.0';
+    ObsoleteState = Pending;
+
     Scripts =
         'https://cdn-bc.dynamics.com/common/js/pdfjs-4.10.38/pdf.min.mjs',
         'script.js';
@@ -19,3 +24,4 @@ controladdin "PDF Viewer"
     procedure PreviousPage();
     procedure SetVisible(IsVisible: Boolean);
 }
+#endif

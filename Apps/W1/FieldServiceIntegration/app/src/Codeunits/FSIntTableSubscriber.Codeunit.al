@@ -32,6 +32,8 @@ codeunit 6610 "FS Int. Table Subscriber"
     SingleInstance = true;
 
     var
+        TempFSWorkOrderProduct: Record "FS Work Order Product" temporary;
+        TempFSWorkOrderService: Record "FS Work Order Service" temporary;
         CDSIntegrationMgt: Codeunit "CDS Integration Mgt.";
         CDSIntegrationImpl: Codeunit "CDS Integration Impl.";
         CRMSynchHelper: Codeunit "CRM Synch. Helper";
@@ -122,8 +124,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Integration Table Mapping", 'OnBeforeModifyEvent', '', true, false)]
-    local procedure IntegrationTableMappingOnBeforeModifyEvent(var Rec: Record "Integration Table Mapping"; RunTrigger: Boolean)
+    [EventSubscriber(ObjectType::Table, Database::"Integration Table Mapping", 'OnAfterModifyEvent', '', true, false)]
+    local procedure IntegrationTableMappingOnAfterModifyEvent(var Rec: Record "Integration Table Mapping"; RunTrigger: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
         ServiceItem: Record "Service Item";
@@ -865,7 +867,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                                 if not IsNullGuid(JobUsageLink."External Id") then
                                     if FSWorkorderProduct.Get(JobUsageLink."External Id") then begin
                                         FSWorkOrderProduct.QuantityInvoiced += JobPlanningLineInvoice."Quantity Transferred";
-                                        if not TryModifyWorkOrderProduct(FSWorkOrderProduct) then begin
+                                        if not FSWorkOrderProduct.Modify() then begin
                                             Session.LogMessage('0000MMV', UnableToModifyWOPTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                                             ClearLastError();
                                         end;
@@ -873,7 +875,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                                     else
                                         if FSWorkorderService.Get(JobUsageLink."External Id") then begin
                                             FSWorkorderService.DurationInvoiced += (JobPlanningLineInvoice."Quantity Transferred" * 60);
-                                            if not TryModifyWorkOrderService(FSWorkOrderService) then begin
+                                            if not FSWorkOrderService.Modify() then begin
                                                 Session.LogMessage('0000MMW', UnableToModifyWOSTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                                                 ClearLastError();
                                             end;
@@ -1089,7 +1091,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
         ServiceLine.SetRange(Type, ServiceLine.Type::Item);
-        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Inventory);
+        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Inventory, ServiceLine."Item Type"::"Non-Inventory");
         if ServiceLine.FindSet() then
             repeat
                 CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
@@ -1144,7 +1146,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
         ServiceLine.SetRange(Type, ServiceLine.Type::Item);
-        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Service, ServiceLine."Item Type"::"Non-Inventory");
+        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Service);
         if ServiceLine.FindSet() then
             repeat
                 CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
@@ -2243,17 +2245,10 @@ codeunit 6610 "FS Int. Table Subscriber"
         JobUsageLink."External Id" := CRMIntegrationRecord."CRM ID";
         JobUsageLink.Modify();
 
-        // write back consumption data to Field Service
-        if not FSWorkOrderProduct.WritePermission() then
-            exit;
-        if not FSWorkOrderService.WritePermission() then
-            exit;
         if FSWorkOrderProduct.Get(CRMIntegrationRecord."CRM ID") then begin
-            FSWorkOrderProduct.QuantityConsumed += JobPlanningLine.Quantity;
-            if not TryModifyWorkOrderProduct(FSWorkOrderProduct) then begin
-                Session.LogMessage('0000MMZ', UnableToModifyWOPTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-                ClearLastError();
-            end;
+            TempFSWorkOrderProduct := FSWorkOrderProduct;
+            TempFSWorkOrderProduct.QuantityConsumed += JobPlanningLine.Quantity;
+            TempFSWorkOrderProduct.Insert();
             exit;
         end;
         if FSWorkOrderService.Get(CRMIntegrationRecord."CRM ID") then begin
@@ -2266,24 +2261,58 @@ codeunit 6610 "FS Int. Table Subscriber"
                         if JobPlanningLine."Line Type" <> JobPlanningLine."Line Type"::Budget then
                             exit;
 
-            FSWorkOrderService.DurationConsumed += Round((60 * JobPlanningLine.Quantity), 1, '=');
-            if not TryModifyWorkOrderService(FSWorkOrderService) then begin
-                Session.LogMessage('0000MN0', UnableToModifyWOSTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-                ClearLastError();
-            end;
+            TempFSWorkOrderService := FSWorkOrderService;
+            TempFSWorkOrderService.DurationConsumed += Round((60 * JobPlanningLine.Quantity), 1, '=');
+            TempFSWorkOrderService.Insert();
         end;
     end;
 
-    [TryFunction]
-    local procedure TryModifyWorkOrderProduct(var FSWorkOrderProduct: Record "FS Work Order Product")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Jnl.-Post Batch", 'OnAfterPostJnlLines', '', false, false)]
+    local procedure HandleOnAfterPostJnlLines(var JobJournalBatch: Record "Job Journal Batch"; var JobJournalLine: Record "Job Journal Line"; JobRegNo: Integer; var SuppressCommit: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        FSWorkOrderService: Record "FS Work Order Service";
     begin
-        FSWorkOrderProduct.Modify();
-    end;
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
 
-    [TryFunction]
-    local procedure TryModifyWorkOrderService(var FSWorkOrderService: Record "FS Work Order Service")
-    begin
-        FSWorkOrderService.Modify();
+        if SuppressCommit then begin
+            TempFSWorkOrderProduct.DeleteAll();
+            TempFSWorkOrderService.DeleteAll();
+            exit;
+        end;
+
+        // write back consumption data to Field Service
+        if not FSWorkOrderProduct.WritePermission() then
+            exit;
+        if not FSWorkOrderService.WritePermission() then
+            exit;
+
+        if TempFSWorkOrderProduct.FindSet() then
+            repeat
+                if FSWorkOrderProduct.Get(TempFSWorkOrderProduct.WorkOrderProductId) then begin
+                    FSWorkOrderProduct.QuantityConsumed += TempFSWorkOrderProduct.QuantityConsumed;
+                    if not FSWorkOrderProduct.Modify() then begin
+                        Session.LogMessage('0000MMZ', UnableToModifyWOPTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+                        ClearLastError();
+                    end;
+                end;
+            until TempFSWorkOrderProduct.Next() = 0;
+
+        if TempFSWorkOrderService.FindSet() then
+            repeat
+                if FSWorkOrderService.Get(TempFSWorkOrderService.WorkOrderServiceId) then begin
+                    FSWorkOrderService.DurationConsumed += TempFSWorkOrderService.DurationConsumed;
+                    if not FSWorkOrderService.Modify() then begin
+                        Session.LogMessage('0000MN0', UnableToModifyWOSTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+                        ClearLastError();
+                    end;
+                end;
+            until TempFSWorkOrderService.Next() = 0;
+
+        TempFSWorkOrderProduct.DeleteAll();
+        TempFSWorkOrderService.DeleteAll();
     end;
 
     local procedure SetJobJournalLineTypesAndNo(var FSConnectionSetup: Record "FS Connection Setup"; var SourceRecordRef: RecordRef; var JobJournalLine: Record "Job Journal Line")
@@ -2610,6 +2639,7 @@ codeunit 6610 "FS Int. Table Subscriber"
     var
         FSConnectionSetup: Record "FS Connection Setup";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        FSIntegrationMgt: Codeunit "FS Integration Mgt.";
         IntegrationRecordRef: RecordRef;
         TelemetryCategories: Dictionary of [Text, Text];
         IntegrationTableName: Text;
@@ -2629,13 +2659,16 @@ codeunit 6610 "FS Int. Table Subscriber"
                 Database::"FS Project Task",
                 Database::"FS Work Order Product",
                 Database::"FS Work Order Service",
+                Database::"FS Work Order Incident",
                 Database::"FS Customer Asset",
                 Database::"FS Bookable Resource",
+                Database::"FS Bookable Resource Booking",
+                Database::"FS Incident Type",
                 Database::"FS Resource Pay Type",
                 Database::"FS Warehouse"] then begin
             Session.LogMessage('0000M9F', FSEntitySynchTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryCategories);
-            FeatureTelemetry.LogUsage('0000M9E', 'Field Service Integration', 'Entity synch');
-            FeatureTelemetry.LogUptake('0000M9D', 'Field Service Integration', Enum::"Feature Uptake Status"::Used);
+            FeatureTelemetry.LogUsage('0000M9E', FSIntegrationMgt.ReturnIntegrationTypeLabel(FSConnectionSetup), 'Entity synch');
+            FeatureTelemetry.LogUptake('0000M9D', FSIntegrationMgt.ReturnIntegrationTypeLabel(FSConnectionSetup), Enum::"Feature Uptake Status"::Used);
             exit;
         end;
     end;
