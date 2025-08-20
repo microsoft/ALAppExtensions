@@ -241,7 +241,7 @@ table 6121 "E-Document"
         /// <summary>
         /// This field is used to determine if the E-document creation was triggered by action requiring the E-document to be sent via email.
         /// </summary>
-        field(40; "Send E-Document via Email"; Boolean)
+        field(41; "Send E-Document via Email"; Boolean)
         {
             Caption = 'Send E-Document via Email';
             DataClassification = SystemMetadata;
