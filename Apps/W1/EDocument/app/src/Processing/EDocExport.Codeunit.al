@@ -114,6 +114,7 @@ codeunit 6102 "E-Doc. Export"
         // Handle next step for each of services
         foreach Code in SupportedServices do begin
             EDocumentService.Get(Code);
+            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Created);
             EDocumentProcessing.ModifyEDocumentStatus(EDocument);
         end;
 
