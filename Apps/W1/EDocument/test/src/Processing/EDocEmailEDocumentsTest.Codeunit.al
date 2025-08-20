@@ -32,6 +32,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
 
         // [GIVEN] Sales order
         LibraryLowerPermission.SetSalesDocsPost();
+        LibraryLowerPermission.SetTeamMember();
         LibraryEDoc.CreateSalesHeaderWithItem(Customer, SalesHeader, SalesHeader."Document Type"::Order);
 
         // [WHEN] Post and send
