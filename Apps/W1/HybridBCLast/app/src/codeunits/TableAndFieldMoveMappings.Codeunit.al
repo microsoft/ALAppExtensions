@@ -39,7 +39,7 @@ codeunit 40030 "Table and Field Move Mappings"
         TableNos.Add(Database::"No. Series Line");
         TableNos.Add(Database::"No. Series Relationship");
         AddTableMappingListFromBaseappToBusinessFoundation(TableNos, AppliesFromVersion, true);
-        AddTableMappingFromBaseappToBusinessFoundation(Database::"No. Series Tenant", AppliesFromVersion, false); // has replicate data = false? 
+        AddTableMappingFromBaseappToBusinessFoundation(Database::"No. Series Tenant", AppliesFromVersion, false); // has replicate data = false?
 
         AddLocalizationNoSeriesMappings();
     end;
@@ -103,15 +103,6 @@ codeunit 40030 "Table and Field Move Mappings"
                 FieldNos.AddRange(12400, 12401, 12402, 12403, 12404, 12405, 12406, 12407, 12408, 12409, 12410, 12411, 12470, 12471, 12472, 17301);
         end;
         AddTableFieldMappingListFromBusinessFoundationToBaseApp(Database::"Source Code Setup", FieldNos, AppliesFromVersion, true);
-
-        Clear(FieldNos);
-        case EnvironmentInformation.GetApplicationFamily() of
-            'AU', 'NZ':
-                FieldNos.Add(28160);
-            'FR':
-                FieldNos.Add(10810);
-        end;
-        AddTableFieldMappingListFromBusinessFoundationToBaseApp(Database::"Source Code", FieldNos, AppliesFromVersion, true);
     end;
 
     local procedure AddSubBillingMappings()
@@ -373,7 +364,7 @@ codeunit 40030 "Table and Field Move Mappings"
         exit(ConvertStr(Name, SQLInvalidCharsLbl, ValidChars));
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnInsertDefaultTableMappings, '', false, false)]
     local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
     var
         HybridBCLastManagement: Codeunit "Hybrid BC Last Management";

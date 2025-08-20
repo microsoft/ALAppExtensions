@@ -116,7 +116,10 @@ codeunit 17142 "NZ Contoso Localization"
                     Codeunit.Run(Codeunit::"Create NZ Gen. Journ. Template");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create NZ Currency Ex. Rate");
+                begin
+                    Codeunit.Run(Codeunit::"Create NZ Currency Ex. Rate");
+                    Codeunit.Run(Codeunit::"Create Allocation Account NZ");
+                end;
         end;
     end;
 

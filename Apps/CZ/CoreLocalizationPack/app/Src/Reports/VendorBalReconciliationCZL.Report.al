@@ -20,6 +20,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
     ApplicationArea = Basic, Suite;
     Caption = 'Vendor - Bal. Reconciliation';
     UsageCategory = ReportsAndAnalysis;
+    EnableExternalImages = true;
 
     dataset
     {
@@ -491,8 +492,6 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
         LanguageMgt: Codeunit Language;
         CustomerVendorBalanceCZL: Codeunit "Customer Vendor Balance CZL";
-        ReturnDate: Date;
-        ReconcileDate: Date;
         PrintOnlyNotZero: Boolean;
         PrintAmountsInCurrency: Boolean;
         CustomerNo: Code[20];
@@ -504,7 +503,6 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
         LCYEntriesOnly: Boolean;
         IncludeCustBalance: Boolean;
         PrintDetails: Boolean;
-        EmployeeNo: Code[20];
         ResponsibleEmployee: Text;
         EmptyReturnDateErr: Label 'You must specify return date.';
         EmptyReconcileDateErr: Label 'You must specify reconcile date.';
@@ -549,6 +547,9 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
 
     protected var
         TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;
+        EmployeeNo: Code[20];
+        ReturnDate: Date;
+        ReconcileDate: Date;
 
     procedure CalcDebitCredit(TotalAmt: Decimal)
     begin

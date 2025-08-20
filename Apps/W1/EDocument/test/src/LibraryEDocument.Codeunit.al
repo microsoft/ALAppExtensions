@@ -18,6 +18,8 @@ codeunit 139629 "Library - E-Document"
         LibraryInvt: Codeunit "Library - Inventory";
         LibraryJobQueue: Codeunit "Library - Job Queue";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryFinChargeMemo: Codeunit "Library - Finance Charge Memo";
+        LibraryInventory: Codeunit "Library - Inventory";
 
     procedure SetupStandardVAT()
     begin
@@ -26,6 +28,7 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('Use SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
     procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration")
     var
@@ -36,6 +39,7 @@ codeunit 139629 "Library - E-Document"
         EDocService.Get(ServiceCode);
         SetupStandardSalesScenario(Customer, EDocService);
     end;
+#pragma warning restore AL0432
 #endif
 
     procedure SetupStandardSalesScenario(var Customer: Record Customer; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration")
@@ -68,7 +72,7 @@ codeunit 139629 "Library - E-Document"
         // Create Customer for sales scenario
         CreateCustomerForSalesScenario(Customer, DocumentSendingProfile.Code);
 
-        // Create Item 
+        // Create Item
         if StandardItem."No." = '' then begin
             VATPostingSetup.TestField("VAT Prod. Posting Group");
             CreateGenericItem(StandardItem);
@@ -89,6 +93,7 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('Use SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
     procedure SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration")
     var
@@ -101,6 +106,7 @@ codeunit 139629 "Library - E-Document"
         end;
         SetupStandardPurchaseScenario(Vendor, EDocService);
     end;
+#pragma warning restore AL0432
 #endif
 
     procedure SetupStandardPurchaseScenario(var Vendor: Record Vendor; var EDocService: Record "E-Document Service"; EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration")
@@ -121,7 +127,7 @@ codeunit 139629 "Library - E-Document"
         CountryRegion: Record "Country/Region";
         ItemReference: Record "Item Reference";
         UnitOfMeasure: Record "Unit of Measure";
-        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        ExtraItem: Record "Item";
         WorkflowSetup: Codeunit "Workflow Setup";
         LibraryItemReference: Codeunit "Library - Item Reference";
     begin
@@ -141,12 +147,10 @@ codeunit 139629 "Library - E-Document"
         Vendor.Validate(GLN, '1234567890128');
         Vendor.Modify(true);
 
-        // Create Item 
+        // Create Item
         if StandardItem."No." = '' then begin
             VATPostingSetup.TestField("VAT Prod. Posting Group");
-            CreateGenericItem(StandardItem);
-            StandardItem."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
-            StandardItem.Modify();
+            CreateGenericItem(StandardItem, VATPostingSetup."VAT Prod. Posting Group");
         end;
 
         UnitOfMeasure.Init();
@@ -154,13 +158,12 @@ codeunit 139629 "Library - E-Document"
         UnitOfMeasure.Code := 'PCS';
         if UnitOfMeasure.Insert() then;
 
-        ItemUnitOfMeasure.Init();
-        ItemUnitOfMeasure.Validate("Item No.", StandardItem."No.");
-        ItemUnitOfMeasure.Validate(Code, UnitOfMeasure.Code);
-        ItemUnitOfMeasure."Qty. per Unit of Measure" := 1;
-        if ItemUnitOfMeasure.Insert() then;
-
+        CreateItemUnitOfMeasure(StandardItem."No.", UnitOfMeasure.Code);
         LibraryItemReference.CreateItemReference(ItemReference, StandardItem."No.", '', 'PCS', Enum::"Item Reference Type"::Vendor, Vendor."No.", '1000');
+
+        CreateGenericItem(ExtraItem, VATPostingSetup."VAT Prod. Posting Group");
+        CreateItemUnitOfMeasure(ExtraItem."No.", UnitOfMeasure.Code);
+        LibraryItemReference.CreateItemReference(ItemReference, ExtraItem."No.", '', 'PCS', Enum::"Item Reference Type"::Vendor, Vendor."No.", '2000');
     end;
 
     procedure PostInvoice(var Customer: Record Customer) SalesInvHeader: Record "Sales Invoice Header";
@@ -170,6 +173,23 @@ codeunit 139629 "Library - E-Document"
         LibraryJobQueue.SetDoNotHandleCodeunitJobQueueEnqueueEvent(true);
         CreateSalesHeaderWithItem(Customer, SalesHeader, Enum::"Sales Document Type"::Invoice);
         PostSalesDocument(SalesHeader, SalesInvHeader);
+    end;
+
+    procedure PostSalesDocument(var Customer: Record Customer; Ship: Boolean) SalesInvHeader: Record "Sales Invoice Header";
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        LibraryJobQueue.SetDoNotHandleCodeunitJobQueueEnqueueEvent(true);
+        CreateSalesHeaderWithItem(Customer, SalesHeader, Enum::"Sales Document Type"::Invoice);
+        PostSalesDocument(SalesHeader, SalesInvHeader, Ship);
+    end;
+
+    procedure PostSalesShipment(var Customer: Record Customer) SalesShipmentHeader: Record "Sales Shipment Header";
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        this.CreateSalesHeaderWithItem(Customer, SalesHeader, Enum::"Sales Document Type"::Order);
+        SalesShipmentHeader.Get(this.LibrarySales.PostSalesDocument(SalesHeader, true, false));
     end;
 
     procedure RunEDocumentJobQueue(var EDocument: Record "E-Document")
@@ -195,6 +215,20 @@ codeunit 139629 "Library - E-Document"
         EDocumentServiceStatus.Insert();
     end;
 
+    procedure MockPurchaseDraftPrepared(EDocument: Record "E-Document")
+    var
+        EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+        EDocumentProcessing: Codeunit "E-Document Processing";
+    begin
+        EDocumentPurchaseHeader.InsertForEDocument(EDocument);
+        EDocumentPurchaseHeader."Sub Total" := 1000;
+        EDocumentPurchaseHeader."Total VAT" := 100;
+        EDocumentPurchaseHeader.Total := 1100;
+        EDocumentPurchaseHeader.Modify();
+        EDocumentProcessing.ModifyEDocumentProcessingStatus(EDocument, "Import E-Doc. Proc. Status"::"Draft Ready");
+        EDocument."Document Type" := "E-Document Type"::"Purchase Invoice";
+        EDocument.Modify();
+    end;
 
     procedure CreateInboundPEPPOLDocumentToState(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; FileName: Text; EDocImportParams: Record "E-Doc. Import Parameters"): Boolean
     var
@@ -202,7 +236,7 @@ codeunit 139629 "Library - E-Document"
         InStream: InStream;
     begin
         NavApp.GetResource(FileName, InStream, TextEncoding::UTF8);
-        EDocImport.CreateFromType(EDocument, EDocumentService, Enum::"E-Doc. Data Storage Blob Type"::XML, 'TestFile', InStream);
+        EDocImport.CreateFromType(EDocument, EDocumentService, Enum::"E-Doc. File Format"::XML, 'TestFile', InStream);
         exit(EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParams));
     end;
 
@@ -267,7 +301,7 @@ codeunit 139629 "Library - E-Document"
         EDocCreatedEventID, SendEDocResponseEventID : Integer;
     begin
         // Create a simple workflow
-        // Send to Service 'ServiceCode' when using Document Sending Profile 'DocSendingProfile' 
+        // Send to Service 'ServiceCode' when using Document Sending Profile 'DocSendingProfile'
         WorkflowStep.SetRange("Function Name", EDocWorkflowSetup.EDocCreated());
         WorkflowStep.SetRange("Entry Point", true);
         if WorkflowStep.FindSet() then
@@ -324,6 +358,13 @@ codeunit 139629 "Library - E-Document"
             SalesHeader.Validate("Shipment Date", WorkDate());
 
         SalesHeader.Modify(true);
+    end;
+
+    procedure CreateGenericItem(var Item: Record Item; VATProdPostingGroupCode: Code[20])
+    begin
+        CreateGenericItem(Item);
+        Item."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+        Item.Modify();
     end;
 
     procedure CreateGenericItem(var Item: Record Item)
@@ -399,6 +440,91 @@ codeunit 139629 "Library - E-Document"
     procedure PostSalesDocument(var SalesHeader: Record "Sales Header"; var SalesInvHeader: Record "Sales Invoice Header")
     begin
         SalesInvHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    procedure PostSalesDocument(var SalesHeader: Record "Sales Header"; var SalesInvHeader: Record "Sales Invoice Header"; Ship: Boolean)
+    begin
+        SalesInvHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, Ship, true));
+    end;
+
+    procedure CreateReminderWithLine(Customer: Record Customer; var ReminderHeader: Record "Reminder Header")
+    var
+        ReminderLine: Record "Reminder Line";
+    begin
+        LibraryERM.CreateReminderHeader(ReminderHeader);
+        ReminderHeader.Validate("Customer No.", Customer."No.");
+        ReminderHeader."Your Reference" := LibraryRandom.RandText(35);
+        ReminderHeader.Modify(false);
+
+        LibraryERM.CreateReminderLine(ReminderLine, ReminderHeader."No.", Enum::"Reminder Source Type"::"G/L Account");
+        ReminderLine.Validate("Remaining Amount", this.LibraryRandom.RandInt(100));
+        ReminderLine.Description := LibraryRandom.RandText(100);
+        ReminderLine.Modify(false);
+    end;
+
+    procedure CreateFinChargeMemoWithLine(Customer: Record Customer; var FinChargeMemoHeader: Record "Finance Charge Memo Header")
+    var
+        FinChargeMemoLine: Record "Finance Charge Memo Line";
+        FinanceChargeTerms: Record "Finance Charge Terms";
+    begin
+        LibraryERM.CreateFinanceChargeMemoHeader(FinChargeMemoHeader, Customer."No.");
+        LibraryFinChargeMemo.CreateFinanceChargeTermAndText(FinanceChargeTerms);
+        FinChargeMemoHeader.Validate("Fin. Charge Terms Code", FinanceChargeTerms.Code);
+        FinChargeMemoHeader."Your Reference" := LibraryRandom.RandText(35);
+        FinChargeMemoHeader.Modify(false);
+
+        LibraryERM.CreateFinanceChargeMemoLine(FinChargeMemoLine, FinChargeMemoHeader."No.", FinChargeMemoLine.Type::"G/L Account");
+        FinChargeMemoLine.Validate("Remaining Amount", this.LibraryRandom.RandInt(100));
+        FinChargeMemoLine.Description := LibraryRandom.RandText(100);
+        FinChargeMemoLine.Modify(false);
+    end;
+
+    procedure IssueReminder(Customer: Record Customer) IssuedReminderHeader: Record "Issued Reminder Header"
+    var
+        ReminderHeader: Record "Reminder Header";
+        ReminderIssue: Codeunit "Reminder-Issue";
+    begin
+        CreateReminderWithLine(Customer, ReminderHeader);
+
+        ReminderHeader.SetRange("No.", ReminderHeader."No.");
+        ReminderIssue.Set(ReminderHeader, false, 0D);
+        ReminderIssue.Run();
+
+        ReminderIssue.GetIssuedReminder(IssuedReminderHeader);
+    end;
+
+    procedure IssueFinChargeMemo(Customer: Record Customer) IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header"
+    var
+        FinChargeMemoHeader: Record "Finance Charge Memo Header";
+        FinChargeMemoIssue: Codeunit "FinChrgMemo-Issue";
+    begin
+        CreateFinChargeMemoWithLine(Customer, FinChargeMemoHeader);
+
+        FinChargeMemoHeader.SetRange("No.", FinChargeMemoHeader."No.");
+        FinChargeMemoIssue.Set(FinChargeMemoHeader, false, 0D);
+        FinChargeMemoIssue.Run();
+
+        FinChargeMemoIssue.GetIssuedFinChrgMemo(IssuedFinChargeMemoHeader);
+    end;
+
+    procedure SetupReminderNoSeries()
+    var
+        SalesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesSetup.Get();
+        SalesSetup.Validate("Reminder Nos.", this.LibraryERM.CreateNoSeriesCode());
+        SalesSetup.Validate("Issued Reminder Nos.", this.LibraryERM.CreateNoSeriesCode());
+        SalesSetup.Modify(false);
+    end;
+
+    procedure SetupFinChargeMemoNoSeries()
+    var
+        SalesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesSetup.Get();
+        SalesSetup.Validate("Fin. Chrg. Memo Nos.", this.LibraryERM.CreateNoSeriesCode());
+        SalesSetup.Validate("Issued Fin. Chrg. M. Nos.", this.LibraryERM.CreateNoSeriesCode());
+        SalesSetup.Modify(false);
     end;
 
     procedure Initialize()
@@ -619,6 +745,7 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('Use CreateService(EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
     procedure CreateService(Integration: Enum "E-Document Integration"): Code[20]
     var
@@ -634,6 +761,7 @@ codeunit 139629 "Library - E-Document"
 
         exit(EDocService.Code);
     end;
+#pragma warning restore AL0432
 #endif
 
     procedure CreateService(Integration: Enum "Service Integration"): Code[20]
@@ -652,6 +780,7 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('Use CreateService(EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration") instead', '26.0')]
     procedure CreateService(EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "E-Document Integration"): Code[20]
     var
@@ -667,6 +796,7 @@ codeunit 139629 "Library - E-Document"
 
         exit(EDocService.Code);
     end;
+#pragma warning restore AL0432
 #endif
 
     procedure CreateService(EDocDocumentFormat: Enum "E-Document Format"; EDocIntegration: Enum "Service Integration"): Code[20]
@@ -769,6 +899,19 @@ codeunit 139629 "Library - E-Document"
         EDocServiceSupportedType.Insert();
     end;
 
+    procedure AddEDocServiceSupportedType(EDocService: Record "E-Document Service"; EDocumentType: Enum "E-Document Type")
+    var
+        EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
+    begin
+        if not EDocService.Get(EDocService.Code) then
+            exit;
+
+        EDocServiceSupportedType.Init();
+        EDocServiceSupportedType."E-Document Service Code" := EDocService.Code;
+        EDocServiceSupportedType."Source Document Type" := EDocumentType;
+        if EDocServiceSupportedType.Insert() then;
+    end;
+
     procedure CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration")
     begin
         if not EDocService.Get('TESTRECEIVE') then begin
@@ -781,6 +924,7 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('Use CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration") instead', '26.0')]
     procedure CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "E-Document Integration")
     begin
@@ -792,6 +936,7 @@ codeunit 139629 "Library - E-Document"
             EDocService.Insert();
         end;
     end;
+#pragma warning restore AL0432
 #endif
 
     procedure CreateGetBasicInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration")
@@ -806,6 +951,7 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('Use CreateGetBasicInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration") instead', '26.0')]
     procedure CreateGetBasicInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "E-Document Integration")
     begin
@@ -817,6 +963,7 @@ codeunit 139629 "Library - E-Document"
             EDocService.Insert();
         end;
     end;
+#pragma warning restore AL0432
 #endif
 
     procedure CreateGetCompleteInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration")
@@ -831,6 +978,7 @@ codeunit 139629 "Library - E-Document"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('Use CreateGetCompleteInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "Service Integration") instead', '26.0')]
     procedure CreateGetCompleteInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service"; Integration: Enum "E-Document Integration")
     begin
@@ -842,6 +990,7 @@ codeunit 139629 "Library - E-Document"
             EDocService.Insert();
         end;
     end;
+#pragma warning restore AL0432
 #endif
 
     procedure CreateDirectMapping(var EDocMapping: Record "E-Doc. Mapping"; EDocService: Record "E-Document Service"; FindValue: Text; ReplaceValue: Text)
@@ -875,6 +1024,17 @@ codeunit 139629 "Library - E-Document"
         EDocMapping.Insert();
     end;
 
+    local procedure CreateItemUnitOfMeasure(ItemNo: Code[20]; UnitOfMeasureCode: Code[10])
+    var
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+    begin
+        ItemUnitOfMeasure.Init();
+        ItemUnitOfMeasure.Validate("Item No.", ItemNo);
+        ItemUnitOfMeasure.Validate(Code, UnitOfMeasureCode);
+        ItemUnitOfMeasure."Qty. per Unit of Measure" := 1;
+        if ItemUnitOfMeasure.Insert() then;
+    end;
+
     procedure TempBlobToTxt(var TempBlob: Codeunit "Temp Blob"): Text
     var
         InStr: InStream;
@@ -883,6 +1043,53 @@ codeunit 139629 "Library - E-Document"
         TempBlob.CreateInStream(InStr);
         InStr.Read(Content);
         exit(Content);
+    end;
+
+    internal procedure CreateLocationsWithPostingSetups(
+        var FromLocation: Record Location;
+        var ToLocation: Record Location;
+        var InTransitLocation: Record Location;
+        var InventoryPostingGroup: Record "Inventory Posting Group")
+    var
+        InventoryPostingSetupFromLocation: Record "Inventory Posting Setup";
+        InventoryPostingSetupToLocation: Record "Inventory Posting Setup";
+        InventoryPostingSetupInTransitLocation: Record "Inventory Posting Setup";
+        LibraryWarehouse: Codeunit "Library - Warehouse";
+    begin
+        LibraryWarehouse.CreateLocation(FromLocation);
+        LibraryWarehouse.CreateLocation(ToLocation);
+        LibraryWarehouse.CreateInTransitLocation(InTransitLocation);
+
+        LibraryInventory.CreateInventoryPostingGroup(InventoryPostingGroup);
+        LibraryInventory.CreateInventoryPostingSetup(InventoryPostingSetupFromLocation, FromLocation.Code, InventoryPostingGroup.Code);
+        LibraryInventory.UpdateInventoryPostingSetup(FromLocation, InventoryPostingGroup.Code);
+
+        InventoryPostingSetupFromLocation.Get(FromLocation.Code, InventoryPostingGroup.Code);
+        InventoryPostingSetupToLocation := InventoryPostingSetupFromLocation;
+        InventoryPostingSetupToLocation."Location Code" := ToLocation.Code;
+        InventoryPostingSetupToLocation.Insert(false);
+
+        InventoryPostingSetupInTransitLocation := InventoryPostingSetupFromLocation;
+        InventoryPostingSetupInTransitLocation."Location Code" := InTransitLocation.Code;
+        InventoryPostingSetupInTransitLocation.Insert(false);
+    end;
+
+    internal procedure CreateItemWithInventoryPostingGroup(var Item: Record Item; InventoryPostingGroupCode: Code[20])
+    begin
+        LibraryInventory.CreateItem(Item);
+        Item."Inventory Posting Group" := InventoryPostingGroupCode;
+        Item.Modify(false);
+    end;
+
+    internal procedure CreateItemWIthInventoryStock(var Item: Record Item; var FromLocation: Record Location; var InventoryPostingGroup: Record "Inventory Posting Group")
+    var
+        ItemJournalLine: Record "Item Journal Line";
+    begin
+        CreateItemWithInventoryPostingGroup(Item, InventoryPostingGroup.Code);
+        LibraryInventory.CreateItemJournalLineInItemTemplate(
+          ItemJournalLine, Item."No.", FromLocation.Code, '', LibraryRandom.RandIntInRange(10, 20));
+        LibraryInventory.PostItemJournalLine(
+          ItemJournalLine."Journal Template Name", ItemJournalLine."Journal Batch Name");
     end;
 
     // Verify procedures

@@ -14,6 +14,9 @@ table 6124 "E-Document Log"
     DataClassification = CustomerContent;
     ReplicateData = false;
 
+    Permissions =
+        tabledata "E-Doc. Data Storage" = md;
+
     fields
     {
         field(1; "Entry No."; Integer)
@@ -81,7 +84,12 @@ table 6124 "E-Document Log"
         }
         field(12; "Processing Status"; Enum "Import E-Doc. Proc. Status")
         {
-            Caption = 'Processing Status';
+            Caption = 'Final Processing Status';
+            Editable = false;
+        }
+        field(13; "Step Undone"; Boolean)
+        {
+            Caption = 'Step Undone';
             Editable = false;
         }
     }

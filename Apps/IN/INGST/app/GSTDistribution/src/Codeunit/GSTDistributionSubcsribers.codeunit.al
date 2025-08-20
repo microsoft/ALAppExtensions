@@ -163,6 +163,25 @@ codeunit 18201 "GST Distribution Subcsribers"
         end;
     end;
 
+    local procedure LocationISDDocumentNo(var GSTDistributionLine: Record "GST Distribution Line")
+    var
+        Record: Variant;
+        IsHandled: Boolean;
+    begin
+        OnBeforeDistDocumentLocationWiseNo(GSTDistributionLine, IsHandled);
+        if IsHandled then
+            exit;
+
+        GSTDistributionLine.TestField("To Location Code");
+
+        Record := GSTDistributionLine;
+        GetDistributionLinePostingNoSeries(Record);
+        GSTDistributionLine := Record;
+
+        if GSTDistributionLine."Location Posting No. Series" = '' then
+            exit;
+    end;
+
     local procedure ReversalInvoiceNo(var GSTDistributionHeader: Record "GST Distribution Header")
     var
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
@@ -309,6 +328,17 @@ codeunit 18201 "GST Distribution Subcsribers"
             GSTDistributionHeader."Posting No. Series" := NoSeriesCode;
     end;
 
+    local procedure GetDistributionLinePostingNoSeries(var GSTDistributionLine: Record "GST Distribution Line")
+    var
+        PostingNoSeries: Record "Posting No. Series";
+        NoSeriesCode: Code[20];
+    begin
+        PostingNoSeries.SetRange("Table Id", Database::"GST Distribution Line");
+        NoSeriesCode := LoopPostingNoSeries(PostingNoSeries, GSTDistributionLine, PostingNoSeries."Document Type"::"GST Distribution Line");
+        if NoSeriesCode <> '' then
+            GSTDistributionLine."Location Posting No. Series" := NoSeriesCode;
+    end;
+
     local procedure LoopPostingNoSeries(Var PostingNoSeries: Record "Posting No. Series"; Record: Variant; PostingDocumentType: Enum "Posting Document Type"): Code[20]
     var
         Filters: Text;
@@ -385,6 +415,11 @@ codeunit 18201 "GST Distribution Subcsribers"
                     PostingNoSeries."Table Id" := Database::"GST Distribution Header";
                     IsHandled := true;
                 end;
+            PostingNoSeries."Document Type"::"GST Distribution Line":
+                begin
+                    PostingNoSeries."Table Id" := Database::"GST Distribution Line";
+                    IsHandled := true;
+                end;
         end;
     end;
 
@@ -434,6 +469,12 @@ codeunit 18201 "GST Distribution Subcsribers"
         DistDocumentType(Rec);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"GST Distribution Line", 'OnAfterValidateEvent', 'To Location Code', false, false)]
+    local procedure ValidateDistDocumentNoLocationWise(var Rec: Record "GST Distribution Line")
+    begin
+        LocationISDDocumentNo(Rec);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"GST Distribution Header", 'OnAfterValidateEvent', 'Reversal Invoice No.', false, false)]
     local procedure ValidateReversalInvoiceNo(var Rec: Record "GST Distribution Header")
     begin
@@ -477,5 +518,34 @@ codeunit 18201 "GST Distribution Subcsribers"
         Rec.Priority := GetLastPriority(Rec."GST Component Code");
         if IsZeroPriority(Rec."GST Component Code") then
             Error(ZeroPriorityErr);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"GST Distribution Header", OnAfterValidateEvent, 'ISD Interstate Posting', false, false)]
+    local procedure OnAfterValidateISDInterstatePosting(var Rec: Record "GST Distribution Header")
+    begin
+        UpdateGSTDistributionLinesForInterstatePosting(Rec);
+    end;
+
+    local procedure UpdateGSTDistributionLinesForInterstatePosting(var GSTDistributionHeader: Record "GST Distribution Header")
+    var
+        GSTDistributionLine: Record "GST Distribution Line";
+    begin
+        GSTDistributionLine.SetLoadFields("Distribution No.", "Distribution Jurisdiction", "To Location Code");
+        GSTDistributionLine.SetRange("Distribution No.", GSTDistributionHeader."No.");
+        if GSTDistributionLine.findset() then
+            repeat
+                case true of
+                    GSTDistributionHeader."ISD Interstate Posting":
+                        GSTDistributionLine."Distribution Jurisdiction" := GSTDistributionLine."Distribution Jurisdiction"::Interstate;
+                    else
+                        GSTDistributionLine.Validate("To Location Code");
+                end;
+                GSTDistributionLine.Modify();
+            until GSTDistributionLine.Next() = 0;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeDistDocumentLocationWiseNo(var GSTDistributionLine: Record "GST Distribution Line"; var IsHandled: Boolean)
+    begin
     end;
 }

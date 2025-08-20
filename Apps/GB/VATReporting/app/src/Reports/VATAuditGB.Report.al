@@ -377,6 +377,7 @@ report 10544 "VAT Audit GB"
                         DecimalPlaces = 0 : 0;
                         MinValue = 0;
                         ToolTip = 'Specifies the number of days between the invoice issue date and the payment received date. ';
+                        AutoFormatType = 0;
                     }
                     field("Late Invoicing File Name"; LateInvoicingFileName)
                     {

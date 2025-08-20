@@ -20,7 +20,7 @@ codeunit 5389 "Create Deferral Template"
     begin
         DeferralAccountNo := CreateGLAccount.OtherAccruedExpensesandDeferredIncome();
         ContosoDeferralTemplate.InsertDeferralTemplate(DeferralCode3M(), Description3M(), DeferralAccountNo, 100, Enum::"Deferral Calculation Method"::"Equal per Period", Enum::"Deferral Calculation Start Date"::"Beginning of Next Period", 3, '%4, %6');
-        ContosoDeferralTemplate.InsertDeferralTemplate(DeferralCode1Y(), Description1Y(), DeferralAccountNo, 100, Enum::"Deferral Calculation Method"::"Equal per Period", Enum::"Deferral Calculation Start Date"::"Beginning of Next Period", 3, '%4, %6');
+        ContosoDeferralTemplate.InsertDeferralTemplate(DeferralCode1Y(), Description1Y(), DeferralAccountNo, 100, Enum::"Deferral Calculation Method"::"Equal per Period", Enum::"Deferral Calculation Start Date"::"Beginning of Next Period", 12, '%4, %6');
     end;
 
     procedure Description3M(): Text[100]

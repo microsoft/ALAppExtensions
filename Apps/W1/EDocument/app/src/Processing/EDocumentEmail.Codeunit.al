@@ -12,7 +12,7 @@ using System.Utilities;
 using System.IO;
 using System.Reflection;
 
-codeunit 6122 "E-Document Email"
+codeunit 6105 "E-Document Email"
 {
     Access = Internal;
 

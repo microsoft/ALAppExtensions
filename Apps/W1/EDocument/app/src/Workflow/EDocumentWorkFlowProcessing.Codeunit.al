@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument;
 using System.Automation;
 using System.Telemetry;
 using System.Utilities;
@@ -229,14 +230,14 @@ codeunit 6135 "E-Document WorkFlow Processing"
 
     local procedure DoSend(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
     var
-        EDocumentLog: Record "E-Document Log";
+        EDocExport: Codeunit "E-Doc. Export";
         EDocIntMgt: Codeunit "E-Doc. Integration Management";
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
         SendContext: Codeunit SendContext;
         Sent, IsAsync : Boolean;
     begin
         Sent := false;
-        if EDocumentLog.FindLogWithStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Exported) then
+        if EDocExport.ExportEDocument(EDocument, EDocumentService) then
             Sent := EDocIntMgt.Send(EDocument, EDocumentService, SendContext, IsAsync);
 
         if Sent then

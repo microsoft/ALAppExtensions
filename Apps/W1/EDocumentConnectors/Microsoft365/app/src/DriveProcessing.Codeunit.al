@@ -6,11 +6,11 @@ namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using Microsoft.EServices.EDocument;
 using System.Text;
-using Microsoft.eServices.EDocument.Integration;
 using System.Utilities;
 using System.Integration;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using System.Telemetry;
+using Microsoft.eServices.EDocument.Integration;
 
 codeunit 6381 "Drive Processing"
 {
@@ -184,8 +184,8 @@ codeunit 6381 "Drive Processing"
 
     internal procedure SizeThreshold(): Integer
     begin
-        // 25 MB
-        exit(26214400)
+        // 5 MB
+        exit(5242880)
     end;
 
     procedure DownloadDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; DocumentMetadataBlob: Codeunit "Temp Blob"; ReceiveContext: Codeunit ReceiveContext)
@@ -222,21 +222,11 @@ codeunit 6381 "Drive Processing"
         TempDocumentSharing.Data.CreateInStream(DocumentInStream, TextEncoding::UTF8);
         CopyStream(DocumentOutStream, DocumentInStream);
 
-        UpdateEDocumentAfterDocumentDownload(Edocument, DocumentId);
-        UpdateReceiveContextAfterDocumentDownload(ReceiveContext, FileId, EDocumentService);
-    end;
-
-    internal procedure UpdateReceiveContextAfterDocumentDownload(ReceiveContext: Codeunit ReceiveContext; FileId: Text; var EDocumentService: Record "E-Document Service")
-    begin
-        ReceiveContext.SetName(CopyStr(FileId, 1, 250));
-        ReceiveContext.SetType(Enum::"E-Doc. Data Storage Blob Type"::PDF);
-        ReceiveContext.SetSourceDetails(GetSourceDetails(EDocumentService."Service Integration V2"));
-    end;
-
-    internal procedure UpdateEDocumentAfterDocumentDownload(var EDocument: Record "E-Document"; DocumentId: Text)
-    begin
         EDocument."Drive Item Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Drive Item Id"));
+        EDocument."Source Details" := CopyStr(GetSourceDetails(EDocumentService."Service Integration V2"), 1, MaxStrLen(EDocument."Source Details"));
         EDocument.Modify();
+        ReceiveContext.SetName(CopyStr(FileId, 1, 250));
+        ReceiveContext.SetFileFormat("E-Doc. File Format"::PDF);
     end;
 
     internal procedure ExtractItemIdAndName(DocumentMetadataBlob: Codeunit "Temp Blob"; var DocumentId: Text; var FileId: Text)
@@ -365,6 +355,7 @@ codeunit 6381 "Drive Processing"
         end;
         exit(ImportedDocumentsFolderId);
     end;
+
 
     local procedure CheckSetupEnabled(var OneDriveSetup: Record "OneDrive Setup")
     begin

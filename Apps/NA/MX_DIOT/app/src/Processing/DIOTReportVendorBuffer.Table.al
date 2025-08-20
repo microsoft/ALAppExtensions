@@ -6,17 +6,20 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 table 27033 "DIOT Report Vendor Buffer"
 {
+    DataClassification = CustomerContent;
+
     fields
     {
         field(1; "Vendor No."; Code[20])
         {
             Caption = 'Vendor No.';
         }
-        field(2; "Type of Operation"; Option)
+#pragma warning disable AS0070
+        field(2; "Type of Operation"; Enum "DIOT Type of Operation")
         {
             Caption = 'Type of Operation';
-            OptionMembers = "Prof. Services","Lease and Rent",Others;
         }
+#pragma warning restore AS0070
         field(3; "Type of Vendor Text"; Text[2])
         {
             Caption = 'Type of Vendor Text';
@@ -37,13 +40,23 @@ table 27033 "DIOT Report Vendor Buffer"
         {
             Caption = 'Vendor Name';
         }
-        field(8; "Country/Region Code"; Text[2])
+#pragma warning disable AS0086
+        field(8; "Country/Region Code"; Text[10])
         {
             Caption = 'Country/Region Code';
         }
+#pragma warning restore AS0086
         field(9; Nationality; Text[250])
         {
             Caption = 'Nationality';
+        }
+        field(10; "Tax Effects Applied"; Boolean)
+        {
+            Caption = 'Tax Effects Applied';
+        }
+        field(11; "Tax Jurisdiction Location"; Text[300])
+        {
+            Caption = 'Tax Jurisdiction Location';
         }
     }
 

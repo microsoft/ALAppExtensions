@@ -46,7 +46,8 @@ codeunit 18151 "GST Ship To Address"
                 "GST Customer Type"::"SEZ Development",
                 "GST Customer Type"::"SEZ Unit",
                 "GST Customer Type"::Registered,
-                "GST Customer Type"::Unregistered] then
+                "GST Customer Type"::Unregistered,
+                "GST Customer Type"::Export] then
             if ShipToAddress.Get(SalesHeader."Sell-to Customer No.", SalesHeader."Ship-to Code") then
                 SalesHeader.State := ShipToAddress.State;
 

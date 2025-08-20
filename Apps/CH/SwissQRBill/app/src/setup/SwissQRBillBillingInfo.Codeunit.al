@@ -88,7 +88,7 @@ codeunit 11519 "Swiss QR-Bill Billing Info"
         TargetVATAmountLine.Reset();
     end;
 
-    internal procedure GetDocumentPaymentTerms(PmtTermsCode: Code[10]): Text
+    internal procedure GetDocumentPaymentTerms(PmtTermsCode: Code[10]; DocumentDate: Date): Text
     var
         PaymentTerms: Record "Payment Terms";
         DummyDateFormula: DateFormula;
@@ -98,7 +98,10 @@ codeunit 11519 "Swiss QR-Bill Billing Info"
             with PaymentTerms do
                 if Get(PmtTermsCode) then
                     if "Discount Date Calculation" <> DummyDateFormula then
-                        exit(Format("Discount %") + ':' + Format(CalcDate("Discount Date Calculation", WorkDate()) - WorkDate()));
+                        exit(Format("Discount %") + ':' + Format(CalcDate("Discount Date Calculation", WorkDate()) - WorkDate()) + ';0:' + Format(CalcDate("Due Date Calculation", DocumentDate) - DocumentDate))
+                    else
+                        if "Due Date Calculation" <> DummyDateFormula then
+                            exit('0:' + Format(CalcDate("Due Date Calculation", DocumentDate) - DocumentDate));
     end;
 
     internal procedure DrillDownBillingInfo(BillingInfoText: Text)

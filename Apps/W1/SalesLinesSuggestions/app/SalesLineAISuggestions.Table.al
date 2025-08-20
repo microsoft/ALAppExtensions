@@ -47,6 +47,7 @@ table 7275 "Sales Line AI Suggestions"
             Caption = 'Quantity';
             ToolTip = 'Specifies the Quantity in the Sales Unit of Measure defined on the Item card.';
             DecimalPlaces = 0 : 5;
+            AutoFormatType = 0;
         }
         field(16; Confidence; Enum "Search Confidence")
         {

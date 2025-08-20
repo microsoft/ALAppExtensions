@@ -17,19 +17,25 @@ page 27033 "DIOT Country/Region Data"
         {
             repeater(General)
             {
-                field("Country/Region Code"; "Country/Region Code")
+                field("Country/Region Code"; Rec."Country/Region Code")
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'Country/Region Code';
                     ToolTip = 'Specifies the DIOT specific country/region code.';
                 }
-                field(Nationality; Nationality)
+                field("ISO A-3 Country/Region Code"; Rec."ISO A-3 Country/Region Code")
+                {
+                    ApplicationArea = BasicMX;
+                    Caption = 'ISO A-3 Country/Region Code';
+                    ToolTip = 'Specifies the ISO 3166-1 Alpha-3 country/region code.';
+                }
+                field(Nationality; Rec.Nationality)
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'Nationality';
                     ToolTip = 'Specifies the DIOT specific nationality.';
                 }
-                field("BC Country/Region Code"; "BC Country/Region Code")
+                field("BC Country/Region Code"; Rec."BC Country/Region Code")
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'BC Country Code';

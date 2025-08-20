@@ -6,6 +6,7 @@
 codeunit 148003 "C5 CustTable Migrator Tst"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

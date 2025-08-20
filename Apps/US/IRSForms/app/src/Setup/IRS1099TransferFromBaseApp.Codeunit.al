@@ -6,6 +6,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
 
@@ -14,6 +15,12 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
+    Permissions =
+        tabledata "Purch. Inv. Header" = rm,
+        tabledata "Purch. Inv. Line" = rm,
+        tabledata "Purch. Cr. Memo Hdr." = rm,
+        tabledata "Purch. Cr. Memo Line" = rm,
+        tabledata "Vendor Ledger Entry" = rm;
 
     var
         StatementLineFilterExpressionTxt: Label 'Form Box No.: %1', Comment = '%1 = Form Box No.';
@@ -32,6 +39,8 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
         TransferVendorSetup(IRSReportingPeriod."No.");
         TransferAdjustments(IRSReportingPeriod."No.", IRSFormsSetup."Init Reporting Year");
         TransferPurchaseDocuments(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
+        TransferPostedPurchInvoices(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
+        TransferPostedPurchCrMemos(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
         TransferVendorLedgerEntries(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
         IRSFormsData.AddFormInstructionLines(IRSReportingPeriod."No.");
 
@@ -159,11 +168,65 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
                 PurchLine.SetRange("Document No.", PurchHeader."No.");
                 if PurchLine.FindSet(true) then
                     repeat
-                        PurchLine."1099 Liable" := true;
+                        PurchLine."1099 Liable" := PurchLine."IRS 1099 Liable";
                         PurchLine.Modify();
                     until PurchLine.Next() = 0;
             end;
         until PurchHeader.Next() = 0;
+#pragma warning restore AL0432
+    end;
+
+    local procedure TransferPostedPurchInvoices(PeriodNo: Code[20]; StartingDate: Date; EndingDate: Date)
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchInvLine: Record "Purch. Inv. Line";
+    begin
+#pragma warning disable AL0432
+        PurchInvHeader.SetRange("Posting Date", StartingDate, EndingDate);
+        PurchInvHeader.SetFilter("IRS 1099 Code", '<>%1', '');
+        if not PurchInvHeader.FindSet(true) then
+            exit;
+        repeat
+            if IsOld1099FormBoxTransferable(PurchInvHeader."IRS 1099 Code") then begin
+                PurchInvHeader."IRS 1099 Reporting Period" := PeriodNo;
+                PurchInvHeader."IRS 1099 Form No." := GetFormNoFromOldFormBox(PurchInvHeader."IRS 1099 Code");
+                PurchInvHeader."IRS 1099 Form Box No." := PurchInvHeader."IRS 1099 Code";
+                PurchInvHeader.Modify();
+                PurchInvLine.SetRange("Document No.", PurchInvHeader."No.");
+                if PurchInvLine.FindSet(true) then
+                    repeat
+                        PurchInvLine."1099 Liable" := PurchInvLine."IRS 1099 Liable";
+                        PurchInvLine.Modify();
+                    until PurchInvLine.Next() = 0;
+            end;
+        until PurchInvHeader.Next() = 0;
+#pragma warning restore AL0432
+    end;
+
+    local procedure TransferPostedPurchCrMemos(PeriodNo: Code[20]; StartingDate: Date; EndingDate: Date)
+    var
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        PurchCrMemoLine: Record "Purch. Cr. Memo Line";
+    begin
+#pragma warning disable AL0432
+        PurchCrMemoHdr.SetRange("Posting Date", StartingDate, EndingDate);
+        PurchCrMemoHdr.SetFilter("IRS 1099 Code", '<>%1', '');
+        if not PurchCrMemoHdr.FindSet(true) then
+            exit;
+        repeat
+            if IsOld1099FormBoxTransferable(PurchCrMemoHdr."IRS 1099 Code") then begin
+                PurchCrMemoHdr."IRS 1099 Reporting Period" := PeriodNo;
+                PurchCrMemoHdr."IRS 1099 Form No." := GetFormNoFromOldFormBox(PurchCrMemoHdr."IRS 1099 Code");
+                PurchCrMemoHdr."IRS 1099 Form Box No." := PurchCrMemoHdr."IRS 1099 Code";
+                PurchCrMemoHdr.Modify();
+                PurchCrMemoLine.SetRange("Document No.", PurchCrMemoHdr."No.");
+                if PurchCrMemoLine.FindSet(true) then
+                    repeat
+                        PurchCrMemoLine."1099 Liable" := PurchCrMemoLine."IRS 1099 Liable";
+                        PurchCrMemoLine.Modify();
+                    until PurchCrMemoLine.Next() = 0;
+            end;
+        until PurchCrMemoHdr.Next() = 0;
 #pragma warning restore AL0432
     end;
 
@@ -182,17 +245,14 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
                 VendorLedgerEntry."IRS 1099 Reporting Period" := PeriodNo;
                 VendorLedgerEntry."IRS 1099 Form No." := GetFormNoFromOldFormBox(VendorLedgerEntry."IRS 1099 Code");
                 VendorLedgerEntry."IRS 1099 Form Box No." := VendorLedgerEntry."IRS 1099 Code";
-                VendorLedgerEntry.CalcFields(Amount);
-                if VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Invoice then
-                    VendorLedgerEntry."IRS 1099 Reporting Amount" := VendorLedgerEntry.Amount
-                else
-                    VendorLedgerEntry."IRS 1099 Reporting Amount" := -VendorLedgerEntry.Amount;
+                VendorLedgerEntry."IRS 1099 Reporting Amount" := VendorLedgerEntry."IRS 1099 Amount";
                 VendorLedgerEntry."IRS 1099 Subject For Reporting" := VendorLedgerEntry."IRS 1099 Reporting Amount" <> 0;
                 VendorLedgerEntry.Modify();
             end;
         until VendorLedgerEntry.Next() = 0;
 #pragma warning restore AL0432
     end;
+
 
     local procedure IsOld1099FormBoxTransferable(OldFormBox: Text): Boolean
     begin

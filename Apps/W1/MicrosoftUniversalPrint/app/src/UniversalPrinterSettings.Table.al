@@ -69,6 +69,7 @@ table 2751 "Universal Printer Settings"
             Caption = 'Printer Paper Height';
             DecimalPlaces = 0 : 2;
             DataClassification = CustomerContent;
+            AutoFormatType = 0;
         }
 
         /// <summary>
@@ -79,6 +80,7 @@ table 2751 "Universal Printer Settings"
             Caption = 'Printer Paper Width';
             DecimalPlaces = 0 : 2;
             DataClassification = CustomerContent;
+            AutoFormatType = 0;
         }
 
         /// <summary>

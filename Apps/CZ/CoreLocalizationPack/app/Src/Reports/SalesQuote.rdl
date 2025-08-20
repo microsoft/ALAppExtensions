@@ -4585,9 +4585,6 @@ End Function</Code>
         <Field Name="QuoteValidUntilDate_SalesHeader">
           <DataField>QuoteValidUntilDate_SalesHeader</DataField>
         </Field>
-        <Field Name="QuoteValidUntilDateFormat_SalesHeader">
-          <DataField>QuoteValidUntilDateFormat_SalesHeader</DataField>
-        </Field>
         <Field Name="DocFooterText">
           <DataField>DocFooterText</DataField>
         </Field>

@@ -1,8 +1,17 @@
 namespace Microsoft.Sustainability.Setup;
 
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.NoSeries;
 using Microsoft.Foundation.UOM;
+using Microsoft.Integration.Dataverse;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Sustainability.CRM;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.ESGReporting;
+using Microsoft.Sustainability.Ledger;
 using Microsoft.Utilities;
+using System.Telemetry;
+using System.Threading;
 using System.Utilities;
 
 table 6217 "Sustainability Setup"
@@ -20,6 +29,11 @@ table 6217 "Sustainability Setup"
         {
             Caption = 'Emission Unit of Measure Code';
             TableRelation = "Unit of Measure";
+
+            trigger OnValidate()
+            begin
+                ValidateEmissionUnitOfMeasure();
+            end;
         }
         field(3; "Emission Reporting UOM Code"; Code[10])
         {
@@ -105,6 +119,14 @@ table 6217 "Sustainability Setup"
         field(16; "Use Emissions In Purch. Doc."; Boolean)
         {
             Caption = 'Use Emissions In Purchase Documents';
+            trigger OnValidate()
+            var
+                FeatureTelemetry: Codeunit "Feature Telemetry";
+                SustainabilityLbl: Label 'Sustainability', Locked = true;
+            begin
+                if Rec."Use Emissions In Purch. Doc." then
+                    FeatureTelemetry.LogUptake('0000PGZ', SustainabilityLbl, Enum::"Feature Uptake Status"::"Set up");
+            end;
         }
         field(17; "Waste Unit of Measure Code"; Code[10])
         {
@@ -132,7 +154,6 @@ table 6217 "Sustainability Setup"
         field(22; "Item Charge Emissions"; Boolean)
         {
             Caption = 'Item Charge Emissions';
-            Editable = false;
         }
         field(23; "Resource Emissions"; Boolean)
         {
@@ -155,6 +176,54 @@ table 6217 "Sustainability Setup"
                 EnableEmissionsWhenValueChainTrackingIsEnabled();
             end;
         }
+        field(26; "Energy Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Energy Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
+        field(27; "Energy Reporting UOM Code"; Code[10])
+        {
+            Caption = 'Energy Reporting Unit of Measure Code';
+            TableRelation = "Unit of Measure";
+        }
+        field(28; "Energy Reporting UOM Factor"; Decimal)
+        {
+            InitValue = 1;
+            Caption = 'Energy Reporting UOM Factor';
+            DecimalPlaces = 0 : 10;
+        }
+        field(29; "Use All Gases As CO2e"; Boolean)
+        {
+            Caption = 'Use All Gases As CO2e';
+            ToolTip = 'Specifies that you want to enable recording all gases as CO2 equivalent values. When this field is selected, the captions for gases will change from their names to their CO2e equivalents. The values you are expected to enter will correspond to their carbon equivalent values, not the original gas values. Additionally, the Carbon Equivalent Factor in the Emission Fees will be set to 1 for all three gases.';
+
+            trigger OnValidate()
+            begin
+                if Rec."Use All Gases As CO2e" then
+                    UpdateCarbonEquivalentFactorInEmissionFee();
+            end;
+        }
+        field(30; "Posted ESG Reporting Nos."; Code[20])
+        {
+            Caption = 'Posted ESG Reporting Nos.';
+            TableRelation = "No. Series";
+            ToolTip = 'Specifies the code for the number series that will be used to assign numbers to posted ESG Reporting nos.';
+        }
+        field(40; "Is Dataverse Int. Enabled"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Enable Dataverse Integration';
+
+            trigger OnValidate()
+            var
+                SustSetupDefaults: Codeunit "Sust. Setup Defaults";
+            begin
+                if Rec."Is Dataverse Int. Enabled" then
+                    SustSetupDefaults.ResetConfiguration(Rec)
+                else
+                    UpdateSustJobQueueEntriesStatus();
+            end;
+        }
     }
 
     keys
@@ -173,6 +242,7 @@ table 6217 "Sustainability Setup"
         RecordHasBeenRead: Boolean;
         AutoFormatExprLbl: Label '<Precision,%1><Standard Format,0>', Locked = true;
         ConfirmEnableValueChainTrackingQst: Label 'Value Chain Tracking feature is currently in preview. We strongly recommend that you first enable and test this feature on a sandbox environment that has a copy of production data before doing this on a production environment.\\Are you sure you want to enable this feature?';
+        EmissionUOMCannotBeChangedErr: Label 'The value for %1 cannot be modified because there are existing sustainability ledger entries that use the unit of measure %2.', Comment = '%1 = Field Caption, %2 = Unit of Measure Code', Locked = true;
 
     procedure GetRecordOnce()
     begin
@@ -240,6 +310,23 @@ table 6217 "Sustainability Setup"
         end;
     end;
 
+    internal procedure IsDataverseIntegrationEnabled(): Boolean
+    begin
+        if not Get() then
+            exit(false);
+
+        exit("Is Dataverse Int. Enabled");
+    end;
+
+    internal procedure ExistSustainabilityLedgerEntryWithUnitOfMeasure(UnitOfMeasure: Code[10]): Boolean
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+    begin
+        SustainabilityLedgerEntry.SetRange("Unit of Measure", UnitOfMeasure);
+
+        exit(not SustainabilityLedgerEntry.IsEmpty());
+    end;
+
     local procedure GetSustainabilitySetup()
     begin
         if not SustainabilitySetupRetrieved then begin
@@ -248,10 +335,58 @@ table 6217 "Sustainability Setup"
         end;
     end;
 
+    local procedure UpdateCarbonEquivalentFactorInEmissionFee()
+    var
+        EmissionFee: Record "Emission Fee";
+    begin
+        EmissionFee.SetFilter("Emission Type", '<>%1', EmissionFee."Emission Type"::" ");
+        EmissionFee.ModifyAll("Carbon Equivalent Factor", 1);
+    end;
+
+    local procedure UpdateSustJobQueueEntriesStatus()
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        JobQueueEntry: Record "Job Queue Entry";
+        NewStatus: Option;
+    begin
+        NewStatus := JobQueueEntry.Status::"On Hold";
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::Dataverse);
+        IntegrationTableMapping.SetRange("Synch. Codeunit ID", Codeunit::"CRM Integration Table Synch.");
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetFilter("Table ID", StrSubstNo('%1|%2|%3|%4|%5', Database::"Sust. ESG Reporting Unit", Database::"Sust. ESG Standard", Database::"Sust. ESG Reporting Name", Database::"Sust. ESG Reporting Line", Database::"Sust. Posted ESG Report Line"));
+        if IntegrationTableMapping.FindSet() then
+            repeat
+                JobQueueEntry.SetRange("Record ID to Process", IntegrationTableMapping.RecordId());
+                if JobQueueEntry.FindSet() then
+                    repeat
+                        JobQueueEntry.SetStatus(NewStatus);
+                    until JobQueueEntry.Next() = 0;
+            until IntegrationTableMapping.Next() = 0;
+    end;
+
     [InherentPermissions(PermissionObjectType::TableData, Database::"Sustainability Setup", 'I')]
     internal procedure InitRecord()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SustainabilityLbl: Label 'Sustainability', Locked = true;
+        SustainabilitySetupInitLbl: Label 'Sustainability initialized', Locked = true;
     begin
-        if not Get() then
-            Insert();
+        if not Get() then begin
+            Rec.Insert();
+            FeatureTelemetry.LogUptake('0000PH0', SustainabilityLbl, Enum::"Feature Uptake Status"::"Set up");
+            FeatureTelemetry.LogUsage('0000PH1', SustainabilityLbl, SustainabilitySetupInitLbl);
+        end;
+    end;
+
+    local procedure ValidateEmissionUnitOfMeasure()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+    begin
+        if Rec."Emission Unit of Measure Code" = xRec."Emission Unit of Measure Code" then
+            exit;
+
+        SustainabilityLedgerEntry.SetFilter("Unit of Measure", '%1', xRec."Emission Unit of Measure Code");
+        if not SustainabilityLedgerEntry.IsEmpty() then
+            Error(EmissionUOMCannotBeChangedErr, Rec.FieldCaption("Emission Unit of Measure Code"), xRec."Emission Unit of Measure Code");
     end;
 }

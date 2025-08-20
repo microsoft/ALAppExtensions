@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Purchase;
 
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Energy;
 using Microsoft.Sustainability.Setup;
 using Microsoft.Purchases.History;
 
@@ -59,6 +60,7 @@ tableextension 6215 "Sust. Purch. Ret. Shpt. Line" extends "Return Shipment Line
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CO2';
+            CaptionClass = '102,6,1';
             DataClassification = CustomerContent;
         }
         field(6218; "Emission CH4"; Decimal)
@@ -66,6 +68,7 @@ tableextension 6215 "Sust. Purch. Ret. Shpt. Line" extends "Return Shipment Line
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CH4';
+            CaptionClass = '102,6,2';
             DataClassification = CustomerContent;
         }
         field(6219; "Emission N2O"; Decimal)
@@ -73,6 +76,33 @@ tableextension 6215 "Sust. Purch. Ret. Shpt. Line" extends "Return Shipment Line
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission N2O';
+            CaptionClass = '102,6,3';
+            DataClassification = CustomerContent;
+        }
+        field(6223; "Energy Source Code"; Code[20])
+        {
+            Caption = 'Energy Source Code';
+            TableRelation = "Sustainability Energy Source";
+            DataClassification = CustomerContent;
+        }
+        field(6224; "Renewable Energy"; Boolean)
+        {
+            Caption = 'Renewable Energy';
+            DataClassification = CustomerContent;
+        }
+        field(6225; "Energy Consumption Per Unit"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Energy Consumption Per Unit';
+            DataClassification = CustomerContent;
+        }
+        field(6226; "Energy Consumption"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Energy Consumption';
+            CaptionClass = '102,13,4';
             DataClassification = CustomerContent;
         }
     }

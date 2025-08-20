@@ -3,6 +3,8 @@ namespace Microsoft.Bank.Reconciliation;
 using Microsoft.Bank.Statement;
 using System.Security.User;
 using Microsoft.Finance.GeneralLedger.Journal;
+using System.Telemetry;
+using Microsoft.Bank.BankAccount;
 
 page 7252 "Trans. To GL Acc. AI Proposal"
 {
@@ -92,6 +94,8 @@ page 7252 "Trans. To GL Acc. AI Proposal"
                     Caption = 'Statement Ending Balance';
                     Editable = true;
                     ToolTip = 'Specifies the ending balance shown on the bank''s statement that you want to reconcile with the bank account.';
+                    AutoFormatType = 1;
+                    AutoFormatExpression = GetBankAccountCurrencyCode();
 
                     trigger OnValidate()
                     var
@@ -246,6 +250,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         LocalBankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankAccountStatement: Record "Bank Account Statement";
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         TelemetryDimensions.Add('Category', BankRecAIMatchingImpl.FeatureName());
@@ -283,6 +288,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             if LocalBankAccReconciliation.Get(LocalBankAccReconciliation."Statement Type"::"Bank Reconciliation", BankAccNo, StatementNo) then
                 TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
             Session.LogMessage('0000LFB', TelemetryUserNotAcceptedProposalsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+            FeatureTelemetry.LogUsage('0000PGX', BankRecAIMatchingImpl.FeatureName(), TelemetryUserNotAcceptedProposalsTxt);
         end;
     end;
 
@@ -343,6 +349,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         LocalBankAccReconciliation: Record "Bank Acc. Reconciliation";
         BankAccRecTransToAcc: Codeunit "Bank Acc. Rec. Trans. to Acc.";
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if not TransToGLAccJnlBatch.FindFirst() then begin
@@ -363,6 +370,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         if LocalBankAccReconciliation.Get(LocalBankAccReconciliation."Statement Type"::"Bank Reconciliation", BankAccNo, StatementNo) then
             TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
         Session.LogMessage('0000LFD', TelemetryUserAcceptedProposalsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
+        FeatureTelemetry.LogUsage('0000PGY', BankRecAIMatchingImpl.FeatureName(), TelemetryUserAcceptedProposalsTxt)
     end;
 
     internal procedure SetBankAccReconciliationLines(var InputBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line");
@@ -411,6 +419,16 @@ page 7252 "Trans. To GL Acc. AI Proposal"
 
         if FoundInvalidPostingDates then
             Message(BankAccRecTransToAcc.GetStatementLinesWithDisallowedDatesLbl());
+    end;
+
+    local procedure GetBankAccountCurrencyCode(): Code[10]
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        if BankAccNo <> '' then
+            if BankAccount.Get(BankAccNo) then
+                exit(BankAccount."Currency Code");
+        exit('')
     end;
 
     var

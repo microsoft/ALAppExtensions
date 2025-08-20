@@ -18,6 +18,7 @@ codeunit 148192 "Integration Tests"
 {
     TestHttpRequestPolicy = AllowOutboundFromHandler;
     Subtype = Test;
+    TestType = Uncategorized;
     Permissions = tabledata "E-Doc. Ext. Connection Setup" = rimd,
                     tabledata "E-Document" = r;
 
@@ -103,6 +104,37 @@ codeunit 148192 "Integration Tests"
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), IncorrectValueErr);
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), IncorrectValueErr);
         EDocumentPage.Close();
+    end;
+
+
+    [Test]
+    [HandlerFunctions('ConfirmQst')]
+    procedure ResetSetupRecord()
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+        PageroAuth: Codeunit "Pagero Auth.";
+        EDOCExt: TestPage "EDoc Ext Connection Setup Card";
+        ValueBefore: Text;
+    begin
+        PageroAuth.InitConnectionSetup();
+        EDocExtConnectionSetup.Get();
+        ValueBefore := EDocExtConnectionSetup."Authentication URL";
+
+        // Mimic wrong url
+        EDocExtConnectionSetup."Authentication URL" := 'Random URL';
+        EDocExtConnectionSetup.Modify();
+
+        EDOCExt.OpenView();
+        EDOCExt.ResetSetup.Invoke();
+
+        EDocExtConnectionSetup.Get();
+        Assert.AreEqual(ValueBefore, EDocExtConnectionSetup."Authentication URL", 'Reset Setup did not restore the Authentication URL');
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmQst(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true; // Automatically confirm all questions in tests
     end;
 
     [HttpClientHandler]

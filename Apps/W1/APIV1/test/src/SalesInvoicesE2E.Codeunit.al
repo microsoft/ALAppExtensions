@@ -3,6 +3,7 @@ codeunit 139709 "Sales Invoices E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

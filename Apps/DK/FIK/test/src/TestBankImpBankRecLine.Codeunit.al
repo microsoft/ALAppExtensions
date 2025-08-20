@@ -6,6 +6,7 @@
 codeunit 148028 "Test Bank Imp. Bank Rec. Line"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

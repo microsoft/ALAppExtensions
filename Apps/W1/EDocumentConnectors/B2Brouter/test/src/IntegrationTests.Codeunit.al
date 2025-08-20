@@ -18,6 +18,7 @@ using Microsoft.eServices.EDocument.Integration;
 codeunit 148199 "Integration Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     Permissions =
         tabledata "b2brouter Setup" = rimd,
         tabledata "E-Document" = r;

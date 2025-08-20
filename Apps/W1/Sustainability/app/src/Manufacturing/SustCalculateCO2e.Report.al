@@ -103,9 +103,9 @@ report 6214 "Sust. Calculate CO2e"
         }
     }
 
-    procedure Initialize(CapacityType: Integer; HideCapacityType: Boolean)
+    procedure Initialize(InitCapacityType: Integer; HideCapacityType: Boolean)
     begin
-        Type := CapacityType;
+        Type := InitCapacityType;
         TypeVisible := HideCapacityType;
     end;
 
@@ -129,21 +129,21 @@ report 6214 "Sust. Calculate CO2e"
         Window.Update(1, Round(Counter / RecordCount * 10000, 1));
     end;
 
-    local procedure OpenDialog(var WorkCenter: Record "Work Center"; var RecordCount: Integer)
+    local procedure OpenDialog(var WorkCenter: Record "Work Center"; var RecCount: Integer)
     begin
         if not GuiAllowed() then
             exit;
 
-        RecordCount := WorkCenter.Count();
+        RecCount := WorkCenter.Count();
         Window.Open(ProcessBarMsg);
     end;
 
-    local procedure OpenDialog(var MachineCenter: Record "Machine Center"; var RecordCount: Integer)
+    local procedure OpenDialog(var MachineCenter: Record "Machine Center"; var RecCount: Integer)
     begin
         if not GuiAllowed() then
             exit;
 
-        RecordCount := MachineCenter.Count();
+        RecCount := MachineCenter.Count();
         Window.Open(ProcessBarMsg);
     end;
 
@@ -155,12 +155,12 @@ report 6214 "Sust. Calculate CO2e"
         Window.Close();
     end;
 
-    local procedure ShowCompletionMsg(RecordCount: Integer; Counter: Integer; TableCaption: Text)
+    local procedure ShowCompletionMsg(RecCount: Integer; Counter: Integer; TableCaption: Text)
     begin
         if not GuiAllowed() then
             exit;
 
-        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecordCount, TableCaption));
+        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecCount, TableCaption));
     end;
 
     local procedure UpdateCO2ePerUnit(var NewWorkCenter: Record "Work Center")

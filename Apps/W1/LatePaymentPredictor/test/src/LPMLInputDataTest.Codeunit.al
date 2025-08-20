@@ -9,6 +9,7 @@ using Microsoft.Inventory.Item;
 codeunit 139576 "LP ML Input Data Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     EventSubscriberInstance = Manual;
     SingleInstance = true;
     TestPermissions = Disabled;

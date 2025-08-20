@@ -3,6 +3,7 @@ codeunit 139821 "APIV2 - Ret. Earnings E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

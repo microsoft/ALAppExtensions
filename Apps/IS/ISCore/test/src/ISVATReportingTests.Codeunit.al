@@ -205,38 +205,6 @@ codeunit 139644 "IS VAT Reporting - Tests"
         until VATAmtLine.Next() = 0;
     end;
 
-    local procedure CreateSalesDoc(var SalesHeader: Record "Sales Header"; DocType: Option)
-    var
-        SalesLine: Record "Sales Line";
-        Cust: Record Customer;
-        Item: Record Item;
-    begin
-        LibrarySales.CreateCustomer(Cust);
-        LibrarySales.CreateSalesHeader(SalesHeader, DocType, Cust."No.");
-        LibraryInvt.CreateItem(Item);
-        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, Item."No.", 1);
-        SalesLine.Validate("Unit Price", 10);
-        SalesLine.Modify(true);
-
-        Commit();
-    end;
-
-    local procedure CreateSalesInvAndPost(var SalesInvoiceHeader: Record "Sales Invoice Header")
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        CreateSalesDoc(SalesHeader, SalesHeader."Document Type"::Invoice);
-        SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
-    end;
-
-    local procedure CreateSalesCrMemoAndPost(var SalesCrMemoHeader: Record "Sales Cr.Memo Header")
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        CreateSalesDoc(SalesHeader, SalesHeader."Document Type"::"Credit Memo");
-        SalesCrMemoHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
-    end;
-
     local procedure CreateSalesDocWithMultipleVAT(var SalesHeader: Record "Sales Header"; DocType: Option)
     var
         SalesLine: Record "Sales Line";
@@ -273,38 +241,6 @@ codeunit 139644 "IS VAT Reporting - Tests"
         SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
-    local procedure CreatePurchDoc(var PurchHeader: Record "Purchase Header"; DocType: Option)
-    var
-        PurchLine: Record "Purchase Line";
-        Vend: Record Vendor;
-        Item: Record Item;
-    begin
-        LibraryPurch.CreateVendor(Vend);
-        LibraryPurch.CreatePurchHeader(PurchHeader, DocType, Vend."No.");
-        LibraryInvt.CreateItem(Item);
-        LibraryPurch.CreatePurchaseLine(PurchLine, PurchHeader, PurchLine.Type::Item, Item."No.", 1);
-        PurchLine.Validate("Direct Unit Cost", 10);
-        PurchLine.Modify(true);
-
-        Commit();
-    end;
-
-    local procedure CreatePurchInvAndPost(var PurchInvHeader: Record "Purch. Inv. Header")
-    var
-        PurchHeader: Record "Purchase Header";
-    begin
-        CreatePurchDoc(PurchHeader, PurchHeader."Document Type"::Invoice);
-        PurchInvHeader.Get(LibraryPurch.PostPurchaseDocument(PurchHeader, true, true));
-    end;
-
-    local procedure CreatePurchCrMemoAndPost(var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.")
-    var
-        PurchHeader: Record "Purchase Header";
-    begin
-        CreatePurchDoc(PurchHeader, PurchHeader."Document Type"::"Credit Memo");
-        PurchCrMemoHdr.Get(LibraryPurch.PostPurchaseDocument(PurchHeader, true, true));
-    end;
-
     local procedure CreatePurchDocWithMultipleVAT(var PurchHeader: Record "Purchase Header"; DocType: Option)
     var
         PurchLine: Record "Purchase Line";
@@ -339,14 +275,6 @@ codeunit 139644 "IS VAT Reporting - Tests"
     begin
         CreatePurchDocWithMultipleVAT(PurchHeader, PurchHeader."Document Type"::Invoice);
         PurchInvHeader.Get(LibraryPurch.PostPurchaseDocument(PurchHeader, true, true));
-    end;
-
-    local procedure CreatePurchCrMemoWithMultipleVATAndPost(var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.")
-    var
-        PurchHeader: Record "Purchase Header";
-    begin
-        CreatePurchDocWithMultipleVAT(PurchHeader, PurchHeader."Document Type"::"Credit Memo");
-        PurchCrMemoHdr.Get(LibraryPurch.PostPurchaseDocument(PurchHeader, true, true));
     end;
 
     local procedure CreateVATPostingSetup(var VATPostingSetup: Record "VAT Posting Setup"; VATBusPostingGrCode: Code[20])
@@ -390,51 +318,6 @@ codeunit 139644 "IS VAT Reporting - Tests"
             until SalesInvoiceLine.Next() = 0;
     end;
 
-    /*local procedure GetSalesCrMemoHeaderVATAmt(var VATAmtLine: Record "VAT Amount Line"; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
-    var
-        SalesCrMemoLine: Record "Sales Cr.Memo Line";
-    begin
-        SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
-        if SalesCrMemoLine.FindSet() then
-            repeat
-                with VATAmtLine do begin
-                    Init();
-                    "VAT Identifier" := SalesCrMemoLine."VAT Identifier";
-                    "VAT Calculation Type" := SalesCrMemoLine."VAT Calculation Type";
-                    "Tax Group Code" := SalesCrMemoLine."Tax Group Code";
-                    "Line Amount" := SalesCrMemoLine."Line Amount";
-
-                    "VAT %" := SalesCrMemoLine."VAT %";
-                    "VAT Base" := SalesCrMemoLine.Amount;
-                    "Amount Including VAT" := SalesCrMemoLine."Amount Including VAT";
-                    "Line Amount" := SalesCrMemoLine."Line Amount";
-
-                    InsertLine();
-                end;
-            until SalesCrMemoLine.Next() = 0;
-    end;*/
-
-    local procedure GetSalesHeaderVATAmt(var VATAmtLine: Record "VAT Amount Line"; SalesHeader: Record "Sales Header")
-    var
-        SalesLine: Record "Sales Line";
-    begin
-        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        if SalesLine.FindSet() then
-            repeat
-                VATAmtLine.Init();
-                VATAmtLine."VAT Identifier" := SalesLine."VAT Identifier";
-                VATAmtLine."VAT Calculation Type" := SalesLine."VAT Calculation Type";
-                VATAmtLine."Tax Group Code" := SalesLine."Tax Group Code";
-                VATAmtLine."VAT %" := SalesLine."VAT %";
-                VATAmtLine."VAT Base" := SalesLine.Amount;
-                VATAmtLine."Amount Including VAT" := SalesLine."Amount Including VAT";
-                VATAmtLine."Line Amount" := SalesLine."Line Amount";
-
-                VATAmtLine.InsertLine();
-            until SalesLine.Next() = 0;
-    end;
-
     local procedure GetPurchInvoiceHeaderVATAmt(var VATAmtLine: Record "VAT Amount Line"; PurchInvHeader: Record "Purch. Inv. Header")
     var
         PurchInvLine: Record "Purch. Inv. Line";
@@ -457,53 +340,6 @@ codeunit 139644 "IS VAT Reporting - Tests"
                     InsertLine();
                 end;
             until PurchInvLine.Next() = 0;
-    end;
-
-    local procedure GetPurchCrMemoHeaderVATAmt(var VATAmtLine: Record "VAT Amount Line"; PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.")
-    var
-        PurchCrMemoLine: Record "Purch. Cr. Memo Line";
-    begin
-        PurchCrMemoLine.SetRange("Document No.", PurchCrMemoHdr."No.");
-        if PurchCrMemoLine.FindSet() then
-            repeat
-                with VATAmtLine do begin
-                    Init();
-                    "VAT Identifier" := PurchCrMemoLine."VAT Identifier";
-                    "VAT Calculation Type" := PurchCrMemoLine."VAT Calculation Type";
-                    "Tax Group Code" := PurchCrMemoLine."Tax Group Code";
-
-                    "VAT %" := PurchCrMemoLine."VAT %";
-                    "VAT Base" := PurchCrMemoLine.Amount;
-                    "Amount Including VAT" := PurchCrMemoLine."Amount Including VAT";
-                    "Line Amount" := PurchCrMemoLine."Line Amount";
-
-                    InsertLine();
-                end;
-            until PurchCrMemoLine.Next() = 0;
-    end;
-
-    local procedure GetPurchHeaderVATAmt(var VATAmtLine: Record "VAT Amount Line"; PurchHeader: Record "Purchase Header")
-    var
-        PurchLine: Record "Purchase Line";
-    begin
-        PurchLine.SetRange("Document Type", PurchHeader."Document Type");
-        PurchLine.SetRange("Document No.", PurchHeader."No.");
-        if PurchLine.FindSet() then
-            repeat
-                with VATAmtLine do begin
-                    Init();
-                    "VAT Identifier" := PurchLine."VAT Identifier";
-                    "VAT Calculation Type" := PurchLine."VAT Calculation Type";
-                    "Tax Group Code" := PurchLine."Tax Group Code";
-
-                    "VAT %" := PurchLine."VAT %";
-                    "VAT Base" := PurchLine.Amount;
-                    "Amount Including VAT" := PurchLine."Amount Including VAT";
-                    "Line Amount" := PurchLine."Line Amount";
-
-                    InsertLine();
-                end;
-            until PurchLine.Next() = 0;
     end;
 
     [RequestPageHandler]

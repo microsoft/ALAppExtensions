@@ -378,6 +378,17 @@ codeunit 6615 "FS Integration Mgt."
         exit(FSBookingStatus.BookingStatusId);
     end;
 
+    internal procedure ReturnIntegrationTypeLabel(FSConnectionSetup: Record "FS Connection Setup"): Text
+    var
+        FieldServiceProjectsLbl: Label 'Field Service Integration (projects)', Locked = true;
+        FieldServiceServiceAndProjectsLbl: Label 'Field Service Integration (service and projects)', Locked = true;
+    begin
+        if FSConnectionSetup."Integration Type" = FSConnectionSetup."Integration Type"::Projects then
+            exit(FieldServiceProjectsLbl)
+        else
+            exit(FieldServiceServiceAndProjectsLbl);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     local procedure RegisterFSConnectionOnRegisterServiceConnection(var ServiceConnection: Record "Service Connection")
     var

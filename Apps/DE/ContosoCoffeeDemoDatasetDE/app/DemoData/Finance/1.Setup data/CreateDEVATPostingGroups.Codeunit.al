@@ -20,6 +20,7 @@ codeunit 11379 "Create DE VAT Posting Groups"
 
     trigger OnRun()
     begin
+        RenameW1VATProductPostingGroup();
         InsertVATProductPostingGroup();
         CreateVATPostingSetup();
         RemoveW1VATProductPostingGroup();
@@ -96,7 +97,6 @@ codeunit 11379 "Create DE VAT Posting Groups"
         ContosoPostingGroup.InsertVATProductPostingGroup(Min19(), StrSubstNo(MinderungDescriptionLbl, '19%'));
         ContosoPostingGroup.InsertVATProductPostingGroup(Min7(), StrSubstNo(MinderungDescriptionLbl, '7%'));
         ContosoPostingGroup.InsertVATProductPostingGroup(VAT7(), StrSubstNo(MiscellaneousVATLbl, '7'));
-        ContosoPostingGroup.InsertVATProductPostingGroup(NoVAT(), MiscellaneousNoVATLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(VAT19(), StrSubstNo(MiscellaneousVATLbl, '19'));
 
         CreateDEPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroups.FreightPostingGroup(), VAT19());
@@ -123,6 +123,15 @@ codeunit 11379 "Create DE VAT Posting Groups"
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.PayableInvoiceRounding(), VAT19());
     end;
 
+    local procedure RenameW1VATProductPostingGroup()
+    var
+        VATProductPostingGroup: Record "VAT Product Posting Group";
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
+    begin
+        VATProductPostingGroup.Get(CreateVATPostingGroups.Zero());
+        VATProductPostingGroup.Rename(NOVAT());
+    end;
+
     local procedure RemoveW1VATProductPostingGroup()
     var
         VATProductPostingGroup: Record "VAT Product Posting Group";
@@ -138,9 +147,6 @@ codeunit 11379 "Create DE VAT Posting Groups"
         VATProductPostingGroup.Delete(true);
 
         VATProductPostingGroup.Get(CreateVATPostingGroups.ServRed());
-        VATProductPostingGroup.Delete(true);
-
-        VATProductPostingGroup.Get(CreateVATPostingGroups.Zero());
         VATProductPostingGroup.Delete(true);
     end;
 
@@ -232,7 +238,6 @@ codeunit 11379 "Create DE VAT Posting Groups"
 #endif
         MiscellaneousVATLbl: Label 'Miscellaneous %1 VAT', Comment = '%1=a number specifying the VAT percentage', MaxLength = 100;
         EUPostingGroupSTLbl: Label 'Einfuhrumsatzsteuer', Locked = true;
-        MiscellaneousNoVATLbl: Label 'Miscellaneous without VAT', MaxLength = 100;
         MinderungDescriptionLbl: Label 'Minderung %1', Locked = true;
         StandardVATDescriptionLbl: Label 'Standard VAT', MaxLength = 100;
         ReducedVATDescriptionLbl: Label 'Reduced VAT', MaxLength = 100;

@@ -54,7 +54,6 @@ codeunit 11208 "Create Currency SE"
             CreateCurrency.RSD(),
             CreateCurrency.SAR(),
             CreateCurrency.SBD(),
-            CreateCurrency.SEK(),
             CreateCurrency.SGD(),
             CreateCurrency.SZL(),
             CreateCurrency.THB(),

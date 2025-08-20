@@ -5,9 +5,6 @@
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using System.Telemetry;
-using Microsoft.eServices.EDocument;
-using Microsoft.eServices.EDocument.Integration;
-using Microsoft.eServices.EDocument.Processing.Import;
 
 table 6382 "Sharepoint Setup"
 {
@@ -31,7 +28,6 @@ table 6382 "Sharepoint Setup"
 
             trigger OnValidate()
             var
-                EDocumentService: Record "E-Document Service";
                 FeatureTelemetry: Codeunit "Feature Telemetry";
                 DriveProcessing: Codeunit "Drive Processing";
                 DriveIntegrationImpl: Codeunit "Drive Integration Impl.";
@@ -45,8 +41,6 @@ table 6382 "Sharepoint Setup"
                     Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription(Rec.FieldName(Enabled), Rec.TableName()), AuditCategory::CustomerFacing);
                 end else
                     Session.LogSecurityAudit(Rec.TableName(), SecurityOperationResult::Success, DriveIntegrationImpl.SecurityAuditLogSetupStatusDescription('Disabled', Rec.TableName()), AuditCategory::CustomerFacing);
-                EDocumentService.SetRange("Service Integration V2", "Service Integration"::SharePoint);
-                EDocumentService.ModifyAll("Import Process", "E-Document Import Process"::"Version 2.0");
             end;
         }
         field(3; "Documents Folder"; Text[2048])

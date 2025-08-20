@@ -16,13 +16,6 @@ page 6107 "E-Doc. Field Value Edit"
     {
         area(Content)
         {
-            field("Previous value"; PreviousValue)
-            {
-                ApplicationArea = All;
-                Caption = 'Previous value';
-                ToolTip = 'Specifies the previous value of the field.';
-                Editable = false;
-            }
             field("New value (Text)"; TextValue)
             {
                 ApplicationArea = All;
