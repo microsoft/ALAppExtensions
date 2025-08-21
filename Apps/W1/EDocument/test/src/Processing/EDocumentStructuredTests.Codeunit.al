@@ -152,6 +152,7 @@ codeunit 139891 "E-Document Structured Tests"
         EDocument: Record "E-Document";
         PurchaseHeader: Record "Purchase Header";
         Item: Record Item;
+        EDocImportParameters: Record "E-Doc. Import Parameters";
         EDocImport: Codeunit "E-Doc. Import";
         EDocumentProcessing: Codeunit "E-Document Processing";
         DataTypeManagement: Codeunit "Data Type Management";
@@ -169,7 +170,7 @@ codeunit 139891 "E-Document Structured Tests"
         ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Prepare draft");
 
         // [GIVEN] A generic item is created for manual assignment
-        LibraryEDoc.CreateGenericItem(Item);
+        LibraryEDoc.CreateGenericItem(Item,'');
 
         // [WHEN] The draft document is opened and modified through UI
         EDocPurchaseDraft.OpenEdit();
@@ -179,7 +180,8 @@ codeunit 139891 "E-Document Structured Tests"
         EDocPurchaseDraft.Lines.Next();
 
         // [WHEN] The processing is completed to finish draft step
-        EDocImport.ProcessIncomingEDocument(EDocument, "Import E-Document Steps"::"Finish draft");
+        EDocImportParameters."Step to Run" := "Import E-Document Steps"::"Finish draft";
+        EDocImport.ProcessIncomingEDocument(EDocument, EDocImportParameters);
         EDocument.Get(EDocument."Entry No");
 
         // [WHEN] The final purchase record is retrieved

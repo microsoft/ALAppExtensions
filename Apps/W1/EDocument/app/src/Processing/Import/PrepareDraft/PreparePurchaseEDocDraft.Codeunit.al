@@ -56,10 +56,15 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         end;
 
         if PurchaseHeader."No." <> '' then begin
-            PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Order);
+            case Vendor."Receive E-Document To" of
+                Vendor."Receive E-Document To"::"Purchase Invoice":
+                    PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Invoice);
+                Vendor."Receive E-Document To"::"Purchase Order":
+                    PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Order);
+            end;
             EDocumentPurchaseHeader."[BC] Purchase Order No." := PurchaseHeader."No.";
             EDocumentPurchaseHeader.Modify();
-            exit("E-Document Type"::"Purchase Order");
+            exit(PurchaseHeader."Document Type" = "Purchase Document Type"::Order ? "E-Document Type"::"Purchase Order" : "E-Document Type"::"Purchase Invoice");
         end;
         if EDocPurchaseHistMapping.FindRelatedPurchaseHeaderInHistory(EDocument, EDocVendorAssignmentHistory) then
             EDocPurchaseHistMapping.UpdateMissingHeaderValuesFromHistory(EDocVendorAssignmentHistory, EDocumentPurchaseHeader);

@@ -37,5 +37,7 @@ codeunit 139782 "E-Doc PDF Mock" implements IStructureReceivedEDocument, IStruct
     begin
         exit("E-Doc. Read into Draft"::Unspecified);
     end;
-
+    procedure ResetDraft(EDocument: Record "E-Document")
+    begin
+    end;
 }

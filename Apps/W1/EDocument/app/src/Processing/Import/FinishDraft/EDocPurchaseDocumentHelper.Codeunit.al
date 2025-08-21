@@ -45,6 +45,7 @@ codeunit 6185 "E-Doc Purchase Document Helper"
         PurchaseDocumentExistsErr: Label 'A purchase %1 with external document number %2 already exists for vendor %3.', Comment = '%1 = Purchase Document Type, %2 = External Document No., %3 = Vendor No.';
         ExternalDocumentNo: Code[35];
     begin
+        EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         case DocumentType of
             "Purchase Document Type"::Invoice:
                 begin
