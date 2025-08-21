@@ -31,7 +31,6 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         BindSubscription(EDocImplState);
 
         // [GIVEN] Sales order
-        LibraryLowerPermission.SetSalesDocsPost();
         LibraryLowerPermission.SetTeamMember();
         LibraryEDoc.CreateSalesHeaderWithItem(Customer, SalesHeader, SalesHeader."Document Type"::Order);
 
@@ -67,7 +66,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         BindSubscription(EDocImplState);
 
         // [GIVEN] Sales credit memo
-        LibraryLowerPermission.SetSalesDocsPost();
+        LibraryLowerPermission.SetTeamMember();
         LibraryEDoc.CreateSalesHeaderWithItem(Customer, SalesHeader, SalesHeader."Document Type"::"Credit Memo");
 
         // [WHEN] Post and send
@@ -142,7 +141,7 @@ codeunit 139501 "E-Doc. Email E-Documents Test"
         BindSubscription(EDocImplState);
 
         // [GIVEN] Customer without sending profile specified
-        LibraryLowerPermission.SetSalesDocsPost();
+        LibraryLowerPermission.SetTeamMember();
         LibraryEDoc.CreateCustomerForSalesScenario(CustomerWithoutDocSendingProfile, '');
         // [GIVEN] Sales credit memo
         LibraryEDoc.CreateSalesHeaderWithItem(CustomerWithoutDocSendingProfile, SalesHeader, SalesHeader."Document Type"::"Credit Memo");

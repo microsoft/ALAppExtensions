@@ -293,7 +293,6 @@ codeunit 6132 "E-Document Log"
     var
         EDocumentLog: Record "E-Document Log";
         EDocDataStorage: Record "E-Doc. Data Storage";
-        EDocLog: Record "E-Document Log";
     begin
         EDocDataStorage.SetAutoCalcFields("Data Storage");
         if EDocumentLog.FindLogWithStatus(EDocument, EDocumentService, EDocumentServiceStatus) then

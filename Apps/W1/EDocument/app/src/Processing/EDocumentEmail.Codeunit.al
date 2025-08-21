@@ -163,12 +163,16 @@ codeunit 6105 "E-Document Email"
         EDocumentLog: Codeunit "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
         EDocumentWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
+        EDocExport: Codeunit "E-Doc. Export";
     begin
         EDocumentWorkFlowProcessing.DoesFlowHasEDocService(EDocumentService, DocumentSendingProfile."Electronic Service Flow");
         if EDocumentService.FindSet() then
             repeat
                 Clear(TempBlob);
-                EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported);
+                if not EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported) then begin
+                    EDocExport.ExportEDocument(EDocument, EDocumentService);
+                    EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported);
+                end;
                 TempBlobList.Add(TempBlob);
             until EDocumentService.Next() = 0;
     end;
