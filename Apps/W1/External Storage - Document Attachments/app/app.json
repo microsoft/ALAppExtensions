@@ -1,0 +1,35 @@
+{
+  "id": "5f2e93a0-6083-4718-b05a-7ac89be5644d",
+  "name": "External Storage - Document Attachments",
+  "publisher": "Microsoft",
+  "version": "27.0.0.0",
+  "brief": "External Storage processor for Business Central document attachments",
+  "description": "Processes document attachments from Business Central and stores them in configured External Storage connectors (Azure Blob, File Share, SharePoint)",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2134520",
+  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+  "logo": "ExtensionLogo.png",
+  "application": "27.0.0.0",
+  "platform": "27.0.0.0",
+  "internalsVisibleTo": [
+  ],
+  "dependencies": [],
+  "screenshots": [],
+  "idRanges": [
+    {
+      "from": 8750,
+      "to": 8770
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2134520",
+  "resourceFolders": [
+    "data"
+  ],
+  "target": "Cloud"
+}
