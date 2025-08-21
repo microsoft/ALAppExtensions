@@ -61,6 +61,11 @@ codeunit 6116 "E-Doc. Unspecified Impl." implements IStructureReceivedEDocument,
     begin
     end;
 
+    procedure ResetDraft(EDocument: Record "E-Document")
+    begin
+        // No actions to undo
+    end;
+
     var
         EDocumentNoReadSpecifiedErr: Label 'No method to read the e-document has been provided.';
 }

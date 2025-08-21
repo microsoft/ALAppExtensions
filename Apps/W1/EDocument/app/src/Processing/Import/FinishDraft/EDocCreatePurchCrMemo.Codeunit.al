@@ -8,13 +8,12 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 using Microsoft.Finance.Dimension;
-using Microsoft.Foundation.Attachment;
 using Microsoft.Purchases.Document;
 
 /// <summary>
-/// Dealing with the creation of the purchase invoice after the draft has been populated.
+/// Dealing with the creation of the purchase credit memo after the draft has been populated.
 /// </summary>
-codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft, IEDocumentCreatePurchaseInvoice
+codeunit 6105 "E-Doc. Create Purch. Cr. Memo" implements IEDocumentFinishDraft, IEDocumentCreatePurchaseCreditMemo
 {
     Access = Internal;
     Permissions = tabledata "Dimension Set Tree Node" = im,
@@ -24,57 +23,56 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         EDocImpSessionTelemetry: Codeunit "E-Doc. Imp. Session Telemetry";
 
     /// <summary>
-    /// Applies the draft E-Document to Business Central by creating a purchase invoice from the draft data.
+    /// Applies the draft E-Document to Business Central by creating a purchase credit memo from the draft data.
     /// </summary>
     /// <param name="EDocument">The E-Document record containing the draft data to be applied.</param>
     /// <param name="EDocImportParameters">The import parameters containing processing customizations.</param>
-    /// <returns>The RecordId of the created purchase invoice.</returns>
-    procedure ApplyDraftToBC(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters"): RecordId
+    /// <returns>The RecordId of the created purchase credit memo.</returns>
+    internal procedure ApplyDraftToBC(EDocument: Record "E-Document"; EDocImportParameters: Record "E-Doc. Import Parameters"): RecordId
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         PurchaseHeader: Record "Purchase Header";
         EDocPurchaseDocumentHelper: Codeunit "E-Doc Purchase Document Helper";
-        IEDocumentFinishPurchaseDraft: Interface IEDocumentCreatePurchaseInvoice;
+        IEDocumentFinishPurchaseDraft: Interface IEDocumentCreatePurchaseCreditMemo;
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         IEDocumentFinishPurchaseDraft := EDocImportParameters."Processing Customizations";
-        PurchaseHeader := IEDocumentFinishPurchaseDraft.CreatePurchaseInvoice(EDocument);
+        PurchaseHeader := IEDocumentFinishPurchaseDraft.CreatePurchaseCreditMemo(EDocument);
 
         // Post document validation - Silently emit telemetry
-        EDocImpSessionTelemetry.SetBool('Totals Validation', EDocPurchaseDocumentHelper.TryValidateDocumentTotals(PurchaseHeader));
+        if not EDocPurchaseDocumentHelper.TryValidateDocumentTotals(PurchaseHeader) then
+            EDocImpSessionTelemetry.SetBool('Totals Validation Failed', true);
 
         exit(PurchaseHeader.RecordId);
     end;
 
     /// <summary>
-    /// Reverts the draft actions by deleting the associated purchase invoice document.
+    /// Reverts the draft actions by deleting the associated purchase credit memo document.
     /// </summary>
     /// <param name="EDocument">The E-Document record whose draft actions should be reverted.</param>
-    procedure RevertDraftActions(EDocument: Record "E-Document")
+    internal procedure RevertDraftActions(EDocument: Record "E-Document")
     var
         PurchaseHeader: Record "Purchase Header";
-        DocumentAttachmentMgt: Codeunit "Document Attachment Mgmt";
     begin
         PurchaseHeader.SetRange("E-Document Link", EDocument.SystemId);
         if not PurchaseHeader.FindFirst() then
             exit;
-        DocumentAttachmentMgt.CopyAttachments(PurchaseHeader, EDocument);
-        DocumentAttachmentMgt.DeleteAttachedDocuments(PurchaseHeader);
-        PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Invoice);
+
+        PurchaseHeader.TestField("Document Type", "Purchase Document Type"::"Credit Memo");
         Clear(PurchaseHeader."E-Document Link");
         PurchaseHeader.Delete(true);
     end;
 
     /// <summary>
-    /// Creates a purchase invoice from E-Document draft data, including header and line information.
+    /// Creates a purchase credit memo from E-Document draft data, including header and line information.
     /// </summary>
-    /// <param name="EDocument">The E-Document record containing the draft data to create the invoice from.</param>
-    /// <returns>The created purchase header record for the invoice.</returns>
-    procedure CreatePurchaseInvoice(EDocument: Record "E-Document") PurchaseHeader: Record "Purchase Header"
+    /// <param name="EDocument">The E-Document record containing the draft data to create the credit memo from.</param>
+    /// <returns>The created purchase header record for the credit memo.</returns>
+    internal procedure CreatePurchaseCreditMemo(EDocument: Record "E-Document") PurchaseHeader: Record "Purchase Header"
     var
         EDocPurchaseDocumentHelper: Codeunit "E-Doc Purchase Document Helper";
     begin
-        PurchaseHeader := EDocPurchaseDocumentHelper.CreatePurchaseDocumentHeader(EDocument, "Purchase Document Type"::Invoice);
+        PurchaseHeader := EDocPurchaseDocumentHelper.CreatePurchaseDocumentHeader(EDocument, "Purchase Document Type"::"Credit Memo");
         exit(PurchaseHeader);
     end;
 }

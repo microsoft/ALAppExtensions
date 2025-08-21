@@ -6,9 +6,10 @@ namespace Microsoft.EServices.EDocument.Processing.Import.Purchase;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
-using System.Telemetry;
+using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
+using System.Telemetry;
 
 table 6100 "E-Document Purchase Header"
 {
@@ -207,6 +208,16 @@ table 6100 "E-Document Purchase Header"
             Caption = 'Vendor Contact Name';
             DataClassification = CustomerContent;
         }
+        field(38; "E-Document Type"; Enum "E-Document Type")
+        {
+            Caption = 'E-Document Type';
+            DataClassification = CustomerContent;
+        }
+        field(39; "Applies-to Doc. No."; Text[20])
+        {
+            Caption = 'Applies-to Doc. No.';
+            DataClassification = CustomerContent;
+        }
         #endregion Purchase fields
 
         #region Business Central Data - Validated fields [101-200]
@@ -233,9 +244,22 @@ table 6100 "E-Document Purchase Header"
     }
 
     trigger OnDelete()
+    var
+        EDocumentPurchaseLine: Record "E-Document Purchase Line";
+        EDocumentHeaderMapping: Record "E-Document Header Mapping";
+        EDocumentLineField: Record "E-Document Line - Field";
     begin
         Session.LogMessage('0000PCQ', DeleteDraftPerformedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocPOCopilotMatching.FeatureName());
         FeatureTelemetry.LogUsage('0000PCV', EDocPOCopilotMatching.FeatureName(), 'Discard draft');
+
+        EDocumentPurchaseLine.SetRange("E-Document Entry No.", Rec."E-Document Entry No.");
+        EDocumentPurchaseLine.DeleteAll(true);
+
+        EDocumentHeaderMapping.SetRange("E-Document Entry No.", Rec."E-Document Entry No.");
+        EDocumentHeaderMapping.DeleteAll(true);
+
+        EDocumentLineField.SetRange("E-Document Entry No.", Rec."E-Document Entry No.");
+        EDocumentLineField.DeleteAll(true);
     end;
 
     procedure GetFromEDocument(EDocument: Record "E-Document")

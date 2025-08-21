@@ -108,7 +108,10 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
         if GetPurchaseLineItemRef(EDocumentPurchaseLine, ItemReference) then begin
             EDocumentPurchaseLine."[BC] Purchase Line Type" := "Purchase Line Type"::Item;
             EDocumentPurchaseLine.Validate("[BC] Purchase Type No.", ItemReference."Item No.");
-            EDocumentPurchaseLine.Validate("[BC] Unit of Measure", ItemReference."Unit of Measure");
+            if ItemReference."Unit of Measure" <> '' then
+                EDocumentPurchaseLine.Validate("[BC] Unit of Measure", ItemReference."Unit of Measure")
+            else
+                EDocumentPurchaseLine.Validate("[BC] Unit of Measure", GetDefaultUnitOfMeasure(ItemReference."Item No."));
             EDocumentPurchaseLine.Validate("[BC] Variant Code", ItemReference."Variant Code");
             EDocumentPurchaseLine.Validate("[BC] Item Reference No.", ItemReference."Reference No.");
             EDocImpSessionTelemetry.SetLineBool(EDocumentPurchaseLine.SystemId, 'Item Reference ', true);
@@ -134,6 +137,11 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
     procedure GetPurchaseOrder(EDocumentPurchaseHeader: Record "E-Document Purchase Header") PurchaseHeader: Record "Purchase Header"
     begin
         if PurchaseHeader.Get("Purchase Document Type"::Order, EDocumentPurchaseHeader."Purchase Order No.") then;
+    end;
+
+    procedure GetPurchaseInvoice(EDocumentPurchaseHeader: Record "E-Document Purchase Header") PurchaseHeader: Record "Purchase Header"
+    begin
+        if PurchaseHeader.Get("Purchase Document Type"::Invoice, EDocumentPurchaseHeader."Purchase Order No.") then;
     end;
 
     local procedure GetPurchaseLineItemRef(EDocumentPurchaseLine: Record "E-Document Purchase Line"; var ItemReference: Record "Item Reference"): Boolean
@@ -171,4 +179,14 @@ codeunit 6124 "E-Doc. Providers" implements IPurchaseLineProvider, IUnitOfMeasur
                 exit(true);
     end;
 
+    local procedure GetDefaultUnitOfMeasure(ItemNo: Code[20]) UnitOfMeasureCode: Code[20];
+    var
+        Item: Record Item;
+    begin
+        if Item.Get(ItemNo) then
+            if Item."Purch. Unit of Measure" <> '' then
+                UnitOfMeasureCode := Item."Purch. Unit of Measure"
+            else
+                UnitOfMeasureCode := Item."Base Unit of Measure";
+    end;
 }

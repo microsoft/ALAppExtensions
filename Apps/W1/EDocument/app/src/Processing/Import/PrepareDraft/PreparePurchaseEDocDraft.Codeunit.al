@@ -26,7 +26,7 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
         UnitOfMeasure: Record "Unit of Measure";
         Vendor: Record Vendor;
-        PurchaseOrder: Record "Purchase Header";
+        PurchaseHeader: Record "Purchase Header";
         EDocVendorAssignmentHistory: Record "E-Doc. Vendor Assign. History";
         EDocPurchaseLineHistory: Record "E-Doc. Purchase Line History";
         EDocPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
@@ -48,13 +48,23 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
             EDocumentPurchaseHeader."[BC] Vendor No." := Vendor."No.";
         end;
 
-        PurchaseOrder := IPurchaseOrderProvider.GetPurchaseOrder(EDocumentPurchaseHeader);
+        case Vendor."Receive E-Document To" of
+            Vendor."Receive E-Document To"::"Purchase Invoice":
+                PurchaseHeader := IPurchaseOrderProvider.GetPurchaseInvoice(EDocumentPurchaseHeader);
+            Vendor."Receive E-Document To"::"Purchase Order":
+                PurchaseHeader := IPurchaseOrderProvider.GetPurchaseOrder(EDocumentPurchaseHeader);
+        end;
 
-        if PurchaseOrder."No." <> '' then begin
-            PurchaseOrder.TestField("Document Type", "Purchase Document Type"::Order);
-            EDocumentPurchaseHeader."[BC] Purchase Order No." := PurchaseOrder."No.";
+        if PurchaseHeader."No." <> '' then begin
+            case Vendor."Receive E-Document To" of
+                Vendor."Receive E-Document To"::"Purchase Invoice":
+                    PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Invoice);
+                Vendor."Receive E-Document To"::"Purchase Order":
+                    PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Order);
+            end;
+            EDocumentPurchaseHeader."[BC] Purchase Order No." := PurchaseHeader."No.";
             EDocumentPurchaseHeader.Modify();
-            exit("E-Document Type"::"Purchase Order");
+            exit(PurchaseHeader."Document Type" = "Purchase Document Type"::Order ? "E-Document Type"::"Purchase Order" : "E-Document Type"::"Purchase Invoice");
         end;
         if EDocPurchaseHistMapping.FindRelatedPurchaseHeaderInHistory(EDocument, EDocVendorAssignmentHistory) then
             EDocPurchaseHistMapping.UpdateMissingHeaderValuesFromHistory(EDocVendorAssignmentHistory, EDocumentPurchaseHeader);
@@ -80,8 +90,6 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
                 EDocumentPurchaseLine.Modify();
                 LogActivitySessionChanges(EDocActivityLogSession);
                 EDocActivityLogSession.CleanUpLogs();
-
-
             until EDocumentPurchaseLine.Next() = 0;
 
         // Ask Copilot to try to find fields that are suited to be matched
@@ -89,7 +97,7 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
             CopilotLineMatching(EDocument."Entry No");
 
         if EDocActivityLogSession.EndSession() then;
-        exit("E-Document Type"::"Purchase Invoice");
+        exit(EDocumentPurchaseHeader."E-Document Type");
     end;
 
     local procedure LogActivitySessionChanges(EDocActivityLogSession: Codeunit "E-Doc. Activity Log Session")

@@ -247,7 +247,7 @@ page 6181 "E-Document Purchase Draft"
                 Visible = true;
                 trigger OnAction()
                 begin
-                    ResetDraft();
+                    this.ResetDraft();
                 end;
             }
             action(AnalyzeDocument)

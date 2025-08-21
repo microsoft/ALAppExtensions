@@ -18,4 +18,11 @@ interface IPurchaseOrderProvider
     /// <param name="EDocumentPurchaseHeader">The E-Document purchase header record containing order details.</param>
     /// <returns>A Purchase Header record matching the provided E-Document purchase header.</returns>
     procedure GetPurchaseOrder(EDocumentPurchaseHeader: Record "E-Document Purchase Header"): Record "Purchase Header";
+
+    /// <summary>
+    /// Retrieves the corresponding purchase invoice for a given E-Document purchase header.
+    /// </summary>
+    /// <param name="EDocumentPurchaseHeader">The E-Document purchase header record containing invoice details.</param>
+    /// <returns>A Purchase Header record matching the provided E-Document purchase header.</returns>
+    procedure GetPurchaseInvoice(EDocumentPurchaseHeader: Record "E-Document Purchase Header"): Record "Purchase Header";
 }

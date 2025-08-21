@@ -50,4 +50,12 @@ codeunit 6193 "E-Doc. Empty Draft" implements IStructureReceivedEDocument, IStru
     begin
         Error(NoDataErr);
     end;
+
+    procedure ResetDraft(EDocument: Record "E-Document")
+    var
+        EDocPurchaseHeader: Record "E-Document Purchase Header";
+    begin
+        EDocPurchaseHeader.GetFromEDocument(EDocument);
+        EDocPurchaseHeader.Delete(true);
+    end;
 }

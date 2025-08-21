@@ -175,6 +175,7 @@ codeunit 6104 "Import E-Document Process"
     var
         EDocumentHeaderMapping: Record "E-Document Header Mapping";
         IEDocumentFinishDraft: Interface IEDocumentFinishDraft;
+        IStructuredFormatReader: Interface IStructuredFormatReader;
     begin
         case Step of
             Step::"Finish draft":
@@ -183,6 +184,11 @@ codeunit 6104 "Import E-Document Process"
                     IEDocumentFinishDraft.RevertDraftActions(EDocument);
                     Clear(EDocument."Document Record ID");
                     EDocument.Modify();
+                end;
+            Step::"Read into Draft":
+                begin
+                    IStructuredFormatReader := EDocument."Read into Draft Impl.";
+                    IStructuredFormatReader.ResetDraft(EDocument);
                 end;
             Step::"Prepare draft":
                 begin

@@ -33,6 +33,12 @@ page 6183 "E-Doc. Purchase Draft Subform"
                 {
                     ApplicationArea = All;
                     Lookup = true;
+
+                    trigger OnValidate()
+                    begin
+                        if Rec."[BC] Purchase Type No." <> xRec."[BC] Purchase Type No." then 
+                            Clear(Rec."[BC] Item Reference No.");
+                   end;
                 }
                 field("Item Reference No."; Rec."[BC] Item Reference No.")
                 {

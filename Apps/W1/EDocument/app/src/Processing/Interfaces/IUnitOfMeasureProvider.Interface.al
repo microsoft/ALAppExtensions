@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument.Processing.Interfaces;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.Purchases.Document;
 using Microsoft.Foundation.UOM;
 
 /// <summary>
