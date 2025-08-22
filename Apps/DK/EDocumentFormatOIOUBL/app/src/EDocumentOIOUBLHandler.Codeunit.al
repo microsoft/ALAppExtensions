@@ -19,7 +19,6 @@ codeunit 13913 "E-Document OIOUBL Handler" implements IStructuredFormatReader
     InherentPermissions = X;
 
     var
-        EDocumentImportHelper: Codeunit "E-Document Import Helper";
         GLNTok: Label 'GLN', Locked = true;
         InvoiceLineTok: Label 'cac:InvoiceLine', Locked = true;
         CreditNoteLineTok: Label 'cac:CreditNoteLine', Locked = true;
@@ -160,6 +159,7 @@ codeunit 13913 "E-Document OIOUBL Handler" implements IStructuredFormatReader
     local procedure ParseAccountingSupplierParty(OIOUBLXml: XmlDocument; XmlNamespaces: XmlNamespaceManager; var EDocumentPurchaseHeader: Record "E-Document Purchase Header"; var EDocument: Record "E-Document"; DocumentType: Text) VendorNo: Code[20]
     var
         EDocumentXMLHelper: Codeunit "EDocument XML Helper";
+        EDocumentImportHelper: Codeunit "E-Document Import Helper";
         DKCVRTok: Label 'DK:CVR', Locked = true;
         VendorName, VendorAddress, VendorParticipantId : Text;
         VATRegistrationNo: Text[20];
@@ -190,7 +190,7 @@ codeunit 13913 "E-Document OIOUBL Handler" implements IStructuredFormatReader
             end;
             VendorParticipantId := SchemeID + ':' + EndpointID;
         end;
-        VATRegistrationNo := CopyStr(EDocumentPurchaseHeader."Vendor VAT Id", 1, 20);
+        VATRegistrationNo := CopyStr(EDocumentPurchaseHeader."Vendor VAT Id", 1, MaxStrLen(VATRegistrationNo));
         VendorName := EDocumentPurchaseHeader."Vendor Company Name";
         VendorAddress := EDocumentPurchaseHeader."Vendor Address";
         if not FindVendorByVATRegNoOrGLN(VendorNo, VATRegistrationNo, GLN) then
