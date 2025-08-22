@@ -52,24 +52,24 @@ page 8751 "Document Attachment - External"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies who attached the file.';
                 }
-                field("BCY Deleted Internally"; Rec."Deleted Internally")
+                field("Deleted Internally"; Rec."Deleted Internally")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the Deleted Internally field.', Comment = '%';
                 }
-                field("BCY Uploaded to External"; Rec."Uploaded Externally")
+                field("Uploaded to External"; Rec."Uploaded Externally")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Uploaded to External';
                     ToolTip = 'Specifies if the file has been uploaded to external storage.';
                 }
-                field("BCY External Upload Date"; Rec."External Upload Date")
+                field("External Upload Date"; Rec."External Upload Date")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Upload Date';
                     ToolTip = 'Specifies when the file was uploaded to external storage.';
                 }
-                field("BCY External File Path"; Rec."External File Path")
+                field("External File Path"; Rec."External File Path")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'External File Path';
