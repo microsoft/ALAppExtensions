@@ -12,7 +12,6 @@ using Microsoft.Sales.Customer;
 using System.Utilities;
 using Microsoft.Foundation.Reporting;
 using System.IO;
-using Microsoft.Bank.BankAccount;
 using Microsoft.Sales.History;
 using Microsoft.Foundation.UOM;
 using Microsoft.Finance.Currency;
@@ -395,7 +394,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         SettlementElement := XmlElement.Create('ApplicableHeaderTradeSettlement', XmlNamespaceRAM);
 
         SettlementElement.Add(XmlElement.Create('InvoiceCurrencyCode', XmlNamespaceRAM, CurrencyCode));
-        InsertPaymentMethod(SettlementElement, SalesInvHeader."Payment Method Code");
+        InsertPaymentMethod(SettlementElement);
         InsertTradeTax(SettlementElement, SalesInvLine, LineAmount, LineVATAmount);
         InsertInvDiscountAllowanceCharge(SettlementElement, SalesInvLine, LineDiscAmount, LineAmounts);
 
@@ -420,7 +419,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         SettlementElement := XmlElement.Create('ApplicableHeaderTradeSettlement', XmlNamespaceRAM);
 
         SettlementElement.Add(XmlElement.Create('InvoiceCurrencyCode', XmlNamespaceRAM, CurrencyCode));
-        InsertPaymentMethod(SettlementElement, SalesCrMemoHeader."Payment Method Code");
+        InsertPaymentMethod(SettlementElement);
         InsertTradeTax(SettlementElement, SalesCrMemoLine, LineAmount, LineVATAmount);
         InsertInvDiscountAllowanceCharge(SettlementElement, SalesCrMemoLine, LineDiscAmount, LineAmounts);
 
@@ -660,22 +659,25 @@ codeunit 13917 "Export ZUGFeRD Document"
         RootXMLNode.Add(PaymentTermsElement);
     end;
 
-    local procedure InsertPaymentMethod(var RootXMLNode: XmlElement; PaymentMethodCode: Code[10])
+    local procedure InsertPaymentMethod(var RootXMLNode: XmlElement)
     var
-        PaymentMethod: Record "Payment Method";
-        PaymentMethodElement, PaymentMethodTypeCodeElement, PaymentMethodIBANElement : XmlElement;
+        PaymentMethodElement, PaymentMethodTypeCodeElement, PaymentMethodIBANElement, PaymentMethodBICElement : XmlElement;
     begin
-        if PaymentMethodCode = '' then
-            exit;
-        if not PaymentMethod.Get(PaymentMethodCode) then
-            exit;
         PaymentMethodElement := XmlElement.Create('SpecifiedTradeSettlementPaymentMeans', XmlNamespaceRAM);
         PaymentMethodTypeCodeElement := XmlElement.Create('TypeCode', XmlNamespaceRAM, '58'); //generic for Credit transfer
         PaymentMethodElement.Add(PaymentMethodTypeCodeElement);
 
-        PaymentMethodIBANElement := XmlElement.Create('PayeePartyCreditorFinancialAccount', XmlNamespaceRAM);
-        PaymentMethodIBANElement.Add(XmlElement.Create('IBANID', XmlNamespaceRAM, GetIBAN(CompanyInformation.IBAN)));
-        PaymentMethodElement.Add(PaymentMethodIBANElement);
+        if CompanyInformation.IBAN <> '' then begin
+            PaymentMethodIBANElement := XmlElement.Create('PayeePartyCreditorFinancialAccount', XmlNamespaceRAM);
+            PaymentMethodIBANElement.Add(XmlElement.Create('IBANID', XmlNamespaceRAM, GetIBAN(CompanyInformation.IBAN)));
+            PaymentMethodElement.Add(PaymentMethodIBANElement);
+        end;
+
+        if CompanyInformation."SWIFT Code" <> '' then begin
+            PaymentMethodBICElement := XmlElement.Create('PayeePartyCreditorFinancialAccount', XmlNamespaceRAM);
+            PaymentMethodBICElement.Add(XmlElement.Create('BICID', XmlNamespaceRAM, GetIBAN(CompanyInformation."SWIFT Code")));
+            PaymentMethodElement.Add(PaymentMethodBICElement);
+        end;
         RootXMLNode.Add(PaymentMethodElement);
     end;
 

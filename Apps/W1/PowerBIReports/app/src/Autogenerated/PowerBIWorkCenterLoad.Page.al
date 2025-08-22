@@ -39,11 +39,9 @@ page 37042 "PowerBI Work Center Load"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection83a7395d207d5b47b1a4', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

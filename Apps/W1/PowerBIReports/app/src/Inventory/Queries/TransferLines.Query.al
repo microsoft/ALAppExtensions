@@ -9,7 +9,7 @@ query 36977 "Transfer Lines"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'transferLine';
     EntitySetName = 'transferLines';
     DataAccessIntent = ReadOnly;

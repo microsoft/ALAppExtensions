@@ -82,6 +82,7 @@ codeunit 27009 "Create CA GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '57210');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapOverheadVarianceName(), '57300');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '57400');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialNonInvVarianceName(), '57150');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.FinishedGoodsName(), '14200');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '14600');

@@ -145,7 +145,7 @@ page 6105 "Inbound E-Documents"
                 AllowedFileExtensions = '.xml';
                 AllowMultipleFiles = true;
                 Image = XMLFile;
-                Visible = false;
+                Visible = true;
 
                 trigger OnAction(Files: List of [FileUpload])
                 begin

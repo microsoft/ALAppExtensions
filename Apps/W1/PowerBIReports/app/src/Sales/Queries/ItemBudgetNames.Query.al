@@ -9,7 +9,7 @@ query 37002 "Item Budget Names"
     Caption = 'Power BI Item Budgets';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'itemBudget';
     EntitySetName = 'itemBudgets';
     DataAccessIntent = ReadOnly;

@@ -209,6 +209,12 @@ table 6217 "Sustainability Setup"
             TableRelation = "No. Series";
             ToolTip = 'Specifies the code for the number series that will be used to assign numbers to posted ESG Reporting nos.';
         }
+        field(31; "Item Material Composition Nos."; Code[20])
+        {
+            Caption = 'Item Material Composition Nos.';
+            TableRelation = "No. Series";
+            ToolTip = 'Specifies the code for the number series that will be used to assign numbers to Item Material Composition Nos.';
+        }
         field(40; "Is Dataverse Int. Enabled"; Boolean)
         {
             DataClassification = SystemMetadata;

@@ -9,7 +9,7 @@ query 36996 "Purch. Lines - Job Outstanding"
     Caption = 'Power BI Outstanding PO Line';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'jobOutstandingPurchaseLine';
     EntitySetName = 'jobOutstandingPurchaseLines';
     DataAccessIntent = ReadOnly;

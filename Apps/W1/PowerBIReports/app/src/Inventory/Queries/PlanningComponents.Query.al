@@ -9,7 +9,7 @@ query 36970 "Planning Components"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'planningComponentLine';
     EntitySetName = 'planningComponentLines';
     DataAccessIntent = ReadOnly;

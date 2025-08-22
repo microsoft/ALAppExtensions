@@ -3,19 +3,24 @@ namespace Microsoft.Sustainability;
 using Microsoft.API.V1;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Calculation;
+using Microsoft.Sustainability.CBAM;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.CRM;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Energy;
+using Microsoft.Sustainability.EPR;
 using Microsoft.Sustainability.ESGReporting;
+using Microsoft.Sustainability.ExciseTax;
 using Microsoft.Sustainability.FinancialReporting;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Manufacturing;
 using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Reports;
 using Microsoft.Sustainability.RoleCenters;
 using Microsoft.Sustainability.Scorecard;
 using Microsoft.Sustainability.Setup;
+using Microsoft.Sustainability.Workflow;
 
 permissionset 6210 "Sustainability - Objects"
 {
@@ -61,6 +66,14 @@ permissionset 6210 "Sustainability - Objects"
         table "Sust. Standard" = X,
         table "Sust. Standard Requirement" = X,
         table "Sust. Unit" = X,
+        table "Sust. Excise Jnl. Line" = X,
+        table "Sust. Excise Journal Batch" = X,
+        table "Sust. Excise Journal Template" = X,
+        table "Sust. Excise Taxes Trans. Log" = X,
+        table "Sust. Item Mat. Comp. Header" = X,
+        table "Sust. Item Mat. Comp. Line" = X,
+        table "Sustainability Carbon Pricing" = X,
+        table "Sustainability EPR Material" = X,
         page "Chart of Sustain. Accounts" = X,
         page "Collect Amount from G/L Entry" = X,
         page "G/L Accounts Subform" = X,
@@ -117,6 +130,24 @@ permissionset 6210 "Sustainability - Objects"
         page "Sust. ESG Unit List" = X,
         page "Sust. Posted ESG Report Lines" = X,
         page "Sust. Standard List" = X,
+        page "CH4 Emission Ratio Chart" = X,
+        page "CO2e Emission Ratio Chart" = X,
+        page "N2O Emission Ratio Chart" = X,
+        page "Sust. Excise Jnl. Batches" = X,
+        page "Sust. Excise Jnl. Temp. List" = X,
+        page "Sust. Excise Jnl. Templates" = X,
+        page "Sust. Excise Taxes Trans. Logs" = X,
+        page "Sust. Item Mat. Comp. Factbox" = X,
+        page "Sust. Item Mat. Comp. Lines" = X,
+        page "Sust. Item Mat. Comp. List" = X,
+        page "Sust. Item Mat. Composition" = X,
+        page "Sustainability Carbon Pricing" = X,
+        page "Sustainability EPR Materials" = X,
+        page "Sustainability Excise Journal" = X,
+        page "Waste Intensity Ratio Chart" = X,
+        page "Water Intensity Bar Chart" = X,
+        page "Water Intensity Ratio Chart" = X,
+        page "Water Type Intensity Bar Chart" = X,
         codeunit "Sustainability Account Mgt." = X,
         codeunit "Sustainability Journal Mgt." = X,
         codeunit "Sustainability Jnl.-Post" = X,
@@ -144,8 +175,21 @@ permissionset 6210 "Sustainability - Objects"
         codeunit "Sust. ESG Reporting Helper Mgt" = X,
         codeunit "Sust. ESG Reporting Post. Mgt" = X,
         codeunit "Sust. ESG Reporting Management" = X,
+        codeunit "Sust. Approvals Mgmt." = X,
+        codeunit "Sust. Excise Cal. Mgt" = X,
+        codeunit "Sust. Excise Jnl.-Check" = X,
+        codeunit "Sust. Excise Jnl.-Post" = X,
+        codeunit "Sust. Excise Journal Mgt." = X,
+        codeunit "Sust. Item Mat. Comp.-Copy" = X,
+        codeunit "Sust. Workflow Event Handling" = X,
+        codeunit "Sustainability Excise Post Mgt" = X,
         report "Emission By Category" = X,
         report "Emission Per Facility" = X,
         report "Total Emissions" = X,
-        report "Batch Update Carbon Emission" = X;
+        report "Batch Update Carbon Emission" = X,
+        report "Sust. Calculate CO2e" = X,
+        report "Sust. Item Calculate CO2e" = X,
+        report "Sust. Prod. BOM Calculate CO2e" = X,
+        report "Sust. Resource Calculate CO2e" = X,
+        report "Sust. Routing Calculate CO2e" = X;
 }

@@ -9,7 +9,7 @@ query 36994 "Job Tasks"
     Caption = 'Power BI Project Tasks';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'jobTask';
     EntitySetName = 'jobTasks';
     DataAccessIntent = ReadOnly;

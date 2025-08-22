@@ -47,6 +47,25 @@ tableextension 6239 "Sust. Sales Invoice Line" extends "Sales Invoice Line"
             Caption = 'Total CO2e';
             DataClassification = CustomerContent;
         }
+        field(6217; "EPR Fee per Unit"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'EPR Fee per Unit';
+            DataClassification = CustomerContent;
+        }
+        field(6218; "Total EPR Fee"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Total EPR Fee';
+            DataClassification = CustomerContent;
+        }
+        field(6250; "EPR Reported"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'EPR Reported';
+        }
     }
 
     var

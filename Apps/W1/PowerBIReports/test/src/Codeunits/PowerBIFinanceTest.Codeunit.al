@@ -105,6 +105,7 @@ codeunit 139876 "PowerBI Finance Test"
         Assert.AreEqual(Format(VendorLedgerEntry."Posting Date", 0, 9), JsonMgt.GetValue('vlePostingDate'), 'Posting date did not match.');
         Assert.AreEqual(Format(VendorLedgerEntry."Document Date", 0, 9), JsonMgt.GetValue('vleDocumentDate'), 'Document date did not match.');
         Assert.AreEqual(Format(VendorLedgerEntry."Dimension Set ID"), JsonMgt.GetValue('vleDimensionSetID'), 'Dimension set ID did not match.');
+        Assert.AreEqual(Format(VendorLedgerEntry."Closed at Date", 0, 9), JsonMgt.GetValue('vleClosedAtDate'), 'Closed at Date did not match.');
         Assert.AreEqual(Format(DetailedVendLedgerEntry."Posting Date", 0, 9), JsonMgt.GetValue('dvlePostingDate'), 'Detailed vendor ledger entry posting date did not match.');
         Assert.AreEqual(Format(DetailedVendLedgerEntry."Entry Type"), JsonMgt.GetValue('dvleEntryType'), 'Detailed vendor ledger entry type did not match.');
         Assert.AreEqual(Format(DetailedVendLedgerEntry."Document Type"), JsonMgt.GetValue('dvleDocumentType'), 'Detailed vendor ledger entry document type did not match.');
@@ -193,6 +194,7 @@ codeunit 139876 "PowerBI Finance Test"
         Assert.AreEqual(Format(CustomerLedgerEntry."Posting Date", 0, 9), JsonMgt.GetValue('clePostingDate'), 'Posting date did not match.');
         Assert.AreEqual(Format(CustomerLedgerEntry."Document Date", 0, 9), JsonMgt.GetValue('cleDocumentDate'), 'Document date did not match.');
         Assert.AreEqual(Format(CustomerLedgerEntry."Dimension Set ID"), JsonMgt.GetValue('cleDimensionSetID'), 'Dimension set ID did not match.');
+        Assert.AreEqual(Format(CustomerLedgerEntry."Closed at Date", 0, 9), JsonMgt.GetValue('cleClosedAtDate'), 'Closed at Date did not match.');
         Assert.AreEqual(Format(DetailedCustLedgerEntry."Posting Date", 0, 9), JsonMgt.GetValue('dclePostingDate'), 'Detailed customer ledger entry posting date did not match.');
         Assert.AreEqual(Format(DetailedCustLedgerEntry."Entry Type"), JsonMgt.GetValue('dcleEntryType'), 'Detailed customer ledger entry type did not match.');
         Assert.AreEqual(Format(DetailedCustLedgerEntry."Document Type"), JsonMgt.GetValue('dcleDocumentType'), 'Detailed customer ledger entry document type did not match.');

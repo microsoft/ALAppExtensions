@@ -25,6 +25,16 @@ pageextension 6239 "Sust. Sales Order Stats." extends "Sales Order Statistics"
                     Caption = 'Posted Total CO2e';
                     ToolTip = 'Specifies the Posted Total CO2e for Purchase Order';
                 }
+                field("Total EPR Fee"; Rec."Total EPR Fee")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Total EPR Fee';
+                }
+                field("Posted Total EPR Fee"; Rec."Posted Total EPR Fee")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Posted Total EPR Fee';
+                }
             }
         }
     }

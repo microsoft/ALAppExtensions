@@ -39,11 +39,9 @@ page 37055 "Production Scrap"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionc790f50d90d7b6a6836a', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

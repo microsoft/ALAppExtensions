@@ -163,6 +163,14 @@ pageextension 36960 "Sales & Marketing Manager RC" extends "Sales & Marketing Ma
                     RunObject = page "Return Order Overview";
                     Tooltip = 'Open the Power BI report that tracks and analyzes return orders, providing insights into return amounts, quantities,  reasons for return, and the financial impact on the organization.';
                 }
+                action("Sales Forecasting (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Sales Forecasting (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Sales Forecasting";
+                    Tooltip = 'Open the Power BI Report that predicts your sales trends, including forecasting of sales metrics across item, customer, document type and salespeople.';
+                }
             }
         }
     }

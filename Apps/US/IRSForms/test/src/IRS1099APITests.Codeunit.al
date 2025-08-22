@@ -120,8 +120,8 @@ codeunit 148018 "IRS 1099 API Tests"
         LibraryGraphMgt.VerifyPropertyInJSON(ResponseJson, 'formBoxNo', IRS1099FormDocLine."Form Box No.");
         LibraryGraphMgt.VerifyPropertyInJSON(ResponseJson, 'manuallyChanged', 'True');
         LibraryGraphMgt.VerifyPropertyInJSON(ResponseJson, 'includeIn1099', 'True');
-        LibraryGraphMgt.VerifyPropertyInJSON(ResponseJson, 'amount', Format(IRS1099FormDocLine.Amount));
-        LibraryGraphMgt.VerifyPropertyInJSON(ResponseJson, 'minimumReportableAmount', Format(IRS1099FormDocLine."Minimum Reportable Amount"));
+        LibraryGraphMgt.VerifyPropertyInJSON(ResponseJson, 'amount', IRS1099FormDocLine.Amount.ToText());
+        LibraryGraphMgt.VerifyPropertyInJSON(ResponseJson, 'minimumReportableAmount', IRS1099FormDocLine."Minimum Reportable Amount".ToText());
     end;
 
     local procedure VerifyIRS1099FormReportResponse(ResponseJson: Text; IRS1099FormReport: Record "IRS 1099 Form Report")

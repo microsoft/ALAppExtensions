@@ -17,6 +17,12 @@
       "name": "Statistical Accounts",
       "publisher": "Microsoft",
       "version": "27.0.0.0"
+    },
+    {
+      "id": "e4e86220-cac0-4ec3-b853-7c2fa610399d",
+      "name": "Power BI Report embeddings for Dynamics 365 Business Central",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
     }
   ],
   "internalsVisibleTo": [
@@ -32,7 +38,7 @@
   "idRanges": [
     {
       "from": 6210,
-      "to": 6300
+      "to": 6350
     }
   ],
   "features": [

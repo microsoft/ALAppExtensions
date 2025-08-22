@@ -36,6 +36,26 @@ tableextension 6234 "Sustainability Sales Header" extends "Sales Header"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(6213; "Total EPR Fee"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            CalcFormula = sum("Sales Line"."Total EPR Fee" where("Document Type" = field("Document Type"),
+                                                              "Document No." = field("No.")));
+            Caption = 'Total EPR Fee';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(6214; "Posted Total EPR Fee"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            CalcFormula = sum("Sales Line"."Posted Total EPR Fee" where("Document Type" = field("Document Type"),
+                                                                     "Document No." = field("No.")));
+            Caption = 'Posted Total EPR Fee';
+            Editable = false;
+            FieldClass = FlowField;
+        }
     }
 
     var

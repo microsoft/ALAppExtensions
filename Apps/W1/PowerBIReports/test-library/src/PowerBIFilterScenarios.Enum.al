@@ -26,8 +26,13 @@ enum 139792 "PowerBI Filter Scenarios"
     {
         Caption = 'Finance Date';
     }
+#if not CLEAN27
     value(7; "Sustainability Date")
     {
         Caption = 'Sustainability Date';
+        ObsoleteReason = 'Unused, tests for the configured filter in the sustainability tests app.';
+        ObsoleteState = Pending;
+        ObsoleteTag = '27.0';
     }
+#endif
 }

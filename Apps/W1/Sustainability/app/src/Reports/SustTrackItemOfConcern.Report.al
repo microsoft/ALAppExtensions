@@ -11,7 +11,7 @@ using Microsoft.Purchases.History;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Setup;
 
-report 6219 "Sust. Track Item Of Concern"
+report 6219 "Sust. Track Item of Concern"
 {
     ApplicationArea = Basic, Suite;
     Caption = 'Track Item of Concern';
