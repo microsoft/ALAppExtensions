@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "Analyse Business Central data in Power BI",
   "description": "Core Connector for Power BI allows you to easily integrate Business Central data with Power BI.",
-  "version": "$(app_currentVersion)",
+  "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2104024",
@@ -21,8 +21,8 @@
     }
   ],
   "screenshots": [],
-  "application": "$(app_minimumVersion)",
-  "platform": "$(app_platformVersion)",
+  "application": "27.0.0.0",
+  "platform": "27.0.0.0",
   "idRanges": [
     {
       "from": 36950,

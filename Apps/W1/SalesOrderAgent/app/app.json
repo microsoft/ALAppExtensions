@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "The Sales Order agent is handling the end-to-end sales order capturing process.",
   "description": "Sales Order agent handles the end-to-end sales order capturing process, from taking the customer’s order by e-mail, preparing the quote with requested items, checking the availability of the items, sending the quote to the customer for approval, and finally converting the quote to a sales order upon receiving customer confirmation.",
-  "version": "$(app_currentVersion)",
+  "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
   "help": "https://go.microsoft.com/fwlink/?linkid=868966",
@@ -12,8 +12,8 @@
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=868966",
   "logo": "ExtensionLogo.png",
   "screenshots": [],
-  "platform": "$(app_platformVersion)",
-  "application": "$(app_minimumVersion)",
+  "platform": "27.0.0.0",
+  "application": "27.0.0.0",
   "target": "OnPrem",
   "idRanges": [
     {

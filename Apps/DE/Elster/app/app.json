@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "Create XML file needed to report VAT in Germany.",
   "description": "With this app it is possible to create a XML file to use for reporting VAT in Germany, making it easy to comply with German VAT requirements.",
-  "version": "$(app_currentVersion)",
+  "version": "27.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2043382",
@@ -18,7 +18,7 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "platform": "$(app_platformVersion)",
+  "platform": "27.0.0.0",
   "target": "OnPrem",
-  "application": "$(app_minimumVersion)"
+  "application": "27.0.0.0"
 }
