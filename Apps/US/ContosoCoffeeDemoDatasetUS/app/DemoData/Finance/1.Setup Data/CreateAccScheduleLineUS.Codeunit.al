@@ -171,6 +171,7 @@ codeunit 11489 "Create Acc. Schedule Line US"
         GLAccount: Record "G/L Account";
         AccScheduleLine: Record "Acc. Schedule Line";
         CreateAccountScheduleName: Codeunit "Create Acc. Schedule Name";
+        CreateAccountScheduleNameUS: Codeunit "Create Acc. Schedule Name US";
         ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
         AccountScheduleName: Code[10];
         LineNo: Integer;
@@ -289,7 +290,7 @@ codeunit 11489 "Create Acc. Schedule Line US"
             until GLAccount.Next() = 0;
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, LineNo, '', 'Check Figure', '10000..99999', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
 
-        AccountScheduleName := CreateAccountScheduleName.BalanceSheet();
+        AccountScheduleName := CreateAccountScheduleNameUS.BalanceSheet();
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 100000, '', 'Current Assets', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 1);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 110000, 'CA', 'Cash', '18000..18999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 1);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 120000, 'CA', 'Accounts Receivable', '15000..15999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 1);
@@ -331,7 +332,7 @@ codeunit 11489 "Create Acc. Schedule Line US"
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 390000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 1);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 400000, 'F9', 'Check Figure', 'F3+F8', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 1);
 
-        AccountScheduleName := CreateAccountScheduleName.BalanceSheetAudit();
+        AccountScheduleName := CreateAccountScheduleNameUS.BalanceSheetAudit();
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 100000, '', 'Current Assets', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 110000, '', 'Cash', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 115000, 'CA1', 'Petty Cash', '18100', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
@@ -503,7 +504,7 @@ codeunit 11489 "Create Acc. Schedule Line US"
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 1760000, '', '', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 1770000, 'F9', 'Check Figure', 'F3+F8', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
 
-        AccountScheduleName := CreateAccountScheduleName.IncomeStatement();
+        AccountScheduleName := CreateAccountScheduleNameUS.IncomeStatement();
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 90000, '', 'Revenue', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 100000, 'R', 'Product Revenue', '40000..40209', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 110000, 'R', 'Job Revenue', '40410..40429', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
@@ -535,7 +536,7 @@ codeunit 11489 "Create Acc. Schedule Line US"
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 360000, 'F7', 'Total of Income Statement', '40000..99999', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 370000, 'F8', 'Check Figure', 'F6-F7', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);
 
-        AccountScheduleName := CreateAccountScheduleName.IncomeStatementAudit();
+        AccountScheduleName := CreateAccountScheduleNameUS.IncomeStatementAudit();
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 90000, '', 'Revenue', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 100000, '', 'Product Revenue', '', Enum::"Acc. Schedule Line Totaling Type"::Formula, Enum::"Acc. Schedule Line Show"::Yes, '', true, false, false, false, 0);
         ContosoAccountSchedule.InsertAccScheduleLine(AccountScheduleName, 120000, 'R1', 'Sale of Raw Materials', '40110', Enum::"Acc. Schedule Line Totaling Type"::"Posting Accounts", Enum::"Acc. Schedule Line Show"::Yes, '', false, false, false, false, 0);

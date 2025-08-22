@@ -21,10 +21,10 @@ codeunit 11497 "Create Financial Report US"
         ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
         AccountScheduleName: Codeunit "Create Acc. Schedule Name";
     begin
-        ContosoAccountSchedule.InsertFinancialReport(BalanceSheet(), BalanceSheetLbl, AccountScheduleName.BalanceSheet(), ColumnLayoutName.BalanceOnly());
-        ContosoAccountSchedule.InsertFinancialReport(BalanceSheetAudit(), BalanceSheetAuditLbl, AccountScheduleName.BalanceSheetAudit(), ColumnLayoutName.BalanceSheetTrend());
-        ContosoAccountSchedule.InsertFinancialReport(IncomeStatement(), IncomeStatementLbl, AccountScheduleName.IncomeStatement(), NetChangeTok);
-        ContosoAccountSchedule.InsertFinancialReport(IncomeStatementAudit(), IncomeStatementAuditLbl, AccountScheduleName.IncomeStatementAudit(), ColumnLayoutNameUS.PeriodandYeartoDate());
+        ContosoAccountSchedule.InsertFinancialReport(BalanceSheet(), BalanceSheetLbl, BalanceSheet(), ColumnLayoutName.BalanceOnly());
+        ContosoAccountSchedule.InsertFinancialReport(BalanceSheetAudit(), BalanceSheetAuditLbl, BalanceSheetAudit(), ColumnLayoutName.BalanceSheetTrend());
+        ContosoAccountSchedule.InsertFinancialReport(IncomeStatement(), IncomeStatementLbl, IncomeStatement(), NetChangeTok);
+        ContosoAccountSchedule.InsertFinancialReport(IncomeStatementAudit(), IncomeStatementAuditLbl, IncomeStatementAudit(), ColumnLayoutNameUS.PeriodandYeartoDate());
     end;
 
     procedure BalanceSheet(): Code[10]
