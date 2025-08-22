@@ -10,7 +10,7 @@ using Microsoft.Foundation.Address;
 using Microsoft.Sales.Customer;
 using System.TestLibraries.Utilities;
 
-codeunit 47200 "SL Customer Migrator Tests"
+codeunit 147600 "SL Customer Migrator Tests"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;

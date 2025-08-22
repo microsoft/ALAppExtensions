@@ -7,7 +7,7 @@ page 36967 "Item Category - PBI API"
     Caption = 'Power BI Item Categories';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'itemCategory';
     EntitySetName = 'itemCategories';
     SourceTable = "Item Category";

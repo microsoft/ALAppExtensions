@@ -1,5 +1,8 @@
 namespace Microsoft.Sustainability.RoleCenters;
 
+using System.Environment;
+using System.Visualization;
+
 page 6240 "Sustainability Goal Cue"
 {
     PageType = CardPart;
@@ -159,6 +162,22 @@ page 6240 "Sustainability Goal Cue"
                     CurrPage.Update(true);
                 end;
             }
+            action("Set Up Cues")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Set Up Cues';
+                Image = Setup;
+                ToolTip = 'Set up the cues (status tiles) related to the role.';
+
+                trigger OnAction()
+                var
+                    CuesAndKpis: Codeunit "Cues And KPIs";
+                    CueRecordRef: RecordRef;
+                begin
+                    CueRecordRef.GetTable(Rec);
+                    CuesAndKpis.OpenCustomizePageForCurrentUser(CueRecordRef.Number);
+                end;
+            }
         }
     }
 
@@ -188,22 +207,22 @@ page 6240 "Sustainability Goal Cue"
 
     var
         ComputeSustGoalCue: Codeunit "Compute Sust. Goal Cue";
-        SustainabilityChartMgmt: Codeunit "Sustainability Chart Mgmt.";
+        UIHelperTriggers: Codeunit "UI Helper Triggers";
         BaselinePerVsCO2StyleText, BaselinePerVsCH4StyleText, BaselinePerVsN2OStyleText, BaselinePerVsWaterStyleText, BaselinePerVsWasteStyleText : Text;
         RealizedPerForCO2StyleText, RealizedPerForCH4StyleText, RealizedPerForN2OStyleText, RealizedPerForWaterStyleText, RealizedPerForWasteStyleText : Text;
 
     local procedure SetControlAppearance()
     begin
-        BaselinePerVsCO2StyleText := Rec.GetBaselinePerVsEmissionStyle(SustainabilityChartMgmt.GetCO2(), Rec."CO2 % vs Baseline");
-        BaselinePerVsCH4StyleText := Rec.GetBaselinePerVsEmissionStyle(SustainabilityChartMgmt.GetCH4(), Rec."CH4 % vs Baseline");
-        BaselinePerVsN2OStyleText := Rec.GetBaselinePerVsEmissionStyle(SustainabilityChartMgmt.GetN2O(), Rec."N2O % vs Baseline");
-        BaselinePerVsWaterStyleText := Rec.GetBaselinePerVsEmissionStyle(SustainabilityChartMgmt.GetWater(), Rec."Water % vs Baseline");
-        BaselinePerVsWasteStyleText := Rec.GetBaselinePerVsEmissionStyle(SustainabilityChartMgmt.GetWaste(), Rec."Waste % vs Baseline");
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("Realized % for CO2"), Rec."Realized % for CO2", RealizedPerForCO2StyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("Realized % for CH4"), Rec."Realized % for CH4", RealizedPerForCH4StyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("Realized % for N2O"), Rec."Realized % for N2O", RealizedPerForN2OStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("Realized % for Water"), Rec."Realized % for Water", RealizedPerForWaterStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("Realized % for Waste"), Rec."Realized % for Waste", RealizedPerForWasteStyleText);
 
-        RealizedPerForCO2StyleText := Rec.GetRealizedPerForEmissionStyle(SustainabilityChartMgmt.GetCO2(), Rec."Realized % for CO2");
-        RealizedPerForCH4StyleText := Rec.GetRealizedPerForEmissionStyle(SustainabilityChartMgmt.GetCH4(), Rec."Realized % for CH4");
-        RealizedPerForN2OStyleText := Rec.GetRealizedPerForEmissionStyle(SustainabilityChartMgmt.GetN2O(), Rec."Realized % for N2O");
-        RealizedPerForWaterStyleText := Rec.GetRealizedPerForEmissionStyle(SustainabilityChartMgmt.GetWater(), Rec."Realized % for Water");
-        RealizedPerForWasteStyleText := Rec.GetRealizedPerForEmissionStyle(SustainabilityChartMgmt.GetWaste(), Rec."Realized % for Waste");
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("CO2 % vs Baseline"), Rec."CO2 % vs Baseline", BaselinePerVsCO2StyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("CH4 % vs Baseline"), Rec."CH4 % vs Baseline", BaselinePerVsCH4StyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("N2O % vs Baseline"), Rec."N2O % vs Baseline", BaselinePerVsN2OStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("Water % vs Baseline"), Rec."Water % vs Baseline", BaselinePerVsWaterStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Goal Cue", Rec.FieldNo("Waste % vs Baseline"), Rec."Waste % vs Baseline", BaselinePerVsWasteStyleText);
     end;
 }

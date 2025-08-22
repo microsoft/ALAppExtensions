@@ -13,7 +13,7 @@ query 36968 "Item Ledger Entries - PBI API"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'itemLedgerEntry';
     EntitySetName = 'itemLedgerEntries';
     DataAccessIntent = ReadOnly;

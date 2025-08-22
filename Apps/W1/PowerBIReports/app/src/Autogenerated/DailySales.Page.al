@@ -39,11 +39,9 @@ page 36999 "Daily Sales"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionb3680fa80c9685297c06', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

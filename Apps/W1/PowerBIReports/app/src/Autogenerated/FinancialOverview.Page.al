@@ -39,9 +39,9 @@ page 36984 "Financial Overview"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
+#pragma warning disable AA0240 // Bug 595848
         ReportPageLbl: Label '04fa320747962435bf38', Locked = true;
 #pragma warning restore AA0240
 

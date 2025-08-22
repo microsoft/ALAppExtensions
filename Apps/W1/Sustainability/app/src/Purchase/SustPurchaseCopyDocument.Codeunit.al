@@ -24,6 +24,7 @@ codeunit 6229 "Sust. Purchase Copy Document"
         ToPurchLine."Posted Emission CH4" := 0;
         ToPurchLine."Posted Emission N2O" := 0;
         ToPurchLine."Posted Energy Consumption" := 0;
+        ToPurchLine."Posted Total Emission Cost" := 0;
 
         if ToPurchLine."Sust. Account No." <> FromPurchaseLine."Sust. Account No." then
             ToPurchLine.Validate("Sust. Account No.", FromPurchaseLine."Sust. Account No.");
@@ -38,6 +39,7 @@ codeunit 6229 "Sust. Purchase Copy Document"
         ToPurchLine.Validate("Emission CH4 Per Unit", FromPurchaseLine."Emission CH4 Per Unit");
         ToPurchLine.Validate("Emission N2O Per Unit", FromPurchaseLine."Emission N2O Per Unit");
         ToPurchLine.Validate("Energy Consumption Per Unit", FromPurchaseLine."Energy Consumption Per Unit");
+        ToPurchLine.Validate("Emission Cost Per Unit", FromPurchaseLine."Emission Cost Per Unit");
     end;
 
     local procedure CopyFromPuchRcptLine(var ToPurchLine: Record "Purchase Line"; FromPurchRcptLine: Record "Purch. Rcpt. Line")
@@ -46,6 +48,7 @@ codeunit 6229 "Sust. Purchase Copy Document"
         ToPurchLine."Posted Emission CH4" := 0;
         ToPurchLine."Posted Emission N2O" := 0;
         ToPurchLine."Posted Energy Consumption" := 0;
+        ToPurchLine."Posted Total Emission Cost" := 0;
 
         if ToPurchLine."Sust. Account No." <> FromPurchRcptLine."Sust. Account No." then
             ToPurchLine.Validate("Sust. Account No.", FromPurchRcptLine."Sust. Account No.");
@@ -60,5 +63,6 @@ codeunit 6229 "Sust. Purchase Copy Document"
         ToPurchLine.Validate("Emission CH4 Per Unit", FromPurchRcptLine."Emission CH4 Per Unit");
         ToPurchLine.Validate("Emission N2O Per Unit", FromPurchRcptLine."Emission N2O Per Unit");
         ToPurchLine.Validate("Energy Consumption Per Unit", FromPurchRcptLine."Energy Consumption Per Unit");
+        ToPurchLine.Validate("Emission Cost Per Unit", FromPurchRcptLine."Emission Cost Per Unit");
     end;
 }

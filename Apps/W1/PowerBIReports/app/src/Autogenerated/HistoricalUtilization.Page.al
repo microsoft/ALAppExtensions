@@ -42,11 +42,9 @@ page 37041 "Historical Utilization"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionf9d212728e1d71a00044', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

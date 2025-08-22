@@ -6,7 +6,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Sales.Customer;
 
-xmlport 47204 "SL BC Customer Data"
+xmlport 147604 "SL BC Customer Data"
 {
     Caption = 'Customer data for import/export';
     Direction = Both;

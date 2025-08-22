@@ -29,6 +29,24 @@ page 10030 "IRS Forms Setup"
                     ToolTip = 'Specifies if the TIN of the vendor/company must be protected when printing reports.';
                 }
             }
+            group(IRIS)
+            {
+                grid(GridControl)
+                {
+                    group(IRISInnerGroup)
+                    {
+                        ShowCaption = false;
+                        field("Business Name Control"; Rec."Business Name Control")
+                        {
+                            ToolTip = 'Specifies the business name control that must match the one in the IRS''s National Account Profile (NAP) database. Generally, it can be up to the first four alphanumeric characters of the business''s legal name.';
+                        }
+                        field("API Client ID"; Rec."IRIS API Client ID")
+                        {
+                            ToolTip = 'Specifies the GUID that is used to authenticate and authorize access to the IRS''s Information Returns Intake System (IRIS) API.';
+                        }
+                    }
+                }
+            }
 #if not CLEAN26
             group(EmailSubject)
             {
@@ -100,7 +118,20 @@ page 10030 "IRS Forms Setup"
                         Rec.Modify(true);
                     end;
                 end;
+            }
+            action(SetupIRISUserID)
+            {
+                ApplicationArea = BasicUS;
+                Caption = 'Setup IRIS User ID';
+                Image = UserCertificate;
+                ToolTip = 'Obtain and set the IRIS User ID which is used to authenticate and authorize access to the IRS''s Information Returns Intake System (IRIS) API.';
 
+                trigger OnAction()
+                var
+                    SetupIRISUserId: Page "Setup IRIS User ID";
+                begin
+                    SetupIRISUserId.RunModal();
+                end;
             }
         }
         area(Promoted)
@@ -108,18 +139,26 @@ page 10030 "IRS Forms Setup"
             actionref(EmailContentSetup_Promoted; EmailContentSetup)
             {
             }
+            actionref(SetupIRISUserID_Promoted; SetupIRISUserID)
+            {
+            }
         }
     }
+
 #if not CLEAN26
     var
         EmailBody: Text;
 #endif
-#if not CLEAN25
+
     trigger OnOpenPage()
+#if not CLEAN25
     var
         IRSFormsFeature: Codeunit "IRS Forms Feature";
-    begin
-        CurrPage.Editable := IRSFormsFeature.FeatureCanBeUsed();
-    end;
 #endif
+    begin
+#if not CLEAN25
+        CurrPage.Editable := IRSFormsFeature.FeatureCanBeUsed();
+#endif
+        Rec.InitIRISAPIClientID();
+    end;
 }

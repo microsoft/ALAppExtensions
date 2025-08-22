@@ -7,6 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Payables;
+using Microsoft.Utilities;
 
 codeunit 10032 "IRS 1099 BaseApp Subscribers"
 {
@@ -166,6 +167,15 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
     local procedure Update1099LiableOnAfterInitHeaderDefaults(var PurchLine: Record "Purchase Line"; PurchHeader: Record "Purchase Header"; var TempPurchLine: record "Purchase Line" temporary)
     begin
         PurchLine."1099 Liable" := (PurchHeader."IRS 1099 Form Box No." <> '')
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Page Management", 'OnConditionalCardPageIDNotFound', '', true, true)]
+    local procedure OnConditionalCardPageIDNotFound(RecordRef: RecordRef; var CardPageID: Integer);
+    begin
+        case RecordRef.Number of
+            Database::"IRS Forms Setup":
+                CardPageID := Page::"IRS Forms Setup";
+        end;
     end;
 
     procedure UpdateIRSDataInPurchHeader(var PurchHeader: Record "Purchase Header"; ModifyRecord: Boolean)

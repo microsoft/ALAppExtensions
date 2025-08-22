@@ -109,6 +109,20 @@ tableextension 6233 "Sust. Item Journal Line" extends "Item Journal Line"
                 UpdateEmissionPerUnit(Rec);
             end;
         }
+        field(6219; "EPR Fee per Unit"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'EPR Fee per Unit';
+            DataClassification = CustomerContent;
+        }
+        field(6220; "Total EPR Fee"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Total EPR Fee';
+            DataClassification = CustomerContent;
+        }
     }
 
     procedure GetPostingSign(GHGCredit: Boolean): Integer

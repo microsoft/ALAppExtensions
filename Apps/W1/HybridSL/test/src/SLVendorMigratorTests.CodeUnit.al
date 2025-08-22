@@ -9,7 +9,7 @@ using Microsoft.Foundation.Address;
 using System.TestLibraries.Utilities;
 using Microsoft.Purchases.Vendor;
 
-codeunit 47203 "SL Vendor Migrator Tests"
+codeunit 147603 "SL Vendor Migrator Tests"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;

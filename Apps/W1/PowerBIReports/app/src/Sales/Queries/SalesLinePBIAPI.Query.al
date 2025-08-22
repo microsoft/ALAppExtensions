@@ -1,3 +1,4 @@
+#if not CLEAN27
 namespace Microsoft.Sales.PowerBIReports;
 
 using Microsoft.Sales.Document;
@@ -9,10 +10,13 @@ query 37019 "Sales Line - PBI API"
     Caption = 'Power BI Sales Lines';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5';
     EntityName = 'salesLine';
     EntitySetName = 'salesLines';
     DataAccessIntent = ReadOnly;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by the new query 37024 "Sales Line V2 - PBI API".';
+    ObsoleteTag = '27.0';
 
     elements
     {
@@ -77,3 +81,4 @@ query 37019 "Sales Line - PBI API"
             CurrQuery.SetFilter(orderDate, DateFilterText);
     end;
 }
+#endif

@@ -6,7 +6,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Finance.GeneralLedger.Account;
 
-xmlport 47202 "SL BC GL Account Data"
+xmlport 147602 "SL BC GL Account Data"
 {
     Caption = 'G/L Account data for import/export';
     Direction = Both;

@@ -5,7 +5,6 @@
 namespace Microsoft.EServices.EDocument.Processing.Import.Purchase;
 
 using Microsoft.eServices.EDocument;
-using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 using System.Telemetry;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
@@ -234,8 +233,8 @@ table 6100 "E-Document Purchase Header"
 
     trigger OnDelete()
     begin
-        Session.LogMessage('0000PCQ', DeleteDraftPerformedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocPOCopilotMatching.FeatureName());
-        FeatureTelemetry.LogUsage('0000PCV', EDocPOCopilotMatching.FeatureName(), 'Discard draft');
+        Session.LogMessage('0000PCQ', DeleteDraftPerformedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
+        FeatureTelemetry.LogUsage('0000PCV', FeatureName(), 'Discard draft');
     end;
 
     procedure GetFromEDocument(EDocument: Record "E-Document")
@@ -252,8 +251,12 @@ table 6100 "E-Document Purchase Header"
         end;
     end;
 
+    internal procedure FeatureName(): Text
+    begin
+        exit('E-Document Matching Assistance');
+    end;
+
     var
-        EDocPOCopilotMatching: Codeunit "E-Doc. PO Copilot Matching";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         DeleteDraftPerformedTxt: Label 'User deleted the draft.';
 

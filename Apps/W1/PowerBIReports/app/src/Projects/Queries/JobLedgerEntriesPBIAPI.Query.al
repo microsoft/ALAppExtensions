@@ -13,7 +13,7 @@ query 36992 "Job Ledger Entries - PBI API"
     Caption = 'Power BI Project Ledger Entry';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'jobLedgerEntry';
     EntitySetName = 'jobLedgerEntries';
     DataAccessIntent = ReadOnly;

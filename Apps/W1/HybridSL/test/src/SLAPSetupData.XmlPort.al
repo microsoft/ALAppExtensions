@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
-xmlport 47213 "SL APSetup Data"
+xmlport 147613 "SL APSetup Data"
 {
     Caption = 'SL APSetup data for import/export';
     Direction = Both;

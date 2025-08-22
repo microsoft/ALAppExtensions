@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
-xmlport 47200 "SL Customer Data"
+xmlport 147600 "SL Customer Data"
 {
     Caption = 'SL Customer data for import/export';
     Direction = Both;

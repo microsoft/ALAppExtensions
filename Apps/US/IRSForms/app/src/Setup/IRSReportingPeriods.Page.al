@@ -42,6 +42,21 @@ page 10031 "IRS Reporting Periods"
                 {
                     ToolTip = 'Specifies a number of forms in the reporting period.';
                 }
+                field("IRIS Transmission"; Rec."IRIS Transmission")
+                {
+                    trigger OnDrillDown()
+                    var
+                        Transmission: Record "Transmission IRIS";
+                        TransmissionPage: Page "Transmissions IRIS";
+                    begin
+                        if not Rec."IRIS Transmission" then
+                            exit;
+
+                        Transmission.SetRange("Period No.", Rec."No.");
+                        TransmissionPage.SetTableView(Transmission);
+                        TransmissionPage.Run();
+                    end;
+                }
             }
         }
     }
@@ -106,6 +121,22 @@ page 10031 "IRS Reporting Periods"
                     IRSReportingPeriod.CopyReportingPeriodSetup(Rec."No.");
                 end;
             }
+            action(CreateIRISTransmission)
+            {
+                Caption = 'Create IRIS Transmission';
+                Image = ElectronicDoc;
+                ToolTip = 'Create the transmission document from all released forms that have not been submitted yet to the IRS for the given period. This document will be used later to create the XML file that is sent to the IRS using IRIS.';
+
+                trigger OnAction()
+                var
+                    Transmission: Record "Transmission IRIS";
+                    CreateTransmissionIRIS: Report "Create Transmission IRIS";
+                begin
+                    CreateTransmissionIRIS.SetPeriod(CopyStr(Rec."No.", 1, MaxStrLen(Transmission."Period No.")));
+                    CreateTransmissionIRIS.RunModal();
+                    Page.Run(Page::"Transmissions IRIS");
+                end;
+            }
         }
         area(Promoted)
         {
@@ -114,23 +145,21 @@ page 10031 "IRS Reporting Periods"
                 Caption = 'Process';
                 actionref(CopyFrom_Promoted; CopyFrom)
                 {
-
                 }
                 actionref(Forms_Promoted; Forms)
                 {
-
                 }
                 actionref(VendorSetup_Promoted; VendorSetup)
                 {
-
                 }
                 actionref(Adjustments_Promoted; Adjustments)
                 {
-
                 }
                 actionref(Documents_Promoted; Documents)
                 {
-
+                }
+                actionref(CreateIRISTransmission_Promoted; CreateIRISTransmission)
+                {
                 }
             }
         }

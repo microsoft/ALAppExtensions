@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
-xmlport 47209 "SL GLSetup Data"
+xmlport 147609 "SL GLSetup Data"
 {
     Caption = 'SL GLSetup data for import/export';
     Direction = Both;

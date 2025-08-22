@@ -6,7 +6,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Foundation.Period;
 
-xmlport 47210 "SL BC Accounting Period Data"
+xmlport 147610 "SL BC Accounting Period Data"
 {
     Caption = 'Accounting Period data for import/export';
     Direction = Both;

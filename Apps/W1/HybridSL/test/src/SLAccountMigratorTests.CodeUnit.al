@@ -7,7 +7,7 @@ namespace Microsoft.DataMigration.SL;
 using System.TestLibraries.Utilities;
 using Microsoft.Foundation.Period;
 
-codeunit 47202 "SL Account Migrator Tests"
+codeunit 147602 "SL Account Migrator Tests"
 {
     Subtype = Test;
     TestPermissions = Disabled;

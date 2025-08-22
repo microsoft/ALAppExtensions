@@ -7,7 +7,7 @@ query 37016 "Dynamic Dimensions - PBI API"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     Caption = 'Power BI Dynamic Dimensions';
     EntityName = 'dynamicDimension';
     EntitySetName = 'dynamicDimensions';

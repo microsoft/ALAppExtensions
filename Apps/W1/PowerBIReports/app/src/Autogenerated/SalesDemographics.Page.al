@@ -39,11 +39,9 @@ page 37100 "Sales Demographics"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '04b18fd32b63ebcd4349', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

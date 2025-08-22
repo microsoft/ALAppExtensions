@@ -39,11 +39,9 @@ page 36988 "Liquidity KPIs"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection6838cf9cda361d088e0a', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

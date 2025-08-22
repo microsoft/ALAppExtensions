@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
-xmlport 47208 "SL AcctHist Data"
+xmlport 147608 "SL AcctHist Data"
 {
     Caption = 'SL AcctHist data for import/export';
     Direction = Both;

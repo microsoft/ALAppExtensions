@@ -1,11 +1,14 @@
 namespace Microsoft.Sustainability;
 
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.CBAM;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.CRM;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Energy;
+using Microsoft.Sustainability.EPR;
 using Microsoft.Sustainability.ESGReporting;
+using Microsoft.Sustainability.ExciseTax;
 using Microsoft.Sustainability.FinancialReporting;
 using Microsoft.Sustainability.Reports;
 using Microsoft.Sustainability.RoleCenters;
@@ -51,5 +54,13 @@ permissionset 6212 "Sustainability Admin"
         tabledata "Sust. Requirement Concept" = IMD,
         tabledata "Sust. Standard" = IMD,
         tabledata "Sust. Standard Requirement" = IMD,
-        tabledata "Sust. Unit" = IMD;
+        tabledata "Sust. Unit" = IMD,
+        tabledata "Sustainability EPR Material" = IMD,
+        tabledata "Sust. Item Mat. Comp. Header" = IMD,
+        tabledata "Sust. Item Mat. Comp. Line" = IMD,
+        tabledata "Sust. Excise Jnl. Line" = IMD,
+        tabledata "Sust. Excise Journal Batch" = IMD,
+        tabledata "Sust. Excise Journal Template" = IMD,
+        tabledata "Sust. Excise Taxes Trans. Log" = IMD,
+        tabledata "Sustainability Carbon Pricing" = IMD;
 }

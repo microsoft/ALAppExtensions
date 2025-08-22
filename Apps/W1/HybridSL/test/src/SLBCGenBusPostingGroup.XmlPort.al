@@ -6,7 +6,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Finance.GeneralLedger.Setup;
 
-xmlport 47203 "SL BC Gen. Bus. Posting Group"
+xmlport 147603 "SL BC Gen. Bus. Posting Group"
 {
     Caption = 'General Business Posting Group data for import/export';
     Direction = Both;

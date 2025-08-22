@@ -6,9 +6,8 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Inventory.Item;
 
-codeunit 47201 "SL Test Helper Functions"
+codeunit 147601 "SL Test Helper Functions"
 {
     procedure ClearBCCustomerTableData()
     var

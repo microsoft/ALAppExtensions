@@ -52,11 +52,51 @@ codeunit 31147 "Non-Deductible VAT CZL"
         exit(NonDeductibleVATCZDisabledErrorInfo);
     end;
 
-    procedure ExistNonDeductibleVATSetupToDate(ToDate: Date): Boolean
+    internal procedure CheckNonDeductibleVATSetup(PurchaseLine: Record "Purchase Line")
     var
-        NonDeductibleVATSetupCZL: Record "Non-Deductible VAT Setup CZL";
+        PurchaseHeader: Record "Purchase Header";
     begin
-        exit(NonDeductibleVATSetupCZL.FindToDate(ToDate))
+        if not NonDeductibleVAT.IsNonDeductibleVATEnabled() then
+            exit;
+        PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+        CheckNonDeductibleVATSetup(
+            PurchaseLine."VAT Bus. Posting Group", PurchaseLine."VAT Prod. Posting Group",
+            "General Posting Type"::Purchase, PurchaseHeader."VAT Reporting Date");
+    end;
+
+    internal procedure CheckNonDeductibleVATSetup(GenJournalLine: Record "Gen. Journal Line")
+    begin
+        if not NonDeductibleVAT.IsNonDeductibleVATEnabled() then
+            exit;
+        if not (GenJournalLine."VAT Calculation Type" in [GenJournalLine."VAT Calculation Type"::"Normal VAT", GenJournalLine."VAT Calculation Type"::"Reverse Charge VAT"]) then
+            exit;
+        CheckNonDeductibleVATSetup(
+            GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group",
+            GenJournalLine."Gen. Posting Type", GenJournalLine."VAT Reporting Date");
+    end;
+
+    internal procedure CheckNonDeductibleVATSetup(VATBusPostGroupCode: Code[20]; VATProdPostGroupCode: Code[20]; GeneralPostingType: Enum "General Posting Type"; ToDate: Date)
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        if not NonDeductibleVAT.IsNonDeductibleVATEnabled() then
+            exit;
+        if not VATPostingSetup.Get(VATBusPostGroupCode, VATProdPostGroupCode) then
+            exit;
+        CheckNonDeductibleVATSetup(VATPostingSetup, GeneralPostingType, ToDate);
+    end;
+
+    internal procedure CheckNonDeductibleVATSetup(VATPostingSetup: Record "VAT Posting Setup"; GeneralPostingType: Enum "General Posting Type"; ToDate: Date)
+    begin
+        if not NonDeductibleVAT.IsNonDeductibleVATEnabled() then
+            exit;
+        if not (VATPostingSetup."VAT Calculation Type" in [VATPostingSetup."VAT Calculation Type"::"Normal VAT", VATPostingSetup."VAT Calculation Type"::"Reverse Charge VAT"]) then
+            exit;
+        if GeneralPostingType <> GeneralPostingType::Purchase then
+            exit;
+        if VATPostingSetup."Allow Non-Deductible VAT" <> VATPostingSetup."Allow Non-Deductible VAT"::Allow then
+            exit;
+        CheckNonDeductibleVATSetupToDate(ToDate);
     end;
 
     procedure CheckNonDeductibleVATSetupToDate(ToDate: Date)
@@ -73,6 +113,13 @@ codeunit 31147 "Non-Deductible VAT CZL"
         if ThrowError then
             Error(GetUndefinedNonDeductibleVATSetupErrorInfo());
         Message(UndefinedNonDeductibleVATSetupErr);
+    end;
+
+    procedure ExistNonDeductibleVATSetupToDate(ToDate: Date): Boolean
+    var
+        NonDeductibleVATSetupCZL: Record "Non-Deductible VAT Setup CZL";
+    begin
+        exit(NonDeductibleVATSetupCZL.FindToDate(ToDate))
     end;
 
     local procedure GetUndefinedNonDeductibleVATSetupErrorInfo(): ErrorInfo
@@ -145,7 +192,6 @@ codeunit 31147 "Non-Deductible VAT CZL"
                 begin
                     if not NonDeductibleVATSetupCZL.FindToDate(ToDate) then
                         exit(0);
-                    NonDeductibleVATSetupCZL.TestField("Advance Coefficient");
                     exit(NonDeductibleVATSetupCZL."Advance Coefficient");
                 end;
             VATPostingSetup."Allow Non-Deductible VAT"::"Do not apply CZL":

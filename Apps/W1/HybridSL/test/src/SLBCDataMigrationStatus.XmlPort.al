@@ -6,7 +6,7 @@ namespace Microsoft.DataMigration.SL;
 
 using System.Integration;
 
-xmlport 47205 "SL BC Data Migration Status"
+xmlport 147605 "SL BC Data Migration Status"
 {
     Caption = 'Data Migration Status data for import/export';
     Direction = Both;
