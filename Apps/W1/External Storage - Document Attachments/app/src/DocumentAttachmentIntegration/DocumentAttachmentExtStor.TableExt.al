@@ -18,7 +18,7 @@ tableextension 8750 "Document Attachment Ext.Stor." extends "Document Attachment
             Editable = false;
             ToolTip = 'Specifies if the file has been uploaded to external storage.';
         }
-        field(8751; "External Upload Date"; Date)
+        field(8751; "External Upload Date"; DateTime)
         {
             Caption = 'External Upload Date';
             DataClassification = CustomerContent;
@@ -48,7 +48,7 @@ tableextension 8750 "Document Attachment Ext.Stor." extends "Document Attachment
     internal procedure MarkAsUploadedToExternal(ExternalFilePath: Text[250])
     begin
         "Uploaded Externally" := true;
-        "External Upload Date" := Today();
+        "External Upload Date" := CurrentDateTime();
         "External File Path" := ExternalFilePath;
         Modify();
     end;
@@ -60,7 +60,7 @@ tableextension 8750 "Document Attachment Ext.Stor." extends "Document Attachment
     internal procedure MarkAsNotUploadedToExternal()
     begin
         "Uploaded Externally" := false;
-        "External Upload Date" := 0D;
+        "External Upload Date" := 0DT;
         "External File Path" := '';
         Modify();
     end;

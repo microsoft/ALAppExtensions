@@ -60,7 +60,7 @@ report 8752 "DA External Storage Sync"
                             FailedCount += 1;
                 end;
                 if DeleteExpiredFiles then
-                    if CalcDate('<+' + GetDateFormulaFromExternalStorageSetup() + '>', DocumentAttachment."External Upload Date") >= Today() then
+                    if CalcDate('<+' + GetDateFormulaFromExternalStorageSetup() + '>', DT2Date(DocumentAttachment."External Upload Date")) >= Today() then
                         if ExternalStorageProcessor.DeleteFromInternalStorage(DocumentAttachment) then
                             DeleteCount += 1
                         else
