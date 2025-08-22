@@ -21,8 +21,6 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
     InherentPermissions = X;
 
     var
-        EDocumentImportHelper: Codeunit "E-Document Import Helper";
-        FeatureTelemetry: Codeunit "Feature Telemetry";
         SchemeIDGLNTok: Label '0088', Locked = true;
         InvoiceLineTok: Label 'cac:InvoiceLine', Locked = true;
         CreditNoteLineTok: Label 'cac:CreditNoteLine', Locked = true;
@@ -37,6 +35,7 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
     internal procedure ReadIntoDraft(EDocument: Record "E-Document"; TempBlob: Codeunit "Temp Blob"): Enum "E-Doc. Process Draft"
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         XRechnungXml: XmlDocument;
         XmlNamespaces: XmlNamespaceManager;
         XmlElement: XmlElement;
@@ -137,10 +136,11 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
 
     local procedure ParseAccountingSupplierParty(XRechnungXml: XmlDocument; XmlNamespaces: XmlNamespaceManager; var EDocumentPurchaseHeader: Record "E-Document Purchase Header"; var EDocument: Record "E-Document"; DocumentType: Text) VendorNo: Code[20]
     var
+        EDocumentImportHelper: Codeunit "E-Document Import Helper";
         EDocumentXMLHelper: Codeunit "EDocument XML Helper";
         EMTok: Label 'EM', Locked = true;
-        "0198Tok": Label '0198', Locked = true;
-        "9930Tok": Label '9930', Locked = true;
+        RoutingIdTok: Label '0198', Locked = true;
+        VATRegNoTok: Label '9930', Locked = true;
         VendorName, VendorAddress, VendorParticipantId : Text;
         VATRegistrationNo: Text[20];
         EndpointID, SchemeID : Text;
@@ -160,7 +160,7 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
             SchemeID := XMLNode.AsXmlAttribute().Value();
             EndpointID := EDocumentXMLHelper.GetNodeValue(XRechnungXml, XmlNamespaces, BasePathTxt + '/cbc:EndpointID');
             case SchemeID of
-                EMTok, "0198Tok", "9930Tok":
+                EMTok, RoutingIdTok, VATRegNoTok:
                     VATRegistrationNo := CopyStr(EndpointID, 1, MaxStrLen(VATRegistrationNo));
                 SchemeIDGLNTok:
                     begin
@@ -170,7 +170,7 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
             end;
             VendorParticipantId := SchemeID + ':' + EndpointID;
         end;
-        VATRegistrationNo := CopyStr(EDocumentPurchaseHeader."Vendor VAT Id", 1, 20);
+        VATRegistrationNo := CopyStr(EDocumentPurchaseHeader."Vendor VAT Id", 1, MaxStrLen(VATRegistrationNo));
         VendorName := EDocumentPurchaseHeader."Vendor Company Name";
         VendorAddress := EDocumentPurchaseHeader."Vendor Address";
         if not FindVendorByVATRegNoOrGLN(VendorNo, VATRegistrationNo, GLN) then
