@@ -385,7 +385,7 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                     Caption = 'Advance Card';
                     ToolTip = 'Show advance card.';
                     ApplicationArea = Basic, Suite;
-                    Image = "Invoicing-Document";
+                    Image = Document;
                     RunObject = page "Purch. Advance Letter CZZ";
                     RunPageLink = "No." = field("Purch. Adv. Letter No.");
                     RunPageMode = View;

@@ -9,7 +9,7 @@ query 36979 "Warehouse Entries"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'warehouseEntry';
     EntitySetName = 'warehouseEntries';
     DataAccessIntent = ReadOnly;

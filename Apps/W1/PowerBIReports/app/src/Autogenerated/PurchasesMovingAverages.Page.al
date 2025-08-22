@@ -39,11 +39,9 @@ page 37012 "Purchases Moving Averages"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionc4bf0b0750800ca6b0c6', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

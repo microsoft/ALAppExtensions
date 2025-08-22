@@ -24,6 +24,12 @@ pageextension 6234 "Sust. Sales Cr. Memo Subform" extends "Sales Cr. Memo Subfor
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the value of the Total CO2e field.';
             }
+            field("Total EPR Fee"; Rec."Total EPR Fee")
+            {
+                Visible = SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the Total EPR Fee field.';
+            }
         }
     }
 

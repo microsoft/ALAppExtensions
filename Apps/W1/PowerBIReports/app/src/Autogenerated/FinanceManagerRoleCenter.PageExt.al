@@ -165,6 +165,14 @@ pageextension 36959 "Finance Manager Role Center" extends "Finance Manager Role 
                     RunObject = page "Inventory Valuation by Loc.";
                     Tooltip = 'Open a Power BI Report that features a Treemap that visualizes ending balance quantities by location. It also includes a table matrix providing a detailed view of ending balances and showing fluctuations in inventory over the specified period.';
                 }
+                action("Late Payments (Receivables) (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Late Payments (Receivables) (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Late Payments (Receivables)";
+                    Tooltip = 'Open the Power BI report that visualizes the late payment behaviours of customers, including amounts and payment times, to analyze the financial impacts of late payments on the business.';
+                }
             }
         }
     }

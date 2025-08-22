@@ -39,11 +39,9 @@ page 37031 "PowerBI Bin Contents"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection12b3ff23621e20c1398d', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

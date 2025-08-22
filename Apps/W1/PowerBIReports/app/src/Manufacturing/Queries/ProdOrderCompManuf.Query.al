@@ -10,7 +10,7 @@ query 36988 "Prod. Order Comp. - Manuf."
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'manufacturingProdOrderComponent';
     EntitySetName = 'manufacturingProdOrderComponents';
     DataAccessIntent = ReadOnly;

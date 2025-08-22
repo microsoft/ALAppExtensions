@@ -23,5 +23,9 @@ permissionset 10031 "IRS Forms - Edit"
                   tabledata "IRS 1099 Form Report" = IMD,
                   tabledata "IRS 1099 Form Instruction" = IMD,
                   tabledata "IRS 1099 Vendor Form Box Adj." = IMD,
-                  tabledata "IRS 1099 Email Queue" = IMD;
+                  tabledata "IRS 1099 Email Queue" = IMD,
+                  tabledata "Error Information IRIS" = IMD,
+                  tabledata "Transmission IRIS" = IMD,
+                  tabledata "Transmission Log IRIS" = IMD,
+                  tabledata "Transmission Log Line IRIS" = IMD;
 }

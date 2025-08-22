@@ -79,8 +79,6 @@ codeunit 6120 "E-Doc. Purchase Hist. Mapping"
     end;
 
     procedure FindRelatedPurchaseLineInHistory(VendorNo: Code[20]; EDocumentPurchaseLine: Record "E-Document Purchase Line"; var EDocPurchaseLineHistory: Record "E-Doc. Purchase Line History"): Boolean
-    var
-        SearchText: Text;
     begin
         Clear(EDocPurchaseLineHistory);
         if (EDocumentPurchaseLine."Product Code" = '') and (EDocumentPurchaseLine.Description = '') then
@@ -110,13 +108,12 @@ codeunit 6120 "E-Doc. Purchase Hist. Mapping"
             if EDocPurchaseLineHistory.FindFirst() then
                 exit(true);
 
-            SearchText := '''@' + EDocumentPurchaseLine.Description + '*''';
-            EDocPurchaseLineHistory.SetFilter(Description, SearchText);
+            EDocPurchaseLineHistory.SetRange(Description);
+            EDocPurchaseLineHistory.SetFilter(Description, '%1', '@' + EDocumentPurchaseLine.Description + '*');
             if EDocPurchaseLineHistory.FindFirst() then
                 exit(true);
 
-            SearchText := '''@* ' + EDocumentPurchaseLine.Description + '*''';
-            EDocPurchaseLineHistory.SetFilter(Description, SearchText);
+            EDocPurchaseLineHistory.SetFilter(Description, '%1', '@*' + EDocumentPurchaseLine.Description + '*');
             if EDocPurchaseLineHistory.FindFirst() then
                 exit(true);
         end;

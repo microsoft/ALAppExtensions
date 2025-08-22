@@ -9,7 +9,7 @@ query 36961 "G/L Budgets"
     Caption = 'Power BI G/L Budgets';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'generalLedgerBudget';
     EntitySetName = 'generalLedgerBudgets';
     DataAccessIntent = ReadOnly;

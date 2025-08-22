@@ -9,7 +9,7 @@ query 37009 "Routing Links - PBI API"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'routingLink';
     EntitySetName = 'routingLinks';
     DataAccessIntent = ReadOnly;

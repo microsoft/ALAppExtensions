@@ -1,0 +1,20 @@
+{
+    "sourceFiles": [
+        {
+            "fileName": "CO2e Emission Factors UK DEFRA.xlsx",
+            "CountryRegionCode": "GB"
+        },
+        {
+            "fileName": "CO2e Emission Factor for Cronus-air.xlsx",
+            "CountryRegionCode": ""
+        },
+        {
+            "fileName": "CO2e Emission Fasctors CONTOSO car producer.xlsx",
+            "CountryRegionCode": ""
+        },
+        {
+            "fileName": "CO2e Emission Fasctors Fabrikam machine producer.xlsx",
+            "CountryRegionCode": ""
+        }
+    ]
+}

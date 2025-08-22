@@ -7,7 +7,7 @@ query 36954 "Account Categories"
     Caption = 'Power BI Account Categories';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'accountCategory';
     EntitySetName = 'accountCategories';
     DataAccessIntent = ReadOnly;

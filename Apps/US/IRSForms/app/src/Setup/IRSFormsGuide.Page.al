@@ -199,6 +199,14 @@ page 10032 "IRS Forms Guide"
                     {
                         ToolTip = 'Specifies if the TIN of the vendor/company must be protected when printing reports.';
                     }
+                    field("Business Name Control"; Rec."Business Name Control")
+                    {
+                        ToolTip = 'Specifies the business name control that must match the one in the IRS''s National Account Profile (NAP) database. Generally, it can be up to the first four alphanumeric characters of the business''s legal name.';
+                    }
+                    field("API Client ID"; Rec."IRIS API Client ID")
+                    {
+                        ToolTip = 'Specifies the GUID that is used to authenticate and authorize access to the IRS''s Information Returns Intake System (IRIS) API.';
+                    }
                 }
             }
             group(FinishedBanner)
@@ -323,6 +331,8 @@ page 10032 "IRS Forms Guide"
         MediaResourcesFinished: Record "Media Resources";
         MediaResourcesStd: Record "Media Resources";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        IRSFormsData: Codeunit "IRS Forms Data";
+        KeyVaultClientIRIS: Codeunit "Key Vault Client IRIS";
         CreateNewSetup, TransferExistingData : Boolean;
         Step: Option Start,Data,TransferExistingData,Features,Finish;
         DataStepEnabled, TransferExistingDataStepEnabled : Boolean;
@@ -358,7 +368,6 @@ page 10032 "IRS Forms Guide"
 
     local procedure FinishAction();
     var
-        IRSFormsData: Codeunit "IRS Forms Data";
         GuidedExperience: Codeunit "Guided Experience";
 #if not CLEAN25
         IRSFormsFeature: Codeunit "IRS Forms Feature";
@@ -404,6 +413,11 @@ page 10032 "IRS Forms Guide"
             else
                 Step += 1;
         EnableControls();
+
+        if not Backwards and (Step = Step::Features) then begin
+            Rec."Business Name Control" := IRSFormsData.GetNameControl();
+            Rec."IRIS API Client ID" := KeyVaultClientIRIS.GetAPIClientIDFromKV();
+        end;
     end;
 
     local procedure ValidateControlsBeforeStep(Backwards: Boolean): Boolean

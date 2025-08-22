@@ -39,11 +39,9 @@ page 37103 "Opportunity Overview"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '7eb61bb06993742c9b40', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

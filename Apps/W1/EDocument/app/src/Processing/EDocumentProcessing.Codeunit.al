@@ -28,6 +28,12 @@ codeunit 6108 "E-Document Processing"
     Permissions = tabledata "E-Document Service Status" = rim,
                 tabledata "E-Document" = m;
 
+    var
+        RelatedRecordCaptionWithDashTxt: Label '%1 - %2', Comment = '%1 - Record Text, %2 - Record Caption', Locked = true;
+        EDocTelemetryCategoryLbl: Label 'E-Document', Locked = true;
+        EDocTelemetryIdLbl: Label 'E-Doc %1', Locked = true;
+        EDocTok: Label 'W1 E-Document', Locked = true;
+
     /// <summary>
     /// Inserts E-Document Service Status record. Throws runtime error if record does exists.
     /// </summary>
@@ -39,6 +45,8 @@ codeunit 6108 "E-Document Processing"
         EDocumentServiceStatus.Validate("E-Document Service Code", EDocumentService.Code);
         EDocumentServiceStatus.Validate(Status, EDocumentStatus);
         EDocumentServiceStatus.Insert();
+
+        OnAfterModifyServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
     end;
 
     /// <summary>
@@ -52,6 +60,8 @@ codeunit 6108 "E-Document Processing"
         EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
         EDocumentServiceStatus.Validate(Status, EDocumentStatus);
         EDocumentServiceStatus.Modify();
+
+        OnAfterModifyServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
     end;
 
     /// <summary>
@@ -99,6 +109,8 @@ codeunit 6108 "E-Document Processing"
         else
             EDocument.Validate(Status, EDocument.Status::Processed);
         EDocument.Modify(true);
+
+        OnAfterModifyEDocumentStatus(EDocument, EDocumentServiceStatus);
     end;
 
     procedure ModifyEDocumentProcessingStatus(EDocument: Record "E-Document"; NewStatus: Enum "Import E-Doc. Proc. Status")
@@ -108,6 +120,39 @@ codeunit 6108 "E-Document Processing"
         EDocumentServiceStatus := EDocument.GetEDocumentServiceStatus();
         EDocumentServiceStatus.Validate("Import Processing Status", NewStatus);
         EDocumentServiceStatus.Modify();
+    end;
+
+    procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
+    var
+        EDocument: Record "E-Document";
+        EDocumentHelper: Codeunit "E-Document Helper";
+        EDocExport: Codeunit "E-Doc. Export";
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(Record);
+        EDocument.SetRange("Document Record ID", SourceDocumentHeader.RecordId);
+        if EDocumentHelper.IsElectronicDocument(SourceDocumentHeader) and EDocument.IsEmpty() then
+            EDocExport.CheckEDocument(SourceDocumentHeader, EDocumentProcPhase);
+    end;
+
+    procedure CreateEDocumentFromPostedDocumentPage(PostedRecord: Variant; DocumentType: Enum "E-Document Type"): Boolean
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        EDocumentHelper: Codeunit "E-Document Helper";
+        EDocumentSubscribers: Codeunit "E-Document Subscribers";
+        RecordRef: RecordRef;
+        ElectronicDocumentErr: Label 'Document sending profile %1 is not setup to send electronic documents.', Comment = '%1 - Document Sending Profile Code';
+    begin
+        if not PostedRecord.IsRecord() then
+            exit;
+
+        RecordRef.GetTable(PostedRecord);
+        if not EDocumentHelper.IsElectronicDocument(RecordRef, DocumentSendingProfile) then
+            Error(ElectronicDocumentErr, DocumentSendingProfile.Code);
+
+        RunEDocumentCheck(PostedRecord, Enum::"E-Document Processing Phase"::Post);
+        EDocumentSubscribers.CreateEDocumentFromPostedDocument(PostedRecord, DocumentSendingProfile, DocumentType);
+        exit(true);
     end;
 
     procedure GetDocSendingProfileForDocRef(var RecRef: RecordRef): Record "Document Sending Profile";
@@ -490,9 +535,14 @@ codeunit 6108 "E-Document Processing"
         exit(RecCaption);
     end;
 
-    var
-        RelatedRecordCaptionWithDashTxt: Label '%1 - %2', Comment = '%1 - Record Text, %2 - Record Caption', Locked = true;
-        EDocTelemetryCategoryLbl: Label 'E-Document', Locked = true;
-        EDocTelemetryIdLbl: Label 'E-Doc %1', Locked = true;
-        EDocTok: Label 'W1 E-Document', Locked = true;
+
+    [InternalEvent(false, false)]
+    local procedure OnAfterModifyEDocumentStatus(var EDocument: Record "E-Document"; var EDocumentServiceStatus: Record "E-Document Service Status")
+    begin
+    end;
+
+    [InternalEvent(false, false)]
+    local procedure OnAfterModifyServiceStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
+    begin
+    end;
 }

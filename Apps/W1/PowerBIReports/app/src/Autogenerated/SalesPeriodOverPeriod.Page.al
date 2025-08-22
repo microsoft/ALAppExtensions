@@ -39,11 +39,9 @@ page 37002 "Sales Period-Over-Period"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection2480499c371d97221c09', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

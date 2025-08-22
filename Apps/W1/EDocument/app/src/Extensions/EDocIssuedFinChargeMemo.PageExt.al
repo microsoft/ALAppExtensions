@@ -19,7 +19,7 @@ pageextension 6149 "E-Doc. Issued Fin. Charge Memo" extends "Issued Finance Char
                     ApplicationArea = Basic, Suite;
                     Caption = 'Open E-Document';
                     Image = CopyDocument;
-                    ToolTip = 'Opens the electronic document card.';
+                    ToolTip = 'Opens the E-Document card page.';
 
                     trigger OnAction()
                     var

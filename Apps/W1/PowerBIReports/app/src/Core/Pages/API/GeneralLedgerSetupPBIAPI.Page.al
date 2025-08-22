@@ -12,7 +12,7 @@ page 36956 "General Ledger Setup - PBI API"
     Caption = 'General Ledger Setup';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'generalLedgerSetup';
     EntitySetName = 'generalLedgerSetups';
     SourceTable = "General Ledger Setup";

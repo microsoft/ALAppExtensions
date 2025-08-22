@@ -4,15 +4,17 @@ using Microsoft.Integration.D365Sales;
 using Microsoft.Integration.Dataverse;
 using Microsoft.Inventory.Location;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.CBAM;
+using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.CRM;
 using Microsoft.Sustainability.Emission;
-using Microsoft.Sustainability.Journal;
-using Microsoft.Sustainability.Scorecard;
-using Microsoft.Sustainability.Certificate;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Energy;
-using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.ESGReporting;
+using Microsoft.Sustainability.ExciseTax;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Scorecard;
+using Microsoft.Sustainability.Setup;
 
 codeunit 148182 "Library - Sustainability"
 {
@@ -411,6 +413,18 @@ codeunit 148182 "Library - Sustainability"
         exit(CRMSystemUser.FindFirst());
     end;
 
+    procedure CreateCarbonPricing(var CarbonPricing: Record "Sustainability Carbon Pricing"; CountryRegion: Code[10]; StartingDate: Date; EndingDate: Date; UOM: Code[10]; ThresholdQty: Decimal; CarbonPrice: Decimal)
+    begin
+        CarbonPricing.Init();
+        CarbonPricing.Validate("Country/Region of Origin", CountryRegion);
+        CarbonPricing.Validate("Starting Date", StartingDate);
+        CarbonPricing.Validate("Ending Date", EndingDate);
+        CarbonPricing.Validate("Unit of Measure Code", UOM);
+        CarbonPricing.Validate("Threshold Quantity", ThresholdQty);
+        CarbonPricing.Validate("Carbon Price", CarbonPrice);
+        CarbonPricing.Insert();
+    end;
+
     procedure CleanUpBeforeTesting()
     var
         SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
@@ -431,6 +445,10 @@ codeunit 148182 "Library - Sustainability"
         ESGReportingLine: Record "Sust. ESG Reporting Line";
         PostedESGReportingHeader: Record "Sust. Posted ESG Report Header";
         PostedESGReportingLine: Record "Sust. Posted ESG Report Line";
+        SustainabilityExciseJnlTemplate: Record "Sust. Excise Journal Template";
+        SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
+        SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line";
+        SustExciseTransactionLog: Record "Sust. Excise Taxes Trans. Log";
     begin
         SustainabilityJnlTemplate.DeleteAll();
         SustainabilityJnlBatch.DeleteAll();
@@ -450,5 +468,9 @@ codeunit 148182 "Library - Sustainability"
         ESGReportingLine.DeleteAll();
         PostedESGReportingHeader.DeleteAll();
         PostedESGReportingLine.DeleteAll();
+        SustainabilityExciseJnlTemplate.DeleteAll();
+        SustainabilityExciseJnlBatch.DeleteAll();
+        SustainabilityExciseJnlLine.DeleteAll();
+        SustExciseTransactionLog.DeleteAll();
     end;
 }

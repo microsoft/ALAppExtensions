@@ -9,7 +9,7 @@ query 36993 "Job Planning Lines"
     Caption = 'Power BI Project Planning Line';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'jobPlanningLine';
     EntitySetName = 'jobPlanningLines';
     DataAccessIntent = ReadOnly;

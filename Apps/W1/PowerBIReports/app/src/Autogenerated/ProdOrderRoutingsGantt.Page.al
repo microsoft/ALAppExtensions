@@ -39,11 +39,9 @@ page 37099 "Prod. Order Routings Gantt"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'f0afc9178d3f83210328', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

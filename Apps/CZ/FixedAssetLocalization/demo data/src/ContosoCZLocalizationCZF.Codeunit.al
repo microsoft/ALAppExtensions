@@ -36,6 +36,8 @@ codeunit 31217 "Contoso CZ Localization CZF"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
+                    Codeunit.Run(Codeunit::"Create Depreciation Book CZF");
+                    Codeunit.Run(Codeunit::"Create No. Series CZF");
                     Codeunit.Run(Codeunit::"Create FA Setup CZF");
                     Codeunit.Run(Codeunit::"Create Tax Depr. Grp. CZF");
                 end;

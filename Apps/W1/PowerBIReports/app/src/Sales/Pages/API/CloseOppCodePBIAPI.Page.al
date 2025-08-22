@@ -8,7 +8,7 @@ page 37083 "Close Opp. Code - PBI API"
     Caption = 'Power BI Close Opportunity Codes';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'closeOpportunityCode';
     EntitySetName = 'closeOpportunityCodes';
     SourceTable = "Close Opportunity Code";

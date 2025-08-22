@@ -111,7 +111,7 @@ codeunit 18082 "GST Vendor Ledger Entry"
 
         VendorLedgerEntry."GST Vendor Type" := GenJournalLine."GST Vendor Type";
         VendorLedgerEntry."Location GST Reg. No." := GenJournalLine."Location GST Reg. No.";
-        if VendorLedgerEntry."GST Vendor Type" in ["GST Vendor Type"::Import, "GST Vendor Type"::Unregistered, "GST Vendor Type"::SEZ] then
+        if VendorLedgerEntry."GST Vendor Type" in ["GST Vendor Type"::Import, "GST Vendor Type"::Unregistered] then
             if not (GenJournalLine."Document Type" in [GenJournalLine."Document Type"::Payment, GenJournalLine."Document Type"::Refund]) then
                 VendorLedgerEntry."GST Reverse Charge" := true
             else

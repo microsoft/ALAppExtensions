@@ -11,7 +11,7 @@ query 36956 "G/L Entries - Closing"
     Caption = 'Power BI Closing G/L Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'closingGeneralLedgerEntry';
     EntitySetName = 'closingGeneralLedgerEntries';
     DataAccessIntent = ReadOnly;

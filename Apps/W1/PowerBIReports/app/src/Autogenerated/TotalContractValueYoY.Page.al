@@ -39,11 +39,9 @@ page 37076 "Total Contract Value YoY"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'bf60e6bdba77e101902e', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

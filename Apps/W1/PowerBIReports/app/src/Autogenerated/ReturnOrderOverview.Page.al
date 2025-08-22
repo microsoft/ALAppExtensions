@@ -39,11 +39,9 @@ page 37105 "Return Order Overview"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'f346c5b1f9260944d3cf', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

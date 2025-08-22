@@ -10,7 +10,7 @@ query 36957 "Customer Ledger Entries"
     Caption = 'Power BI Customer Ledger Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'customerLedgerEntry';
     EntitySetName = 'customerLedgerEntries';
     DataAccessIntent = ReadOnly;
@@ -35,6 +35,12 @@ query 36957 "Customer Ledger Entries"
             {
             }
             column(cleDimensionSetID; "Dimension Set ID")
+            {
+            }
+            column(cleClosedAtDate; "Closed at Date")
+            {
+            }
+            column(cleReasonCode; "Reason Code")
             {
             }
             dataitem(DetailedCustLedgEntry; "Detailed Cust. Ledg. Entry")

@@ -39,11 +39,9 @@ page 36994 "Aged Payables (Back Dating)"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection904474b579cc92816425', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

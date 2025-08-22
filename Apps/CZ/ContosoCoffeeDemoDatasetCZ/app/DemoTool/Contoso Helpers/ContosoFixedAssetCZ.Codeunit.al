@@ -13,6 +13,7 @@ codeunit 31218 "Contoso Fixed Asset CZ"
     InherentEntitlements = X;
     InherentPermissions = X;
     Permissions =
+        tabledata "Depreciation Book" = rim,
         tabledata "FA Depreciation Book" = rim,
         tabledata "FA Posting Group" = rim;
 
@@ -65,6 +66,14 @@ codeunit 31218 "Contoso Fixed Asset CZ"
             FAPostingGroup.Modify(true)
         else
             FAPostingGroup.Insert(true);
+    end;
+
+    internal procedure DeleteDepreciationBook(DepreciationBookCode: Code[20])
+    var
+        DepreciationBook: Record "Depreciation Book";
+    begin
+        if DepreciationBook.Get(DepreciationBookCode) then
+            DepreciationBook.Delete(true);
     end;
 
     procedure DeleteFADepreciationBook(FixedAssetNo: Code[20]; DepreciationBookCode: Code[20])

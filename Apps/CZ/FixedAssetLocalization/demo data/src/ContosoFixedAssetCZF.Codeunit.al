@@ -5,6 +5,7 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
+using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets;
 
 codeunit 31216 "Contoso Fixed Asset CZF"
@@ -12,6 +13,7 @@ codeunit 31216 "Contoso Fixed Asset CZF"
     InherentEntitlements = X;
     InherentPermissions = X;
     Permissions =
+        tabledata "Depreciation Book" = rim,
         tabledata "FA Extended Posting Group CZF" = rim;
 
     var
@@ -84,5 +86,22 @@ codeunit 31216 "Contoso Fixed Asset CZF"
             TaxDepreciationGroupCZF.Modify(true)
         else
             TaxDepreciationGroupCZF.Insert(true);
+    end;
+
+    procedure UpdateDepreciationBook(BookCode: Code[10]; CheckAcqApprBefDep: Boolean; AllAcquisitInSameYear: Boolean; CheckDeprecOnDisposal: Boolean; DeprecFrom1stYearDay: Boolean; DeprecFrom1stMonthDay: Boolean; CorrespGLEntriesDisp: Boolean; CorrespFAEntriesDisp: Boolean)
+    var
+        DepreciationBook: Record "Depreciation Book";
+    begin
+        if not DepreciationBook.Get(BookCode) then
+            exit;
+
+        DepreciationBook.Validate("Check Acq. Appr. bef. Dep. CZF", CheckAcqApprBefDep);
+        DepreciationBook.Validate("All Acquisit. in same Year CZF", AllAcquisitInSameYear);
+        DepreciationBook.Validate("Check Deprec. on Disposal CZF", CheckDeprecOnDisposal);
+        DepreciationBook.Validate("Deprec. from 1st Year Day CZF", DeprecFrom1stYearDay);
+        DepreciationBook.Validate("Deprec. from 1st Month Day CZF", DeprecFrom1stMonthDay);
+        DepreciationBook.Validate("Corresp. G/L Entries Disp. CZF", CorrespGLEntriesDisp);
+        DepreciationBook.Validate("Corresp. FA Entries Disp. CZF", CorrespFAEntriesDisp);
+        DepreciationBook.Modify(true);
     end;
 }

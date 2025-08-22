@@ -36,7 +36,6 @@ table 6232 "Sust. Posted ESG Report Line"
         field(3; "Document No."; Code[20])
         {
             Caption = 'Document No.';
-            OptimizeForTextSearch = true;
         }
         field(4; "Line No."; Integer)
         {
