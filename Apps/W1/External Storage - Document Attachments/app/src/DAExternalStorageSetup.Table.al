@@ -24,18 +24,21 @@ table 8750 "DA External Storage Setup"
         {
             Caption = 'Delete After';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies when files should be automatically deleted.';
         }
         field(6; "Auto Upload"; Boolean)
         {
             Caption = 'Auto Upload';
             DataClassification = CustomerContent;
             InitValue = true;
+            ToolTip = 'Specifies if new attachments should be automatically uploaded to external storage.';
         }
         field(7; "Auto Delete"; Boolean)
         {
             Caption = 'Auto Delete';
             DataClassification = CustomerContent;
             InitValue = false;
+            ToolTip = 'Specifies if files should be automatically deleted from external storage.';
         }
         field(25; "Has Uploaded Files"; Boolean)
         {
@@ -43,6 +46,7 @@ table 8750 "DA External Storage Setup"
             FieldClass = FlowField;
             CalcFormula = exist("Document Attachment" where("Uploaded Externally" = const(true)));
             Editable = false;
+            ToolTip = 'Indicates if files have been uploaded using this configuration.';
         }
     }
 

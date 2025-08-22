@@ -40,40 +40,36 @@ page 8751 "Document Attachment - External"
                 field("File Extension"; Rec."File Extension")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the file extension.';
+                    ToolTip = 'Specifies the file extension of the attached file.';
                 }
                 field("Attached Date"; Rec."Attached Date")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies when the file was attached.';
+                    ToolTip = 'Specifies the date the file was attached.';
                 }
                 field("Attached By"; Rec."Attached By")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies who attached the file.';
+                    ToolTip = 'Specifies the user who attached the file.';
                 }
                 field("Deleted Internally"; Rec."Deleted Internally")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the value of the Deleted Internally field.', Comment = '%';
                 }
                 field("Uploaded to External"; Rec."Uploaded Externally")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Uploaded to External';
-                    ToolTip = 'Specifies if the file has been uploaded to external storage.';
                 }
                 field("External Upload Date"; Rec."External Upload Date")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Upload Date';
-                    ToolTip = 'Specifies when the file was uploaded to external storage.';
                 }
                 field("External File Path"; Rec."External File Path")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'External File Path';
-                    ToolTip = 'Specifies the path to the file in external storage.';
                 }
             }
         }

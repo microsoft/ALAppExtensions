@@ -16,24 +16,28 @@ tableextension 8750 "Document Attachment Ext.Stor." extends "Document Attachment
             Caption = 'Uploaded Externally';
             DataClassification = CustomerContent;
             Editable = false;
+            ToolTip = 'Specifies if the file has been uploaded to external storage.';
         }
         field(8751; "External Upload Date"; Date)
         {
             Caption = 'External Upload Date';
             DataClassification = CustomerContent;
             Editable = false;
+            ToolTip = 'Specifies when the file was uploaded to external storage.';
         }
         field(8752; "External File Path"; Text[250])
         {
             Caption = 'External File Path';
             DataClassification = CustomerContent;
             Editable = false;
+            ToolTip = 'Specifies the path to the file in external storage.';
         }
         field(8753; "Deleted Internally"; Boolean)
         {
             Caption = 'Deleted Internally';
             DataClassification = CustomerContent;
             Editable = false;
+            ToolTip = 'Specifies the value of the Deleted Internally field.';
         }
     }
 

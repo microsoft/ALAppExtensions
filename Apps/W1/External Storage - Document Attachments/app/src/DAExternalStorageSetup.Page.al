@@ -27,17 +27,14 @@ page 8750 "DA External Storage Setup"
                 field("Delete After"; Rec."Delete After")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies when files should be automatically deleted.';
                 }
                 field("Auto Upload"; Rec."Auto Upload")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies if new attachments should be automatically uploaded to external storage.';
                 }
                 field("Auto Delete"; Rec."Auto Delete")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies if files should be automatically deleted from external storage.';
                 }
             }
 
@@ -48,7 +45,6 @@ page 8750 "DA External Storage Setup"
                 field("Has Uploaded Files"; Rec."Has Uploaded Files")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Indicates if files have been uploaded using this configuration.';
                 }
             }
         }
