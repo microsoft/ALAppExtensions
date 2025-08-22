@@ -25,7 +25,7 @@ tableextension 8750 "Document Attachment Ext.Stor." extends "Document Attachment
             Editable = false;
             ToolTip = 'Specifies when the file was uploaded to external storage.';
         }
-        field(8752; "External File Path"; Text[250])
+        field(8752; "External File Path"; Text[2048])
         {
             Caption = 'External File Path';
             DataClassification = CustomerContent;
