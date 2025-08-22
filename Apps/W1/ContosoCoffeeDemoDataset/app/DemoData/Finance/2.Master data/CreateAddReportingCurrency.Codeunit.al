@@ -43,8 +43,8 @@ codeunit 5627 "Create Add. Reporting Currency"
         GLAccountCategory: Record "G/L Account Category";
         SubCategory: Text[80];
     begin
-        ContosoGLAccount.AddAccountForLocalization(ResidualFXGainsName(), '9350');
-        ContosoGLAccount.AddAccountForLocalization(ResidualFXLossesName(), '9360');
+        ContosoGLAccount.AddAccountForLocalization(ResidualFXGainsName(), '9335');
+        ContosoGLAccount.AddAccountForLocalization(ResidualFXLossesName(), '9345');
 
         SubCategory := Format(GLAccountCategory."Account Category"::Income, 80);
         ContosoGLAccount.InsertGLAccount(ResidualFXGains(), ResidualFXGainsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Income, SubCategory, Enum::"G/L Account Type"::Posting, '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
