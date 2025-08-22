@@ -14,10 +14,6 @@ using Microsoft.Purchases.Vendor;
 using System.Telemetry;
 using System.Utilities;
 
-/// <summary>
-/// Handler for processing XRechnung electronic documents.
-/// Implements structured format reader interface for importing XRechnung invoices and credit memos.
-/// </summary>
 codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
 {
     Access = Internal;
