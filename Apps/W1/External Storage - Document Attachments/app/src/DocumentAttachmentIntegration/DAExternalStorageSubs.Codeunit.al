@@ -88,6 +88,110 @@ codeunit 8752 "DA External Storage Subs."
             IsHandled := true;
         end;
     end;
+
+    /// <summary>
+    /// Handles export to stream for externally stored document attachments.
+    /// Downloads from external storage when internal content is not available.
+    /// </summary>
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeExportToStream', '', false, false)]
+    local procedure DocumentAttachment_OnBeforeExportToStream(var DocumentAttachment: Record "Document Attachment"; var AttachmentOutStream: OutStream; var IsHandled: Boolean)
+    var
+        ExternalStorageProcessor: Codeunit "DA External Storage Processor";
+    begin
+        // Only handle if file is uploaded externally and not available internally
+        if not DocumentAttachment."Deleted Internally" then
+            exit;
+
+        if not DocumentAttachment."Uploaded Externally" then
+            exit;
+
+        if DocumentAttachment."Document Reference ID".HasValue() then
+            exit;
+
+        if DocumentAttachment."External File Path" = '' then
+            exit;
+
+        ExternalStorageProcessor.DownloadFromExternalStorageToStream(DocumentAttachment."External File Path", AttachmentOutStream);
+        IsHandled := true;
+    end;
+
+    /// <summary>
+    /// Handles getting content as TempBlob for externally stored document attachments.
+    /// Downloads from external storage when internal content is not available.
+    /// </summary>
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeGetAsTempBlob', '', false, false)]
+    local procedure DocumentAttachment_OnBeforeGetAsTempBlob(var DocumentAttachment: Record "Document Attachment"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
+    var
+        ExternalStorageProcessor: Codeunit "DA External Storage Processor";
+    begin
+        // Only handle if file is uploaded externally and not available internally
+        if not DocumentAttachment."Deleted Internally" then
+            exit;
+
+        if not DocumentAttachment."Uploaded Externally" then
+            exit;
+
+        if DocumentAttachment."Document Reference ID".HasValue() then
+            exit;
+
+        if DocumentAttachment."External File Path" = '' then
+            exit;
+
+        ExternalStorageProcessor.DownloadFromExternalStorageToTempBlob(DocumentAttachment."External File Path", TempBlob);
+        IsHandled := true;
+    end;
+
+    /// <summary>
+    /// Handles content type determination for externally stored document attachments.
+    /// Uses file extension to determine content type when internal content is not available.
+    /// </summary>
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeGetContentType', '', false, false)]
+    local procedure DocumentAttachment_OnBeforeGetContentType(var Rec: Record "Document Attachment"; var ContentType: Text[100]; var IsHandled: Boolean)
+    var
+        ExternalStorageProcessor: Codeunit "DA External Storage Processor";
+    begin
+        // Only handle if file is uploaded externally and not available internally
+        if not Rec."Deleted Internally" then
+            exit;
+
+        if not Rec."Uploaded Externally" then
+            exit;
+
+        if Rec."Document Reference ID".HasValue() then
+            exit;
+
+        if Rec."External File Path" = '' then
+            exit;
+
+        ExternalStorageProcessor.FileExtensionToContentMimeType(Rec, ContentType);
+        IsHandled := true;
+    end;
+
+    /// <summary>
+    /// Handles content availability check for externally stored document attachments.
+    /// Returns true if file is available externally even when not available internally.
+    /// </summary>
+    [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnBeforeHasContent', '', false, false)]
+    local procedure DocumentAttachment_OnBeforeHasContent(var DocumentAttachment: Record "Document Attachment"; var AttachmentIsAvailable: Boolean; var IsHandled: Boolean)
+    var
+        ExternalStorageProcessor: Codeunit "DA External Storage Processor";
+    begin
+        // Only handle if file is uploaded externally and not available internally
+        if not DocumentAttachment."Deleted Internally" then
+            exit;
+
+        if not DocumentAttachment."Uploaded Externally" then
+            exit;
+
+        if DocumentAttachment."Document Reference ID".HasValue() then
+            exit;
+
+        if DocumentAttachment."External File Path" = '' then
+            exit;
+
+        AttachmentIsAvailable := ExternalStorageProcessor.CheckIfFileExistInExternalStorage(DocumentAttachment."External File Path");
+        IsHandled := true;
+    end;
     #endregion
 
     #region File Scenario Handling
@@ -152,6 +256,5 @@ codeunit 8752 "DA External Storage Subs."
         Message(NotPossibleToUnassignScenarioMsg);
         IsHandled := true;
     end;
-
     #endregion
 }

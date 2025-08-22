@@ -181,6 +181,88 @@ codeunit 8750 "DA External Storage Processor"
     end;
 
     /// <summary>
+    /// Downloads a document attachment from external storage to a stream.
+    /// </summary>
+    /// <param name="ExternalFilePath">The path of the external file to download.</param>
+    /// <param name="AttachmentOutStream">The output stream to write the attachment to.</param>
+    /// <returns>True if the download was successful, false otherwise.</returns>
+    internal procedure DownloadFromExternalStorageToStream(ExternalFilePath: Text; var AttachmentOutStream: OutStream): Boolean
+    var
+        FileAccount: Record "File Account";
+        ExternalFileStorage: Codeunit "External File Storage";
+        FileScenarioCU: Codeunit "File Scenario";
+        FileScenario: Enum "File Scenario";
+        InStream: InStream;
+    begin
+        // Search for External Storage assigned File Scenario
+        FileScenario := FileScenario::"Doc. Attach. - External Storage";
+        if not FileScenarioCU.GetFileAccount(FileScenario, FileAccount) then
+            exit(false);
+
+        // Get the file from external storage
+        ExternalFileStorage.Initialize(FileScenario);
+        if not ExternalFileStorage.GetFile(ExternalFilePath, InStream) then
+            exit(false);
+
+        // Copy to output stream
+        CopyStream(AttachmentOutStream, InStream);
+        exit(true);
+    end;
+
+    /// <summary>
+    /// Downloads a document attachment from external storage to a temporary blob.
+    /// </summary>
+    /// <param name="ExternalFilePath">The path of the external file to download.</param>
+    /// <param name="TempBlob">The temporary blob to store the downloaded content.</param>
+    internal procedure DownloadFromExternalStorageToTempBlob(ExternalFilePath: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        FileAccount: Record "File Account";
+        ExternalFileStorage: Codeunit "External File Storage";
+        FileScenarioCU: Codeunit "File Scenario";
+        FileScenario: Enum "File Scenario";
+        InStream: InStream;
+        OutStream: OutStream;
+    begin
+        // Search for External Storage assigned File Scenario
+        FileScenario := FileScenario::"Doc. Attach. - External Storage";
+        if not FileScenarioCU.GetFileAccount(FileScenario, FileAccount) then
+            exit(false);
+
+        // Get the file from external storage
+        ExternalFileStorage.Initialize(FileScenario);
+        if not ExternalFileStorage.GetFile(ExternalFilePath, InStream) then
+            exit(false);
+
+        // Copy to TempBlob
+        TempBlob.CreateOutStream(OutStream);
+        CopyStream(OutStream, InStream);
+        exit(true);
+    end;
+
+    /// <summary>
+    /// Checks if a file exists in external storage.
+    /// </summary>
+    /// <param name="ExternalFilePath">The path of the external file to check.</param>
+    /// <returns>True if the file exists, false otherwise.</returns>
+    internal procedure CheckIfFileExistInExternalStorage(ExternalFilePath: Text): Boolean
+    var
+        FileAccount: Record "File Account";
+        ExternalFileStorage: Codeunit "External File Storage";
+        FileScenarioCU: Codeunit "File Scenario";
+        FileScenario: Enum "File Scenario";
+        InStream: InStream;
+    begin
+        // Search for External Storage assigned File Scenario
+        FileScenario := FileScenario::"Doc. Attach. - External Storage";
+        if not FileScenarioCU.GetFileAccount(FileScenario, FileAccount) then
+            exit(false);
+
+        // Get the file from external storage
+        ExternalFileStorage.Initialize(FileScenario);
+        exit(ExternalFileStorage.FileExists(ExternalFilePath));
+    end;
+
+    /// <summary>
     /// Deletes a document attachment from external storage.
     /// </summary>
     /// <param name="DocumentAttachment">The document attachment record to delete from external storage.</param>
@@ -259,5 +341,53 @@ codeunit 8750 "DA External Storage Processor"
             exit(false);
 
         exit(ExternalStorageSetup."Delete After" = ExternalStorageSetup."Delete After"::Immediately);
+    end;
+
+    /// <summary>
+    /// Maps file extensions to their corresponding MIME types.
+    /// </summary>
+    /// <param name="Rec">The document attachment record.</param>
+    /// <param name="ContentType">The content type to set based on the file extension.</param>
+    internal procedure FileExtensionToContentMimeType(var Rec: Record "Document Attachment"; var ContentType: Text[100])
+    begin
+        // Determine content type based on file extension
+        case LowerCase(Rec."File Extension") of
+            'pdf':
+                ContentType := 'application/pdf';
+            'jpg', 'jpeg':
+                ContentType := 'image/jpeg';
+            'png':
+                ContentType := 'image/png';
+            'gif':
+                ContentType := 'image/gif';
+            'bmp':
+                ContentType := 'image/bmp';
+            'tiff', 'tif':
+                ContentType := 'image/tiff';
+            'doc':
+                ContentType := 'application/msword';
+            'docx':
+                ContentType := 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+            'xls':
+                ContentType := 'application/vnd.ms-excel';
+            'xlsx':
+                ContentType := 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+            'ppt':
+                ContentType := 'application/vnd.ms-powerpoint';
+            'pptx':
+                ContentType := 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+            'txt':
+                ContentType := 'text/plain';
+            'xml':
+                ContentType := 'text/xml';
+            'html', 'htm':
+                ContentType := 'text/html';
+            'zip':
+                ContentType := 'application/zip';
+            'rar':
+                ContentType := 'application/x-rar-compressed';
+            else
+                ContentType := 'application/octet-stream';
+        end;
     end;
 }
