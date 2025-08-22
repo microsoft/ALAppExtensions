@@ -82,10 +82,6 @@ page 8751 "Document Attachment - External"
             action("Upload to External Storage")
             {
                 ApplicationArea = Basic, Suite;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 Caption = 'Upload to External Storage';
                 ToolTip = 'Upload the selected file to external storage.';
                 Image = Export;
@@ -108,10 +104,6 @@ page 8751 "Document Attachment - External"
             action("Download from External Storage")
             {
                 ApplicationArea = Basic, Suite;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 Caption = 'Download from External Storage';
                 ToolTip = 'Download the file from external storage.';
                 Image = Import;
@@ -129,10 +121,6 @@ page 8751 "Document Attachment - External"
             action("Download from External To Internal Storage")
             {
                 ApplicationArea = Basic, Suite;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 Caption = 'Download from External To Internal Storage';
                 ToolTip = 'Download the file from external storage to internal storage.';
                 Image = Import;
@@ -150,10 +138,6 @@ page 8751 "Document Attachment - External"
             action("Delete from External Storage")
             {
                 ApplicationArea = Basic, Suite;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 Enabled = not (Rec."Deleted Internally") and Rec."Uploaded Externally";
                 Caption = 'Delete from External Storage';
                 ToolTip = 'Delete the file from external storage.';
@@ -173,10 +157,6 @@ page 8751 "Document Attachment - External"
             action("Delete from Internal Storage")
             {
                 ApplicationArea = Basic, Suite;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 Enabled = Rec."Uploaded Externally" and not Rec."Deleted Internally";
                 Caption = 'Delete from Internal Storage';
                 ToolTip = 'Delete the file from Internal storage.';
@@ -204,6 +184,14 @@ page 8751 "Document Attachment - External"
                 Image = Setup;
                 RunObject = page "DA External Storage Setup";
             }
+        }
+        area(Promoted)
+        {
+            actionref(UploadToExternalStoragePromoted; "Upload to External Storage") { }
+            actionref(DownloadFromExternalStoragePromoted; "Download from External Storage") { }
+            actionref(DownloadFromExternalToInternalStoragePromoted; "Download from External to Internal Storage") { }
+            actionref(DeleteFromExternalStoragePromoted; "Delete from External Storage") { }
+            actionref(DeleteFromInternalStoragePromoted; "Delete from Internal Storage") { }
         }
     }
 
