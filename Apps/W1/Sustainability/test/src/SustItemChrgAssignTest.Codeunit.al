@@ -956,6 +956,62 @@ codeunit 148210 "Sust. Item Chrg Assign. Test"
         VerifyCO2eAmountActualInSustValueEntry(DocumentNo, ItemChargeAssignmentPurch."Item Charge No.", -1 * Quantity, 1 * ExpectedCO2eEmission);
     end;
 
+    [Test]
+    procedure VerifySustainabilityLedgerEntryMustBeCreatedForPurchOrderWithChgAssignmentToPurchRetShpt()
+    var
+        ItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)";
+        SustainabilityAccount: Record "Sustainability Account";
+        SustAccountSubCategory: Record "Sustain. Account Subcategory";
+        PurchaseHeader: Record "Purchase Header";
+        EmissionFee: array[3] of Record "Emission Fee";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        Quantity: Decimal;
+        ExpectedCO2eEmission: Decimal;
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO 597149] Verify Sustainability Ledger Entry must be created for Posted Purchase Invoice after assigning Charge to Return Shipment.
+        Initialize();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Get Sustainability Sub Category.
+        SustAccountSubCategory.Get(CategoryCode, SubcategoryCode);
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Generate Quantity andEmission.
+        Quantity := LibraryRandom.RandInt(100);
+        EmissionCO2 := LibraryRandom.RandInt(100);
+        EmissionCH4 := LibraryRandom.RandInt(100);
+        EmissionN2O := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Save Expected CO2e Emission.
+        ExpectedCO2eEmission := EmissionCH4 * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2 * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O * EmissionFee[3]."Carbon Equivalent Factor";
+
+        // [WHEN] Create Purchase Document and Assign Item Charge.
+        DocumentNo := PurchDocWithChgAssgntToPurchRetShipt(ItemChargeAssignmentPurch, PurchaseHeader."Document Type"::"Order", 1, 1, Quantity, AccountCode, EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [THEN] Verify "CO2e Emission" must be updated in Sustainability Ledger Entry.
+        SustainabilityLedgerEntry.SetRange("Document No.", DocumentNo);
+        SustainabilityLedgerEntry.FindFirst();
+        Assert.AreEqual(
+            ExpectedCO2eEmission,
+            SustainabilityLedgerEntry."CO2e Emission",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("CO2e Emission"), ExpectedCO2eEmission, SustainabilityLedgerEntry.TableCaption()));
+    end;
+
     local procedure Initialize()
     var
         InventorySetup: Record "Inventory Setup";

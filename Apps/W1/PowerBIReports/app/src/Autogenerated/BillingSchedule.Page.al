@@ -39,11 +39,9 @@ page 37081 "Billing Schedule"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'c27df17dadb4b21679dc', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

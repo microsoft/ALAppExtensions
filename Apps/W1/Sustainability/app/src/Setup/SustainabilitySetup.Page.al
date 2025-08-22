@@ -107,6 +107,16 @@ page 6221 "Sustainability Setup"
                 {
                 }
             }
+            group("Number Series")
+            {
+                Caption = 'Number Series';
+                field("Posted ESG Reporting Nos."; Rec."Posted ESG Reporting Nos.")
+                {
+                }
+                field("Item Material Composition Nos."; Rec."Item Material Composition Nos.")
+                {
+                }
+            }
             group(Calculations)
             {
                 Caption = 'Calculations';
@@ -154,9 +164,6 @@ page 6221 "Sustainability Setup"
                 field("Energy Reporting UOM Factor"; Rec."Energy Reporting UOM Factor")
                 {
                     ToolTip = 'Specifies the unit of measure factor that is used to register Energy.';
-                }
-                field("Posted ESG Reporting Nos."; Rec."Posted ESG Reporting Nos.")
-                {
                 }
             }
         }

@@ -34,6 +34,8 @@ codeunit 5230 "Create General Ledger Setup"
         GeneralLedgerSetup.Validate("Local Cont. Addr. Format", LocalContAddrFormat);
         GeneralLedgerSetup.Validate("Bank Account Nos.", BankAccountNo);
         GeneralLedgerSetup.Validate("LCY Code", LCYCode);
+        GeneralLedgerSetup.Validate("Show Currency", GeneralLedgerSetup."Show Currency"::"FCY Symbol Only");
+        GeneralLedgerSetup.Validate("Currency Symbol Position", GeneralLedgerSetup."Currency Symbol Position"::"Before Amount");
         GeneralLedgerSetup.Validate("Enable Data Check", DataCheck);
         GeneralLedgerSetup.Validate("Acc. Receivables Category", AccReceivablesCategory);
         GeneralLedgerSetup.Modify(true);

@@ -1,3 +1,4 @@
+#if not CLEAN27
 namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
@@ -10,6 +11,9 @@ page 37087 "Water and Waste Analysis"
     Caption = 'Water and Waste Analysis';
     AboutTitle = 'About Water and Waste Analysis';
     AboutText = 'The Water and Waste Analysis allows you to effectively monitor your water and waste usage by different metrics such as Water Type, Intensity Type, and Responsibility Center.';
+    ObsoleteReason = 'Please use and extend page "Water and Waste Power BI" on the Sustainability app.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '27.0';
 
     layout
     {
@@ -39,18 +43,18 @@ page 37087 "Water and Waste Analysis"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'a8f44c103130e497d67d', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var
         PowerBIReportsSetup: Record "PowerBI Reports Setup";
     begin
         SetupHelper.EnsureUserAcceptedPowerBITerms();
+#pragma warning disable AL0801
         ReportId := SetupHelper.GetReportIdAndEnsureSetup(CurrPage.Caption(), PowerBIReportsSetup.FieldNo("Sustainability Report ID"));
+#pragma warning restore AL0801
     end;
 }
-
+#endif

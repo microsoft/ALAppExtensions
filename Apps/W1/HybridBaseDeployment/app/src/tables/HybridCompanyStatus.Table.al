@@ -45,6 +45,16 @@ table 40027 "Hybrid Company Status"
         {
             Description = 'Last User Mapping DateTime';
         }
+
+        field(7; "Record Link Move Completed"; Boolean)
+        {
+            Description = 'Record Link Migration Completed';
+        }
+
+        field(8; "Last Record Link Move DateTime"; DateTime)
+        {
+            Description = 'Last Record Link Migration DateTime';
+        }
     }
 
     keys

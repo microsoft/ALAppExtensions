@@ -87,6 +87,13 @@ table 10036 "IRS 1099 Form Doc. Line"
         field(110; "Currency Code"; Code[10])
         {
         }
+        field(120; "Process Line"; Boolean)
+        {
+        }
+        field(121; "Line Action"; Enum "IRS 1099 Form Doc. Line Action")
+        {
+            Editable = false;
+        }
     }
 
     keys
@@ -94,6 +101,9 @@ table 10036 "IRS 1099 Form Doc. Line"
         key(PK; "Period No.", "Vendor No.", "Form No.", "Document ID", "Line No.")
         {
             Clustered = true;
+        }
+        key(key2; "Line Action")
+        {
         }
     }
 

@@ -39,11 +39,9 @@ page 36996 "Detailed Vendor Ledger Entries"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectione72966404f743d39d212', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

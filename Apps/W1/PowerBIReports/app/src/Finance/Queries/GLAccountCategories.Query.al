@@ -9,7 +9,7 @@ query 36958 "G/L Account Categories"
     Caption = 'Power BI G/L Account Categories';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'generalLedgerAccountCategory';
     EntitySetName = 'generalLedgerAccountCategories';
     DataAccessIntent = ReadOnly;

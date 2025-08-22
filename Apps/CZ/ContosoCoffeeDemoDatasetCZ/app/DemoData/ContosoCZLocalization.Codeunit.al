@@ -34,6 +34,8 @@ codeunit 31215 "Contoso CZ Localization"
                 CommonModuleBefore(ContosoDemoDataLevel);
             Enum::"Contoso Demo Data Module"::Bank:
                 BankModuleBefore(ContosoDemoDataLevel);
+            Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
+                FixedAssetModuleBefore(ContosoDemoDataLevel);
             Enum::"Contoso Demo Data Module"::"Manufacturing Module":
                 ManufacturingModuleBefore(ContosoDemoDataLevel);
         end;
@@ -240,16 +242,41 @@ codeunit 31215 "Contoso CZ Localization"
         end;
     end;
 
+    local procedure FixedAssetModuleBefore(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    var
+        FAModuleSetup: Record "FA Module Setup";
+        CreateDepreciationBookCZ: Codeunit "Create Depreciation Book CZ";
+    begin
+        case ContosoDemoDataLevel of
+            Enum::"Contoso Demo Data Level"::"Setup Data":
+                begin
+                    if not FAModuleSetup.Get() then begin
+                        FAModuleSetup.Init();
+                        FAModuleSetup.Insert();
+                    end;
+                    Codeunit.Run(Codeunit::"Create Depreciation Book CZ");
+                end;
+            Enum::"Contoso Demo Data Level"::"Master Data":
+                CreateDepreciationBookCZ.CreateDummyDepreciationBooks();
+        end;
+    end;
+
     local procedure FixedAssetModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    var
+        CreateDepreciationBookCZ: Codeunit "Create Depreciation Book CZ";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
                     Codeunit.Run(Codeunit::"Create FA Posting Group CZ");
-                    Codeunit.Run(Codeunit::"Create Depreciation Book CZ");
+                    Codeunit.Run(Codeunit::"Create FA Setup CZ");
+                    CreateDepreciationBookCZ.DeleteDepreciationBooks();
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create FA Depreciation Book CZ");
+                begin
+                    Codeunit.Run(Codeunit::"Create FA Depreciation Book CZ");
+                    CreateDepreciationBookCZ.DeleteDepreciationBooks();
+                end;
         end;
     end;
 

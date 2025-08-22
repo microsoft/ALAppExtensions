@@ -9,7 +9,7 @@ query 36975 "Sales Lines - Outstanding"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'outstandingSalesLine';
     EntitySetName = 'outstandingSalesLines';
     DataAccessIntent = ReadOnly;

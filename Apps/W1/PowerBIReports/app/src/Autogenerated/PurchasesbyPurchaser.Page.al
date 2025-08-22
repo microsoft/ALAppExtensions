@@ -39,11 +39,9 @@ page 37017 "Purchases by Purchaser"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection2530548032dd85837d8c', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

@@ -1,3 +1,4 @@
+#if not CLEAN27
 namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
@@ -10,6 +11,9 @@ page 37093 "CO2e Key Influences"
     Caption = 'CO2e Key Influences';
     AboutTitle = 'About CO2e Key Influences';
     AboutText = 'The CO2e Key Influencers report identifies the key factors driving CO2e emission increases, highlighting the most impactful variables and trends based on the sustainability account categories.';
+    ObsoleteReason = 'Please use and extend page "CO2e Key Influences Power BI" on the Sustainability app.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '27.0';
 
     layout
     {
@@ -39,18 +43,18 @@ page 37093 "CO2e Key Influences"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '6305c2799c0d6e6072b5', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var
         PowerBIReportsSetup: Record "PowerBI Reports Setup";
     begin
         SetupHelper.EnsureUserAcceptedPowerBITerms();
+#pragma warning disable AL0801
         ReportId := SetupHelper.GetReportIdAndEnsureSetup(CurrPage.Caption(), PowerBIReportsSetup.FieldNo("Sustainability Report ID"));
+#pragma warning restore AL0801
     end;
 }
-
+#endif

@@ -39,11 +39,9 @@ page 36985 "Income Statement by Month"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionf72eb4d7e5e35db3b283', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

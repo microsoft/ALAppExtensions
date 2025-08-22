@@ -22,5 +22,9 @@ permissionset 10030 "IRS Forms - Read"
                   tabledata "IRS 1099 Form Report" = R,
                   tabledata "IRS 1099 Form Instruction" = R,
                   tabledata "IRS 1099 Vendor Form Box Adj." = R,
-                  tabledata "IRS 1099 Email Queue" = R;
+                  tabledata "IRS 1099 Email Queue" = R,
+                  tabledata "Error Information IRIS" = R,
+                  tabledata "Transmission IRIS" = R,
+                  tabledata "Transmission Log IRIS" = R,
+                  tabledata "Transmission Log Line IRIS" = R;
 }

@@ -39,9 +39,9 @@ page 37044 "Expected Capacity Need"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
+#pragma warning disable AA0240 // Bug 595848
         ReportPageLbl: Label 'ReportSectiona2c7d37ca03217072470', Locked = true;
 #pragma warning restore AA0240
 

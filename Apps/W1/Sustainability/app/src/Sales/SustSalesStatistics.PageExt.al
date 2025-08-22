@@ -24,6 +24,16 @@ pageextension 6242 "Sust. Sales Statistics" extends "Sales Statistics"
                     Caption = 'Posted Total CO2e';
                     ToolTip = 'Specifies the posted total CO2e emissions.';
                 }
+                field("Total EPR Fee"; Rec."Total EPR Fee")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Total EPR Fee';
+                }
+                field("Posted Total EPR Fee"; Rec."Posted Total EPR Fee")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Posted Total EPR Fee';
+                }
             }
         }
     }

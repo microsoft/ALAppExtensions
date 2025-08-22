@@ -1,0 +1,1943 @@
+tests:
+- name: Natural gas Gas
+  input:
+    Account_No.: 31200
+    Account_Name: Gas
+    Description: Natural gas
+    Unit_of_Measure: M3
+    Country/Region_Code: GB
+    Fuel/Electricity: 14.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Gaseous fuels Natural gas Cubic meter
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Gas natural - domestic vendor Gas
+  input:
+    Account_No.: 31200
+    Account_Name: Gas
+    Description: Gas natural - domestic vendor
+    Unit_of_Measure: M3
+    Country/Region_Code: GB
+    Fuel/Electricity: 14.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Gaseous fuels Natural gas Cubic meter
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: CNG Gas
+  input:
+    Account_No.: 31200
+    Account_Name: Gas
+    Description: CNG
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 185.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Gaseous fuels CNG Liter
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: lignit Coal
+  input:
+    Account_No.: 9901
+    Account_Name: Coal
+    Description: lignit
+    Unit_of_Measure: T
+    Country/Region_Code: GB
+    Fuel/Electricity: 3.6
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Solid fuels Coal (industrial) Tonnes
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: mixed coal Coal
+  input:
+    Account_No.: 9901
+    Account_Name: Coal
+    Description: mixed coal
+    Unit_of_Measure: T
+    Country/Region_Code: GB
+    Fuel/Electricity: 2.8
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Solid fuels Coal (industrial) Tonnes
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: solid industrial Coal
+  input:
+    Account_No.: 9901
+    Account_Name: Coal
+    Description: solid industrial
+    Unit_of_Measure: T
+    Country/Region_Code: GB
+    Fuel/Electricity: 3.2
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Solid fuels Coal (industrial) Tonnes
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: UK Power plant - unknown energy source Electricity - domestic vendor
+  input:
+    Account_No.: 9901
+    Account_Name: Electricity - domestic vendor
+    Description: UK Power plant - unknown energy source
+    Unit_of_Measure: KWH
+    Country/Region_Code: GB
+    Fuel/Electricity: 2850.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: 'Electricity generated Electricity: UK kWh'
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Import from French nuclear power station Electricity - domestic vendor FR
+  input:
+    Account_No.: 9901
+    Account_Name: Electricity - domestic vendor
+    Description: Import from French nuclear power station
+    Unit_of_Measure: KWH
+    Country/Region_Code: FR
+    Fuel/Electricity: 2850.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: London-Frankfurt roundtrip Flight short - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - economy
+    Description: London-Frankfurt roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Short-haul flight, to/from UK Economy class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Frankfurt one direction Flight short - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - economy
+    Description: London-Frankfurt one direction
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Short-haul flight, to/from UK Economy class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Vienna roundtrip Flight short - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - economy
+    Description: London-Vienna roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Short-haul flight, to/from UK Economy class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Paris one direction Flight short - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - economy
+    Description: London-Paris one direction
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Short-haul flight, to/from UK Economy class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Frankfurt roundtrip Flight short - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - business
+    Description: London-Frankfurt roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Short-haul flight, to/from UK Business class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Paris one direction Flight short - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - business
+    Description: London-Paris one direction
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Short-haul flight, to/from UK Business class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Madrid roundtrip Flight short - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - business
+    Description: London-Madrid roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Short-haul flight, to/from UK Business class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-New York roundtrip Flight long - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - economy
+    Description: London-New York roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Long-haul flight, to/from UK Economy class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Washington DC roundtrip Flight long - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - economy
+    Description: London-Washington DC roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Long-haul flight, to/from UK Economy class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-New York roundtrip Flight long - premium economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - premium economy
+    Description: London-New York roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Long-haul flight, to/from UK Premium economy class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-New York roundtrip Flight long - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - business
+    Description: London-New York roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Long-haul flight, to/from UK Business class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Washington DC roundtrip Flight long - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - business
+    Description: London-Washington DC roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Long-haul flight, to/from UK Business class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Washington DC roundtrip Flight long - first class
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - first class
+    Description: London-Washington DC roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Long-haul flight, to/from UK First class passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London underground Local rail
+  input:
+    Account_No.: 9900
+    Account_Name: Local rail
+    Description: London underground
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 51.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Rail London Underground passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London subway Local rail
+  input:
+    Account_No.: 9900
+    Account_Name: Local rail
+    Description: London subway
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 47.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Rail London Underground passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Copenhagen metro Local rail DK
+  input:
+    Account_No.: 9900
+    Account_Name: Local rail
+    Description: Copenhagen metro
+    Unit_of_Measure: KM
+    Country/Region_Code: DK
+    Distance: 22.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: New York subway Local rail US
+  input:
+    Account_No.: 9900
+    Account_Name: Local rail
+    Description: New York subway
+    Unit_of_Measure: KM
+    Country/Region_Code: US
+    Distance: 44.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: London-Manchester 1 ticket Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: London-Manchester 1 ticket
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 262.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Rail National rail passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Manchester 2 tickets Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: London-Manchester 2 tickets
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 262.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Rail National rail passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London-Manchester - 1 person by Avanti West Coast Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: London-Manchester - 1 person by Avanti West Coast
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 262.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Rail National rail passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Peterborough-Cambridge 1 ticket Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Peterborough-Cambridge 1 ticket
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 50.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Rail National rail passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Leeds-Birmingham 1 person Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Leeds-Birmingham 1 person
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 147.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Rail National rail passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Liverpool-Edinburgh - 1 ticket Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Liverpool-Edinburgh - 1 ticket
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 283.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Rail National rail passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Liverpool-Edinburgh by Northern 1 ticket Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Liverpool-Edinburgh by Northern 1 ticket
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 283.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Rail National rail passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Palo Alto - San Francisco by Caltrain - 1 passenger roundtrip Intecity rail US
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Palo Alto - San Francisco by Caltrain - 1 passenger roundtrip
+    Unit_of_Measure: KM
+    Country/Region_Code: US
+    Distance: 104.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Kilmarnock-Dumfries 1 passenger Bus
+  input:
+    Account_No.: 9900
+    Account_Name: Bus
+    Description: Kilmarnock-Dumfries 1 passenger
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 97.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Bus Local bus (not London) passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Eastbourne-Southampton - 1 person Bus
+  input:
+    Account_No.: 9900
+    Account_Name: Bus
+    Description: Eastbourne-Southampton - 1 person
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 142.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Bus Local bus (not London) passenger.km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London black Taxi
+  input:
+    Account_No.: 9900
+    Account_Name: Taxi
+    Description: London black
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 36.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Taxis Black cab km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London regular taxi Taxi
+  input:
+    Account_No.: 9900
+    Account_Name: Taxi
+    Description: London regular taxi
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 41.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Taxis Regular taxi km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: London black cab Taxi
+  input:
+    Account_No.: 9900
+    Account_Name: Taxi
+    Description: London black cab
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 26.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Taxis Black cab km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Taxi in San Francisco - electric car Taxi US
+  input:
+    Account_No.: 9900
+    Account_Name: Taxi
+    Description: Taxi in San Francisco - electric car
+    Unit_of_Measure: KM
+    Country/Region_Code: US
+    Distance: 49.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: London - standard room with the breakfast Hotel stay 3-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 3-star
+    Description: London - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 4.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Hotel stay UK (London) Room per night
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Hasselt - guest room with the breakfast Hotel stay 3-star BE
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 3-star
+    Description: Hasselt - guest room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: BE
+    Custom Amount: 3.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Leeds - standard room with the breakfast Hotel stay 4-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 4-star
+    Description: Leeds - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 3.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Hotel stay UK Room per night
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Belfast - standard room with the breakfast Hotel stay 4-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 4-star
+    Description: Belfast - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 4.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Hotel stay UK Room per night
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Copenhagen - standard room with the breakfast Hotel stay 4-star DK
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 4-star
+    Description: Copenhagen - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: DK
+    Custom Amount: 5.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Hamburg - standard room with the breakfast Hotel stay 4-star DE
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 4-star
+    Description: Hamburg - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: DE
+    Custom Amount: 5.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Vienna - standard room with the breakfast Hotel stay 5-star AU
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 5-star
+    Description: Vienna - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: AU
+    Custom Amount: 6.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Bangkok - standard room with the breakfast Hotel stay 5-star TH
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 5-star
+    Description: Bangkok - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: TH
+    Custom Amount: 8.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Night with breakfast included - New York downtown Hotel stay 5-star US
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 5-star
+    Description: Night with breakfast included - New York downtown
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: US
+    Custom Amount: 2.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: San Diego - suite with the breakfast Hotel stay 5-star US
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 5-star
+    Description: San Diego - suite with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: US
+    Custom Amount: 7.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: petrol Company car
+  input:
+    Account_No.: 9901
+    Account_Name: Company car
+    Description: petrol
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 14.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Liquid fuels Petrol (100% mineral petrol) litres
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Sport car 3.0 petrol Company car
+  input:
+    Account_No.: 9901
+    Account_Name: Company car
+    Description: Sport car 3.0 petrol
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 51.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Liquid fuels Petrol (100% mineral petrol) litres
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Semi-trailer diesel truck Internal trucks US
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: Semi-trailer diesel truck
+    Unit_of_Measure: L
+    Country/Region_Code: US
+    Fuel/Electricity: 98.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Live bottom trailer Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: Live bottom trailer
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 167.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Liquid fuels Diesel (100% mineral diesel) litres
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Car carrier trailer Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: Car carrier trailer
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 226.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Liquid fuels Diesel (100% mineral diesel) litres
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Large diesel car used in Hamburg Rental car - others DE
+  input:
+    Account_No.: 9901
+    Account_Name: Rental car - others
+    Description: Large diesel car used in Hamburg
+    Unit_of_Measure: L
+    Country/Region_Code: DE
+    Fuel/Electricity: 39.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Luxury petrol rental car Rental car - others US
+  input:
+    Account_No.: 9901
+    Account_Name: Rental car - others
+    Description: Luxury petrol rental car
+    Unit_of_Measure: L
+    Country/Region_Code: US
+    Fuel/Electricity: 63.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Renting medium hybrid car in Los Angeles Rental car - others US
+  input:
+    Account_No.: 9901
+    Account_Name: Rental car - others
+    Description: Renting medium hybrid car in Los Angeles
+    Unit_of_Measure: L
+    Country/Region_Code: US
+    Fuel/Electricity: 6.5
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Average car Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: Average car
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 126.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (diesel) Average car km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Executive Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: Executive
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 407.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (diesel) Executive km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Luxury Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: Luxury
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 256.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (diesel) Luxury km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: SUV 4x4 Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: SUV 4x4
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 128.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (diesel) Dual purpose 4X4 km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Small car Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Small car
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 49.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (petrol) Small car km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Medium local car Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Medium local car
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 311.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (petrol) Medium car km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Large car Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Large car
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 412.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (petrol) Large car km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Sports car 5.0 Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Sports car 5.0
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 108.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (petrol) Sports km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: medium electric car dual motor Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: medium electric car dual motor
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 188.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (electric) Medium car km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Mediut car electric Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Mediut car electric
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 188.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (electric) Medium car km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Medium size Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Medium size
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 188.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (electric) Medium car km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Large electric car Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Large electric car
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 188.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (electric) Large car km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Large electric car Company car electric FR
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Large electric car
+    Unit_of_Measure: KM
+    Country/Region_Code: FR
+    Distance: 188.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Large electric car Company car electric DK
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Large electric car
+    Unit_of_Measure: KM
+    Country/Region_Code: DK
+    Distance: 188.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Executive electr. Limousine Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Executive electr. Limousine
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 188.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (electric) Executive km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Executive electr. Limousine Company car electric DE
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Executive electr. Limousine
+    Unit_of_Measure: KM
+    Country/Region_Code: DE
+    Distance: 188.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Medium size car Company car hybrid FR
+  input:
+    Account_No.: 9900
+    Account_Name: Company car hybrid
+    Description: Medium size car
+    Unit_of_Measure: KM
+    Country/Region_Code: FR
+    Distance: 206.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Medium size plug-in Company car hybrid
+  input:
+    Account_No.: 9900
+    Account_Name: Company car hybrid
+    Description: Medium size plug-in
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 206.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Cars (plug-in hybrid) Medium car km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Medium plug-in Company car hybrid FR
+  input:
+    Account_No.: 9900
+    Account_Name: Company car hybrid
+    Description: Medium plug-in
+    Unit_of_Measure: KM
+    Country/Region_Code: FR
+    Distance: 206.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: small city motorbike Motorbike
+  input:
+    Account_No.: 9900
+    Account_Name: Motorbike
+    Description: small city motorbike
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 80.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Motorbike Small km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Large motor Motorbike
+  input:
+    Account_No.: 9900
+    Account_Name: Motorbike
+    Description: Large motor
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 145.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Motorbike Large km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Small diesel van Internal Vans
+  input:
+    Account_No.: 9900
+    Account_Name: Internal Vans
+    Description: Small diesel van
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 200.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Vans - diesel Class I (up to 1.305 tonnes) km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: average size - petrol External Vans
+  input:
+    Account_No.: 9900
+    Account_Name: External Vans
+    Description: average size - petrol
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 200.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: Vans - petrol Average (up to 3.5 tonnes) km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: diesel small truck 50% laden External transport trucks 5 tones
+  input:
+    Account_No.: 9900
+    Account_Name: External transport trucks 5 tones
+    Description: diesel small truck 50% laden
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 164.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: HGV (all diesel) - 50% Laden Rigid (>3.5 - 7.5 tonnes) km
+    sourcefile: CO2e Emission Factors UK DEFRA.xlsx
+    conversion_factor: 0.0
+- name: Semi-trailer diesel truck External transport trucks 10 tones US
+  input:
+    Account_No.: 9900
+    Account_Name: External transport trucks 10 tones
+    Description: Semi-trailer diesel truck
+    Unit_of_Measure: KM
+    Country/Region_Code: US
+    Distance: 498.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: 22-wheeler truck External transport trucks 25 tones US
+  input:
+    Account_No.: 9900
+    Account_Name: External transport trucks 25 tones
+    Description: 22-wheeler truck
+    Unit_of_Measure: KM
+    Country/Region_Code: US
+    Distance: 1406.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Forklifts usage in the warehouse Non-road Vehicles BE
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles
+    Description: Forklifts usage in the warehouse
+    Unit_of_Measure: L
+    Country/Region_Code: BE
+    Fuel/Electricity: 24.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Tractor usage Non-road Vehicles DK
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles
+    Description: Tractor usage
+    Unit_of_Measure: L
+    Country/Region_Code: DK
+    Fuel/Electricity: 16.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Cultivating the field with a tractor Non-road Vehicles NL
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles
+    Description: Cultivating the field with a tractor
+    Unit_of_Measure: L
+    Country/Region_Code: NL
+    Fuel/Electricity: 72.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: R410A freon - one year of usage Refrigerator
+  input:
+    Account_No.: 9903
+    Account_Name: Refrigerator
+    Description: R410A freon - one year of usage
+    Unit_of_Measure: '%'
+    Country/Region_Code: GB
+    Custom Amount: 4.0
+    Installation Multiplier: 1.0
+    Time Factor: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: Freon R134A type - 2 devices in 1 year Refrigerator
+  input:
+    Account_No.: 9903
+    Account_Name: Refrigerator
+    Description: Freon R134A type - 2 devices in 1 year
+    Unit_of_Measure: '%'
+    Country/Region_Code: GB
+    Custom Amount: 3.5
+    Installation Multiplier: 2.0
+    Time Factor: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: R22 gas - 1 device, 1 year Refrigerator
+  input:
+    Account_No.: 9903
+    Account_Name: Refrigerator
+    Description: R22 gas - 1 device, 1 year
+    Unit_of_Measure: '%'
+    Country/Region_Code: GB
+    Custom Amount: 5.5
+    Installation Multiplier: 1.0
+    Time Factor: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: R32 freon gas - one device for one year using Refrigerator
+  input:
+    Account_No.: 9903
+    Account_Name: Refrigerator
+    Description: R32 freon gas - one device for one year using
+    Unit_of_Measure: '%'
+    Country/Region_Code: GB
+    Custom Amount: 2.8
+    Installation Multiplier: 1.0
+    Time Factor: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: R32 freon gas - two devices for one year using Refrigerator NL
+  input:
+    Account_No.: 9903
+    Account_Name: Refrigerator
+    Description: R32 freon gas - two devices for one year using
+    Unit_of_Measure: '%'
+    Country/Region_Code: NL
+    Custom Amount: 2.8
+    Installation Multiplier: 2.0
+    Time Factor: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: R32 freon - 1 device in a year Refrigerator DE
+  input:
+    Account_No.: 9903
+    Account_Name: Refrigerator
+    Description: R32 freon - 1 device in a year
+    Unit_of_Measure: '%'
+    Country/Region_Code: DE
+    Custom Amount: 2.8
+    Installation Multiplier: 1.0
+    Time Factor: 1.0
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: 24000BTU x 2 devices; R32 freon Air-condition
+  input:
+    Account_No.: 9903
+    Account_Name: Air-condition
+    Description: 24000BTU x 2 devices; R32 freon
+    Unit_of_Measure: '%'
+    Country/Region_Code: GB
+    Custom Amount: 4.0
+    Installation Multiplier: 2.0
+    Time Factor: 0.3
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: 24000BTU x 4 devices; R32 freon Air-condition ES
+  input:
+    Account_No.: 9903
+    Account_Name: Air-condition
+    Description: 24000BTU x 4 devices; R32 freon
+    Unit_of_Measure: '%'
+    Country/Region_Code: ES
+    Custom Amount: 4.0
+    Installation Multiplier: 4.0
+    Time Factor: 0.5
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: 24000BTU R32 freon - 1 device Air-condition IT
+  input:
+    Account_No.: 9903
+    Account_Name: Air-condition
+    Description: 24000BTU R32 freon - 1 device
+    Unit_of_Measure: '%'
+    Country/Region_Code: IT
+    Custom Amount: 4.0
+    Installation Multiplier: 1.0
+    Time Factor: 0.6
+  InputFile: CO2e Emission Factors UK DEFRA.xlsx
+  expected_match:
+  - category: '-'
+    sourcefile: Public information
+    conversion_factor: 0.0
+- name: 'Cronus-air: London-Frankfurt roundtrip Flight short - economy'
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - economy
+    Description: 'Cronus-air: London-Frankfurt roundtrip'
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Short-haul Cronus-air Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: London-Vienna roundtrip with Cronus-air Flight short - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - economy
+    Description: London-Vienna roundtrip with Cronus-air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Short-haul Cronus-air Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Vienna-Kiev roundtrip - CronusAir operater Flight short - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - economy
+    Description: Vienna-Kiev roundtrip - CronusAir operater
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Short-haul Cronus-air Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: London-Paris one direction using Cronus-Air Flight short - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - economy
+    Description: London-Paris one direction using Cronus-Air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Short-haul Cronus-air Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: 'Cronus-air: London-Frankfurt roundtrip Flight short - business'
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - business
+    Description: 'Cronus-air: London-Frankfurt roundtrip'
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Short-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: London-Paris one direction using Cronus-Air Flight short - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - business
+    Description: London-Paris one direction using Cronus-Air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Short-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: London-Madrid roundtrip, operated by Cronus-Air Flight short - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - business
+    Description: London-Madrid roundtrip, operated by Cronus-Air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Short-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: London-New York roundtrip by Cronuis-air Flight long - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - economy
+    Description: London-New York roundtrip by Cronuis-air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Paris-Bagkok roundtrip with Cronus Air Flight long - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - economy
+    Description: Paris-Bagkok roundtrip with Cronus Air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: 'Cronus-air flifgt: Frankfurt-Seattle roundtrip Flight long - economy'
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - economy
+    Description: 'Cronus-air flifgt: Frankfurt-Seattle roundtrip'
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Cronus-Air London-Washington DC roundtrip Flight long - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - economy
+    Description: Cronus-Air London-Washington DC roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Paris-Salt Lake City one directions - Cronus Air filght Flight long - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - economy
+    Description: Paris-Salt Lake City one directions - Cronus Air filght
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: London-New York roundtrip by Cronuis-air Flight long - premium economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - premium economy
+    Description: London-New York roundtrip by Cronuis-air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Premium Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Paris-Bagkok roundtrip with Cronus Air Flight long - premium economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - premium economy
+    Description: Paris-Bagkok roundtrip with Cronus Air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Premium Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: 'Cronus-air flifgt: Frankfurt-Seattle roundtrip Flight long - premium economy'
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - premium economy
+    Description: 'Cronus-air flifgt: Frankfurt-Seattle roundtrip'
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Premium Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Cronus-Air London-Washington DC roundtrip Flight long - premium economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - premium economy
+    Description: Cronus-Air London-Washington DC roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Premium Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Paris-Salt Lake City one directions - Cronus Air filght Flight long - premium economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - premium economy
+    Description: Paris-Salt Lake City one directions - Cronus Air filght
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Premium Economy passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: London-New York roundtrip by Cronuis-air Flight long - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - business
+    Description: London-New York roundtrip by Cronuis-air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Paris-Bagkok roundtrip with Cronus Air Flight long - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - business
+    Description: Paris-Bagkok roundtrip with Cronus Air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: 'Cronus-air flifgt: Frankfurt-Seattle roundtrip Flight long - business'
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - business
+    Description: 'Cronus-air flifgt: Frankfurt-Seattle roundtrip'
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Cronus-Air London-Washington DC roundtrip Flight long - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - business
+    Description: Cronus-Air London-Washington DC roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Paris-Salt Lake City one directions - Cronus Air filght Flight long - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - business
+    Description: Paris-Salt Lake City one directions - Cronus Air filght
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Istanbul-Bangkok roundtrip by Cronus-Air Flight long - business
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - business
+    Description: Istanbul-Bangkok roundtrip by Cronus-Air
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: 'Cronus-air flight: Istanbul-Kuala Lumpur roundtrip Flight long - business'
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - business
+    Description: 'Cronus-air flight: Istanbul-Kuala Lumpur roundtrip'
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air Business passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: 'Cronus-air flight: Istanbul-Kuala Lumpur roundtrip Flight long - first class'
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - first class
+    Description: 'Cronus-air flight: Istanbul-Kuala Lumpur roundtrip'
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  InputFile: CO2e Emission Factor for Cronus-air.xlsx
+  expected_match:
+  - category: Long-haul Cronus-air First passenger per km
+    sourcefile: CO2e Emission Factor for Cronus-air.xlsx
+    conversion_factor: 0.0
+- name: Contoso A 160d Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: Contoso A 160d
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 84.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso A series 160d Diesel km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso A 160 Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: Contoso A 160
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 84.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso A series 160d Diesel km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso C series 250TDI Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: Contoso C series 250TDI
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 163.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso C series 250TDI Diesel km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso F series 350TDI Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: Contoso F series 350TDI
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 211.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso F series 350TDI Diesel km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso F 350TDI Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: Contoso F 350TDI
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 211.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso F series 350TDI Diesel km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso SUV T5 300TDI 4x4 Company car diesel
+  input:
+    Account_No.: 9900
+    Account_Name: Company car diesel
+    Description: Contoso SUV T5 300TDI 4x4
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 189.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso SUV T5 300TDI 4x4 Diesel km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso F series 300i Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Contoso F series 300i
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 424.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso F series 300i Pertrol km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso SUV T3 250i 4x4 Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Contoso SUV T3 250i 4x4
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 369.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso SUV T3 250i 4x4 Pertrol km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso SUV T3 300i 4x4 Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Contoso SUV T3 300i 4x4
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 512.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso SUV T3 300i 4x4 Pertrol km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso 300si T3 SUV model 4x4 Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Contoso 300si T3 SUV model 4x4
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 512.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso SUV T3 300i 4x4 Pertrol km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso B series 200i Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Contoso B series 200i
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 94.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso B series 200i Pertrol km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Small car - Contoso E1 Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Small car - Contoso E1
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 93.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso E1 Electric kWh/km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso E2 Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Contoso E2
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 312.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso E2 Electric kWh/km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso E3 Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Contoso E3
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 297.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso E3 Electric kWh/km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso E3 class Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Contoso E3 class
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 297.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso E3 Electric kWh/km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso E4 Company car electric
+  input:
+    Account_No.: 9900
+    Account_Name: Company car electric
+    Description: Contoso E4
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 263.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso E4 Electric kWh/km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso D series i-Hybyd Company car hybrid
+  input:
+    Account_No.: 9900
+    Account_Name: Company car hybrid
+    Description: Contoso D series i-Hybyd
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 442.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso D series i-Hybyd Plug-in hybrid km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Contoso D series Plug-in Hybyd Company car hybrid
+  input:
+    Account_No.: 9900
+    Account_Name: Company car hybrid
+    Description: Contoso D series Plug-in Hybyd
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 442.0
+  InputFile: CO2e Emission Factors CONTOSO car producer.xlsx
+  expected_match:
+  - category: Contoso D series i-Hybyd Plug-in hybrid km
+    sourcefile: CO2e Emission Factors CONTOSO car producer.xlsx
+    conversion_factor: 0.0
+- name: Tractor Fabrikam Wide World Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Tractor Fabrikam Wide World
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 4.5
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Fabrikam Wide World Tractor Diesel Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0
+- name: Tractor Fabrikam, Inc. Adatum GN320 Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Tractor Fabrikam, Inc. Adatum GN320
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 4.5
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Fabrikam Adatum Tractor GN320 Diesel Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0
+- name: Fabrikam Adventure Works Forklift Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Fabrikam Adventure Works Forklift
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 8.0
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Fabrikam Adventure Works Forklift Diesel Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0
+- name: Bulldozer Fabrikam ZD450 Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Bulldozer Fabrikam ZD450
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 14.0
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Fabrikam Bulldozer ZD450 Diesel Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0
+- name: Fabrikam Grader GD180 Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Fabrikam Grader GD180
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 7.0
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Fabrikam Grader GD180 Diesel Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0
+- name: Fabrikam Excavator AH Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Fabrikam Excavator AH
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 16.0
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Fabrikam Excavator AH Diesel Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0
+- name: Dumper Fabrikam diesel Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Dumper Fabrikam diesel
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 5.75
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Fabrikam Dumper Diesel Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0
+- name: Fabrikam Electric Tractor Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Fabrikam Electric Tractor
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 5.0
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Fabrikam E-tractor Electric Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0
+- name: Fabrikam E-forklift 200 Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Fabrikam E-forklift 200
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 8.0
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Fabrikam E-forklift 200 Electric Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0
+- name: Plastering tool Fabrikam 250 Non-road Vehicles per hour
+  input:
+    Account_No.: 9901
+    Account_Name: Non-road Vehicles per hour
+    Description: Plastering tool Fabrikam 250
+    Unit_of_Measure: HOUR
+    Country/Region_Code: GB
+    Distance: 14.0
+  InputFile: CO2e Emission Factors Fabrikam machine producer.xlsx
+  expected_match:
+  - category: Plastering machine Fabrikam 250 Electric Hour
+    sourcefile: CO2e Emission Factors Fabrikam machine producer.xlsx
+    conversion_factor: 0.0

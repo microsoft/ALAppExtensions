@@ -84,6 +84,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         PurchaseLine: Record "Purchase Line";
         EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
         DimensionManagement: Codeunit DimensionManagement;
+        PurchCalcDiscByType: Codeunit "Purch - Calc Disc. By Type";
         PurchaseLineCombinedDimensions: array[10] of Integer;
         StopCreatingPurchaseInvoice: Boolean;
         VendorInvoiceNo: Code[35];
@@ -162,9 +163,9 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
                 EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseLine, PurchaseLine);
 
             until EDocumentPurchaseLine.Next() = 0;
-
+        PurchaseHeader.Modify();
+        PurchCalcDiscByType.ApplyInvDiscBasedOnAmt(EDocumentPurchaseHeader."Total Discount", PurchaseHeader);
         exit(PurchaseHeader);
-
     end;
 
     [TryFunction]

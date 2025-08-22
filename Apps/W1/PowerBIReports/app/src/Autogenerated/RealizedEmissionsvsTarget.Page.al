@@ -1,3 +1,4 @@
+#if not CLEAN27
 namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
@@ -10,6 +11,9 @@ page 37085 "Realized Emissions vs Target"
     Caption = 'Realized Emissions vs. Target';
     AboutTitle = 'About Realized Emissions vs. Target';
     AboutText = 'The Realized Emissions by Target report breaks down your carbon emissions and allows for comparison against the target. This allows you to effectively monitor planned progress and drive continuous improvement to sustainability goals.';
+    ObsoleteReason = 'Please use and extend page "Emissions vs Target Power BI" on the Sustainability app.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '27.0';
 
     layout
     {
@@ -39,18 +43,18 @@ page 37085 "Realized Emissions vs Target"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'b5e269104115da14c7e4', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var
         PowerBIReportsSetup: Record "PowerBI Reports Setup";
     begin
         SetupHelper.EnsureUserAcceptedPowerBITerms();
+#pragma warning disable AL0801
         ReportId := SetupHelper.GetReportIdAndEnsureSetup(CurrPage.Caption(), PowerBIReportsSetup.FieldNo("Sustainability Report ID"));
+#pragma warning restore AL0801
     end;
 }
-
+#endif

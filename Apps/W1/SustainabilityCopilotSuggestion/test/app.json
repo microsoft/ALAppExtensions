@@ -1,0 +1,87 @@
+{
+  "id": "e5a931c9-64ba-4a98-a052-d13a7b6a5e89",
+  "name": "Sustainability Copilot Tests",
+  "publisher": "Microsoft",
+  "version": "$(app_currentVersion)",
+  "brief": "Sustainability Copilot AI Tests",
+  "description": "Sustainability Copilot AI Tests",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206176",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206176",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "972624b9-849a-40cd-98b1-fd0924b0defe",
+      "name": "Calculate Sustainability Emission with Copilot",
+      "publisher": "Microsoft",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "2156302a-872f-4568-be0b-60968696f0d5",
+      "publisher": "Microsoft",
+      "name": "AI Test Toolkit",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
+      "publisher": "Microsoft",
+      "name": "Sustainability",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "6723f320-28a1-40cc-bf4d-d4dce362cb39",
+      "publisher": "Microsoft",
+      "name": "Sustainability Tests",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+      "publisher": "Microsoft",
+      "name": "System Application",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "3e75ec63-8d7b-4bf8-9c79-9182a7caad84",
+      "name": "Adversarial Simulation Test Library",
+      "publisher": "Microsoft",
+      "version": "$(app_minimumVersion)"
+    }
+  ],
+  "internalsVisibleTo": [],
+  "screenshots": [],
+  "platform": "$(app_platformVersion)",
+  "idRanges": [
+    {
+      "from": 139793,
+      "to": 139798
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
+  },
+  "target": "Cloud",
+  "resourceFolders": [
+    ".resources"
+  ],
+  "application": "$(app_minimumVersion)",
+  "features": [
+    "TranslationFile",
+    "GenerateCaptions"
+  ]
+}

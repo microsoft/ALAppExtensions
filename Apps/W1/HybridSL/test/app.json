@@ -1,0 +1,53 @@
+{
+  "id": "c9b38161-dd8d-40a9-8920-60ccbf8d7a59",
+  "name": "Dynamics SL Migration Tests",
+  "publisher": "Microsoft",
+  "version": "$(app_currentVersion)",
+  "resourceFolders": [".resources"],
+  "description": "Test for the Business Central Dynamics SL Migration",
+  "brief": "Test for migrating Microsoft Dynamics SL Data to Dynamics 365 Business Central",  
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
+      "name": "Intelligent Cloud Base",
+      "publisher": "Microsoft",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "237981b4-9e3c-437c-9b92-988aae978e8f",
+      "name": "Dynamics SL Migration",
+      "publisher": "Microsoft",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "4f3fe3fd-bdc4-4371-8579-d53820b93575",
+      "name": "Dynamics SL Historical Data",
+      "publisher": "Microsoft",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "name": "Library Assert",
+      "version": "$(app_minimumVersion)"
+    }
+  ],
+  "screenshots": [],
+  "platform": "$(app_platformVersion)",
+  "application": "$(app_minimumVersion)",
+  "idRanges": [
+    {
+      "from": 147600,
+      "to": 147620
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith"
+  ]
+}

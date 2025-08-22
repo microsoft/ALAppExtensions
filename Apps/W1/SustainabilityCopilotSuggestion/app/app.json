@@ -1,0 +1,56 @@
+{
+  "id": "972624b9-849a-40cd-98b1-fd0924b0defe",
+  "name": "Calculate Sustainability Emission with Copilot",
+  "publisher": "Microsoft",
+  "version": "$(app_currentVersion)",
+  "brief": "Create product information with Copilot (Preview) can assist with finding emission factors and update product information based on the result.",
+  "description": "Create product information with Copilot (Preview) can assist with finding emission factors and update product information based on the result.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "url": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
+      "name": "Sustainability",
+      "publisher": "Microsoft",
+      "version": "$(app_minimumVersion)"
+    }
+  ],
+  "platform": "$(app_platformVersion)",
+  "application": "$(app_minimumVersion)",
+  "target": "OnPrem",
+  "idRanges": [
+    {
+      "from": 6280,
+      "to": 6299
+    },
+    {
+      "from": 6328,
+      "to": 6337
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "internalsVisibleTo": [
+    {
+      "id": "e5a931c9-64ba-4a98-a052-d13a7b6a5e89",
+      "name": "Sustainability Copilot Tests",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "594141e4-b7ec-42d8-a028-cdc0f959d3d0",
+      "name": "Sustainability Copilot Brand Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "features": [
+    "NoImplicitWith",
+    "TranslationFile"
+  ]
+}

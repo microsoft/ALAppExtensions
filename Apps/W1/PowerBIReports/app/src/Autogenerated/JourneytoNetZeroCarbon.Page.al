@@ -1,3 +1,4 @@
+#if not CLEAN27
 namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
@@ -10,6 +11,9 @@ page 37090 "Journey to Net Zero Carbon"
     Caption = 'Journey to Net Zero Carbon';
     AboutTitle = 'About Journey to Net Zero Carbon';
     AboutText = 'The Journey to Net Zero highlights the journey to net zero within an organization.';
+    ObsoleteReason = 'Please use and extend page "To Net Zero Carbon Power BI" on the Sustainability app.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '27.0';
 
     layout
     {
@@ -39,18 +43,18 @@ page 37090 "Journey to Net Zero Carbon"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '1782621aa0d0e087ed20', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var
         PowerBIReportsSetup: Record "PowerBI Reports Setup";
     begin
         SetupHelper.EnsureUserAcceptedPowerBITerms();
+#pragma warning disable AL0801
         ReportId := SetupHelper.GetReportIdAndEnsureSetup(CurrPage.Caption(), PowerBIReportsSetup.FieldNo("Sustainability Report ID"));
+#pragma warning restore AL0801
     end;
 }
-
+#endif
