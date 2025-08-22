@@ -51,8 +51,6 @@ codeunit 13921 "E-Document XRechnung Handler" implements IStructuredFormatReader
         EDocumentPurchaseHeader.InsertForEDocument(EDocument);
 
         XmlDocument.ReadFrom(TempBlob.CreateInStream(TextEncoding::UTF8), XRechnungXml);
-
-        // Setup XML namespaces for XRechnung (UBL 2.1 based)
         XmlNamespaces.AddNamespace('cac', CommonAggregateComponentsTok);
         XmlNamespaces.AddNamespace('cbc', CommonBasicComponentsTok);
         XmlNamespaces.AddNamespace('inv', DefaultInvoiceTok);
