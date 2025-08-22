@@ -28,7 +28,6 @@ codeunit 5688 "Create Extended Purch Document"
         CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateItem: Codeunit "Create Item";
         CreatePaymentMethod: Codeunit "Create Payment Method";
-        CreateLocation: Codeunit "Create Location";
         DocumentDate: Date;
         StartingDate: Date;
     begin

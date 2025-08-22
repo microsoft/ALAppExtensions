@@ -33,7 +33,6 @@ codeunit 5692 "Create Extended Sales Document"
         ContosoUtilities: Codeunit "Contoso Utilities";
         CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateItem: Codeunit "Create Item";
-        CreatePaymentMethod: Codeunit "Create Payment Method";
         FirstDayOfTheMonth: Date;
         LastDayOfTheMonth: Date;
     begin
@@ -241,7 +240,6 @@ codeunit 5692 "Create Extended Sales Document"
         ContosoUtilities: Codeunit "Contoso Utilities";
         CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateItem: Codeunit "Create Item";
-        CreatePaymentMethod: Codeunit "Create Payment Method";
         CreateSalesDocument: Codeunit "Create Sales Document";
     begin
 
