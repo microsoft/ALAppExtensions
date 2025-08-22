@@ -33,6 +33,10 @@ codeunit 8750 "DA External Storage Processor"
         if not DocumentAttachment."Document Reference ID".HasValue() then
             exit(false);
 
+        // Check if document is already uploaded
+        if DocumentAttachment."External File Path" <> '' then
+            exit(false);
+
         // Get file content from document attachment
         TempBlob.CreateOutStream(OutStream);
         DocumentAttachment.ExportToStream(OutStream);

@@ -34,6 +34,11 @@ page 8750 "DA External Storage Setup"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if new attachments should be automatically uploaded to external storage.';
                 }
+                field("Auto Delete"; Rec."Auto Delete")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies if files should be automatically deleted from external storage.';
+                }
             }
 
             group(Status)

@@ -53,10 +53,18 @@ codeunit 8752 "DA External Storage Subs."
     [EventSubscriber(ObjectType::Table, Database::"Document Attachment", 'OnAfterDeleteEvent', '', true, true)]
     local procedure OnAfterDeleteDocumentAttachment(var Rec: Record "Document Attachment"; RunTrigger: Boolean)
     var
+        ExternalStorageSetup: Record "DA External Storage Setup";
         ExternalStorageProcessor: Codeunit "DA External Storage Processor";
     begin
         // Exit early if trigger is not running
         if not RunTrigger then
+            exit;
+
+        // Check if auto upload is enabled
+        if not ExternalStorageSetup.Get() then
+            exit;
+
+        if not ExternalStorageSetup."Auto Delete" then
             exit;
 
         // Only process files that were uploaded to external storage

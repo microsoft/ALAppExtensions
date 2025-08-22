@@ -31,6 +31,12 @@ table 8750 "DA External Storage Setup"
             DataClassification = CustomerContent;
             InitValue = true;
         }
+        field(7; "Auto Delete"; Boolean)
+        {
+            Caption = 'Auto Delete';
+            DataClassification = CustomerContent;
+            InitValue = false;
+        }
         field(25; "Has Uploaded Files"; Boolean)
         {
             Caption = 'Has Uploaded Files';
