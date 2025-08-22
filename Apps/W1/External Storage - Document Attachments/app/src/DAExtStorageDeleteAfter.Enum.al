@@ -8,7 +8,7 @@
 /// </summary>
 enum 8750 "DA Ext. Storage - Delete After"
 {
-    Extensible = true;
+    Extensible = false;
 
     value(0; "Immediately")
     {
