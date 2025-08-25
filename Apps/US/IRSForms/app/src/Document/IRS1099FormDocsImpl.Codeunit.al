@@ -25,6 +25,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
         DocID: Integer;
     begin
         TempVendFormBoxBuffer.Reset();
+        TempVendFormBoxBuffer.SetCurrentKey("Vendor No.", "Form No.", "Form Box No.");
         TempVendFormBoxBuffer.SetRange("Buffer Type", TempVendFormBoxBuffer."Buffer Type"::Amount);
         if not TempVendFormBoxBuffer.FindSet() then
             error(NoVendorFormBoxAmountsFoundErr);

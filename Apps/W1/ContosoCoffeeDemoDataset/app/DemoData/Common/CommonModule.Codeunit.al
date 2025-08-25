@@ -20,6 +20,7 @@ codeunit 4769 "Common Module" implements "Contoso Demo Data Module"
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"];
     begin
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::Finance);
         Dependencies.Add(Enum::"Contoso Demo Data Module"::Sales);
         Dependencies.Add(Enum::"Contoso Demo Data Module"::Purchase);
     end;

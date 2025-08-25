@@ -1,0 +1,48 @@
+{
+  "id": "80672d74-d90a-4eb0-8f90-5b9bcea58dca",
+  "name": "GovTalk",
+  "publisher": "Microsoft",
+  "version": "27.0.0.0",
+  "brief": "Third party application for GovTalk",
+  "description": "Provides functionality for GovTalk",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/ui-extensions",
+  "application": "27.0.0.0",
+  "dependencies": [
+    {
+      "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
+      "name": "Contoso Coffee Demo Dataset",
+      "publisher": "Microsoft",
+      "version": "27.0.0.0"
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "039d5e09-7eea-4b0b-b2b9-4b060e5d330a",
+      "name": "GovTalk Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "screenshots": [],
+  "platform": "27.0.0.0",
+  "idRanges": [
+    {
+      "from": 10503,
+      "to": 10591
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith",
+    "TranslationFile"
+  ]
+}

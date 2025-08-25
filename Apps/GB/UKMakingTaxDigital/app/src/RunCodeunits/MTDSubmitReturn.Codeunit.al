@@ -46,8 +46,13 @@ codeunit 10532 "MTD Submit Return"
         TempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF8);
         OutStream.Write(CombineSubmissionRequestResponse(RequestJson, ResponseJson));
         VATReportArchive.Delete();
+#if not CLEAN27    
+#pragma warning disable AL0432      
         VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code".AsInteger(), "No.", TempBlob, DummyGUID);
-
+#else
+        VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code".AsInteger(), "No.", TempBlob);
+#pragma warning restore AL0432
+#endif
         if SubmitSuccess then begin
             // Mark as Submitted
             VATReportMediator.Submit(Rec);

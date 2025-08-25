@@ -486,9 +486,7 @@ page 47018 "SL Migration Configuration"
                 field("Migrate Product Classes"; Rec."Migrate Item Classes")
                 {
                     Caption = 'Product Classes';
-                    Enabled = false;
                     ToolTip = 'Specifies whether to migrate Product classes.';
-                    Visible = false;
 
                     trigger OnValidate()
                     begin

@@ -53,5 +53,11 @@ codeunit 6145 "E-Document Setup"
         WorkflowTableRelation."Related Table ID" := Database::"E-Document Service Status";
         WorkflowTableRelation."Related Field ID" := EDocumentServiceStatus.FieldNo("E-Document Entry No");
         if WorkflowTableRelation.Insert() then;
+
+        WorkflowTableRelation."Table ID" := Database::"E-Document Service Status";
+        WorkflowTableRelation."Field ID" := EDocumentServiceStatus.FieldNo("E-Document Entry No");
+        WorkflowTableRelation."Related Table ID" := Database::"E-Document";
+        WorkflowTableRelation."Related Field ID" := EDocument.FieldNo(EDocument."Entry No");
+        if WorkflowTableRelation.Insert() then;
     end;
 }

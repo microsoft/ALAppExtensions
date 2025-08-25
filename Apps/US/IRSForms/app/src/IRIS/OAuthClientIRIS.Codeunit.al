@@ -14,6 +14,7 @@ codeunit 10046 "OAuth Client IRIS"
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
+    Permissions = tabledata "User Params IRIS" = M;
 
     var
         KeyVaultClient: Codeunit "Key Vault Client IRIS";

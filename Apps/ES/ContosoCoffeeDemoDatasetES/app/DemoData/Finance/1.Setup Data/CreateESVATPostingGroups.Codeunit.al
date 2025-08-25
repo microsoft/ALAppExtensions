@@ -6,7 +6,6 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoTool.Helpers;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
 
 codeunit 10794 "Create ES VAT Posting Groups"
@@ -21,71 +20,71 @@ codeunit 10794 "Create ES VAT Posting Groups"
 
     procedure InsertVATPostingSetupWithGLAccounts()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingSetup: Codeunit "Contoso Posting Setup";
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateESGLAccounts: Codeunit "Create ES GL Accounts";
     begin
+        FinanceModuleSetup.Get();
         ContosoPostingSetup.SetOverwriteData(true);
-        ContosoPostingSetup.InsertVATPostingSetup('', NoVat(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), NoVat(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup('', Vat21(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat21(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup('', Vat7(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat7(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. No VAT", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. No VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup('', Vat4(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat4(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), NoVat(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), NoVaT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. No VAT", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. No VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), NoTax(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), NoTax(), 0, Enum::"Tax Calculation Type"::"No Taxable VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), Vat21(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat21(), 21, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), Vat7(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat7(), 7, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 21, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 7, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), Vat4(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat4(), 4, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), NoVat(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), NoVaT(), 0, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'E', CreateESGLAccounts.VatEuReversion(), '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), FinanceModuleSetup."VAT Prod. Post Grp. No VAT", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. No VAT", 0, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'E', CreateESGLAccounts.VatEuReversion(), '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), NoTax(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), NoTax(), 0, Enum::"Tax Calculation Type"::"No Taxable VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), Vat21(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat21(), 21, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateESGLAccounts.VatEuReversion(), '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), Vat7(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat7(), 7, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateESGLAccounts.VatEuReversion(), '', true);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 21, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateESGLAccounts.VatEuReversion(), '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 7, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateESGLAccounts.VatEuReversion(), '', true);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), Vat4(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat4(), 4, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateESGLAccounts.VatEuReversion(), '', true);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), NoVat(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), NoVaT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. No VAT", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. No VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), NoTax(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), NoTax(), 0, Enum::"Tax Calculation Type"::"No Taxable VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), Vat21(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat21(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), Vat7(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat7(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), Vat4(), CreateESGLAccounts.VatCollByTheComp(), CreateESGLAccounts.GovVatDeductible(), Vat4(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
         ContosoPostingSetup.SetOverwriteData(false);
     end;
 
-    internal procedure RemoveVATPostingSetup()
-    var
-        VATPostingSetup: Record "VAT Posting Setup";
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
-    begin
-        VATPostingSetup.SetRange("VAT Prod. Posting Group", CreateVATPostingGroups.Zero());
-        VATPostingSetup.DeleteAll();
-
-        VATPostingSetup.SetRange("VAT Prod. Posting Group", CreateVATPostingGroups.Reduced());
-        VATPostingSetup.DeleteAll();
-
-        VATPostingSetup.SetRange("VAT Prod. Posting Group", CreateVATPostingGroups.Standard());
-        VATPostingSetup.DeleteAll();
-    end;
-
     local procedure InsertVATProductPostingGroup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
     begin
-        ContosoPostingGroup.SetOverwriteData(true);
+        FinanceModuleSetup.Get();
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Standard" = '' then begin
+            ContosoPostingGroup.InsertVATProductPostingGroup(Vat21(), Miscellaneous21VatLbl);
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Standard", Vat21());
+        end;
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Reduced" = '' then begin
+            ContosoPostingGroup.InsertVATProductPostingGroup(Vat7(), Miscellaneous7VatLbl);
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Reduced", Vat7());
+        end;
+        FinanceModuleSetup.Modify();
+
         ContosoPostingGroup.InsertVATProductPostingGroup(NoTax(), NotchargeableVatLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(NoVat(), MiscellaneousWithoutVatLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(Vat7(), Miscellaneous7VatLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(Vat21(), Miscellaneous21VatLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(Vat4(), Vat21VatLbl);
-        ContosoPostingGroup.SetOverwriteData(false);
     end;
 
-    var
     procedure NoTax(): Code[20]
     begin
         exit(NoTaxTok);
     end;
 
+#if not CLEAN27
+    [Obsolete('Use NoVat in codeunit 5473 "Create VAT Posting Groups" instead', '27.0')]
     procedure NoVat(): Code[20]
+    var
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
-        exit(NoVatTok);
+        exit(CreateVATPostingGroups.NOVAT());
     end;
+#endif
 
     procedure Vat7(): Code[20]
     begin
@@ -104,12 +103,10 @@ codeunit 10794 "Create ES VAT Posting Groups"
 
     var
         NoTaxTok: Label 'NO TAX', MaxLength = 20, Locked = true;
-        NoVatTok: Label 'NO VAT', MaxLength = 20, Locked = true;
         Vat7Tok: Label 'VAT7', MaxLength = 20, Locked = true;
         Vat21Tok: Label 'VAT21', MaxLength = 20, Locked = true;
         Vat4Tok: Label 'VAT4', MaxLength = 20, Locked = true;
         NotchargeableVatLbl: Label 'Not chargeable VAT', MaxLength = 100;
-        MiscellaneousWithoutVatLbl: Label 'Miscellaneous without VAT', MaxLength = 100;
         Vat21VatLbl: Label 'Reduced VAT', MaxLength = 100;
         Miscellaneous21VatLbl: Label 'Miscellaneous 21 VAT', MaxLength = 100;
         Miscellaneous7VatLbl: Label 'Miscellaneous 7 VAT', MaxLength = 100;

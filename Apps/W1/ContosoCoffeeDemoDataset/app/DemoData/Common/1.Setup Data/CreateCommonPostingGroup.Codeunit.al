@@ -37,7 +37,9 @@ codeunit 5134 "Create Common Posting Group"
 
     var
         CreatePostingGroup: Codeunit "Create Posting Groups";
+#if not CLEAN27
         CreateVATPostingGroup: Codeunit "Create VAT Posting Groups";
+#endif
         DomesticCustomerVendorLbl: Label 'Domestic customers and vendors', MaxLength = 100;
         RawMaterialsLbl: Label 'Raw Materials', MaxLength = 100;
         ResaleLbl: Label 'Resale', MaxLength = 100;
@@ -66,30 +68,37 @@ codeunit 5134 "Create Common Posting Group"
         exit(CreatePostingGroup.DomesticPostingGroup());
     end;
 
+#if not CLEAN27
+    [Obsolete('procedure is moved to codeunit 5252 "Create Posting Groups"', '27.0')]
     procedure EU(): Code[20]
     begin
         exit(CreatePostingGroup.EUPostingGroup());
     end;
 
+    [Obsolete('procedure is moved to codeunit 5252 "Create Posting Groups"', '27.0')]
     procedure Export(): Code[20]
     begin
         exit(CreatePostingGroup.ExportPostingGroup());
     end;
 
+    [Obsolete('procedure is moved to codeunit 5473 "Create VAT Posting Groups"', '27.0')]
     procedure ZeroVAT(): Code[20]
     begin
-        exit(CreateVATPostingGroup.Zero());
+        exit(CreateVATPostingGroup.NoVAT());
     end;
 
+    [Obsolete('procedure is moved to codeunit 5473 "Create VAT Posting Groups"', '27.0')]
     procedure ReducedVAT(): Code[20]
     begin
         exit(CreateVATPostingGroup.Reduced());
     end;
 
+    [Obsolete('procedure is moved to codeunit 5473 "Create VAT Posting Groups"', '27.0')]
     procedure StandardVAT(): Code[20]
     begin
         exit(CreateVATPostingGroup.Standard());
     end;
+#endif
 
     procedure Retail(): Code[20]
     begin

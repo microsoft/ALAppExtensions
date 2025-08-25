@@ -33,15 +33,15 @@ codeunit 139525 "Library - VAT Group"
 
     procedure MockDummyVATReportHeader(var VATReportHeader: Record "VAT Report Header")
     begin
-        MockVATReportHeaderWithState(VATReportHeader, 0D, 0D, 0);
+        MockVATReportHeaderWithState(VATReportHeader, 0D, 0D, Enum::"VAT Report Status"::"Open");
     end;
 
     procedure MockVATReportHeaderWithDates(var VATReportHeader: Record "VAT Report Header"; StartDate: Date; EndDate: Date)
     begin
-        MockVATReportHeaderWithState(VATReportHeader, StartDate, EndDate, 0);
+        MockVATReportHeaderWithState(VATReportHeader, StartDate, EndDate, Enum::"VAT Report Status"::"Open");
     end;
 
-    procedure MockVATReportHeaderWithState(var VATReportHeader: Record "VAT Report Header"; StartDate: Date; EndDate: Date; Status: Option)
+    procedure MockVATReportHeaderWithState(var VATReportHeader: Record "VAT Report Header"; StartDate: Date; EndDate: Date; Status: Enum "VAT Report Status")
     begin
         VATReportHeader."VAT Report Config. Code" := VATReportHeader."VAT Report Config. Code"::"VAT Return";
         VATReportHeader."No." := LibraryUtility.GenerateGUID();

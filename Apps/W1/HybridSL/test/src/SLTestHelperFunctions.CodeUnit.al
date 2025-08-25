@@ -6,6 +6,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
+using Microsoft.Inventory.Item;
 
 codeunit 147601 "SL Test Helper Functions"
 {
@@ -14,6 +15,13 @@ codeunit 147601 "SL Test Helper Functions"
         Customer: Record Customer;
     begin
         Customer.DeleteAll();
+    end;
+
+    procedure ClearBCItemTableData()
+    var
+        Item: Record Item;
+    begin
+        Item.DeleteAll();
     end;
 
     procedure ClearBCVendorTableData()
@@ -80,6 +88,22 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateGenBusinessPostingGroupTable(GenBusinessPostingGroupInstream);
     end;
 
+    procedure ImportGenProductPostingGroupData()
+    var
+        GenProductPostingGroupInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLBCGeneralProductPostingGroup.csv', GenProductPostingGroupInstream);
+        PopulateGenProductPostingGroupTable(GenProductPostingGroupInstream);
+    end;
+
+    procedure ImportItemTrackingCodeData()
+    var
+        ItemTrackingCodeInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLBCItemTrackingCode.csv', ItemTrackingCodeInstream);
+        PopulateItemTrackingCodeTable(ItemTrackingCodeInstream);
+    end;
+
     procedure ImportSLAcctHist()
     var
         SLAcctHistInstream: InStream;
@@ -137,6 +161,23 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateSLGLSetupTable(SLGLSetupInstream);
     end;
 
+    procedure ImportSLINSetupData()
+    var
+        SLINSetupInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLINSetup.csv', SLINSetupInstream);
+        PopulateSLINSetupTable(SLINSetupInstream);
+    end;
+
+    procedure ImportSLProductClassData()
+    var
+        SLProductClassInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLProductClass.csv', SLProductClassInstream);
+        PopulateSLProductClassTable(SLProductClassInstream);
+    end;
+
+
     procedure ImportSLSalesTaxData()
     var
         SLSalesTaxInstream: InStream;
@@ -179,6 +220,18 @@ codeunit 147601 "SL Test Helper Functions"
         Xmlport.Import(Xmlport::"SL BC Gen. Bus. Posting Group", Instream);
     end;
 
+    procedure PopulateGenProductPostingGroupTable(var Instream: InStream)
+    begin
+        // Populate Gen. Product Posting Group table
+        Xmlport.Import(Xmlport::"SL BC Gen. Prod. Posting Group", Instream);
+    end;
+
+    procedure PopulateItemTrackingCodeTable(var Instream: InStream)
+    begin
+        // Populate Item Tracking Code table
+        Xmlport.Import(Xmlport::"SL BC Item Tracking Code Data", Instream);
+    end;
+
     procedure PopulateSLAcctHistTable(var Instream: InStream)
     begin
         // Populate SL AcctHist table
@@ -213,6 +266,18 @@ codeunit 147601 "SL Test Helper Functions"
     begin
         // Populate SL GLSetup table
         Xmlport.Import(Xmlport::"SL GLSetup Data", Instream);
+    end;
+
+    procedure PopulateSLINSetupTable(var Instream: InStream)
+    begin
+        // Populate SL INSetup table
+        Xmlport.Import(Xmlport::"SL INSetup Data", Instream);
+    end;
+
+    procedure PopulateSLProductClassTable(var Instream: InStream)
+    begin
+        // Populate SL ProductClass table
+        Xmlport.Import(Xmlport::"SL ProductClass Data", Instream);
     end;
 
     procedure PopulateSLSalesTaxTable(var Instream: InStream)

@@ -21,6 +21,7 @@ page 6287 "Sustainability Excise Journal"
     DelayedInsert = true;
     AutoSplitKey = true;
     RefreshOnActivate = true;
+    AdditionalSearchTerms = 'CBAM Journal, EPR Journal';
 
     layout
     {

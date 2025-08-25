@@ -38,7 +38,7 @@ codeunit 11491 "Create GB VAT Setup Post. Grp."
         if (Rec."VAT Prod. Posting Group" = CreateVATPostingGroups.Standard()) and (Rec.Default) then
             ValidateRecordFields(Rec, 20, CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATNormal(), StandardDescLbl, 1);
 
-        if (Rec."VAT Prod. Posting Group" = CreateVATPostingGroups.Zero()) and (Rec.Default) then
+        if (Rec."VAT Prod. Posting Group" = CreateVATPostingGroups.NoVAT()) and (Rec.Default) then
             ValidateRecordFields(Rec, 0, CreateGBGLAccounts.SalesVATNormal(), CreateGBGLAccounts.PurchaseVATReduced(), ZeroDescLbl, 1);
     end;
 

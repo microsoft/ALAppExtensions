@@ -12,7 +12,7 @@ codeunit 4309 "SOA Agent Task Execution" implements IAgentTaskExecution
 {
     Access = Internal;
 
-    procedure GetTaskMessageAnnotations(AgentTaskMessage: Record "Agent Task Message"; var Annotations: Record "Agent Annotation")
+    procedure AnalyzeAgentTaskMessage(AgentTaskMessage: Record "Agent Task Message"; var Annotations: Record "Agent Annotation")
     begin
         SOAAnnotation.GetAgentTaskMessageAnnotations(AgentTaskMessage, Annotations);
     end;
