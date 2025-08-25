@@ -390,4 +390,25 @@ codeunit 8750 "DA External Storage Processor"
                 ContentType := 'application/octet-stream';
         end;
     end;
+
+    /// <summary>
+    /// Checks if a Document Attachment file is uploaded to external storage and deleted internally.
+    /// </summary>
+    /// <param name="DocumentAttachment">The Document Attachment record to check.</param>
+    /// <returns>True if the file is uploaded and deleted, false otherwise.</returns>
+    procedure IsFileUploadedToExternalStorageAndDeletedInternally(var DocumentAttachment: Record "Document Attachment"): Boolean
+    begin
+        if not DocumentAttachment."Deleted Internally" then
+            exit(false);
+
+        if not DocumentAttachment."Uploaded Externally" then
+            exit(false);
+
+        if DocumentAttachment."Document Reference ID".HasValue() then
+            exit(false);
+
+        if DocumentAttachment."External File Path" = '' then
+            exit(false);
+        exit(true);
+    end;
 }

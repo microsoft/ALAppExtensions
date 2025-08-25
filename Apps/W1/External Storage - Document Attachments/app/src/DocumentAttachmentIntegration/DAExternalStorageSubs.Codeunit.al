@@ -85,16 +85,7 @@ codeunit 8752 "DA External Storage Subs."
         ExternalStorageProcessor: Codeunit "DA External Storage Processor";
     begin
         // Only handle if file is uploaded externally and not available internally
-        if not DocumentAttachment."Deleted Internally" then
-            exit;
-
-        if not DocumentAttachment."Uploaded Externally" then
-            exit;
-
-        if DocumentAttachment."Document Reference ID".HasValue() then
-            exit;
-
-        if DocumentAttachment."External File Path" = '' then
+        if not ExternalStorageProcessor.IsFileUploadedToExternalStorageAndDeletedInternally(DocumentAttachment) then
             exit;
 
         ExternalStorageProcessor.DownloadFromExternalStorageToStream(DocumentAttachment."External File Path", AttachmentOutStream);
@@ -111,16 +102,7 @@ codeunit 8752 "DA External Storage Subs."
         ExternalStorageProcessor: Codeunit "DA External Storage Processor";
     begin
         // Only handle if file is uploaded externally and not available internally
-        if not DocumentAttachment."Deleted Internally" then
-            exit;
-
-        if not DocumentAttachment."Uploaded Externally" then
-            exit;
-
-        if DocumentAttachment."Document Reference ID".HasValue() then
-            exit;
-
-        if DocumentAttachment."External File Path" = '' then
+        if not ExternalStorageProcessor.IsFileUploadedToExternalStorageAndDeletedInternally(DocumentAttachment) then
             exit;
 
         ExternalStorageProcessor.DownloadFromExternalStorageToTempBlob(DocumentAttachment."External File Path", TempBlob);
@@ -137,16 +119,7 @@ codeunit 8752 "DA External Storage Subs."
         ExternalStorageProcessor: Codeunit "DA External Storage Processor";
     begin
         // Only handle if file is uploaded externally and not available internally
-        if not Rec."Deleted Internally" then
-            exit;
-
-        if not Rec."Uploaded Externally" then
-            exit;
-
-        if Rec."Document Reference ID".HasValue() then
-            exit;
-
-        if Rec."External File Path" = '' then
+        if not ExternalStorageProcessor.IsFileUploadedToExternalStorageAndDeletedInternally(Rec) then
             exit;
 
         ExternalStorageProcessor.FileExtensionToContentMimeType(Rec, ContentType);
@@ -163,16 +136,7 @@ codeunit 8752 "DA External Storage Subs."
         ExternalStorageProcessor: Codeunit "DA External Storage Processor";
     begin
         // Only handle if file is uploaded externally and not available internally
-        if not DocumentAttachment."Deleted Internally" then
-            exit;
-
-        if not DocumentAttachment."Uploaded Externally" then
-            exit;
-
-        if DocumentAttachment."Document Reference ID".HasValue() then
-            exit;
-
-        if DocumentAttachment."External File Path" = '' then
+        if not ExternalStorageProcessor.IsFileUploadedToExternalStorageAndDeletedInternally(DocumentAttachment) then
             exit;
 
         AttachmentIsAvailable := ExternalStorageProcessor.CheckIfFileExistInExternalStorage(DocumentAttachment."External File Path");
