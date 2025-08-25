@@ -75,20 +75,6 @@ codeunit 8752 "DA External Storage Subs."
         ExternalStorageProcessor.DeleteFromExternalStorage(Rec);
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Doc. Attachment List Factbox", 'OnBeforeFileNameDrillDown', '', false, false)]
-    local procedure OnBeforeFileNameDrillDown(DocumentAttachment: Record "Document Attachment"; var IsHandled: Boolean)
-    var
-        ExternalStorageProcessor: Codeunit "DA External Storage Processor";
-    begin
-        if not DocumentAttachment."Document Reference ID".HasValue() then begin
-            if DocumentAttachment.SupportedByFileViewer() then
-                ExternalStorageProcessor.DownloadFromExternalStorageAndPreview(DocumentAttachment)
-            else
-                ExternalStorageProcessor.DownloadFromExternalStorage(DocumentAttachment);
-            IsHandled := true;
-        end;
-    end;
-
     /// <summary>
     /// Handles export to stream for externally stored document attachments.
     /// Downloads from external storage when internal content is not available.
