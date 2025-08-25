@@ -82,11 +82,11 @@ codeunit 5688 "Create Extended Purch Document"
         ContosoPurchase.InsertPurchaseLineWithItem(PurchaseHeader, CreateItem.SydneySwivelChairGreen(), 10, '', 96.1);
     end;
 
-    procedure AnalyticsReference(): Text
+    procedure AnalyticsReference(): Code[35]
     begin
         exit(AnalyticsReferenceTok);
     end;
 
     var
-        AnalyticsReferenceTok: Label 'ANALYTICS', Locked = true;
+        AnalyticsReferenceTok: Label 'ANALYTICS', MaxLength = 35;
 }
