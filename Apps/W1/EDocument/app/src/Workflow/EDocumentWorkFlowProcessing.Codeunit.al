@@ -110,6 +110,37 @@ codeunit 6135 "E-Document WorkFlow Processing"
         Telemetry.LogMessage('0000LBW', EDocTelemetryProcessingEndScopeLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
+    internal procedure ExportEDocument(var EDocument: Record "E-Document"; WorkflowStepInstance: Record "Workflow Step Instance")
+    var
+        WorkflowStepArgument: Record "Workflow Step Argument";
+        EDocumentService: Record "E-Document Service";
+    begin
+        if not ValidateFlowStep(EDocument, WorkflowStepArgument, WorkflowStepInstance) then
+            exit;
+        EDocumentService.Get(WorkflowStepArgument."E-Document Service");
+        ExportEDocument(EDocument, EDocumentService);
+    end;
+
+    internal procedure ExportEDocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    var
+        Telemetry: Codeunit Telemetry;
+        EDocumentHelper: Codeunit "E-Document Processing";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        FeatureTelemetry.LogUptake('0000KZ0', EDocumentHelper.GetEDocTok(), Enum::"Feature Uptake Status"::Used);
+        EDocumentHelper.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
+        Telemetry.LogMessage('0000LB6', EDocTelemetryProcessingStartScopeLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
+
+        if IsEdocServiceUsingBatch(EDocumentService) then
+            DoBatchExport(EDocument, EDocumentService)
+        else
+            DoExport(EDocument, EDocumentService);
+
+        FeatureTelemetry.LogUsage('0000KZ1', EDocumentHelper.GetEDocTok(), 'E-Document has been exported.');
+        Telemetry.LogMessage('0000LB7', EDocTelemetryProcessingEndScopeLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
+    end;
+
     internal procedure HandleNextEvent(var EDocument: Record "E-Document")
     var
         WorkflowManagement: Codeunit "Workflow Management";
@@ -190,6 +221,52 @@ codeunit 6135 "E-Document WorkFlow Processing"
         end;
     end;
 
+    local procedure DoBatchExport(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
+    var
+        TempEDocMappingLogs: Record "E-Doc. Mapping Log" temporary;
+        EDocExport: Codeunit "E-Doc. Export";
+        EDocIntMgt: Codeunit "E-Doc. Integration Management";
+        EDocumentLog: Codeunit "E-Document Log";
+        EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
+        EDocumentErrorHelper: Codeunit "E-Document Error Helper";
+        TempBlob: Codeunit "Temp Blob";
+        EDocServiceStatus: Enum "E-Document Service Status";
+        BeforeExportEDocErrorCount: Dictionary of [Integer, Integer];
+        IsAsync, IsHandled, AnyErrors : Boolean;
+        ErrorCount: Integer;
+    begin
+        EDocServiceStatus := Enum::"E-Document Service Status"::"Pending Batch";
+        EDocumentLog.InsertLog(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Pending Batch");
+        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument);
+
+        if EDocumentService."Batch Mode" = EDocumentService."Batch Mode"::Recurrent then
+            exit;
+        if EDocumentService."Batch Mode" = EDocumentService."Batch Mode"::Threshold then begin
+            if not IsThresholdBatchCriteriaMet(EDocumentService, EDocument) then
+                exit;
+        end else begin
+            OnBatchSendWithCustomBatchMode(EDocument, EDocumentService, IsHandled);
+            if not IsHandled then
+                Error(NotSupportedBatchModeErr, EDocumentService."Batch Mode");
+            exit;
+        end;
+
+        EDocExport.ExportEDocumentBatch(EDocument, EDocumentService, TempEDocMappingLogs, TempBlob, BeforeExportEDocErrorCount);
+
+        AnyErrors := false;
+        EDocument.FindSet();
+        repeat
+            BeforeExportEDocErrorCount.Get(EDocument."Entry No", ErrorCount);
+            if (EDocumentErrorHelper.ErrorMessageCount(EDocument) > ErrorCount) then
+                AnyErrors := true;
+        until EDocument.Next() = 0;
+
+        InsertLogsForThresholdBatch(EDocument, EDocumentService, TempEDocMappingLogs, TempBlob, AnyErrors);
+        if not AnyErrors then
+            HandleNextEvent(EDocument);
+    end;
+
     local procedure InsertLogsForThresholdBatch(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempEDocMappingLogs: Record "E-Doc. Mapping Log" temporary; var TempBlob: Codeunit "Temp Blob"; Error: Boolean)
     var
         EDocMappingLog: Record "E-Doc. Mapping Log";
@@ -244,6 +321,14 @@ codeunit 6135 "E-Document WorkFlow Processing"
                 EDocumentBackgroundjobs.ScheduleGetResponseJob()
             else
                 HandleNextEvent(EDocument);
+    end;
+
+    local procedure DoExport(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
+    var
+        EDocExport: Codeunit "E-Doc. Export";
+    begin
+        if EDocExport.ExportEDocument(EDocument, EDocumentService) then
+            HandleNextEvent(EDocument);
     end;
 
     local procedure ValidateFlowStep(var EDocument: Record "E-Document"; var WorkflowStepArgument: Record "Workflow Step Argument"; WorkflowStepInstance: Record "Workflow Step Instance"): Boolean

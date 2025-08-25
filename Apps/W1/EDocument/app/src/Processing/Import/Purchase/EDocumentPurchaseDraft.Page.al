@@ -447,6 +447,8 @@ page 6181 "E-Document Purchase Draft"
                 StyleStatusTxt := 'Unfavorable';
             Rec.Status::Processed:
                 StyleStatusTxt := 'Favorable';
+            Rec.Status::Exported:
+                StyleStatusTxt := 'Ambiguous';
             else
                 StyleStatusTxt := 'None';
         end;

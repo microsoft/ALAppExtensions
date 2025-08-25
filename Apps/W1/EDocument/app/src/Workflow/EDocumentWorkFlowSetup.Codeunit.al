@@ -36,6 +36,19 @@ codeunit 6139 "E-Document Workflow Setup"
         Workflow.Modify();
     end;
 
+    internal procedure InsertInitForSingleServiceTemplate()
+    var
+        Workflow: Record Workflow;
+        WorkflowSetup: Codeunit "Workflow Setup";
+    begin
+        WorkflowSetup.InsertWorkflowTemplate(Workflow, EDocInitForSingleServiceTemplateWfCodeTxt, EDocInitForSingleServiceTemplateWfDescriptionTxt, EDocCategoryTxt);
+        Workflow.Validate(Template, false);
+        Workflow.Modify();
+        InsertB2GWorkflowDetails(Workflow);
+        Workflow.Validate(Template, true);
+        Workflow.Modify();
+    end;
+
     internal procedure EDocReceived(): Code[128]
     begin
         exit('EDOCRECEIVED');
@@ -49,6 +62,11 @@ codeunit 6139 "E-Document Workflow Setup"
     procedure EDocSendEDocResponseCode(): Code[128];
     begin
         exit('EDOCSendEDOCRESPONSE');
+    end;
+
+    procedure EDocInitEDocResponseCode(): Code[128];
+    begin
+        exit('EDOCInitEDOCRESPONSE');
     end;
 
     procedure EDocCreated(): code[128];
@@ -78,6 +96,7 @@ codeunit 6139 "E-Document Workflow Setup"
         WorkflowResponseHandling: Codeunit "Workflow Response Handling";
     begin
         WorkflowResponseHandling.AddResponseToLibrary(EDocSendEDocResponseCode(), Database::"E-Document", 'Send E-Document using setup: %1', 'GROUP 50100');
+        WorkflowResponseHandling.AddResponseToLibrary(EDocInitEDocResponseCode(), Database::"E-Document", 'Init E-Document using setup: %1', 'GROUP 50100');
         WorkflowResponseHandling.AddResponseToLibrary(EDocImport(), Database::"E-Document", 'Import E-Document using setup: %1', 'GROUP 50100');
     end;
 
@@ -86,6 +105,7 @@ codeunit 6139 "E-Document Workflow Setup"
     begin
         case WorkflowResponse."Function Name" of
             EDocSendEDocResponseCode(),
+            EDocInitEDocResponseCode(),
             EDocImport():
                 Result := (CopyStr(StrSubstNo(WorkflowResponse.Description, WorkflowStepArgument."E-Document Service"), 1, 250));
         end;
@@ -101,6 +121,11 @@ codeunit 6139 "E-Document Workflow Setup"
                 begin
                     WorkflowResponseHandling.AddResponsePredecessor(EDocSendEDocResponseCode(), EDocCreated());
                     WorkflowResponseHandling.AddResponsePredecessor(EDocSendEDocResponseCode(), EDocStatusChanged());
+                end;
+            EDocInitEDocResponseCode():
+                begin
+                    WorkflowResponseHandling.AddResponsePredecessor(EDocInitEDocResponseCode(), EDocCreated());
+                    WorkflowResponseHandling.AddResponsePredecessor(EDocInitEDocResponseCode(), EDocStatusChanged());
                 end;
         end;
     end;
@@ -118,6 +143,11 @@ codeunit 6139 "E-Document Workflow Setup"
                     EDocWorkflowProcessing.SendEDocument(Variant, ResponseWorkflowStepInstance);
                     ResponseExecuted := true;
                 end;
+            EDocInitEDocResponseCode():
+                begin
+                    EDocWorkflowProcessing.ExportEDocument(Variant, ResponseWorkflowStepInstance);
+                    ResponseExecuted := true;
+                end;
         end;
     end;
 
@@ -126,6 +156,7 @@ codeunit 6139 "E-Document Workflow Setup"
     begin
         InsertSendToSingleServiceTemplate();
         InsertSendToMultiServiceTemplate();
+        InsertInitForSingleServiceTemplate();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", OnAddWorkflowCategoriesToLibrary, '', false, false)]
@@ -160,6 +191,8 @@ codeunit 6139 "E-Document Workflow Setup"
         EDocCategoryTxt: Label 'EDOC', Locked = true;
         EDocSendToSingleServiceTemplateWfCodeTxt: Label 'EDOCTOS', Locked = true;
         EDocSendToMultiServicesTemplateWfCodeTxt: Label 'EDOCTOM', Locked = true;
+        EDocInitForSingleServiceTemplateWfCodeTxt: Label 'EDOCINIT', Locked = true;
         EDocSendToSingleServiceTemplateWfDescriptionTxt: Label 'Send to one service';
         EDocSendToMultiServicesTemplateWfDescriptionTxt: Label 'Send to multiple services';
+        EDocInitForSingleServiceTemplateWfDescriptionTxt: Label 'Init for one service';
 }

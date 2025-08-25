@@ -75,6 +75,7 @@ codeunit 6108 "E-Document Processing"
 #endif
         IEDocumentStatus: Interface IEDocumentStatus;
         InProgress: Boolean;
+        Exported: Boolean;
 #if not CLEAN26
         IsHandled: Boolean;
 #endif
@@ -99,15 +100,22 @@ codeunit 6108 "E-Document Processing"
                         end;
                     EDocument.Status::"In Progress":
                         InProgress := true;
+                    EDocument.Status::Exported:
+                        Exported := true;
                 end;
 
             until EDocumentServiceStatus.Next() = 0;
 
         // If one service is in progress, then the whole E-Document is in progress
-        if InProgress then
-            EDocument.Validate(Status, EDocument.Status::"In Progress")
-        else
-            EDocument.Validate(Status, EDocument.Status::Processed);
+        // If no service is in progress and at least one status is exported, then the whole E-Document is exported
+        case true of
+            InProgress:
+                EDocument.Validate(Status, EDocument.Status::"In Progress");
+            Exported:
+                EDocument.Validate(Status, EDocument.Status::Exported);
+            else
+                EDocument.Validate(Status, EDocument.Status::Processed);
+        end;
         EDocument.Modify(true);
 
         OnAfterModifyEDocumentStatus(EDocument, EDocumentServiceStatus);

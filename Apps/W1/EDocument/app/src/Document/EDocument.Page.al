@@ -523,6 +523,8 @@ page 6121 "E-Document"
                 StyleStatusTxt := 'Unfavorable';
             Rec.Status::Processed:
                 StyleStatusTxt := 'Favorable';
+            Rec.Status::Exported:
+                StyleStatusTxt := 'Ambiguous';
             else
                 StyleStatusTxt := 'None';
         end;
