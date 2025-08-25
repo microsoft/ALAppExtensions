@@ -6,7 +6,6 @@
 namespace Microsoft.DataMigration.SL;
 
 using System.Integration;
-using Microsoft.Foundation.Company;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Purchases.Vendor;
 using System.EMail;
