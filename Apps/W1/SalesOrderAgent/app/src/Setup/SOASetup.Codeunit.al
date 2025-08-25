@@ -52,15 +52,13 @@ codeunit 4400 "SOA Setup"
     internal procedure CreateAgent(var TempAgent: Record Agent; var TempAgentAccessControl: Record "Agent Access Control" temporary; var TempSOASetup: Record "SOA Setup" temporary; var TempEmailAccount: Record "Email Account" temporary)
     var
         AllProfile: Record "All Profile";
-        TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary;
     begin
         TempSOASetup."Agent User Security ID" := Agent.Create("Agent Metadata Provider"::"SO Agent", TempAgent."User Name", TempAgent."Display Name", TempAgentAccessControl);
         UpdateInstructions(TempSOASetup);
 
+        // TODO(qutreson) Remove this in favor System Application.
         GetProfile(AllProfile);
-        GetPermissionSets(TempAggregatePermissionSet);
         Agent.SetProfile(TempSOASetup."Agent User Security ID", AllProfile);
-        Agent.AssignPermissionSet(TempSOASetup."Agent User Security ID", TempAggregatePermissionSet);
 
         if TempAgent.State = TempAgent.State::Enabled then
             UpdateSOASetupActivationDT(TempSOASetup);
@@ -245,6 +243,31 @@ codeunit 4400 "SOA Setup"
         if IsNullGuid(AgentUserSecurityID) then
             exit;
         Agents.GetUserAccess(AgentUserSecurityID, TempAgentAccessControl);
+    end;
+
+    internal procedure GetDefaultProfile(var TempAllProfile: Record "All Profile" temporary)
+    var
+        ModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(ModuleInfo);
+        TempAllProfile.Init();
+        TempAllProfile.Scope := TempAllProfile.Scope::Tenant;
+        TempAllProfile."App ID" := ModuleInfo.Id;
+        TempAllProfile."Profile ID" := SalesOrderAgentTok;
+        TempAllProfile.Insert();
+    end;
+
+    internal procedure GetDefaultAccessControls(var TempAccessControlBuffer: Record "Access Control Buffer" temporary)
+    var
+        ModuleInfo: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(ModuleInfo);
+        TempAccessControlBuffer.Init();
+        TempAccessControlBuffer."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(TempAccessControlBuffer."Company Name"));
+        TempAccessControlBuffer.Scope := TempAccessControlBuffer.Scope::System;
+        TempAccessControlBuffer."App ID" := ModuleInfo.Id;
+        TempAccessControlBuffer."Role ID" := SOAEditTok;
+        TempAccessControlBuffer.Insert();
     end;
 
     internal procedure GetAgent(var TempSOAgent: Record Agent temporary)
@@ -511,23 +534,6 @@ codeunit 4400 "SOA Setup"
     begin
         NavApp.GetCallerModuleInfo(CurrentModuleInfo);
         AllProfile.Get(AllProfile.Scope::Tenant, CurrentModuleInfo.Id, SalesOrderAgentTok);
-    end;
-
-    local procedure GetPermissionSets(var TempAggregatePermissionSet: Record "Aggregate Permission Set" temporary)
-    var
-        AggregatePermissionSet: Record "Aggregate Permission Set";
-        CurrentModuleInfo: ModuleInfo;
-    begin
-        TempAggregatePermissionSet.Reset();
-        TempAggregatePermissionSet.DeleteAll();
-
-        NavApp.GetCallerModuleInfo(CurrentModuleInfo);
-        AggregatePermissionSet.SetRange("Role ID", SOAEditTok);
-        AggregatePermissionSet.SetRange("App ID", CurrentModuleInfo.Id);
-        AggregatePermissionSet.FindFirst();
-
-        TempAggregatePermissionSet.TransferFields(AggregatePermissionSet, true);
-        TempAggregatePermissionSet.Insert(true);
     end;
 
     local procedure GetSOAUsername(): Text[50]

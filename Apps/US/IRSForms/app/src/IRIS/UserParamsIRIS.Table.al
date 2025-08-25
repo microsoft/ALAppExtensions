@@ -51,6 +51,7 @@ table 10051 "User Params IRIS"
         }
     }
 
+    [InherentPermissions(PermissionObjectType::TableData, Database::"User Params IRIS", 'RI', InherentPermissionsScope::Both)]
     procedure GetRecord()
     begin
         if not Get(UserSecurityId()) then begin

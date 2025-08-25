@@ -27,7 +27,7 @@ codeunit 12252 "Create VATSetupPostingGrp. IT"
                 Rec.Validate("VAT Prod. Posting Grp Desc.", StrSubstNo(MiscellaneousVATDescriptionLbl, '20'));
             CreateVATPostingGroups.Standard():
                 ValidateRecordFields(Rec, CreateITGLAccounts.SalesVat20Perc(), CreateITGLAccounts.PurchaseVat20Perc(), 20);
-            CreateVATPostingGroups.Zero():
+            CreateVATPostingGroups.NoVAT():
                 ValidateRecordFields(Rec, CreateITGLAccounts.SalesVat20Perc(), CreateITGLAccounts.PurchaseVat20Perc(), 0);
         end;
     end;

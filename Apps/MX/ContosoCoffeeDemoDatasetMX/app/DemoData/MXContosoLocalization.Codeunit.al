@@ -41,8 +41,6 @@ codeunit 14108 "MX Contoso Localization"
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
                     Codeunit.Run(Codeunit::"Create Post Code MX");
-                    Codeunit.Run(Codeunit::"Create VAT Posting Groups MX");
-                    Codeunit.Run(Codeunit::"Create Posting Groups MX");
                     Codeunit.Run(Codeunit::"Create Data Exchange Def MX");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
@@ -74,7 +72,6 @@ codeunit 14108 "MX Contoso Localization"
                     Codeunit.Run(Codeunit::"Create VAT Statement MX");
                     CreateMXGLAccounts.AddCategoriesToGLAccounts();
                     CreateMXGLAccounts.UpdateDebitCreditOnGL();
-                    CreateMXGLAccounts.UpdateVATProdPostingGroupOnGL();
                     CreatePostingGroupsMX.CreateGenPostingSetup();
                     Codeunit.Run(Codeunit::"Create Currency MX");
                 end;
@@ -100,16 +97,14 @@ codeunit 14108 "MX Contoso Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Item Template MX");
-                    Codeunit.Run(Codeunit::"Create Location MX");
-                end;
+                Codeunit.Run(Codeunit::"Create Location MX");
         end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
-    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateCustomerMX: Codeunit "Create Customer MX";
         CreateCurrencyExchRateMX: Codeunit "Create Currency Ex. Rate MX";
         CreateAccScheduleLineMX: Codeunit "Create Acc. Schedule Line MX";
@@ -119,7 +114,6 @@ codeunit 14108 "MX Contoso Localization"
         CreateLocationMX: Codeunit "Create Location MX";
         CreateItemMX: Codeunit "Create Item MX";
         CreateBankAccountMX: Codeunit "Create Bank Account MX";
-        CreateItemChargeMX: Codeunit "Create Item Charge MX";
         CreateVendorMX: Codeunit "Create Vendor MX";
         CreateResourceMX: Codeunit "Create Resource MX";
         CreateReminderLevelMX: Codeunit "Create Reminder Level MX";
@@ -134,7 +128,6 @@ codeunit 14108 "MX Contoso Localization"
                 BindSubscription(CreateBankAccountMX);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    BindSubscription(CreateItemChargeMX);
                     BindSubscription(CreateItemMX);
                     BindSubscription(CreateLocationMX);
                     BindSubscription(CreateInvPostingSetupMX);
@@ -153,6 +146,11 @@ codeunit 14108 "MX Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
+                        FinanceModuleSetup.InitRecord();
+                        Codeunit.Run(Codeunit::"Create VAT Posting Groups MX");
+                        Codeunit.Run(Codeunit::"Create Posting Groups MX");
+                    end;
                     BindSubscription(CreateCurrencyExchRateMX);
                     BindSubscription(CreatePostingGroupsMX);
                     BindSubscription(CreateResourceMX);
@@ -174,7 +172,6 @@ codeunit 14108 "MX Contoso Localization"
         CreateLocationMX: Codeunit "Create Location MX";
         CreateItemMX: Codeunit "Create Item MX";
         CreateBankAccountMX: Codeunit "Create Bank Account MX";
-        CreateItemChargeMX: Codeunit "Create Item Charge MX";
         CreateVendorMX: Codeunit "Create Vendor MX";
         CreateResourceMX: Codeunit "Create Resource MX";
         CreateReminderLevelMX: Codeunit "Create Reminder Level MX";
@@ -190,7 +187,6 @@ codeunit 14108 "MX Contoso Localization"
                 UnbindSubscription(CreateBankAccountMX);
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    UnbindSubscription(CreateItemChargeMX);
                     UnbindSubscription(CreateItemMX);
                     UnbindSubscription(CreateLocationMX);
                     UnbindSubscription(CreateInvPostingSetupMX);

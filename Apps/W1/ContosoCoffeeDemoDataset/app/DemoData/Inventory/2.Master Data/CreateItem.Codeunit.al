@@ -25,9 +25,9 @@ codeunit 5537 "Create Item"
 
     local procedure CreateItem()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoItem: Codeunit "Contoso Item";
         CreateInvPostingGroup: Codeunit "Create Inventory Posting Group";
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateUnitOfMeasure: Codeunit "Create Unit of Measure";
         CreateItemCategory: Codeunit "Create Item Category";
         CreatePostingGroup: Codeunit "Create Posting Groups";
@@ -35,65 +35,67 @@ codeunit 5537 "Create Item"
         TempBlob: Codeunit "Temp Blob";
         ImageFolderPathLbl: Label 'Images/Item', Locked = true;
     begin
+        FinanceModuleSetup.Get();
+
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + AthensDesk() + '.jpg');
-        ContosoItem.InsertInventoryItem(AthensDesk(), AthensDeskLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 649.4, 506.6, '', 25, 39.79, 34.6, 1.2, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Desk());
+        ContosoItem.InsertInventoryItem(AthensDesk(), AthensDeskLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 649.4, 506.6, '', 25, 39.79, 34.6, 1.2, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Desk());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + ParisGuestChairBlack() + '.jpg');
-        ContosoItem.InsertInventoryItem(ParisGuestChairBlack(), ParisGuestChairBlackLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(ParisGuestChairBlack(), ParisGuestChairBlackLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + AthensMobilePedestal() + '.jpg');
-        ContosoItem.InsertInventoryItem(AthensMobilePedestal(), AthensMobilePedestalLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 281.4, 219.5, '', 25, 19.67, 17.1, 0.26, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Table());
+        ContosoItem.InsertInventoryItem(AthensMobilePedestal(), AthensMobilePedestalLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 281.4, 219.5, '', 25, 19.67, 17.1, 0.26, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Table());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + LondonSwivelChairBlue() + '.jpg');
-        ContosoItem.InsertInventoryItem(LondonSwivelChairBlue(), LondonSwivelChairBlueLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(LondonSwivelChairBlue(), LondonSwivelChairBlueLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + AntwerpConferenceTable() + '.jpg');
-        ContosoItem.InsertInventoryItem(AntwerpConferenceTable(), AntwerpConferenceTableLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 420.4, 328, '', 15, 28.06, 24.4, 0.9, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Table());
+        ContosoItem.InsertInventoryItem(AntwerpConferenceTable(), AntwerpConferenceTableLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 420.4, 328, '', 15, 28.06, 24.4, 0.9, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Table());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + ConferenceBundle16() + '.jpg');
-        ContosoItem.InsertInventoryItem(ConferenceBundle16(), ConferenceBundle16Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 122.5, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
+        ContosoItem.InsertInventoryItem(ConferenceBundle16(), ConferenceBundle16Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 122.5, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + AmsterdamLamp() + '.jpg');
-        ContosoItem.InsertInventoryItem(AmsterdamLamp(), AmsterdamLampLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 35.6, 27.8, '', 45, 4.03, 3.5, 0.03, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Misc());
+        ContosoItem.InsertInventoryItem(AmsterdamLamp(), AmsterdamLampLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 35.6, 27.8, '', 45, 4.03, 3.5, 0.03, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Misc());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + ConferenceBundle18() + '.jpg');
-        ContosoItem.InsertInventoryItem(ConferenceBundle18(), ConferenceBundle18Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 151.7, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
+        ContosoItem.InsertInventoryItem(ConferenceBundle18(), ConferenceBundle18Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 151.7, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + BerlingGuestChairYellow() + '.jpg');
-        ContosoItem.InsertInventoryItem(BerlingGuestChairYellow(), BerlinGuestChairYellowLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(BerlingGuestChairYellow(), BerlinGuestChairYellowLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + GuestSection1() + '.jpg');
-        ContosoItem.InsertInventoryItem(GuestSection1(), GuestSection1Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 81.6, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
+        ContosoItem.InsertInventoryItem(GuestSection1(), GuestSection1Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 81.6, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + RomeGuestChairGreen() + '.jpg');
-        ContosoItem.InsertInventoryItem(RomeGuestChairGreen(), RomeGuestChairGreenLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(RomeGuestChairGreen(), RomeGuestChairGreenLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + TokyoGuestChairBlue() + '.jpg');
-        ContosoItem.InsertInventoryItem(TokyoGuestChairBlue(), TokyoGuestChairBlueLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(TokyoGuestChairBlue(), TokyoGuestChairBlueLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + ConferenceBundle28() + '.jpg');
-        ContosoItem.InsertInventoryItem(ConferenceBundle28(), ConferenceBundle28Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 151.7, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
+        ContosoItem.InsertInventoryItem(ConferenceBundle28(), ConferenceBundle28Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 151.7, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + MexicoSwivelChairBlack() + '.jpg');
-        ContosoItem.InsertInventoryItem(MexicoSwivelChairBlack(), MexicoSwivelChairBlackLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(MexicoSwivelChairBlack(), MexicoSwivelChairBlackLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + ConferencePackage1() + '.jpg');
-        ContosoItem.InsertInventoryItem(ConferencePackage1(), ConferencePackage1Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 221.8, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
+        ContosoItem.InsertInventoryItem(ConferencePackage1(), ConferencePackage1Lbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 221.8, 0, '', 50, 0, 0, 0, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), '');
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + MunichSwivelChairYellow() + '.jpg');
-        ContosoItem.InsertInventoryItem(MunichSwivelChairYellow(), MunichSwivelChairYellowLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(MunichSwivelChairYellow(), MunichSwivelChairYellowLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + MoscowSwivelChairRed() + '.jpg');
-        ContosoItem.InsertInventoryItem(MoscowSwivelChairRed(), MoscowSwivelChairRedLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(MoscowSwivelChairRed(), MoscowSwivelChairRedLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + SeoulGuestChairRed() + '.jpg');
-        ContosoItem.InsertInventoryItem(SeoulGuestChairRed(), SeoulGuestChairRedLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(SeoulGuestChairRed(), SeoulGuestChairRedLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 125.1, 97.5, '', 50, 9.55, 8.3, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + AtlantaWhiteboardBase() + '.jpg');
-        ContosoItem.InsertInventoryItem(AtlantaWhiteboardBase(), AtlantAWhiteboardBaseLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 906.7, 707.2, '', 100, 80.27, 69.8, 0.31, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Misc());
+        ContosoItem.InsertInventoryItem(AtlantaWhiteboardBase(), AtlantAWhiteboardBaseLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 906.7, 707.2, '', 100, 80.27, 69.8, 0.31, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Misc());
 
         TempBlob := ContosoUtilities.GetTempBlobFromFile(ImageFolderPathLbl + '/' + SydneySwivelChairGreen() + '.jpg');
-        ContosoItem.InsertInventoryItem(SydneySwivelChairGreen(), SydneySwivelChairGreenLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', CreateVATPostingGroups.Standard(), CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
+        ContosoItem.InsertInventoryItem(SydneySwivelChairGreen(), SydneySwivelChairGreenLbl, CreateUnitOfMeasure.Piece(), CreateInvPostingGroup.Resale(), 123.3, 96.1, '', 50, 15.99, 13.9, 0.25, '', CreatePostingGroup.RetailPostingGroup(), TempBlob, '', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateUnitOfMeasure.Piece(), CreateUnitOfMeasure.Piece(), CreateItemCategory.Chair());
     end;
 
     local procedure CreateItemUnitOfMeasure()

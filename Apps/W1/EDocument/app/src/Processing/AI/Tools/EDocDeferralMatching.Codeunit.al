@@ -140,7 +140,7 @@ codeunit 6129 "E-Doc. Deferral Matching" implements "AOAI Function", IEDocAISyst
         ToolDefinition: JsonObject;
         FunctionDefinition: JsonObject;
         ParametersDefinition: JsonObject;
-        FunctionDescriptionLbl: Label 'Matches invoice lines with Deferral Templates.', Locked = true;
+        FunctionDescriptionLbl: Label 'Analyzes each invoice line for deferral requirements and matches with appropriate templates. Must be called for every line, regardless of deferral decision.', Locked = true;
     begin
         ParametersDefinition.ReadFrom(NavApp.GetResourceAsText('AITools/DeferralMatching-FunctionParameters.json'));
 
@@ -156,22 +156,14 @@ codeunit 6129 "E-Doc. Deferral Matching" implements "AOAI Function", IEDocAISyst
 
     internal procedure Execute(Arguments: JsonObject): Variant
     var
-        TempEDocLineMatchBuffer: Record "EDoc Line Match Buffer" temporary;
-        ProposedDeferralCode: Text;
+        TempEDocLineMatchBufferLocal: Record "EDoc Line Match Buffer" temporary;
     begin
-        ProposedDeferralCode := Arguments.GetText('deferralCode');
-        if ProposedDeferralCode = '' then
-            exit;
-
-        Clear(TempEDocLineMatchBuffer);
-        TempEDocLineMatchBuffer."Line No." := Arguments.GetInteger('lineId');
-        TempEDocLineMatchBuffer."Deferral Code" := CopyStr(ProposedDeferralCode, 1, MaxStrLen(TempEDocLineMatchBuffer."Deferral Code"));
-
-        if Arguments.Contains('deferralReasoning') then
-            TempEDocLineMatchBuffer."Deferral Reason" := CopyStr(Arguments.GetText('deferralReasoning'), 1, 250);
+        TempEDocLineMatchBufferLocal."Line No." := Arguments.GetInteger('lineId');
+        TempEDocLineMatchBufferLocal."Deferral Code" := CopyStr(Arguments.GetText('deferralCode'), 1, MaxStrLen(TempEDocLineMatchBufferLocal."Deferral Code"));
+        TempEDocLineMatchBufferLocal."Deferral Reason" := CopyStr(Arguments.GetText('deferralReasoning'), 1, MaxStrLen(TempEDocLineMatchBufferLocal."Deferral Reason"));
 
         // Guarding insert as LLM result could be contain duplicate line numbers.
-        exit(TempEDocLineMatchBuffer);
+        exit(TempEDocLineMatchBufferLocal);
     end;
 
     procedure GetName(): Text
@@ -185,7 +177,7 @@ codeunit 6129 "E-Doc. Deferral Matching" implements "AOAI Function", IEDocAISyst
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
         PromptSecretText: SecretText;
-        PromptSecretNameTok: Label 'DeferralMatching-SystemPrompt', Locked = true;
+        PromptSecretNameTok: Label 'DeferralMatching-SystemPrompt270', Locked = true;
     begin
         if not AzureKeyVault.GetAzureKeyVaultSecret(PromptSecretNameTok, PromptSecretText) then
             PromptSecretText := SecretStrSubstNo('');

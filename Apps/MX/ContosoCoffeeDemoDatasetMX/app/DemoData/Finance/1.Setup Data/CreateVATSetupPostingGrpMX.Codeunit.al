@@ -28,15 +28,17 @@ codeunit 14111 "Create VATSetupPostingGrp. MX"
 
     local procedure CreateVatSetupPostingGrp()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         VATSetupPostingGroups: Record "VAT Setup Posting Groups";
-        CreateVatPostingGroupMX: Codeunit "Create VAT Posting Groups MX";
         ContosoVATStatement: Codeunit "Contoso VAT Statement";
         CreateMXGLAccounts: Codeunit "Create MX GL Accounts";
     begin
+        FinanceModuleSetup.Get();
+
         ContosoVATStatement.SetOverwriteData(true);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupMX.NOVAT(), true, 0, CreateMXGLAccounts.SalesVat16Perc(), CreateMXGLAccounts.PurchaseVat16Perc(), true, VATSetupPostingGroups."Application Type"::Items, StrSubstNo(VATDescriptionLbl, CreateVatPostingGroupMX.NOVAT()));
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupMX.VAT16(), true, 16, CreateMXGLAccounts.SalesVat16Perc(), CreateMXGLAccounts.PurchaseVat16Perc(), true, VATSetupPostingGroups."Application Type"::Items, StrSubstNo(VATDescriptionLbl, CreateVatPostingGroupMX.VAT16()));
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupMX.VAT8(), true, 8, CreateMXGLAccounts.SalesVat8Perc(), CreateMXGLAccounts.PurchaseVat8Perc(), true, VATSetupPostingGroups."Application Type"::Items, StrSubstNo(VATDescriptionLbl, CreateVatPostingGroupMX.VAT8()));
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", true, 0, CreateMXGLAccounts.SalesVat16Perc(), CreateMXGLAccounts.PurchaseVat16Perc(), true, VATSetupPostingGroups."Application Type"::Items, StrSubstNo(VATDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. NO VAT"));
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Standard", true, 16, CreateMXGLAccounts.SalesVat16Perc(), CreateMXGLAccounts.PurchaseVat16Perc(), true, VATSetupPostingGroups."Application Type"::Items, StrSubstNo(VATDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. Standard"));
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Reduced", true, 8, CreateMXGLAccounts.SalesVat8Perc(), CreateMXGLAccounts.PurchaseVat8Perc(), true, VATSetupPostingGroups."Application Type"::Items, StrSubstNo(VATDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. Reduced"));
         ContosoVATStatement.SetOverwriteData(false);
     end;
 

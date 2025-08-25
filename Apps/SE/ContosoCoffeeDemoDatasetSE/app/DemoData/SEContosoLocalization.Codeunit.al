@@ -48,8 +48,6 @@ codeunit 11214 "SE Contoso Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create Post Code SE");
                     CreateCompanyInformationSE.UpdateCompanyRegistrationInformation();
-                    Codeunit.Run(Codeunit::"Create Vat Posting Groups SE");
-                    Codeunit.Run(Codeunit::"Create Posting Groups SE");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 Codeunit.Run(Codeunit::"Create Company Information SE");
@@ -117,15 +115,15 @@ codeunit 11214 "SE Contoso Localization"
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
                     CreateInvPostingSetupSE.UpdateInventoryPosting();
-                    Codeunit.Run(Codeunit::"Create Item Template SE");
                     Codeunit.Run(Codeunit::"Create Location SE");
                 end;
         end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
-    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateLocationSE: Codeunit "Create Location SE";
         CreateItemSE: Codeunit "Create Item SE";
         CreateBankAccountSE: Codeunit "Create Bank Account SE";
@@ -142,7 +140,6 @@ codeunit 11214 "SE Contoso Localization"
         CreateCurrencyExchRateSE: Codeunit "Create Currency Ex. Rate SE";
         CreateFADepreciationBookSE: Codeunit "Create FA Depreciation Book SE";
         CreateAccScheduleSE: Codeunit "Create Acc. Schedule SE";
-        CreateItemChargeSE: Codeunit "Create Item Charge SE";
         CreateGenJournalLineSE: Codeunit "Create Gen. Journal Line SE";
         CreateVATStatementSE: Codeunit "Create VAT Statement SE";
     begin
@@ -156,7 +153,6 @@ codeunit 11214 "SE Contoso Localization"
                 begin
                     BindSubscription(CreateItemSE);
                     BindSubscription(CreateLocationSE);
-                    BindSubscription(CreateItemChargeSE);
                 end;
             Enum::"Contoso Demo Data Module"::Sales:
                 begin
@@ -174,6 +170,11 @@ codeunit 11214 "SE Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
+                        FinanceModuleSetup.InitRecord();
+                        Codeunit.Run(Codeunit::"Create Vat Posting Groups SE");
+                        Codeunit.Run(Codeunit::"Create Posting Groups SE");
+                    end;
                     BindSubscription(CreateCurrencySE);
                     BindSubscription(CreateCurrencyExchRateSE);
                     BindSubscription(CreateResourceSE);
@@ -203,7 +204,6 @@ codeunit 11214 "SE Contoso Localization"
         CreateCurrencyExchRateSE: Codeunit "Create Currency Ex. Rate SE";
         CreateFADepreciationBookSE: Codeunit "Create FA Depreciation Book SE";
         CreateAccScheduleSE: Codeunit "Create Acc. Schedule SE";
-        CreateItemChargeSE: Codeunit "Create Item Charge SE";
         CreateGenJournalLineSE: Codeunit "Create Gen. Journal Line SE";
         CreateVATStatementSE: Codeunit "Create VAT Statement SE";
     begin
@@ -217,7 +217,6 @@ codeunit 11214 "SE Contoso Localization"
                 begin
                     UnBindSubscription(CreateItemSE);
                     UnBindSubscription(CreateLocationSE);
-                    UnbindSubscription(CreateItemChargeSE);
                 end;
             Enum::"Contoso Demo Data Module"::Sales:
                 begin
