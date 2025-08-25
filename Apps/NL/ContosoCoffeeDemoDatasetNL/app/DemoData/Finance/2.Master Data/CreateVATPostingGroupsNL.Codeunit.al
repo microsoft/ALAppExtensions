@@ -22,32 +22,34 @@ codeunit 11534 "Create VAT Posting Groups NL"
 
     local procedure UpdateVATPostingSetup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
         ContosoPostingSetup: Codeunit "Contoso Posting Setup";
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateNLGLAccounts: Codeunit "Create NL GL Accounts";
     begin
         ContosoCoffeeDemoDataSetup.Get();
+        FinanceModuleSetup.Get();
 
         ContosoPostingSetup.SetOverwriteData(true);
         if ContosoCoffeeDemoDataSetup."Company Type" = ContosoCoffeeDemoDataSetup."Company Type"::"Sales Tax" then
             ContosoPostingSetup.InsertVATPostingSetup('', '', '', '', '', 0, Enum::"Tax Calculation Type"::"Sales Tax", 'E', '', '', false)
         else begin
-            ContosoPostingSetup.InsertVATPostingSetup('', CreateVATPostingGroups.Reduced(), CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.Reduced(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', CreateVATPostingGroups.Reduced(), false);
-            ContosoPostingSetup.InsertVATPostingSetup('', CreateVATPostingGroups.Standard(), CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.Standard(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-            ContosoPostingSetup.InsertVATPostingSetup('', CreateVATPostingGroups.Zero(), CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), CreateVATPostingGroups.Zero(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', CreateVATPostingGroups.Zero(), false);
+            ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', FinanceModuleSetup."VAT Prod. Post Grp. Reduced", false);
+            ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+            ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", false);
 
-            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.Reduced(), CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.Reduced(), 9, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', CreateVATPostingGroups.Reduced(), false);
-            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.Standard(), CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.Standard(), 21, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
-            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.Zero(), CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), CreateVATPostingGroups.Zero(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', CreateVATPostingGroups.Zero(), false);
+            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 9, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', FinanceModuleSetup."VAT Prod. Post Grp. Reduced", false);
+            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 21, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
+            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", false);
 
-            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.Reduced(), CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.Reduced(), 9, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateNLGLAccounts.MiscVATPayables(), CreateVATPostingGroups.Reduced(), true);
-            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.Standard(), CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.Standard(), 21, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateNLGLAccounts.MiscVATPayables(), '', false);
-            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), CreateVATPostingGroups.Zero(), CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), CreateVATPostingGroups.Zero(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', CreateVATPostingGroups.Zero(), false);
+            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 9, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateNLGLAccounts.MiscVATPayables(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", true);
+            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 21, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateNLGLAccounts.MiscVATPayables(), '', false);
+            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", false);
 
-            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.Reduced(), CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), CreateVATPostingGroups.Reduced(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', CreateVATPostingGroups.Reduced(), false);
-            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.Standard(), CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), CreateVATPostingGroups.Standard(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), CreateVATPostingGroups.Zero(), CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), CreateVATPostingGroups.Zero(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', CreateVATPostingGroups.Zero(), false);
+            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', FinanceModuleSetup."VAT Prod. Post Grp. Reduced", false);
+            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+            ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", false);
         end;
         ContosoPostingSetup.SetOverwriteData(false);
     end;

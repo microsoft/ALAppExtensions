@@ -85,5 +85,10 @@ table 10044 "IRS 1099 Vend. Form Box Buffer"
         {
 
         }
+        key(VendorFormBox; "Vendor No.", "Form No.", "Form Box No.")
+        {
+
+        }
+
     }
 }

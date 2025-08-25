@@ -19,11 +19,13 @@ codeunit 11149 "Create Posting Groups AT"
 
     local procedure InsertGenProdPostingGroup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
-        CreateVATPostingGroupAT: codeunit "Create VAT Posting Group AT";
     begin
+        FinanceModuleSetup.Get();
+
         ContosoPostingGroup.SetOverwriteData(true);
-        ContosoPostingGroup.InsertGenProductPostingGroup(NoVATPostingGroup(), MiscDescriptionLbl, CreateVATPostingGroupAT.NOVAT());
+        ContosoPostingGroup.InsertGenProductPostingGroup(NoVATPostingGroup(), MiscDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. NO VAT");
         ContosoPostingGroup.SetOverwriteData(false);
     end;
 

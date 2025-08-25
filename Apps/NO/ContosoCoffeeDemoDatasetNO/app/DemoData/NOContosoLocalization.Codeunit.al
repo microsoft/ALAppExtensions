@@ -38,11 +38,7 @@ codeunit 10669 "NO Contoso Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Post Code NO");
-                    Codeunit.Run(Codeunit::"Create Vat Posting Groups NO");
-                    Codeunit.Run(Codeunit::"Create Posting Groups NO");
-                end;
+                Codeunit.Run(Codeunit::"Create Post Code NO");
             Enum::"Contoso Demo Data Level"::"Master Data":
                 Codeunit.Run(Codeunit::"Create Company Information NO");
         end;
@@ -78,16 +74,15 @@ codeunit 10669 "NO Contoso Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Item Template NO");
-                    Codeunit.Run(Codeunit::"Create Location NO");
-                end;
+
+                Codeunit.Run(Codeunit::"Create Location NO");
         end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
-    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateItemNO: Codeunit "Create Item NO";
         CreateCurrencyNO: Codeunit "Create Currency NO";
         CreateCurrencyExchRateNO: Codeunit "Create Currency Ex. Rate NO";
@@ -102,7 +97,6 @@ codeunit 10669 "NO Contoso Localization"
         CreateVendorPostingGroupNO: Codeunit "Create Vendor Posting Group NO";
         CreateShiptoAddressNO: Codeunit "Create Ship-to Address NO";
         CreateBankAccountNO: Codeunit "Create Bank Account NO";
-        CreateItemChargeNO: Codeunit "Create Item Charge NO";
         CreateCustomerTemplateNO: Codeunit "Create Customer Template NO";
         CreateVendorTemplateNO: Codeunit "Create Vendor Template NO";
         CreateAccScheduleLineNO: Codeunit "Create Acc. Schedule Line NO";
@@ -113,10 +107,14 @@ codeunit 10669 "NO Contoso Localization"
                 begin
                     BindSubscription(CreateLocationNO);
                     BindSubscription(CreateItemNO);
-                    BindSubscription(CreateItemChargeNO);
                 end;
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
+                        FinanceModuleSetup.InitRecord();
+                        Codeunit.Run(Codeunit::"Create Vat Posting Groups NO");
+                        Codeunit.Run(Codeunit::"Create Posting Groups NO");
+                    end;
                     BindSubscription(CreateCurrencyNO);
                     BindSubscription(CreateCurrencyExchRateNO);
                     BindSubscription(CreateResourceNO);
@@ -161,7 +159,6 @@ codeunit 10669 "NO Contoso Localization"
         CreateVendorPostingGroupNO: Codeunit "Create Vendor Posting Group NO";
         CreateShiptoAddressNO: Codeunit "Create Ship-to Address NO";
         CreateBankAccountNO: Codeunit "Create Bank Account NO";
-        CreateItemChargeNO: Codeunit "Create Item Charge NO";
         CreateCustomerTemplateNO: Codeunit "Create Customer Template NO";
         CreateVendorTemplateNO: Codeunit "Create Vendor Template NO";
         CreateAccScheduleLineNO: Codeunit "Create Acc. Schedule Line NO";
@@ -172,7 +169,6 @@ codeunit 10669 "NO Contoso Localization"
                 begin
                     UnbindSubscription(CreateLocationNO);
                     UnBindSubscription(CreateItemNO);
-                    UnbindSubscription(CreateItemChargeNO);
                 end;
             Enum::"Contoso Demo Data Module"::Finance:
                 begin

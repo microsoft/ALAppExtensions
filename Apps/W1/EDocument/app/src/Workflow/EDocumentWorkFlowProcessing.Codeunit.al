@@ -7,6 +7,7 @@ namespace Microsoft.eServices.EDocument;
 using System.Automation;
 using System.Telemetry;
 using System.Utilities;
+using Microsoft.Sales.History;
 using Microsoft.eServices.EDocument.Integration.Send;
 
 codeunit 6135 "E-Document WorkFlow Processing"
@@ -14,7 +15,6 @@ codeunit 6135 "E-Document WorkFlow Processing"
     Permissions =
         tabledata "E-Document" = m,
         tabledata "E-Doc. Mapping Log" = i;
-
 
     internal procedure IsServiceUsedInActiveWorkflow(EDocumentService: Record "E-Document Service"): Boolean
     var
@@ -33,6 +33,38 @@ codeunit 6135 "E-Document WorkFlow Processing"
                                 exit(true);
                     until WorkflowStep.Next() = 0;
             until Workflow.Next() = 0;
+    end;
+
+    internal procedure SendEDocFromEmail(var EDocument: Record "E-Document"; WorkflowStepInstance: Record "Workflow Step Instance")
+    var
+        SalesInvHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+    begin
+        case EDocument."Document Type" of
+            Enum::"E-Document Type"::None:
+                Error(CannotSendEDocWithoutTypeErr);
+            Enum::"E-Document Type"::"Sales Invoice":
+                begin
+                    if not SalesInvHeader.Get(EDocument."Document No.")
+                    then
+                        Error(CannotFindEDocErr, Enum::"E-Document Type"::"Sales Invoice", EDocument."Document No.");
+
+                    SalesInvHeader.SetRecFilter();
+                    SalesInvHeader.EmailRecords(false);
+                end;
+            Enum::"E-Document Type"::"Sales Credit Memo":
+                begin
+                    if not SalesCrMemoHeader.Get(EDocument."Document No.")
+                    then
+                        Error(CannotFindEDocErr, Enum::"E-Document Type"::"Sales Credit Memo", EDocument."Document No.");
+
+                    SalesCrMemoHeader.SetRecFilter();
+                    SalesCrMemoHeader.EmailRecords(false);
+                end;
+            else
+                Error(NotSupportedEDocTypeErr, EDocument."Document Type");
+        end;
+
     end;
 
     internal procedure GetEDocumentServicesInWorkflow(WorkFlow: Record Workflow; var EDocumentService: Record "E-Document Service"): Boolean
@@ -119,11 +151,11 @@ codeunit 6135 "E-Document WorkFlow Processing"
         Commit();
 
         if EDocument.Count() = 1 then
-            WorkflowManagement.HandleEventOnKnownWorkflowInstance(EDocumentWorkflowSetup.EDocStatusChanged(), EDocument, EDocument."Workflow Step Instance ID")
+            WorkflowManagement.HandleEventOnKnownWorkflowInstance(EDocumentWorkflowSetup.EventEDocStatusChanged(), EDocument, EDocument."Workflow Step Instance ID")
         else begin
             EDocument.FindSet();
             repeat
-                WorkflowManagement.HandleEventOnKnownWorkflowInstance(EDocumentWorkflowSetup.EDocStatusChanged(), EDocument, EDocument."Workflow Step Instance ID");
+                WorkflowManagement.HandleEventOnKnownWorkflowInstance(EDocumentWorkflowSetup.EventEDocStatusChanged(), EDocument, EDocument."Workflow Step Instance ID");
             until EDocument.Next() = 0;
         end;
     end;
@@ -229,6 +261,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
 
     local procedure DoSend(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service")
     var
+        EDocServiceStatus: Record "E-Document Service Status";
         EDocExport: Codeunit "E-Doc. Export";
         EDocIntMgt: Codeunit "E-Doc. Integration Management";
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
@@ -236,14 +269,38 @@ codeunit 6135 "E-Document WorkFlow Processing"
         Sent, IsAsync : Boolean;
     begin
         Sent := false;
-        if EDocExport.ExportEDocument(EDocument, EDocumentService) then
-            Sent := EDocIntMgt.Send(EDocument, EDocumentService, SendContext, IsAsync);
+
+        if EDocServiceStatus.Get(EDocument."Entry No", EDocumentService.Code) then;
+
+        // if the EDoc has been exported, we don't need to export it again when it is triggered by workflow.
+        if (EDocServiceStatus.Status = Enum::"E-Document Service Status"::Exported) then
+            Sent := EDocIntMgt.Send(EDocument, EDocumentService, SendContext, IsAsync)
+        else
+            if EDocExport.ExportEDocument(EDocument, EDocumentService) then
+                Sent := EDocIntMgt.Send(EDocument, EDocumentService, SendContext, IsAsync);
 
         if Sent then
             if IsAsync then
                 EDocumentBackgroundjobs.ScheduleGetResponseJob()
             else
                 HandleNextEvent(EDocument);
+    end;
+
+    internal procedure ExportEDocument(var EDocument: Record "E-Document"; WorkflowStepInstance: Record "Workflow Step Instance")
+    var
+        WorkflowStepArgument: Record "Workflow Step Argument";
+        EDocumentService: Record "E-Document Service";
+        EDocExport: Codeunit "E-Doc. Export";
+        WorkflowManagement: Codeunit "Workflow Management";
+        EDocWorkflowSetup: Codeunit "E-Document Workflow Setup";
+    begin
+        if not ValidateFlowStep(EDocument, WorkflowStepArgument, WorkflowStepInstance) then
+            exit;
+
+        EDocumentService.Get(WorkflowStepArgument."E-Document Service");
+
+        if EDocExport.ExportEDocument(EDocument, EDocumentService) then
+            WorkflowManagement.HandleEventOnKnownWorkflowInstance(EDocWorkflowSetup.EventEDocExported(), EDocument, EDocument."Workflow Step Instance ID");
     end;
 
     local procedure ValidateFlowStep(var EDocument: Record "E-Document"; var WorkflowStepArgument: Record "Workflow Step Argument"; WorkflowStepInstance: Record "Workflow Step Instance"): Boolean
@@ -304,6 +361,9 @@ codeunit 6135 "E-Document WorkFlow Processing"
         NotSupportedBatchModeErr: Label 'Batch Mode %1 is not supported in E-Document Framework.', Comment = '%1 - The batch mode enum value';
         EDocTelemetryProcessingStartScopeLbl: Label 'E-Document Processing: Start Scope', Locked = true;
         EDocTelemetryProcessingEndScopeLbl: Label 'E-Document Processing: End Scope', Locked = true;
+        CannotSendEDocWithoutTypeErr: Label 'Cannot send the E-Document without document type.';
+        CannotFindEDocErr: Label 'Cannot find the E-Document with type %1, document number %2.', Comment = '%1 - E-Document type, %2 - Document number';
+        NotSupportedEDocTypeErr: Label 'The document type %1 is not supported for sending from email.', Comment = '%1 - E-Document type';
 
     [IntegrationEvent(false, false)]
     local procedure OnBatchSendWithCustomBatchMode(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var IsHandled: Boolean)

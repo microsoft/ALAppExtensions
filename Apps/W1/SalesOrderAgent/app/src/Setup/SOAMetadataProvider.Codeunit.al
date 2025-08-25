@@ -8,6 +8,8 @@ namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.Agents;
 using System.AI;
+using System.Reflection;
+using System.Security.AccessControl;
 
 codeunit 4401 "SOA Metadata Provider" implements IAgentMetadata, IAgentFactory
 {
@@ -60,6 +62,16 @@ codeunit 4401 "SOA Metadata Provider" implements IAgentMetadata, IAgentFactory
     procedure GetAgentTaskMessagePageId(AgentUserId: Guid; MessageId: Guid): Integer
     begin
         exit(Page::"SOA Email Message");
+    end;
+
+    procedure GetDefaultProfile(var TempAllProfile: Record "All Profile" temporary)
+    begin
+        SOASetupCU.GetDefaultProfile(TempAllProfile);
+    end;
+
+    procedure GetDefaultAccessControls(var TempAccessControlBuffer: Record "Access Control Buffer" temporary)
+    begin
+        SOASetupCU.GetDefaultAccessControls(TempAccessControlBuffer);
     end;
 
     var

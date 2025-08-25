@@ -23,16 +23,15 @@ codeunit 11364 "Create Posting Group BE"
 
     local procedure InsertGenProdPostingGroup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
         CreateVATPostingGroupBE: codeunit "Create VAT Posting Group BE";
         CreatePostingGroup: Codeunit "Create Posting Groups";
     begin
+        FinanceModuleSetup.Get();
+
         ContosoPostingGroup.SetOverwriteData(true);
-        ContosoPostingGroup.InsertGenProductPostingGroup(NoVATPostingGroup(), MiscDescriptionLbl, CreateVATPostingGroupBE.NOVAT());
-        UpdateGenProdPostingGrp(CreatePostingGroup.FreightPostingGroup(), CreateVATPostingGroupBE.G3());
-        UpdateGenProdPostingGrp(CreatePostingGroup.RawMatPostingGroup(), CreateVATPostingGroupBE.G3());
-        UpdateGenProdPostingGrp(CreatePostingGroup.RetailPostingGroup(), CreateVATPostingGroupBE.G3());
-        UpdateGenProdPostingGrp(CreatePostingGroup.MiscPostingGroup(), CreateVATPostingGroupBE.G3());
+        ContosoPostingGroup.InsertGenProductPostingGroup(NoVATPostingGroup(), MiscDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. NO VAT");
         UpdateGenProdPostingGrp(CreatePostingGroup.ServicesPostingGroup(), CreateVATPostingGroupBE.S3());
         UpdateGenProdPostingGrp(CreatePostingGroup.ExportPostingGroup(), CreateVATPostingGroupBE.IMPEXP());
         ContosoPostingGroup.SetOverwriteData(false);

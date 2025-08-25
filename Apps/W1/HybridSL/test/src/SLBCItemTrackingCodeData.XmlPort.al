@@ -6,7 +6,7 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Inventory.Tracking;
 
-xmlport 47221 "SL BC Item Tracking Code Data"
+xmlport 147621 "SL BC Item Tracking Code Data"
 {
     Caption = 'BC Item Tracking Code data for import/export';
     Direction = Both;

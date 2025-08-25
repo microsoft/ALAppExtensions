@@ -14,6 +14,7 @@ page 10058 "Transmission IRIS"
     Caption = 'IRIS Transmission';
     ApplicationArea = BasicUS;
     SourceTable = "Transmission IRIS";
+    Permissions = tabledata "User Params IRIS" = M;
 
     layout
     {

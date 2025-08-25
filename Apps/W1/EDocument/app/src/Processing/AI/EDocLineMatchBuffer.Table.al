@@ -38,7 +38,7 @@ table 6111 "EDoc Line Match Buffer"
             DataClassification = CustomerContent;
             TableRelation = "Deferral Template";
         }
-        field(6; "Deferral Reason"; Text[250])
+        field(6; "Deferral Reason"; Text[1024])
         {
             Caption = 'Deferral Reason';
             DataClassification = CustomerContent;

@@ -20,32 +20,37 @@ codeunit 11379 "Create DE VAT Posting Groups"
 
     trigger OnRun()
     begin
-        RenameW1VATProductPostingGroup();
-        InsertVATProductPostingGroup();
         CreateVATPostingSetup();
         RemoveW1VATProductPostingGroup();
+        UpdateVATProdGroupOnGLAccount();
     end;
 
     local procedure CreateVATPostingSetup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingSetup: codeunit "Contoso Posting Setup";
         CreateDEGLAccount: Codeunit "Create DE GL Acc.";
         CreatePostingGroup: codeunit "Create Posting Groups";
     begin
+        FinanceModuleSetup.Get();
+
         ContosoPostingSetup.SetOverwriteData(true);
-        ContosoPostingSetup.InsertVATPostingSetup('', NOVAT(), CreateDEGLAccount.MiscVATPayables(), CreateDEGLAccount.MiscVATReceivables(), NOVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup('', VAT19(), CreateDEGLAccount.SalesVATNormal(), CreateDEGLAccount.PurchaseVATNormal(), VAT19(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup('', VAT7(), CreateDEGLAccount.SalesVATReduced(), CreateDEGLAccount.PurchaseVATReduced(), VAT7(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateDEGLAccount.MiscVATPayables(), CreateDEGLAccount.MiscVATReceivables(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateDEGLAccount.SalesVATNormal(), CreateDEGLAccount.PurchaseVATNormal(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateDEGLAccount.SalesVATReduced(), CreateDEGLAccount.PurchaseVATReduced(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+
         ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.DomesticPostingGroup(), EUPostingGroupST(), '', '', EUPostingGroupST(), 100, Enum::"Tax Calculation Type"::"Full VAT", 'S', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.DomesticPostingGroup(), NOVAT(), CreateDEGLAccount.MiscVATPayables(), CreateDEGLAccount.MiscVATReceivables(), NOVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.DomesticPostingGroup(), VAT19(), CreateDEGLAccount.SalesVATNormal(), CreateDEGLAccount.PurchaseVATNormal(), VAT19(), 19, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.DomesticPostingGroup(), VAT7(), CreateDEGLAccount.SalesVATReduced(), CreateDEGLAccount.PurchaseVATReduced(), VAT7(), 7, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.EUPostingGroup(), NOVAT(), CreateDEGLAccount.MiscVATPayables(), CreateDEGLAccount.MiscVATReceivables(), NOVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.EUPostingGroup(), VAT19(), CreateDEGLAccount.SalesVATNormal(), CreateDEGLAccount.PurchaseVATNormal(), VAT19(), 19, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateDEGLAccount.MiscVATPayables(), '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.EUPostingGroup(), VAT7(), CreateDEGLAccount.SalesVATReduced(), CreateDEGLAccount.PurchaseVATReduced(), VAT7(), 7, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateDEGLAccount.MiscVATPayables(), '', true);
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.ExportPostingGroup(), NOVAT(), CreateDEGLAccount.MiscVATPayables(), CreateDEGLAccount.MiscVATReceivables(), NOVAT(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.ExportPostingGroup(), VAT19(), CreateDEGLAccount.SalesVATNormal(), CreateDEGLAccount.PurchaseVATNormal(), VAT19(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.ExportPostingGroup(), VAT7(), CreateDEGLAccount.SalesVATReduced(), CreateDEGLAccount.PurchaseVATReduced(), VAT7(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.DomesticPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateDEGLAccount.MiscVATPayables(), CreateDEGLAccount.MiscVATReceivables(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.DomesticPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateDEGLAccount.SalesVATNormal(), CreateDEGLAccount.PurchaseVATNormal(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 19, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.DomesticPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateDEGLAccount.SalesVATReduced(), CreateDEGLAccount.PurchaseVATReduced(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 7, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
+
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.EUPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateDEGLAccount.MiscVATPayables(), CreateDEGLAccount.MiscVATReceivables(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.EUPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateDEGLAccount.SalesVATNormal(), CreateDEGLAccount.PurchaseVATNormal(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 19, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateDEGLAccount.MiscVATPayables(), '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.EUPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateDEGLAccount.SalesVATReduced(), CreateDEGLAccount.PurchaseVATReduced(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 7, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateDEGLAccount.MiscVATPayables(), '', true);
+
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.ExportPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateDEGLAccount.MiscVATPayables(), CreateDEGLAccount.MiscVATReceivables(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.ExportPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateDEGLAccount.SalesVATNormal(), CreateDEGLAccount.PurchaseVATNormal(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroup.ExportPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateDEGLAccount.SalesVATReduced(), CreateDEGLAccount.PurchaseVATReduced(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
         ContosoPostingSetup.SetOverwriteData(false);
     end;
 
@@ -86,31 +91,33 @@ codeunit 11379 "Create DE VAT Posting Groups"
 
     procedure InsertVATProductPostingGroup()
     var
-        CreateDEPostingGroups: Codeunit "Create DE Posting Groups";
-        CreatePostingGroups: Codeunit "Create Posting Groups";
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
-        CreateDEGLAcc: Codeunit "Create DE GL Acc.";
-        CreateGLAccount: Codeunit "Create G/L Account";
     begin
+        FinanceModuleSetup.Get();
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Standard" = '' then begin
+            ContosoPostingGroup.InsertVATProductPostingGroup(VAT19(), StrSubstNo(MiscellaneousVATLbl, '19'));
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Standard", VAT19());
+        end;
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Reduced" = '' then begin
+            ContosoPostingGroup.InsertVATProductPostingGroup(VAT7(), StrSubstNo(MiscellaneousVATLbl, '7'));
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Reduced", VAT7());
+        end;
+
+        FinanceModuleSetup.Modify();
+
         ContosoPostingGroup.InsertVATProductPostingGroup(EUPostingGroupST(), EUPostingGroupSTLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(Min19(), StrSubstNo(MinderungDescriptionLbl, '19%'));
         ContosoPostingGroup.InsertVATProductPostingGroup(Min7(), StrSubstNo(MinderungDescriptionLbl, '7%'));
-        ContosoPostingGroup.InsertVATProductPostingGroup(VAT7(), StrSubstNo(MiscellaneousVATLbl, '7'));
-        ContosoPostingGroup.InsertVATProductPostingGroup(VAT19(), StrSubstNo(MiscellaneousVATLbl, '19'));
+    end;
 
-        CreateDEPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroups.FreightPostingGroup(), VAT19());
-        CreateDEPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroups.RawMatPostingGroup(), VAT19());
-        CreateDEPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroups.MiscPostingGroup(), VAT19());
-        CreateDEPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroups.ServicesPostingGroup(), VAT7());
-        CreateDEPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroups.RetailPostingGroup(), VAT19());
-        CreateDEPostingGroups.UpdateVATProdPostingGroup(CreateDEPostingGroups.NoVATPostingGroup(), NOVAT());
-
-        ContosoPostingGroup.SetOverwriteData(true);
-        ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.Standard(), StandardVATDescriptionLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.Reduced(), ReducedVATDescriptionLbl);
-        ContosoPostingGroup.SetOverwriteData(false);
-
+    local procedure UpdateVATProdGroupOnGLAccount()
+    var
+        CreateDEGLAcc: Codeunit "Create DE GL Acc.";
+        CreateGLAccount: Codeunit "Create G/L Account";
+    begin
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.MiscVATPayables(), VAT19());
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.Incomefromsecurities(), VAT19());
         UpdateVATProductPostingGroupOnGLAccount(CreateGLAccount.InterestIncome(), VAT19());
@@ -121,15 +128,6 @@ codeunit 11379 "Create DE VAT Posting Groups"
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.SaleofSubcontracting(), VAT7());
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.SalesofServiceContracts(), VAT7());
         UpdateVATProductPostingGroupOnGLAccount(CreateDEGLAcc.PayableInvoiceRounding(), VAT19());
-    end;
-
-    local procedure RenameW1VATProductPostingGroup()
-    var
-        VATProductPostingGroup: Record "VAT Product Posting Group";
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
-    begin
-        VATProductPostingGroup.Get(CreateVATPostingGroups.Zero());
-        VATProductPostingGroup.Rename(NOVAT());
     end;
 
     local procedure RemoveW1VATProductPostingGroup()
@@ -161,10 +159,15 @@ codeunit 11379 "Create DE VAT Posting Groups"
         GLAccount.Modify(true);
     end;
 
+#if not CLEAN27
+    [Obsolete('Use the procedure NOVAT in codeunit 5473 "Create VAT Posting Groups"', '27.0')]
     procedure NOVAT(): Code[20]
+    var
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
-        exit(NoVATTok);
+        exit(CreateVATPostingGroups.NOVAT());
     end;
+#endif
 
     procedure VAT19(): Code[20]
     begin
@@ -176,10 +179,15 @@ codeunit 11379 "Create DE VAT Posting Groups"
         exit(VAT7Tok);
     end;
 
+#if not CLEAN27
+    [Obsolete('Use the procedure NOVAT in codeunit 5473 "Create VAT Posting Groups"', '27.0')]
     procedure Zero(): Code[20]
+    var
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
-        exit(ZeroTok);
+        exit(CreateVATPostingGroups.NOVAT());
     end;
+#endif
 
     procedure EUPostingGroupST(): Code[20]
     begin
@@ -223,10 +231,8 @@ codeunit 11379 "Create DE VAT Posting Groups"
 #endif
 
     var
-        NoVATTok: Label 'NO VAT', MaxLength = 20;
         VAT19Tok: Label 'VAT19', MaxLength = 20;
         VAT7Tok: Label 'VAT7', MaxLength = 20;
-        ZeroTok: Label 'ZERO', MaxLength = 20, Locked = true;
         EUSTTok: Label 'EUST', MaxLength = 20, Locked = true;
         Min19Tok: Label 'MIN19', MaxLength = 20, Locked = true;
         Min7Tok: Label 'MIN7', MaxLength = 20, Locked = true;
@@ -239,6 +245,4 @@ codeunit 11379 "Create DE VAT Posting Groups"
         MiscellaneousVATLbl: Label 'Miscellaneous %1 VAT', Comment = '%1=a number specifying the VAT percentage', MaxLength = 100;
         EUPostingGroupSTLbl: Label 'Einfuhrumsatzsteuer', Locked = true;
         MinderungDescriptionLbl: Label 'Minderung %1', Locked = true;
-        StandardVATDescriptionLbl: Label 'Standard VAT', MaxLength = 100;
-        ReducedVATDescriptionLbl: Label 'Reduced VAT', MaxLength = 100;
 }
