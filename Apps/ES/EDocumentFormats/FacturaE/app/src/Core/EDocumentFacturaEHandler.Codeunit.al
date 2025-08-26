@@ -273,4 +273,12 @@ codeunit 10776 "E-Document Factura-E Handler" implements IStructuredFormatReader
                 UOMCode := UnitOfMeasure.Code;
         end;
     end;
+
+    procedure ResetDraft(EDocument: Record "E-Document")
+    var
+        EDocPurchaseHeader: Record "E-Document Purchase Header";
+    begin
+        EDocPurchaseHeader.GetFromEDocument(EDocument);
+        EDocPurchaseHeader.Delete(true);
+    end;    
 }
