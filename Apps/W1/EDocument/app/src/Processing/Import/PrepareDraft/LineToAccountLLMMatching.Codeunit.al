@@ -49,7 +49,7 @@ codeunit 6126 "Line To Account LLM Matching" implements "AOAI Function"
         EDocumentPurchaseLinesTxt: Text;
         SuccessfulAssignment: Boolean;
         GLAccountsTxt, Reasoning : Text;
-        LinesMatched: Integer;
+        LinesMatched, LinesConsidered: Integer;
         EstimateTokenCount, EstimateGLAccInstrTokenCount : Integer;
         LineDictionary: Dictionary of [Integer, Text[100]];
     begin
@@ -63,6 +63,7 @@ codeunit 6126 "Line To Account LLM Matching" implements "AOAI Function"
             Session.LogMessage('0000POF', 'No invoice lines are being sent to Copilot. There are either none, or they all have an account number.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
             exit(Result);
         end;
+        LinesConsidered := LineDictionary.Keys().Count();
         FindGLAccountsPromptSecTxt := BuildMostAppropriateGLAccountPromptTask();
         GLAccountsTxt := BuildGLAccounts();
         EstimateGLAccInstrTokenCount := AOAIToken.GetGPT4TokenCount(FindGLAccountsPromptSecTxt) + AOAIToken.GetGPT4TokenCount(GLAccountsTxt);
@@ -146,8 +147,8 @@ codeunit 6126 "Line To Account LLM Matching" implements "AOAI Function"
                 until EDocumentPurchaseLine.Next() = 0;
 
         TelemetryCustomDimensions.Add('Category', FeatureName());
-        TelemetryCustomDimensions.Add('LinesConsidered', Format(EDocumentPurchaseLine.Count()));
-        TelemetryCustomDimensions.Add('LInesMatched', Format(LinesMatched));
+        TelemetryCustomDimensions.Add('LinesConsidered', Format(LinesConsidered));
+        TelemetryCustomDimensions.Add('LinesMatched', Format(LinesMatched));
         Session.LogMessage('0000PCN', MatchStatisticsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryCustomDimensions);
 
         exit(Result);

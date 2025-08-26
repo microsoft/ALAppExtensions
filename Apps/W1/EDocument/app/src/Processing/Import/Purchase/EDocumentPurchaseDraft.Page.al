@@ -189,13 +189,6 @@ page 6181 "E-Document Purchase Draft"
                     end;
                 }
             }
-
-            part(ErrorMessagesPart; "Error Messages Part")
-            {
-                Visible = HasErrorsOrWarnings;
-                ShowFilter = false;
-                UpdatePropagation = Both;
-            }
         }
         area(factboxes)
         {
@@ -219,6 +212,12 @@ page 6181 "E-Document Purchase Draft"
                 Caption = 'Details';
                 SubPageLink = "E-Document Entry No" = field("Entry No");
                 ShowFilter = false;
+            }
+            part(ErrorMessagesFactBox; "Error Messages Part")
+            {
+                Visible = false;
+                ShowFilter = false;
+                UpdatePropagation = Both;
             }
         }
     }
@@ -291,20 +290,6 @@ page 6181 "E-Document Purchase Draft"
                     EDocImport.ViewExtractedData(Rec);
                 end;
             }
-            action(ClearErrors)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Clear errors';
-                ToolTip = 'Clears all error messages for the E-Document.';
-                Image = ClearLog;
-                Visible = HasErrorsOrWarnings;
-
-                trigger OnAction()
-                begin
-                    EDocumentErrorHelper.ClearErrorMessages(Rec);
-                    ClearErrorsAndWarnings();
-                end;
-            }
         }
         area(Navigation)
         {
@@ -346,9 +331,6 @@ page 6181 "E-Document Purchase Draft"
                 {
                 }
                 actionref(Promoted_ViewFile; ViewFile)
-                {
-                }
-                actionref(Promoted_ClearErrors; ClearErrors)
                 {
                 }
             }
@@ -440,14 +422,9 @@ page 6181 "E-Document Purchase Draft"
     begin
         ErrorMessage.SetRange("Context Record ID", Rec.RecordId);
         ErrorMessage.CopyToTemp(TempErrorMessage);
-        CurrPage.ErrorMessagesPart.Page.SetRecords(TempErrorMessage);
-        CurrPage.ErrorMessagesPart.Page.Update(false);
 
-        ErrorsAndWarningsNotification.Id := GetErrorNotificationGuid();
-        ErrorsAndWarningsNotification.Scope := NotificationScope::LocalScope;
-        if ErrorsAndWarningsNotification.Recall() then;
-        ErrorsAndWarningsNotification.Message(EDocHasErrorOrWarningMsg);
-        ErrorsAndWarningsNotification.Send();
+        CurrPage.ErrorMessagesFactBox.Page.SetRecords(TempErrorMessage);
+        CurrPage.ErrorMessagesFactBox.Page.Update(false);
     end;
 
     local procedure LookupVendor(var VendorNo: Text): Boolean
@@ -467,15 +444,14 @@ page 6181 "E-Document Purchase Draft"
     var
         TempErrorMessage: Record "Error Message" temporary;
     begin
-        CurrPage.ErrorMessagesPart.Page.SetRecords(TempErrorMessage);
-        CurrPage.ErrorMessagesPart.Page.Update(false);
-
-        ErrorsAndWarningsNotification.Id := GetErrorNotificationGuid();
-        if ErrorsAndWarningsNotification.Recall() then;
+        CurrPage.ErrorMessagesFactBox.Page.SetRecords(TempErrorMessage);
+        CurrPage.ErrorMessagesFactBox.Page.Update(false);
     end;
 
     local procedure FinalizeEDocument()
     var
+        TempErrorMessage: Record "Error Message" temporary;
+        ErrorMessage: Record "Error Message";
         EDocImportParameters: Record "E-Doc. Import Parameters";
         EDocImport: Codeunit "E-Doc. Import";
     begin
@@ -488,8 +464,12 @@ page 6181 "E-Document Purchase Draft"
         EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
         Rec.Get(Rec."Entry No");
 
-        if EDocumentErrorHelper.HasErrors(Rec) then
-            exit;
+        if EDocumentErrorHelper.HasErrors(Rec) then begin
+            ErrorMessage.SetRange("Context Record ID", Rec.RecordId);
+            ErrorMessage.CopyToTemp(TempErrorMessage);
+            Commit(); // Persists error messages after error is thrown.
+            TempErrorMessage.ThrowError();
+        end;
 
         PageEditable := IsEditable();
         CurrPage.Lines.Page.Update();
@@ -566,11 +546,6 @@ page 6181 "E-Document Purchase Draft"
             Progress.Close();
     end;
 
-    local procedure GetErrorNotificationGuid(): Guid
-    begin
-        exit('5d928119-f61d-42f7-ba98-43bfcf8bfaeb');
-    end;
-
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -579,12 +554,10 @@ page 6181 "E-Document Purchase Draft"
         EDocPOCopilotMatching: Codeunit "E-Doc. PO Copilot Matching";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocumentHelper: Codeunit "E-Document Helper";
-        ErrorsAndWarningsNotification: Notification;
         RecordLinkTxt, StyleStatusTxt, ServiceStatusStyleTxt, VendorName, DataCaption : Text;
         HasErrorsOrWarnings, HasErrors : Boolean;
         ShowFinalizeDraftAction: Boolean;
         ShowAnalyzeDocumentAction: Boolean;
-        EDocHasErrorOrWarningMsg: Label 'Errors occurred when processing this draft. See errors in the "Error messages" section at the bottom of the page.';
         FinalizeDraftInvokedTxt: Label 'User invoked Finalize Draft action.';
         FinalizeDraftPerformedTxt: Label 'User completed Finalize Draft action.';
         ProcessingDocumentMsg: Label 'Processing document...';

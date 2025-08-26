@@ -8,7 +8,7 @@ using System.TestTools.AITestToolkit;
 codeunit 133515 "Magic Function Prompt Test"
 {
     Subtype = Test;
-    TestType = Uncategorized;
+    TestType = AITest;
     TestPermissions = Disabled;
 
     var

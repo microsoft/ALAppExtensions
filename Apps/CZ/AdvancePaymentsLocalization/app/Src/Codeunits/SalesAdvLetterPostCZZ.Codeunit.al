@@ -302,7 +302,7 @@ codeunit 31143 "Sales Adv. Letter-Post CZZ"
                     OnPostAdvancePaymentVATOnBeforePost(
                         SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, AdvancePostingBufferCZZ,
                         AdvancePostingParametersCZZ, GenJnlPostLine, GenJournalLine);
-                    GLEntryNo := RunGenJnlPostLine(GenJournalLine, GenJnlPostLine, true, true, false);
+                    GLEntryNo := RunGenJnlPostLine(GenJournalLine, GenJnlPostLine, true, true, true);
                     VATEntryNo := GenJnlPostLine.GetNextVATEntryNo() - 1;
                     OnPostAdvancePaymentVATOnAfterPost(
                         SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, AdvancePostingBufferCZZ,
@@ -406,6 +406,8 @@ codeunit 31143 "Sales Adv. Letter-Post CZZ"
         AdvancePostingParametersCZZ2."Document Type" := "Gen. Journal Document Type"::" ";
         InitGenJournalLine(SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
         GenJournalLine."Account No." := VATPostingSetup.GetSalesAdvLetterAccountCZZ();
+        AdvancePostingBufferCZZ."VAT Amount" := 0;
+        AdvancePostingBufferCZZ."VAT Base Amount" := 0;
         GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
         if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
             OnPostAdvancePaymentVATUnlinkingOnBeforePostBalance(
@@ -698,6 +700,8 @@ codeunit 31143 "Sales Adv. Letter-Post CZZ"
             AdvancePostingParametersCZZ2."Document Type" := "Gen. Journal Document Type"::" ";
             InitGenJournalLine(SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
             GenJournalLine."Account No." := VATPostingSetup.GetSalesAdvLetterAccountCZZ();
+            AdvancePostingBufferCZZ."VAT Amount" := 0;
+            AdvancePostingBufferCZZ."VAT Base Amount" := 0;
             GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
             if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
                 OnPostAdvanceCreditMemoVATOnBeforePostBalance(
@@ -891,6 +895,8 @@ codeunit 31143 "Sales Adv. Letter-Post CZZ"
         InitGenJournalLine(SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, AdvancePostingParametersCZZ2, GenJournalLine);
         GenJournalLine."Account No." := VATPostingSetup.GetSalesAdvLetterAccountCZZ();
         GenJournalLine.Correction := true;
+        AdvancePostingBufferCZZ."VAT Amount" := 0;
+        AdvancePostingBufferCZZ."VAT Base Amount" := 0;
         GenJournalLine.CopyFromAdvancePostingBufferAmountsCZZ(AdvancePostingBufferCZZ);
         if not AdvancePostingParametersCZZ."Temporary Entries Only" and not AdvancePostingBufferCZZ."Auxiliary Entry" then begin
             OnPostAdvanceLetterEntryVATUsageUnapplyingOnBeforePostBalance(
