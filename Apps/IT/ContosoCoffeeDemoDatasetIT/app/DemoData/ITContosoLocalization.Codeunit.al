@@ -34,6 +34,8 @@ codeunit 12251 "IT Contoso Localization"
             CRMModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::Bank then
             BankModule(ContosoDemoDataLevel);
+        if Module = Enum::"Contoso Demo Data Module"::Analytics then
+            AnalyticsModule(ContosoDemoDataLevel);
 
         UnBindSubscriptionDemoData(Module);
     end;
@@ -115,6 +117,17 @@ codeunit 12251 "IT Contoso Localization"
         end;
     end;
 
+    local procedure AnalyticsModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
+    begin
+        case ContosoDemoDataLevel of
+            Enum::"Contoso Demo Data Level"::"Transactional Data":
+                begin
+                    Codeunit.Run(Codeunit::"Create Sales Document IT");
+                    Codeunit.Run(Codeunit::"Create Purchase Document IT");
+                end;
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
     local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
     var
@@ -184,6 +197,11 @@ codeunit 12251 "IT Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 BindSubscription(CreateNoSeriesIT);
+            Enum::"Contoso Demo Data Module"::Analytics:
+                begin
+                    BindSubscription(CreatePurchaseDocumentIT);
+                    BindSubscription(CreateSalesDocumentIT);
+                end;
         end;
     end;
 
@@ -251,6 +269,11 @@ codeunit 12251 "IT Contoso Localization"
                     UnbindSubscription(CreateSalesDocumentIT);
                 end;
             Enum::"Contoso Demo Data Module"::"Service Module":
+                begin
+                    UnbindSubscription(CreatePurchaseDocumentIT);
+                    UnbindSubscription(CreateSalesDocumentIT);
+                end;
+            Enum::"Contoso Demo Data Module"::Analytics:
                 begin
                     UnbindSubscription(CreatePurchaseDocumentIT);
                     UnbindSubscription(CreateSalesDocumentIT);
