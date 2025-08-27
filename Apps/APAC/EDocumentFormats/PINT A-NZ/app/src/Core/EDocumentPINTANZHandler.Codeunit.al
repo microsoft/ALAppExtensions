@@ -280,4 +280,12 @@ codeunit 28008 "E-Document PINT A-NZ Handler" implements IStructuredFormatReader
         VendorNo := ServiceParticipant.Participant;
         exit(VendorNo <> '');
     end;
+
+    procedure ResetDraft(EDocument: Record "E-Document")
+    var
+        EDocPurchaseHeader: Record "E-Document Purchase Header";
+    begin
+        EDocPurchaseHeader.GetFromEDocument(EDocument);
+        EDocPurchaseHeader.Delete(true);
+    end;
 }
