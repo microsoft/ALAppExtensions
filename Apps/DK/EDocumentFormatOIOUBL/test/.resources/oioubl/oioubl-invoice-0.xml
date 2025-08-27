@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:oasis:names:specification:ubl:schema:xsd:CoreComponentParameters-2" xmlns:sdt="urn:oasis:names:specification:ubl:schema:xsd:SpecializedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2 UBL-Invoice-2.0.xsd">
+  <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
+  <cbc:CustomizationID>OIOUBL-2.01</cbc:CustomizationID>
+  <cbc:ProfileID schemeAgencyID="320" schemeID="urn:oioubl:id:profileid-1.1">Procurement-OrdSimR-BilSim-1.0</cbc:ProfileID>
+  <cbc:ID>103033</cbc:ID>
+  <cbc:CopyIndicator>false</cbc:CopyIndicator>
+  <cbc:UUID>01d4dd7d-ac2b-460d-ae44-5f20d540952a</cbc:UUID>
+  <cbc:IssueDate>2026-01-22</cbc:IssueDate>
+  <cbc:IssueTime>12:00:00</cbc:IssueTime>
+  <cbc:DueDate>2026-02-22</cbc:DueDate>
+  <cbc:InvoiceTypeCode listAgencyID="320" listID="urn:oioubl:codelist:invoicetypecode-1.1">380</cbc:InvoiceTypeCode>
+  <cbc:DocumentCurrencyCode>XYZ</cbc:DocumentCurrencyCode>
+  <cac:OrderReference>
+    <cbc:ID>2</cbc:ID>
+    <cbc:CopyIndicator>false</cbc:CopyIndicator>
+    <cbc:UUID>9756b468-8815-1029-857a-e388fe63f399</cbc:UUID>
+    <cbc:IssueDate>2025-07-20</cbc:IssueDate>
+    <cbc:IssueTime>12:00:00</cbc:IssueTime>
+  </cac:OrderReference>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="DK:CVR">GB123456789</cbc:EndpointID>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="DK:CVR">GB123456789</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyName>
+        <cbc:Name>CRONUS International</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:AddressFormatCode listAgencyID="320" listID="urn:oioubl:codelist:addressformatcode-1.1">StructuredDK</cbc:AddressFormatCode>
+        <cbc:StreetName>Main Street, 14</cbc:StreetName>
+        <cbc:CityName>Birmingham</cbc:CityName>
+        <cbc:PostalZone>B27 4KT</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID schemeID="DK:SE">GB123456789</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+          <cbc:Name>Moms</cbc:Name>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>CRONUS International</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="DK:CVR">GB123456789</cbc:CompanyID>
+      </cac:PartyLegalEntity>
+      <cac:Contact>
+        <cbc:Name>Jim Olive</cbc:Name>
+        <cbc:ElectronicMail>JO@contoso.com</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="DK:CVR">GB789456278</cbc:EndpointID>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="DK:CVR">GB789456278</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyName>
+        <cbc:Name>The Cannon Group PLC</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:AddressFormatCode listAgencyID="320" listID="urn:oioubl:codelist:addressformatcode-1.1">StructuredDK</cbc:AddressFormatCode>
+        <cbc:StreetName>192 Market Square</cbc:StreetName>
+        <cbc:CityName>Birmingham</cbc:CityName>
+        <cbc:PostalZone>B27 4KT</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID schemeID="DK:SE">GB789456278</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+          <cbc:Name>Moms</cbc:Name>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>The Cannon Group PLC</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="DK:CVR">GB789456278</cbc:CompanyID>
+      </cac:PartyLegalEntity>
+      <cac:Contact>
+        <cbc:Name>Contact Person</cbc:Name>
+        <cbc:ElectronicMail>mr.andy.teal@cannongroup.com</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="DKK">1000.00</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="DKK">14000.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="DKK">1000.00</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxcategoryid-1.1">StandardRated</cbc:ID>
+        <cbc:Percent>25</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+          <cbc:Name>Moms</cbc:Name>
+        </cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="DKK">14000.00</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="DKK">14000.00</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="DKK">14140.00</cbc:TaxInclusiveAmount>
+    <cbc:AllowanceTotalAmount currencyID="DKK">0</cbc:AllowanceTotalAmount>
+    <cbc:PrepaidAmount currencyID="DKK">0.00</cbc:PrepaidAmount>
+    <cbc:PayableRoundingAmount currencyID="DKK">0</cbc:PayableRoundingAmount>
+    <cbc:PayableAmount currencyID="DKK">14140.00</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:InvoiceLine>
+    <cbc:ID>10000</cbc:ID>
+    <cbc:Note>Vare</cbc:Note>
+    <cbc:InvoicedQuantity unitCode="PCS">1</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="XYZ">4000.00</cbc:LineExtensionAmount>
+    <cac:TaxTotal>
+      <cbc:TaxAmount currencyID="DKK">1000.00</cbc:TaxAmount>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="DKK">4000.00</cbc:TaxableAmount>
+        <cbc:TaxAmount currencyID="DKK">1000.00</cbc:TaxAmount>
+        <cac:TaxCategory>
+          <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxcategoryid-1.1">StandardRated</cbc:ID>
+          <cbc:Percent>25</cbc:Percent>
+          <cac:TaxScheme>
+            <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+            <cbc:Name>Moms</cbc:Name>
+          </cac:TaxScheme>
+        </cac:TaxCategory>
+      </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:Item>
+      <cbc:Description>Bicycle</cbc:Description>
+      <cbc:Name>Bicycle</cbc:Name>
+      <cac:SellersItemIdentification>
+        <cbc:ID>1000</cbc:ID>
+      </cac:SellersItemIdentification>
+      <cac:StandardItemIdentification>
+        <cbc:ID schemeID="0160">1000</cbc:ID>
+      </cac:StandardItemIdentification>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxcategoryid-1.1">StandardRated</cbc:ID>
+        <cbc:Percent>25</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+          <cbc:Name>Moms</cbc:Name>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
+    </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="DKK">4000.00</cbc:PriceAmount>
+      <cbc:BaseQuantity unitCode="PCS">1</cbc:BaseQuantity>
+    </cac:Price>
+  </cac:InvoiceLine>
+  <cac:InvoiceLine>
+    <cbc:ID>20000</cbc:ID>
+    <cbc:Note>Vare</cbc:Note>
+    <cbc:InvoicedQuantity unitCode="PCS">2</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="XYZ">10000.00</cbc:LineExtensionAmount>
+    <cac:TaxTotal>
+      <cbc:TaxAmount currencyID="DKK">0.00</cbc:TaxAmount>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="DKK">10000.00</cbc:TaxableAmount>
+        <cbc:TaxAmount currencyID="DKK">0.00</cbc:TaxAmount>
+        <cac:TaxCategory>
+          <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxcategoryid-1.1">StandardRated</cbc:ID>
+          <cbc:Percent>25</cbc:Percent>
+          <cac:TaxScheme>
+            <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+            <cbc:Name>Moms</cbc:Name>
+          </cac:TaxScheme>
+        </cac:TaxCategory>
+      </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:Item>
+      <cbc:Description>Bicycle v2</cbc:Description>
+      <cbc:Name>Bicycle v2</cbc:Name>
+      <cac:SellersItemIdentification>
+        <cbc:ID>2000</cbc:ID>
+      </cac:SellersItemIdentification>
+      <cac:StandardItemIdentification>
+        <cbc:ID schemeID="0160">2000</cbc:ID>
+      </cac:StandardItemIdentification>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxcategoryid-1.1">StandardRated</cbc:ID>
+        <cbc:Percent>25</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID schemeAgencyID="320" schemeID="urn:oioubl:id:taxschemeid-1.1">63</cbc:ID>
+          <cbc:Name>Moms</cbc:Name>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
+    </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="DKK">5000.00</cbc:PriceAmount>
+      <cbc:BaseQuantity unitCode="PCS">1</cbc:BaseQuantity>
+    </cac:Price>
+  </cac:InvoiceLine>
+</Invoice>

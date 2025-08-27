@@ -373,4 +373,12 @@ codeunit 13913 "E-Document OIOUBL Handler" implements IStructuredFormatReader
         VendorNo := EDocServiceParticipant.Participant;
         exit(true);
     end;
+
+    procedure ResetDraft(EDocument: Record "E-Document")
+    var
+        EDocPurchaseHeader: Record "E-Document Purchase Header";
+    begin
+        EDocPurchaseHeader.GetFromEDocument(EDocument);
+        EDocPurchaseHeader.Delete(true);
+    end;
 }
