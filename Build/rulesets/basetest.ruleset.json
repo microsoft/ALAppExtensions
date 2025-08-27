@@ -67,6 +67,22 @@
     {
       "id": "AS0075",
       "action": "Warning"
+    },
+    {
+      "id": "AA0471",
+      "action": "Error"
+    },
+    {
+      "id": "AA0472",
+      "action": "Error"
+    },
+    {
+      "id": "AA0473",
+      "action": "Error"
+    },
+    {
+      "id": "AA0474",
+      "action": "Error"
     }
   ]
 }

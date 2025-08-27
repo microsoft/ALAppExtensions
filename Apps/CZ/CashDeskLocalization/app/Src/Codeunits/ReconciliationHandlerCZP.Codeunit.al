@@ -27,4 +27,16 @@ codeunit 11705 "Reconciliation Handler CZP"
             GLAccountNetChange."Balance after Posting Curr.CZL" := CashDesk.Balance;
         end;
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"G/L Account Net Change", 'OnAfterUpdateNetChange', '', false, false)]
+    local procedure HandleCashDeskTypeOnAfterUpdateNetChange(var GLAccountNetChange: Record "G/L Account Net Change"; NetChange: Decimal)
+    begin
+        if (GLAccountNetChange."Acc. Type CZL" <> GLAccountNetChange."Acc. Type CZL"::"Cash Desk CZP") or
+           (GLAccountNetChange."Currency Code CZL" = '')
+        then
+            exit;
+
+        GLAccountNetChange."Net Change in Jnl. Curr. CZL" += NetChange;
+        GLAccountNetChange."Balance after Posting Curr.CZL" += NetChange;
+    end;
 }

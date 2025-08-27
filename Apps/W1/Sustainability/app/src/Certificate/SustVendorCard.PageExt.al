@@ -20,6 +20,12 @@ pageextension 6221 "Sust. Vendor Card" extends "Vendor Card"
                 Importance = Additional;
                 ToolTip = 'Specifies the Sustainability Certificate Name of the Vendor.';
             }
+            field("Carbon Pricing Paid"; Rec."Carbon Pricing Paid")
+            {
+                ApplicationArea = Basic, Suite;
+                Importance = Additional;
+                ToolTip = 'Specifies the Carbon Pricing Paid of the Vendor.';
+            }
         }
     }
 }

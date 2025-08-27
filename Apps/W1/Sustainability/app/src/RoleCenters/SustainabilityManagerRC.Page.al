@@ -204,7 +204,7 @@ page 6235 "Sustainability Manager RC"
                 Caption = 'Production';
                 action("Consumption Journal")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Manufacturing;
                     Caption = 'Consumption Journal';
                     RunObject = page "Consumption Journal";
                     Tooltip = 'Open the Consumption Journals page.';
@@ -212,7 +212,7 @@ page 6235 "Sustainability Manager RC"
                 }
                 action("Output Journal")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Manufacturing;
                     Caption = 'Output Journal';
                     RunObject = Page "Output Journal";
                     Tooltip = 'Open the Output Journals page.';
@@ -220,7 +220,7 @@ page 6235 "Sustainability Manager RC"
                 }
                 action("Production Journal")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Manufacturing;
                     Caption = 'Production Journal';
                     RunObject = Page "Production Journal";
                     Tooltip = 'Open the Production Journals page.';
@@ -528,42 +528,42 @@ page 6235 "Sustainability Manager RC"
             {
                 action("Work Centers")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Manufacturing;
                     Caption = 'Work Centers';
                     RunObject = page "Work Center List";
                     ToolTip = 'View or edit the list of work centers.';
                 }
                 action("Machine Centers")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Manufacturing;
                     Caption = 'Machine Centers';
                     RunObject = Page "Machine Center List";
                     ToolTip = 'View the list of machine centers.';
                 }
                 action("Production BOM")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Manufacturing;
                     Caption = 'Production BOM';
                     RunObject = Page "Production BOM List";
                     ToolTip = 'Open the item''s production bill of material to view or edit its components.';
                 }
                 action(Routings)
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Manufacturing;
                     Caption = 'Routings';
                     RunObject = Page "Routing List";
                     ToolTip = 'View or edit operation sequences and process times for produced items.';
                 }
                 action("Released Production Orders")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Manufacturing;
                     Caption = 'Released Production Orders';
                     RunObject = Page "Released Production Orders";
                     ToolTip = 'View the list of released production order that are ready for warehouse activities.';
                 }
                 action("Finished Production Orders")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Manufacturing;
                     Caption = 'Finished Production Orders';
                     RunObject = Page "Finished Production Orders";
                     ToolTip = 'View completed production orders. ';
@@ -577,14 +577,14 @@ page 6235 "Sustainability Manager RC"
                 }
                 action("Assembly Orders")
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Assembly;
                     Caption = 'Assembly Orders';
                     RunObject = Page "Assembly Orders";
                     ToolTip = 'View ongoing assembly orders.';
                 }
                 action(Projects)
                 {
-                    ApplicationArea = Basic, Suite;
+                    ApplicationArea = Jobs;
                     Caption = 'Projects';
                     RunObject = Page "Job List";
                     ToolTip = 'Define a project activity by creating a project card with integrated project tasks and project planning lines, structured in two layers. The project task enables you to set up project planning lines and to post consumption to the project. The project planning lines specify the detailed use of resources, items, and various general ledger expenses.';

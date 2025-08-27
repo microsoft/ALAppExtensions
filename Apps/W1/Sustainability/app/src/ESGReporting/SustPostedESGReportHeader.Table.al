@@ -28,7 +28,6 @@ table 6231 "Sust. Posted ESG Report Header"
         field(3; "No."; Code[20])
         {
             Caption = 'No.';
-            OptimizeForTextSearch = true;
         }
         field(4; Description; Text[100])
         {
@@ -39,26 +38,43 @@ table 6231 "Sust. Posted ESG Report Header"
             Caption = 'Date Filter';
             FieldClass = FlowFilter;
         }
-        field(6; "Standard Type"; Enum "Sust ESG Reporting Std. Type")
+        field(6; Standard; Code[20])
         {
-            Caption = 'Standard Type';
+            Caption = 'Standard';
+            TableRelation = "Sust. ESG Standard"."No.";
         }
-        field(7; Period; Integer)
+        field(7; "Period Name"; Text[100])
         {
-            Caption = 'Period';
+            Caption = 'Period Name';
         }
-        field(8; "Country/Region Code"; Code[10])
+        field(8; "Period Starting Date"; Date)
+        {
+            Caption = 'Period Starting Date';
+        }
+        field(9; "Period Ending Date"; Date)
+        {
+            Caption = 'Period Ending Date';
+        }
+        field(10; "Country/Region Code"; Code[10])
         {
             Caption = 'Country/Region Code';
             TableRelation = "Country/Region";
         }
     }
-
     keys
     {
         key(Key1; "No.")
         {
             Clustered = true;
+        }
+    }
+    fieldgroups
+    {
+        fieldgroup(DropDown; "No.", "ESG Reporting Template Name", Name)
+        {
+        }
+        fieldgroup(Brick; "No.", "ESG Reporting Template Name", Name)
+        {
         }
     }
 

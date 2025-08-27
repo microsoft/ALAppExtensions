@@ -42,9 +42,9 @@ codeunit 6122 "E-Doc. Imp. Session Telemetry"
         SystemID, Session : Text;
     begin
         Session := LowerCase(CreateGuid()).Replace('}', '').Replace('{', '');
-        SystemID := LowerCase(EDocument.SystemId).Replace('}', '').Replace('{', '');
+        SystemID := CreateSystemIdText(EDocument.SystemId);
         Data.Set('Session', Session);
-        Data.Set('E-Document System Id', SystemID);
+        Data.Set(GetEDocSystemIdTok(), SystemID);
         Telemetry.LogMessage('0000PJD', 'E-Document Import Session', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, Data);
         EmitLines(SystemID, Session);
 
@@ -64,8 +64,8 @@ codeunit 6122 "E-Doc. Imp. Session Telemetry"
                 continue;
 
             LineDataEntry.Set('Session', Session);
-            LineDataEntry.Set('E-Document System Id', SystemID);
-            LineDataEntry.Set('E-Document Line System Id', LowerCase(K).Replace('}', '').Replace('{', ''));
+            LineDataEntry.Set(GetEDocSystemIdTok(), SystemID);
+            LineDataEntry.Set(GetEDocLineSystemIdTok(), LowerCase(K).Replace('}', '').Replace('{', ''));
             Telemetry.LogMessage('0000PSQ', 'E-Document Import Session', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, LineDataEntry);
         end;
         if UnbindSubscription(this) then;
@@ -127,5 +127,19 @@ codeunit 6122 "E-Doc. Imp. Session Telemetry"
     begin
     end;
 
+    procedure CreateSystemIdText(SystemId: Guid): Text
+    begin
+        exit(LowerCase(SystemId).Replace('}', '').Replace('{', ''));
+    end;
+
+    procedure GetEDocSystemIdTok(): Text
+    begin
+        exit('E-Document System Id');
+    end;
+
+    procedure GetEDocLineSystemIdTok(): Text
+    begin
+        exit('E-Document Line System Id');
+    end;
 
 }

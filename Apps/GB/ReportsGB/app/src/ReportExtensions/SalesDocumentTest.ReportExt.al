@@ -94,7 +94,7 @@ reportextension 10581 "Sales Document - Test" extends "Sales Document - Test"
         layout(GBlocalizationLayout)
         {
             Type = RDLC;
-            Caption = 'Purchase Document Test GB localization';
+            Caption = 'Sales Document Test GB localization';
             LayoutFile = './src/ReportExtensions/SalesDocumentTestGB.rdlc';
             ObsoleteState = Pending;
             ObsoleteReason = 'Feature Reports GB will be enabled by default in version 30.0.';

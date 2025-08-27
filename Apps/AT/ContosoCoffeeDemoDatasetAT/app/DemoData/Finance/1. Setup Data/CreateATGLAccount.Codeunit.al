@@ -1313,24 +1313,6 @@ codeunit 11148 "Create AT GL Account"
             until GLAccountCategory.Next() = 0;
     end;
 
-    internal procedure UpdateVATProdPostGrpInGLAccounts()
-    var
-        GLAccounts: Record "G/L Account";
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
-        CreateVATPostingGroupAT: Codeunit "Create VAT Posting Group AT";
-    begin
-        GLAccounts.SetFilter("VAT Prod. Posting Group", '<>%1', '');
-        if GLAccounts.FindSet() then
-            repeat
-                if GLAccounts."VAT Prod. Posting Group" = CreateVATPostingGroups.Standard() then
-                    GLAccounts.Validate(GLAccounts."VAT Prod. Posting Group", CreateVATPostingGroupAT.VAT20());
-                if GLAccounts."VAT Prod. Posting Group" = CreateVATPostingGroups.Reduced() then
-                    GLAccounts.Validate(GLAccounts."VAT Prod. Posting Group", CreateVATPostingGroupAT.VAT10());
-                if GLAccounts."VAT Prod. Posting Group" <> CreateVATPostingGroupAT.NOVAT() then
-                    GLAccounts.Modify(true);
-            until GLAccounts.Next() = 0;
-    end;
-
     procedure AssignCategoryToChartOfAccounts(GLAccountCategory: Record "G/L Account Category")
     var
         CreateGLAccount: Codeunit "Create G/L Account";

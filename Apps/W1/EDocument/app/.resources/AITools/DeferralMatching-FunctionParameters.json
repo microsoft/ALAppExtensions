@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "properties": {
+        "deferralReasoning": {
+            "type": "string",
+            "description": "A concise professional explanation of the deferral decision and template selection. Do not mention confidence levels, uncertainty, or speculative language. Ensure the explanation is clear to the end user, respectful, and free of harmful language."
+        },
+        "lineId": {
+            "type": "number",
+            "description": "The unique identifier of the invoice line item being analyzed."
+        },
+        "deferralCode": {
+            "type": "string",
+            "description": "The selected deferral template code from the provided list, or empty string if no deferral is appropriate."
+        }
+    },
+    "required": [
+        "deferralReasoning",
+        "lineId",
+        "deferralCode"
+    ]
+}

@@ -18,7 +18,7 @@ pageextension 31269 "Reconciliation CZP" extends Reconciliation
         CashDocumentLineCZP.SetRange("Cash Document No.", CashDocumentHeaderCZP."No.");
         if CashDocumentLineCZP.FindSet() then
             repeat
-                Rec.SaveNetChangeCZL(PopulateGenJournalLineFrom(CashDocumentLineCZP));
+                Rec.SaveNetChangeCZL(PopulateGenJournalLineFrom(CashDocumentHeaderCZP, CashDocumentLineCZP));
             until CashDocumentLineCZP.Next() = 0;
 
         Rec.Reset();
@@ -35,20 +35,20 @@ pageextension 31269 "Reconciliation CZP" extends Reconciliation
         GenJournalLine."Account Type" := Enum::"Net Change Account Type CZL"::"Cash Desk CZP";
         GenJournalLine."Account No." := CashDocumentHeaderCZP."Cash Desk No.";
         GenJournalLine."Currency Code" := CashDocumentHeaderCZP."Currency Code";
-        GenJournalLine."Amount" := -TotalCashDocumentLineCZP."Amount";
-        GenJournalLine."VAT Amount" := -TotalCashDocumentLineCZP."VAT Amount";
-        GenJournalLine."Amount (LCY)" := -TotalCashDocumentLineCZP."Amount (LCY)";
-        GenJournalLine."VAT Amount (LCY)" := -TotalCashDocumentLineCZP."VAT Amount (LCY)";
+        GenJournalLine."Amount" := -CashDocumentHeaderCZP.SignAmount() * TotalCashDocumentLineCZP."Amount";
+        GenJournalLine."VAT Amount" := -CashDocumentHeaderCZP.SignAmount() * TotalCashDocumentLineCZP."VAT Amount";
+        GenJournalLine."Amount (LCY)" := -CashDocumentHeaderCZP.SignAmount() * TotalCashDocumentLineCZP."Amount (LCY)";
+        GenJournalLine."VAT Amount (LCY)" := -CashDocumentHeaderCZP.SignAmount() * TotalCashDocumentLineCZP."VAT Amount (LCY)";
     end;
 
-    local procedure PopulateGenJournalLineFrom(CashDocumentLineCZP: Record "Cash Document Line CZP") GenJournalLine: Record "Gen. Journal Line"
+    local procedure PopulateGenJournalLineFrom(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; CashDocumentLineCZP: Record "Cash Document Line CZP") GenJournalLine: Record "Gen. Journal Line"
     begin
         GenJournalLine."Account Type" := CashDocumentLineCZP.AccountTypeToNetChangeAccountType();
         GenJournalLine."Account No." := CashDocumentLineCZP."Account No.";
         GenJournalLine."Currency Code" := CashDocumentLineCZP."Currency Code";
-        GenJournalLine."Amount" := CashDocumentLineCZP."Amount";
-        GenJournalLine."VAT Amount" := CashDocumentLineCZP."VAT Amount";
-        GenJournalLine."Amount (LCY)" := CashDocumentLineCZP."Amount (LCY)";
-        GenJournalLine."VAT Amount (LCY)" := CashDocumentLineCZP."VAT Amount (LCY)";
+        GenJournalLine."Amount" := CashDocumentHeaderCZP.SignAmount() * CashDocumentLineCZP."Amount";
+        GenJournalLine."VAT Amount" := CashDocumentHeaderCZP.SignAmount() * CashDocumentLineCZP."VAT Amount";
+        GenJournalLine."Amount (LCY)" := CashDocumentHeaderCZP.SignAmount() * CashDocumentLineCZP."Amount (LCY)";
+        GenJournalLine."VAT Amount (LCY)" := CashDocumentHeaderCZP.SignAmount() * CashDocumentLineCZP."VAT Amount (LCY)";
     end;
 }

@@ -19,6 +19,7 @@ using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Warehouse.Journal;
+using Microsoft.Warehouse.Ledger;
 
 codeunit 18466 "Subcontracting Post"
 {
@@ -416,6 +417,23 @@ codeunit 18466 "Subcontracting Post"
             PurchHeader.SubConPostLine := 0;
             PurchHeader.Modify();
         end;
+    end;
+
+    local procedure GetVendorLocationBinCode(ItemLedgerEntry: Record "Item Ledger Entry"; SubOrderCompListVendLocal: Record "Sub Order Comp. List Vend"; var ItemJrnlLine: Record "Item Journal Line")
+    var
+        WarehouseEntry: Record "Warehouse Entry";
+    begin
+        WarehouseEntry.SetLoadFields("Location Code", "Item No.", "Reference No.", "Zone Code", "Bin Code");
+        WarehouseEntry.SetRange("Reference No.", ItemLedgerEntry."Document No.");
+        WarehouseEntry.SetRange("Location Code", SubOrderCompListVendLocal."Vendor Location");
+        WarehouseEntry.SetRange("Item No.", SubOrderCompListVendLocal."Item No.");
+        if not WarehouseEntry.FindFirst() then
+            exit;
+
+        if WarehouseEntry."Bin Code" = '' then
+            exit;
+
+        ItemJrnlLine.Validate("Bin Code", WarehouseEntry."Bin Code");
     end;
 
     procedure PostSubcon(var PurchLine: Record "Purchase Line")
@@ -1152,7 +1170,6 @@ codeunit 18466 "Subcontracting Post"
         OldReservEntry: Record "Reservation Entry";
         ItemTrackingSetup: Record "Item Tracking Setup";
         ItemTrackingManagement: Codeunit "Item Tracking Management";
-        ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
         RemQtytoPost: Decimal;
         TotalQtyToPost: Decimal;
         Completed: Boolean;
@@ -1279,6 +1296,8 @@ codeunit 18466 "Subcontracting Post"
                                     ItemJnlLine.Validate("New Location Code", SubOrderCompListVendLocal."Company Location");
                                     if SubOrderCompListVendLocal."Bin Code" <> '' then
                                         ItemJnlLine.Validate("New Bin Code", SubOrderCompListVendLocal."Bin Code");
+
+                                    GetVendorLocationBinCode(ItemLedgerEntry, SubOrderCompListVendLocal, ItemJnlLine);
                                     ItemJnlLine."Variant Code" := SubOrderCompListVendLocal."Variant Code";
                                     ItemJnlLine."Gen. Prod. Posting Group" := CompItem."Gen. Prod. Posting Group";
                                     ItemJnlLine."Item Category Code" := CompItem."Item Category Code";
@@ -1331,7 +1350,7 @@ codeunit 18466 "Subcontracting Post"
                                             ItemLedgerEntry,
                                             TypeQty::Receive);
 
-                                    ItemJnlPostLine.Run(ItemJnlLine);
+                                    PostItemJnlLine(ItemJnlLine);
                                 end;
                             end;
                         until (ItemLedgerEntry.Next() = 0) or Completed;

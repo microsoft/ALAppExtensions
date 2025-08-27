@@ -14,10 +14,8 @@ codeunit 5415 "Finance Module" implements "Contoso Demo Data Module"
     InherentPermissions = X;
 
     procedure RunConfigurationPage()
-    var
-        ContosoDemoTool: Codeunit "Contoso Demo Tool";
     begin
-        Message(ContosoDemoTool.GetNoConfiguirationMsg());
+        Page.Run(Page::"Finance Module Setup");
     end;
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"]
@@ -27,6 +25,7 @@ codeunit 5415 "Finance Module" implements "Contoso Demo Data Module"
 
     procedure CreateSetupData()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreatePostingGroups: Codeunit "Create Posting Groups";
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateAccScheduleName: Codeunit "Create Acc. Schedule Name";
@@ -35,6 +34,7 @@ codeunit 5415 "Finance Module" implements "Contoso Demo Data Module"
         CreateColumnLayout: Codeunit "Create Column Layout";
         CreateFinancialReport: Codeunit "Create Financial Report";
     begin
+        FinanceModuleSetup.InitRecord();
         Codeunit.Run(Codeunit::"Create VAT Posting Groups");
         Codeunit.Run(Codeunit::"Create Posting Groups");
         Codeunit.Run(Codeunit::"Create G/L Account");

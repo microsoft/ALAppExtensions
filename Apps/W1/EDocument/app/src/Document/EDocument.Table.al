@@ -279,6 +279,21 @@ table 6121 "E-Document"
             ToolTip = 'Specifies the implementation to use for processing the draft received.';
         }
         #endregion
+
+        #region Clearance Model
+        field(60; "Clearance Date"; DateTime)
+        {
+            Caption = 'Clearance Date';
+            ToolTip = 'Specifies date and time when document was cleared by authority';
+            DataClassification = SystemMetadata;
+        }
+        field(61; "Last Clearance Request Time"; DateTime)
+        {
+            Caption = 'Last Clearance Request Time';
+            DataClassification = SystemMetadata;
+        }
+
+        #endregion
     }
     keys
     {

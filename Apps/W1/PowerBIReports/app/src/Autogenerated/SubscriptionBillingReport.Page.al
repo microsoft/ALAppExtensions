@@ -11,6 +11,7 @@ page 37067 "Subscription Billing Report"
     AboutTitle = 'About Subscription Billing Report';
     AboutText = 'The Subscription Billing Report offers a consolidated view of all subscription report pages, conveniently embedded into a single page for easy access.';
 
+
     layout
     {
         area(Content)
@@ -39,11 +40,9 @@ page 37067 "Subscription Billing Report"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

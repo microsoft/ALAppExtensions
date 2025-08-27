@@ -39,11 +39,9 @@ page 37027 "Gross Requirement"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection94c932a22e568b021aba', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

@@ -39,11 +39,11 @@ page 37032 "Bin Contents by Item Tracking"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
+#pragma warning disable AA0240 // Bug 595848
         ReportPageLbl: Label 'ReportSection7359815290770dd2a490', Locked = true;
-#pragma warning restore AA0240
+#pragma warning restore AA240
 
     trigger OnOpenPage()
     var

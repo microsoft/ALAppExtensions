@@ -8,7 +8,7 @@ page 36958 "Salesperson/Purchasers"
     Caption = 'Power BI Salesperson/Purchasers';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'salespersonPurchaser';
     EntitySetName = 'salespersonPurchasers';
     SourceTable = "Salesperson/Purchaser";

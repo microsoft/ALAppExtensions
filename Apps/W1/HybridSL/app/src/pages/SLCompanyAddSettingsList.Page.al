@@ -159,8 +159,6 @@ page 47017 "SL Company Add. Settings List"
                 }
                 field("Migrate Product Classes"; Rec."Migrate Item Classes")
                 {
-                    Enabled = false;
-                    Visible = false;
                 }
                 field("Oldest Hist. Year to Migrate"; Rec."Oldest Hist. Year to Migrate")
                 {

@@ -9,7 +9,7 @@ query 37001 "Purch. Lines - Item Received"
     Caption = 'Power BI Received Not Invd. PO';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'itemReceivedNotInvoicedPurchaseLine';
     EntitySetName = 'itemReceivedNotInvoicedPurchaseLines';
     DataAccessIntent = ReadOnly;

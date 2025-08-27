@@ -9,7 +9,7 @@ query 36965 "Assembly Lines - Item"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'assemblyLine';
     EntitySetName = 'assemblyLines';
     DataAccessIntent = ReadOnly;

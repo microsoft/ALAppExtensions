@@ -39,11 +39,9 @@ page 37023 "Inventory by Item"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection8c3ed3c2c96e298a0824', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

@@ -18,15 +18,17 @@ codeunit 5448 "Create Item Template"
 
     trigger OnRun()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoInventory: Codeunit "Contoso Inventory";
         CreateInvPostingGroup: Codeunit "Create Inventory Posting Group";
         CreateUnitOfMeasure: Codeunit "Create Unit of Measure";
         CreatePostingGroup: Codeunit "Create Posting Groups";
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
-        ContosoInventory.InsertItemTemplateData(Item(), ItemLbl, CreateUnitOfMeasure.Piece(), Enum::"Item Type"::Inventory, CreateInvPostingGroup.Resale(), CreatePostingGroup.RetailPostingGroup(), CreateVATPostingGroups.Standard(), Enum::"Reserve Method"::Optional);
-        ContosoInventory.InsertItemTemplateData(Service(), ServiceLbl, CreateUnitOfMeasure.Hour(), Enum::"Item Type"::Service, '', CreatePostingGroup.ServicesPostingGroup(), CreateVATPostingGroups.Standard(), Enum::"Reserve Method"::Never);
-        ContosoInventory.InsertItemTemplateData(NonInv(), NonInvLbl, CreateUnitOfMeasure.Piece(), Enum::"Item Type"::"Non-Inventory", '', CreatePostingGroup.RetailPostingGroup(), CreateVATPostingGroups.Standard(), Enum::"Reserve Method"::Never);
+        FinanceModuleSetup.Get();
+
+        ContosoInventory.InsertItemTemplateData(Item(), ItemLbl, CreateUnitOfMeasure.Piece(), Enum::"Item Type"::Inventory, CreateInvPostingGroup.Resale(), CreatePostingGroup.RetailPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", Enum::"Reserve Method"::Optional);
+        ContosoInventory.InsertItemTemplateData(Service(), ServiceLbl, CreateUnitOfMeasure.Hour(), Enum::"Item Type"::Service, '', CreatePostingGroup.ServicesPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", Enum::"Reserve Method"::Never);
+        ContosoInventory.InsertItemTemplateData(NonInv(), NonInvLbl, CreateUnitOfMeasure.Piece(), Enum::"Item Type"::"Non-Inventory", '', CreatePostingGroup.RetailPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", Enum::"Reserve Method"::Never);
     end;
 
     procedure Service(): Code[20]

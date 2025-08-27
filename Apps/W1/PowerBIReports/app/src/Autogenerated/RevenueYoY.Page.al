@@ -39,11 +39,9 @@ page 37069 "Revenue YoY"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '3e6e12bc48782630bd89', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

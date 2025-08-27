@@ -10,7 +10,7 @@ query 36955 "G\L Entries - Balance Sheet"
     Caption = 'Power BI Balance Sheet G/L Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'balanceSheetGeneralLedgerEntry';
     EntitySetName = 'balanceSheetGeneralLedgerEntries';
     DataAccessIntent = ReadOnly;

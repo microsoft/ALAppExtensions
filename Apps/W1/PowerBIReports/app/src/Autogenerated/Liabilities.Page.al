@@ -39,11 +39,9 @@ page 36990 "Liabilities"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectioncd819efac970874e83c3', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

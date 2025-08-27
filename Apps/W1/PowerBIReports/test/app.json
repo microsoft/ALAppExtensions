@@ -47,12 +47,6 @@
       "name": "PowerBI Reports Test Library",
       "publisher": "Microsoft",
       "version": "27.0.0.0"
-    },
-    {
-      "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
-      "name": "Sustainability",
-      "publisher": "Microsoft",
-      "version": "27.0.0.0"
     }
   ],
   "screenshots": [],

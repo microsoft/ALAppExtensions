@@ -23,6 +23,11 @@ tableextension 6219 "Sust. Vendor" extends Vendor
             Caption = 'Sustainability Certificate Name';
             Editable = false;
         }
+        field(6212; "Carbon Pricing Paid"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Carbon Pricing Paid';
+        }
     }
 
     local procedure UpdateCertificateInformation()

@@ -39,9 +39,9 @@ page 37095 "PBI Machine Center Statistics"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
+#pragma warning disable AA0240 // Bug 595848
         ReportPageLbl: Label '949e7a93960706625a9a', Locked = true;
 #pragma warning restore AA0240
 

@@ -77,10 +77,7 @@ codeunit 17131 "AU Contoso Localization"
                     Codeunit.Run(Codeunit::"Create AU Inv Posting Setup");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    CreateAUInvPostingSetup.UpdateInventoryPosting();
-                    Codeunit.Run(Codeunit::"Create AU Item Template");
-                end;
+                CreateAUInvPostingSetup.UpdateInventoryPosting();
         end;
     end;
 
@@ -149,7 +146,6 @@ codeunit 17131 "AU Contoso Localization"
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
                     Codeunit.Run(Codeunit::"Create AU General Ledger Setup");
-                    Codeunit.Run(Codeunit::"Create AU VAT Posting Groups");
                     Codeunit.Run(Codeunit::"Create AU Posting Groups");
                     CreateAUGLAccounts.AddCategoriesToMiniGLAccounts();
 
@@ -184,6 +180,7 @@ codeunit 17131 "AU Contoso Localization"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
     local procedure OnBeforeGeneratingDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateAUInvPostingSetup: Codeunit "Create AU Inv Posting Setup";
         CreateAUBankAccPostingGrp: Codeunit "Create AU Bank Acc Posting Grp";
         CreateAUPaymentMethod: Codeunit "Create AU Payment Method";
@@ -195,7 +192,6 @@ codeunit 17131 "AU Contoso Localization"
         CreateAUPaymentTerms: Codeunit "Create AU Payment Terms";
         CreateAUShippingAgent: Codeunit "Create AU Shipping Agent";
         CreateAUItem: Codeunit "Create AU Item";
-        CreateAUItemCharge: Codeunit "Create AU Item Charge";
         CreateAULocation: Codeunit "Create AU Location";
         CreateAUShipToAddress: Codeunit "Create AU Ship-To Address";
         CreateAUFAPostingGroup: Codeunit "Create AU FA Posting Group";
@@ -218,6 +214,10 @@ codeunit 17131 "AU Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
+                        FinanceModuleSetup.InitRecord();
+                        Codeunit.Run(Codeunit::"Create AU VAT Posting Groups");
+                    end;
                     BindSubscription(CreateAUResource);
                     BindSubscription(CreateAUAccScheduleLine);
                     BindSubscription(CreateAUCurrency);
@@ -228,7 +228,6 @@ codeunit 17131 "AU Contoso Localization"
                     BindSubscription(CreateAULocation);
                     BindSubscription(CreateAUInvPostingSetup);
                     BindSubscription(CreateAUItem);
-                    BindSubscription(CreateAUItemCharge);
                 end;
             Enum::"Contoso Demo Data Module"::Bank:
                 begin
@@ -271,7 +270,6 @@ codeunit 17131 "AU Contoso Localization"
         CreateAUCountryRegion: Codeunit "Create AU Country Region";
         CreateAUPaymentTerms: Codeunit "Create AU Payment Terms";
         CreateAUShippingAgent: Codeunit "Create AU Shipping Agent";
-        CreateAUItemCharge: Codeunit "Create AU Item Charge";
         CreateAUItem: Codeunit "Create AU Item";
         CreateAULocation: Codeunit "Create AU Location";
         CreateAUShipToAddress: Codeunit "Create AU Ship-To Address";
@@ -303,7 +301,6 @@ codeunit 17131 "AU Contoso Localization"
                 begin
                     UnbindSubscription(CreateAUInvPostingSetup);
                     UnbindSubscription(CreateAUItem);
-                    UnbindSubscription(CreateAUItemCharge);
                     UnbindSubscription(CreateAULocation);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:

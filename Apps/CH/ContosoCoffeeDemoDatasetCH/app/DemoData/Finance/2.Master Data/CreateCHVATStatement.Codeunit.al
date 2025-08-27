@@ -132,7 +132,7 @@ codeunit 11622 "Create CH VAT Statement"
                 480000:
                     ValidateRecordFields(Rec, '', Enum::"VAT Statement Line Type"::"Row Totaling", Enum::"General Posting Type"::" ", '', '', '1310..1318', Enum::"VAT Statement Line Amount Type"::" ", 0, true, 1, CountryExportOverseasLbl);
                 490000:
-                    ValidateRecordFields(Rec, '1320', Enum::"VAT Statement Line Type"::"VAT Entry Totaling", Enum::"General Posting Type"::"Sale", CreateVATPostingGroups.Domestic(), CreateCHVATPostingGroups.NOVAT(), '', Enum::"VAT Statement Line Amount Type"::"Base", 1, false, 0, TaxFreeSalesDomesticLbl);
+                    ValidateRecordFields(Rec, '1320', Enum::"VAT Statement Line Type"::"VAT Entry Totaling", Enum::"General Posting Type"::"Sale", CreateVATPostingGroups.Domestic(), CreateVATPostingGroups.NoVAT(), '', Enum::"VAT Statement Line Amount Type"::"Base", 1, false, 0, TaxFreeSalesDomesticLbl);
                 500000:
                     ValidateRecordFields(Rec, '', Enum::"VAT Statement Line Type"::"Row Totaling", Enum::"General Posting Type"::" ", '', '', '1320..1328', Enum::"VAT Statement Line Amount Type"::" ", 0, true, 1, TaxFreeSalesDomesticLbl);
 

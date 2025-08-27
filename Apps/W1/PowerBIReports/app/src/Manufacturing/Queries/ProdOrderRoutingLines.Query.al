@@ -10,7 +10,7 @@ query 36990 "Prod. Order Routing Lines"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'prodOrderRoutingLine';
     EntitySetName = 'prodOrderRoutingLines';
     DataAccessIntent = ReadOnly;

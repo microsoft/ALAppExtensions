@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Root>
+    <AITSuite Code="SUSTAIN01" Description="Sustainability Copilot accuracy tests" Dataset="FormulaDataset.yaml" TestRunnerId="130451">
+        <Line CodeunitID="139794" Description="Sustainability Copilot formula tests" Dataset="FormulaDataset.yaml" />
+        <Line CodeunitID="139796" Description="Sustainability Copilot match tests" Dataset="MatchDataset.yaml" />
+        <Line CodeunitID="139797" Description="Sustainability Copilot emission tests" Dataset="EmissionFactor.yaml" />
+    </AITSuite>
+</Root>

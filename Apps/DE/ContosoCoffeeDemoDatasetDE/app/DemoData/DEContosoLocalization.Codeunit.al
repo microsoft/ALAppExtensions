@@ -68,10 +68,7 @@ codeunit 11113 "DE Contoso Localization"
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 Codeunit.Run(Codeunit::"Create DE Purch. Payable Setup");
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create DE Inv. Posting Setup");
-                    Codeunit.Run(Codeunit::"Create DE Item Template");
-                end;
+                Codeunit.Run(Codeunit::"Create DE Inv. Posting Setup");
         end;
     end;
 
@@ -107,6 +104,7 @@ codeunit 11113 "DE Contoso Localization"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
     local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateDEAccScheduleLine: Codeunit "Create DE Acc. Schedule Line";
         CreateDEAnalysisView: Codeunit "Create DE Analysis View";
         CreateDECurrencyExRate: Codeunit "Create DE Currency Ex. Rate";
@@ -119,7 +117,6 @@ codeunit 11113 "DE Contoso Localization"
         CreateDEFAPostingGrp: Codeunit "Create DE FA Posting Grp.";
         CreateDEInvPostingSetup: Codeunit "Create DE Inv. Posting Setup";
         CreateDEItem: Codeunit "Create DE Item";
-        CreateDEItemCharge: Codeunit "Create DE Item Charge";
         CreateDELocation: Codeunit "Create DE Location";
         CreateDEResource: Codeunit "Create DE Resource";
         CreatDeVendorPostingGrp: Codeunit "Create DE Vendor Posting Grp";
@@ -136,6 +133,10 @@ codeunit 11113 "DE Contoso Localization"
 
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
+                        FinanceModuleSetup.InitRecord();
+                        CreateDEVatPostingGroup.InsertVATProductPostingGroup();
+                    end;
                     BindSubscription(CreateDEAccScheduleLine);
                     BindSubscription(CreateDEAnalysisView);
                     BindSubscription(CreateDECurrencyExRate);
@@ -156,7 +157,6 @@ codeunit 11113 "DE Contoso Localization"
                 begin
                     BindSubscription(CreateDEInvPostingSetup);
                     BindSubscription(CreateDEItem);
-                    BindSubscription(CreateDEItemCharge);
                     BindSubscription(CreateDELocation);
                 end;
 
@@ -192,7 +192,6 @@ codeunit 11113 "DE Contoso Localization"
         CreateDEFAPostingGrp: Codeunit "Create DE FA Posting Grp.";
         CreateDEInvPostingSetup: Codeunit "Create DE Inv. Posting Setup";
         CreateDEItem: Codeunit "Create DE Item";
-        CreateDEItemCharge: Codeunit "Create DE Item Charge";
         CreateDELocation: Codeunit "Create DE Location";
         CreateDEResource: Codeunit "Create DE Resource";
         CreatDeVendorPostingGrp: Codeunit "Create DE Vendor Posting Grp";
@@ -228,7 +227,6 @@ codeunit 11113 "DE Contoso Localization"
                 begin
                     UnbindSubscription(CreateDEInvPostingSetup);
                     UnbindSubscription(CreateDEItem);
-                    UnbindSubscription(CreateDEItemCharge);
                     UnbindSubscription(CreateDELocation);
                 end;
 

@@ -18,21 +18,20 @@ codeunit 10706 "Create Resource NO"
     local procedure OnBeforeInsertResource(var Rec: Record Resource)
     var
         CreateResource: Codeunit "Create Resource";
-        CreateVatPostingGroupsNO: Codeunit "Create Vat Posting Groups NO";
     begin
         case Rec."No." of
             CreateResource.Katherine():
-                ValidateRecordFields(Rec, CityLbl, 490, 539, 970, PostCodeLbl, CreateVatPostingGroupsNO.Low());
+                ValidateRecordFields(Rec, CityLbl, 490, 539, 970, PostCodeLbl);
             CreateResource.Lina():
-                ValidateRecordFields(Rec, CityLbl, 580, 638, 1170, PostCodeLbl, CreateVatPostingGroupsNO.Low());
+                ValidateRecordFields(Rec, CityLbl, 580, 638, 1170, PostCodeLbl);
             CreateResource.Marty():
-                ValidateRecordFields(Rec, CityLbl, 440, 484, 880, PostCodeLbl, CreateVatPostingGroupsNO.Low());
+                ValidateRecordFields(Rec, CityLbl, 440, 484, 880, PostCodeLbl);
             CreateResource.Terry():
-                ValidateRecordFields(Rec, CityLbl, 490, 539, 970, PostCodeLbl, CreateVatPostingGroupsNO.Low());
+                ValidateRecordFields(Rec, CityLbl, 490, 539, 970, PostCodeLbl);
         end;
     end;
 
-    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; UnitPrice: Decimal; PostCode: Code[20]; VatProdPostingGroup: Code[20])
+    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; UnitPrice: Decimal; PostCode: Code[20])
     begin
         Resource.Validate(City, City);
         Resource.Validate("Post Code", PostCode);
@@ -40,7 +39,6 @@ codeunit 10706 "Create Resource NO"
         Resource.Validate("Direct Unit Cost", DirectUnitCost);
         Resource.Validate("Unit Cost", UnitCost);
         Resource.Validate("Unit Price", UnitPrice);
-        Resource.Validate("VAT Prod. Posting Group", VatProdPostingGroup);
     end;
 
     var

@@ -231,8 +231,9 @@ tableextension 31047 "G/L Account Net Change CZL" extends "G/L Account Net Chang
         Employee: Record Employee;
     begin
         Employee.Get("Account No. CZL");
+        Employee.CalcFields("Balance (LCY)");
         Name := Employee.FullName();
-        "Balance after Posting" := -Employee.Balance;
+        "Balance after Posting" := -Employee."Balance (LCY)";
         OnAfterPopulateFromEmployee(Rec, Employee);
     end;
 
