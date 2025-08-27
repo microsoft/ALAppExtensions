@@ -10,11 +10,11 @@ codeunit 148002 "E-Document Structured Tests"
         Assert: Codeunit Assert;
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryEDoc: Codeunit "Library - E-Document";
-        // EDocImplState: Codeunit "E-Doc. Impl. State";
         LibraryLowerPermission: Codeunit "Library - Lower Permissions";
         FacturaEStructValidations: Codeunit "Factura-E Struct. Validations";
         IsInitialized: Boolean;
         EDocumentStatusNotUpdatedErr: Label 'The status of the EDocument was not updated to the expected status after the step was executed.';
+        TestFileTok: Label 'factura-e/facturae-invoice-0.xml', Locked = true;
         MockCurrencyCode: Code[10];
         MockDate: Date;
 
@@ -24,15 +24,22 @@ codeunit 148002 "E-Document Structured Tests"
     var
         EDocument: Record "E-Document";
     begin
+        // [FEATURE] [E-Document] [FacturaE] [Import]
+        // [SCENARIO] Import and validate a valid FacturaE invoice document
+
+        // [GIVEN] A valid FacturaE XML invoice document
         Initialize(Enum::"Service Integration"::"No Integration");
         SetupFacturaEEDocumentService();
-        CreateInboundEDocumentFromXML(EDocument, 'factura-e/facturae-invoice-0.xml');
+        CreateInboundEDocumentFromXML(EDocument, TestFileTok);
+
+        // [WHEN] The document is processed to read into draft step
         if ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Read into Draft") then begin
             FacturaEStructValidations.SetMockCurrencyCode(MockCurrencyCode);
             FacturaEStructValidations.SetMockDate(MockDate);
+
+            // [THEN] The document content is fully extracted and validated
             FacturaEStructValidations.AssertFullEDocumentContentExtracted(EDocument."Entry No");
-        end
-        else
+        end else
             Assert.Fail(EDocumentStatusNotUpdatedErr);
     end;
 
@@ -49,7 +56,7 @@ codeunit 148002 "E-Document Structured Tests"
         // [GIVEN] A valid FacturaE XML invoice document is imported
         Initialize(Enum::"Service Integration"::"No Integration");
         SetupFacturaEEDocumentService();
-        CreateInboundEDocumentFromXML(EDocument, 'factura-e/facturae-invoice-0.xml');
+        CreateInboundEDocumentFromXML(EDocument, TestFileTok);
 
         // [WHEN] The document is processed to draft status
         ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Read into Draft");
@@ -82,7 +89,7 @@ codeunit 148002 "E-Document Structured Tests"
         Vendor.Modify(true);
 
         SetupFacturaEEDocumentService();
-        CreateInboundEDocumentFromXML(EDocument, 'factura-e/facturae-invoice-0.xml');
+        CreateInboundEDocumentFromXML(EDocument, TestFileTok);
 
         // [WHEN] The document is processed through finish draft step
         ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Finish draft");
@@ -121,7 +128,7 @@ codeunit 148002 "E-Document Structured Tests"
         Vendor."VAT Registration No." := 'GB123456789';
         Vendor.Modify(true);
         SetupFacturaEEDocumentService();
-        CreateInboundEDocumentFromXML(EDocument, 'factura-e/facturae-invoice-0.xml');
+        CreateInboundEDocumentFromXML(EDocument, TestFileTok);
         ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Prepare draft");
 
         // [GIVEN] A generic item is created for manual assignment
@@ -172,26 +179,25 @@ codeunit 148002 "E-Document Structured Tests"
     begin
         LibraryLowerPermission.SetOutsideO365Scope();
         LibraryVariableStorage.Clear();
-        // Clear(EDocImplState);
         Clear(LibraryVariableStorage);
 
         if IsInitialized then
             exit;
 
-        EDocument.DeleteAll();
-        EDocumentServiceStatus.DeleteAll();
-        EDocumentService.DeleteAll();
-        EDocDataStorage.DeleteAll();
-        EDocumentPurchaseHeader.DeleteAll();
-        EDocumentPurchaseLine.DeleteAll();
-        DocumentAttachment.DeleteAll();
+        EDocument.DeleteAll(false);
+        EDocumentServiceStatus.DeleteAll(false);
+        EDocumentService.DeleteAll(false);
+        EDocDataStorage.DeleteAll(false);
+        EDocumentPurchaseHeader.DeleteAll(false);
+        EDocumentPurchaseLine.DeleteAll(false);
+        DocumentAttachment.DeleteAll(false);
 
         LibraryEDoc.SetupStandardVAT();
         LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"Factura-E 3.2.2", Integration);
         LibraryEDoc.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"Factura-E 3.2.2", Integration);
         EDocumentService."Import Process" := "E-Document Import Process"::"Version 2.0";
         EDocumentService."Read into Draft Impl." := "E-Doc. Read into Draft"::"Factura-E";
-        EDocumentService.Modify();
+        EDocumentService.Modify(false);
         EDocumentsSetup.InsertNewExperienceSetup();
 
         // Set a currency that can be used across all localizations
@@ -203,7 +209,7 @@ codeunit 148002 "E-Document Structured Tests"
 
         MockDate := DMY2Date(22, 01, 2026);
 
-        TransformationRule.DeleteAll();
+        TransformationRule.DeleteAll(false);
         TransformationRule.CreateDefaultTransformations();
 
         IsInitialized := true;
@@ -212,7 +218,7 @@ codeunit 148002 "E-Document Structured Tests"
     local procedure SetupFacturaEEDocumentService()
     begin
         EDocumentService."Read into Draft Impl." := "E-Doc. Read into Draft"::"Factura-E";
-        EDocumentService.Modify();
+        EDocumentService.Modify(false);
     end;
 
     local procedure CreateInboundEDocumentFromXML(var EDocument: Record "E-Document"; FilePath: Text)
@@ -227,7 +233,7 @@ codeunit 148002 "E-Document Structured Tests"
         EDocLogRecord := EDocumentLog.InsertLog(Enum::"E-Document Service Status"::Imported, Enum::"Import E-Doc. Proc. Status"::Readable);
 
         EDocument."Structured Data Entry No." := EDocLogRecord."E-Doc. Data Storage Entry No.";
-        EDocument.Modify();
+        EDocument.Modify(false);
     end;
 
     local procedure ProcessEDocumentToStep(var EDocument: Record "E-Document"; ProcessingStep: Enum "Import E-Document Steps"): Boolean

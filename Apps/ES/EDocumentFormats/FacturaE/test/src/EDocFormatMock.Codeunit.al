@@ -51,6 +51,4 @@ codeunit 148004 "E-Doc. Format Mock" implements "E-Document"
     local procedure OnGetCompleteInfoFromReceivedDocument(var EDocument: Record "E-Document"; var CreatedDocumentHeader: RecordRef; var CreatedDocumentLines: RecordRef; var TempBlob: codeunit "Temp Blob");
     begin
     end;
-
-
 }
