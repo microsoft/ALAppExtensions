@@ -14,6 +14,7 @@ codeunit 148005 "E-Document Structured Tests"
         PINTANZStructuredValidations: Codeunit "PINTANZ Structured Validations";
         IsInitialized: Boolean;
         EDocumentStatusNotUpdatedErr: Label 'The status of the EDocument was not updated to the expected status after the step was executed.';
+        TestFileTok: Label 'pint_a-nz/pint_a-nz-invoice-0.xml', Locked = true;
         MockCurrencyCode: Code[10];
         MockDate: Date;
 
@@ -23,15 +24,22 @@ codeunit 148005 "E-Document Structured Tests"
     var
         EDocument: Record "E-Document";
     begin
+        // [FEATURE] [E-Document] [PINTANZ] [Import]
+        // [SCENARIO] Import and process a valid PINTANZ invoice document
+
+        // [GIVEN] A valid PINTANZ XML invoice document is imported
         Initialize(Enum::"Service Integration"::"No Integration");
         SetupPINTANZEDocumentService();
-        CreateInboundEDocumentFromXML(EDocument, 'pint_a-nz/pint_a-nz-invoice-0.xml');
+        CreateInboundEDocumentFromXML(EDocument, TestFileTok);
+
+        // [WHEN] The document is processed to draft status
         if ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Read into Draft") then begin
             PINTANZStructuredValidations.SetMockCurrencyCode(MockCurrencyCode);
             PINTANZStructuredValidations.SetMockDate(MockDate);
+
+            // [THEN] The full E-Document content is correctly extracted
             PINTANZStructuredValidations.AssertFullEDocumentContentExtracted(EDocument."Entry No");
-        end
-        else
+        end else
             Assert.Fail(EDocumentStatusNotUpdatedErr);
     end;
 
@@ -48,7 +56,7 @@ codeunit 148005 "E-Document Structured Tests"
         // [GIVEN] A valid PINTANZ XML invoice document is imported
         Initialize(Enum::"Service Integration"::"No Integration");
         SetupPINTANZEDocumentService();
-        CreateInboundEDocumentFromXML(EDocument, 'pint_a-nz/pint_a-nz-invoice-0.xml');
+        CreateInboundEDocumentFromXML(EDocument, TestFileTok);
 
         // [WHEN] The document is processed to draft status
         ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Read into Draft");
@@ -78,7 +86,7 @@ codeunit 148005 "E-Document Structured Tests"
         // [GIVEN] A valid PINTANZ XML invoice document is imported
         Initialize(Enum::"Service Integration"::"No Integration");
         SetupPINTANZEDocumentService();
-        CreateInboundEDocumentFromXML(EDocument, 'pint_a-nz/pint_a-nz-invoice-0.xml');
+        CreateInboundEDocumentFromXML(EDocument, TestFileTok);
 
         // [WHEN] The document is processed through finish draft step
         ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Finish draft");
@@ -115,7 +123,7 @@ codeunit 148005 "E-Document Structured Tests"
         // [GIVEN] A valid PINTANZ XML invoice document is imported and processed to draft preparation
         Initialize(Enum::"Service Integration"::"No Integration");
         SetupPINTANZEDocumentService();
-        CreateInboundEDocumentFromXML(EDocument, 'pint_a-nz/pint_a-nz-invoice-0.xml');
+        CreateInboundEDocumentFromXML(EDocument, TestFileTok);
         ProcessEDocumentToStep(EDocument, "Import E-Document Steps"::"Prepare draft");
 
         // [GIVEN] A generic item is created for manual assignment
@@ -170,13 +178,13 @@ codeunit 148005 "E-Document Structured Tests"
         if IsInitialized then
             exit;
 
-        EDocument.DeleteAll();
-        EDocumentServiceStatus.DeleteAll();
-        EDocumentService.DeleteAll();
-        EDocDataStorage.DeleteAll();
-        EDocumentPurchaseHeader.DeleteAll();
-        EDocumentPurchaseLine.DeleteAll();
-        DocumentAttachment.DeleteAll();
+        EDocument.DeleteAll(false);
+        EDocumentServiceStatus.DeleteAll(false);
+        EDocumentService.DeleteAll(false);
+        EDocDataStorage.DeleteAll(false);
+        EDocumentPurchaseHeader.DeleteAll(false);
+        EDocumentPurchaseLine.DeleteAll(false);
+        DocumentAttachment.DeleteAll(false);
 
         LibraryEDoc.SetupStandardVAT();
         LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"PINT A-NZ", Integration);
@@ -195,7 +203,7 @@ codeunit 148005 "E-Document Structured Tests"
 
         MockDate := DMY2Date(22, 01, 2026);
 
-        TransformationRule.DeleteAll();
+        TransformationRule.DeleteAll(false);
         TransformationRule.CreateDefaultTransformations();
 
         IsInitialized := true;
@@ -204,7 +212,7 @@ codeunit 148005 "E-Document Structured Tests"
     local procedure SetupPINTANZEDocumentService()
     begin
         EDocumentService."Read into Draft Impl." := "E-Doc. Read into Draft"::"PINT A-NZ";
-        EDocumentService.Modify();
+        EDocumentService.Modify(false);
     end;
 
     local procedure CreateInboundEDocumentFromXML(var EDocument: Record "E-Document"; FilePath: Text)
@@ -219,7 +227,7 @@ codeunit 148005 "E-Document Structured Tests"
         EDocLogRecord := EDocumentLog.InsertLog(Enum::"E-Document Service Status"::Imported, Enum::"Import E-Doc. Proc. Status"::Readable);
 
         EDocument."Structured Data Entry No." := EDocLogRecord."E-Doc. Data Storage Entry No.";
-        EDocument.Modify();
+        EDocument.Modify(false);
     end;
 
     local procedure ProcessEDocumentToStep(var EDocument: Record "E-Document"; ProcessingStep: Enum "Import E-Document Steps"): Boolean

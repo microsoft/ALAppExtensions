@@ -1109,5 +1109,4 @@ codeunit 148006 "Library - E-Document"
     begin
         LibraryVariableStorage.Enqueue(EDocument);
     end;
-
 }
