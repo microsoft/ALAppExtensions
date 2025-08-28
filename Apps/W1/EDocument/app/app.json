@@ -37,6 +37,16 @@
       "id": "967eceac-106e-4102-b76a-fe5dc3d799e5",
       "name": "Payables Agent Tests",
       "publisher": "Microsoft"
+    },
+    {
+      "id": "fdeb586e-beff-49d8-947d-1e73ce980b34",
+      "name": "E-Document for Germany",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "4022897d-41ca-4ae2-a766-a429d0b19273",
+      "name": "E-Document for Germany Tests",
+      "publisher": "Microsoft"
     }
   ],
   "screenshots": [],
