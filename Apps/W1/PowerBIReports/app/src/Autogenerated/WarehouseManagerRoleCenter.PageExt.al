@@ -109,6 +109,14 @@ pageextension 36962 "Warehouse Manager Role Center" extends "Warehouse Manager R
                     RunObject = page "Bin Contents by Item Tracking";
                     Tooltip = 'Open a Power BI Report that provides a detailed view of warehouse quantities by Item, Location, Bin Code, Zone Code, Lot number or Serial number. ';
                 }
+                action("Inventory Forecasting (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Inventory Forecasting (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Inventory Forecasting";
+                    Tooltip = 'Open the Power BI Report that predicts your inventory trends, including forecasting of quantity across item, location and inventory posting groups.';
+                }
             }
         }
     }

@@ -22,15 +22,18 @@ codeunit 11538 "Create Posting Groups NL"
 
     local procedure InsertVATProductPostingGroup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
+        FinanceModuleSetup.Get();
+
         ContosoPostingGroup.SetOverwriteData(true);
         ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.FullNormal(), StrSubstNo(VATOnlyInvoicesDescriptionLbl, '21'));
         ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.ServNormal(), StrSubstNo(MiscellaneousVATDescriptionLbl, '21'));
-        ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.Standard(), StrSubstNo(NormalVatDescriptionLbl, '21'));
+        ContosoPostingGroup.InsertVATProductPostingGroup(FinanceModuleSetup."VAT Prod. Post Grp. Standard", StrSubstNo(NormalVatDescriptionLbl, '21'));
         ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.FullRed(), StrSubstNo(VATOnlyInvoicesDescriptionLbl, '9'));
-        ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.Reduced(), StrSubstNo(ReducedVatDescriptionLbl, '9'));
+        ContosoPostingGroup.InsertVATProductPostingGroup(FinanceModuleSetup."VAT Prod. Post Grp. Reduced", StrSubstNo(ReducedVatDescriptionLbl, '9'));
         ContosoPostingGroup.InsertVATProductPostingGroup(CreateVATPostingGroups.ServRed(), StrSubstNo(MiscellaneousVATDescriptionLbl, '9'));
         ContosoPostingGroup.SetOverwriteData(false);
     end;

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Inventory.Intrastat;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Inventory.Intrastat;
 
 codeunit 31489 "Contoso Intrastat CZ"
 {
@@ -15,7 +15,9 @@ codeunit 31489 "Contoso Intrastat CZ"
     Permissions =
         tabledata "Intrastat Delivery Group CZ" = rim,
         tabledata "Shipment Method" = rm,
-        tabledata "Transaction Type" = rim;
+        tabledata "Tariff Number" = rim,
+        tabledata "Transaction Type" = rim,
+        tabledata "Transport Method" = rim;
 
     var
         OverwriteData: Boolean;
@@ -65,6 +67,50 @@ codeunit 31489 "Contoso Intrastat CZ"
             TransactionType.Modify(true)
         else
             TransactionType.Insert(true);
+    end;
+
+    procedure InsertTransportMethod(Code: Code[10]; Description: Text[100])
+    var
+        TransportMethod: Record "Transport Method";
+        Exists: Boolean;
+    begin
+        if TransportMethod.Get(Code) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        TransportMethod.Validate(Code, Code);
+        TransportMethod.Validate(Description, Description);
+
+        if Exists then
+            TransportMethod.Modify(true)
+        else
+            TransportMethod.Insert(true);
+    end;
+
+    procedure InsertTariffNumber(No: Code[10]; Description: Text[100]; DescriptionEN: Text[100]; SupplUnitOfMeasure: Code[10])
+    var
+        TariffNumber: Record "Tariff Number";
+        Exists: Boolean;
+    begin
+        if TariffNumber.Get(No) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        TariffNumber.Validate("No.", No);
+        TariffNumber.Validate(Description, Description);
+        TariffNumber.Validate("Description EN CZL", DescriptionEN);
+        TariffNumber.Validate("Suppl. Unit of Measure", SupplUnitOfMeasure);
+
+        if Exists then
+            TariffNumber.Modify(true)
+        else
+            TariffNumber.Insert(true);
     end;
 
     internal procedure UpdateShipmentMethod(Code: Code[10]; IntrastatDeliveryGroup: Code[10])

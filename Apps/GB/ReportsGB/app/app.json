@@ -12,8 +12,7 @@
   "logo": "ExtensionLogo.png",
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/ui-extensions",
   "application": "27.0.0.0",
-  "dependencies": 
-  [
+  "dependencies": [
     {
       "id": "a78b53ce-d24d-4e49-a526-63bed5f48009",
       "name": "Reverse Charge VAT GB",
@@ -26,7 +25,7 @@
   "idRanges": [
     {
       "from": 10580,
-      "to": 10584
+      "to": 10684
     }
   ],
   "target": "Cloud",

@@ -144,66 +144,80 @@ page 10037 "IRS 1099 Form Document"
                         IRS1099FormDocument.Reopen(Rec);
                     end;
                 }
-                action("Mark as Submitted")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Mark as Submitted';
-                    Image = Approve;
-                    ToolTip = 'Indicate that you submitted the form document to the tax authority manually.';
+            }
+            action("Mark as Submitted")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Mark as Submitted';
+                Image = Approve;
+                ToolTip = 'Indicate that you submitted the form document to the tax authority manually.';
 
-                    trigger OnAction()
-                    var
-                        IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
-                    begin
-                        IRS1099FormDocument.MarkAsSubmitted(Rec);
-                    end;
-                }
-                action(Print)
-                {
-                    ApplicationArea = BasicUS;
-                    Caption = 'Print';
-                    Ellipsis = true;
-                    Image = PrintAcknowledgement;
-                    ToolTip = 'Prints a single form.';
+                trigger OnAction()
+                var
+                    IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
+                begin
+                    IRS1099FormDocument.MarkAsSubmitted(Rec);
+                end;
+            }
+            action(AllowCorrection)
+            {
+                ApplicationArea = BasicUS;
+                Caption = 'Allow Correction';
+                Image = ResetStatus;
+                ToolTip = 'Allows the form to be reopened for correction. After the correction is done, the form must be released again.';
 
-                    trigger OnAction()
-                    var
-                        IRSFormsFacade: Codeunit "IRS Forms Facade";
-                    begin
-                        IRSFormsFacade.PrintContent(Rec);
-                    end;
-                }
-                action(Reports)
-                {
-                    ApplicationArea = BasicUS;
-                    Caption = 'Reports';
-                    Ellipsis = true;
-                    Image = Report;
-                    ToolTip = 'Opens the reports page.';
-                    RunObject = page "IRS 1099 Form Reports";
-                    RunPageLink = "Document ID" = field(ID);
-                }
-                action(SendEmail)
-                {
-                    ApplicationArea = BasicUS;
-                    Caption = 'Send Email';
-                    Ellipsis = true;
-                    Image = Email;
-                    ToolTip = 'Sends the form by email.';
+                trigger OnAction()
+                var
+                    IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
+                begin
+                    IRS1099FormDocument.AllowCorrection(Rec);
+                end;
+            }
+            action(Print)
+            {
+                ApplicationArea = BasicUS;
+                Caption = 'Print';
+                Ellipsis = true;
+                Image = PrintAcknowledgement;
+                ToolTip = 'Prints a single form.';
 
-                    trigger OnAction()
-                    var
-                        IRS1099SendEmailReport: Report "IRS 1099 Send Email";
-                        IRS1099SendEmail: Codeunit "IRS 1099 Send Email";
-                    begin
-                        IRS1099SendEmail.CheckEmailSetup();
-                        IRS1099SendEmail.CheckCanSendEmail(Rec);
+                trigger OnAction()
+                var
+                    IRSFormsFacade: Codeunit "IRS Forms Facade";
+                begin
+                    IRSFormsFacade.PrintContent(Rec);
+                end;
+            }
+            action(Reports)
+            {
+                ApplicationArea = BasicUS;
+                Caption = 'Reports';
+                Ellipsis = true;
+                Image = Report;
+                ToolTip = 'Opens the reports page.';
+                RunObject = page "IRS 1099 Form Reports";
+                RunPageLink = "Document ID" = field(ID);
+            }
+            action(SendEmail)
+            {
+                ApplicationArea = BasicUS;
+                Caption = 'Send Email';
+                Ellipsis = true;
+                Image = Email;
+                ToolTip = 'Sends the form by email.';
 
-                        Rec.SetRecFilter();
-                        IRS1099SendEmailReport.SetTableView(Rec);
-                        IRS1099SendEmailReport.RunModal();
-                    end;
-                }
+                trigger OnAction()
+                var
+                    IRS1099SendEmailReport: Report "IRS 1099 Send Email";
+                    IRS1099SendEmail: Codeunit "IRS 1099 Send Email";
+                begin
+                    IRS1099SendEmail.CheckEmailSetup();
+                    IRS1099SendEmail.CheckCanSendEmail(Rec);
+
+                    Rec.SetRecFilter();
+                    IRS1099SendEmailReport.SetTableView(Rec);
+                    IRS1099SendEmailReport.RunModal();
+                end;
             }
         }
         area(Promoted)

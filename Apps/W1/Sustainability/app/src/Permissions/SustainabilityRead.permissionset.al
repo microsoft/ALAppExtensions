@@ -1,13 +1,18 @@
 namespace Microsoft.Sustainability;
 
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.CBAM;
 using Microsoft.Sustainability.Certificate;
+using Microsoft.Sustainability.CRM;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Energy;
+using Microsoft.Sustainability.EPR;
 using Microsoft.Sustainability.ESGReporting;
+using Microsoft.Sustainability.ExciseTax;
 using Microsoft.Sustainability.FinancialReporting;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Reports;
 using Microsoft.Sustainability.RoleCenters;
 using Microsoft.Sustainability.Scorecard;
 using Microsoft.Sustainability.Setup;
@@ -44,5 +49,26 @@ permissionset 6211 "Sustainability Read"
         tabledata "Sust. ESG Reporting Name" = R,
         tabledata "Sust. ESG Reporting Line" = R,
         tabledata "Sust. Posted ESG Report Header" = R,
-        tabledata "Sust. Posted ESG Report Line" = R;
+        tabledata "Sust. Posted ESG Report Line" = R,
+        tabledata "Sust. Assessment" = R,
+        tabledata "Sust. Assessment Req. Fact" = R,
+        tabledata "Sust. Assessment Requirement" = R,
+        tabledata "Sust. Concept" = R,
+        tabledata "Sust. ESG Fact" = R,
+        tabledata "Sust. ESG Reporting Unit" = R,
+        tabledata "Sust. ESG Standard" = R,
+        tabledata "Sust. Item Emission Buffer" = R,
+        tabledata "Sust. Range Period" = R,
+        tabledata "Sust. Requirement Concept" = R,
+        tabledata "Sust. Standard" = R,
+        tabledata "Sust. Standard Requirement" = R,
+        tabledata "Sust. Unit" = R,
+        tabledata "Sust. Item Mat. Comp. Header" = R,
+        tabledata "Sust. Item Mat. Comp. Line" = R,
+        tabledata "Sust. Excise Jnl. Line" = R,
+        tabledata "Sust. Excise Journal Batch" = R,
+        tabledata "Sust. Excise Journal Template" = R,
+        tabledata "Sust. Excise Taxes Trans. Log" = R,
+        tabledata "Sustainability Carbon Pricing" = R,
+        tabledata "Sustainability EPR Material" = R;
 }

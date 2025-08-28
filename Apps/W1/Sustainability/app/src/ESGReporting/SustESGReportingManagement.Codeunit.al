@@ -159,6 +159,11 @@ codeunit 6259 "Sust. ESG Reporting Management"
         Report.Run(ESGReportingTemplate."ESG Reporting Report ID", true, false, ESGReportingName);
     end;
 
+    internal procedure GetESGDefaultTemplate(): Text
+    begin
+        exit(ESGLbl);
+    end;
+
     local procedure CheckTemplateName(CurrentESGReportingTemplateName: Code[10]; var CurrentESGReportingName: Code[10])
     var
         ESGReportingTemplate: Record "Sust. ESG Reporting Template";
@@ -176,7 +181,7 @@ codeunit 6259 "Sust. ESG Reporting Management"
         end;
     end;
 
-    local procedure InsertDefaultESGReportingTemplate(var ESGReportingTemplate: Record "Sust. ESG Reporting Template")
+    internal procedure InsertDefaultESGReportingTemplate(var ESGReportingTemplate: Record "Sust. ESG Reporting Template")
     begin
         ESGReportingTemplate.Init();
         ESGReportingTemplate.Name := ESGLbl;

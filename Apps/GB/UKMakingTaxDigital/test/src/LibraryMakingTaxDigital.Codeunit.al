@@ -179,7 +179,7 @@ codeunit 148080 "Library - Making Tax Digital"
         VATReturnPeriod.Modify();
     end;
 
-    internal procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period"; NewStatus: Option)
+    internal procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period"; NewStatus: Enum "VAT Report Status")
     begin
         MockLinkedVATReturnHeader(VATReportHeader, VATReturnPeriod);
         VATReportHeader.Status := NewStatus;

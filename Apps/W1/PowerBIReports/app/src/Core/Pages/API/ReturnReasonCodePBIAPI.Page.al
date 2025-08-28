@@ -7,7 +7,7 @@ page 36965 "Return Reason Code - PBI API"
     Caption = 'Power BI Reason Codes';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'returnReasonCode';
     EntitySetName = 'returnReasonCodes';
     SourceTable = "Return Reason";

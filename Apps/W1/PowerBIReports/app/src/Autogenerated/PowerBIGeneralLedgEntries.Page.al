@@ -39,11 +39,9 @@ page 36995 "PowerBI General Ledg. Entries"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionfdc853c4230265e530cc', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

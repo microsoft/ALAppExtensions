@@ -29,7 +29,7 @@ codeunit 14628 "IS Contoso Localization"
             HumanResourceModule(ContosoDemoDataLevel);
         if Module = Enum::"Contoso Demo Data Module"::Finance then
             FinanceModule(ContosoDemoDataLevel);
-        if Module = Enum::"Contoso Demo Data Module"::Finance then
+        if Module = Enum::"Contoso Demo Data Module"::Inventory then
             InventoryModule(ContosoDemoDataLevel);
 
         UnBindSubscriptionDemoData(Module);

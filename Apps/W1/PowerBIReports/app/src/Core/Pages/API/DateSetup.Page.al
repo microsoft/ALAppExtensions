@@ -10,7 +10,7 @@ page 36955 "Date Setup"
     Caption = 'Power BI Date Setup';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'dateSetup';
     EntitySetName = 'dateSetups';
     EntityCaption = 'Date Setup';

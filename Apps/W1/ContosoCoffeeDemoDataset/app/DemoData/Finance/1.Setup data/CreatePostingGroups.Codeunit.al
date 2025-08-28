@@ -22,15 +22,17 @@ codeunit 5252 "Create Posting Groups"
 
     local procedure InsertGenPostingGroup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
-        ContosoPostingGroup.InsertGenProductPostingGroup(FreightPostingGroup(), FreightDescriptionLbl, CreateVATPostingGroups.Standard());
-        ContosoPostingGroup.InsertGenProductPostingGroup(MiscPostingGroup(), MiscDescriptionLbl, CreateVATPostingGroups.Standard());
-        ContosoPostingGroup.InsertGenProductPostingGroup(RawMatPostingGroup(), RawMatDescriptionLbl, CreateVATPostingGroups.Standard());
-        ContosoPostingGroup.InsertGenProductPostingGroup(RetailPostingGroup(), RetailDescriptionLbl, CreateVATPostingGroups.Standard());
-        ContosoPostingGroup.InsertGenProductPostingGroup(ServicesPostingGroup(), ServicesDescriptionLbl, CreateVATPostingGroups.Reduced());
-        ContosoPostingGroup.InsertGenProductPostingGroup(ZeroPostingGroup(), ZeroDescriptionLbl, CreateVATPostingGroups.Zero());
+        FinanceModuleSetup.Get();
+
+        ContosoPostingGroup.InsertGenProductPostingGroup(FreightPostingGroup(), FreightDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. Standard");
+        ContosoPostingGroup.InsertGenProductPostingGroup(MiscPostingGroup(), MiscDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. Standard");
+        ContosoPostingGroup.InsertGenProductPostingGroup(RawMatPostingGroup(), RawMatDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. Standard");
+        ContosoPostingGroup.InsertGenProductPostingGroup(RetailPostingGroup(), RetailDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. Standard");
+        ContosoPostingGroup.InsertGenProductPostingGroup(ServicesPostingGroup(), ServicesDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. Reduced");
+        ContosoPostingGroup.InsertGenProductPostingGroup(ZeroPostingGroup(), ZeroDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. NO VAT");
     end;
 
     local procedure InsertGenBusinessPostingGroup()

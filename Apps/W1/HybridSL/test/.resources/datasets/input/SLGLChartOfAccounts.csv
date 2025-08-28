@@ -1,0 +1,5 @@
+﻿No.,Name,Search Name,Account Type,Account Category,Income/Balance,Debit/Credit,Direct Posting
+1110,A/R Trade-USD                 ,A/R TRADE-USD,Posting,Assets,Balance Sheet,Both,true
+1210,Inventory-Merchandise         ,INVENTORY-MERCHANDISE,Posting,Assets,Balance Sheet,Both,true
+1230,Inventory-Components          ,INVENTORY-COMPONENTS,Posting,Assets,Balance Sheet,Both,true
+2050,A/P Trade-USD                 ,A/P TRADE-USD,Posting,Liabilities,Balance Sheet,Both,true

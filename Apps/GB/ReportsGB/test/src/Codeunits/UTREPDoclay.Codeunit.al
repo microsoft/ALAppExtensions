@@ -11,6 +11,45 @@ codeunit 144014 "UT REP Doclay"
         LibraryReportDataset: Codeunit "Library - Report Dataset";
         LibraryUTUtility: Codeunit "Library UT Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        PurchHeaderCapLbl: Label 'No_PurchaseHeader';
+        SalesHeaderCapLbl: Label 'No_SalesHeader';
+
+    [Test]
+    [HandlerFunctions('OrderGBRequestPageHandler')]
+    procedure OnAfterGetRecordCopyLoopOrderGB()
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        // Purpose of the test is to validate OnAfterGetRecord Trigger of CopyLoop of  Report 10576 - Order GB.
+        OnAfterGetCopyLoopPurchaseDocument(PurchaseHeader."Document Type"::Order, REPORT::OrderGB, PurchHeaderCapLbl);
+    end;
+
+    [Test]
+    [HandlerFunctions('BlanketPurchaseOrderGBRequestPageHandler')]
+    procedure OnAfterGetRecordCopyLoopBlanketPurchaseOrderGB()
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        // Purpose of the test is to validate OnAfterGetRecord Trigger of CopyLoop of Report 10579 - Blanket Purchase Order GB.
+        OnAfterGetCopyLoopPurchaseDocument(
+          PurchaseHeader."Document Type"::"Blanket Order", REPORT::"Blanket Purch. Order GB", PurchHeaderCapLbl);
+    end;
+
+    local procedure OnAfterGetCopyLoopPurchaseDocument(DocumentType: Enum "Purchase Document Type"; ReportID: Option; DocumentNoCaption: Text[30])
+    var
+        No: Code[20];
+    begin
+        // Setup: Create Purchase Document.
+        Initialize();
+        No := CreatePurchaseDocument(DocumentType);
+        Commit();  // Codeunit 317 Purch.Header - Printed OnRUN calls commit.
+
+        // Exercise.
+        REPORT.Run(ReportID);  // Opens BlanketPurchaseOrderGBRequestPageHandler,OrderGBRequestPageHandler.
+
+        // Verify: Verify Document No. on Report - Order GB, Blanket Purchase Order GB
+        VerifyDataOnReport(DocumentNoCaption, No);
+    end;
 
     [Test]
     [HandlerFunctions('PurchaseInvoiceGBRequestPageHandler')]
@@ -52,6 +91,42 @@ codeunit 144014 "UT REP Doclay"
         VerifyDataOnReport('No_PurchCrMemoHdr', No);
     end;
 
+    [Test]
+    [HandlerFunctions('OrderConfirmationGBRequestPageHandler')]
+    procedure OnAfterGetRoundLoopOrderConfirmationGB()
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Purpose of the test is to validate OnAfterGetRecord Trigger of RoundLoop of Report 10571 Order Confirmation GB.
+        OnAfterGetRoundLoopSalesDocument(SalesHeader."Document Type"::Order, REPORT::"Order Confirmation", SalesHeaderCapLbl);
+    end;
+
+    [Test]
+    [HandlerFunctions('BlanketSalesOrderGBRequestPageHandler')]
+    procedure OnAfterGetRoundLoopBlanketSalesOrderGB()
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Purpose of the test is to validate OnAfterGetRecord Trigger of RoundLoop of Report 10574 Blanket Sales Order GB
+        OnAfterGetRoundLoopSalesDocument(SalesHeader."Document Type"::"Blanket Order", REPORT::"Blanket Order Sales GB", SalesHeaderCapLbl);
+    end;
+
+    local procedure OnAfterGetRoundLoopSalesDocument(DocumentType: Enum "Sales Document Type"; ReportID: Option; DocumentNoCaption: Text[30])
+    var
+        No: Code[20];
+    begin
+        // Setup: Create Sales Document according to the Document Type provided in parameter.
+        Initialize();
+        No := CreateSalesDocument(DocumentType);
+        Commit();  // Commit required since explicit Commit used on OnRun Trigger of COD313: Sales-Printed.
+
+        // Exercise.
+        REPORT.Run(ReportID);  // Opens OrderConfirmationGBRequestPageHandler Or BlanketSalesOrderGBRequestPageHandler
+
+        // Verify: Verify Tax Amount on Report - Order Confirmation GB or Blanket Sales Order GB.
+        VerifyDataOnReport(DocumentNoCaption, No);
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
@@ -87,10 +162,88 @@ codeunit 144014 "UT REP Doclay"
         exit(PurchInvHeader."No.");
     end;
 
+    local procedure CreatePurchaseDocument(DocumentType: Enum "Purchase Document Type"): Code[20]
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+    begin
+        PurchaseHeader."Document Type" := DocumentType;
+        PurchaseHeader."No." := LibraryUTUtility.GetNewCode();
+        PurchaseHeader.Insert();
+        PurchaseLine."Document Type" := DocumentType;
+        PurchaseLine."Document No." := PurchaseHeader."No.";
+        PurchaseLine.Type := PurchaseLine.Type::Item;
+        PurchaseLine."No." := LibraryUTUtility.GetNewCode();
+        PurchaseLine.Insert();
+
+        // Enqueue for BlanketPurchaseOrderGBRequestPageHandler or OrderGBRequestPageHandler.
+        LibraryVariableStorage.Enqueue(PurchaseHeader."No.");
+        exit(PurchaseLine."Document No.");
+    end;
+
+    local procedure CreateSalesDocument(DocumentType: Enum "Sales Document Type"): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+    begin
+        SalesHeader."Document Type" := DocumentType;
+        SalesHeader."No." := LibraryUTUtility.GetNewCode();
+        SalesHeader.Insert();
+        SalesLine."Document Type" := SalesHeader."Document Type";
+        SalesLine."Document No." := SalesHeader."No.";
+        SalesLine.Type := SalesLine.Type::Item;
+        SalesLine."No." := LibraryUTUtility.GetNewCode();
+        SalesLine.Insert();
+
+        // Enqueue required for BlanketSalesOrderGBRequestPageHandler,OrderConfirmationGBTestRequestPageHandler.
+        LibraryVariableStorage.Enqueue(SalesHeader."No.");
+        exit(SalesLine."Document No.");
+    end;
+
     local procedure VerifyDataOnReport(ElementName: Text; ExpectedValue: Variant)
     begin
         LibraryReportDataset.LoadDataSetFile();
         LibraryReportDataset.AssertElementWithValueExists(ElementName, ExpectedValue);
+    end;
+
+    [RequestPageHandler]
+    procedure BlanketPurchaseOrderGBRequestPageHandler(var PurchaseBlanketOrderGB: TestRequestPage "Blanket Purch. Order GB")
+    var
+        No: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(No);
+        PurchaseBlanketOrderGB."Purchase Header".SetFilter("No.", No);
+        PurchaseBlanketOrderGB.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
+    end;
+
+    [RequestPageHandler]
+    procedure BlanketSalesOrderGBRequestPageHandler(var BlanketSalesOrderGB: TestRequestPage "Blanket Order Sales GB")
+    var
+        No: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(No);
+        BlanketSalesOrderGB."Sales Header".SetFilter("No.", No);
+        BlanketSalesOrderGB.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
+    end;
+
+    [RequestPageHandler]
+    procedure OrderConfirmationGBRequestPageHandler(var OrderConfirmationGB: TestRequestPage "Order Confirmation")
+    var
+        No: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(No);
+        OrderConfirmationGB."Sales Header".SetFilter("No.", No);
+        OrderConfirmationGB.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
+    end;
+
+    [RequestPageHandler]
+    procedure OrderGBRequestPageHandler(var OrderGB: TestRequestPage OrderGB)
+    var
+        No: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(No);
+        OrderGB."Purchase Header".SetFilter("No.", No);
+        OrderGB.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
     end;
 
     [RequestPageHandler]

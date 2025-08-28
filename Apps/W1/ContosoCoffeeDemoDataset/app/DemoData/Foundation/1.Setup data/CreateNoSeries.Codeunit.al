@@ -40,10 +40,6 @@ codeunit 5278 "Create No. Series"
         ContosoNoSeries.InsertNoSeries(InventoryShipment(), InventoryShipmentLbl, 'IS000001', 'IS999999', '', '', 1, Enum::"No. Series Implementation"::Normal, true);
         ContosoNoSeries.InsertNoSeries(PostedInventoryShipment(), PostedInventoryShipmentLbl, 'IS000001', 'IS999999', '', '', 1, Enum::"No. Series Implementation"::Normal, true);
 
-        ContosoNoSeries.InsertNoSeries(JobJournal(), JobJournalLbl, 'J00001', 'J01000', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
-
-        ContosoNoSeries.InsertNoSeries(RecurringJobJournal(), RecurringJobJournalLbl, 'J01001', 'J02000', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
-        ContosoNoSeries.InsertNoSeries(JobWIP(), JobWIPLbl, 'WIP0000001', 'WIP9999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
         ContosoNoSeries.InsertNoSeries(JobPriceList(), JobPriceListLbl, 'J00001', 'J99999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
         ContosoNoSeries.InsertNoSeries(LotNumbering(), LotNumberingLbl, 'LOT0001', 'LOT9999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
         ContosoNoSeries.InsertNoSeries(CatalogItems(), CatalogItemsLbl, 'NS0001', 'NS0100', 'NS0095', '', 1, Enum::"No. Series Implementation"::Sequence, true);
@@ -204,20 +200,31 @@ codeunit 5278 "Create No. Series"
         exit('I-SHPT+');
     end;
 
+#if not CLEAN27
+    [Obsolete('The procedure is moved into "Create Job No Series" codeunit 5195.', '27.0')]
     procedure JobJournal(): Code[20]
+    var
+        CreateJobNoSeries: Codeunit Microsoft.DemoData.Jobs."Create Job No Series";
     begin
-        exit('JJNL-GEN');
+        exit(CreateJobNoSeries.JobJournal());
     end;
 
+    [Obsolete('The procedure is moved into "Create Job No Series" codeunit 5195.', '27.0')]
     procedure RecurringJobJournal(): Code[20]
+    var
+        CreateJobNoSeries: Codeunit Microsoft.DemoData.Jobs."Create Job No Series";
     begin
-        exit('JJNL-REC');
+        exit(CreateJobNoSeries.RecurringJobJournal());
     end;
 
+    [Obsolete('The procedure is moved into "Create Job No Series" codeunit 5195.', '27.0')]
     procedure JobWIP(): Code[20]
+    var
+        CreateJobNoSeries: Codeunit Microsoft.DemoData.Jobs."Create Job No Series";
     begin
-        exit('JOB-WIP');
+        exit(CreateJobNoSeries.JobWIP());
     end;
+#endif
 
     procedure JobPriceList(): Code[20]
     begin
@@ -483,9 +490,6 @@ codeunit 5278 "Create No. Series"
         PostedInventoryReceiptLbl: Label 'Posted Inventory Receipt', MaxLength = 100;
         InventoryShipmentLbl: Label 'Inventory Shipment', MaxLength = 100;
         PostedInventoryShipmentLbl: Label 'Posted Inventory Shipment', MaxLength = 100;
-        JobJournalLbl: Label 'Job Journal', MaxLength = 100;
-        RecurringJobJournalLbl: Label 'Recurring Job Journal', MaxLength = 100;
-        JobWIPLbl: Label 'Job-WIP', MaxLength = 100;
         JobPriceListLbl: Label 'Job Price List', MaxLength = 100;
         LotNumberingLbl: Label 'Lot Numbering', MaxLength = 100;
         CatalogItemsLbl: Label 'Catalog Items', MaxLength = 100;

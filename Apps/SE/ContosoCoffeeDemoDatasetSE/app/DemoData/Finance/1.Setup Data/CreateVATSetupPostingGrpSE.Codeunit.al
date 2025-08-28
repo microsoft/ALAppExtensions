@@ -15,15 +15,16 @@ codeunit 11247 "Create VAT Setup PostingGrp SE"
     trigger OnRun()
     var
         ContosoVATStatement: Codeunit "Contoso VAT Statement";
-        CreateVatPostingGroup: Codeunit "Create VAT Posting Groups SE";
+        CreateVatPostingGroupSE: Codeunit "Create VAT Posting Groups SE";
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateGLAccount: Codeunit "Create G/L Account";
         CreateSEGLAccounts: Codeunit "Create SE GL Accounts";
     begin
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.NoVat(), true, 0, CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), true, 1, StrSubstNo(SetupforExportDescLbl, CreateVatPostingGroup.NoVat()));
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.Only(), true, 0, '', '', true, 1, OnlyVatDescriptionLbl);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.VAT12(), true, 12, CreateSEGLAccounts.SalesVAT12(), CreateGLAccount.PurchaseVAT25(), true, 1, StrSubstNo(SetupforExportDescLbl, CreateVatPostingGroup.VAT12()));
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.VAT25(), true, 25, CreateGLAccount.SalesVAT25(), CreateSEGLAccounts.PurchaseVAT12EU(), true, 1, StrSubstNo(SetupforExportDescLbl, CreateVatPostingGroup.VAT25()));
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.VAT6(), true, 6, '', '', true, 1, StrSubstNo(SetupforExportDescLbl, CreateVatPostingGroup.VAT6()));
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVATPostingGroups.NoVAT(), true, 0, CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), true, 1, StrSubstNo(SetupforExportDescLbl, CreateVATPostingGroups.NoVAT()));
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupSE.Only(), true, 0, '', '', true, 1, OnlyVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupSE.VAT12(), true, 12, CreateSEGLAccounts.SalesVAT12(), CreateGLAccount.PurchaseVAT25(), true, 1, StrSubstNo(SetupforExportDescLbl, CreateVatPostingGroupSE.VAT12()));
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupSE.VAT25(), true, 25, CreateGLAccount.SalesVAT25(), CreateSEGLAccounts.PurchaseVAT12EU(), true, 1, StrSubstNo(SetupforExportDescLbl, CreateVatPostingGroupSE.VAT25()));
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupSE.VAT6(), true, 6, '', '', true, 1, StrSubstNo(SetupforExportDescLbl, CreateVatPostingGroupSE.VAT6()));
     end;
 
     var

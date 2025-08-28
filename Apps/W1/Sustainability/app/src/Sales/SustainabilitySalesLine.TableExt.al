@@ -118,11 +118,50 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
             Editable = false;
             DataClassification = CustomerContent;
         }
+        field(6217; "EPR Fee Per Unit"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'EPR Fee Per Unit';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if Rec."EPR Fee Per Unit" <> 0 then
+                    ValidateEmissionPrerequisite(Rec, Rec.FieldNo("EPR Fee Per Unit"));
+
+                UpdateSustainabilityEmission(Rec);
+            end;
+        }
+        field(6218; "Total EPR Fee"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Total EPR Fee';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if Rec."Total EPR Fee" <> 0 then
+                    ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Total EPR Fee"));
+
+                UpdateEmissionPerUnit(Rec);
+            end;
+        }
+        field(6219; "Posted Total EPR Fee"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Posted Total EPR Fee';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
     }
 
     procedure UpdateSustainabilityEmission(var SalesLine: Record "Sales Line")
     begin
         SalesLine."Total CO2e" := SalesLine."CO2e per Unit" * SalesLine."Qty. per Unit of Measure" * SalesLine.Quantity;
+        SalesLine."Total EPR Fee" := SalesLine."EPR Fee Per Unit" * SalesLine."Qty. per Unit of Measure" * SalesLine.Quantity;
     end;
 
     procedure UpdateEmissionPerUnit(var SalesLine: Record "Sales Line")
@@ -130,6 +169,7 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
         Denominator: Decimal;
     begin
         SalesLine."CO2e Per Unit" := 0;
+        SalesLine."EPR Fee Per Unit" := 0;
 
         if (SalesLine."Qty. per Unit of Measure" = 0) or (SalesLine.Quantity = 0) then
             exit;
@@ -137,11 +177,15 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
         Denominator := SalesLine."Qty. per Unit of Measure" * SalesLine.Quantity;
         if SalesLine."Total CO2e" <> 0 then
             SalesLine."CO2e per Unit" := SalesLine."Total CO2e" / Denominator;
+
+        if SalesLine."Total EPR Fee" <> 0 then
+            SalesLine."EPR Fee Per Unit" := SalesLine."Total EPR Fee" / Denominator;
     end;
 
     local procedure ClearEmissionInformation(var SalesLine: Record "Sales Line")
     begin
         SalesLine.Validate("CO2e per Unit", 0);
+        SalesLine.Validate("EPR Fee Per Unit", 0);
     end;
 
     local procedure ValidateEmissionPrerequisite(SalesLine: Record "Sales Line"; CurrentFieldNo: Integer)
@@ -150,7 +194,9 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
     begin
         case CurrentFieldNo of
             SalesLine.FieldNo("CO2e per Unit"),
-            SalesLine.FieldNo("Total CO2e"):
+            SalesLine.FieldNo("Total CO2e"),
+             SalesLine.FieldNo("EPR Fee Per Unit"),
+            SalesLine.FieldNo("Total EPR Fee"):
                 begin
                     SalesLine.TestStatusOpen();
                     SalesLine.TestField("Sust. Account No.");
@@ -181,6 +227,7 @@ tableextension 6235 "Sustainability Sales Line" extends "Sales Line"
                 begin
                     Item.Get(Rec."No.");
                     Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
+                    Rec.Validate("EPR Fee Per Unit", Item."EPR Fees Per Unit");
                 end;
             Rec.Type::Resource:
                 begin

@@ -9,7 +9,7 @@ query 36999 "Item Budget Entries - Purch."
     Caption = 'Power BI Purch. Item Budget Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'purchaseItemBudgetEntry';
     EntitySetName = 'purchaseItemBudgetEntries';
     DataAccessIntent = ReadOnly;

@@ -1,1 +1,0 @@
-{"data": {"product": {"id": "gid://shopify/Product/123456", "title": "Product 1", "options": [{"id": "gid://shopify/ProductOption/1", "name": "%1"}]}}}

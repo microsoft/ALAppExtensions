@@ -77,11 +77,12 @@ codeunit 11580 "Create CH GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '7792');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '7793');
 
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '7890');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '7891');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '7892');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapOverheadVarianceName(), '7893');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '4892');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '4890');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '4892');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '4893');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapOverheadVarianceName(), '4894');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '4895');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialNonInvVarianceName(), '4891');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.FinishedGoodsName(), '1260');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '2140');
@@ -583,10 +584,10 @@ codeunit 11580 "Create CH GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(MaterialLossName(), '4880');
         ContosoGLAccount.AddAccountForLocalization(GoodsLossName(), '4886');
         ContosoGLAccount.AddAccountForLocalization(MaterialVarianceProductionName(), '4890');
-        ContosoGLAccount.AddAccountForLocalization(CapacityVarianceProductionName(), '4891');
-        ContosoGLAccount.AddAccountForLocalization(VarianceMatOverheadCostsName(), '4892');
-        ContosoGLAccount.AddAccountForLocalization(VarianceCapOverheadCostsName(), '4893');
-        ContosoGLAccount.AddAccountForLocalization(VarianceSubcontractingName(), '4894');
+        ContosoGLAccount.AddAccountForLocalization(CapacityVarianceProductionName(), '4892');
+        ContosoGLAccount.AddAccountForLocalization(VarianceMatOverheadCostsName(), '4895');
+        ContosoGLAccount.AddAccountForLocalization(VarianceCapOverheadCostsName(), '4894');
+        ContosoGLAccount.AddAccountForLocalization(VarianceSubcontractingName(), '4893');
         ContosoGLAccount.AddAccountForLocalization(CostReductionsName(), '49');
         ContosoGLAccount.AddAccountForLocalization(PurchaseDiscName(), '4900');
         ContosoGLAccount.AddAccountForLocalization(CostReductionDiscountName(), '4901');

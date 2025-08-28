@@ -313,6 +313,7 @@ codeunit 18201 "GST Distribution Subcsribers"
                 GSTDistributionLine."Distribution No." := GSTDistributionHeader."No.";
                 GSTDistributionLine."Posting Date" := GSTDistributionHeader2."Posting Date";
                 GSTDistributionLine."Distribution Amount" := 0;
+                GSTDistributionLine."Location Posting No. Series" := PostedGSTDistributionLine."Location Posting No. Series";
                 GSTDistributionLine.Insert(true);
             until PostedGSTDistributionLine.Next() = 0;
     end;

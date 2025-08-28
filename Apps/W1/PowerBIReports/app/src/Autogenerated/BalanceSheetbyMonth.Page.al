@@ -39,9 +39,9 @@ page 36986 "Balance Sheet by Month"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
+#pragma warning disable AA0240 // Bug 595848
         ReportPageLbl: Label 'ReportSection6a30609896651f006f0f', Locked = true;
 #pragma warning restore AA0240
 

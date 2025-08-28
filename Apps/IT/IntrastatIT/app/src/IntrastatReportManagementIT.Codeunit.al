@@ -266,11 +266,13 @@ codeunit 148121 "Intrastat Report Management IT"
         ItemLedgEntry2: Record "Item Ledger Entry";
     begin
         IsHandled := true;
-        Result := false;
+        Result := IntrastatReportHeader."Include Community Entries";
 
         CompanyInfo.Get();
-        if Country.Code in [CompanyInfo."Country/Region Code", ''] then
-            Result := IntrastatReportHeader."Include Community Entries";
+        if Country.Code in [CompanyInfo."Country/Region Code", ''] then begin
+            Result := false;
+            exit;
+        end;
 
         if ItemLedgerEntry."Applies-to Entry" = 0 then begin
             ItemLedgEntry2.SetCurrentKey("Item No.", "Posting Date");
@@ -282,7 +284,7 @@ codeunit 148121 "Intrastat Report Management IT"
             ItemLedgEntry2.Get(ItemLedgerEntry."Applies-to Entry");
 
         if not (IntrastatReportMgt.GetIntrastatBaseCountryCode(ItemLedgEntry2) in [CompanyInfo."Country/Region Code", '']) then
-            Result := IntrastatReportHeader."Include Community Entries";
+            Result := false;
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnAfterCheckItemLedgerEntry', '', true, true)]
@@ -292,9 +294,14 @@ codeunit 148121 "Intrastat Report Management IT"
         CompanyInfo: Record "Company Information";
     begin
         CompanyInfo.Get();
-        CurrReportSkip := (ItemLedgerEntry."Entry Type" = ItemLedgerEntry."Entry Type"::Sale) and
-            SalesShipmentHeader.Get(ItemLedgerEntry."Document No.") and
-            (CompanyInfo."Country/Region Code" = SalesShipmentHeader."Bill-to Country/Region Code");
+        case ItemLedgerEntry."Entry Type" of
+            ItemLedgerEntry."Entry Type"::Sale:
+                CurrReportSkip := SalesShipmentHeader.Get(ItemLedgerEntry."Document No.") and (CompanyInfo."Country/Region Code" = SalesShipmentHeader."Bill-to Country/Region Code");
+            ItemLedgerEntry."Entry Type"::Transfer:
+                CurrReportSkip :=
+                    ((IntrastatReportHeader.Type = IntrastatReportHeader.Type::Purchases) and (ItemLedgerEntry."Document Type" = ItemLedgerEntry."Document Type"::"Transfer Receipt") or
+                     (IntrastatReportHeader.Type = IntrastatReportHeader.Type::Sales) and (ItemLedgerEntry."Document Type" = ItemLedgerEntry."Document Type"::"Transfer Shipment"));
+        end;
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeCalculateTotalsCall', '', true, true)]
@@ -682,7 +689,7 @@ codeunit 148121 "Intrastat Report Management IT"
             IntrastatReportLine.Validate(Quantity, Round(-IntrastatReportLine.Quantity, 0.00001));
         end else begin
             if ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Transfer then begin
-                if TotalInvoicedQty < 0 then
+                if TotalInvoicedQty > 0 then
                     IntrastatReportLine.Type := IntrastatReportLine.Type::Receipt
                 else
                     IntrastatReportLine.Type := IntrastatReportLine.Type::Shipment

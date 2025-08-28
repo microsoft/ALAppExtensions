@@ -39,6 +39,18 @@ page 6255 "Sust. ESG Reporting Prev. Line"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a reporting code of the ESG reporting line.';
                 }
+                field("Concept Link"; Rec."Concept Link")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the Concept link of the Source field.';
+                }
+                field("Concept"; Rec."Concept")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the Concept of the Source field.';
+                }
                 field("Field Type"; Rec."Field Type")
                 {
                     ApplicationArea = Basic, Suite;

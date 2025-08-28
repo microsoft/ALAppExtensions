@@ -9,7 +9,7 @@ query 36991 "Work Centers"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'workCenter';
     EntitySetName = 'workCenters';
     DataAccessIntent = ReadOnly;

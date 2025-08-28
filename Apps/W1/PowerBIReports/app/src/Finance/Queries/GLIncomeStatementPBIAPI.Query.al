@@ -10,7 +10,7 @@ query 37014 "G/L Income Statement - PBI API"
     Caption = 'Power BI G/L Entries Income Statement';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'incomeStmtGeneralLedgerEntry';
     EntitySetName = 'incomeStmtGeneralLedgerEntries';
     DataAccessIntent = ReadOnly;

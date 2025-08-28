@@ -39,11 +39,9 @@ page 37096 "PBI Machine Center Load"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'd0b095013b4daa61d75c', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

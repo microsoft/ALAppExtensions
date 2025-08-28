@@ -10,7 +10,7 @@ query 36986 "Item Ledger Entries - Prod."
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'prodItemLedgerEntry';
     EntitySetName = 'prodItemLedgerEntries';
     DataAccessIntent = ReadOnly;

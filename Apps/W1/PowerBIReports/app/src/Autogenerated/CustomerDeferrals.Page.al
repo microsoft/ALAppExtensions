@@ -39,11 +39,9 @@ page 37078 "Customer Deferrals"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'dcb80fad15d5002bc00d', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

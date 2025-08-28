@@ -21,6 +21,7 @@ codeunit 6252 "Sust. Sales Copy Document"
     local procedure CopyFromSalesLine(var ToSalesLine: Record "Sales Line"; FromSalesLine: Record "Sales Line")
     begin
         ToSalesLine."Posted Total CO2e" := 0;
+        ToSalesLine."Posted Total EPR Fee" := 0;
 
         if ToSalesLine."Sust. Account No." <> FromSalesLine."Sust. Account No." then
             ToSalesLine.Validate("Sust. Account No.", FromSalesLine."Sust. Account No.");
@@ -32,11 +33,13 @@ codeunit 6252 "Sust. Sales Copy Document"
             ToSalesLine.Validate("Sust. Account Subcategory", FromSalesLine."Sust. Account Subcategory");
 
         ToSalesLine.Validate("CO2e per Unit", FromSalesLine."CO2e per Unit");
+        ToSalesLine.Validate("EPR Fee Per Unit", FromSalesLine."EPR Fee Per Unit");
     end;
 
     local procedure CopyFromSalesShipmentLine(var ToSalesLine: Record "Sales Line"; FromSalesShptLine: Record "Sales Shipment Line")
     begin
         ToSalesLine."Posted Total CO2e" := 0;
+        ToSalesLine."Posted Total EPR Fee" := 0;
 
         if ToSalesLine."Sust. Account No." <> FromSalesShptLine."Sust. Account No." then
             ToSalesLine.Validate("Sust. Account No.", FromSalesShptLine."Sust. Account No.");
@@ -48,5 +51,6 @@ codeunit 6252 "Sust. Sales Copy Document"
             ToSalesLine.Validate("Sust. Account Subcategory", FromSalesShptLine."Sust. Account Subcategory");
 
         ToSalesLine.Validate("CO2e per Unit", FromSalesShptLine."CO2e per Unit");
+        ToSalesLine.Validate("EPR Fee Per Unit", FromSalesShptLine."EPR Fee per Unit");
     end;
 }

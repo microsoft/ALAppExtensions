@@ -6,16 +6,11 @@ using System.DateTime;
 using System.Security.User;
 using System.Utilities;
 
-#pragma warning disable AS0125
-#pragma warning disable AS0030
 page 36950 "PowerBI Assisted Setup"
-#pragma warning restore AS0030
-#pragma warning restore AS0125
 {
     PageType = NavigatePage;
-    Caption = 'Power BI Assisted Setup';
+    Caption = 'Power BI Content Assisted Setup';
     SourceTable = "PowerBI Reports Setup";
-    Extensible = false;
 
     layout
     {
@@ -663,91 +658,6 @@ page 36950 "PowerBI Assisted Setup"
                         }
                     }
                 }
-                group(SustainabilityReportSetup)
-                {
-                    Caption = 'Sustainability';
-                    InstructionalText = 'Configure the Power BI Sustainability App.';
-
-                    field("Sustainability Report Name"; Format(Rec."Sustainability Report Name"))
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Power BI Sustainability Report';
-                        ToolTip = 'Specifies the Power BI Sustainability Report.';
-
-                        trigger OnAssistEdit()
-                        begin
-                            SetupHelper.EnsureUserAcceptedPowerBITerms();
-                            SetupHelper.LookupPowerBIReport(Rec."Sustainability Report ID", Rec."Sustainability Report Name");
-                        end;
-                    }
-                    group(SustShowMoreGroup)
-                    {
-                        ShowCaption = false;
-                        Visible = not SustainabilityTabVisible;
-                        field(SustShowMore; ShowMoreTxt)
-                        {
-                            ApplicationArea = All;
-                            ShowCaption = false;
-                            trigger OnDrillDown()
-                            begin
-                                SustainabilityTabVisible := not SustainabilityTabVisible;
-                            end;
-                        }
-                    }
-                    group(SustFastTab)
-                    {
-                        ShowCaption = false;
-                        Visible = SustainabilityTabVisible;
-                        group(SustDataFiltering)
-                        {
-                            ShowCaption = false;
-                            InstructionalText = 'Configure the volume of data that is sent to your Power BI semantic models (optional).';
-
-                            field("Sustainability Load Date Type"; Rec."Sustainability Load Date Type")
-                            {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the date type for Sustainability report filter.';
-                            }
-                            group(SustRepStartEndDateFilters)
-                            {
-                                ShowCaption = false;
-                                Visible = Rec."Sustainability Load Date Type" = Rec."Sustainability Load Date Type"::"Start/End Date";
-
-                                field("Sustainability Start Date"; Rec."Sustainability Start Date")
-                                {
-                                    ApplicationArea = All;
-                                    ToolTip = 'Specifies the start date for Sustainability report filter.';
-                                }
-                                field("Sustainability End Date"; Rec."Sustainability End Date")
-                                {
-                                    ApplicationArea = All;
-                                    ToolTip = 'Specifies the end date for Sustainability report filter.';
-                                }
-                            }
-                            group(SustRepRelativeDateFilter)
-                            {
-                                ShowCaption = false;
-                                Visible = Rec."Sustainability Load Date Type" = Rec."Sustainability Load Date Type"::"Relative Date";
-
-                                field("Sustainability Date Formula"; Rec."Sustainability Date Formula")
-                                {
-                                    ApplicationArea = All;
-                                    ToolTip = 'Specifies the date formula for Sustainability report filter.';
-                                }
-                            }
-                        }
-                        field(SustShowLess; ShowLessTxt)
-                        {
-                            ApplicationArea = All;
-                            ShowCaption = false;
-
-                            trigger OnDrillDown()
-                            begin
-                                SustainabilityTabVisible := not SustainabilityTabVisible;
-                            end;
-                        }
-                    }
-                }
                 group(SubscriptionBillingReportSetup)
                 {
                     Caption = 'Subscription Billing';
@@ -765,9 +675,7 @@ page 36950 "PowerBI Assisted Setup"
                         end;
                     }
                 }
-
             }
-
             group(Step6)
             {
                 Visible = CurrentStep = Steps::Finish;
@@ -871,7 +779,7 @@ page 36950 "PowerBI Assisted Setup"
         GuidedExperience: Codeunit "Guided Experience";
         TimeZoneSelection: Codeunit "Time Zone Selection";
         EnvironmentInformation: Codeunit "Environment Information";
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         Steps: Option Intro,DateTableConfig,UTCOffset,WorkingDays,Setting,Finish;
         PrevStep: Option;
         CurrentStep: Option;
@@ -894,7 +802,6 @@ page 36950 "PowerBI Assisted Setup"
         PurchasesTabVisible: Boolean;
         ProjectTabVisible: Boolean;
         ManufacturingTabVisible: Boolean;
-        SustainabilityTabVisible: Boolean;
         ShowMoreTxt: Label 'Show More';
         ShowLessTxt: Label 'Show Less';
         AdminPermissionRequiredErr: Label 'Setting up Power BI requires the ''%1'' permission set (or equivalent) that your account doesn''t have. Ask your administrator to assign the permission set to you.', Comment = '%1 = permission set name';

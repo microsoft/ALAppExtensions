@@ -44,7 +44,7 @@ codeunit 13449 "Create VATSetupPostingGrp. FI"
                 ValidateRecordFields(Rec, 17, CreateFIGLAccounts.Deferredtaxliability10(), CreateFIGLAccounts.Deferredtaxreceivables3());
             CreateVATPostingGroups.Standard():
                 ValidateRecordFields(Rec, 24, CreateFIGLAccounts.Deferredtaxliability8(), CreateFIGLAccounts.Deferredtaxreceivables1());
-            CreateVATPostingGroups.Zero():
+            CreateVATPostingGroups.NoVAT():
                 ValidateRecordFields(Rec, 0, CreateFIGLAccounts.Deferredtaxliability8(), CreateFIGLAccounts.Deferredtaxreceivables1());
         end;
     end;

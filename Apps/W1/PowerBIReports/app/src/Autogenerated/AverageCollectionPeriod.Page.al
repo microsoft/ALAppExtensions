@@ -39,11 +39,9 @@ page 36992 "Average Collection Period"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionb1d1e3d33a031ad3b0ed', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var
