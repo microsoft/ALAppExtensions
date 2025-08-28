@@ -18,7 +18,6 @@ codeunit 13924 "E-Document Structured Tests"
         MockCurrencyCode: Code[10];
         MockDate: Date;
 
-
     #region XRechnung XML
     [Test]
     procedure TestXRechnungInvoice_ValidDocument()
