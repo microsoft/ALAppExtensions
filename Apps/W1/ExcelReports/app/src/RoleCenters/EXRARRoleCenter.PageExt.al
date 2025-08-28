@@ -21,11 +21,7 @@ pageextension 4405 EXRARRoleCenter extends "Account Receivables"
                 action(EXRTrialBalanceExcel)
                 {
                     ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                    Caption = 'Trial Balance (Preview)';
-#else
                     Caption = 'Trial Balance (Excel)';
-#endif
                     Image = "Report";
                     RunObject = report "EXR Trial Balance Excel";
                     ToolTip = 'Open a spreadsheet that shows Trial Balance Excel data.';
@@ -46,18 +42,6 @@ pageextension 4405 EXRARRoleCenter extends "Account Receivables"
                     RunObject = report "EXR Trial Bal. Prev Year Excel";
                     ToolTip = 'Open a spreadsheet that shows Trial Balance/Previous Year data';
                 }
-                action(EXRAgedAccountsRecExcel)
-                {
-                    ApplicationArea = Basic, Suite;
-#if not CLEAN25
-                    Caption = 'Aged Accounts Receivable (Preview)';
-#else
-                    Caption = 'Aged Accounts Receivable (Excel)';
-#endif
-                    Image = "Report";
-                    RunObject = report "EXR Aged Accounts Rec Excel";
-                    ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
-                }
                 action(EXRCustomerTopListExcel)
                 {
                     ApplicationArea = Basic, Suite;
@@ -66,6 +50,17 @@ pageextension 4405 EXRARRoleCenter extends "Account Receivables"
                     RunObject = report "EXR Customer Top List";
                     ToolTip = 'Open a spreadsheet that shows a list of top customers.';
                 }
+            }
+        }
+        addafter("Customer - &Balance to Date")
+        {
+            action(EXRAgedAccountsRecExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Aged Accounts Receivable (Excel)';
+                Image = "Report";
+                RunObject = report "EXR Aged Accounts Rec Excel";
+                ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
             }
         }
     }
