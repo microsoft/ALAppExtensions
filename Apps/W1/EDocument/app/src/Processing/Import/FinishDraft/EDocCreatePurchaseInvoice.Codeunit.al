@@ -91,10 +91,11 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         GlobalDim1, GlobalDim2 : Code[20];
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
-        if not AllDraftLinesHaveTypeAndNumberSpecificed(EDocumentPurchaseHeader) then begin
-            Telemetry.LogMessage('0000PLY', 'Draft line does not contain type or number', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All);
-            Error(DraftLineDoesNotConstantTypeAndNumberErr);
-        end;
+        if EDocumentPurchaseHeader."E-Document Type" <> "E-Document Type"::"Issued Reminder" then
+            if not AllDraftLinesHaveTypeAndNumberSpecificed(EDocumentPurchaseHeader) then begin
+                Telemetry.LogMessage('0000PLY', 'Draft line does not contain type or number', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All);
+                Error(DraftLineDoesNotConstantTypeAndNumberErr);
+            end;
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");
         PurchaseHeader.SetRange("Buy-from Vendor No.", EDocumentPurchaseHeader."[BC] Vendor No."); // Setting the filter, so that the insert trigger assigns the right vendor to the purchase header
         PurchaseHeader."Document Type" := "Purchase Document Type"::Invoice;

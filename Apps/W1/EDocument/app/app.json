@@ -37,6 +37,11 @@
       "id": "967eceac-106e-4102-b76a-fe5dc3d799e5",
       "name": "Payables Agent Tests",
       "publisher": "Microsoft"
+    },
+    {
+      "id": "8228f99b-cce5-4b9c-b247-9ee1145b7470",
+      "name": "E-Document format for OIOUBL",
+      "publisher": "Microsoft"
     }
   ],
   "screenshots": [],
