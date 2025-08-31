@@ -35,6 +35,19 @@ codeunit 6139 "E-Document Workflow Setup"
         Workflow.Modify();
     end;
 
+    internal procedure InsertInitForSingleServiceTemplate()
+    var
+        Workflow: Record Workflow;
+        WorkflowSetup: Codeunit "Workflow Setup";
+    begin
+        WorkflowSetup.InsertWorkflowTemplate(Workflow, EDocInitForSingleServiceTemplateWfCodeTxt, EDocInitForSingleServiceTemplateWfDescriptionTxt, EDocCategoryTxt);
+        Workflow.Validate(Template, false);
+        Workflow.Modify();
+        InsertEDocExportWorkflowDetails(Workflow);
+        Workflow.Validate(Template, true);
+        Workflow.Modify();
+    end;
+
     #region Workflow Events
     procedure EDocCreated(): code[128];
     begin
@@ -182,6 +195,7 @@ codeunit 6139 "E-Document Workflow Setup"
     begin
         InsertSendToSingleServiceTemplate();
         InsertSendToMultiServiceTemplate();
+        InsertInitForSingleServiceTemplate();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Setup", OnAddWorkflowCategoriesToLibrary, '', false, false)]
@@ -211,11 +225,22 @@ codeunit 6139 "E-Document Workflow Setup"
         WorkflowSetup.InsertResponseStep(Workflow, EDocSendEDocResponseCode(), ResponseStepIdA);
     end;
 
+    local procedure InsertEDocExportWorkflowDetails(var Workflow: Record Workflow)
+    var
+        WorkflowSetup: Codeunit "Workflow Setup";
+        EntryPointStepId: Integer;
+    begin
+        EntryPointStepId := WorkflowSetup.InsertEntryPointEventStep(Workflow, EDocCreated());
+        WorkflowSetup.InsertResponseStep(Workflow, ResponseEDocExport(), EntryPointStepId);
+    end;
+
     var
         EDocCategoryDescriptionTxt: Label 'E-Document';
         EDocCategoryTxt: Label 'EDOC', Locked = true;
         EDocSendToSingleServiceTemplateWfCodeTxt: Label 'EDOCTOS', Locked = true;
         EDocSendToMultiServicesTemplateWfCodeTxt: Label 'EDOCTOM', Locked = true;
+        EDocInitForSingleServiceTemplateWfCodeTxt: Label 'EDOCINIT', Locked = true;
         EDocSendToSingleServiceTemplateWfDescriptionTxt: Label 'Send to one service';
         EDocSendToMultiServicesTemplateWfDescriptionTxt: Label 'Send to multiple services';
+        EDocInitForSingleServiceTemplateWfDescriptionTxt: Label 'Init for one service';
 }
