@@ -9,7 +9,6 @@ using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Purchases.Vendor;
-using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 using System.Telemetry;
 
 page 6181 "E-Document Purchase Draft"
@@ -163,18 +162,56 @@ page 6181 "E-Document Purchase Draft"
             group("E-Document Details")
             {
                 ShowCaption = false;
-                field("Amount Incl. VAT"; EDocumentPurchaseHeader.Total)
-                {
-                    ToolTip = 'Specifies the total amount of the electronic document including VAT.';
-                    Editable = false;
-                    Importance = Promoted;
-                }
-                field("Amount Excl. VAT"; EDocumentPurchaseHeader.Total - EDocumentPurchaseHeader."Total VAT")
+                field("Amount Excl. VAT"; EDocumentPurchaseHeader."Sub Total")
                 {
                     Caption = 'Amount Excl. VAT';
                     ToolTip = 'Specifies the total amount of the electronic document excluding VAT.';
                     Importance = Promoted;
-                    Editable = false;
+
+                    trigger OnValidate()
+                    begin
+                        UpdateTotal();
+                        EDocumentPurchaseHeader.Modify();
+                        CurrPage.Update();
+                    end;
+                }
+                field("Invoice Discount"; EDocumentPurchaseHeader."Total Discount")
+                {
+                    Caption = 'Invoice Discount';
+                    ToolTip = 'Specifies the discount in addition to the lines';
+                    Importance = Promoted;
+
+                    trigger OnValidate()
+                    begin
+                        UpdateTotal();
+                        EDocumentPurchaseHeader.Modify();
+                        CurrPage.Update();
+                    end;
+                }
+                field("Total VAT"; EDocumentPurchaseHeader."Total VAT")
+                {
+                    Caption = 'Total VAT';
+                    ToolTip = 'Specifies the total VAT';
+                    Importance = Promoted;
+
+                    trigger OnValidate()
+                    begin
+                        UpdateTotal();
+                        EDocumentPurchaseHeader.Modify();
+                        CurrPage.Update();
+                    end;
+                }
+                field("Amount Incl. VAT"; EDocumentPurchaseHeader.Total)
+                {
+                    ToolTip = 'Specifies the total amount of the electronic document including VAT.';
+                    Importance = Promoted;
+
+                    trigger OnValidate()
+                    begin
+                        EDocumentPurchaseHeader.Modify();
+                        CurrPage.Update();
+                    end;
+
                 }
                 field("Currency Code"; EDocumentPurchaseHeader."Currency Code")
                 {
@@ -189,13 +226,6 @@ page 6181 "E-Document Purchase Draft"
                     end;
                 }
             }
-
-            part(ErrorMessagesPart; "Error Messages Part")
-            {
-                Visible = HasErrorsOrWarnings;
-                ShowFilter = false;
-                UpdatePropagation = Both;
-            }
         }
         area(factboxes)
         {
@@ -204,9 +234,8 @@ page 6181 "E-Document Purchase Draft"
                 ApplicationArea = All;
                 Caption = 'Documents';
                 UpdatePropagation = Both;
-                SubPageLink = "Table ID" = const(Database::"E-Document"),
-                            "E-Document Entry No." = field("Entry No"),
-                            "E-Document Attachment" = const(true);
+                SubPageLink = "E-Document Entry No." = field("Entry No"),
+                              "E-Document Attachment" = const(true);
             }
             part(InboundEDocPicture; "Inbound E-Doc. Picture")
             {
@@ -220,6 +249,12 @@ page 6181 "E-Document Purchase Draft"
                 Caption = 'Details';
                 SubPageLink = "E-Document Entry No" = field("Entry No");
                 ShowFilter = false;
+            }
+            part(ErrorMessagesFactBox; "Error Messages Part")
+            {
+                Visible = false;
+                ShowFilter = false;
+                UpdatePropagation = Both;
             }
         }
     }
@@ -292,20 +327,6 @@ page 6181 "E-Document Purchase Draft"
                     EDocImport.ViewExtractedData(Rec);
                 end;
             }
-            action(ClearErrors)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Clear errors';
-                ToolTip = 'Clears all error messages for the E-Document.';
-                Image = ClearLog;
-                Visible = HasErrorsOrWarnings;
-
-                trigger OnAction()
-                begin
-                    EDocumentErrorHelper.ClearErrorMessages(Rec);
-                    ClearErrorsAndWarnings();
-                end;
-            }
         }
         area(Navigation)
         {
@@ -349,9 +370,6 @@ page 6181 "E-Document Purchase Draft"
                 actionref(Promoted_ViewFile; ViewFile)
                 {
                 }
-                actionref(Promoted_ClearErrors; ClearErrors)
-                {
-                }
             }
         }
     }
@@ -359,24 +377,21 @@ page 6181 "E-Document Purchase Draft"
     trigger OnOpenPage()
     var
         EDocumentsSetup: Record "E-Documents Setup";
-        ImportEDocumentProcess: Codeunit "Import E-Document Process";
         EDocumentNotification: Codeunit "E-Document Notification";
     begin
         if not EDocumentsSetup.IsNewEDocumentExperienceActive() then
             Error('');
 
-        if EDocumentPurchaseHeader.Get(Rec."Entry No") then
-            if Rec."Read into Draft Impl." = "E-Doc. Read into Draft"::ADI then begin
-                HasPDFSource := true;
-                AIGeneratedContentNotification.Message(ImportEDocumentProcess.AIGeneratedContentText());
-                AIGeneratedContentNotification.AddAction(ImportEDocumentProcess.TermsAndConditionsText(), Codeunit::"Import E-Document Process", 'OpenTermsAndConditions');
-                AIGeneratedContentNotification.Send();
-            end;
+        if EDocumentPurchaseHeader.Get(Rec."Entry No") then;
+        HasPDFSource := Rec."Read into Draft Impl." = "E-Doc. Read into Draft"::ADI;
         EDocumentServiceStatus := Rec.GetEDocumentServiceStatus();
         HasErrorsOrWarnings := false;
         HasErrors := false;
         PageEditable := IsEditable();
         EDocumentNotification.SendPurchaseDocumentDraftNotifications(Rec."Entry No");
+
+        if Rec."Entry No" <> 0 then
+            Rec.SetRecFilter(); // Filter the record to only this instance to avoid navigation 
     end;
 
     local procedure IsEditable(): Boolean
@@ -437,6 +452,11 @@ page 6181 "E-Document Purchase Draft"
         end;
     end;
 
+    local procedure UpdateTotal()
+    begin
+        EDocumentPurchaseHeader.Total := EDocumentPurchaseHeader."Sub Total" - EDocumentPurchaseHeader."Total Discount" + EDocumentPurchaseHeader."Total VAT";
+    end;
+
     local procedure ShowErrorsAndWarnings()
     var
         ErrorMessage: Record "Error Message";
@@ -444,14 +464,9 @@ page 6181 "E-Document Purchase Draft"
     begin
         ErrorMessage.SetRange("Context Record ID", Rec.RecordId);
         ErrorMessage.CopyToTemp(TempErrorMessage);
-        CurrPage.ErrorMessagesPart.Page.SetRecords(TempErrorMessage);
-        CurrPage.ErrorMessagesPart.Page.Update(false);
 
-        ErrorsAndWarningsNotification.Id := GetErrorNotificationGuid();
-        ErrorsAndWarningsNotification.Scope := NotificationScope::LocalScope;
-        if ErrorsAndWarningsNotification.Recall() then;
-        ErrorsAndWarningsNotification.Message(EDocHasErrorOrWarningMsg);
-        ErrorsAndWarningsNotification.Send();
+        CurrPage.ErrorMessagesFactBox.Page.SetRecords(TempErrorMessage);
+        CurrPage.ErrorMessagesFactBox.Page.Update(false);
     end;
 
     local procedure LookupVendor(var VendorNo: Text): Boolean
@@ -471,19 +486,18 @@ page 6181 "E-Document Purchase Draft"
     var
         TempErrorMessage: Record "Error Message" temporary;
     begin
-        CurrPage.ErrorMessagesPart.Page.SetRecords(TempErrorMessage);
-        CurrPage.ErrorMessagesPart.Page.Update(false);
-
-        ErrorsAndWarningsNotification.Id := GetErrorNotificationGuid();
-        if ErrorsAndWarningsNotification.Recall() then;
+        CurrPage.ErrorMessagesFactBox.Page.SetRecords(TempErrorMessage);
+        CurrPage.ErrorMessagesFactBox.Page.Update(false);
     end;
 
     local procedure FinalizeEDocument()
     var
+        TempErrorMessage: Record "Error Message" temporary;
+        ErrorMessage: Record "Error Message";
         EDocImportParameters: Record "E-Doc. Import Parameters";
         EDocImport: Codeunit "E-Doc. Import";
     begin
-        Session.LogMessage('0000PCO', FinalizeDraftInvokedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocPOCopilotMatching.FeatureName());
+        Session.LogMessage('0000PCO', FinalizeDraftInvokedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocumentPurchaseHeader.FeatureName());
 
         if not EDocumentHelper.EnsureInboundEDocumentHasService(Rec) then
             exit;
@@ -492,14 +506,18 @@ page 6181 "E-Document Purchase Draft"
         EDocImport.ProcessIncomingEDocument(Rec, EDocImportParameters);
         Rec.Get(Rec."Entry No");
 
-        if EDocumentErrorHelper.HasErrors(Rec) then
-            exit;
+        if EDocumentErrorHelper.HasErrors(Rec) then begin
+            ErrorMessage.SetRange("Context Record ID", Rec.RecordId);
+            ErrorMessage.CopyToTemp(TempErrorMessage);
+            Commit(); // Persists error messages after error is thrown.
+            TempErrorMessage.ThrowError();
+        end;
 
         PageEditable := IsEditable();
         CurrPage.Lines.Page.Update();
         CurrPage.Update();
-        Session.LogMessage('0000PCP', FinalizeDraftPerformedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocPOCopilotMatching.FeatureName());
-        FeatureTelemetry.LogUsage('0000PCU', EDocPOCopilotMatching.FeatureName(), 'Finalize draft');
+        Session.LogMessage('0000PCP', FinalizeDraftPerformedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocumentPurchaseHeader.FeatureName());
+        FeatureTelemetry.LogUsage('0000PCU', EDocumentPurchaseHeader.FeatureName(), 'Finalize draft');
         Rec.ShowRecord();
     end;
 
@@ -570,26 +588,17 @@ page 6181 "E-Document Purchase Draft"
             Progress.Close();
     end;
 
-    local procedure GetErrorNotificationGuid(): Guid
-    begin
-        exit('5d928119-f61d-42f7-ba98-43bfcf8bfaeb');
-    end;
-
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         EDocumentProcessing: Codeunit "E-Document Processing";
-        EDocPOCopilotMatching: Codeunit "E-Doc. PO Copilot Matching";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocumentHelper: Codeunit "E-Document Helper";
-        ErrorsAndWarningsNotification: Notification;
-        AIGeneratedContentNotification: Notification;
         RecordLinkTxt, StyleStatusTxt, ServiceStatusStyleTxt, VendorName, DataCaption : Text;
         HasErrorsOrWarnings, HasErrors : Boolean;
         ShowFinalizeDraftAction: Boolean;
         ShowAnalyzeDocumentAction: Boolean;
-        EDocHasErrorOrWarningMsg: Label 'Errors occurred when processing this draft. See errors in the "Error messages" section at the bottom of the page.';
         FinalizeDraftInvokedTxt: Label 'User invoked Finalize Draft action.';
         FinalizeDraftPerformedTxt: Label 'User completed Finalize Draft action.';
         ProcessingDocumentMsg: Label 'Processing document...';

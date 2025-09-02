@@ -28,15 +28,19 @@ codeunit 5629 "Create VAT Setup Posting Grp."
 
     local procedure CreateVatSetupPostingGrp()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
+        FinanceModuleSetup.Get();
+
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.FullNormal(), true, 0, '', '', true, 1, StrSubstNo(VATOnlyInvoicesDescriptionLbl, '25'));
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.FullRed(), true, 0, '', '', true, 1, StrSubstNo(VATOnlyInvoicesDescriptionLbl, '10'));
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.Reduced(), true, 10, CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), true, 1, ReducedVatDescriptionLbl);
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.ServNormal(), true, 0, '', '', true, 1, StrSubstNo(MiscellaneousVATDescriptionLbl, '25'));
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.ServRed(), true, 0, '', '', true, 1, StrSubstNo(MiscellaneousVATDescriptionLbl, '10'));
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.Standard(), true, 25, CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), true, 1, NormalVatDescriptionLbl);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.Zero(), true, 0, CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), true, 1, NoVatDescriptionLbl);
+
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Reduced", true, 10, CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), true, 1, ReducedVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Standard", true, 25, CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), true, 1, NormalVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", true, 0, CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), true, 1, NoVatDescriptionLbl);
     end;
 
     local procedure CreateVATAssistedSetupGrp()

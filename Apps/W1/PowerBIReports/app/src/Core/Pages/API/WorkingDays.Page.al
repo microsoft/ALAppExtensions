@@ -6,7 +6,7 @@ page 36960 "Working Days"
     Caption = 'Power BI Working Days';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'workingDay';
     EntitySetName = 'workingDays';
     EntityCaption = 'Working Day';

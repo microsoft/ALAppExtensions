@@ -5,6 +5,7 @@
 namespace Microsoft.Sustainability.ESGReporting;
 
 using Microsoft.Foundation.Address;
+using Microsoft.Integration.Dataverse;
 
 table 6229 "Sust. ESG Reporting Name"
 {
@@ -34,29 +35,63 @@ table 6229 "Sust. ESG Reporting Name"
             Caption = 'Date Filter';
             FieldClass = FlowFilter;
         }
-        field(6; "Standard Type"; Enum "Sust ESG Reporting Std. Type")
+        field(6; Standard; Code[20])
         {
-            Caption = 'Standard Type';
+            Caption = 'Standard';
+            TableRelation = "Sust. ESG Standard"."No.";
         }
-        field(7; Period; Integer)
+        field(7; "Period Name"; Text[100])
         {
-            Caption = 'Period';
+            Caption = 'Period Name';
 
             trigger OnValidate()
             begin
-                if Rec.Period <> xRec.Period then
+                if Rec."Period Name" <> xRec."Period Name" then
                     Rec.Validate(Posted, false);
             end;
         }
-        field(8; "Country/Region Code"; Code[10])
+        field(8; "Period Starting Date"; Date)
+        {
+            Caption = 'Period Starting Date';
+
+            trigger OnValidate()
+            begin
+                if ("Period Starting Date" > "Period Ending Date") and ("Period Ending Date" <> 0D) then
+                    Error(StartingDateCannotBeAfterEndingDateErr, FieldCaption("Period Starting Date"), FieldCaption("Period Ending Date"));
+
+                if Rec."Period Starting Date" <> xRec."Period Starting Date" then
+                    Rec.Validate(Posted, false);
+            end;
+        }
+        field(9; "Period Ending Date"; Date)
+        {
+            Caption = 'Period Ending Date';
+
+            trigger OnValidate()
+            begin
+                Validate("Period Starting Date");
+
+                if Rec."Period Ending Date" <> xRec."Period Ending Date" then
+                    Rec.Validate(Posted, false);
+            end;
+        }
+        field(10; "Country/Region Code"; Code[10])
         {
             Caption = 'Country/Region Code';
             TableRelation = "Country/Region";
         }
-        field(9; Posted; Boolean)
+        field(15; Posted; Boolean)
         {
             Caption = 'Posted';
             Editable = false;
+        }
+        field(20; "Coupled to Dataverse"; Boolean)
+        {
+            FieldClass = FlowField;
+            Caption = 'Coupled to Dataverse';
+            Editable = false;
+            CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Sust. ESG Reporting Name")));
+            ToolTip = 'Specifies that the reporting name is coupled to an assessment in Dataverse.';
         }
     }
 
@@ -87,4 +122,7 @@ table 6229 "Sust. ESG Reporting Name"
         while ESGReportingLine.FindFirst() do
             ESGReportingLine.Rename("ESG Reporting Template Name", Name, ESGReportingLine."Line No.");
     end;
+
+    var
+        StartingDateCannotBeAfterEndingDateErr: Label '%1 cannot be after %2', Comment = '%1 = Starting Date, %2 = Ending Date';
 }

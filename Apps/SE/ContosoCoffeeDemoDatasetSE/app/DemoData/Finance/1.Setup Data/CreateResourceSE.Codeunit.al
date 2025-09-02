@@ -20,21 +20,20 @@ codeunit 11211 "Create Resource SE"
     var
         CreateResource: Codeunit "Create Resource";
         ContosoUtilities: Codeunit "Contoso Utilities";
-        CreateVatPostingGroupsSE: Codeunit "Create Vat Posting Groups SE";
     begin
         case Rec."No." of
             CreateResource.Katherine():
-                ValidateRecordFields(Rec, CityLbl, 510, 561, 44.45545, 1010, PostCodeLbl, ContosoUtilities.AdjustDate(20050525D), CreateVatPostingGroupsSE.VAT12());
+                ValidateRecordFields(Rec, CityLbl, 510, 561, 44.45545, 1010, PostCodeLbl, ContosoUtilities.AdjustDate(20050525D));
             CreateResource.Lina():
-                ValidateRecordFields(Rec, CityLbl, 610, 671, 44.54545, 1210, PostCodeLbl, ContosoUtilities.AdjustDate(18780101D), CreateVatPostingGroupsSE.VAT12());
+                ValidateRecordFields(Rec, CityLbl, 610, 671, 44.54545, 1210, PostCodeLbl, ContosoUtilities.AdjustDate(18780101D));
             CreateResource.Marty():
-                ValidateRecordFields(Rec, CityLbl, 450, 495, 45.6044, 910, PostCodeLbl, ContosoUtilities.AdjustDate(18750301D), CreateVatPostingGroupsSE.VAT12());
+                ValidateRecordFields(Rec, CityLbl, 450, 495, 45.6044, 910, PostCodeLbl, ContosoUtilities.AdjustDate(18750301D));
             CreateResource.Terry():
-                ValidateRecordFields(Rec, CityLbl, 510, 561, 44.45545, 1010, PostCodeLbl, ContosoUtilities.AdjustDate(18750301D), CreateVatPostingGroupsSE.VAT12());
+                ValidateRecordFields(Rec, CityLbl, 510, 561, 44.45545, 1010, PostCodeLbl, ContosoUtilities.AdjustDate(18750301D));
         end;
     end;
 
-    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; ProfitPercentage: Decimal; UnitPrice: Decimal; PostCode: Code[20]; EmploymentDate: Date; VatProdPostingGroup: Code[20])
+    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; ProfitPercentage: Decimal; UnitPrice: Decimal; PostCode: Code[20]; EmploymentDate: Date)
     begin
         Resource.Validate(City, City);
         Resource.Validate("Direct Unit Cost", DirectUnitCost);
@@ -43,7 +42,6 @@ codeunit 11211 "Create Resource SE"
         Resource.Validate("Profit %", ProfitPercentage);
         Resource.Validate("Post Code", PostCode);
         Resource.Validate("Employment Date", EmploymentDate);
-        Resource.Validate("VAT Prod. Posting Group", VatProdPostingGroup);
     end;
 
     var

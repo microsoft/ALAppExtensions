@@ -39,11 +39,9 @@ page 36987 "Budget Comparison"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection64d670dfa9da1a5b7033', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

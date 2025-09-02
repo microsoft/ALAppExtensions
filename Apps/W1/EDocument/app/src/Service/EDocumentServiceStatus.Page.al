@@ -22,17 +22,17 @@ page 6135 "E-Document Service Status"
             {
                 field("E-Document Service Code"; Rec."E-Document Service Code")
                 {
-                    ToolTip = 'Specifies the service code of an E-Dcoument';
+                    ToolTip = 'Specifies the service code of an E-Document';
                 }
                 field(Status; Rec.Status)
                 {
-                    ToolTip = 'Specifies the status of an E-Dcoument';
+                    ToolTip = 'Specifies the status of an E-Document';
                     StyleExpr = StyleTxt;
                 }
                 field(Logs; Rec.Logs())
                 {
                     Caption = 'Logs';
-                    ToolTip = 'Specifies the count of logs for an E-Dcoument';
+                    ToolTip = 'Specifies the count of logs for an E-Document';
 
                     trigger OnDrillDown()
                     begin
@@ -41,7 +41,7 @@ page 6135 "E-Document Service Status"
                 }
                 field(HttpLogs; Rec.IntegrationLogs())
                 {
-                    ToolTip = 'Specifies the count of communication logs for an E-Dcoument';
+                    ToolTip = 'Specifies the count of communication logs for an E-Document';
                     Caption = 'Communication Logs';
 
                     trigger OnDrillDown()

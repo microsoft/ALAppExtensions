@@ -6,6 +6,7 @@
 codeunit 148085 "MTDTestReturnsWebService"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -586,7 +587,7 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         SubmitVATReturnScenario(VATReportHeader, true);
 
-        VerifyVATReportStatus(VATReportHeader, VATReportHeader.Status::Submitted);
+        VerifyVATReportStatus(VATReportHeader, VATReportHeader.Status::Submitted.AsInteger());
         VerifyArchiveSubmissionMessage(VATReportHeader);
         VATReportArchive.Get(VATReportArchive."VAT Report Type"::"VAT Return", VATReportHeader."No.", DummyGUID);
         Assert.IsFalse(VATReportArchive."Response Message BLOB".HasValue(), 'VATReportArchive."Response Message BLOB".HasValue');
@@ -610,7 +611,7 @@ codeunit 148085 "MTDTestReturnsWebService"
 
         SubmitAndGetVATReturnScenario(VATReportHeader);
 
-        VerifyVATReportStatus(VATReportHeader, VATReportHeader.Status::Accepted);
+        VerifyVATReportStatus(VATReportHeader, VATReportHeader.Status::Accepted.AsInteger());
         VerifyArchiveResponseMessage(VATReportHeader);
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -640,7 +641,7 @@ codeunit 148085 "MTDTestReturnsWebService"
         MTDReturnDetails.DeleteAll();
     end;
 
-    local procedure InitSubmitReturnScenario(var VATReturnPeriod: Record "VAT Return Period"; var VATReportHeader: Record "VAT Report Header"; VATReportStatus: Option)
+    local procedure InitSubmitReturnScenario(var VATReturnPeriod: Record "VAT Return Period"; var VATReportHeader: Record "VAT Report Header"; VATReportStatus: Enum "VAT Report Status")
     begin
         Initialize();
         LibraryMakingTaxDigital.MockVATReturnPeriod(

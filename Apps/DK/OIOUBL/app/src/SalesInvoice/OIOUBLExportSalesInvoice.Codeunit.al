@@ -158,12 +158,20 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
             if SalesSetup."Document No. as Ext. Doc. No." then
                 ExternalDocumentNo := SalesInvoiceHeader."No.";
         end;
-        if SalesInvoiceHeader."Order No." <> '' then
-            OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
-              ExternalDocumentNo, '', CalcDate('<0D>'))
-        else
-            OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
+
+        case true of
+            SalesInvoiceHeader."Order No." <> '':
+                OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
+                  ExternalDocumentNo, '', CalcDate('<0D>'));
+
+            SalesInvoiceHeader."Prepayment Order No." <> '':
+                OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
+                  ExternalDocumentNo, SalesInvoiceHeader."Prepayment Order No.", CalcDate('<0D>'))
+            else
+                OIOUBLXMLGenerator.InsertOrderReference(OrderLineReferenceElement,
               ExternalDocumentNo, '', CalcDate('<0D>'));
+        end;
+
         InvoiceLineElement.Add(OrderLineReferenceElement);
     end;
 

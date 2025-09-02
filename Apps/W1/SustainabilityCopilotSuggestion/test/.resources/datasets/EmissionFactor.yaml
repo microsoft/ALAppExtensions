@@ -1,0 +1,801 @@
+tests:
+- name: Natural gas Gas
+  input:
+    Account_No.: 31200
+    Account_Name: Gas
+    Description: Natural gas
+    Unit_of_Measure: M3
+    Country/Region_Code: GB
+    Fuel/Electricity: 14.0
+  minExpectedResult: 1.7857
+  maxExpectedResult: 2.1429
+- name: Gas natural - domestic vendor Gas
+  input:
+    Account_No.: 31200
+    Account_Name: Gas
+    Description: Gas natural - domestic vendor
+    Unit_of_Measure: M3
+    Country/Region_Code: GB
+    Fuel/Electricity: 14.0
+  minExpectedResult: 1.7857
+  maxExpectedResult: 2.1429
+- name: lignit Coal
+  input:
+    Account_No.: 9901
+    Account_Name: Coal
+    Description: lignit
+    Unit_of_Measure: T
+    Country/Region_Code: GB
+    Fuel/Electricity: 3.6
+  minExpectedResult: 0.7778
+  maxExpectedResult: 2.5
+- name: UK Power plant - unknown energy source Electricity - domestic vendor
+  input:
+    Account_No.: 9901
+    Account_Name: Electricity - domestic vendor
+    Description: UK Power plant - unknown energy source
+    Unit_of_Measure: KWH
+    Country/Region_Code: GB
+    Fuel/Electricity: 2850.0
+  minExpectedResult: 0.193
+  maxExpectedResult: 0.2456
+- name: Import from French nuclear power station Electricity - domestic vendor FR
+  input:
+    Account_No.: 9901
+    Account_Name: Electricity - domestic vendor
+    Description: Import from French nuclear power station
+    Unit_of_Measure: KWH
+    Country/Region_Code: FR
+    Fuel/Electricity: 2850.0
+  minExpectedResult: 0.0
+  maxExpectedResult: 0.007
+- name: Vienna-Kiev roundtrip Flight short - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight short - economy
+    Description: Vienna-Kiev roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  minExpectedResult: 0.1018
+  maxExpectedResult: 0.1615
+- name: Frankfurt-Las Vegas roundtrip Flight long - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - economy
+    Description: Frankfurt-Las Vegas roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  minExpectedResult: 0.1009
+  maxExpectedResult: 0.1623
+- name: Paris-Salt Lake City one directions Flight long - economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - economy
+    Description: Paris-Salt Lake City one directions
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  minExpectedResult: 0.1019
+  maxExpectedResult: 0.1614
+- name: Frankfurt-Las Vegas roundtrip Flight long - premium economy
+  input:
+    Account_No.: 9904
+    Account_Name: Flight long - premium economy
+    Description: Frankfurt-Las Vegas roundtrip
+    Unit_of_Measure: FLIGHT
+    Country/Region_Code: GB
+    Custom Amount: 1.0
+  minExpectedResult: 0.1471
+  maxExpectedResult: 0.2713
+- name: London metro Local rail
+  input:
+    Account_No.: 9900
+    Account_Name: Local rail
+    Description: London metro
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 39.0
+  minExpectedResult: 0.0256
+  maxExpectedResult: 0.041
+- name: London subway Local rail
+  input:
+    Account_No.: 9900
+    Account_Name: Local rail
+    Description: London subway
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 47.0
+  minExpectedResult: 0.0277
+  maxExpectedResult: 0.0426
+- name: San Francisco BART Local rail US
+  input:
+    Account_No.: 9900
+    Account_Name: Local rail
+    Description: San Francisco BART
+    Unit_of_Measure: KM
+    Country/Region_Code: US
+    Distance: 31.0
+  minExpectedResult: 0.0323
+  maxExpectedResult: 0.0484
+- name: Underground in Rome, Italy Local rail IT
+  input:
+    Account_No.: 9900
+    Account_Name: Local rail
+    Description: Underground in Rome, Italy
+    Unit_of_Measure: KM
+    Country/Region_Code: IT
+    Distance: 19.0
+  minExpectedResult: 0.0316
+  maxExpectedResult: 0.0474
+- name: London-Manchester 1 ticket Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: London-Manchester 1 ticket
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 262.0
+  minExpectedResult: 0.0267
+  maxExpectedResult: 0.042
+- name: London-Manchester - 1 person by Avanti West Coast Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: London-Manchester - 1 person by Avanti West Coast
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 262.0
+  minExpectedResult: 0.0267
+  maxExpectedResult: 0.042
+- name: Peterborough-Cambridge 1 passenger Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Peterborough-Cambridge 1 passenger
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 50.0
+  minExpectedResult: 0.028
+  maxExpectedResult: 0.042
+- name: Peterborough-Cambridge 1 ticket Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Peterborough-Cambridge 1 ticket
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 50.0
+  minExpectedResult: 0.028
+  maxExpectedResult: 0.042
+- name: Leeds-Birmingham 1 person Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Leeds-Birmingham 1 person
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 147.0
+  minExpectedResult: 0.0272
+  maxExpectedResult: 0.0442
+- name: Liverpool-Edinburgh - 1 ticket Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Liverpool-Edinburgh - 1 ticket
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 283.0
+  minExpectedResult: 0.0272
+  maxExpectedResult: 0.0424
+- name: Liverpool-Edinburgh by Northern 1 ticket Intecity rail
+  input:
+    Account_No.: 9900
+    Account_Name: Intecity rail
+    Description: Liverpool-Edinburgh by Northern 1 ticket
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 283.0
+  minExpectedResult: 0.0272
+  maxExpectedResult: 0.0424
+- name: Kilmarnock-Dumfries 1 passenger Bus
+  input:
+    Account_No.: 9900
+    Account_Name: Bus
+    Description: Kilmarnock-Dumfries 1 passenger
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 97.0
+  minExpectedResult: 0.0361
+  maxExpectedResult: 0.134
+- name: Brampton-Newcastle upon Tyne - 1 ticket Bus
+  input:
+    Account_No.: 9900
+    Account_Name: Bus
+    Description: Brampton-Newcastle upon Tyne - 1 ticket
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 78.0
+  minExpectedResult: 0.0385
+  maxExpectedResult: 0.1346
+- name: Shefield-Hull - 2 tickets Bus
+  input:
+    Account_No.: 9900
+    Account_Name: Bus
+    Description: Shefield-Hull - 2 tickets
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 110.0
+  minExpectedResult: 0.0727
+  maxExpectedResult: 0.1455
+- name: Eastbourne-Southampton - 1 person Bus
+  input:
+    Account_No.: 9900
+    Account_Name: Bus
+    Description: Eastbourne-Southampton - 1 person
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 142.0
+  minExpectedResult: 0.0387
+  maxExpectedResult: 0.1338
+- name: London black Taxi
+  input:
+    Account_No.: 9900
+    Account_Name: Taxi
+    Description: London black
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 36.0
+  minExpectedResult: 0.125
+  maxExpectedResult: 0.3194
+- name: London taxi Taxi
+  input:
+    Account_No.: 9900
+    Account_Name: Taxi
+    Description: London taxi
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 39.0
+  minExpectedResult: 0.1026
+  maxExpectedResult: 0.2179
+- name: London regular taxi Taxi
+  input:
+    Account_No.: 9900
+    Account_Name: Taxi
+    Description: London regular taxi
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 41.0
+  minExpectedResult: 0.1098
+  maxExpectedResult: 0.2195
+- name: London black cab Taxi
+  input:
+    Account_No.: 9900
+    Account_Name: Taxi
+    Description: London black cab
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 26.0
+  minExpectedResult: 0.1346
+  maxExpectedResult: 0.3077
+- name: London black taxi Taxi
+  input:
+    Account_No.: 9900
+    Account_Name: Taxi
+    Description: London black taxi
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 68.0
+  minExpectedResult: 0.1324
+  maxExpectedResult: 0.3088
+- name: London - standard room with the breakfast Hotel stay 3-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 3-star
+    Description: London - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 4.0
+  minExpectedResult: 10.0
+  maxExpectedResult: 20.0
+- name: London - superior room with the breakfast Hotel stay 3-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 3-star
+    Description: London - superior room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 4.0
+  minExpectedResult: 10.0
+  maxExpectedResult: 20.0
+- name: Eastbourne - standard room with the breakfast Hotel stay 3-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 3-star
+    Description: Eastbourne - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 2.0
+  minExpectedResult: 10.0
+  maxExpectedResult: 20.0
+- name: London - standard room with the breakfast Hotel stay 4-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 4-star
+    Description: London - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 4.0
+  minExpectedResult: 15.0
+  maxExpectedResult: 30.0
+- name: Edinburgh - standard room with the breakfast Hotel stay 4-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 4-star
+    Description: Edinburgh - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 2.0
+  minExpectedResult: 15.0
+  maxExpectedResult: 30.0
+- name: Belfast - standard room with the breakfast Hotel stay 4-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 4-star
+    Description: Belfast - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 4.0
+  minExpectedResult: 15.0
+  maxExpectedResult: 30.0
+- name: Copenhagen - standard room with the breakfast Hotel stay 4-star DK
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 4-star
+    Description: Copenhagen - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: DK
+    Custom Amount: 5.0
+  minExpectedResult: 12.0
+  maxExpectedResult: 24.0
+- name: Hamburg - standard room with the breakfast Hotel stay 4-star DE
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 4-star
+    Description: Hamburg - standard room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: DE
+    Custom Amount: 5.0
+  minExpectedResult: 12.0
+  maxExpectedResult: 24.0
+- name: London - premium room with the breakfast Hotel stay 5-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 5-star
+    Description: London - premium room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 4.0
+  minExpectedResult: 17.5
+  maxExpectedResult: 31.25
+- name: Night with breakfast included - New York downtown Hotel stay 5-star US
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 5-star
+    Description: Night with breakfast included - New York downtown
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: US
+    Custom Amount: 2.0
+  minExpectedResult: 20.0
+  maxExpectedResult: 36.0
+- name: Manchester - premium room with the breakfast Hotel stay 5-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 5-star
+    Description: Manchester - premium room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 5.0
+  minExpectedResult: 18.0
+  maxExpectedResult: 32.0
+- name: Liverpool - premium room with the breakfast Hotel stay 5-star
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 5-star
+    Description: Liverpool - premium room with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: GB
+    Custom Amount: 3.0
+  minExpectedResult: 16.6667
+  maxExpectedResult: 33.3333
+- name: San Diego - suite with the breakfast Hotel stay 5-star US
+  input:
+    Account_No.: 9902
+    Account_Name: Hotel stay 5-star
+    Description: San Diego - suite with the breakfast
+    Unit_of_Measure: NIGHT
+    Country/Region_Code: US
+    Custom Amount: 7.0
+  minExpectedResult: 20.0
+  maxExpectedResult: 35.7143
+- name: Small diesel car Company car
+  input:
+    Account_No.: 9901
+    Account_Name: Company car
+    Description: Small diesel car
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 22.0
+  minExpectedResult: 2.6136
+  maxExpectedResult: 2.7273
+- name: small 1.4 petrol Company car
+  input:
+    Account_No.: 9901
+    Account_Name: Company car
+    Description: small 1.4 petrol
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 37.0
+  minExpectedResult: 2.2973
+  maxExpectedResult: 2.4324
+- name: SUV 2.0d 4x4 Company car
+  input:
+    Account_No.: 9901
+    Account_Name: Company car
+    Description: SUV 2.0d 4x4
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 26.0
+  minExpectedResult: 2.6154
+  maxExpectedResult: 2.7308
+- name: Midsize 1.8d Company car
+  input:
+    Account_No.: 9901
+    Account_Name: Company car
+    Description: Midsize 1.8d
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 28.0
+  minExpectedResult: 2.625
+  maxExpectedResult: 2.7321
+- name: Large car diesel 2.2 Company car
+  input:
+    Account_No.: 9901
+    Account_Name: Company car
+    Description: Large car diesel 2.2
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 26.0
+  minExpectedResult: 2.6154
+  maxExpectedResult: 2.7308
+- name: Large 2.5d car Company car
+  input:
+    Account_No.: 9901
+    Account_Name: Company car
+    Description: Large 2.5d car
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 29.0
+  minExpectedResult: 2.6552
+  maxExpectedResult: 2.7586
+- name: 3.5T full Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 3.5T full
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 88.0
+  minExpectedResult: 2.6136
+  maxExpectedResult: 2.7273
+- name: 3.5T 50% full Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 3.5T 50% full
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 84.0
+  minExpectedResult: 2.619
+  maxExpectedResult: 2.7381
+- name: 3.5T half-full Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 3.5T half-full
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 82.0
+  minExpectedResult: 2.622
+  maxExpectedResult: 2.7439
+- name: 5T capacity truck Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 5T capacity truck
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 96.0
+  minExpectedResult: 2.6042
+  maxExpectedResult: 2.7083
+- name: 7 tones truck Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 7 tones truck
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 98.0
+  minExpectedResult: 2.602
+  maxExpectedResult: 2.7041
+- name: 7 tones truck full Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 7 tones truck full
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 37.0
+  minExpectedResult: 2.6351
+  maxExpectedResult: 2.7297
+- name: 12 t truck half loaded Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 12 t truck half loaded
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 86.0
+  minExpectedResult: 2.6163
+  maxExpectedResult: 2.7326
+- name: 12 t fully loaded truck Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 12 t fully loaded truck
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 45.0
+  minExpectedResult: 2.6222
+  maxExpectedResult: 2.7111
+- name: Tank trailer fully laden - diesel Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: Tank trailer fully laden - diesel
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 39.0
+  minExpectedResult: 2.641
+  maxExpectedResult: 2.6923
+- name: 15T carrying capacity truck Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 15T carrying capacity truck
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 71.0
+  minExpectedResult: 2.6338
+  maxExpectedResult: 2.6901
+- name: Semi-trailer diesel truck Internal trucks US
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: Semi-trailer diesel truck
+    Unit_of_Measure: L
+    Country/Region_Code: US
+    Fuel/Electricity: 98.0
+  minExpectedResult: 2.6531
+  maxExpectedResult: 2.7041
+- name: refrigerator trailer - diesel Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: refrigerator trailer - diesel
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 84.0
+  minExpectedResult: 2.6429
+  maxExpectedResult: 2.7024
+- name: 25 tones long truck Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 25 tones long truck
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 97.0
+  minExpectedResult: 2.6495
+  maxExpectedResult: 2.701
+- name: Live bottom trailer Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: Live bottom trailer
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 167.0
+  minExpectedResult: 2.6347
+  maxExpectedResult: 2.6946
+- name: 22-wheeler truck Internal trucks US
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 22-wheeler truck
+    Unit_of_Measure: L
+    Country/Region_Code: US
+    Fuel/Electricity: 182.0
+  minExpectedResult: 2.6484
+  maxExpectedResult: 2.7033
+- name: 22t live stock truck Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: 22t live stock truck
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 128.0
+  minExpectedResult: 2.6328
+  maxExpectedResult: 2.6875
+- name: Car carrier trailer Internal trucks
+  input:
+    Account_No.: 9901
+    Account_Name: Internal trucks
+    Description: Car carrier trailer
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 226.0
+  minExpectedResult: 2.646
+  maxExpectedResult: 2.6903
+- name: Small diesel car Rental car - others
+  input:
+    Account_No.: 9901
+    Account_Name: Rental car - others
+    Description: Small diesel car
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 12.0
+  minExpectedResult: 2.5
+  maxExpectedResult: 2.75
+- name: Large diesel rental car Rental car - others
+  input:
+    Account_No.: 9901
+    Account_Name: Rental car - others
+    Description: Large diesel rental car
+    Unit_of_Measure: L
+    Country/Region_Code: GB
+    Fuel/Electricity: 36.0
+  minExpectedResult: 2.6111
+  maxExpectedResult: 2.75
+- name: Large diesel car used in Hamburg Rental car - others DE
+  input:
+    Account_No.: 9901
+    Account_Name: Rental car - others
+    Description: Large diesel car used in Hamburg
+    Unit_of_Measure: L
+    Country/Region_Code: DE
+    Fuel/Electricity: 39.0
+  minExpectedResult: 2.6154
+  maxExpectedResult: 2.7436
+- name: Luxury petrol rental car Rental car - others US
+  input:
+    Account_No.: 9901
+    Account_Name: Rental car - others
+    Description: Luxury petrol rental car
+    Unit_of_Measure: L
+    Country/Region_Code: US
+    Fuel/Electricity: 63.0
+  minExpectedResult: 2.254
+  maxExpectedResult: 2.3492
+- name: Executive Company car diesel
+  input:
+    Account_No.: 9901
+    Account_Name: Company car diesel
+    Description: Executive
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 407.0
+  minExpectedResult: 0.1671
+  maxExpectedResult: 0.1966
+- name: SUV 4x4 Company car diesel
+  input:
+    Account_No.: 9901
+    Account_Name: Company car diesel
+    Description: SUV 4x4
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 128.0
+  minExpectedResult: 0.1953
+  maxExpectedResult: 0.25
+- name: Small car Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Small car
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 49.0
+  minExpectedResult: 0.1327
+  maxExpectedResult: 0.1939
+- name: Medium local car Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Medium local car
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 311.0
+  minExpectedResult: 0.1736
+  maxExpectedResult: 0.1994
+- name: Large car Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Large car
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 412.0
+  minExpectedResult: 0.1917
+  maxExpectedResult: 0.2718
+- name: Sports car 5.0 Company car petrol
+  input:
+    Account_No.: 9900
+    Account_Name: Company car petrol
+    Description: Sports car 5.0
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 108.0
+  minExpectedResult: 0.1852
+  maxExpectedResult: 0.3241
+- name: Medium size car Company car hybrid
+  input:
+    Account_No.: 9900
+    Account_Name: Company car hybrid
+    Description: Medium size car
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 206.0
+  minExpectedResult: 0.0485
+  maxExpectedResult: 0.1214
+- name: Medium size car Company car hybrid FR
+  input:
+    Account_No.: 9900
+    Account_Name: Company car hybrid
+    Description: Medium size car
+    Unit_of_Measure: KM
+    Country/Region_Code: FR
+    Distance: 206.0
+  minExpectedResult: 0.0388
+  maxExpectedResult: 0.1117
+- name: small city motorbike Motorbike
+  input:
+    Account_No.: 9900
+    Account_Name: Motorbike
+    Description: small city motorbike
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 80.0
+  minExpectedResult: 0.0563
+  maxExpectedResult: 0.0875
+- name: Big diesel van Internal Vans
+  input:
+    Account_No.: 9900
+    Account_Name: Internal Vans
+    Description: Big diesel van
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 200.0
+  minExpectedResult: 0.225
+  maxExpectedResult: 0.3
+- name: Tank trailer fully laden - diesel External transport trucks 10 tones
+  input:
+    Account_No.: 9900
+    Account_Name: External transport trucks 10 tones
+    Description: Tank trailer fully laden - diesel
+    Unit_of_Measure: KM
+    Country/Region_Code: GB
+    Distance: 398.0
+  minExpectedResult: 0.6784
+  maxExpectedResult: 1.3568

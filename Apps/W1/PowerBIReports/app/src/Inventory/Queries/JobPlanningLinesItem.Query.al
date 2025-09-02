@@ -9,7 +9,7 @@ query 36969 "Job Planning Lines - Item"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'itemJobPlanningLine';
     EntitySetName = 'itemJobPlanningLines';
     DataAccessIntent = ReadOnly;

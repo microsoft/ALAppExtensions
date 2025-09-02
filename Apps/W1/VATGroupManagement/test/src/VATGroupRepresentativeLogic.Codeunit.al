@@ -1,6 +1,7 @@
 codeunit 139521 "VAT Group Representative Logic"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

@@ -16,16 +16,18 @@ codeunit 5237 "Create Resource"
 
     trigger OnRun()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoProjects: Codeunit "Contoso Projects";
         ContosoUtilities: Codeunit "Contoso Utilities";
         CreatePostingGroup: Codeunit "Create Posting Groups";
-        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateUnitofMeasure: Codeunit "Create Unit of Measure";
     begin
-        ContosoProjects.InsertResource(Katherine(), Enum::"Resource Type"::Person, KatherineHullLbl, DeerfieldRoadLbl, LondonLbl, ManagerLbl, ContosoUtilities.AdjustDate(18840525D), CreateUnitofMeasure.Hour(), 50, 10, 55, 45, 0, 100, CreatePostingGroup.ServicesPostingGroup(), N125XYLbl, CreateVATPostingGroups.Reduced());
-        ContosoProjects.InsertResource(Lina(), Enum::"Resource Type"::Person, LinaTownsendLbl, WaterWayLbl, LondonLbl, DesignerLbl, ContosoUtilities.AdjustDate(18780101D), CreateUnitofMeasure.Hour(), 60, 10, 66, 45, 0, 120, CreatePostingGroup.ServicesPostingGroup(), N1634ZLbl, CreateVATPostingGroups.Reduced());
-        ContosoProjects.InsertResource(Marty(), Enum::"Resource Type"::Person, MartyHorstLbl, ALittleJohnStreetLbl, LondonLbl, InstallerLbl, ContosoUtilities.AdjustDate(18750301D), CreateUnitofMeasure.Hour(), 45, 10, 49.5, 45, 0, 90, CreatePostingGroup.ServicesPostingGroup(), N125XYLbl, CreateVATPostingGroups.Reduced());
-        ContosoProjects.InsertResource(Terry(), Enum::"Resource Type"::Person, TerryDoddsLbl, BJamesRoadLbl, LondonLbl, DesignerLbl, ContosoUtilities.AdjustDate(18750301D), CreateUnitofMeasure.Hour(), 50, 10, 55, 45, 0, 100, CreatePostingGroup.ServicesPostingGroup(), N125XYLbl, CreateVATPostingGroups.Reduced());
+        FinanceModuleSetup.Get();
+
+        ContosoProjects.InsertResource(Katherine(), Enum::"Resource Type"::Person, KatherineHullLbl, DeerfieldRoadLbl, LondonLbl, ManagerLbl, ContosoUtilities.AdjustDate(18840525D), CreateUnitofMeasure.Hour(), 50, 10, 55, 45, 0, 100, CreatePostingGroup.ServicesPostingGroup(), N125XYLbl, FinanceModuleSetup."VAT Prod. Post Grp. Reduced");
+        ContosoProjects.InsertResource(Lina(), Enum::"Resource Type"::Person, LinaTownsendLbl, WaterWayLbl, LondonLbl, DesignerLbl, ContosoUtilities.AdjustDate(18780101D), CreateUnitofMeasure.Hour(), 60, 10, 66, 45, 0, 120, CreatePostingGroup.ServicesPostingGroup(), N1634ZLbl, FinanceModuleSetup."VAT Prod. Post Grp. Reduced");
+        ContosoProjects.InsertResource(Marty(), Enum::"Resource Type"::Person, MartyHorstLbl, ALittleJohnStreetLbl, LondonLbl, InstallerLbl, ContosoUtilities.AdjustDate(18750301D), CreateUnitofMeasure.Hour(), 45, 10, 49.5, 45, 0, 90, CreatePostingGroup.ServicesPostingGroup(), N125XYLbl, FinanceModuleSetup."VAT Prod. Post Grp. Reduced");
+        ContosoProjects.InsertResource(Terry(), Enum::"Resource Type"::Person, TerryDoddsLbl, BJamesRoadLbl, LondonLbl, DesignerLbl, ContosoUtilities.AdjustDate(18750301D), CreateUnitofMeasure.Hour(), 50, 10, 55, 45, 0, 100, CreatePostingGroup.ServicesPostingGroup(), N125XYLbl, FinanceModuleSetup."VAT Prod. Post Grp. Reduced");
     end;
 
     procedure Katherine(): Code[20]

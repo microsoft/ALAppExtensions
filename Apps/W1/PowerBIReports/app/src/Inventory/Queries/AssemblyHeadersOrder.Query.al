@@ -9,7 +9,7 @@ query 36964 "Assembly Headers - Order"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'assemblyHeader';
     EntitySetName = 'assemblyHeaders';
     DataAccessIntent = ReadOnly;

@@ -8,7 +8,7 @@ page 36966 "Contacts - PBI API"
     Caption = 'Power BI Contacts';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'contact';
     EntitySetName = 'contacts';
     SourceTable = Contact;

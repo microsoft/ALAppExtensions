@@ -16,6 +16,7 @@ using Microsoft.Foundation.UOM;
 codeunit 148189 "Sust. Water/Waste Int. Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

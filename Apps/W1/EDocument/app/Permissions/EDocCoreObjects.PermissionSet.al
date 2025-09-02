@@ -60,7 +60,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         codeunit "E-Document Log" = X,
         codeunit "E-Doc. Export" = X,
         codeunit "E-Document No Integration" = X,
-        codeunit "E-Document Subscription" = X,
+        codeunit "E-Document Subscribers" = X,
         codeunit "E-Document Update Order" = X,
         codeunit "E-Document Workflow Setup" = X,
         codeunit "E-Document Created Flow" = X,

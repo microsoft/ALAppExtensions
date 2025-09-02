@@ -1,6 +1,7 @@
 codeunit 139873 "P. & P. Permissions Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Restrictive;
     
     var

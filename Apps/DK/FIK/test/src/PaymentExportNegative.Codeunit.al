@@ -8,6 +8,7 @@ codeunit 148022 "Payment Export Negative"
     // version Test,ERM,DK
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

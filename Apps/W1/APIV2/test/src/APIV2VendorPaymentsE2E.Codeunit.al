@@ -1,6 +1,7 @@
 codeunit 139843 "APIV2 - Vendor Payments E2E"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

@@ -39,11 +39,9 @@ page 36989 "Profitability"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionbb4917d9edb6d427282c', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

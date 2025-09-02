@@ -25,6 +25,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
         DocID: Integer;
     begin
         TempVendFormBoxBuffer.Reset();
+        TempVendFormBoxBuffer.SetCurrentKey("Vendor No.", "Form No.", "Form Box No.");
         TempVendFormBoxBuffer.SetRange("Buffer Type", TempVendFormBoxBuffer."Buffer Type"::Amount);
         if not TempVendFormBoxBuffer.FindSet() then
             error(NoVendorFormBoxAmountsFoundErr);
@@ -96,7 +97,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
         TempIRS1099FormDocHeader.Insert(true);
     end;
 
-    local procedure AddTempFormLineFromBuffer(var TempIRS1099FormDocLine: Record "IRS 1099 Form Doc. Line" temporary; IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header"; VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer"; LineNo: Integer)
+    procedure AddTempFormLineFromBuffer(var TempIRS1099FormDocLine: Record "IRS 1099 Form Doc. Line" temporary; IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header"; VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer"; LineNo: Integer)
     begin
         TempIRS1099FormDocLine.Init();
         TempIRS1099FormDocLine."Document ID" := IRS1099FormDocHeader.ID;
@@ -123,7 +124,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
         TempIRS1099FormDocLineDetail.Insert(true);
     end;
 
-    local procedure InsertFormDocsFromTempBuffer(var TempIRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header" temporary; var TempIRS1099FormDocLine: Record "IRS 1099 Form Doc. Line" temporary; var TempIRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail" temporary)
+    procedure InsertFormDocsFromTempBuffer(var TempIRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header" temporary; var TempIRS1099FormDocLine: Record "IRS 1099 Form Doc. Line" temporary; var TempIRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail" temporary) IRS1099FormDocHeaderIDs: List of [Integer]
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
@@ -141,6 +142,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
                 IRS1099FormDocHeader.ID := DocID;
                 IRS1099FormDocHeader.Validate("Vendor No.");
                 IRS1099FormDocHeader.Insert(true);
+                IRS1099FormDocHeaderIDs.Add(IRS1099FormDocHeader.ID);
                 TempIRS1099FormDocLine.SetRange("Document ID", TempIRS1099FormDocHeader.ID);
                 if TempIRS1099FormDocLine.FindSet() then
                     repeat
@@ -160,5 +162,40 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
                         end;
                     until TempIRS1099FormDocLine.Next() = 0;
             until TempIRS1099FormDocHeader.Next() = 0;
+    end;
+
+    procedure AddTempFormLineFromBuffer(var TempIRS1099FormDocLine: Record "IRS 1099 Form Doc. Line" temporary; var TempIRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail" temporary; var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; LineAction: Enum "IRS 1099 Form Doc. Line Action")
+    var
+        CurrVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer";
+    begin
+        TempIRS1099FormDocLine.Init();
+        TempIRS1099FormDocLine."Document ID" := TempVendFormBoxBuffer."Document ID";
+        TempIRS1099FormDocLine."Period No." := TempVendFormBoxBuffer."Period No.";
+        TempIRS1099FormDocLine."Vendor No." := TempVendFormBoxBuffer."Vendor No.";
+        TempIRS1099FormDocLine."Form No." := TempVendFormBoxBuffer."Form No.";
+        TempIRS1099FormDocLine."Form Box No." := TempVendFormBoxBuffer."Form Box No.";
+        TempIRS1099FormDocLine."Line No." := TempVendFormBoxBuffer."Line No";
+        TempVendFormBoxBuffer.CalcFields("Minimum Reportable Amount", "Adjustment Amount");
+        TempIRS1099FormDocLine."Minimum Reportable Amount" := TempVendFormBoxBuffer."Minimum Reportable Amount";
+        TempIRS1099FormDocLine."Adjustment Amount" := TempVendFormBoxBuffer."Adjustment Amount";
+        TempIRS1099FormDocLine.Validate("Calculated Amount", TempVendFormBoxBuffer.Amount);
+        TempIRS1099FormDocLine.Amount := TempVendFormBoxBuffer."Reporting Amount";      // to avoid opening document
+        TempIRS1099FormDocLine.Validate("Include In 1099", TempVendFormBoxBuffer."Include In 1099");
+        TempIRS1099FormDocLine."Process Line" := true;
+        TempIRS1099FormDocLine."Line Action" := LineAction;
+        TempIRS1099FormDocLine.Insert(true);
+
+        IRSFormsSetup.Get();
+        if IRSFormsSetup."Collect Details For Line" then begin
+            CurrVendFormBoxBuffer.Copy(TempVendFormBoxBuffer);
+            TempVendFormBoxBuffer.Reset();
+            TempVendFormBoxBuffer.SetRange("Parent Entry No.", TempVendFormBoxBuffer."Entry No.");
+            TempVendFormBoxBuffer.SetRange("Buffer Type", TempVendFormBoxBuffer."Buffer Type"::"Ledger Entry");
+            if TempVendFormBoxBuffer.FindSet() then
+                repeat
+                    AddFormDocLineDetail(TempIRS1099FormDocLineDetail, TempIRS1099FormDocLine, TempVendFormBoxBuffer."Vendor Ledger Entry No.");
+                until TempVendFormBoxBuffer.Next() = 0;
+            TempVendFormBoxBuffer.Copy(CurrVendFormBoxBuffer);
+        end;
     end;
 }

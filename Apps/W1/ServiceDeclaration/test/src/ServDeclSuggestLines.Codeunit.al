@@ -1,6 +1,7 @@
 codeunit 139905 "Serv. Decl. Suggest Lines"
 {
     Subtype = Test;
+    TestType = Uncategorized;
 
     trigger OnRun()
     begin

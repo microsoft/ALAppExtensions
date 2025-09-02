@@ -19,20 +19,14 @@ codeunit 11213 "Create Posting Groups SE"
 
     local procedure InsertGenPostingGroup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateVATPostingGroupsSE: Codeunit "Create VAT Posting Groups SE";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
-        CreatePostingGroups: Codeunit "Create Posting Groups";
     begin
-        ContosoPostingGroup.InsertGenProductPostingGroup(NoVatPostingGroup(), NoVatDescriptionLbl, CreateVATPostingGroupsSE.NoVat());
-        ContosoPostingGroup.InsertGenProductPostingGroup(OnlyPostingGroup(), OnlyDescriptionLbl, CreateVATPostingGroupsSE.Only());
+        FinanceModuleSetup.Get();
 
-        ContosoPostingGroup.SetOverwriteData(true);
-        ContosoPostingGroup.InsertGenProductPostingGroup(CreatePostingGroups.FreightPostingGroup(), FreightDescriptionLbl, CreateVATPostingGroupsSE.VAT25());
-        ContosoPostingGroup.InsertGenProductPostingGroup(CreatePostingGroups.MiscPostingGroup(), MiscDescriptionLbl, CreateVATPostingGroupsSE.VAT25());
-        ContosoPostingGroup.InsertGenProductPostingGroup(CreatePostingGroups.RawMatPostingGroup(), RawMatDescriptionLbl, CreateVATPostingGroupsSE.VAT25());
-        ContosoPostingGroup.InsertGenProductPostingGroup(CreatePostingGroups.RetailPostingGroup(), RetailDescriptionLbl, CreateVATPostingGroupsSE.VAT25());
-        ContosoPostingGroup.InsertGenProductPostingGroup(CreatePostingGroups.ServicesPostingGroup(), ServicesDescriptionLbl, CreateVATPostingGroupsSE.VAT12());
-        ContosoPostingGroup.SetOverwriteData(false);
+        ContosoPostingGroup.InsertGenProductPostingGroup(NoVatPostingGroup(), NoVatDescriptionLbl, FinanceModuleSetup."VAT Prod. Post Grp. NO VAT");
+        ContosoPostingGroup.InsertGenProductPostingGroup(OnlyPostingGroup(), OnlyDescriptionLbl, CreateVATPostingGroupsSE.Only());
     end;
 
     procedure UpdateGenPostingSetup()
@@ -74,9 +68,4 @@ codeunit 11213 "Create Posting Groups SE"
         NoVatDescriptionLbl: Label 'Miscellaneous without VAT', MaxLength = 100;
         OnlyTok: Label 'ONLY', Locked = true, MaxLength = 20;
         OnlyDescriptionLbl: Label 'Manually Posted VAT', MaxLength = 100;
-        FreightDescriptionLbl: Label 'Freight, etc.', MaxLength = 100;
-        MiscDescriptionLbl: Label 'Miscellaneous with VAT', MaxLength = 100;
-        RawMatDescriptionLbl: Label 'Raw Materials', MaxLength = 100;
-        RetailDescriptionLbl: Label 'Retail', MaxLength = 100;
-        ServicesDescriptionLbl: Label 'Resources, etc.', MaxLength = 100;
 }

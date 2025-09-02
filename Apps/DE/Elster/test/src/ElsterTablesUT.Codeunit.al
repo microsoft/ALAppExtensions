@@ -6,6 +6,7 @@
 codeunit 148165 "Elster Tables UT"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

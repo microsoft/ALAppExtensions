@@ -1,6 +1,7 @@
 codeunit 139523 "VAT Group Setup Guide Test"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     // Workaround description: the error, if the test fails, is thrown both in the failing test BUT ALSO in the procedure ConfirmHandlerYes (when present)

@@ -66,7 +66,9 @@ codeunit 6261 "Sust. ESG Reporting Post. Mgt"
     begin
         SustainabilitySetup.TestField("Posted ESG Reporting Nos.");
         ESGReportingName.TestField(Posted, false);
-        ESGReportingName.TestField(Period);
+        ESGReportingName.TestField("Period Name");
+        ESGReportingName.TestField("Period Starting Date");
+        ESGReportingName.TestField("Period Ending Date");
 
         if ESGReportingLine.IsEmpty() then
             Error(NothingToPostErr);
@@ -107,13 +109,8 @@ codeunit 6261 "Sust. ESG Reporting Post. Mgt"
     end;
 
     local procedure SetDateFilter(var ESGReportingLine: Record "Sust. ESG Reporting Line"; ESGReportingName: Record "Sust. ESG Reporting Name")
-    var
-        Period: Record Date;
     begin
-        Period.SetRange("Period Type", Period."Period Type"::Year);
-        Period.SetRange("Period No.", ESGReportingName.Period);
-        if Period.FindFirst() then
-            ESGReportingLine.SetRange("Date Filter", Period."Period Start", Period."Period End");
+        ESGReportingLine.SetRange("Date Filter", ESGReportingName."Period Starting Date", ESGReportingName."Period Ending Date");
     end;
 
     var

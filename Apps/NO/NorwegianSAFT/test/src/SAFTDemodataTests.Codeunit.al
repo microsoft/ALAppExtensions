@@ -1,6 +1,7 @@
 codeunit 148100 "SAF-T Demodata Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

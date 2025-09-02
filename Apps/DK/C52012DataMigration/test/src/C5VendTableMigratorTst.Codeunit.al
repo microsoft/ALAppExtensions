@@ -6,6 +6,7 @@
 codeunit 148004 "C5 VendTable Migrator Tst"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

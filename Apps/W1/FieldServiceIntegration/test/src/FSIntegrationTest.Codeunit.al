@@ -35,6 +35,7 @@ using System.TestLibraries.Utilities;
 codeunit 139204 "FS Integration Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

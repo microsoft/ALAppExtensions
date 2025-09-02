@@ -6,15 +6,15 @@ namespace Microsoft.eServices.EDocument;
 
 using System.Telemetry;
 using System.Utilities;
+using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
-using Microsoft.eServices.EDocument.Processing.Import;
-using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
+using Microsoft.eServices.EDocument.Processing.Import;
+using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.eServices.EDocument.Service;
 using Microsoft.Foundation.Attachment;
-using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 
 page 6121 "E-Document"
 {
@@ -155,6 +155,25 @@ page 6121 "E-Document"
                     ToolTip = 'Specifies the receiving company address.';
                 }
             }
+            group(ClearanceInfo)
+            {
+                Caption = 'Clearance Information';
+                Visible = ShowClearanceInfo;
+
+                field("Clearance Date"; Rec."Clearance Date")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Date and time when document was cleared';
+                    Editable = false;
+                }
+                field(LastRequestTime; Rec."Last Clearance Request Time")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the last time a clearance request was made';
+                    Editable = false;
+                }
+            }
+
             part("Lines"; "E-Doc. Read. Purch. Lines")
             {
                 SubPageLink = "E-Document Entry No." = field("Entry No");
@@ -490,10 +509,15 @@ page 6121 "E-Document"
         HasErrors := false;
         IsProcessed := false;
         NewEDocumentExperienceActive := EDocumentsSetup.IsNewEDocumentExperienceActive();
+
+        if Rec."Entry No" <> 0 then
+            Rec.SetRecFilter(); // Filter the record to only this instance to avoid navigation 
     end;
 
     trigger OnAfterGetRecord()
     begin
+        ShowClearanceInfo := Rec."Last Clearance Request Time" <> 0DT;
+        SubmitClearanceVisible := Rec."Document Type" = Enum::"E-Document Type"::"Sales Invoice";
         IsProcessed := Rec.Status = Rec.Status::Processed;
         IsIncomingDoc := Rec.Direction = Rec.Direction::Incoming;
 
@@ -609,9 +633,9 @@ page 6121 "E-Document"
         EDocumentHelper: Codeunit "E-Document Processing";
         ErrorsAndWarningsNotification: Notification;
         NewEDocumentExperienceActive: Boolean;
+        ShowClearanceInfo: Boolean;
         RecordLinkTxt, StyleStatusTxt : Text;
-        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed : Boolean;
+        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, SubmitClearanceVisible : Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
         DocNotCreatedMsg: Label 'Failed to create new %1 from E-Document. Please review errors below.', Comment = '%1 - E-Document Document Type';
-
 }

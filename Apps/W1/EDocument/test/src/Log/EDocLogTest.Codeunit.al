@@ -1,6 +1,7 @@
 codeunit 139616 "E-Doc Log Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     EventSubscriberInstance = Manual;
 
     trigger OnRun()

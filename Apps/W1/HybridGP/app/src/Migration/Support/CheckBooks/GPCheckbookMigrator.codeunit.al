@@ -170,9 +170,9 @@ codeunit 40025 "GP Checkbook Migrator"
         GenJournalLineCurrent.SetRange("Journal Template Name", JournalTemplateName);
         GenJournalLineCurrent.SetRange("Journal Batch Name", BatchNameTxt);
         if GenJournalLineCurrent.FindLast() then
-            LineNum := GenJournalLineCurrent."Line No." + 10000
+            LineNum := GenJournalLineCurrent."Line No." + 10
         else
-            LineNum := 10000;
+            LineNum := 10;
 
         GenJournalTemplate.Get(JournalTemplateName);
 

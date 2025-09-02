@@ -10,10 +10,12 @@ using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.ESGReporting;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Reports;
 
 codeunit 148206 "Sust. ESG Reporting Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -23,6 +25,7 @@ codeunit 148206 "Sust. ESG Reporting Test"
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySustainability: Codeunit "Library - Sustainability";
+        LibraryReportDataset: Codeunit "Library - Report Dataset";
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
@@ -81,6 +84,10 @@ codeunit 148206 "Sust. ESG Reporting Test"
 
         // [GIVEN] Create ESG Reporting Name.
         LibrarySustainability.CreateESGReportingName(ESGReportingName, ESGReportingTemplate);
+        ESGReportingName.Validate("Period Name", Format(Date2DMY(WorkDate(), 3)));
+        ESGReportingName.Validate("Period Starting Date", CalcDate('<-CY>', WorkDate()));
+        ESGReportingName.Validate("Period Ending Date", CalcDate('<CY>', WorkDate()));
+        ESGReportingName.Modify();
 
         // [GIVEN] Create ESG Reporting Line A.
         LibrarySustainability.CreateESGReportingLine(
@@ -212,7 +219,9 @@ codeunit 148206 "Sust. ESG Reporting Test"
 
         // [GIVEN] Create ESG Reporting Name.
         LibrarySustainability.CreateESGReportingName(ESGReportingName, ESGReportingTemplate);
-        ESGReportingName.Validate(Period, Date2DMY(WorkDate(), 3));
+        ESGReportingName.Validate("Period Name", Format(Date2DMY(WorkDate(), 3)));
+        ESGReportingName.Validate("Period Starting Date", CalcDate('<-CY>', WorkDate()));
+        ESGReportingName.Validate("Period Ending Date", CalcDate('<CY>', WorkDate()));
         ESGReportingName.Modify();
 
         // [GIVEN] Create ESG Reporting Line A.
@@ -339,7 +348,9 @@ codeunit 148206 "Sust. ESG Reporting Test"
 
         // [GIVEN] Create ESG Reporting Name.
         LibrarySustainability.CreateESGReportingName(ESGReportingName, ESGReportingTemplate);
-        ESGReportingName.Validate(Period, Date2DMY(WorkDate(), 3));
+        ESGReportingName.Validate("Period Name", Format(Date2DMY(WorkDate(), 3)));
+        ESGReportingName.Validate("Period Starting Date", CalcDate('<-CY>', WorkDate()));
+        ESGReportingName.Validate("Period Ending Date", CalcDate('<CY>', WorkDate()));
         ESGReportingName.Modify();
 
         // [GIVEN] Create ESG Reporting Line A.
@@ -454,6 +465,10 @@ codeunit 148206 "Sust. ESG Reporting Test"
 
         // [GIVEN] Create ESG Reporting Name.
         LibrarySustainability.CreateESGReportingName(ESGReportingName, ESGReportingTemplate);
+        ESGReportingName.Validate("Period Name", Format(Date2DMY(WorkDate(), 3)));
+        ESGReportingName.Validate("Period Starting Date", CalcDate('<-CY>', WorkDate()));
+        ESGReportingName.Validate("Period Ending Date", CalcDate('<CY>', WorkDate()));
+        ESGReportingName.Modify();
 
         // [GIVEN] Create ESG Reporting Line A.
         LibrarySustainability.CreateESGReportingLine(
@@ -529,7 +544,7 @@ codeunit 148206 "Sust. ESG Reporting Test"
             SustainabilityLedgerEntries.Filter.GetFilter("Account No."),
             StrSubstNo(FilterIsIncorrectErr, SustainabilityLedgerEntries."Account No.".Caption()));
         Assert.AreEqual(
-            StrSubstNo('''''..' + Format(DMY2Date(31, 12, 9999))),
+            StrSubstNo(Format(CalcDate('<-CY>', WorkDate())) + '..' + Format(CalcDate('<CY>', WorkDate()))),
             SustainabilityLedgerEntries.Filter.GetFilter("Posting Date"),
             StrSubstNo(FilterIsIncorrectErr, SustainabilityLedgerEntries."Posting Date".Caption()));
     end;
@@ -703,7 +718,9 @@ codeunit 148206 "Sust. ESG Reporting Test"
 
         // [GIVEN] Create ESG Reporting Name with Period.
         LibrarySustainability.CreateESGReportingName(ESGReportingName, ESGReportingTemplate);
-        ESGReportingName.Validate(Period, Date2DMY(WorkDate(), 3));
+        ESGReportingName.Validate("Period Name", Format(Date2DMY(WorkDate(), 3)));
+        ESGReportingName.Validate("Period Starting Date", CalcDate('<-CY>', WorkDate()));
+        ESGReportingName.Validate("Period Ending Date", CalcDate('<CY>', WorkDate()));
         ESGReportingName.Validate("Country/Region Code", CountryRegion.Code);
         ESGReportingName.Modify();
 
@@ -867,6 +884,10 @@ codeunit 148206 "Sust. ESG Reporting Test"
 
         // [GIVEN] Create ESG Reporting Name.
         LibrarySustainability.CreateESGReportingName(ESGReportingName, ESGReportingTemplate);
+        ESGReportingName.Validate("Period Name", Format(Date2DMY(WorkDate(), 3)));
+        ESGReportingName.Validate("Period Starting Date", CalcDate('<-CY>', WorkDate()));
+        ESGReportingName.Validate("Period Ending Date", CalcDate('<CY>', WorkDate()));
+        ESGReportingName.Modify();
 
         // [GIVEN] Create ESG Reporting Line A.
         LibrarySustainability.CreateESGReportingLine(
@@ -1114,6 +1135,10 @@ codeunit 148206 "Sust. ESG Reporting Test"
 
         // [GIVEN] Create ESG Reporting Name.
         LibrarySustainability.CreateESGReportingName(ESGReportingName, ESGReportingTemplate);
+        ESGReportingName.Validate("Period Name", Format(Date2DMY(WorkDate(), 3)));
+        ESGReportingName.Validate("Period Starting Date", CalcDate('<-CY>', WorkDate()));
+        ESGReportingName.Validate("Period Ending Date", CalcDate('<CY>', WorkDate()));
+        ESGReportingName.Modify();
 
         // [GIVEN] Create ESG Reporting Line A.
         LibrarySustainability.CreateESGReportingLine(
@@ -1221,7 +1246,7 @@ codeunit 148206 "Sust. ESG Reporting Test"
 
         // [THEN] Verify "Posting Date" filters in Sustainability Ledger Entries.
         Assert.AreEqual(
-            StrSubstNo('''''..' + Format(DMY2Date(31, 12, 9999))),
+            StrSubstNo(Format(CalcDate('<-CY>', WorkDate())) + '..' + Format(CalcDate('<CY>', WorkDate()))),
             SustainabilityLedgerEntries.Filter.GetFilter("Posting Date"),
             StrSubstNo(FilterIsIncorrectErr, SustainabilityLedgerEntries."Posting Date".Caption()));
 
@@ -1232,7 +1257,7 @@ codeunit 148206 "Sust. ESG Reporting Test"
 
         // [THEN] Verify "Posting Date" filters in General Ledger Entries.
         Assert.AreEqual(
-            StrSubstNo('''''..' + Format(DMY2Date(31, 12, 9999))),
+            StrSubstNo(Format(CalcDate('<-CY>', WorkDate())) + '..' + Format(CalcDate('<CY>', WorkDate()))),
             GeneralLedgerEntries.Filter.GetFilter("Posting Date"),
             StrSubstNo(FilterIsIncorrectErr, GeneralLedgerEntries."Posting Date".Caption()));
 
@@ -1256,6 +1281,146 @@ codeunit 148206 "Sust. ESG Reporting Test"
         ESGReportingPreview.ESGReportingPreviewSubPage.ColumnValue.Drilldown();
 
         // [THEN] Verify Employee List must be trapped.
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler,CSRDPreparationReportRequestPageHandler')]
+    procedure TestCSRDPreparationReport()
+    var
+        EmissionFee: array[3] of Record "Emission Fee";
+        ESGReportingTemplate: Record "Sust. ESG Reporting Template";
+        ESGReportingName: Record "Sust. ESG Reporting Name";
+        ESGReportingLine: array[3] of Record "Sust. ESG Reporting Line";
+        PostedESGReportingHeader: Record "Sust. Posted ESG Report Header";
+        PostedESGReportingLine: Record "Sust. Posted ESG Report Line";
+        SustainabilityAccount: Record "Sustainability Account";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        ESGReportingManagement: Codeunit "Sust. ESG Reporting Management";
+        ESGReportingAggregation: TestPage "Sust. ESG Report. Aggregation";
+        PostedESGReportSub: TestPage "Sust. Posted ESG Report Sub.";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+    begin
+        // [SCENARIO 507039] Verify the CSRD Preparation Report for Posted ESG Reporting.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Posted ESG Reporting Nos." in Sustainability Setup.
+        LibrarySustainability.UpdatePostedESGReportingNoInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(5);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Create and Post Purchase Order with WorkDate().
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [GIVEN] Create and Post another Purchase Order with WorkDate().
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [GIVEN] Create ESG Reporting Template.
+        LibrarySustainability.CreateESGReportingTemplate(ESGReportingTemplate);
+
+        // [GIVEN] Create ESG Reporting Name.
+        LibrarySustainability.CreateESGReportingName(ESGReportingName, ESGReportingTemplate);
+        ESGReportingName.Validate("Period Name", Format(Date2DMY(WorkDate(), 3)));
+        ESGReportingName.Validate("Period Starting Date", CalcDate('<-CY>', WorkDate()));
+        ESGReportingName.Validate("Period Ending Date", CalcDate('<CY>', WorkDate()));
+        ESGReportingName.Modify();
+
+        // [GIVEN] Create ESG Reporting Line A.
+        LibrarySustainability.CreateESGReportingLine(
+            ESGReportingLine[1],
+            ESGReportingName,
+            10000,
+            '',
+            '10',
+            ESGReportingLine[1]."Field Type"::"Table Field",
+            Database::"Sustainability Ledger Entry",
+            SustainabilityLedgerEntry.FieldNo("CO2e Emission"),
+            ESGReportingLine[1]."Value Settings"::Sum,
+            AccountCode,
+            ESGReportingLine[1]."Row Type"::"Net Change",
+            '',
+            ESGReportingLine[1]."Calculate with"::Sign,
+            true,
+            ESGReportingLine[1]."Show with"::Sign);
+
+        // [GIVEN] Create ESG Reporting Line B.
+        LibrarySustainability.CreateESGReportingLine(
+            ESGReportingLine[2],
+            ESGReportingName,
+            20000,
+            '',
+            '20',
+            ESGReportingLine[2]."Field Type"::"Table Field",
+            Database::"Sustainability Ledger Entry",
+            SustainabilityLedgerEntry.FieldNo("Carbon Fee"),
+            ESGReportingLine[2]."Value Settings"::Sum,
+            AccountCode,
+            ESGReportingLine[2]."Row Type"::"Net Change",
+            '',
+            ESGReportingLine[2]."Calculate with"::Sign,
+            true,
+            ESGReportingLine[2]."Show with"::Sign);
+
+        // [GIVEN] Create ESG Reporting Line C.
+        LibrarySustainability.CreateESGReportingLine(
+            ESGReportingLine[3],
+            ESGReportingName,
+            30000,
+            '',
+            '30',
+            ESGReportingLine[3]."Field Type"::Formula,
+            0,
+            0,
+            ESGReportingLine[3]."Value Settings"::" ",
+            '',
+            ESGReportingLine[3]."Row Type"::"Net Change",
+            ESGReportingLine[1]."Row No." + '+' + ESGReportingLine[2]."Row No.",
+            ESGReportingLine[3]."Calculate with"::Sign,
+            true,
+            ESGReportingLine[3]."Show with"::Sign);
+
+        // [GIVEN] Open ESG Reporting Aggregation.
+        ESGReportingAggregation.Trap();
+        ESGReportingManagement.TemplateSelectionFromBatch(ESGReportingName);
+
+        // [GIVEN] Open Calculate and Post ESG Report.
+        ESGReportingAggregation."Calc. and Post ESG Report".Invoke();
+
+        // [GIVEN] Verify the Posted ESG Reporting Data.
+        PostedESGReportSub.OpenView();
+        FindPostedESGReportingLine(PostedESGReportingLine, ESGReportingLine[1]."Row No.");
+        PostedESGReportingHeader.SetRange("No.", PostedESGReportingLine."Document No.");
+        PostedESGReportingHeader.FindSet();
+
+        // [GIVEN] Save a Transaction.
+        Commit();
+
+        // [WHEN] Run "CSRD Preparation" Report.
+        Report.Run(Report::"Sust. CSRD Preparation", true, false, PostedESGReportingHeader);
+
+        // [THEN]: Verify CSRD Preparation details on Generated Report.
+        LibraryReportDataset.LoadDataSetFile();
+        VerifyPostedESGReporting(PostedESGReportingHeader, PostedESGReportingLine);
+
+        FindPostedESGReportingLine(PostedESGReportingLine, ESGReportingLine[2]."Row No.");
+        VerifyPostedESGReporting(PostedESGReportingHeader, PostedESGReportingLine);
+
+        FindPostedESGReportingLine(PostedESGReportingLine, ESGReportingLine[3]."Row No.");
+        VerifyPostedESGReporting(PostedESGReportingHeader, PostedESGReportingLine);
     end;
 
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
@@ -1352,6 +1517,21 @@ codeunit 148206 "Sust. ESG Reporting Test"
         PostedESGReportingLine.FindFirst();
     end;
 
+    local procedure VerifyPostedESGReporting(PostedESGReportingHeader: Record "Sust. Posted ESG Report Header"; PostedESGReportingLine: Record "Sust. Posted ESG Report Line")
+    begin
+        LibraryReportDataset.SetRange('No_', PostedESGReportingHeader."No.");
+        LibraryReportDataset.SetRange('Row_No_', PostedESGReportingLine."Row No.");
+        LibraryReportDataset.GetNextRow();
+        LibraryReportDataset.AssertCurrentRowValueEquals('No_', PostedESGReportingHeader."No.");
+        LibraryReportDataset.AssertCurrentRowValueEquals('Standard', PostedESGReportingHeader.Standard);
+        LibraryReportDataset.AssertCurrentRowValueEquals('Period_Name', PostedESGReportingHeader."Period Name");
+        LibraryReportDataset.AssertCurrentRowValueEquals('Reporting_Code', PostedESGReportingLine."Reporting Code");
+        LibraryReportDataset.AssertCurrentRowValueEquals('Concept', PostedESGReportingLine.Concept);
+        LibraryReportDataset.AssertCurrentRowValueEquals('Concept_Link', PostedESGReportingLine."Concept Link");
+        LibraryReportDataset.AssertCurrentRowValueEquals('Reporting_Unit', PostedESGReportingLine."Reporting Unit");
+        LibraryReportDataset.AssertCurrentRowValueEquals('Posted_Amount', PostedESGReportingLine."Posted Amount");
+    end;
+
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
     begin
@@ -1361,5 +1541,11 @@ codeunit 148206 "Sust. ESG Reporting Test"
     [MessageHandler]
     procedure MessageHandler(Msg: Text[1024])
     begin
+    end;
+
+    [RequestPageHandler]
+    procedure CSRDPreparationReportRequestPageHandler(var CSRDPreparationReport: TestRequestPage "Sust. CSRD Preparation")
+    begin
+        CSRDPreparationReport.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
     end;
 }

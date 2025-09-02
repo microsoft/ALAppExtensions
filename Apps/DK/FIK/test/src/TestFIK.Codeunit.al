@@ -7,6 +7,7 @@ Codeunit 148029 TestFIK
 {
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     VAR

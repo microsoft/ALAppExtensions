@@ -10,6 +10,8 @@ using Microsoft.Sales.Document;
 using Microsoft.Sustainability.Ledger;
 using System.Automation;
 using System.Device;
+using System.Environment;
+using System.Visualization;
 
 page 6236 "Sustainability Activities"
 {
@@ -46,8 +48,8 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = All;
                     Caption = 'CH4 This Month';
+                    StyleExpr = EmissionCH4StyleText;
                     DecimalPlaces = 2 : 2;
-                    Style = None;
                     DrillDownPageId = "Sustainability Ledger Entries";
                     ToolTip = 'Specifies the value of the CH4 This Month field.';
 
@@ -60,7 +62,7 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = All;
                     Caption = 'N2O This Month';
-                    Style = None;
+                    StyleExpr = EmissionN2OStyleText;
                     DecimalPlaces = 2 : 2;
                     DrillDownPageId = "Sustainability Ledger Entries";
                     ToolTip = 'Specifies the value of the N2O This Month field.';
@@ -81,7 +83,7 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = All;
                     Caption = 'Water This Month';
-                    Style = None;
+                    StyleExpr = WaterIntensityStyleText;
                     DecimalPlaces = 2 : 2;
                     DrillDownPageId = "Sustainability Ledger Entries";
                     ToolTip = 'Specifies the value of the Water This Month field.';
@@ -95,7 +97,7 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = All;
                     Caption = 'Waste This Month';
-                    Style = None;
+                    StyleExpr = WasteIntensityStyleText;
                     DecimalPlaces = 2 : 2;
                     DrillDownPageId = "Sustainability Ledger Entries";
                     ToolTip = 'Specifies the value of the Waste This Month field.';
@@ -112,14 +114,14 @@ page 6236 "Sustainability Activities"
                 field("Ongoing Purchase Orders"; Rec."Ongoing Purchase Orders")
                 {
                     ApplicationArea = Suite;
-                    Style = None;
+                    StyleExpr = OngoingPurchaseOrderStyleText;
                     DrillDownPageID = "Purchase Order List";
                     ToolTip = 'Specifies purchases orders that are not posted or only partially posted.';
                 }
                 field("Ongoing Purchase Invoices"; Rec."Ongoing Purchase Invoices")
                 {
                     ApplicationArea = Basic, Suite;
-                    Style = None;
+                    StyleExpr = OngoingPurchaseInvoiceStyleText;
                     DrillDownPageID = "Purchase Invoices";
                     ToolTip = 'Specifies purchases invoices that are not posted or only partially posted.';
                 }
@@ -136,14 +138,14 @@ page 6236 "Sustainability Activities"
                 field("My Incoming Documents"; Rec."My Incoming Documents")
                 {
                     ApplicationArea = Suite;
-                    Style = None;
+                    StyleExpr = MyIncomingDocumentsStyleText;
                     ToolTip = 'Specifies incoming documents that are assigned to you.';
                 }
                 field("Awaiting Verfication"; Rec."Inc. Doc. Awaiting Verfication")
                 {
                     ApplicationArea = Suite;
                     DrillDown = true;
-                    Style = None;
+                    StyleExpr = IncomingDocAwaitingVerificationStyleText;
                     ToolTip = 'Specifies incoming documents in OCR processing that require you to log on to the OCR service website to manually verify the OCR values before the documents can be received.';
                     Visible = ShowAwaitingIncomingDoc;
 
@@ -196,13 +198,13 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = Suite;
                     DrillDownPageID = "Sales Order List";
-                    Style = None;
+                    StyleExpr = OngoingSalesOrderStyleText;
                     ToolTip = 'Specifies Sales orders that are not posted or only partially posted.';
                 }
                 field("Ongoing Sales Invoices"; Rec."Ongoing Sales Invoices")
                 {
                     ApplicationArea = Basic, Suite;
-                    Style = None;
+                    StyleExpr = OngoingSalesInvoiceStyleText;
                     DrillDownPageID = "Sales Invoice List";
                     ToolTip = 'Specifies Sales invoices that are not posted or only partially posted.';
                 }
@@ -216,7 +218,7 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = All;
                     Caption = 'Released Prod. Orders This Month';
-                    Style = None;
+                    StyleExpr = ReleasedProductionOrderStyleText;
                     DrillDownPageId = "Released Production Orders";
                     ToolTip = 'Specifies the value of the Released Production Orders This Month field.';
                 }
@@ -224,7 +226,7 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = All;
                     Caption = 'Assembly Orders This Month';
-                    Style = None;
+                    StyleExpr = AssemblyOrderStyleText;
                     DrillDownPageId = "Assembly Orders";
                     ToolTip = 'Specifies the value of the Assembly Orders This Month field.';
                 }
@@ -232,7 +234,7 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = Basic, Suite;
                     DrillDownPageID = "Transfer Orders";
-                    Style = None;
+                    StyleExpr = TransferOrderStyleText;
                     ToolTip = 'Specifies Transfer Orders that are not posted or only partially posted.';
                 }
             }
@@ -261,8 +263,8 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Pending User Tasks';
+                    StyleExpr = PendingTasksStyleText;
                     Image = Checklist;
-                    Style = None;
                     ToolTip = 'Specifies the number of pending tasks that are assigned to you or to a group that you are a member of.';
 
                     trigger OnDrillDown()
@@ -302,8 +304,32 @@ page 6236 "Sustainability Activities"
         }
     }
 
+    actions
+    {
+        area(processing)
+        {
+            action("Set Up Cues")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Set Up Cues';
+                Image = Setup;
+                ToolTip = 'Set up the cues (status tiles) related to the role.';
+
+                trigger OnAction()
+                var
+                    CuesAndKpis: Codeunit "Cues And KPIs";
+                    CueRecordRef: RecordRef;
+                begin
+                    CueRecordRef.GetTable(Rec);
+                    CuesAndKpis.OpenCustomizePageForCurrentUser(CueRecordRef.Number);
+                end;
+            }
+        }
+    }
+
     var
         UserTaskManagement: Codeunit "User Task Management";
+        UIHelperTriggers: Codeunit "UI Helper Triggers";
         HasCamera: Boolean;
         ShowAwaitingIncomingDoc: Boolean;
         EmissionCO2: Decimal;
@@ -311,10 +337,14 @@ page 6236 "Sustainability Activities"
         EmissionN2O: Decimal;
         WaterIntensity: Decimal;
         WasteIntensity: Decimal;
-        EmissionCO2StyleText: Text;
-        PurchInvDueNextWeekStyleText: Text;
-        SalesInvDueNextWeekStyleText: Text;
-        RequestsSentForApprovalStyleText, RequestsToApprovalStyleText, TasksThisMonthStyleText, OverdueTasksStyleText : Text;
+        EmissionCO2StyleText, EmissionCH4StyleText, EmissionN2OStyleText : Text;
+        WaterIntensityStyleText, WasteIntensityStyleText : Text;
+        OngoingPurchaseOrderStyleText, OngoingPurchaseInvoiceStyleText, PurchInvDueNextWeekStyleText : Text;
+        MyIncomingDocumentsStyleText, IncomingDocAwaitingVerificationStyleText : Text;
+        OngoingSalesOrderStyleText, OngoingSalesInvoiceStyleText, SalesInvDueNextWeekStyleText : Text;
+        ReleasedProductionOrderStyleText, AssemblyOrderStyleText, TransferOrderStyleText : Text;
+        RequestsSentForApprovalStyleText, RequestsToApprovalStyleText : Text;
+        PendingTasksStyleText, TasksThisMonthStyleText, OverdueTasksStyleText : Text;
 
     trigger OnOpenPage()
     var
@@ -376,12 +406,26 @@ page 6236 "Sustainability Activities"
 
     local procedure SetControlAppearance()
     begin
-        EmissionCO2StyleText := Rec.GetEmissionCO2Style();
-        PurchInvDueNextWeekStyleText := Rec.GetPurchInvDueNextWeekStyle();
-        SalesInvDueNextWeekStyleText := Rec.GetSalesInvDueNextWeekStyle();
-        RequestsSentForApprovalStyleText := Rec.GetRequestsSentForApprovalStyle();
-        RequestsToApprovalStyleText := Rec.GetRequestsToApprovalStyle();
-        TasksThisMonthStyleText := Rec.GetTasksThisMonthStyle();
-        OverdueTasksStyleText := Rec.GetOverdueTasksStyle();
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Emission CO2"), EmissionCO2, EmissionCO2StyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Emission CH4"), EmissionCH4, EmissionCH4StyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Emission N2O"), EmissionN2O, EmissionN2OStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Water Intensity"), WaterIntensity, WaterIntensityStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Waste Intensity"), WasteIntensity, WasteIntensityStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Ongoing Purchase Orders"), Rec."Ongoing Purchase Orders", OngoingPurchaseOrderStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Ongoing Purchase Invoices"), Rec."Ongoing Purchase Invoices", OngoingPurchaseInvoiceStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Purch. Invoices Due Next Week"), Rec."Purch. Invoices Due Next Week", PurchInvDueNextWeekStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("My Incoming Documents"), Rec."My Incoming Documents", MyIncomingDocumentsStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Inc. Doc. Awaiting Verfication"), Rec."Inc. Doc. Awaiting Verfication", IncomingDocAwaitingVerificationStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Ongoing Sales Orders"), Rec."Ongoing Sales Orders", OngoingSalesOrderStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Ongoing Sales Invoices"), Rec."Ongoing Sales Invoices", OngoingSalesInvoiceStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Sales Invoices Due Next Week"), Rec."Sales Invoices Due Next Week", SalesInvDueNextWeekStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Released Prod. Orders"), Rec."Released Prod. Orders", ReleasedProductionOrderStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Assembly Orders"), Rec."Assembly Orders", AssemblyOrderStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Ongoing Transfer Orders"), Rec."Ongoing Transfer Orders", TransferOrderStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Requests Sent for Approval"), Rec."Requests Sent for Approval", RequestsSentForApprovalStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Requests to Approve"), Rec."Requests to Approve", RequestsToApprovalStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Pending User Tasks"), UserTaskManagement.GetMyPendingUserTasksCount(), PendingTasksStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Tasks This Month"), Rec.GetMyPendingUserTasksThisMonthCount(), TasksThisMonthStyleText);
+        UIHelperTriggers.GetCueStyle(Database::"Sustainability Cue", Rec.FieldNo("Overdue User Tasks"), Rec.GetMyOverDueUserTasksCount(), OverdueTasksStyleText);
     end;
 }

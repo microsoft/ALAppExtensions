@@ -35,6 +35,7 @@ table 1070 "MS - PayPal Standard Account"
 
             trigger OnValidate();
             var
+                AuditLog: Codeunit "Audit Log";
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                 MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
                 FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -46,7 +47,7 @@ table 1070 "MS - PayPal Standard Account"
                 if Rec.Enabled then begin
                     VerifyAccountID();
                     FeatureTelemetry.LogUptake('0000LHR', MSPayPalStandardMgt.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
-                    Session.LogAuditMessage(StrSubstNo(MSPayPalConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
+                    AuditLog.LogAuditMessage(StrSubstNo(MSPayPalConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
                 end;
             end;
         }

@@ -9,6 +9,7 @@ using Microsoft.API.V1;
 codeunit 148185 "Sustainability API Tests"
 {
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

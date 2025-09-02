@@ -51,10 +51,10 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
 
         // Post document creation
         DocumentAttachmentMgt.CopyAttachments(EDocument, PurchaseHeader);
+        DocumentAttachmentMgt.DeleteAttachedDocuments(EDocument);
 
         // Post document validation - Silently emit telemetry
-        if not TryValidateDocumentTotals(PurchaseHeader) then
-            EDocImpSessionTelemetry.SetBool('Totals Validation Failed', true);
+        EDocImpSessionTelemetry.SetBool('Totals Validation', TryValidateDocumentTotals(PurchaseHeader));
 
         exit(PurchaseHeader.RecordId);
     end;
@@ -62,10 +62,13 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
     procedure RevertDraftActions(EDocument: Record "E-Document")
     var
         PurchaseHeader: Record "Purchase Header";
+        DocumentAttachmentMgt: Codeunit "Document Attachment Mgmt";
     begin
         PurchaseHeader.SetRange("E-Document Link", EDocument.SystemId);
         if not PurchaseHeader.FindFirst() then
             exit;
+        DocumentAttachmentMgt.CopyAttachments(PurchaseHeader, EDocument);
+        DocumentAttachmentMgt.DeleteAttachedDocuments(PurchaseHeader);
         PurchaseHeader.TestField("Document Type", "Purchase Document Type"::Invoice);
         Clear(PurchaseHeader."E-Document Link");
         PurchaseHeader.Delete(true);
@@ -80,8 +83,12 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
         PurchaseLine: Record "Purchase Line";
         EDocumentPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
+        DimensionManagement: Codeunit DimensionManagement;
+        PurchCalcDiscByType: Codeunit "Purch - Calc Disc. By Type";
+        PurchaseLineCombinedDimensions: array[10] of Integer;
         StopCreatingPurchaseInvoice: Boolean;
         VendorInvoiceNo: Code[35];
+        GlobalDim1, GlobalDim2 : Code[20];
     begin
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         if not AllDraftLinesHaveTypeAndNumberSpecificed(EDocumentPurchaseHeader) then begin
@@ -142,19 +149,23 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
                 if EDocumentPurchaseLine."Total Discount" > 0 then
                     PurchaseLine.Validate("Line Discount Amount", EDocumentPurchaseLine."Total Discount");
                 PurchaseLine.Validate("Deferral Code", EDocumentPurchaseLine."[BC] Deferral Code");
-                PurchaseLine.Validate("Dimension Set ID", EDocumentPurchaseLine."[BC] Dimension Set ID");
+
+                Clear(PurchaseLineCombinedDimensions);
+                PurchaseLineCombinedDimensions[1] := PurchaseLine."Dimension Set ID";
+                PurchaseLineCombinedDimensions[2] := EDocumentPurchaseLine."[BC] Dimension Set ID";
+                PurchaseLine.Validate("Dimension Set ID", DimensionManagement.GetCombinedDimensionSetID(PurchaseLineCombinedDimensions, GlobalDim1, GlobalDim2));
                 PurchaseLine.Validate("Shortcut Dimension 1 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 1 Code");
                 PurchaseLine.Validate("Shortcut Dimension 2 Code", EDocumentPurchaseLine."[BC] Shortcut Dimension 2 Code");
-                EDocumentPurchaseHistMapping.ApplyHistoryValuesToPurchaseLine(EDocumentPurchaseLine, PurchaseLine);
+                EDocumentPurchaseHistMapping.ApplyAdditionalFieldsFromHistoryToPurchaseLine(EDocumentPurchaseLine, PurchaseLine);
                 PurchaseLine.Insert();
 
                 // Track changes for history
                 EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseLine, PurchaseLine);
 
             until EDocumentPurchaseLine.Next() = 0;
-
+        PurchaseHeader.Modify();
+        PurchCalcDiscByType.ApplyInvDiscBasedOnAmt(EDocumentPurchaseHeader."Total Discount", PurchaseHeader);
         exit(PurchaseHeader);
-
     end;
 
     [TryFunction]

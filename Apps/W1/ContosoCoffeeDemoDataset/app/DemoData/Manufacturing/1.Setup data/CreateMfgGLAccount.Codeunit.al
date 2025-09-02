@@ -29,6 +29,7 @@ codeunit 4762 "Create Mfg GL Account"
         ContosoGLAccount.InsertGLAccount(SubcontractedVariance(), SubcontractedVarianceName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting);
         ContosoGLAccount.InsertGLAccount(CapOverheadVariance(), CapOverheadVarianceName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting);
         ContosoGLAccount.InsertGLAccount(MfgOverheadVariance(), MfgOverheadVarianceName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting);
+        ContosoGLAccount.InsertGLAccount(MaterialNonInvVariance(), MaterialNonInvVarianceName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting);
 
         ContosoGLAccount.InsertGLAccount(DirectCostAppliedCap(), DirectCostAppliedCapName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting);
         ContosoGLAccount.InsertGLAccount(OverheadAppliedCap(), OverheadAppliedCapName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::Posting);
@@ -43,10 +44,11 @@ codeunit 4762 "Create Mfg GL Account"
         ContosoGLAccount.AddAccountForLocalization(WIPAccountFinishedGoodsName(), '2140');
 
         ContosoGLAccount.AddAccountForLocalization(MaterialVarianceName(), '7890');
-        ContosoGLAccount.AddAccountForLocalization(CapacityVarianceName(), '7891');
-        ContosoGLAccount.AddAccountForLocalization(SubcontractedVarianceName(), '7892');
-        ContosoGLAccount.AddAccountForLocalization(CapOverheadVarianceName(), '7893');
-        ContosoGLAccount.AddAccountForLocalization(MfgOverheadVarianceName(), '7894');
+        ContosoGLAccount.AddAccountForLocalization(MaterialNonInvVarianceName(), '7891');
+        ContosoGLAccount.AddAccountForLocalization(CapacityVarianceName(), '7892');
+        ContosoGLAccount.AddAccountForLocalization(SubcontractedVarianceName(), '7893');
+        ContosoGLAccount.AddAccountForLocalization(CapOverheadVarianceName(), '7894');
+        ContosoGLAccount.AddAccountForLocalization(MfgOverheadVarianceName(), '7895');
 
         ContosoGLAccount.AddAccountForLocalization(DirectCostAppliedCapName(), '7791');
         ContosoGLAccount.AddAccountForLocalization(OverheadAppliedCapName(), '7792');
@@ -67,6 +69,7 @@ codeunit 4762 "Create Mfg GL Account"
         SubcontractedVarianceTok: Label 'Subcontracted Variance', MaxLength = 100;
         CapOverheadVarianceTok: Label 'Capacity Overhead Variance', MaxLength = 100;
         MfgOverheadVarianceTok: Label 'Manufacturing Overhead Variance', MaxLength = 100;
+        MaterialNonInvVarianceTok: Label 'Material Non-Inv. Variance', MaxLength = 100;
 
     procedure FinishedGoods(): Code[20]
     begin
@@ -166,6 +169,16 @@ codeunit 4762 "Create Mfg GL Account"
     procedure PurchaseVarianceCapName(): Text[100]
     begin
         exit(PurchaseVarianceCapTok);
+    end;
+
+    procedure MaterialNonInvVariance(): Code[20]
+    begin
+        exit(ContosoGLAccount.GetAccountNo(MaterialNonInvVarianceName()));
+    end;
+
+    procedure MaterialNonInvVarianceName(): Text[100]
+    begin
+        exit(MaterialNonInvVarianceTok);
     end;
 
     [IntegrationEvent(false, false)]

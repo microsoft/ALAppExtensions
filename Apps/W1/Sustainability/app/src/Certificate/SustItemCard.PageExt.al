@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Certificate;
 
 using Microsoft.Inventory.Item;
+using Microsoft.Sustainability.EPR;
 using Microsoft.Sustainability.Setup;
 
 pageextension 6222 "Sust. Item Card" extends "Item Card"
@@ -64,6 +65,75 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                     Editable = false;
                     ToolTip = 'Specifies the value of the CO2e per Unit field.';
                 }
+                field("Item of Concern"; Rec."Item of Concern")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the Item of Concern field.';
+                }
+                field("Recyclability Percentage"; Rec."Recyclability Percentage")
+                {
+                    ApplicationArea = Basic, Suite;
+                }
+                field("Energy Efficiency Rating"; Rec."Energy Efficiency Rating")
+                {
+                    ApplicationArea = Basic, Suite;
+                }
+                field("End-of-Life Information"; Rec."End-of-Life Information")
+                {
+                    ApplicationArea = Basic, Suite;
+                }
+                field("Source of Emission Data"; Rec."Source of Emission Data")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the Source of Emission Data field.';
+                }
+                field("Emission Verified"; Rec."Emission Verified")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the Emission Verified field.';
+                }
+                field("CBAM Compliance"; Rec."CBAM Compliance")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the CBAM Compliance field.';
+                }
+                field("EPR Category"; Rec."EPR Category")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the EPR Category field.';
+                }
+                field("Material Composition No."; Rec."Material Composition No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the Material Composition No. field.';
+                }
+                field("Total EPR Weight"; Rec."Total EPR Weight")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the Total EPR Weight field.';
+                }
+                field("EPR Fees Per Unit"; Rec."EPR Fees Per Unit")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the EPR Fees per Unit field.';
+                }
+                field("End-of-Life Disposal Req."; Rec."End-of-Life Disposal Req.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the value of the End-of-Life Disposal Requirements field.';
+                }
+            }
+        }
+
+        addlast(factboxes)
+        {
+            part("Sust. Item Mat. Comp. Factbox"; "Sust. Item Mat. Comp. Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Material Composition';
+                UpdatePropagation = Both;
+                Visible = SustainabilityVisible;
+                SubPageLink = "Item Material Composition No." = field("Material Composition No.");
             }
         }
     }

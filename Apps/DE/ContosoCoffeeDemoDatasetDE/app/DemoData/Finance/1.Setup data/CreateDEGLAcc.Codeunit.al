@@ -455,10 +455,10 @@ codeunit 11119 "Create DE GL Acc."
         ContosoGLAccount.AddAccountForLocalization(ManufVariancesName(), '5030');
         ContosoGLAccount.AddAccountForLocalization(PurchaseVarianceCapName(), '5031');
         ContosoGLAccount.AddAccountForLocalization(MaterialVarianceName(), '5032');
-        ContosoGLAccount.AddAccountForLocalization(CapacityVarianceName(), '5033');
-        ContosoGLAccount.AddAccountForLocalization(SubcontractedVarianceName(), '5034');
-        ContosoGLAccount.AddAccountForLocalization(CapOverheadVarianceName(), '5035');
-        ContosoGLAccount.AddAccountForLocalization(MfgOverheadVarianceName(), '5036');
+        ContosoGLAccount.AddAccountForLocalization(CapacityVarianceName(), '5034');
+        ContosoGLAccount.AddAccountForLocalization(SubcontractedVarianceName(), '5035');
+        ContosoGLAccount.AddAccountForLocalization(CapOverheadVarianceName(), '5036');
+        ContosoGLAccount.AddAccountForLocalization(MfgOverheadVarianceName(), '5037');
         ContosoGLAccount.AddAccountForLocalization(TotalManufVariancesName(), '5038');
         ContosoGLAccount.AddAccountForLocalization(CostofVariancesName(), '5039');
         ContosoGLAccount.AddAccountForLocalization(CostsofJobsName(), '5040');

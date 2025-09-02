@@ -8,6 +8,7 @@ using Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.HumanResources.Employee;
+using Microsoft.Integration.Dataverse;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Scorecard;
@@ -16,6 +17,8 @@ using System.Reflection;
 table 6230 "Sust. ESG Reporting Line"
 {
     Caption = 'ESG Reporting Line';
+    LookupPageId = "Sust. ESG Reporting Lines";
+    DrillDownPageId = "Sust. ESG Reporting Lines";
     DataClassification = CustomerContent;
 
     fields
@@ -34,7 +37,7 @@ table 6230 "Sust. ESG Reporting Line"
         {
             Caption = 'Line No.';
         }
-        field(5; "Grouping"; Code[10])
+        field(5; "Grouping"; Text[100])
         {
             Caption = 'Grouping';
         }
@@ -42,11 +45,11 @@ table 6230 "Sust. ESG Reporting Line"
         {
             Caption = 'Row No.';
         }
-        field(7; Description; Text[100])
+        field(7; Description; Text[500])
         {
             Caption = 'Description';
         }
-        field(8; "Reporting Code"; Code[20])
+        field(8; "Reporting Code"; Text[100])
         {
             Caption = 'Reporting Code';
         }
@@ -145,6 +148,7 @@ table 6230 "Sust. ESG Reporting Line"
         field(25; "Reporting Unit"; Code[20])
         {
             Caption = 'Reporting Unit';
+            TableRelation = "Sust. ESG Reporting Unit".Code;
         }
         field(27; "Row Type"; Option)
         {
@@ -179,6 +183,22 @@ table 6230 "Sust. ESG Reporting Line"
         field(35; "Goal SystemID"; Guid)
         {
             Caption = 'Goal SystemID';
+        }
+        field(36; "Concept Link"; Text[840])
+        {
+            Caption = 'Concept Link';
+        }
+        field(37; "Concept"; Text[400])
+        {
+            Caption = 'Concept';
+        }
+        field(40; "Coupled to Dataverse"; Boolean)
+        {
+            FieldClass = FlowField;
+            Caption = 'Coupled to Dataverse';
+            Editable = false;
+            CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Sust. ESG Reporting Line")));
+            ToolTip = 'Specifies that the reporting line is coupled to an assessment requirement in Dataverse.';
         }
     }
 

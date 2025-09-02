@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.Setup;
 
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
 using System.Text;
 
 codeunit 6278 "Sust. CaptionClass Mgt"
@@ -36,6 +38,9 @@ codeunit 6278 "Sust. CaptionClass Mgt"
         CH4Txt: Label 'CH4';
         N2OTxt: Label 'N2O';
         EnergyConsumptionTxt: Label 'Energy Consumption';
+        TotalEmissionCostTxt: Label 'Total Emission Cost';
+        TotalCBAMCostTxt: Label 'Total CBAM Cost';
+        PostedEmissionCostLbl: Label 'Posted %1', Comment = '%1 = Emission Type';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Caption Class", 'OnResolveCaptionClass', '', true, true)]
     local procedure ResolveCaptionClass(CaptionArea: Text; CaptionExpr: Text; Language: Integer; var Caption: Text; var Resolved: Boolean)
@@ -68,6 +73,8 @@ codeunit 6278 "Sust. CaptionClass Mgt"
         // '12' -> Total Emission
         // '13' -> Energy Consumption
         // '14' -> Posted Energy Consumption
+        // '15' -> Total Emission Cost
+        // '16' -> Posted Total Emission Cost
 
         // SustCaptionRef
         // <DataType>   := [SubString]
@@ -120,6 +127,16 @@ codeunit 6278 "Sust. CaptionClass Mgt"
                         UsageContext := StrSubstNo(PostedEnergyConsumptionUnitOfMeasureLbl, '%1', SustainabilitySetup."Energy Unit of Measure Code")
                     else
                         UsageContext := PostedEnergyConsumptionLbl;
+                '15':
+                    if IsEUCountry() then
+                        UsageContext := TotalCBAMCostTxt
+                    else
+                        UsageContext := TotalEmissionCostTxt;
+                '16':
+                    if IsEUCountry() then
+                        UsageContext := StrSubstNo(PostedEmissionCostLbl, TotalCBAMCostTxt)
+                    else
+                        UsageContext := StrSubstNo(PostedEmissionCostLbl, TotalEmissionCostTxt);
             end;
 
             case SustCaptionRef of
@@ -140,9 +157,21 @@ codeunit 6278 "Sust. CaptionClass Mgt"
                         exit(StrSubstNo(UsageContext, N2OTxt));
                 '4':
                     exit(StrSubstNo(UsageContext, EnergyConsumptionTxt));
+                '5':
+                    exit(UsageContext);
             end
         end;
         Resolved := false;
         exit('');
+    end;
+
+    internal procedure IsEUCountry(): Boolean
+    var
+        CompanyInformation: Record "Company Information";
+        CountryRegion: Record "Country/Region";
+    begin
+        CompanyInformation.Get();
+        if CompanyInformation."Country/Region Code" <> '' then
+            exit(CountryRegion.IsEUCountry(CompanyInformation."Country/Region Code"));
     end;
 }

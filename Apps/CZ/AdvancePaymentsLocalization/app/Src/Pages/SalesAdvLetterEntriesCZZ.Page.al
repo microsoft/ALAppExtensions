@@ -328,7 +328,7 @@ page 31173 "Sales Adv. Letter Entries CZZ"
                     Caption = 'Advance Card';
                     ToolTip = 'Show advance card.';
                     ApplicationArea = Basic, Suite;
-                    Image = "Invoicing-Document";
+                    Image = Document;
                     RunObject = page "Sales Advance Letter CZZ";
                     RunPageLink = "No." = field("Sales Adv. Letter No.");
                     RunPageMode = View;
@@ -401,13 +401,13 @@ page 31173 "Sales Adv. Letter Entries CZZ"
         view(BalanceEntries)
         {
             Caption = 'Balance Entries';
-            Filters = where("Entry Type" = filter('Payment|Usage|Closed'));
+            Filters = where("Entry Type" = filter(Payment | Usage | Close));
             Visible = not IsAdvLetterNoFiltered;
         }
         view(VATEntries)
         {
             Caption = 'VAT Entries';
-            Filters = where("Entry Type" = filter('VAT Payment|VAT Usage|VAT Close|VAT Rate|VAT Adjustment'));
+            Filters = where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close" | "VAT Rate" | "VAT Adjustment"));
             Visible = not IsAdvLetterNoFiltered;
         }
     }

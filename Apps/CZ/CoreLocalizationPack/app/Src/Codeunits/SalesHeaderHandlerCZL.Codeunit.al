@@ -73,6 +73,14 @@ codeunit 11743 "Sales Header Handler CZL"
         SalesHeader.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeUpdateVATReportingDate', '', false, false)]
+    local procedure OnBeforeUpdateVATReportingDate(var SalesHeader: Record "Sales Header"; CalledByFieldNo: Integer; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        IsHandled := SalesHeader.IsVATReportingDateChanged() and (CalledByFieldNo = SalesHeader.FieldNo("Document Date"));
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterInitFromSalesHeader', '', false, false)]
     local procedure UpdateBankAccountOnAfterInitFromSalesHeader(var SalesHeader: Record "Sales Header"; SourceSalesHeader: Record "Sales Header")
     begin

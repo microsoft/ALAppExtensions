@@ -19,7 +19,7 @@ pageextension 6148 "E-Doc. Issued Reminder" extends "Issued Reminder"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Open E-Document';
                     Image = CopyDocument;
-                    ToolTip = 'Opens the electronic document card.';
+                    ToolTip = 'Opens the E-Document card page.';
 
                     trigger OnAction()
                     var

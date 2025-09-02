@@ -19,7 +19,7 @@ using Microsoft.Foundation.PaymentTerms;
 codeunit 13918 "XRechnung XML Document Tests"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
+    TestType = Uncategorized;
 
     trigger OnRun();
     begin
@@ -567,7 +567,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesHeader: Record "Sales Header";
     begin
         CreateSalesHeader(SalesHeader, DocumentType);
-        CreateSalesLine(SalesHeader, LineType);
+        CreateSalesLine(SalesHeader, LineType, false);
 
         if InvoiceDiscount then
             ApplyInvoiceDiscount(SalesHeader);
@@ -579,8 +579,8 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesHeader: Record "Sales Header";
     begin
         CreateSalesHeader(SalesHeader, DocumentType);
-        CreateSalesLine(SalesHeader, LineType);
-        CreateSalesLine(SalesHeader, LineType);
+        CreateSalesLine(SalesHeader, LineType, false);
+        CreateSalesLine(SalesHeader, LineType, false);
 
         if InvoiceDiscount then
             ApplyInvoiceDiscount(SalesHeader);
@@ -592,8 +592,8 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesHeader: Record "Sales Header";
     begin
         CreateSalesHeader(SalesHeader, DocumentType);
-        CreateSalesLine(SalesHeader, LineType);
-        CreateSalesLineLineDiscount(SalesHeader, LineType);
+        CreateSalesLine(SalesHeader, LineType, false);
+        CreateSalesLine(SalesHeader, LineType, true);
 
         if InvoiceDiscount then
             ApplyInvoiceDiscount(SalesHeader);
@@ -642,7 +642,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         exit(Customer."No.")
     end;
 
-    local procedure CreateSalesLine(SalesHeader: Record "Sales Header"; LineType: Enum "Sales Line Type");
+    local procedure CreateSalesLine(SalesHeader: Record "Sales Header"; LineType: Enum "Sales Line Type"; LineDiscount: Boolean);
     var
         SalesLine: Record "Sales Line";
         UnitOfMeasure: Record "Unit of Measure";
@@ -654,24 +654,9 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesLine, SalesHeader, LineType, LibraryInventory.CreateItemNo(), LibraryRandom.RandDecInRange(10, 20, 2));
         SalesLine.Validate("Unit Price", LibraryRandom.RandDecInRange(100, 200, 2));
         SalesLine.Validate("Unit of Measure", UnitOfMeasure.Code);
-        SalesLine.Validate("Tax Category", 'S');
-        SalesLine.Modify(true);
-    end;
-
-    local procedure CreateSalesLineLineDiscount(SalesHeader: Record "Sales Header"; LineType: Enum "Sales Line Type");
-    var
-        SalesLine: Record "Sales Line";
-        UnitOfMeasure: Record "Unit of Measure";
-    begin
-        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
-        UnitOfMeasure."International Standard Code" := LibraryUtility.GenerateGUID();
-        UnitOfMeasure.Modify(true);
-        LibrarySales.CreateSalesLine(
-        SalesLine, SalesHeader, LineType, LibraryInventory.CreateItemNo(), LibraryRandom.RandDecInRange(10, 20, 2));
-        SalesLine.Validate("Unit Price", LibraryRandom.RandDecInRange(100, 200, 2));
-        SalesLine.Validate("Unit of Measure", UnitOfMeasure.Code);
-        SalesLine.Validate("Tax Category", 'S');
-        SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
+        SalesLine.Validate("Tax Category", LibraryRandom.RandText(2));
+        if LineDiscount then
+            SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
         SalesLine.Modify(true);
     end;
 
@@ -860,46 +845,52 @@ codeunit 13918 "XRechnung XML Document Tests"
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
         DocumentTok: Label '/ubl:Invoice/cac:InvoiceLine', Locked = true;
-        Path: Text;
-        SecondLine: Boolean;
     begin
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
         SalesInvoiceLine.FindSet();
-        repeat
-            Path := DocumentTok + '/cbc:ID';
-            if SecondLine then
-                Assert.AreEqual(Format(SalesInvoiceLine."Line No."), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(Format(SalesInvoiceLine."Line No."), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:InvoicedQuantity';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:LineExtensionAmount';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cac:Item/cbc:Name';
-            if SecondLine then
-                Assert.AreEqual(SalesInvoiceLine."Description", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(SalesInvoiceLine."Description", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
-            if SecondLine then
-                Assert.AreEqual(SalesInvoiceLine."No.", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(SalesInvoiceLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
-            if SecondLine then
-                Assert.AreEqual(FormatFourDecimal(SalesInvoiceLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(FormatFourDecimal(SalesInvoiceLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
-            Assert.AreEqual(SalesInvoiceLine."Tax Category", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            SecondLine := true;
-        until SalesInvoiceLine.Next() = 0;
+        VerifyFirstInvoiceLine(SalesInvoiceLine, TempXMLBuffer, DocumentTok);
+        SalesInvoiceLine.Next();
+        VerifySecondInvoiceLine(SalesInvoiceLine, TempXMLBuffer, DocumentTok);
+    end;
+
+    local procedure VerifyFirstInvoiceLine(SalesInvoiceLine: Record "Sales Invoice Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/cbc:ID';
+        Assert.AreEqual(Format(SalesInvoiceLine."Line No."), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:InvoicedQuantity';
+        Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cbc:Name';
+        Assert.AreEqual(SalesInvoiceLine."Description", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
+        Assert.AreEqual(SalesInvoiceLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
+        Assert.AreEqual(FormatFourDecimal(SalesInvoiceLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
+        Assert.AreEqual(SalesInvoiceLine."Tax Category", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifySecondInvoiceLine(SalesInvoiceLine: Record "Sales Invoice Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/cbc:ID';
+        Assert.AreEqual(Format(SalesInvoiceLine."Line No."), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:InvoicedQuantity';
+        Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cbc:Name';
+        Assert.AreEqual(SalesInvoiceLine."Description", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
+        Assert.AreEqual(SalesInvoiceLine."No.", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
+        Assert.AreEqual(FormatFourDecimal(SalesInvoiceLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
+        Assert.AreEqual(SalesInvoiceLine."Tax Category", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyInvoiceLineWithDiscount(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -907,25 +898,17 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesInvoiceLine: Record "Sales Invoice Line";
         DocumentTok: Label '/ubl:Invoice/cac:InvoiceLine/cac:AllowanceCharge', Locked = true;
         Path: Text;
-        SecondLine: Boolean;
     begin
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
-        SalesInvoiceLine.FindSet();
-        repeat
-            Path := DocumentTok + '/cbc:AllowanceChargeReason';
-            if SecondLine then
-                Assert.AreEqual('LineDiscount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:Amount';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Line Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:BaseAmount';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Unit Price" * SalesInvoiceLine.Quantity), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            SecondLine := true;
-        until SalesInvoiceLine.Next() = 0;
+        SalesInvoiceLine.FindLast();
+        Path := DocumentTok + '/cbc:AllowanceChargeReason';
+        Assert.AreEqual('LineDiscount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
+        Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:Amount';
+        Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Line Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:BaseAmount';
+        Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Unit Price" * SalesInvoiceLine.Quantity), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyInvoiceWithInvDiscount(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -948,46 +931,52 @@ codeunit 13918 "XRechnung XML Document Tests"
     var
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
         DocumentTok: Label '/ns0:CreditNote/cac:CreditNoteLine', Locked = true;
-        Path: Text;
-        SecondLine: Boolean;
     begin
         SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
         SalesCrMemoLine.FindSet();
-        repeat
-            Path := DocumentTok + '/cbc:ID';
-            if SecondLine then
-                Assert.AreEqual(Format(SalesCrMemoLine."Line No."), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(Format(SalesCrMemoLine."Line No."), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:CreditedQuantity ';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:LineExtensionAmount';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cac:Item/cbc:Name';
-            if SecondLine then
-                Assert.AreEqual(SalesCrMemoLine."Description", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(SalesCrMemoLine."Description", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
-            if SecondLine then
-                Assert.AreEqual(SalesCrMemoLine."No.", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(SalesCrMemoLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
-            if SecondLine then
-                Assert.AreEqual(FormatFourDecimal(SalesCrMemoLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path))
-            else
-                Assert.AreEqual(FormatFourDecimal(SalesCrMemoLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
-            Assert.AreEqual(SalesCrMemoLine."Tax Category", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            SecondLine := true;
-        until SalesCrMemoLine.Next() = 0;
+        VerifyFirstCrMemoLine(SalesCrMemoLine, TempXMLBuffer, DocumentTok);
+        SalesCrMemoLine.Next();
+        VerifySecondCrMemoLine(SalesCrMemoLine, TempXMLBuffer, DocumentTok);
+    end;
+
+    local procedure VerifyFirstCrMemoLine(SalesCrMemoLine: Record "Sales Cr.Memo Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/cbc:ID';
+        Assert.AreEqual(Format(SalesCrMemoLine."Line No."), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:CreditedQuantity ';
+        Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Quantity"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cbc:Name';
+        Assert.AreEqual(SalesCrMemoLine."Description", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
+        Assert.AreEqual(SalesCrMemoLine."No.", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
+        Assert.AreEqual(FormatFourDecimal(SalesCrMemoLine."Unit Price"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
+        Assert.AreEqual(SalesCrMemoLine."Tax Category", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifySecondCrMemoLine(SalesCrMemoLine: Record "Sales Cr.Memo Line"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
+    var
+        Path: Text;
+    begin
+        Path := DocumentTok + '/cbc:ID';
+        Assert.AreEqual(Format(SalesCrMemoLine."Line No."), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:CreditedQuantity ';
+        Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Quantity"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:LineExtensionAmount';
+        Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Amount"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cbc:Name';
+        Assert.AreEqual(SalesCrMemoLine."Description", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:SellersItemIdentification/cbc:ID';
+        Assert.AreEqual(SalesCrMemoLine."No.", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Price/cbc:PriceAmount';
+        Assert.AreEqual(FormatFourDecimal(SalesCrMemoLine."Unit Price"), GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cac:Item/cac:ClassifiedTaxCategory/cbc:ID';
+        Assert.AreEqual(SalesCrMemoLine."Tax Category", GetLastNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -995,25 +984,17 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesCrMemoLine: Record "Sales Cr.Memo Line";
         DocumentTok: Label '/ns0:CreditNote/cac:CreditNoteLine/cac:AllowanceCharge', Locked = true;
         Path: Text;
-        SecondLine: Boolean;
     begin
         SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
-        SalesCrMemoLine.FindSet();
-        repeat
-            Path := DocumentTok + '/cbc:AllowanceChargeReason';
-            if SecondLine then
-                Assert.AreEqual('LineDiscount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:Amount';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Line Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            Path := DocumentTok + '/cbc:BaseAmount';
-            if SecondLine then
-                Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Unit Price" * SalesCrMemoLine.Quantity), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
-            SecondLine := true;
-        until SalesCrMemoLine.Next() = 0;
+        SalesCrMemoLine.FindLast();
+        Path := DocumentTok + '/cbc:AllowanceChargeReason';
+        Assert.AreEqual('LineDiscount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
+        Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:Amount';
+        Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Line Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/cbc:BaseAmount';
+        Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Unit Price" * SalesCrMemoLine.Quantity), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
     local procedure VerifyCrMemoWithInvDiscount(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempXMLBuffer: Record "XML Buffer" temporary);

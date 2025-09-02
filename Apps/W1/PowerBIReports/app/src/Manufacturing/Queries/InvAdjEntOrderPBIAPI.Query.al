@@ -9,7 +9,7 @@ query 37020 "Inv. Adj. Ent Order - PBI API"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'inventoryAdjustmentEntryOrder';
     EntitySetName = 'inventoryAdjustmentEntryOrders';
     DataAccessIntent = ReadOnly;

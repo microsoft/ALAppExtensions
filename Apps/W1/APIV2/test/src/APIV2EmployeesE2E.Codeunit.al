@@ -3,6 +3,7 @@ codeunit 139822 "APIV2 - Employees E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()

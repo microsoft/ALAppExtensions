@@ -5,12 +5,13 @@
 namespace Microsoft.eServices.EDocument.Processing.Import;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.Processing.AI;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.Foundation.UOM;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
-using System.AI;
+using System.Log;
 
 codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
 {
@@ -29,6 +30,7 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         EDocVendorAssignmentHistory: Record "E-Doc. Vendor Assign. History";
         EDocPurchaseLineHistory: Record "E-Doc. Purchase Line History";
         EDocPurchaseHistMapping: Codeunit "E-Doc. Purchase Hist. Mapping";
+        EDocActivityLogSession: Codeunit "E-Doc. Activity Log Session";
         IUnitOfMeasureProvider: Interface IUnitOfMeasureProvider;
         IPurchaseLineProvider: Interface IPurchaseLineProvider;
         IPurchaseOrderProvider: Interface IPurchaseOrderProvider;
@@ -36,6 +38,8 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
         IUnitOfMeasureProvider := EDocImportParameters."Processing Customizations";
         IPurchaseLineProvider := EDocImportParameters."Processing Customizations";
         IPurchaseOrderProvider := EDocImportParameters."Processing Customizations";
+
+        if EDocActivityLogSession.CreateSession() then;
 
         EDocumentPurchaseHeader.GetFromEDocument(EDocument);
         EDocumentPurchaseHeader.TestField("E-Document Entry No.");
@@ -74,39 +78,58 @@ codeunit 6125 "Prepare Purchase E-Doc. Draft" implements IProcessStructuredData
                     EDocPurchaseHistMapping.UpdateMissingLineValuesFromHistory(EDocPurchaseLineHistory, EDocumentPurchaseLine);
 
                 EDocumentPurchaseLine.Modify();
+                LogActivitySessionChanges(EDocActivityLogSession);
+                EDocActivityLogSession.CleanUpLogs();
+
+
             until EDocumentPurchaseLine.Next() = 0;
 
         // Ask Copilot to try to find fields that are suited to be matched
         if EDocumentPurchaseHeader."[BC] Vendor No." <> '' then
             CopilotLineMatching(EDocument."Entry No");
 
+        if EDocActivityLogSession.EndSession() then;
         exit("E-Document Type"::"Purchase Invoice");
+    end;
+
+    local procedure LogActivitySessionChanges(EDocActivityLogSession: Codeunit "E-Doc. Activity Log Session")
+    begin
+        Log(EDocActivityLogSession, EDocActivityLogSession.AccountNumberTok());
+        Log(EDocActivityLogSession, EDocActivityLogSession.DeferralTok());
+        Log(EDocActivityLogSession, EDocActivityLogSession.ItemRefTok());
+        Log(EDocActivityLogSession, EDocActivityLogSession.TextToAccountMappingTok());
+    end;
+
+    local procedure Log(EDocActivityLogSession: Codeunit "E-Doc. Activity Log Session"; ActivityLogName: Text)
+    var
+        ActivityLog: Codeunit "Activity Log Builder";
+        Found: Boolean;
+    begin
+        EDocActivityLogSession.Get(ActivityLogName, ActivityLog, Found);
+        if Found then
+            ActivityLog.Log();
     end;
 
     local procedure CopilotLineMatching(EDocumentEntryNo: Integer)
     var
         EDocumentPurchaseLine: Record "E-Document Purchase Line";
-        CopilotCapability: Codeunit "Copilot Capability";
-        LineToAccountLLMMatching: Codeunit "Line To Account LLM Matching";
-        EDocLineMatcherDeferral: Codeunit "E-Doc Line Matcher - Deferral";
     begin
-        if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"E-Document Matching Assistance") then
-            exit;
-
-        if not CopilotCapability.IsCapabilityActive(Enum::"Copilot Capability"::"E-Document Matching Assistance") then
-            exit;
-
         EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocumentEntryNo);
-        if EDocumentPurchaseLine.FindSet() then
-            LineToAccountLLMMatching.GetPurchaseLineAccountsWithCopilot(EDocumentPurchaseLine)
-        else
-            Session.LogMessage('0000POG', 'No E-Document Purchase Lines found for the E-Document', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'E-Document Matching Assistance');
-        Clear(EDocumentPurchaseLine);
+        EDocumentPurchaseLine.SetRange("[BC] Purchase Type No.", '');
+        EDocumentPurchaseLine.SetRange("[BC] Item Reference No.", '');
+        if EDocumentPurchaseLine.FindSet() then begin
+            Commit();
+            Codeunit.Run(Codeunit::"E-Doc. GL Account Matching", EDocumentPurchaseLine);
+        end;
 
+        Clear(EDocumentPurchaseLine);
         EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocumentEntryNo);
         EDocumentPurchaseLine.SetRange("[BC] Deferral Code", '');
-        if EDocumentPurchaseLine.FindSet() then
-            EDocLineMatcherDeferral.ApplyPurchaseLineMatchingProposals(EDocumentPurchaseLine);
+        EDocumentPurchaseLine.SetRange("[BC] Item Reference No.", '');
+        if EDocumentPurchaseLine.FindSet() then begin
+            Commit();
+            if Codeunit.Run(Codeunit::"E-Doc. Deferral Matching", EDocumentPurchaseLine) then;
+        end;
     end;
 
     procedure OpenDraftPage(var EDocument: Record "E-Document")

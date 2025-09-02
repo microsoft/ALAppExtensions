@@ -9,7 +9,7 @@ query 36980 "Whse. Journal Lines - From Bin"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'fromBinWarehouseJournalLine';
     EntitySetName = 'fromBinWarehouseJournalLines';
     DataAccessIntent = ReadOnly;

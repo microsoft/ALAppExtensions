@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -27,7 +27,10 @@ table 6121 "E-Document"
 
     Permissions =
         tabledata "E-Document" = i,
-        tabledata "E-Document Service Status" = d;
+        tabledata "E-Document Service Status" = d,
+        tabledata "E-Document Log" = d,
+        tabledata "E-Document Integration Log" = d,
+        tabledata "E-Doc. Mapping Log" = d;
 
 
     fields
@@ -275,6 +278,21 @@ table 6121 "E-Document"
             Caption = 'Structured Data Process';
             ToolTip = 'Specifies the implementation to use for processing the draft received.';
         }
+        #endregion
+
+        #region Clearance Model
+        field(60; "Clearance Date"; DateTime)
+        {
+            Caption = 'Clearance Date';
+            ToolTip = 'Specifies date and time when document was cleared by authority';
+            DataClassification = SystemMetadata;
+        }
+        field(61; "Last Clearance Request Time"; DateTime)
+        {
+            Caption = 'Last Clearance Request Time';
+            DataClassification = SystemMetadata;
+        }
+
         #endregion
     }
     keys

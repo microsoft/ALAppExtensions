@@ -39,11 +39,9 @@ page 37046 "Consumption Variance"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectiona9060ee37f667a3d554d', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

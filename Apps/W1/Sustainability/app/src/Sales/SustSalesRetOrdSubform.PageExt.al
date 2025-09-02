@@ -24,6 +24,12 @@ pageextension 6235 "Sust. Sales Ret. Ord. Subform" extends "Sales Return Order S
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the value of the Total CO2e field.';
             }
+            field("Total EPR Fee"; Rec."Total EPR Fee")
+            {
+                Visible = SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the Total EPR Fee field.';
+            }
         }
     }
 

@@ -71,13 +71,18 @@ page 1696 "Posted Bank Deposit List"
                     ToolTip = 'Specifies the currency code of the bank account that the deposit was deposited in.';
                     Visible = false;
                 }
+#if not CLEAN27
                 field(Reversed; Rec.IsReversed())
                 {
                     ApplicationArea = Suite;
                     Editable = false;
                     Caption = 'Reversed';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Removing this field from the list to improve performance. Use the Reversed field on the Posted Bank Deposit card page.';
+                    ObsoleteTag = '27.0';
                     ToolTip = 'Specifies if transactions from the corresponding G/L Register have been reversed.';
                 }
+#endif
                 field("Language Code"; Rec."Language Code")
                 {
                     ApplicationArea = Basic, Suite;

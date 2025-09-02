@@ -15,12 +15,20 @@ codeunit 10031 "IRS 1099 Form Document"
         ReportingPeriodNotDefinedErr: Label 'Reporting period is not defined';
         CannotChangeIRSDataInEntryConnectedToFormDocumentErr: Label 'You cannot change the IRS data in the vendor ledger entry connected to the form document. Period = %1, Vendor No. = %2, Form No. = %3', Comment = '%1 = Period No., %2 = Vendor No., %3 = Form No.';
         FormDocHasBeenMarkedAsSubmittedMsg: Label 'The form document %1 has been marked as submitted', Comment = '%1 = document id';
+        CannotReopenSubmittedFormDocumentErr: Label 'You must use the Allow Correction action to mark the document for correction and then reopen it.';
+        CannotAllowCorrectionErr: Label 'Only documents that are in progress or submitted can be marked for correction.';
         IRSFormsTok: Label 'IRS Forms', Locked = true;
 
     procedure Reopen(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
     begin
+        if IRS1099FormDocHeader.Status = IRS1099FormDocHeader.Status::Submitted then
+            if not IRS1099FormDocHeader."Allow Correction" then
+                Error(CannotReopenSubmittedFormDocumentErr);
+
         if IRS1099FormDocHeader.Status <> IRS1099FormDocHeader.Status::Released then
-            IRS1099FormDocHeader.FieldError(Status);
+            if not IRS1099FormDocHeader."Allow Correction" then
+                IRS1099FormDocHeader.FieldError(Status);
+
         IRS1099FormDocHeader.Validate(Status, IRS1099FormDocHeader.Status::Open);
         IRS1099FormDocHeader.Modify(true);
     end;
@@ -29,7 +37,23 @@ codeunit 10031 "IRS 1099 Form Document"
     begin
         if IRS1099FormDocHeader.Status <> IRS1099FormDocHeader.Status::Open then
             IRS1099FormDocHeader.FieldError(Status);
+        if IRS1099FormDocHeader."IRIS Submission Status" <> Enum::"Transmission Status IRIS"::None then
+            IRS1099FormDocHeader."IRIS Updated Not Sent" := true;
         IRS1099FormDocHeader.Validate(Status, IRS1099FormDocHeader.Status::Released);
+        IRS1099FormDocHeader.Modify(true);
+    end;
+
+    procedure Abandon(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
+    begin
+        IRS1099FormDocHeader.Validate(Status, IRS1099FormDocHeader.Status::Abandoned);
+        IRS1099FormDocHeader.Modify(true);
+    end;
+
+    procedure AllowCorrection(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
+    begin
+        if not (IRS1099FormDocHeader.Status in [Enum::"IRS 1099 Form Doc. Status"::"In Progress", Enum::"IRS 1099 Form Doc. Status"::Submitted]) then
+            Error(CannotAllowCorrectionErr);
+        IRS1099FormDocHeader.Validate("Allow Correction", true);
         IRS1099FormDocHeader.Modify(true);
     end;
 

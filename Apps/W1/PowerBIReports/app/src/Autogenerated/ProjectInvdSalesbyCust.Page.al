@@ -39,11 +39,9 @@ page 37039 "Project Invd. Sales by Cust."
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectioncd82c6e10e816900e80b', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

@@ -3,6 +3,7 @@ namespace Microsoft.Test.Sustainability;
 using System.TestLibraries.Utilities;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Inventory.Item;
+using Microsoft.Foundation.UOM;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.Sustainability.Account;
@@ -38,6 +39,7 @@ using Microsoft.Projects.Project.Planning;
 codeunit 148187 "Sust. Certificate Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -74,6 +76,10 @@ codeunit 148187 "Sust. Certificate Test"
         SustValueEntriesActionShouldNotBeVisibleErr: Label 'Sustainability Value Entries action should not be visible in Page %1', Comment = '%1 = Page Caption';
         CalculateTotalCO2eActionShouldNotBeVisibleErr: Label 'Calculate Total CO2e action should not be visible in Page %1', Comment = '%1 = Page Caption';
         CalculateTotalCO2eActionShouldBeVisibleErr: Label 'Calculate Total CO2e action should be visible in Page %1', Comment = '%1 = Page Caption';
+        RecyclabilityPercentageMinValueErr: Label 'The value must be greater than or equal to %1. Value: %2.', Comment = '%1 = Minimum Value, %2 = Field Value';
+        RecyclabilityPercentageMaxValueErr: Label 'The value must be less than or equal to %1. Value: %2.', Comment = '%1 = Maximum Value, %2 = Field Value';
+        EmissionUOMCannotBeChangedErr: Label 'The value for %1 cannot be modified because there are existing sustainability ledger entries that use the unit of measure %2.', Comment = '%1 = Field Caption, %2 = Unit of Measure Code';
+        FieldShouldNotBeEditableErr: Label '%1 should not be editable in Page %2', Comment = '%1 = Field Caption, %2 = Page Caption';
 
     [Test]
     procedure VerifyHasValueFieldShouldThrowErrorWhenValueIsUpdated()
@@ -6294,6 +6300,233 @@ codeunit 148187 "Sust. Certificate Test"
                 FieldShouldNotBeVisibleErr,
                 JobTaskStatistics."Total CO2e".Caption(),
                 JobTaskStatistics.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyErrorWhenUpdatingNegativeValueOnRecyclabilityPercentageOnItemCard()
+    var
+        Item: Record "Item";
+        ItemCard: TestPage "Item Card";
+        RecyclabilityPercentage: decimal;
+    begin
+        // [SCENARIO 580128] Verify system should throw an error when "Recyclability Percentage" is set to a negative value on Item Card.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Generate a random negative value for "Recyclability Percentage".
+        RecyclabilityPercentage := -LibraryRandom.RandIntInRange(100, 200);
+
+        // [GIVEN] Open Item Card page.
+        ItemCard.OpenEdit();
+        ItemCard.GoToRecord(Item);
+
+        // [WHEN] Updating "Recyclability Percentage" to Negative value.
+        asserterror ItemCard."Recyclability Percentage".SetValue(RecyclabilityPercentage);
+
+        // [THEN] Verify expected error message when "Recyclability Percentage" is set to a negative value on Item Card.
+        Assert.ExpectedError(StrSubstNo(RecyclabilityPercentageMinValueErr, 0, RecyclabilityPercentage));
+        ItemCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyErrorWhenUpdatingValueAboveHundredInRecyclabilityPercentageOnItemCard()
+    var
+        Item: Record Item;
+        ItemCard: TestPage "Item Card";
+        RecyclabilityPercentage: decimal;
+    begin
+        // [SCENARIO 580128] Verify system should throw an error when "Recyclability Percentage" value is set above 100 on Item Card.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Generate a random value above maximum for "Recyclability Percentage".
+        RecyclabilityPercentage := LibraryRandom.RandIntInRange(101, 200);
+
+        // [GIVEN] Open Item Card page.
+        ItemCard.OpenEdit();
+        ItemCard.GoToRecord(Item);
+
+        // [WHEN] Updating "Recyclability Percentage" above maximum value.
+        asserterror ItemCard."Recyclability Percentage".SetValue(RecyclabilityPercentage);
+
+        // [THEN] Verify expected error message when "Recyclability Percentage" is set to above maximum value on Item Card.
+        Assert.ExpectedError(StrSubstNo(RecyclabilityPercentageMaxValueErr, 100, RecyclabilityPercentage));
+        ItemCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyEmissionUnitOfMeasureCanBeChangedInSustainabilitySetupWithNoLedgerEntriesExist()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+        UnitOfMeasure: Record "Unit of Measure";
+    begin
+        // [SCENARIO 580119] Verify that the "Emission Unit of Measure Code" in the Sustainability Setup can be modified when no sustainability ledger entries exist.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [WHEN] Update the "Emission Unit of Measure Code" in Sustainability Setup.
+        SustainabilitySetup.Validate("Emission Unit of Measure Code", UnitOfMeasure.Code);
+        SustainabilitySetup.Modify();
+
+        // [THEN] Verify that the "Emission Unit of Measure Code" in the Sustainability Setup can be modified.
+        Assert.AreEqual(
+            UnitOfMeasure.Code,
+            SustainabilitySetup."Emission Unit of Measure Code",
+            StrSubstNo(
+                ValueMustBeEqualErr,
+                SustainabilitySetup.FieldCaption("Emission Unit of Measure Code"),
+                UnitOfMeasure.Code,
+                SustainabilitySetup.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifySystemShouldThrowAnErrorWhenEmissionUnitOfMeasureIsUpdatedInSustainabilitySetupWithExistingLedgerEntries()
+    var
+        Item: Record Item;
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        UnitOfMeasure: array[2] of Record "Unit of Measure";
+        SustainabilitySetup: Record "Sustainability Setup";
+        SustainabilityAccount: Record "Sustainability Account";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 580119] Verify that the system should throw an error message when attempting to change the 'Emission Unit of Measure Code' in the Sustainability Setup.
+        // When there are existing sustainability ledger entries using the current unit of measure.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure[1]);
+
+        // [GIVEN] Create another Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure[2]);
+
+        // [GIVEN] Get Sustainability Setup with "Emission Unit of Measure Code".
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Emission Unit of Measure Code", UnitOfMeasure[1].Code);
+        SustainabilitySetup.Modify();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, 1);
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Create Item Unit of Measure.
+        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitOfMeasure, Item."No.", UnitOfMeasure[1].Code, 1);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader.Modify();
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            Item."No.",
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Unit of Measure code" in purchase line.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Unit of Measure code", UnitOfMeasure[1].Code);
+        PurchaseLine.Modify();
+
+        // [GIVEN] Post the Purchase Document.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Update the "Emission Unit of Measure Code" in Sustainability Setup.
+        asserterror SustainabilitySetup.Validate("Emission Unit of Measure Code", UnitOfMeasure[2].Code);
+
+        // [THEN] Verify that the system should throw an error message when attempting to change the 'Emission Unit of Measure Code' in the Sustainability Setup.
+        Assert.ExpectedError(StrSubstNo(EmissionUOMCannotBeChangedErr, SustainabilitySetup.FieldCaption("Emission Unit of Measure Code"), UnitOfMeasure[1].Code));
+    end;
+
+    [Test]
+    procedure VerifyEmissionUnitOfMeasureCannotBeEditInSustainabilitySetupPage()
+    var
+        Item: Record Item;
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        UnitOfMeasure: array[2] of Record "Unit of Measure";
+        SustainabilitySetup: Record "Sustainability Setup";
+        SustainabilityAccount: Record "Sustainability Account";
+        SustainabilitySetupPage: TestPage "Sustainability Setup";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 580119] Verify that 'Emission Unit of Measure Code' cannot be edited in the Sustainability Setup when there are existing sustainability ledger entries using the current unit of measure.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure[1]);
+
+        // [GIVEN] Create another Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure[2]);
+
+        // [GIVEN] Get Sustainability Setup with "Emission Unit of Measure Code".
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Emission Unit of Measure Code", UnitOfMeasure[1].Code);
+        SustainabilitySetup.Modify();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, 1);
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Create Item Unit of Measure.
+        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitOfMeasure, Item."No.", UnitOfMeasure[1].Code, 1);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader.Modify();
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            Item."No.",
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Unit of Measure code" in purchase line.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Unit of Measure code", UnitOfMeasure[1].Code);
+        PurchaseLine.Modify();
+
+        // [GIVEN] Post the Purchase Document.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Open the Sustainability Setup page.
+        SustainabilitySetupPage.OpenEdit();
+
+        // [THEN] Verify that 'Emission Unit of Measure Code' cannot be edited in the Sustainability Setup.
+        Assert.IsFalse(
+            SustainabilitySetupPage."Emission Unit of Measure Code".Editable(),
+            StrSubstNo(FieldShouldNotBeEditableErr, SustainabilitySetup.FieldCaption("Emission Unit of Measure Code"), SustainabilitySetupPage.Caption()));
+        SustainabilitySetupPage.Close();
     end;
 
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"

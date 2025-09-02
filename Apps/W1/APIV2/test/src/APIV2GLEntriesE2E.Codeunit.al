@@ -3,6 +3,7 @@ codeunit 139830 "APIV2 - GLEntries E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

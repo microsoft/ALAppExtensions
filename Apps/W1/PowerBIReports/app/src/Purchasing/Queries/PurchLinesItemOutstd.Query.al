@@ -9,7 +9,7 @@ query 36998 "Purch. Lines - Item Outstd."
     Caption = 'Power BI Outstanding PO';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'itemOutstandingPurchaseLine';
     EntitySetName = 'itemOutstandingPurchaseLines';
     DataAccessIntent = ReadOnly;

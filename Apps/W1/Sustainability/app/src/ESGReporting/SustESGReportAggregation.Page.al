@@ -4,6 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.ESGReporting;
 
+using Microsoft.Integration.Dataverse;
+using Microsoft.Sustainability.Setup;
+
 page 6252 "Sust. ESG Report. Aggregation"
 {
     ApplicationArea = Basic, Suite;
@@ -58,6 +61,18 @@ page 6252 "Sust. ESG Report. Aggregation"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the Reporting Code field.';
+                }
+                field("Concept Link"; Rec."Concept Link")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the Concept link of the Source field.';
+                }
+                field("Concept"; Rec."Concept")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Specifies the Concept of the Source field.';
                 }
                 field("Field Type"; Rec."Field Type")
                 {
@@ -134,6 +149,11 @@ page 6252 "Sust. ESG Report. Aggregation"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the Rounding field.';
                 }
+                field("Coupled to Dataverse"; Rec."Coupled to Dataverse")
+                {
+                    ApplicationArea = All;
+                    Visible = SustDataverseIntEnabled;
+                }
             }
         }
         area(factboxes)
@@ -170,6 +190,105 @@ page 6252 "Sust. ESG Report. Aggregation"
                     ToolTip = 'Preview the ESG reporting.';
                 }
             }
+            group(ActionGroupCRM)
+            {
+                Caption = 'Dataverse';
+                Visible = SustDataverseIntEnabled;
+                action(CRMGotoAssessmentRequirement)
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Assessment Requirement';
+                    Image = CoupledItem;
+                    ToolTip = 'Open the coupled Dataverse assessment requirement.';
+
+                    trigger OnAction()
+                    var
+                        CRMIntegrationManagement: Codeunit "CRM Integration Management";
+                    begin
+                        CRMIntegrationManagement.ShowCRMEntityFromRecordID(Rec.RecordId());
+                    end;
+                }
+                action(CRMSynchronizeNow)
+                {
+                    AccessByPermission = TableData "CRM Integration Record" = IM;
+                    ApplicationArea = Suite;
+                    Caption = 'Synchronize';
+                    Image = Refresh;
+                    ToolTip = 'Send or get updated data to or from Dataverse.';
+
+                    trigger OnAction()
+                    var
+                        ESGReportingLine: Record "Sust. ESG Reporting Line";
+                        CRMIntegrationManagement: Codeunit "CRM Integration Management";
+                        CustomerRecordRef: RecordRef;
+                    begin
+                        CurrPage.SetSelectionFilter(ESGReportingLine);
+                        ESGReportingLine.Next();
+
+                        if ESGReportingLine.Count = 1 then
+                            CRMIntegrationManagement.UpdateOneNow(ESGReportingLine.RecordId())
+                        else begin
+                            CustomerRecordRef.GetTable(ESGReportingLine);
+                            CRMIntegrationManagement.UpdateMultipleNow(CustomerRecordRef);
+                        end
+                    end;
+                }
+                group(Coupling)
+                {
+                    Caption = 'Coupling', Comment = 'Coupling is a noun';
+                    Image = LinkAccount;
+                    ToolTip = 'Create, change, or delete a coupling between the Business Central record and a Dataverse record.';
+                    action(ManageCRMCoupling)
+                    {
+                        AccessByPermission = TableData "CRM Integration Record" = IM;
+                        ApplicationArea = Suite;
+                        Caption = 'Set Up Coupling';
+                        Image = LinkAccount;
+                        ToolTip = 'Create or modify the coupling to a Dataverse assessment requirement.';
+
+                        trigger OnAction()
+                        var
+                            CRMIntegrationManagement: Codeunit "CRM Integration Management";
+                        begin
+                            CRMIntegrationManagement.DefineCoupling(Rec.RecordId());
+                        end;
+                    }
+                    action(DeleteCRMCoupling)
+                    {
+                        AccessByPermission = TableData "CRM Integration Record" = D;
+                        ApplicationArea = Suite;
+                        Caption = 'Delete Coupling';
+                        Enabled = CRMIsCoupledToRecord;
+                        Image = UnLinkAccount;
+                        ToolTip = 'Delete the coupling to a Dataverse assessment requirement.';
+
+                        trigger OnAction()
+                        var
+                            ESGReportingLine: Record "Sust. ESG Reporting Line";
+                            CRMCouplingManagement: Codeunit "CRM Coupling Management";
+                            RecRef: RecordRef;
+                        begin
+                            CurrPage.SetSelectionFilter(ESGReportingLine);
+                            RecRef.GetTable(ESGReportingLine);
+                            CRMCouplingManagement.RemoveCoupling(RecRef);
+                        end;
+                    }
+                }
+                action(ShowLog)
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Synchronization Log';
+                    Image = Log;
+                    ToolTip = 'View integration synchronization jobs for the esg reporting line table.';
+
+                    trigger OnAction()
+                    var
+                        CRMIntegrationManagement: Codeunit "CRM Integration Management";
+                    begin
+                        CRMIntegrationManagement.ShowLog(Rec.RecordId());
+                    end;
+                }
+            }
         }
         area(processing)
         {
@@ -204,13 +323,44 @@ page 6252 "Sust. ESG Report. Aggregation"
                 {
                 }
             }
+            group(Category_Synchronize)
+            {
+                Caption = 'Synchronize';
+                Visible = SustDataverseIntEnabled;
+
+                group(Category_Coupling)
+                {
+                    Caption = 'Coupling';
+                    ShowAs = SplitButton;
+
+                    actionref(ManageCRMCoupling_Promoted; ManageCRMCoupling)
+                    {
+                    }
+                    actionref(DeleteCRMCoupling_Promoted; DeleteCRMCoupling)
+                    {
+                    }
+                }
+                actionref(CRMSynchronizeNow_Promoted; CRMSynchronizeNow)
+                {
+                }
+                actionref(ShowLog_Promoted; ShowLog)
+                {
+                }
+            }
         }
     }
 
     trigger OnOpenPage()
     var
+        SustainabilitySetup: Record "Sustainability Setup";
+        CRMIntegrationManagement: Codeunit "CRM Integration Management";
         ESGReportingSelected: Boolean;
     begin
+        CRMIntegrationEnabled := CRMIntegrationManagement.IsCRMIntegrationEnabled();
+        CDSIntegrationEnabled := CRMIntegrationManagement.IsCDSIntegrationEnabled();
+        if CRMIntegrationEnabled or CDSIntegrationEnabled then
+            SustDataverseIntEnabled := SustainabilitySetup.IsDataverseIntegrationEnabled();
+
         OpenedFromBatch := (Rec."ESG Reporting Name" <> '') and (Rec."ESG Reporting Template Name" = '');
         if OpenedFromBatch then begin
             CurrentESGReportingName := Rec."ESG Reporting Name";
@@ -225,10 +375,22 @@ page 6252 "Sust. ESG Report. Aggregation"
         ESGReportingManagement.OpenESGReporting(CurrentESGReportingName, Rec);
     end;
 
+    trigger OnAfterGetCurrRecord()
+    var
+        CRMCouplingManagement: Codeunit "CRM Coupling Management";
+    begin
+        if CRMIntegrationEnabled or CDSIntegrationEnabled then
+            CRMIsCoupledToRecord := CRMCouplingManagement.IsRecordCoupledToCRM(Rec.RecordId());
+    end;
+
     var
         ESGReportingManagement: Codeunit "Sust. ESG Reporting Management";
         CurrentESGReportingName: Code[10];
         OpenedFromBatch: Boolean;
+        CRMIntegrationEnabled: Boolean;
+        CDSIntegrationEnabled: Boolean;
+        CRMIsCoupledToRecord: Boolean;
+        SustDataverseIntEnabled: Boolean;
 
     local procedure CurrentESGReportingNameOnAfterValidate()
     begin

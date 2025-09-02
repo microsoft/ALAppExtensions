@@ -6,7 +6,7 @@
 namespace Microsoft.DemoData.Manufacturing;
 
 using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Common;
+using Microsoft.DemoData.Finance;
 
 codeunit 4782 "Create Mfg Posting Group"
 {
@@ -15,13 +15,14 @@ codeunit 4782 "Create Mfg Posting Group"
 
     trigger OnRun()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ManufacturingDemoDataSetup: Record "Manufacturing Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
-        CreateContosoPostingGroup: Codeunit "Create Common Posting Group";
     begin
         ManufacturingDemoDataSetup.Get();
+        FinanceModuleSetup.Get();
 
-        ContosoPostingGroup.InsertGenProductPostingGroup(Manufacturing(), CapacitiesTok, CreateContosoPostingGroup.StandardVAT());
+        ContosoPostingGroup.InsertGenProductPostingGroup(Manufacturing(), CapacitiesTok, FinanceModuleSetup."VAT Prod. Post Grp. Standard");
 
         ContosoPostingGroup.InsertInventoryPostingGroup(Finished(), FinishedItemsLbl);
     end;
