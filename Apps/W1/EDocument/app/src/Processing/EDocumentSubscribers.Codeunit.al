@@ -518,7 +518,11 @@ codeunit 6103 "E-Document Subscribers"
     var
         WorkFlow: Record Workflow;
         PostedSourceDocumentHeader: RecordRef;
+        IsHandled: Boolean;
     begin
+        OnBeforeCreateEDocumentFromPostedDocument(PostedRecord, IsHandled);
+        if IsHandled then
+            exit;
         PostedSourceDocumentHeader.GetTable(PostedRecord);
         if (DocumentSendingProfile."Electronic Document" <> DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow") then
             exit;
@@ -542,4 +546,8 @@ codeunit 6103 "E-Document Subscribers"
         end;
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateEDocumentFromPostedDocument(PostedRecord: Variant; var IsHandled: Boolean)
+    begin
+    end;
 }
