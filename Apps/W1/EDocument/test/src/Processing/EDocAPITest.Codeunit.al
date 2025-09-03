@@ -42,6 +42,33 @@ codeunit 139501 "E-Doc. API Test"
         VerifyEDocumentResponse(EDocument, Response);
     end;
 
+    [Test]
+    procedure CreateEDocument()
+    var
+        EDocumentService: Record "E-Document Service";
+        EDocument: Record "E-Document";
+        JSONRequest: Text;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [SCENARIO] Create E-Document using api page
+        Initialize();
+
+        // [GIVEN] E-Document service
+        EDocumentService.Init();
+        EDocumentService.Code := Any.AlphanumericText(20);
+        EDocumentService.Insert(false);
+        // [GIVEN] JSON containing e document data
+        LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'eDocumentService', EDocumentService.Code);
+        LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'fileName', Any.AlphanumericText(256));
+        LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'fileType', Format(Enum::"E-Doc. File Format"::XML));
+        LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'processDocument', 'false');
+
+        TargetURL := LibraryGraphMgt.CreateTargetURL('', Page::"Create E-Documents API", 'createEDocuments');
+        LibraryGraphMgt.PostToWebService(Response, TargetURL, JSONRequest);
+
+    end;
+
     procedure Initialize()
     begin
         if IsInitialized then
