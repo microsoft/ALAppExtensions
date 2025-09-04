@@ -4,27 +4,17 @@ codeunit 139501 "E-Doc. API Test"
     TestType = IntegrationTest;
     TestPermissions = Disabled;
 
-    trigger OnRun()
-    begin
-        IsInitialized := false;
-    end;
-
-    var
-        LibraryGraphMgt: Codeunit "Library - Graph Mgt";
-        Assert: Codeunit Assert;
-        Any: Codeunit Any;
-
     [Test]
     procedure GetEDocument()
     var
         PurchaseHeader: Record "Purchase Header";
         EDocument: Record "E-Document";
+        LibrarygraphMgt: Codeunit "Library - Graph Mgt";
         TargetURL: Text;
         Response: Text;
         EDocsApiServiceNameTok: Label 'eDocuments', Locked = true;
     begin
         // [SCENARIO] Get E-Document from api page
-        Initialize();
 
         // [GIVEN] Related document for e document
         CreatePurchaseHeader(PurchaseHeader);
@@ -45,13 +35,14 @@ codeunit 139501 "E-Doc. API Test"
     procedure CreateEDocument()
     var
         EDocumentService: Record "E-Document Service";
+        Assert: Codeunit Assert;
+        LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         JSONRequest: Text;
         TargetURL: Text;
         Response: Text;
         CreateEDocumentsServiceTxt: Label 'createEDocuments', Locked = true;
     begin
         // [SCENARIO] Create E-Document using api page
-        Initialize();
 
         // [GIVEN] E-Document service
         EDocumentService.Init();
@@ -70,6 +61,8 @@ codeunit 139501 "E-Doc. API Test"
 
     local procedure VerifyEDocumentResponse(EDocument: Record "E-Document"; Response: Text)
     var
+        Assert: Codeunit Assert;
+        LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         AmtInclVatTxt: Text;
         AmtExclVatTxt: Text;
         AmtInclVat: Decimal;
@@ -106,6 +99,8 @@ codeunit 139501 "E-Doc. API Test"
     end;
 
     local procedure CreateEDocument(var PurchaseHeader: Record "Purchase Header"; var EDocument: Record "E-Document")
+    var
+        Any: Codeunit Any;
     begin
         EDocument.Init();
         EDocument."Entry No" := Any.IntegerInRange(10000, 99999);
@@ -134,6 +129,8 @@ codeunit 139501 "E-Doc. API Test"
     end;
 
     local procedure CreatePurchaseHeader(var PurchaseHeader: Record "Purchase Header")
+    var
+        Any: Codeunit Any;
     begin
         PurchaseHeader.Init();
         PurchaseHeader."Document Type" := PurchaseHeader."Document Type"::Order;
@@ -142,6 +139,8 @@ codeunit 139501 "E-Doc. API Test"
     end;
 
     local procedure GetEDocumentCreateRequest(EDocumentServiceCode: Code[20]; var JSONRequest: Text)
+    var
+        LibraryGraphMgt: Codeunit "Library - Graph Mgt";
     begin
         JSONRequest := LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'eDocumentService', EDocumentServiceCode);
         JSONRequest := LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'base64file', NavApp.GetResourceAsText('API/base64file.txt', TextEncoding::UTF8));
