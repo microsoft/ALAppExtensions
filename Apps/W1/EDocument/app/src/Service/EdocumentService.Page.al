@@ -304,34 +304,16 @@ page 6133 "E-Document Service"
                 Caption = 'Export mapping setup';
                 ToolTip = 'Opens export mapping setup';
                 Image = Setup;
-
-                trigger OnAction()
-                var
-                    ExportMapping: Record "E-Doc. Mapping";
-                    ExportMappingPart: Page "E-Doc. Mapping Part";
-                begin
-                    ExportMapping.SetRange(Code, Rec.Code);
-                    ExportMapping.SetRange("For Import", false);
-                    ExportMappingPart.SetTableView(ExportMapping);
-                    ExportMappingPart.RunModal();
-                end;
+                RunObject = Page "E-Doc. Mapping";
+                RunPageLink = Code = field(Code), "For Import" = const(false);
             }
             action(OpenImportMapping)
             {
                 Caption = 'Import mapping setup';
                 ToolTip = 'Opens import mapping setup';
                 Image = Setup;
-
-                trigger OnAction()
-                var
-                    ImportMapping: Record "E-Doc. Mapping";
-                    ImportMappingPart: Page "E-Doc. Mapping Part";
-                begin
-                    ImportMapping.SetRange(Code, Rec.Code);
-                    ImportMapping.SetRange("For Import", true);
-                    ImportMappingPart.SetTableView(ImportMapping);
-                    ImportMappingPart.RunModal();
-                end;
+                RunObject = Page "E-Doc. Mapping";
+                RunPageLink = Code = field(Code), "For Import" = const(true);
             }
         }
         area(Promoted)

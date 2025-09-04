@@ -291,8 +291,9 @@ table 4810 "Intrastat Report Setup"
         GetSetup();
         if VATNoBasedToCheck <> "VAT No. Based On" then
             exit('');
-
+#pragma warning disable AL0432
         exit(GetPartnerNo(SellTo, BillTo));
+#pragma warning restore AL0432
     end;
 
     [Obsolete('Pending removal.', '26.0')]

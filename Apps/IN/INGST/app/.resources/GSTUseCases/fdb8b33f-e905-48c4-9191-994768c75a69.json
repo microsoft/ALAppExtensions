@@ -1,0 +1,108 @@
+[
+    {
+        "CaseID": "{FDB8B33F-E905-48C4-9191-994768C75A69}",
+        "Description": "GST Exempted Sales through Sales Journal/Journal/General Journal.",
+        "Version": 3,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "GST HSN",
+        "TaxEntity": "Gen. Journal Line",
+        "ParentUseCase": "",
+        "ParentCaseId": "{00000000-0000-0000-0000-000000000000}",
+        "PresentationOrder": 508,
+        "Indent": 0,
+        "Attributes": [
+            {
+                "Name": "GST Group Code",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": true,
+                            "TableName": "Gen. Journal Line"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "HSN/SAC",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": true,
+                            "TableName": "Gen. Journal Line"
+                        }
+                    }
+                ]
+            }
+        ],
+        "RateColumns": [
+            {
+                "Name": "Location State Code",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Location State Code"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "From State",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Customer",
+                            "TableFieldName": "State Code",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Account No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Date",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Posting Date"
+                        }
+                    }
+                ]
+            }
+        ],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": []
+    }
+]

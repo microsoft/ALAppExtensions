@@ -110,14 +110,8 @@ page 10035 "IRS 1099 Vendor Form Box Setup"
 
     trigger OnOpenPage()
     var
-#if not CLEAN25
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-#endif
     begin
         PeriodIsVisible := Rec.GetFilter("Period No.") = '';
         VendorIsVisible := Rec.GetFilter("Vendor No.") = '';
-#if not CLEAN25
-        CurrPage.Editable := IRSFormsFeature.FeatureCanBeUsed();
-#endif
     end;
 }

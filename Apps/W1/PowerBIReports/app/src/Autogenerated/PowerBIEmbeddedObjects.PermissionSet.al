@@ -95,6 +95,8 @@ permissionset 36955 "Power BI Embedded - Objects"
         page "Inventory Report" = X,
         page "Inventory Valuation Report" = X,
         page "Sales by Location" = X,
+        //#if not CLEAN28
+        //#pragma warning disable AL0432
         page "Subscription Billing Report" = X,
         page "Subscription Overview" = X,
         page "Revenue YoY" = X,
@@ -110,6 +112,8 @@ permissionset 36955 "Power BI Embedded - Objects"
         page "Vendor Deferrals" = X,
         page "Sales and Cost forecast" = X,
         page "Billing Schedule" = X,
+        //#pragma warning restore AL0432
+        //#endif
 #if not CLEAN27
 #pragma warning disable AL0432
         page "Sustainability Overview" = X,

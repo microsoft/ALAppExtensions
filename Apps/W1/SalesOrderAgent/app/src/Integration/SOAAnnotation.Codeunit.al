@@ -240,6 +240,6 @@ codeunit 4399 "SOA Annotation"
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
     begin
-        exit(AzureKeyVault.GetAzureKeyVaultSecret('BCSOA-Irrelevance-Prompt', Prompt));
+        exit(AzureKeyVault.GetAzureKeyVaultSecret('BCSOAIrrelevancePromptV27', Prompt));
     end;
 }

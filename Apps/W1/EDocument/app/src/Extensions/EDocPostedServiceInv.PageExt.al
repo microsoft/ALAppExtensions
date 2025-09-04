@@ -40,7 +40,7 @@ pageextension 6142 "E-Doc. Posted Service Inv." extends "Posted Service Invoice"
                     var
                         EDocumentProcessing: Codeunit "E-Document Processing";
                     begin
-                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Sales Invoice") then
+                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Service Invoice") then
                             Message(EDocumentCreatedMsg);
                     end;
                 }

@@ -1423,6 +1423,83 @@ codeunit 148206 "Sust. ESG Reporting Test"
         VerifyPostedESGReporting(PostedESGReportingHeader, PostedESGReportingLine);
     end;
 
+    [Test]
+    procedure TestSystemShouldThrowAnErrorWhenFieldTypeIsFormulaAndRowTotIsNotBlankInReportingLine()
+    var
+        ESGReportingName: Record "Sust. ESG Reporting Name";
+        ESGReportingLine: array[3] of Record "Sust. ESG Reporting Line";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 598433] Verify the system should an error When "Field Type" is Table Field and "Row Totaling" is not blank in ESG Reporting Line.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Posted ESG Reporting Nos." in Sustainability Setup.
+        LibrarySustainability.UpdatePostedESGReportingNoInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create ESG Reporting Line A.
+        LibrarySustainability.CreateESGReportingLine(
+            ESGReportingLine[1],
+            ESGReportingName,
+            10000,
+            '',
+            '10',
+            ESGReportingLine[1]."Field Type"::"Table Field",
+            Database::"Sustainability Ledger Entry",
+            SustainabilityLedgerEntry.FieldNo("CO2e Emission"),
+            ESGReportingLine[1]."Value Settings"::Sum,
+            AccountCode,
+            ESGReportingLine[1]."Row Type"::"Net Change",
+            '',
+            ESGReportingLine[1]."Calculate with"::Sign,
+            true,
+            ESGReportingLine[1]."Show with"::Sign);
+
+        // [GIVEN] Create ESG Reporting Line B.
+        LibrarySustainability.CreateESGReportingLine(
+            ESGReportingLine[2],
+            ESGReportingName,
+            20000,
+            '',
+            '20',
+            ESGReportingLine[2]."Field Type"::"Table Field",
+            Database::"Sustainability Ledger Entry",
+            SustainabilityLedgerEntry.FieldNo("Carbon Fee"),
+            ESGReportingLine[2]."Value Settings"::Sum,
+            AccountCode,
+            ESGReportingLine[2]."Row Type"::"Net Change",
+            '',
+            ESGReportingLine[2]."Calculate with"::Sign,
+            true,
+            ESGReportingLine[2]."Show with"::Sign);
+
+        // [WHEN] Create ESG Reporting Line C.
+        asserterror LibrarySustainability.CreateESGReportingLine(
+            ESGReportingLine[3],
+            ESGReportingName,
+            30000,
+            '',
+            '30',
+            ESGReportingLine[3]."Field Type"::"Table Field",
+            0,
+            0,
+            ESGReportingLine[3]."Value Settings"::" ",
+            '',
+            ESGReportingLine[3]."Row Type"::"Net Change",
+            ESGReportingLine[1]."Row No." + '+' + ESGReportingLine[2]."Row No.",
+            ESGReportingLine[3]."Calculate with"::Sign,
+            true,
+            ESGReportingLine[3]."Show with"::Sign);
+
+        // [THEN] Verify the system should throw an error When "Field Type" is Table Field and "Row Totaling" is not blank in ESG Reporting Line.
+        Assert.ExpectedTestFieldError(ESGReportingLine[3].FieldCaption("Field Type"), Format(ESGReportingLine[3]."Field Type"::Formula));
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);

@@ -677,7 +677,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
     var
         EssentialBusinessHeadline: Record "Ess. Business Headline Per Usr";
     begin
-        if EssentialBusinessHeadline.Get(HeadlineName) then begin
+        if EssentialBusinessHeadline.Get(HeadlineName, UserSecurityId()) then begin
             EssentialBusinessHeadline.Validate("Headline Visible", false);
             EssentialBusinessHeadline.Modify();
         end;
@@ -721,7 +721,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::OpenVATReturn);
         VATReportSetup.Get();
         VATReturnPeriod.SetFilter("Due Date", '>=%1&<=%2', WorkDate(), CalcDate(VATReportSetup."Period Reminder Calculation", WorkDate()));
-        if VATReportSetup.IsPeriodReminderCalculation() AND
+        if VATReportSetup.IsPeriodReminderCalculation() and
            FindOpenVATReturnPeriod(VATReturnPeriod)
         then begin
             HeadlineText :=

@@ -1,0 +1,158 @@
+[
+    {
+        "CaseID": "{E696BECA-20A6-498E-9615-114585216ABA}",
+        "Description": "PAN No. Validations (through Sales Quote/ Sales Order/ Sales Invoice)",
+        "Version": 1,
+        "MinorVersion": 0,
+        "TaxType": "TCS",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "Sales Line",
+        "ParentUseCase": "TCS to be calculated on Customer Invoice (through Sales Quote/ Sales Order/ Sales Invoice)",
+        "ParentCaseId": "{6AD030DC-AE48-48C9-9651-36BA6742BDED}",
+        "PresentationOrder": 192,
+        "Indent": 1,
+        "Attributes": [],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [
+            {
+                "ActivityType": "ALERTMESSAGE",
+                "Activity": {
+                    "MessageText": {
+                        "Type": "Constant",
+                        "Value": "The Customer P.A.N. is invalid."
+                    },
+                    "ThrowError": true
+                }
+            }
+        ],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Sales Line",
+                            "FieldName": "Document Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Quote"
+                    }
+                },
+                {
+                    "Operator": "or",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Sales Line",
+                            "FieldName": "Document Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Order"
+                    }
+                },
+                {
+                    "Operator": "or",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Sales Line",
+                            "FieldName": "Document Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Invoice"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Sales Line",
+                            "FieldName": "TCS Nature of Collection"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Customer",
+                            "TableFieldName": "P.A.N. Status",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Bill-to Customer No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": " "
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Customer",
+                            "TableFieldName": "P.A.N. No.",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Bill-to Customer No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                }
+            ]
+        }
+    }
+]

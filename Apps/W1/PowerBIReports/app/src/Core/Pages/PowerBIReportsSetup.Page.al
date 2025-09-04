@@ -485,26 +485,42 @@ page 36951 "PowerBI Reports Setup"
                     }
                 }
             }
+#if not CLEAN28
             group(SubscriptionBillingReport)
             {
                 Caption = 'Subscription Billing Report';
+                ObsoleteReason = 'Moved to the Subscription Billing app, please add it to your dependencies and extend instead "SubBill PBI Reports Setup"';
+                ObsoleteState = Pending;
+                ObsoleteTag = '28.0';
+                Visible = false;
                 group(SubscriptionBillingGeneral)
                 {
                     ShowCaption = false;
+                    Visible = false;
+                    ObsoleteReason = 'Moved to the Subscription Billing app, please add it to your dependencies and extend instead "SubBill PBI Reports Setup"';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '28.0';
+#pragma warning disable AL0801
                     field("Subscription Billing Report Name"; Format(Rec."Subs. Billing Report Name"))
                     {
                         ApplicationArea = All;
                         Caption = 'Power BI Subscription Billing App';
                         ToolTip = 'Specifies where you have installed the Power BI Subscription Billing App.';
+                        ObsoleteReason = 'Moved to the Subscription Billing app, please add it to your dependencies and extend instead "SubBill PBI Reports Setup"';
+                        ObsoleteState = Pending;
+                        ObsoleteTag = '28.0';
+                        Visible = false;
 
                         trigger OnAssistEdit()
                         begin
                             SetupHelper.EnsureUserAcceptedPowerBITerms();
                             SetupHelper.LookupPowerBIReport(Rec."Subscription Billing Report ID", Rec."Subs. Billing Report Name");
                         end;
+#pragma warning restore AL0801
                     }
                 }
             }
+#endif
             group(Dimensions)
             {
                 Caption = 'Dimensions';

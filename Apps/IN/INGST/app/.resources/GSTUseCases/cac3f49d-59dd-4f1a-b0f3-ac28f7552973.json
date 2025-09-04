@@ -1,0 +1,1716 @@
+[
+    {
+        "CaseID": "{CAC3F49D-59DD-4F1A-B0F3-AC28F7552973}",
+        "Description": "InterState GST Calculation on Finance Charge Memo For SEZ Unit/SEZ Development/Deemed Export Customer With Payment of Duty.\n",
+        "Version": 3,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "Finance Charge Memo Line",
+        "ParentUseCase": "Finance Charge Memo",
+        "ParentCaseId": "{7647BA98-B553-41F7-8E2B-AE17EB85A560}",
+        "PresentationOrder": 535,
+        "Indent": 1,
+        "PostingTableName": "GST Posting Setup",
+        "PostingTableFilters": [
+            {
+                "FiterFieldName": "State Code",
+                "FilterType": "Equals",
+                "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                        "SourceType": "Table",
+                        "TableName": "Finance Charge Memo Header",
+                        "TableFieldName": "Location State Code",
+                        "Method": "First",
+                        "TableFilters": [
+                            {
+                                "FiterFieldName": "No.",
+                                "FilterType": "Equals",
+                                "FilterValue": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Current Record",
+                                        "TableName": "Finance Charge Memo Line",
+                                        "FieldName": "Finance Charge Memo No."
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "Attributes": [],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [
+            {
+                "Name": "ExchangeRateAmount",
+                "Datatype": "Number"
+            },
+            {
+                "Name": "RelationalRateAmount",
+                "Datatype": "Number"
+            },
+            {
+                "Name": "CurrencyFactor",
+                "Datatype": "Number"
+            }
+        ],
+        "PostingScript": [
+            {
+                "ActivityType": "IFSTATEMENT",
+                "Activity": {
+                    "Condition": {
+                        "Body": [
+                            {
+                                "Operator": " ",
+                                "ConditionType": "Not Equals",
+                                "LHS": {
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "Finance Charge Memo Header",
+                                        "TableFieldName": "Currency Code",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "No.",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Finance Charge Memo Line",
+                                                        "FieldName": "Finance Charge Memo No."
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Constant",
+                                    "Value": ""
+                                }
+                            }
+                        ]
+                    },
+                    "Body": [
+                        {
+                            "ActivityType": "SETVARIABLE",
+                            "Activity": {
+                                "OutputVariableName": "ExchangeRateAmount",
+                                "OutputValue": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "Currency Exchange Rate",
+                                        "TableFieldName": "Exchange Rate Amount",
+                                        "Method": "Last",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Currency Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Table",
+                                                        "TableName": "Finance Charge Memo Header",
+                                                        "TableFieldName": "Currency Code",
+                                                        "Method": "First",
+                                                        "TableFilters": [
+                                                            {
+                                                                "FiterFieldName": "No.",
+                                                                "FilterType": "Equals",
+                                                                "FilterValue": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Finance Charge Memo Line",
+                                                                        "FieldName": "Finance Charge Memo No."
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "FiterFieldName": "Starting Date",
+                                                "FilterType": "Is Less Than Or Equals To",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Table",
+                                                        "TableName": "Finance Charge Memo Header",
+                                                        "TableFieldName": "Posting Date",
+                                                        "Method": "First",
+                                                        "TableFilters": [
+                                                            {
+                                                                "FiterFieldName": "No.",
+                                                                "FilterType": "Equals",
+                                                                "FilterValue": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Finance Charge Memo Line",
+                                                                        "FieldName": "Finance Charge Memo No."
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "ActivityType": "SETVARIABLE",
+                            "Activity": {
+                                "OutputVariableName": "RelationalRateAmount",
+                                "OutputValue": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "Currency Exchange Rate",
+                                        "TableFieldName": "Relational Exch. Rate Amount",
+                                        "Method": "Last",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Currency Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Table",
+                                                        "TableName": "Finance Charge Memo Header",
+                                                        "TableFieldName": "Currency Code",
+                                                        "Method": "First",
+                                                        "TableFilters": [
+                                                            {
+                                                                "FiterFieldName": "No.",
+                                                                "FilterType": "Equals",
+                                                                "FilterValue": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Finance Charge Memo Line",
+                                                                        "FieldName": "Finance Charge Memo No."
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "FiterFieldName": "Starting Date",
+                                                "FilterType": "Is Less Than Or Equals To",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Table",
+                                                        "TableName": "Finance Charge Memo Header",
+                                                        "TableFieldName": "Posting Date",
+                                                        "Method": "First",
+                                                        "TableFilters": [
+                                                            {
+                                                                "FiterFieldName": "No.",
+                                                                "FilterType": "Equals",
+                                                                "FilterValue": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Finance Charge Memo Line",
+                                                                        "FieldName": "Finance Charge Memo No."
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "ActivityType": "NUMBERCALCULATION",
+                            "Activity": {
+                                "OutputVariableName": "CurrencyFactor",
+                                "Operator": "Divided By",
+                                "LHS": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Variable",
+                                        "VariableName": "ExchangeRateAmount"
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Variable",
+                                        "VariableName": "RelationalRateAmount"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Components": [
+            {
+                "ComponentName": "GST Base Amount",
+                "Sequence": 2,
+                "Formula": {
+                    "VariableName": "GST Base Amount",
+                    "Expression": "{Amount}",
+                    "Tokens": [
+                        {
+                            "TokenName": "{Amount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Finance Charge Memo Line",
+                                    "FieldName": "Amount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "IGST",
+                "Sequence": 1,
+                "Formula": {
+                    "VariableName": "IGST",
+                    "Expression": "{Amount}*IGST/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{Amount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Finance Charge Memo Line",
+                                    "FieldName": "Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "IGST",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "IGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Finance Charge Memo Header",
+                            "TableFieldName": "GST Customer Type",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Finance Charge Memo Line",
+                                            "FieldName": "Finance Charge Memo No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "SEZ Unit"
+                    }
+                },
+                {
+                    "Operator": "or",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Finance Charge Memo Header",
+                            "TableFieldName": "GST Customer Type",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Finance Charge Memo Line",
+                                            "FieldName": "Finance Charge Memo No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "SEZ Development"
+                    }
+                },
+                {
+                    "Operator": "or",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Finance Charge Memo Header",
+                            "TableFieldName": "GST Customer Type",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Finance Charge Memo Line",
+                                            "FieldName": "Finance Charge Memo No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Deemed Export"
+                    }
+                },
+                {
+                    "Operator": "or",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Finance Charge Memo Header",
+                            "TableFieldName": "GST Customer Type",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Finance Charge Memo Line",
+                                            "FieldName": "Finance Charge Memo No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Export"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Finance Charge Memo Line",
+                            "FieldName": "Exempted"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Finance Charge Memo Line",
+                            "FieldName": "Non-GST Line"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Finance Charge Memo Line",
+                            "FieldName": "GST Group Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Finance Charge Memo Line",
+                            "FieldName": "HSN/SAC Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Finance Charge Memo Header",
+                            "TableFieldName": "GST Without Payment of Duty",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Finance Charge Memo Line",
+                                            "FieldName": "Finance Charge Memo No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                }
+            ]
+        },
+        "TaxPostingSetup": [
+            {
+                "ComponentName": "IGST",
+                "TableName": "GST Posting Setup",
+                "AccountSourceType": "Field",
+                "FieldName": "Refund Account",
+                "AccountingImpact": "Debit",
+                "ReverseCharge": true,
+                "ReverseAccountSourceType": "Field",
+                "ReverseChargeFieldName": "Payable Account",
+                "TableFilters": [
+                    {
+                        "FiterFieldName": "Component ID",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                            "Type": "Constant",
+                            "Value": "3"
+                        }
+                    }
+                ],
+                "When": [
+                    {
+                        "ValueType": "Insert Record",
+                        "Sequence": 0,
+                        "InsertRecord": {
+                            "TableName": "GST Ledger Entry",
+                            "RunTrigger": true,
+                            "SubLedgerGrpBy": "Component",
+                            "InsertRecordFields": [
+                                {
+                                    "FieldName": "Gen. Bus. Posting Group",
+                                    "Sequence": 2,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Gen. Bus. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Gen. Prod. Posting Group",
+                                    "Sequence": 3,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Gen. Prod. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Posting Date",
+                                    "Sequence": 4,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Posting Date",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document No.",
+                                    "Sequence": 5,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Posted Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document Type",
+                                    "Sequence": 6,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Invoice"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Transaction Type",
+                                    "Sequence": 7,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Sales"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Base Amount",
+                                    "Sequence": 8,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "GST Base Amount"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source Type",
+                                    "Sequence": 9,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Customer"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source No.",
+                                    "Sequence": 10,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Customer No.",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "User ID",
+                                    "Sequence": 11,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Database",
+                                            "DatabaseVariableName": "UserId"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source Code",
+                                    "Sequence": 12,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Source Code Setup",
+                                            "TableFieldName": "Finance Charge Memo",
+                                            "Method": "First",
+                                            "TableFilters": []
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Transaction No.",
+                                    "Sequence": 13,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "G/L Entry Transaction No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Component Code",
+                                    "Sequence": 14,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "IGST"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Amount",
+                                    "Sequence": 15,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Code",
+                                    "Sequence": 16,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Currency Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Factor",
+                                    "Sequence": 17,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Variable",
+                                            "VariableName": "CurrencyFactor"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "G/L Entry No.",
+                                    "Sequence": 1,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "G/L Entry No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "ValueType": "Insert Record",
+                        "Sequence": 2,
+                        "InsertRecord": {
+                            "TableName": "Detailed GST Ledger Entry Info",
+                            "RunTrigger": true,
+                            "SubLedgerGrpBy": "Line / Component",
+                            "InsertRecordFields": [
+                                {
+                                    "FieldName": "User ID",
+                                    "Sequence": 3,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Database",
+                                            "DatabaseVariableName": "UserId"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Positive",
+                                    "Sequence": 12,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "false"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Nature of Supply",
+                                    "Sequence": 1,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Nature of Supply",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location State Code",
+                                    "Sequence": 2,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Location State Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Buyer/Seller State Code",
+                                    "Sequence": 6,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Customer",
+                                            "TableFieldName": "State Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Table",
+                                                            "TableName": "Finance Charge Memo Header",
+                                                            "TableFieldName": "Customer No.",
+                                                            "Method": "First",
+                                                            "TableFilters": [
+                                                                {
+                                                                    "FiterFieldName": "No.",
+                                                                    "FilterType": "Equals",
+                                                                    "FilterValue": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Current Record",
+                                                                            "TableName": "Finance Charge Memo Line",
+                                                                            "FieldName": "Finance Charge Memo No."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Shipping Address State Code",
+                                    "Sequence": 8,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "GST Ship-to State Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Original Doc. Type",
+                                    "Sequence": 4,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Invoice"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Original Doc. No.",
+                                    "Sequence": 5,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Posted Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Sales Invoice Type",
+                                    "Sequence": 11,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Invoice Type",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Gen. Bus. Posting Group",
+                                    "Sequence": 9,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Gen. Bus. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Gen. Prod. Posting Group",
+                                    "Sequence": 10,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Gen. Prod. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Ship-to Code",
+                                    "Sequence": 7,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Ship-to Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Finance Charge Memo",
+                                    "Sequence": 13,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "true"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location ARN No.",
+                                    "Sequence": 14,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Location",
+                                            "TableFieldName": "Location ARN No.",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Code",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Table",
+                                                            "TableName": "Finance Charge Memo Header",
+                                                            "TableFieldName": "Location Code",
+                                                            "Method": "First",
+                                                            "TableFilters": [
+                                                                {
+                                                                    "FiterFieldName": "No.",
+                                                                    "FilterType": "Equals",
+                                                                    "FilterValue": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Current Record",
+                                                                            "TableName": "Finance Charge Memo Line",
+                                                                            "FieldName": "Finance Charge Memo No."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "ValueType": "Insert Record",
+                        "Sequence": 1,
+                        "InsertRecord": {
+                            "TableName": "Detailed GST Ledger Entry",
+                            "RunTrigger": true,
+                            "SubLedgerGrpBy": "Line / Component",
+                            "InsertRecordFields": [
+                                {
+                                    "FieldName": "Entry Type",
+                                    "Sequence": 1,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Initial Entry"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Transaction Type",
+                                    "Sequence": 2,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Sales"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document Type",
+                                    "Sequence": 3,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Invoice"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document No.",
+                                    "Sequence": 4,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Posted Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Posting Date",
+                                    "Sequence": 5,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Posting Date",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Type",
+                                    "Sequence": 6,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "G/L Account"
+                                    }
+                                },
+                                {
+                                    "FieldName": "No.",
+                                    "Sequence": 29,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Customer Posting Group",
+                                            "TableFieldName": "Interest Account",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Code",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Table",
+                                                            "TableName": "Customer",
+                                                            "TableFieldName": "Customer Posting Group",
+                                                            "Method": "First",
+                                                            "TableFilters": [
+                                                                {
+                                                                    "FiterFieldName": "No.",
+                                                                    "FilterType": "Equals",
+                                                                    "FilterValue": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Table",
+                                                                            "TableName": "Finance Charge Memo Header",
+                                                                            "TableFieldName": "Customer No.",
+                                                                            "Method": "First",
+                                                                            "TableFilters": [
+                                                                                {
+                                                                                    "FiterFieldName": "No.",
+                                                                                    "FilterType": "Equals",
+                                                                                    "FilterValue": {
+                                                                                        "Type": "Lookup",
+                                                                                        "Lookup": {
+                                                                                            "SourceType": "Current Record",
+                                                                                            "TableName": "Finance Charge Memo Line",
+                                                                                            "FieldName": "Finance Charge Memo No."
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source Type",
+                                    "Sequence": 7,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Customer"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source No.",
+                                    "Sequence": 8,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Customer No.",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "HSN/SAC Code",
+                                    "Sequence": 9,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Finance Charge Memo Line",
+                                            "FieldName": "HSN/SAC Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Component Code",
+                                    "Sequence": 10,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "IGST"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Group Code",
+                                    "Sequence": 11,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Finance Charge Memo Line",
+                                            "FieldName": "GST Group Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Jurisdiction Type",
+                                    "Sequence": 12,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Interstate"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Base Amount",
+                                    "Sequence": 13,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "GST Base Amount"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST %",
+                                    "Sequence": 14,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component Percent",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Amount",
+                                    "Sequence": 15,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Quantity",
+                                    "Sequence": 16,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "-1"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Without Payment of Duty",
+                                    "Sequence": 28,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "GST Without Payment of Duty",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "G/L Account No.",
+                                    "Sequence": 17,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "GST Posting Setup",
+                                            "TableFieldName": "Payable Account",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "State Code",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Table",
+                                                            "TableName": "Finance Charge Memo Header",
+                                                            "TableFieldName": "Location State Code",
+                                                            "Method": "First",
+                                                            "TableFilters": [
+                                                                {
+                                                                    "FiterFieldName": "No.",
+                                                                    "FilterType": "Equals",
+                                                                    "FilterValue": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Current Record",
+                                                                            "TableName": "Finance Charge Memo Line",
+                                                                            "FieldName": "Finance Charge Memo No."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "FiterFieldName": "Component ID",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Constant",
+                                                        "Value": "3"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document Line No.",
+                                    "Sequence": 18,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Finance Charge Memo Line",
+                                            "FieldName": "Line No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location  Reg. No.",
+                                    "Sequence": 21,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Location",
+                                            "TableFieldName": "GST Registration No.",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Code",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Table",
+                                                            "TableName": "Finance Charge Memo Header",
+                                                            "TableFieldName": "Location Code",
+                                                            "Method": "First",
+                                                            "TableFilters": [
+                                                                {
+                                                                    "FiterFieldName": "No.",
+                                                                    "FilterType": "Equals",
+                                                                    "FilterValue": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Current Record",
+                                                                            "TableName": "Finance Charge Memo Line",
+                                                                            "FieldName": "Finance Charge Memo No."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Buyer/Seller Reg. No.",
+                                    "Sequence": 23,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Customer",
+                                            "TableFieldName": "GST Registration No.",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Table",
+                                                            "TableName": "Finance Charge Memo Header",
+                                                            "TableFieldName": "Customer No.",
+                                                            "Method": "First",
+                                                            "TableFilters": [
+                                                                {
+                                                                    "FiterFieldName": "No.",
+                                                                    "FilterType": "Equals",
+                                                                    "FilterValue": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Current Record",
+                                                                            "TableName": "Finance Charge Memo Line",
+                                                                            "FieldName": "Finance Charge Memo No."
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Group Type",
+                                    "Sequence": 19,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Service"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Transaction No.",
+                                    "Sequence": 24,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "G/L Entry Transaction No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Code",
+                                    "Sequence": 27,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Currency Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Factor",
+                                    "Sequence": 30,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Variable",
+                                            "VariableName": "CurrencyFactor"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location Code",
+                                    "Sequence": 20,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "Location Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Customer Type",
+                                    "Sequence": 22,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Finance Charge Memo Header",
+                                            "TableFieldName": "GST Customer Type",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Finance Charge Memo Line",
+                                                            "FieldName": "Finance Charge Memo No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Place of Supply",
+                                    "Sequence": 25,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Finance Charge Memo Line",
+                                            "FieldName": "GST Place of Supply"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Liable to Pay",
+                                    "Sequence": 26,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "true"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -129,6 +129,7 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
         // Track changes for history
         EDocumentPurchaseHistMapping.TrackRecord(EDocument, EDocumentPurchaseHeader, PurchaseHeader);
 
+        PurchaseLine."Line No." := GetLastLineNumberOnPurchaseInvoice(PurchaseHeader."No."); // We get the last line number, even if this is a new document since recurrent lines get inserted on the header's creation
         EDocumentPurchaseLine.SetRange("E-Document Entry No.", EDocument."Entry No");
         if EDocumentPurchaseLine.FindSet() then
             repeat
@@ -193,6 +194,18 @@ codeunit 6117 "E-Doc. Create Purchase Invoice" implements IEDocumentFinishDraft,
                 exit(false);
         until EDocumentPurchaseLine.Next() = 0;
         exit(true);
+    end;
+
+    local procedure GetLastLineNumberOnPurchaseInvoice(DocumentNo: Code[20]): Integer
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        PurchaseLine.SetLoadFields("Line No.");
+        PurchaseLine.ReadIsolation := IsolationLevel::ReadUncommitted;
+        PurchaseLine.SetRange("Document Type", "Purchase Document Type"::Invoice);
+        PurchaseLine.SetRange("Document No.", DocumentNo);
+        if PurchaseLine.FindLast() then
+            exit(PurchaseLine."Line No.");
     end;
 
 }

@@ -126,9 +126,12 @@ codeunit 13915 "Import XRechnung Document"
     local procedure ParseAccountingSupplierParty(var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentType: Text)
     var
         Vendor: Record Vendor;
+        EDocumentService: Record "E-Document Service";
+        EDocumentHelper: Codeunit "E-Document Helper";
         VendorName, VendorAddress : Text;
         VATRegistrationNo: Text[20];
         GLN: Text[13];
+        VendorID: Text[200];
         VendorNo: Code[20];
     begin
         VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(VATRegistrationNo));
@@ -138,6 +141,16 @@ codeunit 13915 "Import XRechnung Document"
 
         GLN := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID'), 1, MaxStrLen(GLN));
         VendorNo := EDocumentImportHelper.FindVendor('', GLN, VATRegistrationNo);
+
+        // If vendor not found, try to find by Service Participant.
+        if VendorNo = '' then begin
+            VendorID := GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID') + ':';
+            VendorID += GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification');
+
+            EDocumentHelper.GetEdocumentService(EDocument, EDocumentService);
+            VendorNo := EDocumentImportHelper.FindVendorByServiceParticipant(VendorID, EDocumentService.Code);
+        end;
+
         if VendorNo = '' then begin
             VendorName := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(VendorName));
             VendorAddress := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(VendorAddress));

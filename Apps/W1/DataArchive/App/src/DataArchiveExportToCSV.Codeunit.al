@@ -58,7 +58,7 @@ codeunit 609 "Data Archive Export to CSV"
             CsvSeparator := ';'
         else
             CsvSeparator := ',';
-            
+
         NoOfDataRecords := DataArchiveTable.Count();
         DataCompression.CreateZipArchive();
         repeat
@@ -131,7 +131,7 @@ codeunit 609 "Data Archive Export to CSV"
             if FieldIndex < ArrayLen(QuoteChars) then
                 QuoteChars[FieldIndex + 1] := FieldTypeAsText in ['Text', 'Code'];
             FieldJson.Get('FieldName', JsonToken);
-            If FieldIndex = 0 then
+            if FieldIndex = 0 then
                 Line.Append('"' + JsonToken.AsValue().AsText() + '"')
             else
                 Line.Append(CsvSeparator + '"' + JsonToken.AsValue().AsText() + '"');
@@ -159,7 +159,7 @@ codeunit 609 "Data Archive Export to CSV"
                     QuoteTxt := '"'
                 else
                     QuoteTxt := '';
-                If FieldIndex = 0 then
+                if FieldIndex = 0 then
                     Line.Append(QuoteTxt + JsonToken.AsValue().AsText() + QuoteTxt)
                 else
                     Line.Append(CsvSeparator + QuoteTxt + JsonToken.AsValue().AsText() + QuoteTxt);

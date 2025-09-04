@@ -19,7 +19,7 @@ page 8851 "Bank Statement Import Preview"
                 {
                     ApplicationArea = All;
                     Caption = 'Date';
-                    ToolTip = 'Transaction date.';
+                    ToolTip = 'Specifies the transaction date.';
                     Style = Unfavorable;
                     StyleExpr = not IsValidDate;
                 }
@@ -27,7 +27,7 @@ page 8851 "Bank Statement Import Preview"
                 {
                     ApplicationArea = All;
                     Caption = 'Transaction Amount';
-                    ToolTip = 'Transaction amount.';
+                    ToolTip = 'Specifies the transaction amount.';
                     Style = Unfavorable;
                     StyleExpr = not IsValidAmount;
                 }
@@ -35,7 +35,7 @@ page 8851 "Bank Statement Import Preview"
                 {
                     ApplicationArea = All;
                     Caption = 'Description';
-                    ToolTip = 'Transaction description.';
+                    ToolTip = 'Specifies the description.';
                 }
             }
         }

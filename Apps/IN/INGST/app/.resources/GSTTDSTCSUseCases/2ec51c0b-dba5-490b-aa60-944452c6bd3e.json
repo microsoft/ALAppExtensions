@@ -1,0 +1,90 @@
+[
+    {
+        "CaseID": "{2EC51C0B-DBA5-490B-AA60-944452C6BD3E}",
+        "Description": "GST TDS TCS Calculation",
+        "Version": 1,
+        "MinorVersion": 0,
+        "TaxType": "GST TDS TCS",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "Gen. Journal Line",
+        "ParentUseCase": "",
+        "ParentCaseId": "{00000000-0000-0000-0000-000000000000}",
+        "PresentationOrder": 498,
+        "Indent": 0,
+        "Attributes": [
+            {
+                "Name": "GST TDS TCS Type",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": false,
+                            "TableName": "Gen. Journal Line",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Journal Template Name",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Journal Template Name"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "Line No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Line No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "Journal Batch Name",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Journal Batch Name"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ],
+        "RateColumns": [
+            {
+                "Name": "Effective Date",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Posting Date"
+                        }
+                    }
+                ]
+            }
+        ],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": []
+    }
+]

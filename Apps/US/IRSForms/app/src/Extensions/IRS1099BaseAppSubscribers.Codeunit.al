@@ -181,12 +181,15 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
     procedure UpdateIRSDataInPurchHeader(var PurchHeader: Record "Purchase Header"; ModifyRecord: Boolean)
     var
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
+        PurchaseLine: Record "Purchase Line";
         PeriodNo: Code[20];
+        OldFormBoxNo: Code[20];
     begin
 #if not CLEAN25
         if not IRSFormsFeature.IsEnabled() then
             exit;
 #endif
+        OldFormBoxNo := PurchHeader."IRS 1099 Form Box No.";
         PeriodNo := IRSReportingPeriod.GetReportingPeriod(PurchHeader."Posting Date");
         if PeriodNo <> '' then
             if not IRS1099VendorFormBoxSetup.Get(PeriodNo, PurchHeader."Pay-To Vendor No.") then
@@ -196,6 +199,12 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         PurchHeader.Validate("IRS 1099 Form Box No.", IRS1099VendorFormBoxSetup."Form Box No.");
         if ModifyRecord and (PurchHeader."No." <> '') then
             if PurchHeader.Modify(true) then;
+        if OldFormBoxNo = PurchHeader."IRS 1099 Form Box No." then
+            exit;
+        PurchaseLine.ReadIsolation(IsolationLevel::ReadCommitted);
+        PurchaseLine.SetRange("Document Type", PurchHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchHeader."No.");
+        PurchaseLine.ModifyAll("1099 Liable", PurchHeader."IRS 1099 Form Box No." <> '');
     end;
 
     procedure UpdateIRSDataInGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")

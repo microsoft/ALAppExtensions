@@ -1,0 +1,2029 @@
+[
+    {
+        "CaseID": "{631DEFA0-165E-4BDC-8F8A-AB2A88DF90AD}",
+        "Description": "Calculation of Cess in Transfer Order",
+        "Version": 1,
+        "MinorVersion": 0,
+        "TaxType": "GST CESS",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "Transfer Line",
+        "ParentUseCase": "",
+        "ParentCaseId": "{00000000-0000-0000-0000-000000000000}",
+        "PresentationOrder": 526,
+        "Indent": 0,
+        "Attributes": [
+            {
+                "Name": "HSN/SAC Code",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": true,
+                            "TableName": "Transfer Line"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "GST Group Code",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": true,
+                            "TableName": "Transfer Line"
+                        }
+                    }
+                ]
+            }
+        ],
+        "RateColumns": [
+            {
+                "Name": "Date",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Transfer Header",
+                            "TableFieldName": "Posting Date",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Transfer Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Location State Code",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Location",
+                            "TableFieldName": "State Code",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Transfer Header",
+                                            "TableFieldName": "Transfer-to Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "Document No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "From State",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Location",
+                            "TableFieldName": "State Code",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Transfer Header",
+                                            "TableFieldName": "Transfer-from Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "Document No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ],
+        "ComputationVariables": [
+            {
+                "Name": "CessAmount",
+                "Datatype": "Number"
+            },
+            {
+                "Name": "CessAmountByCessPercent",
+                "Datatype": "Number"
+            },
+            {
+                "Name": "CessAmountByUnitFactor",
+                "Datatype": "Number"
+            },
+            {
+                "Name": "BeforeThresholdCessAmount",
+                "Datatype": "Number"
+            },
+            {
+                "Name": "UOMConversionRate",
+                "Datatype": "Number"
+            },
+            {
+                "Name": "ConversionRate",
+                "Datatype": "Number"
+            },
+            {
+                "Name": "UOMNotExistErr",
+                "Datatype": "String"
+            },
+            {
+                "Name": "UnitConversionRate",
+                "Datatype": "Number"
+            },
+            {
+                "Name": "CessUOMErr",
+                "Datatype": "String"
+            },
+            {
+                "Name": "CessFactorQtyErr",
+                "Datatype": "String"
+            },
+            {
+                "Name": "CessAmountPerUnitFactorErr",
+                "Datatype": "String"
+            },
+            {
+                "Name": "QtyPerUOMTaxRateErr",
+                "Datatype": "String"
+            },
+            {
+                "Name": "QtyPerUOMPurchLineErr",
+                "Datatype": "String"
+            }
+        ],
+        "ComputationScript": [
+            {
+                "ActivityType": "IFSTATEMENT",
+                "Activity": {
+                    "Condition": {
+                        "Body": [
+                            {
+                                "Operator": " ",
+                                "ConditionType": "Equals",
+                                "LHS": {
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "GST Group",
+                                        "TableFieldName": "Component Calc. Type",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "GST Group Code"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Constant",
+                                    "Value": "Cess % + Amount / Unit Factor"
+                                }
+                            },
+                            {
+                                "Operator": "or",
+                                "ConditionType": "Equals",
+                                "LHS": {
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "GST Group",
+                                        "TableFieldName": "Component Calc. Type",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "GST Group Code"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Constant",
+                                    "Value": "Cess % Or Amount / Unit Factor Whichever Higher"
+                                }
+                            },
+                            {
+                                "Operator": "or",
+                                "ConditionType": "Equals",
+                                "LHS": {
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "GST Group",
+                                        "TableFieldName": "Component Calc. Type",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "GST Group Code"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Constant",
+                                    "Value": "Amount / Unit Factor"
+                                }
+                            }
+                        ]
+                    },
+                    "Body": [
+                        {
+                            "ActivityType": "IFSTATEMENT",
+                            "Activity": {
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Column",
+                                                    "RateColumnName": "Cess Factor Quantity"
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Constant",
+                                                "Value": ""
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "STRINGEXPRESSION",
+                                        "Activity": {
+                                            "OutputVariableName": "CessFactorQtyErr",
+                                            "Expression": "Cess Factor Quantity must have a value in Tax Rates for GST Group Code {GSTGroupCode}.",
+                                            "Token": [
+                                                {
+                                                    "TokenName": "GSTGroupCode",
+                                                    "FormatString": "",
+                                                    "LookupVariableName": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "GST Group Code"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "ActivityType": "ALERTMESSAGE",
+                                        "Activity": {
+                                            "MessageText": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Variable",
+                                                    "VariableName": "CessFactorQtyErr"
+                                                }
+                                            },
+                                            "ThrowError": true
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "ActivityType": "IFSTATEMENT",
+                            "Activity": {
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Column",
+                                                    "RateColumnName": "Cess Amount per Unit Factor"
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Constant",
+                                                "Value": ""
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "STRINGEXPRESSION",
+                                        "Activity": {
+                                            "OutputVariableName": "CessAmountPerUnitFactorErr",
+                                            "Expression": "Cess Amount per Unit Factor must have a value in Tax Rates for GST Group Code {GSTGroup}.",
+                                            "Token": [
+                                                {
+                                                    "TokenName": "GSTGroup",
+                                                    "FormatString": "",
+                                                    "LookupVariableName": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "GST Group Code"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "ActivityType": "ALERTMESSAGE",
+                                        "Activity": {
+                                            "MessageText": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Variable",
+                                                    "VariableName": "CessAmountPerUnitFactorErr"
+                                                }
+                                            },
+                                            "ThrowError": true
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "ActivityType": "IFSTATEMENT",
+                            "Activity": {
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Table",
+                                                    "TableName": "GST Group",
+                                                    "TableFieldName": "Cess UOM",
+                                                    "Method": "First",
+                                                    "TableFilters": [
+                                                        {
+                                                            "FiterFieldName": "Code",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Transfer Line",
+                                                                    "FieldName": "GST Group Code"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Constant",
+                                                "Value": ""
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "STRINGEXPRESSION",
+                                        "Activity": {
+                                            "OutputVariableName": "CessUOMErr",
+                                            "Expression": "Cess UOM must have a value in GST Group {GSTGroup}.",
+                                            "Token": [
+                                                {
+                                                    "TokenName": "GSTGroup",
+                                                    "FormatString": "",
+                                                    "LookupVariableName": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "GST Group Code"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "ActivityType": "ALERTMESSAGE",
+                                        "Activity": {
+                                            "MessageText": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Variable",
+                                                    "VariableName": "CessUOMErr"
+                                                }
+                                            },
+                                            "ThrowError": true
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ActivityType": "IFSTATEMENT",
+                "Activity": {
+                    "Condition": {
+                        "Body": [
+                            {
+                                "Operator": " ",
+                                "ConditionType": "Equals",
+                                "LHS": {
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "GST Group",
+                                        "TableFieldName": "Component Calc. Type",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "GST Group Code"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Constant",
+                                    "Value": "Cess % + Amount / Unit Factor"
+                                }
+                            },
+                            {
+                                "Operator": "or",
+                                "ConditionType": "Equals",
+                                "LHS": {
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "GST Group",
+                                        "TableFieldName": "Component Calc. Type",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "GST Group Code"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Constant",
+                                    "Value": "Cess % Or Amount / Unit Factor Whichever Higher"
+                                }
+                            },
+                            {
+                                "Operator": "or",
+                                "ConditionType": "Equals",
+                                "LHS": {
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "GST Group",
+                                        "TableFieldName": "Component Calc. Type",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "GST Group Code"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Constant",
+                                    "Value": "Amount / Unit Factor"
+                                }
+                            }
+                        ]
+                    },
+                    "Body": [
+                        {
+                            "ActivityType": "IFSTATEMENT",
+                            "Activity": {
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Table",
+                                                    "TableName": "Item Unit of Measure",
+                                                    "TableFieldName": "",
+                                                    "Method": "Exist",
+                                                    "TableFilters": [
+                                                        {
+                                                            "FiterFieldName": "Item No.",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Transfer Line",
+                                                                    "FieldName": "Item No."
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "FiterFieldName": "Code",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Table",
+                                                                    "TableName": "GST Group",
+                                                                    "TableFieldName": "Cess UOM",
+                                                                    "Method": "First",
+                                                                    "TableFilters": [
+                                                                        {
+                                                                            "FiterFieldName": "Code",
+                                                                            "FilterType": "Equals",
+                                                                            "FilterValue": {
+                                                                                "Type": "Lookup",
+                                                                                "Lookup": {
+                                                                                    "SourceType": "Current Record",
+                                                                                    "TableName": "Transfer Line",
+                                                                                    "FieldName": "GST Group Code"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Constant",
+                                                "Value": ""
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "STRINGEXPRESSION",
+                                        "Activity": {
+                                            "OutputVariableName": "UOMNotExistErr",
+                                            "Expression": "Unit of Measure must have a value in Item Unit of Measure for the Item No. {ItemNo} and Unit of Measure {UOM}.",
+                                            "Token": [
+                                                {
+                                                    "TokenName": "ItemNo",
+                                                    "FormatString": "",
+                                                    "LookupVariableName": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "Item No."
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "TokenName": "UOM",
+                                                    "FormatString": "",
+                                                    "LookupVariableName": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Table",
+                                                            "TableName": "GST Group",
+                                                            "TableFieldName": "Cess UOM",
+                                                            "Method": "First",
+                                                            "TableFilters": [
+                                                                {
+                                                                    "FiterFieldName": "Code",
+                                                                    "FilterType": "Equals",
+                                                                    "FilterValue": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Current Record",
+                                                                            "TableName": "Transfer Line",
+                                                                            "FieldName": "GST Group Code"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "ActivityType": "ALERTMESSAGE",
+                                        "Activity": {
+                                            "MessageText": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Variable",
+                                                    "VariableName": "UOMNotExistErr"
+                                                }
+                                            },
+                                            "ThrowError": true
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "ActivityType": "IFSTATEMENT",
+                            "Activity": {
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Table",
+                                                    "TableName": "Item Unit of Measure",
+                                                    "TableFieldName": "Qty. per Unit of Measure",
+                                                    "Method": "First",
+                                                    "TableFilters": [
+                                                        {
+                                                            "FiterFieldName": "Item No.",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Transfer Line",
+                                                                    "FieldName": "Item No."
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "FiterFieldName": "Code",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Table",
+                                                                    "TableName": "GST Group",
+                                                                    "TableFieldName": "Cess UOM",
+                                                                    "Method": "First",
+                                                                    "TableFilters": [
+                                                                        {
+                                                                            "FiterFieldName": "Code",
+                                                                            "FilterType": "Equals",
+                                                                            "FilterValue": {
+                                                                                "Type": "Lookup",
+                                                                                "Lookup": {
+                                                                                    "SourceType": "Current Record",
+                                                                                    "TableName": "Transfer Line",
+                                                                                    "FieldName": "GST Group Code"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Constant",
+                                                "Value": ""
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "STRINGEXPRESSION",
+                                        "Activity": {
+                                            "OutputVariableName": "QtyPerUOMTaxRateErr",
+                                            "Expression": "Qty. per Unit of Measure must have a value in Item Unit of Measure for Item {ItemNo} and UOM {UOM}.",
+                                            "Token": [
+                                                {
+                                                    "TokenName": "ItemNo",
+                                                    "FormatString": "",
+                                                    "LookupVariableName": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "Item No."
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "TokenName": "UOM",
+                                                    "FormatString": "",
+                                                    "LookupVariableName": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Table",
+                                                            "TableName": "GST Group",
+                                                            "TableFieldName": "Cess UOM",
+                                                            "Method": "First",
+                                                            "TableFilters": [
+                                                                {
+                                                                    "FiterFieldName": "Code",
+                                                                    "FilterType": "Equals",
+                                                                    "FilterValue": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Current Record",
+                                                                            "TableName": "Transfer Line",
+                                                                            "FieldName": "GST Group Code"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "ActivityType": "ALERTMESSAGE",
+                                        "Activity": {
+                                            "MessageText": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Variable",
+                                                    "VariableName": "QtyPerUOMTaxRateErr"
+                                                }
+                                            },
+                                            "ThrowError": true
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "ActivityType": "SETVARIABLE",
+                            "Activity": {
+                                "OutputVariableName": "ConversionRate",
+                                "OutputValue": {
+                                    "Type": "Constant",
+                                    "Value": "1"
+                                }
+                            }
+                        },
+                        {
+                            "ActivityType": "SETVARIABLE",
+                            "Activity": {
+                                "OutputVariableName": "UOMConversionRate",
+                                "OutputValue": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "Item Unit of Measure",
+                                        "TableFieldName": "Qty. per Unit of Measure",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Item No.",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "Item No."
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "FiterFieldName": "Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Table",
+                                                        "TableName": "GST Group",
+                                                        "TableFieldName": "Cess UOM",
+                                                        "Method": "First",
+                                                        "TableFilters": [
+                                                            {
+                                                                "FiterFieldName": "Code",
+                                                                "FilterType": "Equals",
+                                                                "FilterValue": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Transfer Line",
+                                                                        "FieldName": "GST Group Code"
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "ActivityType": "IFSTATEMENT",
+                            "Activity": {
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Current Record",
+                                                    "TableName": "Transfer Line",
+                                                    "FieldName": "Unit of Measure Code"
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Table",
+                                                    "TableName": "GST Group",
+                                                    "TableFieldName": "Cess UOM",
+                                                    "Method": "First",
+                                                    "TableFilters": [
+                                                        {
+                                                            "FiterFieldName": "Code",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Transfer Line",
+                                                                    "FieldName": "GST Group Code"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "SETVARIABLE",
+                                        "Activity": {
+                                            "OutputVariableName": "UnitConversionRate",
+                                            "OutputValue": {
+                                                "Type": "Constant",
+                                                "Value": "1"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "ActivityType": "IFSTATEMENT",
+                            "Activity": {
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Not Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Table",
+                                                    "TableName": "Item",
+                                                    "TableFieldName": "Base Unit of Measure",
+                                                    "Method": "First",
+                                                    "TableFilters": [
+                                                        {
+                                                            "FiterFieldName": "No.",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Transfer Line",
+                                                                    "FieldName": "Item No."
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Current Record",
+                                                    "TableName": "Transfer Line",
+                                                    "FieldName": "Unit of Measure Code"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "SETVARIABLE",
+                                        "Activity": {
+                                            "OutputVariableName": "ConversionRate",
+                                            "OutputValue": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Table",
+                                                    "TableName": "Item Unit of Measure",
+                                                    "TableFieldName": "Qty. per Unit of Measure",
+                                                    "Method": "First",
+                                                    "TableFilters": [
+                                                        {
+                                                            "FiterFieldName": "Item No.",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Transfer Line",
+                                                                    "FieldName": "Item No."
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "FiterFieldName": "Code",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Transfer Line",
+                                                                    "FieldName": "Unit of Measure Code"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "ActivityType": "IFSTATEMENT",
+                                        "Activity": {
+                                            "Condition": {
+                                                "Body": [
+                                                    {
+                                                        "Operator": " ",
+                                                        "ConditionType": "Equals",
+                                                        "LHS": {
+                                                            "Lookup": {
+                                                                "SourceType": "Table",
+                                                                "TableName": "Item Unit of Measure",
+                                                                "TableFieldName": "Qty. per Unit of Measure",
+                                                                "Method": "First",
+                                                                "TableFilters": [
+                                                                    {
+                                                                        "FiterFieldName": "Item No.",
+                                                                        "FilterType": "Equals",
+                                                                        "FilterValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Current Record",
+                                                                                "TableName": "Transfer Line",
+                                                                                "FieldName": "Item No."
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "FiterFieldName": "Code",
+                                                                        "FilterType": "Equals",
+                                                                        "FilterValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Current Record",
+                                                                                "TableName": "Transfer Line",
+                                                                                "FieldName": "Unit of Measure Code"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "RHS": {
+                                                            "Type": "Constant",
+                                                            "Value": ""
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "Body": [
+                                                {
+                                                    "ActivityType": "STRINGEXPRESSION",
+                                                    "Activity": {
+                                                        "OutputVariableName": "QtyPerUOMPurchLineErr",
+                                                        "Expression": "Qty. per Unit of Measure must have a value in Item Unit of Measure for Item {ItemNo} and UOM {UOM}.",
+                                                        "Token": [
+                                                            {
+                                                                "TokenName": "ItemNo",
+                                                                "FormatString": "",
+                                                                "LookupVariableName": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Transfer Line",
+                                                                        "FieldName": "Item No."
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "TokenName": "UOM",
+                                                                "FormatString": "",
+                                                                "LookupVariableName": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Transfer Line",
+                                                                        "FieldName": "Unit of Measure Code"
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "ActivityType": "ALERTMESSAGE",
+                                                    "Activity": {
+                                                        "MessageText": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Variable",
+                                                                "VariableName": "QtyPerUOMPurchLineErr"
+                                                            }
+                                                        },
+                                                        "ThrowError": true
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "ActivityType": "NUMBERCALCULATION",
+                            "Activity": {
+                                "OutputVariableName": "UnitConversionRate",
+                                "Operator": "Divided By",
+                                "LHS": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Variable",
+                                        "VariableName": "ConversionRate"
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Variable",
+                                        "VariableName": "UOMConversionRate"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "ActivityType": "NUMERICEXPRESSION",
+                            "Activity": {
+                                "VariableName": "CessAmountByUnitFactor",
+                                "Expression": "((LineQty*UnitConversionRate)/CessFactorQty)*CessAmountPerUnitFactor",
+                                "Tokens": [
+                                    {
+                                        "TokenName": "CessAmountPerUnitFactor",
+                                        "TokenValue": {
+                                            "Type": "Lookup",
+                                            "Lookup": {
+                                                "SourceType": "Column",
+                                                "RateColumnName": "Cess Amount per Unit Factor"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "TokenName": "CessFactorQty",
+                                        "TokenValue": {
+                                            "Type": "Lookup",
+                                            "Lookup": {
+                                                "SourceType": "Column",
+                                                "RateColumnName": "Cess Factor Quantity"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "TokenName": "LineQty",
+                                        "TokenValue": {
+                                            "Type": "Lookup",
+                                            "Lookup": {
+                                                "SourceType": "Current Record",
+                                                "TableName": "Transfer Line",
+                                                "FieldName": "Quantity"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "TokenName": "UnitConversionRate",
+                                        "TokenValue": {
+                                            "Type": "Lookup",
+                                            "Lookup": {
+                                                "SourceType": "Variable",
+                                                "VariableName": "UnitConversionRate"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ActivityType": "IFSTATEMENT",
+                "Activity": {
+                    "Condition": {
+                        "Body": [
+                            {
+                                "Operator": " ",
+                                "ConditionType": "Equals",
+                                "LHS": {
+                                    "Lookup": {
+                                        "SourceType": "Table",
+                                        "TableName": "GST Group",
+                                        "TableFieldName": "Component Calc. Type",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Code",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "GST Group Code"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Constant",
+                                    "Value": "Cess %"
+                                }
+                            }
+                        ]
+                    },
+                    "Body": [
+                        {
+                            "ActivityType": "NUMERICEXPRESSION",
+                            "Activity": {
+                                "VariableName": "CessAmount",
+                                "Expression": "Amount*Cess/100",
+                                "Tokens": [
+                                    {
+                                        "TokenName": "Amount",
+                                        "TokenValue": {
+                                            "Type": "Lookup",
+                                            "Lookup": {
+                                                "SourceType": "Current Record",
+                                                "TableName": "Transfer Line",
+                                                "FieldName": "Amount"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "TokenName": "Cess",
+                                        "TokenValue": {
+                                            "Type": "Lookup",
+                                            "Lookup": {
+                                                "SourceType": "Component Percent",
+                                                "ComponentName": "CESS"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "ElseIf": {
+                        "Condition": {
+                            "Body": [
+                                {
+                                    "Operator": " ",
+                                    "ConditionType": "Equals",
+                                    "LHS": {
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "GST Group",
+                                            "TableFieldName": "Component Calc. Type",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Code",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "GST Group Code"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "RHS": {
+                                        "Type": "Constant",
+                                        "Value": "Threshold"
+                                    }
+                                }
+                            ]
+                        },
+                        "Body": [
+                            {
+                                "ActivityType": "IFSTATEMENT",
+                                "Activity": {
+                                    "Condition": {
+                                        "Body": [
+                                            {
+                                                "Operator": " ",
+                                                "ConditionType": "Is Less Than Or Equals To",
+                                                "LHS": {
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "Amount"
+                                                    }
+                                                },
+                                                "RHS": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Column",
+                                                        "RateColumnName": "Threshold Amount"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "Body": [
+                                        {
+                                            "ActivityType": "NUMERICEXPRESSION",
+                                            "Activity": {
+                                                "VariableName": "BeforeThresholdCessAmount",
+                                                "Expression": "Amount*Cess/100",
+                                                "Tokens": [
+                                                    {
+                                                        "TokenName": "Amount",
+                                                        "TokenValue": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Current Record",
+                                                                "TableName": "Transfer Line",
+                                                                "FieldName": "Amount"
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "TokenName": "Cess",
+                                                        "TokenValue": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Component Percent",
+                                                                "ComponentName": "Before Threshold Cess"
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "ElseIf": {
+                                        "Condition": {
+                                            "Body": []
+                                        },
+                                        "Body": [
+                                            {
+                                                "ActivityType": "NUMERICEXPRESSION",
+                                                "Activity": {
+                                                    "VariableName": "CessAmount",
+                                                    "Expression": "Amount*Cess/100",
+                                                    "Tokens": [
+                                                        {
+                                                            "TokenName": "Amount",
+                                                            "TokenValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Transfer Line",
+                                                                    "FieldName": "Amount"
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "TokenName": "Cess",
+                                                            "TokenValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Component Percent",
+                                                                    "ComponentName": "CESS"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        "ElseIf": {
+                            "Condition": {
+                                "Body": [
+                                    {
+                                        "Operator": " ",
+                                        "ConditionType": "Equals",
+                                        "LHS": {
+                                            "Lookup": {
+                                                "SourceType": "Table",
+                                                "TableName": "GST Group",
+                                                "TableFieldName": "Component Calc. Type",
+                                                "Method": "First",
+                                                "TableFilters": [
+                                                    {
+                                                        "FiterFieldName": "Code",
+                                                        "FilterType": "Equals",
+                                                        "FilterValue": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Current Record",
+                                                                "TableName": "Transfer Line",
+                                                                "FieldName": "GST Group Code"
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "RHS": {
+                                            "Type": "Constant",
+                                            "Value": "Cess % + Amount / Unit Factor"
+                                        }
+                                    },
+                                    {
+                                        "Operator": "and",
+                                        "ConditionType": "Equals",
+                                        "LHS": {
+                                            "Lookup": {
+                                                "SourceType": "Current Record",
+                                                "TableName": "Transfer Line",
+                                                "FieldName": ""
+                                            }
+                                        },
+                                        "RHS": {
+                                            "Type": "Constant",
+                                            "Value": "Item"
+                                        }
+                                    }
+                                ]
+                            },
+                            "Body": [
+                                {
+                                    "ActivityType": "NUMERICEXPRESSION",
+                                    "Activity": {
+                                        "VariableName": "CessAmount",
+                                        "Expression": "(Amount*Cess/100)+CessAmountUnitFactor",
+                                        "Tokens": [
+                                            {
+                                                "TokenName": "Amount",
+                                                "TokenValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": "Amount"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "TokenName": "Cess",
+                                                "TokenValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Component Percent",
+                                                        "ComponentName": "CESS"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "TokenName": "CessAmountUnitFactor",
+                                                "TokenValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Variable",
+                                                        "VariableName": "CessAmountByUnitFactor"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "ElseIf": {
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Table",
+                                                    "TableName": "GST Group",
+                                                    "TableFieldName": "Component Calc. Type",
+                                                    "Method": "First",
+                                                    "TableFilters": [
+                                                        {
+                                                            "FiterFieldName": "Code",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Transfer Line",
+                                                                    "FieldName": "GST Group Code"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Constant",
+                                                "Value": "Amount / Unit Factor"
+                                            }
+                                        },
+                                        {
+                                            "Operator": "and",
+                                            "ConditionType": "Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Current Record",
+                                                    "TableName": "Transfer Line",
+                                                    "FieldName": ""
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Constant",
+                                                "Value": "Item"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "NUMERICEXPRESSION",
+                                        "Activity": {
+                                            "VariableName": "CessAmount",
+                                            "Expression": "CessAmountUnitFactor",
+                                            "Tokens": [
+                                                {
+                                                    "TokenName": "CessAmountUnitFactor",
+                                                    "TokenValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Variable",
+                                                            "VariableName": "CessAmountByUnitFactor"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "ElseIf": {
+                                    "Condition": {
+                                        "Body": [
+                                            {
+                                                "Operator": " ",
+                                                "ConditionType": "Equals",
+                                                "LHS": {
+                                                    "Lookup": {
+                                                        "SourceType": "Table",
+                                                        "TableName": "GST Group",
+                                                        "TableFieldName": "Component Calc. Type",
+                                                        "Method": "First",
+                                                        "TableFilters": [
+                                                            {
+                                                                "FiterFieldName": "Code",
+                                                                "FilterType": "Equals",
+                                                                "FilterValue": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Transfer Line",
+                                                                        "FieldName": "GST Group Code"
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "RHS": {
+                                                    "Type": "Constant",
+                                                    "Value": "Cess % Or Amount / Unit Factor Whichever Higher"
+                                                }
+                                            },
+                                            {
+                                                "Operator": "and",
+                                                "ConditionType": "Equals",
+                                                "LHS": {
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Transfer Line",
+                                                        "FieldName": ""
+                                                    }
+                                                },
+                                                "RHS": {
+                                                    "Type": "Constant",
+                                                    "Value": "Item"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "Body": [
+                                        {
+                                            "ActivityType": "NUMERICEXPRESSION",
+                                            "Activity": {
+                                                "VariableName": "CessAmountByCessPercent",
+                                                "Expression": "Amount*Cess/100",
+                                                "Tokens": [
+                                                    {
+                                                        "TokenName": "Amount",
+                                                        "TokenValue": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Current Record",
+                                                                "TableName": "Transfer Line",
+                                                                "FieldName": "Amount"
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "TokenName": "Cess",
+                                                        "TokenValue": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Component Percent",
+                                                                "ComponentName": "CESS"
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "ActivityType": "NUMERICEXPRESSION",
+                                            "Activity": {
+                                                "VariableName": "CessAmountByUnitFactor",
+                                                "Expression": "CessAmountUnitFactor",
+                                                "Tokens": [
+                                                    {
+                                                        "TokenName": "CessAmountUnitFactor",
+                                                        "TokenValue": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Variable",
+                                                                "VariableName": "CessAmountByUnitFactor"
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "ActivityType": "IFSTATEMENT",
+                                            "Activity": {
+                                                "Condition": {
+                                                    "Body": [
+                                                        {
+                                                            "Operator": " ",
+                                                            "ConditionType": "Is Greater Than",
+                                                            "LHS": {
+                                                                "Lookup": {
+                                                                    "SourceType": "Variable",
+                                                                    "VariableName": "CessAmountByCessPercent"
+                                                                }
+                                                            },
+                                                            "RHS": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Variable",
+                                                                    "VariableName": "CessAmountByUnitFactor"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "Body": [
+                                                    {
+                                                        "ActivityType": "SETVARIABLE",
+                                                        "Activity": {
+                                                            "OutputVariableName": "CessAmount",
+                                                            "OutputValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Variable",
+                                                                    "VariableName": "CessAmountByCessPercent"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ],
+                                                "ElseIf": {
+                                                    "Condition": {
+                                                        "Body": []
+                                                    },
+                                                    "Body": [
+                                                        {
+                                                            "ActivityType": "SETVARIABLE",
+                                                            "Activity": {
+                                                                "OutputVariableName": "CessAmount",
+                                                                "OutputValue": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Variable",
+                                                                        "VariableName": "CessAmountByUnitFactor"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "Before Threshold Cess",
+                "Sequence": 2,
+                "Formula": {
+                    "VariableName": "Before Threshold Cess",
+                    "Expression": "BeforeCessAmount",
+                    "Tokens": [
+                        {
+                            "TokenName": "BeforeCessAmount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Variable",
+                                    "VariableName": "BeforeThresholdCessAmount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "CESS",
+                "Sequence": 1,
+                "Formula": {
+                    "VariableName": "CESS",
+                    "Expression": "CessAmount",
+                    "Tokens": [
+                        {
+                            "TokenName": "CessAmount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Variable",
+                                    "VariableName": "CessAmount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Transfer Line",
+                            "FieldName": "Exempted"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "GST Group",
+                            "TableFieldName": "Component Calc. Type",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Transfer Line",
+                                            "FieldName": "GST Group Code"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "General"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Location",
+                            "TableFieldName": "Bonded warehouse",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Transfer Header",
+                                            "TableFieldName": "Transfer-from Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "Document No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Transfer Line",
+                            "FieldName": "GST Group Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Transfer Line",
+                            "FieldName": "HSN/SAC Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Location",
+                            "TableFieldName": "GST Registration No.",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Transfer Header",
+                                            "TableFieldName": "Transfer-from Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "Document No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Location",
+                            "TableFieldName": "GST Registration No.",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Transfer Header",
+                                            "TableFieldName": "Transfer-to Code",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Transfer Line",
+                                                            "FieldName": "Document No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+]

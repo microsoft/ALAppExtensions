@@ -700,6 +700,33 @@ codeunit 139600 "Test Essential Bus. Headlines"
         TestRecentlyOverdueInvoiceWithOverdueInvoices(5);
     end;
 
+    [Test]
+    procedure TestHeadlineCanBeHidden()
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        // [GIVEN] Initial state when no data is present
+        Initialize();
+
+        // [GIVEN] One invoice that was due yesterday
+        CreateInvoicesWithDueDateYesterday(1);
+
+        // [WHEN] Run the headline computation
+        EssentialBusHeadlineMgt.HandleRecentlyOverdueInvoices();
+
+        // [THEN] Recently overdue invoices headline is visible
+        Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices), 'Expected recently overdue invoices headline to be visible');
+
+        // [WHEN] Simulate no more overdue invoices by deleting all customer ledger entries
+        CustLedgerEntry.DeleteAll();
+
+        // [WHEN] Recompute the headline computation
+        EssentialBusHeadlineMgt.HandleRecentlyOverdueInvoices();
+
+        // [THEN] The headline is hidden
+        Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices), 'Expected recently overdue invoices headline to be not visible after recompute');
+    end;
+
     local procedure TestRecentlyOverdueInvoiceWithOverdueInvoices(NumberOfNewlyOverdueInvoices: Integer)
     var
         OverdueInvoicesTxt: Text;

@@ -18,7 +18,7 @@
         },
         {
             "name": "subscription billing app",
-            "path": "../SubscriptionBilling/app"
+            "path": "../../../BCApps/src/Apps/W1/Subscription Billing/App"
         },
         {
             "name": "statistical accounts app",

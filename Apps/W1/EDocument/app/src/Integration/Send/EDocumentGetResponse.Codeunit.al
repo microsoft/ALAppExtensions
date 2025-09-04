@@ -44,7 +44,7 @@ codeunit 6144 "E-Document Get Response"
                 EDocumentService.Get(EDocumentServiceStatus."E-Document Service Code");
                 HandleResponse(EDocument, EDocumentService, EDocumentServiceStatus);
 
-                WorkflowManagement.HandleEventOnKnownWorkflowInstance(EDocumentWorkflowSetup.EventEDocStatusChanged(), EDocument, EDocument."Workflow Step Instance ID");
+                WorkflowManagement.HandleEventOnKnownWorkflowInstance(EDocumentWorkflowSetup.EventEDocStatusChanged(), EDocumentServiceStatus, EDocument."Workflow Step Instance ID");
 
             until EDocumentServiceStatus.Next() = 0;
     end;

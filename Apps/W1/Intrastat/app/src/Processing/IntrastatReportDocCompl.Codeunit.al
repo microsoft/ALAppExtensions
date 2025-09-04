@@ -15,15 +15,15 @@ using Microsoft.Service.Document;
 using Microsoft.Service.Posting;
 using Microsoft.Service.Reports;
 
-
 codeunit 4812 "Intrastat Report Doc. Compl."
 {
     var
-        IntrastatReportSetup: Record "Intrastat Report Setup";
         MustBeSpecifiedLbl: Label '%1 must be specified.', Comment = '%1 = FieldCaption';
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeInsertEvent', '', false, false)]
     local procedure DefaultSalesDocuments(var Rec: Record "Sales Header"; RunTrigger: Boolean)
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
     begin
         if Rec.IsTemporary() or (not RunTrigger) or (not IntrastatReportSetup.ReadPermission) then
             exit;
@@ -44,6 +44,8 @@ codeunit 4812 "Intrastat Report Doc. Compl."
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeInsertEvent', '', false, false)]
     local procedure DefaultPurchaseDocuments(var Rec: Record "Purchase Header"; RunTrigger: Boolean)
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
     begin
         if Rec.IsTemporary() or (not RunTrigger) or (not IntrastatReportSetup.ReadPermission) then
             exit;
@@ -64,6 +66,8 @@ codeunit 4812 "Intrastat Report Doc. Compl."
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeInsertEvent', '', false, false)]
     local procedure DefaultServiceDocuments(var Rec: Record "Service Header"; RunTrigger: Boolean)
+    var
+        IntrastatReportSetup: Record "Intrastat Report Setup";
     begin
         if Rec.IsTemporary() or (not RunTrigger) or (not IntrastatReportSetup.ReadPermission) then
             exit;

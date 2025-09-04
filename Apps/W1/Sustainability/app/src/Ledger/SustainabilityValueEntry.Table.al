@@ -326,8 +326,10 @@ table 6227 "Sustainability Value Entry"
                 "No." := ValueEntry."Item No.";
             end;
 
-        "Job No." := ValueEntry."Job No.";
-        "Job Task No." := ValueEntry."Job Task No."
+        if ValueEntry."Item Ledger Entry Type" <> ValueEntry."Item Ledger Entry Type"::Purchase then begin
+            "Job No." := ValueEntry."Job No.";
+            "Job Task No." := ValueEntry."Job Task No."
+        end;
     end;
 
     procedure CopyFromJobLedgerEntry(JobLedgerEntry: Record "Job Ledger Entry")

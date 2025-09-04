@@ -11,7 +11,9 @@ codeunit 2651 "Document Print Ready"
 {
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reporting Triggers", 'OnDocumentPrintReady', '', true, true)]
-    procedure OnDocumentPrintReady(ObjectType: Option "Report","Page"; ObjectId: Integer; ObjectPayload: JsonObject; DocumentStream: InStream; var Success: Boolean);
+#pragma warning disable AS0022    
+    local procedure OnDocumentPrintReady(ObjectType: Option "Report","Page"; ObjectId: Integer; ObjectPayload: JsonObject; DocumentStream: InStream; var Success: Boolean);
+#pragma warning restore AS0022
     var
         EmailPrinterSettings: Record "Email Printer Settings";
         MailManagement: Codeunit "Mail Management";

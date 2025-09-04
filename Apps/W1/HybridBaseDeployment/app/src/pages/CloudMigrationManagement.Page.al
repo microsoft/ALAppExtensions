@@ -45,6 +45,18 @@ page 40063 "Cloud Migration Management"
                                 Message(StatusTxt);
                         end;
                     }
+                    field(Warnings; NumberOfWarnings)
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                        Caption = 'Warnings';
+                        ToolTip = 'Specifies the number of warnings for the selected migration.';
+
+                        trigger OnDrillDown()
+                        begin
+                            Page.Run(Page::"Cloud Migration Warnings");
+                        end;
+                    }
                 }
 
                 group(MigrationStatistics)
@@ -229,7 +241,7 @@ page 40063 "Cloud Migration Management"
             }
             action(MigrateRecordLinks)
             {
-                Enabled = IsSuper and IsSetupComplete;
+                Enabled = IsSuper and IsSetupComplete and not RecordLinkBufferEmpty;
                 Visible = not IsOnPrem;
                 ApplicationArea = All;
                 Caption = 'Migrate record links and notes';
@@ -243,6 +255,7 @@ page 40063 "Cloud Migration Management"
                     WarnRecordLinkMigrationDoneBefore();
                     HybridCloudManagement.MigrateRecordLinks();
                     Message(RecordLinkMigrationCompletedTxt);
+                    UpdateWarningCounts();
                 end;
             }
 
@@ -292,6 +305,7 @@ page 40063 "Cloud Migration Management"
                     HybridCloudManagement.GetCloudMigrationStatusText(StatusTxt, StatusTxtStyle, MoreInformationTxt);
                     UpdateTablesStatistics();
                     UpdateControlProperties();
+                    UpdateWarningCounts();
                     CurrPage.Update();
                     WarnAboutNonInitializedCompanies();
                 end;
@@ -700,6 +714,7 @@ page 40063 "Cloud Migration Management"
 
         IntelligentCloudNotifier.ShowICUpdateNotification();
         WarnAboutNonInitializedCompanies();
+        UpdateWarningCounts();
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -745,6 +760,7 @@ page 40063 "Cloud Migration Management"
     var
         IntelligentCloudStatus: Record "Intelligent Cloud Status";
         HybridCompany: Record "Hybrid Company";
+        ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         PermissionManager: Codeunit "Permission Manager";
     begin
@@ -756,6 +772,8 @@ page 40063 "Cloud Migration Management"
         TablesRemainingVisible := TotalTablesRemainingCount > 0;
         WarningsVisible := TotalTablesWithWarningsCount > 0;
         TablesFailedVisible := TotalTablesFailedCount > 0;
+
+        RecordLinkBufferEmpty := ReplicationRecordLinkBuffer.IsEmpty();
     end;
 
     procedure SendRepairDataNotification()
@@ -863,6 +881,21 @@ page 40063 "Cloud Migration Management"
             Error('');
     end;
 
+    local procedure UpdateWarningCounts()
+    var
+        ICloudMigrationWarning: Interface "Cloud Migration Warning";
+        CloudMigrationWarningType: Enum "Cloud Migration Warning Type";
+        WarningImplementations: List of [Integer];
+        WarningImplementation: Integer;
+    begin
+        NumberOfWarnings := 0;
+        WarningImplementations := CloudMigrationWarningType.Ordinals();
+        foreach WarningImplementation in WarningImplementations do begin
+            ICloudMigrationWarning := "Cloud Migration Warning Type".FromInteger(WarningImplementation);
+            NumberOfWarnings += ICloudMigrationWarning.GetWarningCount();
+        end;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure CanRunDiagnostic(var CanRun: Boolean)
     begin
@@ -929,6 +962,7 @@ page 40063 "Cloud Migration Management"
         TotalTablesRemainingCount: Integer;
         TotalTablesWithWarningsCount: Integer;
         NotInitializedCompaniesCount: Integer;
+        NumberOfWarnings: Integer;
         StatusTxt: Text;
         StatusTxtStyle: Text;
         MoreInformationTxt: Text;
@@ -949,5 +983,5 @@ page 40063 "Cloud Migration Management"
         UpdateReplicationCompaniesEnabled: Boolean;
         CustomTablesEnabled: Boolean;
         LastRefresh: DateTime;
-
+        RecordLinkBufferEmpty: Boolean;
 }

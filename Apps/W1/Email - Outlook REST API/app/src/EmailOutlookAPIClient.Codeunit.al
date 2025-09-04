@@ -10,7 +10,9 @@ using System.Text;
 using System.Utilities;
 
 #if not CLEAN26
+#pragma warning disable AL0432
 codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v2", "Email - Outlook API Client v3", "Email - Outlook API Client v4"
+#pragma warning restore AL0432
 #else
 codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v2", "Email - Outlook API Client v4"
 #endif

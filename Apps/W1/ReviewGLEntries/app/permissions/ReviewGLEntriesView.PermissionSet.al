@@ -14,7 +14,9 @@ permissionset 22220 "Review G/L Entries - View"
 
     Permissions = tabledata "G/L Entry Review Log" = imd,
 #if not CLEAN27
+#pragma warning disable AL0432
                   tabledata "G/L Entry Review Entry" = imd,
+#pragma warning restore AL0432
 #endif
                   tabledata "G/L Entry Review Setup" = imd;
 }

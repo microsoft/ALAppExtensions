@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument.Processing.AI;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.Purchases.Document;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
 using Microsoft.Finance.Deferral;
 using Microsoft.Finance.GeneralLedger.Account;
@@ -12,6 +13,7 @@ using Microsoft.Finance.GeneralLedger.Account;
 table 6111 "EDoc Line Match Buffer"
 {
     TableType = Temporary;
+    DataClassification = SystemMetadata;
     InherentEntitlements = X;
     InherentPermissions = RIMDX;
     Caption = 'EDocument Line Match Buffer';
@@ -59,6 +61,47 @@ table 6111 "EDoc Line Match Buffer"
             Caption = 'GL Account Candidate Count';
             DataClassification = SystemMetadata;
         }
+        field(10; "Purchase Type"; Enum "Purchase Line Type")
+        {
+            Caption = 'Purchase Type';
+        }
+        field(11; "Purchase Type No."; Code[20])
+        {
+            Caption = 'Purchase Type No.';
+        }
+        field(12; "Item Reference No."; Code[50])
+        {
+            Caption = 'Item Reference No.';
+        }
+        
+        field(25; "Shortcut Dimension 1 Code"; Code[20])
+        {
+            Caption = 'Shortcut Dimension 1 Code';
+            DataClassification = CustomerContent;
+        }
+        field(26; "Shortcut Dimension 2 Code"; Code[20])
+        {
+            Caption = 'Shortcut Dimension 2 Code';
+            DataClassification = CustomerContent;
+        }
+        field(30; "Historical Matching Reasoning"; Text[250])
+        {
+            Caption = 'Historical Matching Reason';
+            DataClassification = CustomerContent;
+        }
+        field(40; "Confidence Score"; Decimal)
+        {
+            Caption = 'Confidence Score';
+            DecimalPlaces = 0 : 2;
+            MinValue = 0;
+            MaxValue = 1;
+        }
+        field(50; "Matched PurchInvLine SystemId"; Guid)
+        {
+            Caption = 'Matched Purch. Inv. Line SystemId';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
     keys
     {
@@ -68,7 +111,7 @@ table 6111 "EDoc Line Match Buffer"
         }
     }
 
-    internal procedure SetSource(var EDocumentPurchaseLine: Record "E-Document Purchase Line")
+        internal procedure SetSource(var EDocumentPurchaseLine: Record "E-Document Purchase Line")
     begin
         Rec."E-Document Entry No." := EDocumentPurchaseLine."E-Document Entry No.";
         Rec."Line No." := EDocumentPurchaseLine."Line No.";

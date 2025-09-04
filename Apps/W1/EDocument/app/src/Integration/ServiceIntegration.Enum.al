@@ -15,7 +15,7 @@ enum 6151 "Service Integration" implements IDocumentSender, IDocumentReceiver, I
 
     value(0; "No Integration")
     {
-        Caption = '';
+        Caption = ' ';
         Implementation = IDocumentSender = "E-Document No Integration", IDocumentReceiver = "E-Document No Integration", IConsentManager = "E-Document No Integration";
     }
 }

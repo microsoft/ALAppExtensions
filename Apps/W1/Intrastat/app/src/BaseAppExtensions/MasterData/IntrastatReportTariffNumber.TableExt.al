@@ -27,6 +27,7 @@ tableextension 4819 "Intrastat Report Tariff Number" extends "Tariff Number"
             Caption = 'Conversion Factor';
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the conversion factor for the tariff number.';
+            AutoFormatType = 0;
             trigger OnValidate()
             var
                 Item: Record Item;

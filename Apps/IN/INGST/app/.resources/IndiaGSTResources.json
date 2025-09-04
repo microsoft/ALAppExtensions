@@ -1,0 +1,24 @@
+{
+    "taxTypes":[
+        {
+            "GST": "TaxTypes/GST.json"
+        },
+        {
+            "GSTCESS": "TaxTypes/GSTCESS.json"
+        },
+        {
+            "GSTTDSTCS": "TaxTypes/GSTTDSTCS.json"
+        }
+    ],
+    "useCases":[
+        {
+            "GST": "GSTUseCases"
+        },
+        {
+            "GSTCESS": "GSTCESSUseCases"
+        },
+        {
+            "GSTTDSTCS": "GSTTDSTCSUseCases"
+        }   
+    ]
+}

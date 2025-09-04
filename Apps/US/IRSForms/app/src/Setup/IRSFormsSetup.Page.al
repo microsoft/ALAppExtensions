@@ -151,14 +151,8 @@ page 10030 "IRS Forms Setup"
 #endif
 
     trigger OnOpenPage()
-#if not CLEAN25
-    var
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-#endif
     begin
-#if not CLEAN25
-        CurrPage.Editable := IRSFormsFeature.FeatureCanBeUsed();
-#endif
+        Rec.InitSetup();
         Rec.InitIRISAPIClientID();
     end;
 }

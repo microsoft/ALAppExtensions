@@ -40,7 +40,7 @@ table 4570 "Ext. File Share Account"
         {
             Access = Internal;
             Caption = 'Authorization Type';
-            ToolTip = 'The way of authorizing used to access the Blob Storage.';
+            ToolTip = 'Specifies the way of authorization used to access the File Share.';
         }
         field(8; "Secret Key"; Guid)
         {

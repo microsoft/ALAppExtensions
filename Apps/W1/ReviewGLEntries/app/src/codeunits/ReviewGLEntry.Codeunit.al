@@ -10,7 +10,9 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
     Permissions = TableData "G/L Entry" = rm,
                   TableData "G/L Entry Review Setup" = ri,
 #if not CLEAN27
+#pragma warning disable AL0432
                   TableData "G/L Entry Review Entry" = rid,
+#pragma warning restore AL0432
 #endif
                   TableData "G/L Entry Review Log" = rid;
 
@@ -24,7 +26,9 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
     var
         GLEntryReviewLog: Record "G/L Entry Review Log";
 #if not CLEAN27
+#pragma warning disable AL0432
         GLEntryReviewEntry: Record "G/L Entry Review Entry";
+#pragma warning restore AL0432
 #endif
         FeatureTelemetry: Codeunit "Feature Telemetry";
         UserName: Code[50];
@@ -47,7 +51,9 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
             GLEntry.Modify(true);
         until GLEntry.Next() = 0;
 #if not CLEAN27
+#pragma warning disable AL0432
         OnAfterReviewEntries(GLEntry, GLEntryReviewEntry);
+#pragma warning restore AL0432
 #endif
 
         OnAfterReviewEntriesLog(GLEntry, GLEntryReviewLog);
@@ -125,11 +131,13 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
     end;
 
 #if not CLEAN27
+#pragma warning disable AL0432
     [Obsolete('Use the event OnAfterReviewEntriesLog instead.', '27.0')]
     [IntegrationEvent(false, false)]
     local procedure OnAfterReviewEntries(var GLEntry: Record "G/L Entry"; var GLEntryReviewEntry: Record "G/L Entry Review Entry")
     begin
     end;
+#pragma warning restore AL0432
 #endif
 
     [IntegrationEvent(false, false)]

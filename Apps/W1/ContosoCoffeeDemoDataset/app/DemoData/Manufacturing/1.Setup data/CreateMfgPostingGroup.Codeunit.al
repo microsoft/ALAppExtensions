@@ -16,10 +16,8 @@ codeunit 4782 "Create Mfg Posting Group"
     trigger OnRun()
     var
         FinanceModuleSetup: Record "Finance Module Setup";
-        ManufacturingDemoDataSetup: Record "Manufacturing Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
     begin
-        ManufacturingDemoDataSetup.Get();
         FinanceModuleSetup.Get();
 
         ContosoPostingGroup.InsertGenProductPostingGroup(Manufacturing(), CapacitiesTok, FinanceModuleSetup."VAT Prod. Post Grp. Standard");

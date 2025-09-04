@@ -49,6 +49,7 @@ permissionset 6101 "E-Doc. Core - Read"
         tabledata "E-Doc. Vendor Assign. History" = R,
         tabledata "E-Doc. Purchase Line History" = R,
         tabledata "ED Purchase Line Field Setup" = R,
+        tabledata "EDoc Historical Matching Setup" = R,
         tabledata "E-Doc. Record Link" = R;
     #endregion Purchase draft        
 }

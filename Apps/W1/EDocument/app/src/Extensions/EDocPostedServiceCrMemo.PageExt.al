@@ -40,7 +40,7 @@ pageextension 6143 "E-Doc. Posted Service Cr. Memo" extends "Posted Service Cred
                     var
                         EDocumentProcessing: Codeunit "E-Document Processing";
                     begin
-                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Sales Invoice") then
+                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Service Credit Memo") then
                             Message(EDocumentCreatedMsg);
                     end;
                 }

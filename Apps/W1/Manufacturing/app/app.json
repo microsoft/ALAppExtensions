@@ -2,7 +2,7 @@
   "id": "4d6c453d-e61d-4872-b35d-6c731c0fd93e",
   "name": "Manufacturing",
   "publisher": "Microsoft",
-  "version": "27.0.0.0",
+  "version": "28.0.0.0",
   "brief": "Manufacturing app",
   "description": "The app enables the management of production orders.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,7 +15,7 @@
   "logo": "ExtensionLogo.png",
   "internalsVisibleTo": [],
   "platform": "27.0.0.0",
-  "application": "27.0.0.0",
+  "application": "28.0.0.0",
   "idRanges": [
     {
       "from": 99000750,

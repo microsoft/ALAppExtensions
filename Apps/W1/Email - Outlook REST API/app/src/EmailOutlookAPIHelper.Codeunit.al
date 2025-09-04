@@ -282,6 +282,7 @@ codeunit 4509 "Email - Outlook API Helper"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('Update OutlookAPIClient to v4.', '26.0')]
     procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client v3"; var OAuthClient: interface "Email - OAuth Client v2")
     var
@@ -292,6 +293,7 @@ codeunit 4509 "Email - Outlook API Helper"
         OAuthClient := DefaultOAuthClient;
         OnAfterInitializeClientsV3(OutlookAPIClient, OAuthClient);
     end;
+#pragma warning restore AL0432
 #endif
     procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client v4"; var OAuthClient: interface "Email - OAuth Client v2")
     var
@@ -657,10 +659,12 @@ codeunit 4509 "Email - Outlook API Helper"
     end;
 
 #if not CLEAN26
+#pragma warning disable AL0432
     [InternalEvent(false)]
     local procedure OnAfterInitializeClientsV3(var OutlookAPIClient: interface "Email - Outlook API Client v3"; var OAuthClient: interface "Email - OAuth Client v2")
     begin
     end;
+#pragma warning restore AL0432
 #endif
     [InternalEvent(false)]
     local procedure OnAfterInitializeClientsV4(var OutlookAPIClient: interface "Email - Outlook API Client v4"; var OAuthClient: interface "Email - OAuth Client v2")

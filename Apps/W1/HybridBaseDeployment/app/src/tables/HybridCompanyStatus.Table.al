@@ -55,6 +55,11 @@ table 40027 "Hybrid Company Status"
         {
             Description = 'Last Record Link Migration DateTime';
         }
+        field(9; "Tenant Media Count"; Integer)
+        {
+            Description = 'Tenant Media Count';
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

@@ -1,0 +1,261 @@
+[
+    {
+        "Code": "GST TDS TCS",
+        "TaxTypeDescription": "GST TDS/TCS",
+        "Enable": true,
+        "Version": 4,
+        "MinorVersion": 0,
+        "ChangedBy": "Microsoft",
+        "TaxEntities": [
+            {
+                "TableName": "Customer",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Vendor",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Gen. Journal Line",
+                "Type": "Transaction"
+            }
+        ],
+        "Attributes": [
+            {
+                "TaxType": "",
+                "ID": 1,
+                "Name": "State",
+                "Type": "Text",
+                "LookupTable": "State",
+                "LookupField": "Code",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Vendor",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Company Information",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "Location State Code"
+                    },
+                    {
+                        "Entity": "Order Address",
+                        "MappingField": "State"
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 2,
+                "Name": "PAN No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "P.A.N. No."
+                    },
+                    {
+                        "Entity": "Vendor",
+                        "MappingField": "P.A.N. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 3,
+                "Name": "TCAN No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "T.C.A.N. No."
+                    },
+                    {
+                        "Entity": "Company Information",
+                        "MappingField": "T.C.A.N. No."
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "T.C.A.N. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 4,
+                "Name": "Customer GST Registration No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "GST Registration No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 5,
+                "Name": "TAN No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "T.A.N. No."
+                    },
+                    {
+                        "Entity": "Company Information",
+                        "MappingField": "T.A.N. No."
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "T.A.N. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST TDS TCS",
+                "ID": 35,
+                "Name": "GST TDS TCS Type",
+                "Type": "Option",
+                "LookupTable": "Gen. Journal Line",
+                "LookupField": "GST TDS/GST TCS",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": true,
+                "EntityMapping": [
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "GST TDS/GST TCS"
+                    }
+                ]
+            }
+        ],
+        "AccountingPeriod": {
+            "AccountingPeriodCode": "GST",
+            "AccountingPeriodDesc": "GST Accounting Periods"
+        },
+        "Components": [
+            {
+                "ID": 10000,
+                "Name": "CGST",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 20000,
+                "Name": "SGST",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 30000,
+                "Name": "IGST",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 40000,
+                "Name": "GST TDS/TCS Base Amount",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": true,
+                "ComponentType": "Normal"
+            }
+        ],
+        "TaxRateColumnSetup": [
+            {
+                "Sequence": 1,
+                "ID": 43,
+                "ColumnType": "Tax Attributes",
+                "ColumnName": "GST TDS TCS Type",
+                "VisibleOnInterface": true,
+                "Type": "Option",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 3,
+                "ID": 44,
+                "ColumnType": "Component",
+                "ColumnName": "CGST",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 4,
+                "ID": 45,
+                "ColumnType": "Component",
+                "ColumnName": "SGST",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 5,
+                "ID": 46,
+                "ColumnType": "Component",
+                "ColumnName": "IGST",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 2,
+                "ID": 47,
+                "ColumnType": "Range From",
+                "ColumnName": "Effective Date",
+                "VisibleOnInterface": false,
+                "Type": "Date",
+                "AllowBlank": false
+            }
+        ]
+    }
+]

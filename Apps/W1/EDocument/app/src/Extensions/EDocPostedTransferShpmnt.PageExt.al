@@ -43,7 +43,7 @@ pageextension 6106 "E-Doc. Posted Transfer Shpmnt." extends "Posted Transfer Shi
                     var
                         EDocumentProcessing: Codeunit "E-Document Processing";
                     begin
-                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Sales Invoice") then
+                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Transfer Shipment") then
                             Message(EDocumentCreatedMsg);
                     end;
                 }

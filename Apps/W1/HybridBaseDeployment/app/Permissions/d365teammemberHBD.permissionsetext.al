@@ -14,5 +14,8 @@ permissionsetextension 4002 "D365 TEAM MEMBER - HBD" extends "D365 TEAM MEMBER"
                   tabledata "Migration Table Mapping" = RIMD,
                   tabledata "Intelligent Cloud Not Migrated" = RIMD,
                   tabledata "User Mapping Work" = RIMD,
-                  tabledata "Replication Run Completed Arg" = RIMD;
+                  tabledata "Replication Run Completed Arg" = RIMD,
+                  tabledata "Replication Record Link Buffer" = RIMD,
+                  tabledata "Record Link Mapping" = RIMD,
+                  tabledata "Cloud Migration Warning" = RIMD;
 }

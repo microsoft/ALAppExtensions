@@ -1,0 +1,114 @@
+[
+    {
+        "CaseID": "{6A75BFF5-C880-498F-AC1D-E9CF9BE7F888}",
+        "Description": "Inter-state Subcontracting GST For Delivery Challan Line for Registered Vendor",
+        "Version": 2,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "Delivery Challan Line",
+        "ParentUseCase": "Subcontracting GST For Delivery Challan Line",
+        "ParentCaseId": "{23B7CD0D-EA02-4835-9AE8-875813B138F0}",
+        "PresentationOrder": 496,
+        "Indent": 1,
+        "Attributes": [],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "IGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "IGST",
+                    "Expression": "{GSTBaseAmount}*{GSTPer}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Delivery Challan Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{GSTPer}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "IGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "GST Base Amount",
+                "Sequence": 1,
+                "Formula": {
+                    "VariableName": "GST Base Amount",
+                    "Expression": "{GSTBaseAmount}",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Delivery Challan Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Delivery Challan Line",
+                            "FieldName": "Location State Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Delivery Challan Line",
+                            "FieldName": "Vendor State Code"
+                        }
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Delivery Challan Line",
+                            "FieldName": "GST Vendor Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Registered"
+                    }
+                }
+            ]
+        }
+    }
+]

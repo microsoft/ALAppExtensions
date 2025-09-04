@@ -1,0 +1,49 @@
+{
+    "type": "object",
+    "properties": {
+        "lineId": {
+            "type": "integer",
+            "description": "The identifier of the line item being analyzed."
+        },
+        "purchaseType": {
+            "type": "integer",
+            "description": "The purchase line type as an enum integer value (0=G/L Account, 1=Item, 2=Resource, 3=Fixed Asset, 4=Charge (Item))."
+        },
+        "itemNo": {
+            "type": "string",
+            "description": "The item number for the purchase line to be matched. Required for all purchase types."
+        },
+        "deferralCode": {
+            "type": "string",
+            "description": "The deferral code to be applied to this line, if applicable."
+        },
+        "dimension1Code": {
+            "type": "string",
+            "description": "The code for the first dimension (e.g., department, location) to be applied to this line, if applicable."
+        },
+        "dimension2Code": {
+            "type": "string",
+            "description": "The code for the second dimension (e.g., project, cost center) to be applied to this line, if applicable."
+        },
+        "confidenceScore": {
+            "type": "number",
+            "description": "The confidence level of the match, expressed as a decimal (e.g., 0.85)."
+        },
+        "reasoning": {
+            "type": "string",
+            "description": "Clear explanation of the historical pattern that led to this match. This should include the logic used to determine the match, such as specific historical records or patterns that were considered."
+        },
+        "recentHistoricalRecordRef": {
+            "type": "string",
+            "description": "SystemId to the most recent/relevant historical record used for this match."
+        }
+    },
+    "required": [
+        "lineId",
+        "purchaseType",
+        "itemNo",
+        "reasoning",
+        "confidenceScore",
+        "recentHistoricalRecordRef"
+    ]
+}

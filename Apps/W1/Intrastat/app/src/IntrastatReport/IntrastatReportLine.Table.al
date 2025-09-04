@@ -135,6 +135,7 @@ table 4812 "Intrastat Report Line"
             Caption = 'Net Weight';
             DecimalPlaces = 0 : 5;
             ToolTip = 'Specifies the net weight of one unit of the item.';
+            AutoFormatType = 0;
             trigger OnValidate()
             begin
                 if Quantity <> 0 then
@@ -148,6 +149,8 @@ table 4812 "Intrastat Report Line"
             Caption = 'Amount';
             DecimalPlaces = 0 : 5;
             ToolTip = 'Specifies the total amount of the entry, excluding VAT.';
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
             trigger OnValidate()
             begin
                 if "Cost Regulation %" <> 0 then
@@ -161,6 +164,7 @@ table 4812 "Intrastat Report Line"
             Caption = 'Quantity';
             DecimalPlaces = 0 : 5;
             ToolTip = 'Specifies the number of units of the item in the entry.';
+            AutoFormatType = 0;
             trigger OnValidate()
             begin
                 if (Quantity <> 0) then
@@ -183,6 +187,7 @@ table 4812 "Intrastat Report Line"
             MaxValue = 100;
             MinValue = 0;
             ToolTip = 'Specifies any indirect costs, as a percentage.';
+            AutoFormatType = 0;
             trigger OnValidate()
             begin
                 "Indirect Cost" := Amount * "Cost Regulation %" / 100;
@@ -194,6 +199,8 @@ table 4812 "Intrastat Report Line"
             Caption = 'Indirect Cost';
             DecimalPlaces = 0 : 5;
             ToolTip = 'Specifies an amount that represents the costs for freight and insurance.';
+            AutoFormatType = 2;
+            AutoFormatExpression = "Currency Code";
             trigger OnValidate()
             begin
                 "Cost Regulation %" := 0;
@@ -205,6 +212,7 @@ table 4812 "Intrastat Report Line"
             Caption = 'Statistical Value';
             DecimalPlaces = 0 : 5;
             ToolTip = 'Specifies the entry''s statistical value, which must be reported to the statistics authorities.';
+            AutoFormatType = 0;
         }
         field(18; "Document No."; Code[20])
         {
@@ -264,6 +272,7 @@ table 4812 "Intrastat Report Line"
             DecimalPlaces = 0 : 5;
             Editable = false;
             ToolTip = 'Specifies the total weight for the items in the item entry.';
+            AutoFormatType = 0;
         }
         field(22; "Supplementary Units"; Boolean)
         {
@@ -332,6 +341,7 @@ table 4812 "Intrastat Report Line"
             DecimalPlaces = 0 : 5;
             Editable = false;
             ToolTip = 'Specifies the conversion factor of the item on this Intrastat report line.';
+            AutoFormatType = 0;
             trigger OnValidate()
             var
                 UOMMgt: Codeunit "Unit of Measure Management";
@@ -362,6 +372,7 @@ table 4812 "Intrastat Report Line"
             DecimalPlaces = 0 : 5;
             Editable = false;
             ToolTip = 'Specifies the quantity of supplementary units on the Intrastat line.';
+            AutoFormatType = 0;
         }
         field(36; "Statistical System"; Enum "Intrastat Report Stat. System")
         {
@@ -374,9 +385,10 @@ table 4812 "Intrastat Report Line"
         }
         field(38; "Source Currency Amount"; Decimal)
         {
-            AutoFormatExpression = "Currency Code";
             Caption = 'Source Currency Amount';
             DecimalPlaces = 0 : 5;
+            AutoFormatType = 1;
+            AutoFormatExpression = "Currency Code";
         }
         field(39; "Corrective entry"; Boolean)
         {

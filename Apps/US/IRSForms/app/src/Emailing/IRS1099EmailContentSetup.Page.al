@@ -41,15 +41,6 @@ page 10055 "IRS 1099 Email Content Setup"
         EmailSubject: Text[250];
         EmailBody: Text;
 
-#if not CLEAN25
-    trigger OnOpenPage()
-    var
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-    begin
-        CurrPage.Editable := IRSFormsFeature.FeatureCanBeUsed();
-    end;
-#endif
-
     procedure SetValues(NewEmailSubject: Text[250]; NewEmailBody: Text[2048])
     begin
         EmailSubject := NewEmailSubject;

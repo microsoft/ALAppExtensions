@@ -125,7 +125,7 @@ page 11753 "Unreliable Payer Entries CZL"
             }
             group(Category_Category4)
             {
-                Caption = 'Navigate';
+                Caption = 'Related';
                 actionref(VendorBankAccounts_Promoted; "Vendor Bank Accounts")
                 {
                 }

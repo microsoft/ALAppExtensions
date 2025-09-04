@@ -47,7 +47,7 @@ codeunit 6126 "E-Doc. GL Account Matching" implements "AOAI Function", IEDocAISy
 
         if not EDocumentAIProcessor.Setup(this) then
             exit;
-        if not EDocumentAIProcessor.Process(CreatePrompt(Rec), Response) then
+        if not EDocumentAIProcessor.Process(CreateUserMessage(Rec), Response) then
             exit;
 
         foreach FunctionResponse in Response.GetFunctionResponses() do begin
@@ -94,7 +94,7 @@ codeunit 6126 "E-Doc. GL Account Matching" implements "AOAI Function", IEDocAISy
         EDocumentPurchaseLine.Validate("[BC] Purchase Type No.", ValueSuggested);
     end;
 
-    local procedure CreatePrompt(var EDocumentPurchaseLine: Record "E-Document Purchase Line"): Text
+    local procedure CreateUserMessage(var EDocumentPurchaseLine: Record "E-Document Purchase Line"): Text
     var
         EDocumentPurchaseHeader: Record "E-Document Purchase Header";
         Vendor: Record Vendor;

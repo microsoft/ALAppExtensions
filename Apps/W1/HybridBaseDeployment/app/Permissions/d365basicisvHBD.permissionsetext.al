@@ -18,5 +18,6 @@ permissionsetextension 4001 "D365 BASIC ISV - HBD" extends "D365 BASIC ISV"
                   tabledata "Cloud Migration Override Log" = RIMD,
                   tabledata "Hybrid DA Approval" = rmi,
                   tabledata "Replication Record Link Buffer" = RIMD,
-                  tabledata "Record Link Mapping" = RIMD;
+                  tabledata "Record Link Mapping" = RIMD,
+                  tabledata "Cloud Migration Warning" = RIMD;
 }

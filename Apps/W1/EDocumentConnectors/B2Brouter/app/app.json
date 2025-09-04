@@ -2,7 +2,7 @@
   "id": "b4305a63-f987-425b-8520-ca9ccf7b22b6",
   "name": "E-Document Connector - B2Brouter",
   "publisher": "Microsoft",
-  "version": "27.0.0.0",
+  "version": "28.0.0.0",
   "brief": "E-Document Connector - B2Brouter",
   "description": "E-Document Connector - B2Brouter",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,7 +15,7 @@
     {
       "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
       "name": "E-Document Core",
-      "version": "27.0.0.0",
+      "version": "28.0.0.0",
       "publisher": "Microsoft"
     }
   ],
@@ -28,7 +28,7 @@
   ],
   "screenshots": [],
   "platform": "27.0.0.0",
-  "application": "27.0.0.0",
+  "application": "28.0.0.0",
   "idRanges": [
     {
       "from": 6490,

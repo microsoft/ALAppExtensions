@@ -53,14 +53,16 @@ codeunit 11738 "Service Handler CZP"
         ServiceInvoiceHeader: Record "Service Invoice Header";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
     begin
-        if ServiceHeader."Cash Desk Code CZP" = '' then
+        if (ServiceHeader."Cash Desk Code CZP" = '') or (ServiceHeader."Last Posting No." = '') then
             exit;
 
         if ServiceHeader."Document Type" in [ServiceHeader."Document Type"::Order, ServiceHeader."Document Type"::Invoice] then begin
-            ServiceInvoiceHeader.Get(ServiceHeader."Last Posting No.");
+            if not ServiceInvoiceHeader.Get(ServiceHeader."Last Posting No.") then
+                exit;
             CashDeskManagementCZP.CreateCashDocumentFromServiceInvoice(ServiceInvoiceHeader);
         end else begin
-            ServiceCrMemoHeader.Get(ServiceHeader."Last Posting No.");
+            if not ServiceCrMemoHeader.Get(ServiceHeader."Last Posting No.") then
+                exit;
             CashDeskManagementCZP.CreateCashDocumentFromServiceCrMemo(ServiceCrMemoHeader);
         end;
     end;

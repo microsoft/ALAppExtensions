@@ -237,13 +237,9 @@ page 10036 "IRS 1099 Form Documents"
     var
         PeriodIsVisible: Boolean;
 
-#if not CLEAN25
     trigger OnOpenPage()
-    var
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
     begin
         PeriodIsVisible := Rec.GetFilter("Period No.") = '';
-        CurrPage.Editable := IRSFormsFeature.FeatureCanBeUsed();
     end;
-#endif
+
 }

@@ -30,37 +30,37 @@ page 630 "Data Archive List"
                 {
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'This field specifies the entry number for the data archive.';
+                    ToolTip = 'Specifies the entry number for the data archive.';
                 }
                 field(Description; Rec.Description)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'This field specifies a description for this data archive.';
+                    ToolTip = 'Specifies the description for this data archive.';
                 }
                 field(SystemCreatedAt; Rec.SystemCreatedAt)
                 {
                     ApplicationArea = All;
                     Caption = 'Created On';
                     Editable = false;
-                    ToolTip = 'This field specifies when the data archive was created.';
+                    ToolTip = 'Specifies when the data archive was created.';
                 }
                 field(CreatedBy; Rec."Created by User")
                 {
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'This field specifies which user created the data archive.';
+                    ToolTip = 'Specifies which user created the data archive.';
                 }
                 field("No. of Tables"; Rec."No. of Tables")
                 {
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'This field specifies the number of tables archived in this data archive.';
+                    ToolTip = 'Specifies the number of tables archived in this data archive.';
                 }
                 field("No. of Records"; Rec."No. of Records")
                 {
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'This field specifies the tota number of records archived in this data archive.';
+                    ToolTip = 'Specifies the total number of records archived in this data archive.';
                 }
             }
         }
@@ -69,7 +69,7 @@ page 630 "Data Archive List"
             part(ArchiveTables; "Data Archive Table ListPart")
             {
                 ApplicationArea = All;
-                SubPageLink = "Data Archive Entry No." = FIELD("Entry No.");
+                SubPageLink = "Data Archive Entry No." = field("Entry No.");
             }
 
         }

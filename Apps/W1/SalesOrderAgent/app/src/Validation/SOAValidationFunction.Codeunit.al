@@ -28,7 +28,7 @@ codeunit 4302 "SOA Validation Function" implements "AOAI Function"
         Tool: JsonObject;
         ToolText: Text;
     begin
-        if not AzureKeyVault.GetAzureKeyVaultSecret('BCSOA-Irrelevance-ValidateTool', ToolText) then begin
+        if not AzureKeyVault.GetAzureKeyVaultSecret('BCSOAIrrelevanceValidateToolV27', ToolText) then begin
             Session.LogMessage('0000PPJ', AKVRetrievalErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
             Error(AKVRetrievalErr);
         end;
