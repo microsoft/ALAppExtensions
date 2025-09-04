@@ -74,18 +74,25 @@ table 6101 "E-Document Purchase Line"
         }
         field(8; "Unit Price"; Decimal)
         {
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 2;
             Caption = 'Unit Price';
             ToolTip = 'Specifies the direct unit cost.';
             Editable = false;
         }
         field(9; "Sub Total"; Decimal)
         {
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 2;
             Caption = 'Sub Total';
+            ToolTip = 'Specifies the line subtotal.';
         }
         field(10; "Total Discount"; Decimal)
         {
             Caption = 'Total Discount';
             ToolTip = 'Specifies the line discount.';
+            AutoFormatExpression = Rec."Currency Code";
+            AutoFormatType = 2;
         }
         field(11; "VAT Rate"; Decimal)
         {

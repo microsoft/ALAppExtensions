@@ -16,7 +16,11 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+#if not CLEAN27
+using Microsoft.Purchases.Document;
+#endif
 
 table 6121 "E-Document"
 {
@@ -393,8 +397,15 @@ table 6121 "E-Document"
         EDocMappingLog: Record "E-Doc. Mapping Log";
         EDocumentIntegrationLog: Record "E-Document Integration Log";
         EDocumentLog: Record "E-Document Log";
+        EDocImportedLine: Record "E-Doc. Imported Line";
         EDocumentServiceStatus: Record "E-Document Service Status";
+#if not CLEAN27
+        PurchaseHeader: Record "Purchase Header";
+#endif
         IProcessStructuredData: Interface IProcessStructuredData;
+#if not CLEAN27
+        NullGuid: Guid;
+#endif
     begin
         EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
         if not EDocumentLog.IsEmpty() then
@@ -417,6 +428,18 @@ table 6121 "E-Document"
         if not EDocMappingLog.IsEmpty() then
             EDocMappingLog.DeleteAll(true);
 
+        EDocImportedLine.SetRange("E-Document Entry No.", Rec."Entry No");
+        if not EDocImportedLine.IsEmpty() then
+            EDocImportedLine.DeleteAll(true);
+
+#if not CLEAN27
+        // Version 1 processing cleanup
+        // Can be removed soon as version 1 is fully migrated to version 2
+        PurchaseHeader.SetRange("E-Document Link", Rec.SystemId);
+        PurchaseHeader.ModifyAll("E-Document Link", NullGuid, false);
+#endif
+
+        // Version 2 processing cleanup
         IProcessStructuredData := Rec."Process Draft Impl.";
         IProcessStructuredData.CleanUpDraft(Rec);
     end;

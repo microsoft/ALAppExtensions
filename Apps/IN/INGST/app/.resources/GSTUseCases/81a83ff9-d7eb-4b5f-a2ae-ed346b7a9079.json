@@ -1,0 +1,145 @@
+[
+    {
+        "CaseID": "{81A83FF9-D7EB-4B5F-A2AE-ED346B7A9079}",
+        "Description": "Intra-state Subcontracting GST on GST Liability Line for Registered Vendor",
+        "Version": 2,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "GST Liability Line",
+        "ParentUseCase": "Subcontracting GST For GST Liability Line",
+        "ParentCaseId": "{BECB23D8-56A1-4EB4-BF02-D3903BC14DF1}",
+        "PresentationOrder": 939,
+        "Indent": 1,
+        "Attributes": [],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "SGST",
+                "Sequence": 1,
+                "Formula": {
+                    "VariableName": "SGST",
+                    "Expression": "{GSTBaseAmount}*{SGSTPer}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "GST Liability Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{SGSTPer}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "SGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "GST Base Amount",
+                "Sequence": 2,
+                "Formula": {
+                    "VariableName": "GST Base Amount",
+                    "Expression": "{GSTBaseAmount}",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "GST Liability Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "CGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "CGST",
+                    "Expression": "{GSTBaseAmount}*{CGSTPer}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{CGSTPer}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "CGST"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "GST Liability Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "GST Liability Line",
+                            "FieldName": "Location State Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "GST Liability Line",
+                            "FieldName": "Vendor State Code"
+                        }
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "GST Liability Line",
+                            "FieldName": "GST Vendor Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Registered"
+                    }
+                }
+            ]
+        }
+    }
+]

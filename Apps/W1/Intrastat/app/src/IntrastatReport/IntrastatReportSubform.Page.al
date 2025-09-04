@@ -97,6 +97,7 @@ page 4813 "Intrastat Report Subform"
                 field(StatisticalValue; StatisticalValue + Rec."Statistical Value" - xRec."Statistical Value")
                 {
                     AutoFormatType = 1;
+                    AutoFormatExpression = Rec."Currency Code";
                     Caption = 'Statistical Value';
                     Editable = false;
                     ToolTip = 'Specifies the statistical value that has accumulated in the Intrastat report.';
@@ -105,6 +106,7 @@ page 4813 "Intrastat Report Subform"
                 field(TotalStatisticalValue; TotalStatisticalValue + Rec."Statistical Value" - xRec."Statistical Value")
                 {
                     AutoFormatType = 1;
+                    AutoFormatExpression = Rec."Currency Code";
                     Caption = 'Total Stat. Value';
                     Editable = false;
                     ToolTip = 'Specifies the total statistical value in the Intrastat report.';

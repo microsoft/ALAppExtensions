@@ -29,7 +29,6 @@ codeunit 5140 "Warehouse Module" implements "Contoso Demo Data Module"
     begin
         WarehouseModuleSetup.InitRecord();
         Codeunit.Run(Codeunit::"Create Whse Put Away Template");
-        Codeunit.Run(Codeunit::"Create Whse Location");
         Codeunit.Run(Codeunit::"Create Whse No Series");
         Codeunit.Run(Codeunit::"Create Whse Posting Setup");
         Codeunit.Run(Codeunit::"Create Whse Inventory Setup");
@@ -38,7 +37,10 @@ codeunit 5140 "Warehouse Module" implements "Contoso Demo Data Module"
     procedure CreateMasterData()
     var
         WarehouseModuleSetup: Record "Warehouse Module Setup";
+        CreateWhseInventorySetup: Codeunit "Create Whse Inventory Setup";
     begin
+        Codeunit.Run(Codeunit::"Create Whse Location");
+        CreateWhseInventorySetup.CreateInventoryPostingSetup();
         WarehouseModuleSetup.InitWarehousingDemoDataSetup();
         Codeunit.Run(Codeunit::"Create Whse Item Category");
         Codeunit.Run(Codeunit::"Create Whse Item");

@@ -23,7 +23,7 @@ page 633 "Data Archive - New Archive"
                 field(ArchiveName; ArchiveName)
                 {
                     Caption = 'Name of new archive';
-                    ToolTip = 'Enter a name or description in this field.';
+                    ToolTip = 'Specifies the name or description.';
                     ApplicationArea = All;
                 }
             }

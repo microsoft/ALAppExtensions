@@ -1028,7 +1028,9 @@ codeunit 4810 IntrastatReportManagement
     procedure IsFeatureEnabled() IsEnabled: Boolean
     begin
         IsEnabled := true;
+#pragma warning disable AL0432
         OnAfterCheckFeatureEnabled(IsEnabled);
+#pragma warning restore AL0432
     end;
 
     [Obsolete('Pending removal.', '25.0')]
@@ -1037,12 +1039,13 @@ codeunit 4810 IntrastatReportManagement
         MyNotifications: Record "My Notifications";
         IntrastatFeatureAwarenessNotification: Notification;
     begin
+#pragma warning disable AL0432
         if IsInstalledByAppId(GetAppId()) then
             if MyNotifications.IsEnabled(GetIntrastatFeatureAwarenessNotificationId()) then begin
                 IntrastatFeatureAwarenessNotification.Id(GetIntrastatFeatureAwarenessNotificationId());
                 IntrastatFeatureAwarenessNotification.SetData('NotificationId', GetIntrastatFeatureAwarenessNotificationId());
                 IntrastatFeatureAwarenessNotification.Message(IntrastatAwarenessNotificationTxt);
-
+#pragma warning restore AL0432
                 IntrastatFeatureAwarenessNotification.AddAction(LearnMoreTxt, Codeunit::IntrastatReportManagement, 'LearnMore');
                 IntrastatFeatureAwarenessNotification.AddAction(DisableNotificationTxt, Codeunit::IntrastatReportManagement, 'DisableNotification');
                 IntrastatFeatureAwarenessNotification.Send();

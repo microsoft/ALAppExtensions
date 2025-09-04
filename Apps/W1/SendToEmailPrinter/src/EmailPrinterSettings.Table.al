@@ -9,6 +9,8 @@
 /// </summary>
 table 2650 "Email Printer Settings"
 {
+    DataClassification = CustomerContent;
+
     fields
     {
         field(1; ID; code[250])
@@ -40,11 +42,13 @@ table 2650 "Email Printer Settings"
         {
             Caption = 'Printer Paper Height';
             DecimalPlaces = 0 : 2;
+            AutoFormatType = 0;
         }
         field(8; "Paper Width"; Decimal)
         {
             Caption = 'Printer Paper Width';
             DecimalPlaces = 0 : 2;
+            AutoFormatType = 0;
         }
         field(9; "Paper Unit"; Enum "Email Printer Paper Unit")
         {

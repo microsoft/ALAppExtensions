@@ -61,5 +61,10 @@ permissionset 10032 "IRS Forms - Objects"
                   report "IRS 1099 Create Form Docs" = X,
                   report "IRS 1099 FIRE" = X,
                   report "IRS 1099 Print" = X,
+#pragma warning disable AL0432
+#if not CLEAN27
+                  report "Upgrade IRS 1099 Data" = X,
+#endif
+#pragma warning restore AL0432
                   report "IRS 1099 Send Email" = X;
 }

@@ -190,15 +190,4 @@ codeunit 4020 "Hybrid BC Last Wizard"
 
         W1Management.PopulateTableMapping();
     end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
-    local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
-    var
-        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-    begin
-        if ProductID <> this.ProductId() then
-            exit;
-
-        HybridCloudManagement.InsertRecordLinkTableMapping();
-    end;
 }

@@ -17,20 +17,20 @@ page 2650 "Email Printer Settings"
     {
         area(content)
         {
-            field(ID; ID)
+            field(ID; Rec.ID)
             {
                 Caption = 'Printer ID';
                 ApplicationArea = All;
                 ToolTip = 'Specifies the ID of the printer.';
                 Editable = NewMode;
             }
-            field(Description; Description)
+            field(Description; Rec.Description)
             {
                 Caption = 'Description';
                 ApplicationArea = All;
                 ToolTip = 'Specifies the description of the printer.';
             }
-            field(EmailAddress; "Email Address")
+            field(EmailAddress; Rec."Email Address")
             {
                 ApplicationArea = All;
                 ShowMandatory = true;
@@ -39,24 +39,24 @@ page 2650 "Email Printer Settings"
                 var
                     MailManagement: Codeunit "Mail Management";
                 begin
-                    MailManagement.CheckValidEmailAddress("Email Address");
+                    MailManagement.CheckValidEmailAddress(Rec."Email Address");
                     CreateAndSendPrivacyNotification();
                 end;
             }
-            field(PaperKind; "Paper Size")
+            field(PaperKind; Rec."Paper Size")
             {
                 Caption = 'Paper Size';
                 ApplicationArea = All;
                 ToolTip = 'Specifies the printer''s selected paper size.';
                 trigger OnValidate()
                 begin
-                    IsSizeCustom := SetupPrinters.IsPaperSizeCustom("Paper Size");
+                    IsSizeCustom := SetupPrinters.IsPaperSizeCustom(Rec."Paper Size");
 
-                    if IsSizeCustom and (("Paper Width" <= 0) or ("Paper Height" <= 0)) then begin
+                    if IsSizeCustom and ((Rec."Paper Width" <= 0) or (Rec."Paper Height" <= 0)) then begin
                         // Set default to A4 inches
-                        "Paper Height" := 8.3;
-                        "Paper Width" := 11.7;
-                        "Paper Unit" := "Paper Unit"::Inches;
+                        Rec."Paper Height" := 8.3;
+                        Rec."Paper Width" := 11.7;
+                        Rec."Paper Unit" := Rec."Paper Unit"::Inches;
                     end;
                 end;
             }
@@ -67,27 +67,27 @@ page 2650 "Email Printer Settings"
                 group(Custom)
                 {
                     ShowCaption = false;
-                    field(PaperHeight; "Paper Height")
+                    field(PaperHeight; Rec."Paper Height")
                     {
                         ApplicationArea = All;
                         ShowMandatory = true;
                         ToolTip = 'Specifies the height of the paper.';
                         trigger OnValidate()
                         begin
-                            SetupPrinters.ValidatePaperHeight("Paper Height");
+                            SetupPrinters.ValidatePaperHeight(Rec."Paper Height");
                         end;
                     }
-                    field(PaperWidth; "Paper Width")
+                    field(PaperWidth; Rec."Paper Width")
                     {
                         ApplicationArea = All;
                         ShowMandatory = true;
                         ToolTip = 'Specifies the width of the paper.';
                         trigger OnValidate()
                         begin
-                            SetupPrinters.ValidatePaperWidth("Paper Width");
+                            SetupPrinters.ValidatePaperWidth(Rec."Paper Width");
                         end;
                     }
-                    field(PaperUnit; "Paper Unit")
+                    field(PaperUnit; Rec."Paper Unit")
                     {
                         ApplicationArea = All;
                         Caption = 'Paper Units';
@@ -95,17 +95,17 @@ page 2650 "Email Printer Settings"
                     }
                 }
             }
-            field(Landscape; Landscape)
+            field(Landscape; Rec.Landscape)
             {
                 ApplicationArea = All;
                 ToolTip = 'Specifies whether the paper is in Landscape orientation.';
             }
-            field(EmailSubject; "Email Subject")
+            field(EmailSubject; Rec."Email Subject")
             {
                 ApplicationArea = All;
                 ToolTip = 'Specifies the subject of the sent email.';
             }
-            field(EmailBody; "Email Body")
+            field(EmailBody; Rec."Email Body")
             {
                 ApplicationArea = All;
                 Caption = 'Email Body (Optional)';
@@ -198,7 +198,7 @@ page 2650 "Email Printer Settings"
         PrintPrivacyNotification.Scope := NOTIFICATIONSCOPE::LocalScope;
         PrintPrivacyNotification.AddAction(
           LearnMoreActionLbl, CODEUNIT::"Setup Printers", 'LearnMoreAction');
-        NotificationLifecycleMgt.SendNotification(PrintPrivacyNotification, RecordId);
+        NotificationLifecycleMgt.SendNotification(PrintPrivacyNotification, Rec.RecordId);
     end;
 
     var
@@ -224,7 +224,7 @@ page 2650 "Email Printer Settings"
 
     trigger OnDeleteRecord(): Boolean
     begin
-        SetupPrinters.DeletePrinterSettings(ID);
+        SetupPrinters.DeletePrinterSettings(Rec.ID);
         DeleteMode := true;
     end;
 
@@ -241,7 +241,7 @@ page 2650 "Email Printer Settings"
         EmailAccount: Record "Email Account";
         EmailScenario: Codeunit "Email Scenario";
     begin
-        IsSizeCustom := SetupPrinters.IsPaperSizeCustom("Paper Size");
+        IsSizeCustom := SetupPrinters.IsPaperSizeCustom(Rec."Paper Size");
         HasEmailAccountPermission := EmailAccount.WritePermission();
         IsEmailAccountDefined := EmailScenario.GetEmailAccount(Enum::"Email Scenario"::"Email Printer", EmailAccount);
     end;

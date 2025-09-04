@@ -9,6 +9,8 @@ using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
+using System.Telemetry;
+using System.Reflection;
 
 codeunit 10040 "IRS 1099 Transfer From BaseApp"
 {
@@ -23,6 +25,8 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
         tabledata "Vendor Ledger Entry" = rm;
 
     var
+        Telemetry: Codeunit Telemetry;
+        UpgradeDataDict: Dictionary of [Integer, Integer];
         StatementLineFilterExpressionTxt: Label 'Form Box No.: %1', Comment = '%1 = Form Box No.';
         CreatedDuringDataTransferMsg: Label 'Created during data transfer';
 
@@ -30,19 +34,12 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
     var
         IRSFormsSetup: Record "IRS Forms Setup";
         IRSReportingPeriod: Record "IRS Reporting Period";
-        IRSFormsData: Codeunit "IRS Forms Data";
     begin
         IRSFormsSetup.Get();
         IRSFormsSetup.TestField("Init Reporting Year");
         CreateReportingPeriod(IRSReportingPeriod, IRSFormsSetup."Init Reporting Year");
-        TransferFormBoxes(IRSReportingPeriod."No.");
-        TransferVendorSetup(IRSReportingPeriod."No.");
-        TransferAdjustments(IRSReportingPeriod."No.", IRSFormsSetup."Init Reporting Year");
-        TransferPurchaseDocuments(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
-        TransferPostedPurchInvoices(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
-        TransferPostedPurchCrMemos(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
-        TransferVendorLedgerEntries(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
-        IRSFormsData.AddFormInstructionLines(IRSReportingPeriod."No.");
+        TransferIRS1099Setup(IRSReportingPeriod, IRSFormsSetup."Init Reporting Year");
+        TransferIRS1099Data(IRSReportingPeriod);
 
         Clear(IRSFormsSetup."Data Transfer Task ID");
         Clear(IRSFormsSetup."Task Start Date/Time");
@@ -51,7 +48,41 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
         IRSFormsSetup.Modify();
     end;
 
-    local procedure CreateReportingPeriod(var IRSReportingPeriod: Record "IRS Reporting Period"; ReportingYear: Integer)
+    procedure TransferIRS1099Setup(IRSReportingPeriod: Record "IRS Reporting Period"; ReportingYear: Integer)
+    var
+        IRSFormsData: Codeunit "IRS Forms Data";
+    begin
+        Telemetry.LogMessage('0000PZA', 'IRS 1099 setup transfer started', Verbosity::Normal, DataClassification::SystemMetadata);
+        TransferFormBoxes(IRSReportingPeriod."No.");
+        TransferVendorSetup(IRSReportingPeriod."No.");
+        TransferAdjustments(IRSReportingPeriod."No.", ReportingYear);
+        IRSFormsData.AddFormInstructionLines(IRSReportingPeriod."No.");
+        Telemetry.LogMessage('0000PZB', 'IRS 1099 setup transfer completed', Verbosity::Normal, DataClassification::SystemMetadata);
+    end;
+
+    procedure TransferIRS1099Data(IRSReportingPeriod: Record "IRS Reporting Period")
+    var
+        NoDataWasTransferredLbl: Label 'No data was transferred during the upgrade.';
+    begin
+        Telemetry.LogMessage('0000PZC', 'IRS 1099 data transfer started', Verbosity::Normal, DataClassification::SystemMetadata);
+        TransferPurchaseDocuments(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
+        TransferPostedPurchInvoices(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
+        TransferPostedPurchCrMemos(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
+        TransferVendorLedgerEntries(IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date");
+        Telemetry.LogMessage('0000PZD', 'IRS 1099 data transfer completed', Verbosity::Normal, DataClassification::SystemMetadata);
+        if not GuiAllowed() then
+            exit;
+        if UpgradeDataDict.Count() = 0 then begin
+            Telemetry.LogMessage('0000PZE', 'No data was transferred during the upgrade', Verbosity::Normal, DataClassification::SystemMetadata);
+            Message(NoDataWasTransferredLbl);
+            exit;
+        end;
+        Message(UpgradedDataDictToMessage());
+    end;
+
+    procedure CreateReportingPeriod(var IRSReportingPeriod: Record "IRS Reporting Period"; ReportingYear: Integer)
+    var
+        NewIRSReportingPeriodCreatedLbl: Label 'New IRS Reporting Period created for year %1', Comment = '%1 = Reporting Year';
     begin
         IRSReportingPeriod.Init();
         IRSReportingPeriod."No." := Format(ReportingYear);
@@ -59,6 +90,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
         IRSReportingPeriod."Ending Date" := DMY2Date(31, 12, ReportingYear);
         IRSReportingPeriod.Description := CreatedDuringDataTransferMsg;
         IRSReportingPeriod.Insert();
+        Telemetry.LogMessage('0000PZF', StrSubstNo(NewIRSReportingPeriodCreatedLbl, ReportingYear), Verbosity::Normal, DataClassification::SystemMetadata);
     end;
 
     local procedure TransferFormBoxes(PeriodNo: Code[20])
@@ -118,6 +150,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
             end;
             Vendor."FATCA Requirement" := Vendor."FATCA filing requirement";
             Vendor.Modify();
+            IncValueInUpgradedDataDict(Database::Vendor);
         until Vendor.Next() = 0;
 #pragma warning restore AL0432
     end;
@@ -155,6 +188,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
             "Document Type", '%1|%2|%3|%4', PurchHeader."Document Type"::Invoice, PurchHeader."Document Type"::"Credit Memo", PurchHeader."Document Type"::Order, PurchHeader."Document Type"::"Return Order");
         PurchHeader.SetRange("Posting Date", StartingDate, EndingDate);
         PurchHeader.SetFilter("IRS 1099 Code", '<>%1', '');
+        PurchHeader.SetRange("IRS 1099 Reporting Period", '');
         if not PurchHeader.FindSet(true) then
             exit;
         PurchLine.SetRange("IRS 1099 Liable", true);
@@ -164,6 +198,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
                 PurchHeader."IRS 1099 Form No." := GetFormNoFromOldFormBox(PurchHeader."IRS 1099 Code");
                 PurchHeader."IRS 1099 Form Box No." := PurchHeader."IRS 1099 Code";
                 PurchHeader.Modify();
+                IncValueInUpgradedDataDict(Database::"Purchase Header");
                 PurchLine.SetRange("Document Type", PurchHeader."Document Type");
                 PurchLine.SetRange("Document No.", PurchHeader."No.");
                 if PurchLine.FindSet(true) then
@@ -184,6 +219,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
 #pragma warning disable AL0432
         PurchInvHeader.SetRange("Posting Date", StartingDate, EndingDate);
         PurchInvHeader.SetFilter("IRS 1099 Code", '<>%1', '');
+        PurchInvHeader.SetRange("IRS 1099 Reporting Period", '');
         if not PurchInvHeader.FindSet(true) then
             exit;
         repeat
@@ -192,6 +228,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
                 PurchInvHeader."IRS 1099 Form No." := GetFormNoFromOldFormBox(PurchInvHeader."IRS 1099 Code");
                 PurchInvHeader."IRS 1099 Form Box No." := PurchInvHeader."IRS 1099 Code";
                 PurchInvHeader.Modify();
+                IncValueInUpgradedDataDict(Database::"Purch. Inv. Header");
                 PurchInvLine.SetRange("Document No.", PurchInvHeader."No.");
                 if PurchInvLine.FindSet(true) then
                     repeat
@@ -211,6 +248,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
 #pragma warning disable AL0432
         PurchCrMemoHdr.SetRange("Posting Date", StartingDate, EndingDate);
         PurchCrMemoHdr.SetFilter("IRS 1099 Code", '<>%1', '');
+        PurchCrMemoHdr.SetRange("IRS 1099 Reporting Period", '');
         if not PurchCrMemoHdr.FindSet(true) then
             exit;
         repeat
@@ -219,6 +257,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
                 PurchCrMemoHdr."IRS 1099 Form No." := GetFormNoFromOldFormBox(PurchCrMemoHdr."IRS 1099 Code");
                 PurchCrMemoHdr."IRS 1099 Form Box No." := PurchCrMemoHdr."IRS 1099 Code";
                 PurchCrMemoHdr.Modify();
+                IncValueInUpgradedDataDict(Database::"Purch. Cr. Memo Hdr.");
                 PurchCrMemoLine.SetRange("Document No.", PurchCrMemoHdr."No.");
                 if PurchCrMemoLine.FindSet(true) then
                     repeat
@@ -238,6 +277,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
         VendorLedgerEntry.SetRange("Posting Date", StartingDate, EndingDate);
         VendorLedgerEntry.SetFilter("Document Type", '%1|%2', VendorLedgerEntry."Document Type"::Invoice, VendorLedgerEntry."Document Type"::"Credit Memo");
         VendorLedgerEntry.SetFilter("IRS 1099 Code", '<>%1', '');
+        VendorLedgerEntry.SetRange("IRS 1099 Reporting Period", '');
         if not VendorLedgerEntry.FindSet(true) then
             exit;
         repeat
@@ -248,6 +288,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
                 VendorLedgerEntry."IRS 1099 Reporting Amount" := VendorLedgerEntry."IRS 1099 Amount";
                 VendorLedgerEntry."IRS 1099 Subject For Reporting" := VendorLedgerEntry."IRS 1099 Reporting Amount" <> 0;
                 VendorLedgerEntry.Modify();
+                IncValueInUpgradedDataDict(Database::"Vendor Ledger Entry");
             end;
         until VendorLedgerEntry.Next() = 0;
 #pragma warning restore AL0432
@@ -282,6 +323,29 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
             IRS1099FormStatementLine."Print Value Type" := Enum::"IRS 1099 Print Value Type"::"Yes/No";
         IRS1099FormStatementLine.Validate("Filter Expression", StrSubstNo(StatementLineFilterExpressionTxt, FormBoxNo));
         IRS1099FormStatementLine.Insert(true);
+    end;
+
+    local procedure IncValueInUpgradedDataDict(TableId: Integer)
+    begin
+        if not UpgradeDataDict.ContainsKey(TableId) then
+            UpgradeDataDict.Add(TableId, 0);
+        UpgradeDataDict.Set(TableId, UpgradeDataDict.Get(TableId) + 1);
+    end;
+
+    local procedure UpgradedDataDictToMessage() Message: Text
+    var
+        AllObjWithCaption: Record AllObjWithCaption;
+        TableId: Integer;
+        Count: Integer;
+        StatisticsOfTransferreddDataLbl: Label 'Statistics of transferred data';
+    begin
+        Message := StatisticsOfTransferreddDataLbl + '\';
+        foreach TableId in UpgradeDataDict.Keys() do begin
+            Count := UpgradeDataDict.Get(TableId);
+            Message += '\';
+            AllObjWithCaption.Get(AllObjWithCaption."Object Type"::Table, TableId);
+            Message += StrSubstNo('%1: %2', AllObjWithCaption."Object Caption", Count);
+        end;
     end;
 }
 #endif

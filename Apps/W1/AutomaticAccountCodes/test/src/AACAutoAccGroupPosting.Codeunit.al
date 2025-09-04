@@ -782,6 +782,54 @@ codeunit 139598 "AAC Auto. Acc. Group Posting"
         CountGLEntryLines(GenJnlLine);//assert
     end;
 
+    [Test]
+    procedure AllowDeferralPostingPurchaseInvoiceAutoAccGroup()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvoiceHeader: Record "Purch. Inv. Header";
+        DeferralTemplate: Record "Deferral Template";
+        PostedInvoiceNo, AutoGroupGLAccountNo : Code[20];
+        AutoAccGroupNo: Code[10];
+    begin
+        // [FEATURE] [Deferral] [Purchase]
+        // [SCENARIO 579189] "Posting Date outside range" error message appears if Deferrals and Auto Acc. Group are used in a purchase document in Swedish version
+
+        // [GIVEN] Automatic Account Group "AAG" with 2 lines where "Account No." = "GL-AG" and balancing line with blank Account No.
+        Initialize();
+
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup.Validate("Allow Posting From", DMY2Date(1, Date2DMY(WorkDate(), 2), Date2DMY(WorkDate(), 3) - 2));
+        GeneralLedgerSetup.Validate("Allow Posting To", CalcDate('<CM>', GeneralLedgerSetup."Allow Posting From"));
+        GeneralLedgerSetup.Validate("Allow Deferral Posting To", CalcDate('<CM>', WorkDate()));
+        GeneralLedgerSetup.Modify(true);
+
+        AutoGroupGLAccountNo := LibraryERM.CreateGLAccountNo();
+        AutoAccGroupNo := CreateAutomaticAccGroupWithTwoLines(AutoGroupGLAccountNo);
+
+        // [GIVEN] Deferral Template "D" where "No. of Periods" = 3 and "Deferral Account" = "GL-D"
+        CreateDeferralCode(
+            DeferralTemplate, "Deferral Calculation Method"::"Equal per Period", "Deferral Calculation Start Date"::"Beginning of Next Period", LibraryRandom.RandIntInRange(2, 5));
+
+        // [GIVEN] Purchase invoice for "G/L Account" = "GL-PI" with Amount = 100, "Automatic Account Group" = "AAG" and "Deferral Code" = "D"
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader.Validate("Posting Date", CalcDate('<-2Y>', WorkDate()));
+        PurchaseHeader.Modify(true);
+        LibraryPurchase.CreatePurchaseLine(
+          PurchaseLine, PurchaseHeader, PurchaseLine.Type::"G/L Account", LibraryERM.CreateGLAccountWithPurchSetup(), 1);
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(100, 200, 2));
+        PurchaseLine.Validate("Automatic Account Group", AutoAccGroupNo);
+        PurchaseLine.Validate("Deferral Code", DeferralTemplate."Deferral Code");
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Post purchase invoice
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] No error of Allow Posting Date should be raised while posting purchase invoice.
+        PurchInvoiceHeader.Get(PostedInvoiceNo);
+    end;
+
     local procedure Initialize()
     begin
         LibrarySetupStorage.Restore();

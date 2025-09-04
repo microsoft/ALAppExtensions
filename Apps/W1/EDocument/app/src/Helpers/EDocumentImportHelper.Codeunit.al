@@ -16,6 +16,7 @@ using System.Reflection;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Item;
+using Microsoft.eServices.EDocument.Service.Participant;
 using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Setup;
@@ -586,6 +587,27 @@ codeunit 6109 "E-Document Import Helper"
     begin
         if not Vendor.Get(VendorNo) then
             EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(VendorNotFoundErr, EDocument."Bill-to/Pay-to Name"));
+    end;
+
+    /// <summary>
+    /// Use it to find a vendor by service participant
+    /// </summary>
+    /// <param name="VendorID">Vendor's ID</param>
+    /// <param name="EDocumentServiceCode">E-Document Service code</param>
+    /// <returns>Vendor number if exists or empty string.</returns>
+    procedure FindVendorByServiceParticipant(VendorID: Text[200]; EDocumentServiceCode: Code[20]): Code[20]
+    var
+        ServiceParticipant: Record "Service Participant";
+    begin
+        ServiceParticipant.SetRange("Participant Type", ServiceParticipant."Participant Type"::Vendor);
+        ServiceParticipant.SetRange("Participant Identifier", VendorID);
+        ServiceParticipant.SetRange(Service, EDocumentServiceCode);
+        if ServiceParticipant.FindFirst() then
+            exit(ServiceParticipant.Participant);
+
+        ServiceParticipant.SetRange(Service);
+        if ServiceParticipant.FindFirst() then
+            exit(ServiceParticipant.Participant);
     end;
 
 #if not CLEAN26

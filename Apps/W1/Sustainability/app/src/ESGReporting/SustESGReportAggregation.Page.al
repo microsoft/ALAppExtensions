@@ -41,6 +41,7 @@ page 6252 "Sust. ESG Report. Aggregation"
             }
             repeater(Control1)
             {
+                FreezeColumn = "Row No.";
                 ShowCaption = false;
                 field(Grouping; Rec.Grouping)
                 {

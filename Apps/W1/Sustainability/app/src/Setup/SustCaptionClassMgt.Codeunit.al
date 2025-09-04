@@ -81,6 +81,10 @@ codeunit 6278 "Sust. CaptionClass Mgt"
         // <DataValue>  := [String]
         // This string is the actual string making up the Caption.
         // It will contain a '%1', and the Emission Type will substitute for it.
+        if SustainabilitySetup.IsEmpty() then begin
+            Resolved := false;
+            exit('');
+        end;
         SustainabilitySetup.GetRecordOnce();
 
         CommaPosition := StrPos(CaptionExpr, ',');

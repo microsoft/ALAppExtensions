@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "API Reports - Finance lets you easily access tha data that can be used to build different Financial Reports.",
   "description": "API Reports - Finance lets you easily access tha data that can be used to build different Financial Reports.",
-  "version": "27.0.0.0",
+  "version": "28.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2103698",
@@ -13,12 +13,15 @@
   "screenshots": [],
   "platform": "27.0.0.0",
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2134520",
-  "application": "27.0.0.0",
+  "application": "28.0.0.0",
   "idRanges": [
     {
       "from": 30300,
       "to": 30399
     }
   ],
-  "target": "Cloud"
+  "target": "Cloud",
+  "features": [
+    "TranslationFile"
+  ]
 }

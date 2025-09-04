@@ -301,10 +301,15 @@ codeunit 18001 "GST Base Validation"
         if Rec."Transaction Type" = Rec."Transaction Type"::Sales then begin
             Rec."GST Base Amount" := (Rec."GST Base Amount") * SignFactor;
             Rec."GST Amount" := (Rec."GST Amount") * SignFactor;
-        end else begin
-            Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
-            Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
-        end;
+        end else
+            if Rec."GST Base Amount" > 0 then begin
+                Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
+                Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
+            end
+            else begin
+                Rec."GST Base Amount" := Rec."GST Base Amount";
+                Rec."GST Amount" := Rec."GST Amount";
+            end;
 
         if Rec."Document Type" = Rec."Document Type"::"Credit Memo" then
             Rec.Quantity := Abs(Rec.Quantity)
@@ -312,7 +317,10 @@ codeunit 18001 "GST Base Validation"
             if ((Rec."Transaction Type" = Rec."Transaction Type"::Sales) and (Rec."Document Type" = Rec."Document Type"::Refund)) then
                 Rec.Quantity := Abs(Rec.Quantity) * (-1)
             else
-                Rec.Quantity := Abs(Rec.Quantity) * SignFactor;
+                if Rec.Quantity > 0 then
+                    Rec.Quantity := Abs(Rec.Quantity) * SignFactor
+                else
+                    Rec.Quantity := Abs(Rec.Quantity);
 
         Rec."Remaining Base Amount" := Rec."GST Base Amount";
         Rec."Remaining GST Amount" := Rec."GST Amount";

@@ -10,7 +10,9 @@
 codeunit 2650 "Setup Printers"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reporting Triggers", 'SetupPrinters', '', true, true)]
-    procedure SetSendToEmailPrinter(var Printers: Dictionary of [Text[250], JsonObject])
+#pragma warning disable AS0022    
+    local procedure SetSendToEmailPrinter(var Printers: Dictionary of [Text[250], JsonObject])
+#pragma warning restore AS0022    
     var
         EmailPrinterSettings: Record "Email Printer Settings";
         Payload: JsonObject;
@@ -55,7 +57,9 @@ codeunit 2650 "Setup Printers"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Printer Setup", 'OnOpenPrinterSettings', '', false, false)]
-    internal procedure OnOpenSendToEmailPrinter(PrinterID: Text; var IsHandled: Boolean)
+#pragma warning disable AS0022    
+    local procedure OnOpenSendToEmailPrinter(PrinterID: Text; var IsHandled: Boolean)
+#pragma warning restore AS0022    
     var
         EmailPrinterSettings: Record "Email Printer Settings";
     begin
@@ -89,7 +93,7 @@ codeunit 2650 "Setup Printers"
         if not PrinterSelection.ReadPermission() then
             exit;
         PrinterSelection.SetRange("Printer Name", PrinterID);
-        if NOT PrinterSelection.IsEmpty() then
+        if not PrinterSelection.IsEmpty() then
             Error(UsedInPrinterSelectionErr, PrinterID);
     end;
 
