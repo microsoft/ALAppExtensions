@@ -125,6 +125,46 @@ pageextension 36955 "Purchasing Agent Role Center" extends "Purchasing Agent Rol
                     RunObject = page "Purch. Actual vs. Budget Amt.";
                     Tooltip = 'Open a Power BI Report that offers a comparative analysis of purchase amounts against budgeted amounts. It includes variance and variance percentage metrics to clearly show how actual purchases align with budgeted targets.';
                 }
+                action("Purchase Forecasting (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Purchase Forecasting (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Purchase Forecasting";
+                    Tooltip = 'Open the Power BI Report that predicts your purchasing trends, including forecasting of purchase metrics across item, vendor, and purchaser.';
+                }
+                action("Vendor Quality Analysis (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Vendor Quality Analysis (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Vendor Quality Analysis";
+                    Tooltip = 'Open the Power BI report that analyses the quality of Vendors, featuring insights on returns, discounts and single-supplier items. This report highlights effective vendor relationships to continuously improve supplier performance.';
+                }
+                action("Return Order Overview (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Return Order Overview (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Return Order Overview";
+                    Tooltip = 'Open the Power BI report that tracks and analyzes return orders, providing insights into return amounts, quantities,  reasons for return, and the financial impact on the organization.';
+                }
+                action("Key Purchase Influencers (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Key Purchase Influencers (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Key Purchase Influencers";
+                    Tooltip = 'Open the Power BI report that identifies and analyzes the main factors influencing purchase performance, highlighting the most impactful variables and trends based on the purchase data like items, vendor and dimensions.';
+                }
+                action("Purchase Quote Overview (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Purchase Quote Overview (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Purchase Quote Overview";
+                    Tooltip = 'Open the Power BI report that provides detailed information on purchase quotes, including the number of quotes, total value and purchase quote amount over time.';
+                }
             }
         }
     }

@@ -39,11 +39,9 @@ page 37020 "Purch. Actual vs. Budget Qty."
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection0cb7f30495bc871b8948', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

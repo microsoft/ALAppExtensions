@@ -18,20 +18,19 @@ codeunit 13712 "Create Resource DK"
     local procedure OnBeforeInsertResource(var Rec: Record Resource)
     var
         CreateResource: Codeunit "Create Resource";
-        CreateVatPostingGroupsDK: Codeunit "Create Vat Posting Groups DK";
     begin
         case Rec."No." of
             CreateResource.Katherine(),
             CreateResource.Terry():
-                ValidateRecordFields(Rec, CopenhagenLbl, 430, 473, 45, 860, PostCode1152Lbl, CreateVatPostingGroupsDK.Vat25Serv());
+                ValidateRecordFields(Rec, CopenhagenLbl, 430, 473, 45, 860, PostCode1152Lbl);
             CreateResource.Marty():
-                ValidateRecordFields(Rec, CopenhagenLbl, 390, 429, 44.28571, 770, PostCode1152Lbl, CreateVatPostingGroupsDK.Vat25Serv());
+                ValidateRecordFields(Rec, CopenhagenLbl, 390, 429, 44.28571, 770, PostCode1152Lbl);
             CreateResource.Lina():
-                ValidateRecordFields(Rec, HorsholmLbl, 510, 561, 45.53398, 1030, PostCode2970Lbl, CreateVatPostingGroupsDK.Vat25Serv());
+                ValidateRecordFields(Rec, HorsholmLbl, 510, 561, 45.53398, 1030, PostCode2970Lbl);
         end;
     end;
 
-    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; ProfitPercentage: Decimal; UnitPrice: Decimal; PostCode: Code[20]; VATProdPostingGroup: Code[20])
+    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; ProfitPercentage: Decimal; UnitPrice: Decimal; PostCode: Code[20])
     begin
         Resource.Validate(City, City);
         Resource.Validate("Direct Unit Cost", DirectUnitCost);
@@ -39,7 +38,6 @@ codeunit 13712 "Create Resource DK"
         Resource.Validate("Unit Price", UnitPrice);
         Resource.Validate("Profit %", ProfitPercentage);
         Resource.Validate("Post Code", PostCode);
-        Resource.Validate("VAT Prod. Posting Group", VATProdPostingGroup);
     end;
 
     var

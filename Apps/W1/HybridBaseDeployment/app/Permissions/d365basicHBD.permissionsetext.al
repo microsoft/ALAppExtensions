@@ -15,5 +15,7 @@ permissionsetextension 4000 "D365 BASIC - HBD" extends "D365 BASIC"
                   tabledata "Intelligent Cloud Not Migrated" = RIMD,
                   tabledata "User Mapping Work" = RIMD,
                   tabledata "Cloud Migration Override Log" = RIMD,
-                  tabledata "Replication Run Completed Arg" = RIMD;
+                  tabledata "Replication Run Completed Arg" = RIMD,
+                  tabledata "Replication Record Link Buffer" = RIMD,
+                  tabledata "Record Link Mapping" = RIMD;
 }

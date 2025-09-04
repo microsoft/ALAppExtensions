@@ -9,7 +9,7 @@ query 36997 "Purch. Lines - Job Received"
     Caption = 'Power BI Received Not Invoiced PO Line';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'jobReceivedNotInvoicedPurchaseLine';
     EntitySetName = 'jobReceivedNotInvoicedPurchaseLines';
     DataAccessIntent = ReadOnly;

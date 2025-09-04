@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Purchase;
 
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.Energy;
 using Microsoft.Sustainability.Setup;
 using Microsoft.Purchases.History;
@@ -103,6 +104,36 @@ tableextension 6215 "Sust. Purch. Ret. Shpt. Line" extends "Return Shipment Line
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Energy Consumption';
             CaptionClass = '102,13,4';
+            DataClassification = CustomerContent;
+        }
+        field(6228; "Source of Emission Data"; Enum "Sust. Source of Emission")
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Source of Emission Data';
+        }
+        field(6229; "Emission Verified"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Emission Verified';
+        }
+        field(6230; "CBAM Compliance"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'CBAM Compliance';
+        }
+        field(6231; "Emission Cost per Unit"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Emission Cost per Unit';
+            DataClassification = CustomerContent;
+        }
+        field(6232; "Total Emission Cost"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Total Emission Cost';
+            CaptionClass = '102,15,5';
             DataClassification = CustomerContent;
         }
     }

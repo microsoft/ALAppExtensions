@@ -19,10 +19,10 @@ pageextension 6106 "E-Doc. Posted Transfer Shpmnt." extends "Posted Transfer Shi
                 action(OpenEDocument)
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Open E-Document';
-                    Enabled = HasEDocument;
-                    Image = CopyDocument;
+                    Caption = 'Open';
+                    Image = Open;
                     ToolTip = 'Opens electronic document card.';
+                    Enabled = EDocumentExists;
 
                     trigger OnAction()
                     var
@@ -31,23 +31,36 @@ pageextension 6106 "E-Doc. Posted Transfer Shpmnt." extends "Posted Transfer Shi
                         EDocument.OpenEDocument(Rec.RecordId);
                     end;
                 }
+                action(CreateEDocument)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Create';
+                    Image = CreateDocument;
+                    ToolTip = 'Creates an E-Document from the posted document and sends it via service.';
+                    Enabled = not EDocumentExists;
+
+                    trigger OnAction()
+                    var
+                        EDocumentProcessing: Codeunit "E-Document Processing";
+                    begin
+                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Sales Invoice") then
+                            Message(EDocumentCreatedMsg);
+                    end;
+                }
             }
         }
     }
 
     var
-        HasEDocument: Boolean;
+        EDocumentExists: Boolean;
+        EDocumentCreatedMsg: Label 'The e-document has been created.';
 
     trigger OnAfterGetRecord()
-    begin
-        HasEDocument := EDocumentExists(Rec.RecordId);
-    end;
-
-    local procedure EDocumentExists(DocumentRecordId: RecordId): Boolean
     var
         EDocument: Record "E-Document";
     begin
-        EDocument.SetRange("Document Record ID", DocumentRecordId);
-        exit(not EDocument.IsEmpty());
+        EDocument.SetRange("Document Record ID", Rec.RecordId());
+        EDocumentExists := not EDocument.IsEmpty();
     end;
+
 }

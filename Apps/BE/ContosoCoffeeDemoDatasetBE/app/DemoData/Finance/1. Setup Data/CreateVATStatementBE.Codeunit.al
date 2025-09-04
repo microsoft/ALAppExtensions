@@ -346,12 +346,14 @@ codeunit 11425 "Create VAT Statement BE"
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.G1(), true, 6, CreateGLAccount.VATPayable(), CreateGLAccountBE.VatRecoverable(), true, 1, 'Setup for IMPREV / G1');
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.G2(), true, 12, CreateGLAccount.VATPayable(), CreateGLAccountBE.VatRecoverable(), true, 1, 'Setup for IMPREV / G2');
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.G3(), true, 21, CreateGLAccount.VATPayable(), CreateGLAccountBE.VatRecoverable(), true, 1, 'Setup for IMPREV / G3');
+
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.I0(), true, 0, CreateGLAccount.VATPayable(), CreateGLAccountBE.VatRecoverable(), true, 1, 'Setup for IMPREV / I0');
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.I3(), true, 21, CreateGLAccount.VATPayable(), CreateGLAccountBE.VatRecoverable(), true, 1, 'Setup for IMPREV / I3');
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.NOVAT(), true, 0, '', '', true, 1, 'Miscellaneous without VAT');
+
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.S0(), true, 0, CreateGLAccount.VATPayable(), CreateGLAccountBE.VatRecoverable(), true, 1, 'Setup for IMPREV / S0');
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.S1(), true, 6, CreateGLAccount.VATPayable(), CreateGLAccountBE.VatRecoverable(), true, 1, 'Setup for IMPREV / S1');
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.S3(), true, 21, CreateGLAccount.VATPayable(), CreateGLAccountBE.VatRecoverable(), true, 1, 'Setup for IMPREV / S3');
+
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupBE.VAT(), true, 0, CreateGLAccount.VATPayable(), CreateGLAccountBE.VatRecoverable(), true, 1, 'Setup for DOMESTIC / VAT');
     end;
 

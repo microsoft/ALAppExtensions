@@ -1,3 +1,4 @@
+#if not CLEAN27
 namespace Microsoft.Purchases.PowerBIReports;
 
 using Microsoft.Inventory.Ledger;
@@ -9,10 +10,13 @@ query 37000 "Value Entries - Purch."
     Caption = 'Power BI Purchase Value Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5';
     EntityName = 'purchaseValueEntry';
     EntitySetName = 'purchaseValueEntries';
     DataAccessIntent = ReadOnly;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by the new query 37023 "Purch. Value Entries - PBI API".';
+    ObsoleteTag = '27.0';
 
     elements
     {
@@ -75,3 +79,4 @@ query 37000 "Value Entries - Purch."
             CurrQuery.SetFilter(postingDate, DateFilterText);
     end;
 }
+#endif

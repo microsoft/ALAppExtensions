@@ -39,11 +39,9 @@ page 37072 "Churn Analysis"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ebdd708c02b5406dd277', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

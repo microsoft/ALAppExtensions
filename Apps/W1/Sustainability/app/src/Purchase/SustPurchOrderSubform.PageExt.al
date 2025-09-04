@@ -54,6 +54,30 @@ pageextension 6211 "Sust. Purch. Order Subform" extends "Purchase Order Subform"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the value of the Energy Consumption field.';
             }
+            field("Source of Emission Data"; Rec."Source of Emission Data")
+            {
+                Visible = SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the Source of Emission Data field.';
+            }
+            field("Emission Verified"; Rec."Emission Verified")
+            {
+                Visible = SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the Emission Verified field.';
+            }
+            field("CBAM Compliance"; Rec."CBAM Compliance")
+            {
+                Visible = SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the CBAM Compliance field.';
+            }
+            field("Total Emission Cost"; Rec."Total Emission Cost")
+            {
+                Visible = false and SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the Total Emission Cost field.';
+            }
         }
     }
 

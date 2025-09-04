@@ -9,7 +9,7 @@ query 37004 "Item Budget Entries - Sales"
     Caption = 'Power BI Sales Item Budget Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'salesItemBudgetEntry';
     EntitySetName = 'salesItemBudgetEntries';
     DataAccessIntent = ReadOnly;

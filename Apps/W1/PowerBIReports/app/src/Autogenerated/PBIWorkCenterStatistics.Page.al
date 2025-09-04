@@ -39,11 +39,9 @@ page 37094 "PBI Work Center Statistics"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'd0f01228e35f48f4c891', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

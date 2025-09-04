@@ -9,7 +9,7 @@ query 36976 "Service Lines - Order"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'orderServiceLine';
     EntitySetName = 'orderServiceLines';
     DataAccessIntent = ReadOnly;

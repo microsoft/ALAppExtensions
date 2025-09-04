@@ -9,7 +9,7 @@ query 36972 "Prod. Order Lines - Invt."
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'inventoryProdOrderLine';
     EntitySetName = 'inventoryProdOrderLines';
     DataAccessIntent = ReadOnly;

@@ -1,0 +1,360 @@
+{
+    "ElementNames": {
+        "DIV": [
+            {
+                "FormBoxNo": "DIV-01-A",
+                "AmtXmlElementName": "TotalOrdinaryDividendsAmt",
+                "Description": "Total ordinary dividends"
+            },
+            {
+                "FormBoxNo": "DIV-01-B",
+                "AmtXmlElementName": "QualifiedDividendsAmt",
+                "Description": "Qualified dividends"
+            },
+            {
+                "FormBoxNo": "DIV-02-A",
+                "AmtXmlElementName": "TotalCapitalDistributionsAmt",
+                "Description": "Total capital gain distribution"
+            },
+            {
+                "FormBoxNo": "DIV-02-B",
+                "AmtXmlElementName": "UnrecapturedSection1250GainAmt",
+                "Description": "Unrecaptured Section 1250 gain"
+            },
+            {
+                "FormBoxNo": "DIV-02-C",
+                "AmtXmlElementName": "CapitalGainSect1202Amt",
+                "Description": "Section 1202 gain"
+            },
+            {
+                "FormBoxNo": "DIV-02-D",
+                "AmtXmlElementName": "Collectibles28PercentGainAmt",
+                "Description": "Collectibles (28%) gain"
+            },
+            {
+                "FormBoxNo": "DIV-02-E",
+                "AmtXmlElementName": "Section897OrdinaryDividendsAmt",
+                "Description": "Section 897 ordinary dividends"
+            },
+            {
+                "FormBoxNo": "DIV-02-F",
+                "AmtXmlElementName": "Section897CapitalGainAmt",
+                "Description": "Section 897 capital gain"
+            },
+            {
+                "FormBoxNo": "DIV-03",
+                "AmtXmlElementName": "NondividendDistributionsAmt",
+                "Description": "Nondividend distributions"
+            },
+            {
+                "FormBoxNo": "DIV-04",
+                "AmtXmlElementName": "FederalIncomeTaxWithheldAmt",
+                "Description": "Federal income tax withheld",
+                "FederalIncomeTaxWithheld": true
+            },
+            {
+                "FormBoxNo": "DIV-05",
+                "AmtXmlElementName": "Section199ADividendsAmt",
+                "Description": "Section 199A dividends"
+            },
+            {
+                "FormBoxNo": "DIV-06",
+                "AmtXmlElementName": "InvestmentExpenseAmt",
+                "Description": "Investment expenses"
+            },
+            {
+                "FormBoxNo": "DIV-07",
+                "AmtXmlElementName": "ForeignTaxesPaidAmt",
+                "Description": "Foreign tax paid"
+            },
+            {
+                "FormBoxNo": "DIV-09",
+                "AmtXmlElementName": "CashLiquidationDistriAmt",
+                "Description": "Cash liquidation distributions"
+            },
+            {
+                "FormBoxNo": "DIV-10",
+                "AmtXmlElementName": "NoncashLiquidationDistriAmt",
+                "Description": "Noncash liquidation distributions"
+            },
+            {
+                "FormBoxNo": "DIV-12",
+                "AmtXmlElementName": "ExemptInterestDividendsAmt",
+                "Description": "Exempt-interest dividends"
+            },
+            {
+                "FormBoxNo": "DIV-13",
+                "AmtXmlElementName": "PrivateActivityBondIntDivAmt",
+                "Description": "Specified private activity bond interest dividends"
+            }
+        ],
+        "INT": [
+            {
+                "FormBoxNo": "INT-01",
+                "AmtXmlElementName": "InterestIncomeAmt",
+                "Description": "Interest income"
+            },
+            {
+                "FormBoxNo": "INT-02",
+                "AmtXmlElementName": "EarlyWithdrawalPenaltyAmt",
+                "Description": "Early withdrawal penalty"
+            },
+            {
+                "FormBoxNo": "INT-03",
+                "AmtXmlElementName": "USSavingsBondsTreasObligIntAmt",
+                "Description": "Interest on U.S. Savings Bonds and Treasury obligations"
+            },
+            {
+                "FormBoxNo": "INT-04",
+                "AmtXmlElementName": "FederalIncomeTaxWithheldAmt",
+                "Description": "Federal income tax withheld",
+                "FederalIncomeTaxWithheld": true
+            },
+            {
+                "FormBoxNo": "INT-05",
+                "AmtXmlElementName": "InvestmentExpenseAmt",
+                "Description": "Investment expenses"
+            },
+            {
+                "FormBoxNo": "INT-06",
+                "AmtXmlElementName": "ForeignTaxesPaidAmt",
+                "Description": "Foreign tax paid"
+            },
+            {
+                "FormBoxNo": "INT-08",
+                "AmtXmlElementName": "TaxExemptInterestAmt",
+                "Description": "Tax-exempt interest"
+            },
+            {
+                "FormBoxNo": "INT-09",
+                "AmtXmlElementName": "SpcfdPrvtActyBondInterestAmt",
+                "Description": "Specified private activity bond interest"
+            },
+            {
+                "FormBoxNo": "INT-10",
+                "AmtXmlElementName": "MarketDiscountAmt",
+                "Description": "Market discount"
+            },
+            {
+                "FormBoxNo": "INT-11",
+                "AmtXmlElementName": "BondPremiumAmt",
+                "Description": "Bond premium"
+            },
+            {
+                "FormBoxNo": "INT-12",
+                "AmtXmlElementName": "TreasuryObligBondPremiumAmt",
+                "Description": "Bond premium on Treasury obligations"
+            },
+            {
+                "FormBoxNo": "INT-13",
+                "AmtXmlElementName": "TaxExemptBondPremiumAmt",
+                "Description": "Bond premium on tax-exempt bond"
+            }
+        ],
+        "MISC": [
+            {
+                "FormBoxNo": "MISC-01",
+                "AmtXmlElementName": "RentAmt",
+                "Description": "An amount of rent"
+            },
+            {
+                "FormBoxNo": "MISC-02",
+                "AmtXmlElementName": "RoyaltyAmt",
+                "Description": "The amount of royalties"
+            },
+            {
+                "FormBoxNo": "MISC-03",
+                "AmtXmlElementName": "OtherIncomeAmt",
+                "Description": "The amount of other income"
+            },
+            {
+                "FormBoxNo": "MISC-04",
+                "AmtXmlElementName": "FederalIncomeTaxWithheldAmt",
+                "Description": "Federal income tax withheld",
+                "FederalIncomeTaxWithheld": true
+            },
+            {
+                "FormBoxNo": "MISC-05",
+                "AmtXmlElementName": "FishingBoatProceedsAmt",
+                "Description": "The amount of fishing boat proceeds"
+            },
+            {
+                "FormBoxNo": "MISC-06",
+                "AmtXmlElementName": "MedicalHealthCarePaymentsAmt",
+                "Description": "The amount of medical and healthcare payments"
+            },
+            {
+                "FormBoxNo": "MISC-08",
+                "AmtXmlElementName": "SubstitutePaymentsAmt",
+                "Description": "The amount of substitute payments"
+            },
+            {
+                "FormBoxNo": "MISC-07",
+                "AmtXmlElementName": "DirectSaleAboveThresholdInd",
+                "Description": "Direct sale above threshold indicator"
+            },
+            {
+                "FormBoxNo": "MISC-09",
+                "AmtXmlElementName": "CropInsuranceProceedsAmt",
+                "Description": "The amount of crop insurance proceeds"
+            },
+            {
+                "FormBoxNo": "MISC-10",
+                "AmtXmlElementName": "AttorneyGrossProceedsPaidAmt",
+                "Description": "The amount of gross proceeds paid to attorney"
+            },
+            {
+                "FormBoxNo": "MISC-11",
+                "AmtXmlElementName": "FishPurchasedForResaleAmt",
+                "Description": "The amount paid for the purchase of fish for resale"
+            },
+            {
+                "FormBoxNo": "MISC-12",
+                "AmtXmlElementName": "Section409ADeferralsAmt",
+                "Description": "The amount of Section 409A deferrals"
+            },
+            {
+                "FormBoxNo": "MISC-14",
+                "AmtXmlElementName": "ExcessParachutePaymentAmt",
+                "Description": "The amount of excess parachute payments"
+            },
+            {
+                "FormBoxNo": "MISC-15",
+                "AmtXmlElementName": "NonqlfyDeferredCompensationAmt",
+                "Description": "The amount of nonqualified deferred compensation"
+            }
+        ],
+        "NEC": [
+            {
+                "FormBoxNo": "NEC-01",
+                "AmtXmlElementName": "NonemployeeCompensationAmt",
+                "Description": "Nonemployee Compensation"
+            },
+            {
+                "FormBoxNo": "NEC-02",
+                "AmtXmlElementName": "DirectSaleAboveThresholdInd",
+                "Description": "Direct Sale Above Threshold Indicator"
+            },
+            {
+                "FormBoxNo": "NEC-04",
+                "AmtXmlElementName": "FederalIncomeTaxWithheldAmt",
+                "Description": "Federal Income Tax Withheld",
+                "FederalIncomeTaxWithheld": true
+            }
+        ]
+    },
+    "ElementOrderTotals": {
+        "DIV": [
+            "FederalIncomeTaxWithheldAmt",
+            "TotalReportedAmt",
+            "TotalOrdinaryDividendsAmt",
+            "QualifiedDividendsAmt",
+            "TotalCapitalDistributionsAmt",
+            "UnrecapturedSection1250GainAmt",
+            "CapitalGainSect1202Amt",
+            "Collectibles28PercentGainAmt",
+            "Section897OrdinaryDividendsAmt",
+            "Section897CapitalGainAmt",
+            "NondividendDistributionsAmt",
+            "Section199ADividendsAmt",
+            "InvestmentExpenseAmt",
+            "ForeignTaxesPaidAmt",
+            "CashLiquidationDistriAmt",
+            "NoncashLiquidationDistriAmt",
+            "ExemptInterestDividendsAmt",
+            "PrivateActivityBondIntDivAmt"
+        ],
+        "INT": [
+            "TotalReportedAmt",
+            "InterestIncomeAmt",
+            "EarlyWithdrawalPenaltyAmt",
+            "USSavingsBondsTreasObligIntAmt",
+            "FederalIncomeTaxWithheldAmt",
+            "InvestmentExpenseAmt",
+            "ForeignTaxesPaidAmt",
+            "TaxExemptInterestAmt",
+            "SpcfdPrvtActyBondInterestAmt",
+            "MarketDiscountAmt",
+            "BondPremiumAmt",
+            "TreasuryObligBondPremiumAmt",
+            "TaxExemptBondPremiumAmt"
+        ],
+        "MISC": [
+            "FederalIncomeTaxWithheldAmt",
+            "TotalReportedAmt",
+            "RentAmt",
+            "RoyaltyAmt",
+            "OtherIncomeAmt",
+            "FishingBoatProceedsAmt",
+            "MedicalHealthCarePaymentsAmt",
+            "SubstitutePaymentsAmt",
+            "CropInsuranceProceedsAmt",
+            "AttorneyGrossProceedsPaidAmt",
+            "FishPurchasedForResaleAmt",
+            "Section409ADeferralsAmt",
+            "ExcessParachutePaymentAmt",
+            "NonqlfyDeferredCompensationAmt"
+        ],
+        "NEC": [
+            "FederalIncomeTaxWithheldAmt",
+            "TotalReportedAmt",
+            "NonemployeeCompensationAmt"
+        ]
+    },
+    "ElementOrderDetails": {
+        "DIV": [
+            "TotalOrdinaryDividendsAmt",
+            "QualifiedDividendsAmt",
+            "TotalCapitalDistributionsAmt",
+            "UnrecapturedSection1250GainAmt",
+            "CapitalGainSect1202Amt",
+            "Collectibles28PercentGainAmt",
+            "Section897OrdinaryDividendsAmt",
+            "Section897CapitalGainAmt",
+            "NondividendDistributionsAmt",
+            "FederalIncomeTaxWithheldAmt",
+            "Section199ADividendsAmt",
+            "InvestmentExpenseAmt",
+            "ForeignTaxesPaidAmt",
+            "CashLiquidationDistriAmt",
+            "NoncashLiquidationDistriAmt",
+            "ExemptInterestDividendsAmt",
+            "PrivateActivityBondIntDivAmt"
+        ],
+        "INT": [
+            "InterestIncomeAmt",
+            "EarlyWithdrawalPenaltyAmt",
+            "USSavingsBondsTreasObligIntAmt",
+            "FederalIncomeTaxWithheldAmt",
+            "InvestmentExpenseAmt",
+            "ForeignTaxesPaidAmt",
+            "TaxExemptInterestAmt",
+            "SpcfdPrvtActyBondInterestAmt",
+            "MarketDiscountAmt",
+            "BondPremiumAmt",
+            "TreasuryObligBondPremiumAmt",
+            "TaxExemptBondPremiumAmt"
+        ],
+        "MISC": [
+            "RentAmt",
+            "RoyaltyAmt",
+            "OtherIncomeAmt",
+            "FederalIncomeTaxWithheldAmt",
+            "FishingBoatProceedsAmt",
+            "MedicalHealthCarePaymentsAmt",
+            "DirectSaleAboveThresholdInd",
+            "SubstitutePaymentsAmt",
+            "CropInsuranceProceedsAmt",
+            "AttorneyGrossProceedsPaidAmt",
+            "FishPurchasedForResaleAmt",
+            "Section409ADeferralsAmt",
+            "ExcessParachutePaymentAmt",
+            "NonqlfyDeferredCompensationAmt"
+        ],
+        "NEC": [
+            "NonemployeeCompensationAmt",
+            "DirectSaleAboveThresholdInd",
+            "FederalIncomeTaxWithheldAmt"
+        ]
+    }
+}

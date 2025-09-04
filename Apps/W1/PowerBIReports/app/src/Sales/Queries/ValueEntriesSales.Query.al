@@ -1,3 +1,4 @@
+#if not CLEAN27
 namespace Microsoft.Sales.PowerBIReports;
 
 using Microsoft.Inventory.Ledger;
@@ -9,10 +10,13 @@ query 37005 "Value Entries - Sales"
     Caption = 'Power BI Sales Value Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5';
     EntityName = 'salesValueEntry';
     EntitySetName = 'salesValueEntries';
     DataAccessIntent = ReadOnly;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by the new query 37025 "Sales Value Entries - PBI API".';
+    ObsoleteTag = '27.0';
 
     elements
     {
@@ -54,3 +58,4 @@ query 37005 "Value Entries - Sales"
             CurrQuery.SetFilter(postingDate, DateFilterText);
     end;
 }
+#endif

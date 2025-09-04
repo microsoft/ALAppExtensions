@@ -8,6 +8,7 @@ using System.TestLibraries.Security.AccessControl;
 using Microsoft.CRM.Contact;
 using System.Utilities;
 using System.Text;
+using Microsoft.Projects.Resources.Resource;
 
 
 codeunit 139875 "PowerBI Core Test"
@@ -25,6 +26,8 @@ codeunit 139875 "PowerBI Core Test"
         LibInv: Codeunit "Library - Inventory";
         LibraryUtility: Codeunit "Library - Utility";
         LibERM: Codeunit "Library - ERM";
+        LibResource: Codeunit "Library - Resource";
+        LibRandom: Codeunit "Library - Random";
         UriBuilder: Codeunit "Uri Builder";
         FilterScenario: Enum "PowerBI Filter Scenarios";
         PowerBIAPIEndpoints: Enum "PowerBI API Endpoints";
@@ -161,127 +164,6 @@ codeunit 139875 "PowerBI Core Test"
         Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales Start Date".Caption()));
         Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales End Date".Caption()));
         Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Item Sales Date Formula".Caption()));
-    end;
-
-    [Test]
-    procedure TestGenerateSustainabilityReportDateFilter_StartEndDate()
-    var
-        PBISetup: Record "PowerBI Reports Setup";
-        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
-        ExpectedFilterTxt: Text;
-        ActualFilterTxt: Text;
-        IsStartDateVisible: Boolean;
-        IsEndDateVisible: Boolean;
-        IsDateFormulaVisible: Boolean;
-    begin
-        // [SCENARIO] Test GenerateSustainabilityReportDateFilter
-        // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
-        AssignAdminPermissionSet();
-        RecreatePBISetup();
-        PBISetup."Sustainability Load Date Type" := PBISetup."Sustainability Load Date Type"::"Start/End Date";
-
-        // [GIVEN] Mock start & end date values are entered 
-        PBISetup."Sustainability Start Date" := Today();
-        PBISetup."Sustainability End Date" := Today() + 10;
-        PBISetup.Modify();
-        PermissionsMock.ClearAssignments();
-
-        ExpectedFilterTxt := Format(Today()) + '..' + Format(Today() + 10);
-
-        // [WHEN] GenerateItemSalesReportDateFilter executes 
-        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sustainability Date");
-
-        // [WHEN] The Power BI Reports Setup page opens
-        PowerBIReportsSetup.OpenEdit();
-        IsStartDateVisible := PowerBIReportsSetup."Sustainability Start Date".Visible();
-        IsEndDateVisible := PowerBIReportsSetup."Sustainability End Date".Visible();
-        IsDateFormulaVisible := PowerBIReportsSetup."Sustainability Date Formula".Visible();
-
-        // [THEN] A filter text of format "%1..%2" should be created 
-        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
-
-        // [THEN] The Start Date & End Date fields should be shown.
-        Assert.IsTrue(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability Start Date".Caption()));
-        Assert.IsTrue(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability End Date".Caption()));
-        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Sustainability Date Formula".Caption()));
-    end;
-
-    [Test]
-    procedure TestGenerateSustainabilityReportDateFilter_RelativeDate()
-    var
-        PBISetup: Record "PowerBI Reports Setup";
-        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
-        ExpectedFilterTxt: Text;
-        ActualFilterTxt: Text;
-        IsStartDateVisible: Boolean;
-        IsEndDateVisible: Boolean;
-        IsDateFormulaVisible: Boolean;
-    begin
-        // [SCENARIO] Test GenerateSustainabilityReportDateFilter
-        // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
-        AssignAdminPermissionSet();
-        RecreatePBISetup();
-        PBISetup."Sustainability Load Date Type" := PBISetup."Sustainability Load Date Type"::"Relative Date";
-
-        // [GIVEN] A mock date formula value
-        Evaluate(PBISetup."Sustainability Date Formula", '30D');
-        PBISetup.Modify();
-        PermissionsMock.ClearAssignments();
-
-        ExpectedFilterTxt := Format(CalcDate(PBISetup."Sustainability Date Formula")) + '..';
-
-        // [WHEN] GenerateItemSalesReportDateFilter executes 
-        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sustainability Date");
-
-        // [WHEN] The Power BI Reports Setup page opens
-        PowerBIReportsSetup.OpenEdit();
-        IsStartDateVisible := PowerBIReportsSetup."Sustainability Start Date".Visible();
-        IsEndDateVisible := PowerBIReportsSetup."Sustainability End Date".Visible();
-        IsDateFormulaVisible := PowerBIReportsSetup."Sustainability Date Formula".Visible();
-
-        // [THEN] A filter text of format "%1.." should be created 
-        Assert.AreEqual(ExpectedFilterTxt, ActualFilterTxt, 'The expected & actual filter text did not match.');
-
-        // [THEN] The Date Formula field should be shown.
-        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Sustainability Start Date".Caption()));
-        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldHiddenMsg, PowerBIReportsSetup."Sustainability End Date".Caption()));
-        Assert.IsTrue(IsDateFormulaVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability Date Formula".Caption()));
-    end;
-
-    [Test]
-    procedure TestGenerateSustainabilityReportDateFilter_Blank()
-    var
-        PBISetup: Record "PowerBI Reports Setup";
-        PowerBIReportsSetup: TestPage "PowerBI Reports Setup";
-        ActualFilterTxt: Text;
-        IsStartDateVisible: Boolean;
-        IsEndDateVisible: Boolean;
-        IsDateFormulaVisible: Boolean;
-    begin
-        // [SCENARIO] Test GenerateSustainabilityReportDateFilter
-        // [GIVEN] Power BI setup record is created with Load Date Type = " "
-        AssignAdminPermissionSet();
-        RecreatePBISetup();
-        PBISetup."Sustainability Load Date Type" := PBISetup."Sustainability Load Date Type"::" ";
-        PBISetup.Modify();
-        PermissionsMock.ClearAssignments();
-
-        // [WHEN] GenerateItemSalesReportDateFilter executes 
-        ActualFilterTxt := PowerBIAPIRequests.GetFilterForQueryScenario(FilterScenario::"Sustainability Date");
-
-        // [WHEN] The Power BI Reports Setup page opens
-        PowerBIReportsSetup.OpenEdit();
-        IsStartDateVisible := PowerBIReportsSetup."Sustainability Start Date".Visible();
-        IsEndDateVisible := PowerBIReportsSetup."Sustainability End Date".Visible();
-        IsDateFormulaVisible := PowerBIReportsSetup."Sustainability Date Formula".Visible();
-
-        // [THEN] A blank filter text should be created 
-        Assert.AreEqual('', ActualFilterTxt, 'The expected & actual filter text did not match.');
-
-        // [THEN] All date setup fields should be hidden.
-        Assert.IsFalse(IsStartDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability Start Date".Caption()));
-        Assert.IsFalse(IsEndDateVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability End Date".Caption()));
-        Assert.IsFalse(IsDateFormulaVisible, StrSubstNo(FieldShownMsg, PowerBIReportsSetup."Sustainability Date Formula".Caption()));
     end;
 
     [Test]
@@ -786,5 +668,46 @@ codeunit 139875 "PowerBI Core Test"
         Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.reasonCode == ''' + Format(ReturnReason.Code) + ''')]'), 'Return Reason not found.');
         Assert.AreEqual(ReturnReason.Code, JsonMgt.GetValue('reasonCode'), 'Return Reason Code does not match.');
         Assert.AreEqual(ReturnReason.Description, JsonMgt.GetValue('reasonDescription'), 'Description does not match.');
+    end;
+
+    [Test]
+    procedure TestGetResource()
+    var
+        Resource: Record Resource;
+        Uri: Codeunit Uri;
+        Response: Text;
+        TargetURL: Text;
+    begin
+        Initialize();
+
+        // [GIVEN] A new resource
+        LibResource.CreateResourceNew(Resource);
+        Resource.Validate("Unit Cost", LibRandom.RandInt(50));
+        Resource.Modify();
+        Commit();
+
+        // [WHEN] Get request for Resource
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::Resources);
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddQueryParameter('$filter', 'resourceNo eq ''' + Format(Resource."No.") + '''');
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the resource information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        VerifyResource(Response, Resource);
+    end;
+
+    local procedure VerifyResource(Response: Text; Resource: Record Resource)
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.resourceNo == ''' + Format(Resource."No.") + ''')]'), 'Resource not found.');
+        Assert.AreEqual(Resource."No.", JsonMgt.GetValue('resourceNo'), 'Resource no. does not match.');
+        Assert.AreEqual(Resource.Name, JsonMgt.GetValue('resourceName'), 'Resource name does not match.');
+        Assert.AreEqual(Resource."Base Unit of Measure", JsonMgt.GetValue('baseUnitofMeasure'), 'Base unit of measure does not match.');
+        Assert.AreEqual(Format(Resource."Unit Cost" / 1.0, 0, 9), JsonMgt.GetValue('unitCost'), 'Unit cost does not match.');
+        Assert.AreEqual(Format(Resource."Unit Price" / 1.0, 0, 9), JsonMgt.GetValue('unitPrice'), 'Unit price does not match.');
     end;
 }

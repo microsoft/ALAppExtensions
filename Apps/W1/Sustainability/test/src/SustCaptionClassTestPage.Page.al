@@ -236,6 +236,18 @@ page 148180 "Sust. Caption Class Test Page"
                 CaptionClass = '102,14,4';
                 ToolTip = 'Specifies the posted energy consumption in the specified unit of measure.';
             }
+            field(TotalEmissionCost; TextValue)
+            {
+                ApplicationArea = All;
+                CaptionClass = '102,15,5';
+                ToolTip = 'Specifies the value of the total emission cost field.';
+            }
+            field(PostedTotalEmissionCost; TextValue)
+            {
+                ApplicationArea = All;
+                CaptionClass = '102,16,5';
+                ToolTip = 'Specifies the value of the posted total emission cost field.';
+            }
         }
     }
 

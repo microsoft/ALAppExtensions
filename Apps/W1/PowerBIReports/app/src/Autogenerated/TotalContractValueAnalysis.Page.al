@@ -39,11 +39,9 @@ page 37077 "Total Contract Value Analysis"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '6d4dcc705ea9db21d91b', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

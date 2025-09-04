@@ -9,7 +9,7 @@ query 36973 "Purchase Lines - Outstanding"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'outstandingPurchaseLine';
     EntitySetName = 'outstandingPurchaseLines';
     DataAccessIntent = ReadOnly;

@@ -39,11 +39,9 @@ page 37058 "Inventory Valuation by Loc."
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '6a6852c0d882690a617b', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

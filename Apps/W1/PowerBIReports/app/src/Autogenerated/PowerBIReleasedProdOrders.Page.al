@@ -39,11 +39,9 @@ page 37049 "PowerBI Released Prod. Orders"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionc2dea8def8e17bcc1d69', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

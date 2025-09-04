@@ -37,11 +37,14 @@
       "to": 10075
     }
   ],
+  "resourceFolders": [
+    ".resources"
+  ],
   "resourceExposurePolicy": {
     "allowDebugging": true,
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
   "application": "27.0.0.0",
-  "target": "Cloud"
+  "target": "OnPrem"
 }

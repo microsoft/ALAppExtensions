@@ -9,7 +9,7 @@ query 36959 "G/L Accounts"
     Caption = 'Power BI G/L Accounts';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'generalLedgerAccount';
     EntitySetName = 'generalLedgerAccounts';
     DataAccessIntent = ReadOnly;

@@ -14,7 +14,7 @@ query 36963 "Vendor Ledg. Entries - PBI API"
     Caption = 'Power BI Vendor Ledger Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'vendorLedgerEntry';
     EntitySetName = 'vendorLedgerEntries';
     DataAccessIntent = ReadOnly;
@@ -39,6 +39,12 @@ query 36963 "Vendor Ledg. Entries - PBI API"
             {
             }
             column(vleDimensionSetID; "Dimension Set ID")
+            {
+            }
+            column(vleClosedAtDate; "Closed at Date")
+            {
+            }
+            column(vleReasonCode; "Reason Code")
             {
             }
             dataitem(DetailedVendLedgerEntry; "Detailed Vendor Ledg. Entry")

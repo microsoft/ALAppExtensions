@@ -39,11 +39,9 @@ page 37075 "Revenue by Salesperson"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '926fa2c13070086cb999', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

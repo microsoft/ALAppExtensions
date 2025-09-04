@@ -8,7 +8,7 @@ page 37082 "Sales Cycle Stage - PBI API"
     Caption = 'Power BI Sales Cycle Stages';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'salesCycleStage';
     EntitySetName = 'salesCycleStages';
     SourceTable = "Sales Cycle Stage";

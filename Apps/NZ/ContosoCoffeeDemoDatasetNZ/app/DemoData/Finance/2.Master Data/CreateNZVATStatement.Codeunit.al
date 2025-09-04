@@ -18,20 +18,23 @@ codeunit 17144 "Create NZ VAT Statement"
     [EventSubscriber(ObjectType::Table, Database::"VAT Statement Line", 'OnBeforeInsertEvent', '', false, false)]
     local procedure OnBeforeInsertAccScheduleLine(var Rec: Record "VAT Statement Line")
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateVATStatement: Codeunit "Create VAT Statement";
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateNZVATPostingGroup: Codeunit "Create NZ VAT Posting Group";
     begin
+        FinanceModuleSetup.Get();
+
         if (Rec."Statement Template Name" = CreateVATStatement.VATTemplateName()) and (Rec."Statement Name" = CreateVATStatement.VATStatementName()) then
             case Rec."Line No." of
                 10000:
-                    ValidateRecordFields(Rec, '1010', SalesVat15PercOutgoingLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Domestic(), CreateNZVATPostingGroup.VAT15(), '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::"Opposite Sign", '5');
+                    ValidateRecordFields(Rec, '1010', SalesVat15PercOutgoingLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::"Opposite Sign", '5');
                 20000:
-                    ValidateRecordFields(Rec, '1020', SalesVat9PercOutgoingLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Domestic(), CreateNZVATPostingGroup.VAT9(), '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::"Opposite Sign", '6');
+                    ValidateRecordFields(Rec, '1020', SalesVat9PercOutgoingLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::"Opposite Sign", '6');
                 30000:
-                    ValidateRecordFields(Rec, '1050', Vat15PercPercOnEuPurchasesEtcLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), CreateNZVATPostingGroup.VAT15(), '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::"Opposite Sign", false, Rec."Print with"::"Opposite Sign", '7');
+                    ValidateRecordFields(Rec, '1050', Vat15PercPercOnEuPurchasesEtcLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::"Opposite Sign", false, Rec."Print with"::"Opposite Sign", '7');
                 40000:
-                    ValidateRecordFields(Rec, '1060', Vat9PercPercOnEuPurchasesEtcLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), CreateNZVATPostingGroup.VAT9(), '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::"Opposite Sign", false, Rec."Print with"::"Opposite Sign", '8');
+                    ValidateRecordFields(Rec, '1060', Vat9PercPercOnEuPurchasesEtcLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::"Opposite Sign", false, Rec."Print with"::"Opposite Sign", '8');
                 50000:
                     ValidateRecordFields(Rec, '', BlankLbl, Enum::"VAT Statement Line Type"::Description, '', Enum::"General Posting Type"::" ", '', '', '', Enum::"VAT Statement Line Amount Type"::" ", Rec."Calculate with"::Sign, true, Rec."Print with"::Sign, '');
                 60000:
@@ -39,13 +42,13 @@ codeunit 17144 "Create NZ VAT Statement"
                 70000:
                     ValidateRecordFields(Rec, '', '', Enum::"VAT Statement Line Type"::Description, '', Enum::"General Posting Type"::" ", '', '', '', Enum::"VAT Statement Line Amount Type"::" ", Rec."Calculate with"::Sign, true, Rec."Print with"::Sign, '');
                 80000:
-                    ValidateRecordFields(Rec, '1110', PurchaseVat15PercDomesticLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateVATPostingGroups.Domestic(), CreateNZVATPostingGroup.VAT15(), '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '9');
+                    ValidateRecordFields(Rec, '1110', PurchaseVat15PercDomesticLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '9');
                 90000:
-                    ValidateRecordFields(Rec, '1120', PurchaseVat9PercDomesticLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateVATPostingGroups.Domestic(), CreateNZVATPostingGroup.VAT9(), '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '10');
+                    ValidateRecordFields(Rec, '1120', PurchaseVat9PercDomesticLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '10');
                 100000:
-                    ValidateRecordFields(Rec, '1150', PurchaseVat15PercEuLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), CreateNZVATPostingGroup.VAT15(), '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '11');
+                    ValidateRecordFields(Rec, '1150', PurchaseVat15PercEuLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '11');
                 110000:
-                    ValidateRecordFields(Rec, '1160', PurchaseVat9PercEuLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), CreateNZVATPostingGroup.VAT9(), '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '12');
+                    ValidateRecordFields(Rec, '1160', PurchaseVat9PercEuLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", '', Enum::"VAT Statement Line Amount Type"::Amount, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '12');
                 120000:
                     ValidateRecordFields(Rec, '1179', PurchaseVatIngoingLbl, Enum::"VAT Statement Line Type"::"Row Totaling", '', Enum::"General Posting Type"::" ", '', '', '1110..1170', Enum::"VAT Statement Line Amount Type"::" ", Rec."Calculate with"::Sign, true, Rec."Print with"::"Opposite Sign", '13');
                 140000:
@@ -77,25 +80,25 @@ codeunit 17144 "Create NZ VAT Statement"
                 270000:
                     ValidateRecordFields(Rec, '', '', Enum::"VAT Statement Line Type"::Description, '', Enum::"General Posting Type"::" ", '', '', '', Enum::"VAT Statement Line Amount Type"::" ", Rec."Calculate with"::Sign, true, Rec."Print with"::Sign, '');
                 280000:
-                    ValidateRecordFields(Rec, '1210', ValueOfEuPurchases15PercLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), CreateNZVATPostingGroup.VAT15(), '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
+                    ValidateRecordFields(Rec, '1210', ValueOfEuPurchases15PercLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
                 290000:
-                    ValidateRecordFields(Rec, '1220', ValueOfEuPurchases9PercLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), CreateNZVATPostingGroup.VAT9(), '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
+                    ValidateRecordFields(Rec, '1220', ValueOfEuPurchases9PercLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Purchase, CreateNZVATPostingGroup.MISC(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
                 300000:
                     ValidateRecordFields(Rec, '', '', Enum::"VAT Statement Line Type"::Description, '', Enum::"General Posting Type"::" ", '', '', '', Enum::"VAT Statement Line Amount Type"::" ", Rec."Calculate with"::Sign, true, Rec."Print with"::Sign, '');
                 310000:
-                    ValidateRecordFields(Rec, '1240', ValueOfEuSales15PercLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateNZVATPostingGroup.MISC(), CreateNZVATPostingGroup.VAT15(), '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::"Opposite Sign", '');
+                    ValidateRecordFields(Rec, '1240', ValueOfEuSales15PercLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateNZVATPostingGroup.MISC(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::"Opposite Sign", '');
                 320000:
-                    ValidateRecordFields(Rec, '1250', ValueOfEuSales9PercLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateNZVATPostingGroup.MISC(), CreateNZVATPostingGroup.VAT9(), '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::"Opposite Sign", '');
+                    ValidateRecordFields(Rec, '1250', ValueOfEuSales9PercLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateNZVATPostingGroup.MISC(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::"Opposite Sign", '');
                 330000:
                     ValidateRecordFields(Rec, '', '', Enum::"VAT Statement Line Type"::Description, '', Enum::"General Posting Type"::" ", '', '', '', Enum::"VAT Statement Line Amount Type"::" ", Rec."Calculate with"::Sign, true, Rec."Print with"::Sign, '');
                 340000:
-                    ValidateRecordFields(Rec, '1310', NonVatLiableSalesOverseasLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Export(), CreateNZVATPostingGroup.VAT15(), '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
+                    ValidateRecordFields(Rec, '1310', NonVatLiableSalesOverseasLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
                 350000:
-                    ValidateRecordFields(Rec, '1320', NonVatLiableSalesOverseasLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Export(), CreateNZVATPostingGroup.VAT9(), '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
+                    ValidateRecordFields(Rec, '1320', NonVatLiableSalesOverseasLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
                 360000:
                     ValidateRecordFields(Rec, '', NonVatLiableSalesOverseasLbl, Enum::"VAT Statement Line Type"::"Row Totaling", '', Enum::"General Posting Type"::" ", '', '', '1310..1330', Enum::"VAT Statement Line Amount Type"::" ", Rec."Calculate with"::Sign, true, Rec."Print with"::"Opposite Sign", '');
                 370000:
-                    ValidateRecordFields(Rec, '1340', NonVatLiableSalesDomesticLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Domestic(), CreateNZVATPostingGroup.NoVAT(), '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
+                    ValidateRecordFields(Rec, '1340', NonVatLiableSalesDomesticLbl, Enum::"VAT Statement Line Type"::"VAT Entry Totaling", '', Enum::"General Posting Type"::Sale, CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", '', Enum::"VAT Statement Line Amount Type"::Base, Rec."Calculate with"::Sign, false, Rec."Print with"::Sign, '');
                 380000:
                     ValidateRecordFields(Rec, '', NonVatLiableSalesDomesticLbl, Enum::"VAT Statement Line Type"::"Row Totaling", '', Enum::"General Posting Type"::" ", '', '', '1340..1348', Enum::"VAT Statement Line Amount Type"::" ", Rec."Calculate with"::Sign, true, Rec."Print with"::"Opposite Sign", '');
             end;

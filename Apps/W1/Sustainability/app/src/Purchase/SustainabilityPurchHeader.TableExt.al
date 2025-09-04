@@ -102,6 +102,28 @@ tableextension 6212 "Sustainability Purch. Header" extends "Purchase Header"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(6219; "Total Emission Cost"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            CalcFormula = sum("Purchase Line"."Total Emission Cost" where("Document Type" = field("Document Type"),
+                                                                          "Document No." = field("No.")));
+            Caption = 'Total Emission Cost';
+            CaptionClass = '102,15,5';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(6220; "Posted Total Emission Cost"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            CalcFormula = sum("Purchase Line"."Posted Total Emission Cost" where("Document Type" = field("Document Type"),
+                                                                                 "Document No." = field("No.")));
+            Caption = 'Posted Total Emission Cost';
+            CaptionClass = '102,16,5';
+            Editable = false;
+            FieldClass = FlowField;
+        }
     }
 
     var

@@ -26,15 +26,14 @@ codeunit 17123 "Create NZ VAT Setup PostingGrp"
     local procedure CreateVatSetupPostingGrp()
     var
         VATSetupPostingGroups: Record "VAT Setup Posting Groups";
-        CreateGLAccount: Codeunit "Create G/L Account";
         CreateNZGLAccounts: Codeunit "Create NZ GL Accounts";
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
         CreateNZVatPostingGroup: Codeunit "Create NZ VAT Posting Group";
         ContosoVATStatement: Codeunit "Contoso VAT Statement";
     begin
         ContosoVATStatement.SetOverwriteData(true);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateNZVatPostingGroup.NoVAT(), true, 0, CreateNZGLAccounts.SalesVAT15Perc(), CreateNZGLAccounts.PurchaseVAT15Perc(), true, VATSetupPostingGroups."Application Type"::Items, NoVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVATPostingGroups.NoVAT(), true, 0, CreateNZGLAccounts.SalesVAT15Perc(), CreateNZGLAccounts.PurchaseVAT15Perc(), true, VATSetupPostingGroups."Application Type"::Items, NoVatDescriptionLbl);
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateNZVatPostingGroup.VAT15(), true, 15, CreateNZGLAccounts.SalesVAT15Perc(), CreateNZGLAccounts.PurchaseVAT15Perc(), true, VATSetupPostingGroups."Application Type"::Items, Vat15DescriptionLbl);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateNZVatPostingGroup.VAT9(), true, 9, CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10EU(), true, VATSetupPostingGroups."Application Type"::Items, Vat9DescriptionLbl);
         ContosoVATStatement.SetOverwriteData(false);
     end;
 
@@ -67,7 +66,6 @@ codeunit 17123 "Create NZ VAT Setup PostingGrp"
     var
         NoVatDescriptionLbl: Label 'Setup for MISC / NO VAT', MaxLength = 100;
         Vat15DescriptionLbl: Label 'Setup for MISC / VAT15', MaxLength = 100;
-        Vat9DescriptionLbl: Label 'Setup for MISC / VAT9', MaxLength = 100;
         MiscPostingGroupDescriptionLbl: Label 'Customers and vendors in MISC', MaxLength = 100;
         ExportDescriptionLbl: Label 'Other customers and vendors (not MISC)', MaxLength = 100;
 }

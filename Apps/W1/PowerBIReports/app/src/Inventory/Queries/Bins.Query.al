@@ -9,7 +9,7 @@ query 36966 Bins
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'bin';
     EntitySetName = 'bins';
     DataAccessIntent = ReadOnly;

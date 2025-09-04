@@ -39,11 +39,9 @@ page 37047 "Capacity Variance"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection6616bf98be16d1636d03', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

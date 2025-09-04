@@ -6,6 +6,11 @@ using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Sales.Document;
 using Microsoft.PowerBIReports;
+using Microsoft.Sales.History;
+using Microsoft.Projects.Project.Ledger;
+using Microsoft.Projects.Project.Planning;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Resources.Resource;
 using Microsoft.PowerBIReports.Test;
 using System.TestLibraries.Security.AccessControl;
 using System.Text;
@@ -16,6 +21,7 @@ codeunit 139881 "PowerBI Sales Test"
     Subtype = Test;
     TestType = Uncategorized;
     Access = Internal;
+    EventSubscriberInstance = Manual;
 
     var
         Assert: Codeunit Assert;
@@ -25,6 +31,8 @@ codeunit 139881 "PowerBI Sales Test"
         LibInv: Codeunit "Library - Inventory";
         LibRandom: Codeunit "Library - Random";
         LibMarketing: Codeunit "Library - Marketing";
+        LibResource: Codeunit "Library - Resource";
+        LibJob: Codeunit "Library - Job";
         UriBuilder: Codeunit "Uri Builder";
         PermissionsMock: Codeunit "Permissions Mock";
         PowerBICoreTest: Codeunit "PowerBI Core Test";
@@ -189,7 +197,7 @@ codeunit 139881 "PowerBI Sales Test"
     end;
 
     [Test]
-    procedure TestGetSalesValueEntry()
+    procedure TestGetSalesValueEntryV2()
     var
         SalesHeader: Record "Sales Header";
         ValueEntry: Record "Value Entry";
@@ -209,15 +217,15 @@ codeunit 139881 "PowerBI Sales Test"
         Commit();
 
         // [WHEN] Get request for sales value entry is made
-        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Value Entries - Sales");
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Value Entries");
         LibGraphMgt.GetFromWebService(Response, TargetURL);
 
         // [THEN] The response contains the sales value entry information
         Assert.AreNotEqual('', Response, ResponseEmptyErr);
-        VerifySalesValueEntry(Response, SalesHeader, ValueEntry, ItemLedgerEntry);
+        VerifySalesValueEntryV2(Response, SalesHeader, ValueEntry, ItemLedgerEntry);
     end;
 
-    local procedure VerifySalesValueEntry(Response: Text; SalesHeader: Record "Sales Header"; ValueEntry: Record "Value Entry"; ItemLedgerEntry: Record "Item Ledger Entry")
+    local procedure VerifySalesValueEntryV2(Response: Text; SalesHeader: Record "Sales Header"; ValueEntry: Record "Value Entry"; ItemLedgerEntry: Record "Item Ledger Entry")
     var
         JsonMgt: Codeunit "JSON Management";
     begin
@@ -225,6 +233,8 @@ codeunit 139881 "PowerBI Sales Test"
         Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.itemLedgerEntryNo == ' + Format(ItemLedgerEntry."Entry No.") + ')]'), 'Sales item ledger entry not found.');
         Assert.AreEqual(SalesHeader."Salesperson Code", JsonMgt.GetValue('salespersonCode'), 'Salesperson code does not match.');
         Assert.AreEqual(Format(ValueEntry."Entry No."), JsonMgt.GetValue('entryNo'), 'Value entry entry no does not match.');
+        Assert.AreEqual(Format(ItemLedgerEntry."Entry No."), JsonMgt.GetValue('itemLedgerEntryNo'), 'Item ledger entry no. does not match.');
+        Assert.AreEqual(Format(ItemLedgerEntry."Entry Type"), JsonMgt.GetValue('itemLedgerEntryType'), 'Item ledger entry type does not match.');
         Assert.AreEqual(Format(ValueEntry."Entry Type"), JsonMgt.GetValue('entryType'), 'Value entry entry type does not match.');
         Assert.AreEqual(ValueEntry."Document No.", JsonMgt.GetValue('documentNo'), 'Value entry document no does not match.');
         Assert.AreEqual(Format(ValueEntry."Document Type"), JsonMgt.GetValue('documentType'), 'Value entry document type does not match.');
@@ -240,6 +250,7 @@ codeunit 139881 "PowerBI Sales Test"
         Assert.AreEqual(ValueEntry."Location Code", JsonMgt.GetValue('locationCode'), 'Value entry location code does not match.');
         Assert.AreEqual(Format(ValueEntry."Dimension Set ID"), JsonMgt.GetValue('dimensionSetID'), 'Value entry Dimension Set ID does not match.');
         Assert.AreEqual(Format(ValueEntry."Return Reason Code"), JsonMgt.GetValue('returnReasonCode'), 'Value entry return reason code does not match.');
+        Assert.AreEqual(ValueEntry."Job No.", JsonMgt.GetValue('projectNo'), 'Value entry project no. does not match.');
     end;
 
     [Test]
@@ -389,7 +400,7 @@ codeunit 139881 "PowerBI Sales Test"
     end;
 
     [Test]
-    procedure TestGetSalesLine()
+    procedure TestGetSalesLineV2()
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
@@ -414,7 +425,7 @@ codeunit 139881 "PowerBI Sales Test"
         Commit();
 
         // [WHEN] Get request for sales lines
-        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Lines");
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Lines V2");
         UriBuilder.Init(TargetURL);
         UriBuilder.AddQueryParameter('$filter', 'orderNo eq ''' + Format(SalesHeader."No.") + '''');
         UriBuilder.GetUri(Uri);
@@ -425,11 +436,11 @@ codeunit 139881 "PowerBI Sales Test"
         SalesLine.SetAutoCalcFields("Posting Date");
         if SalesLine.FindSet() then
             repeat
-                VerifySalesLine(Response, SalesHeader, SalesLine);
+                VerifySalesLineV2(Response, SalesHeader, SalesLine);
             until SalesLine.Next() = 0;
     end;
 
-    local procedure VerifySalesLine(Response: Text; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
+    local procedure VerifySalesLineV2(Response: Text; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
     var
         JsonMgt: Codeunit "JSON Management";
     begin
@@ -477,6 +488,9 @@ codeunit 139881 "PowerBI Sales Test"
         Assert.AreEqual(Format(SalesLine."Shipped Not Inv. (LCY) No VAT" / 1.0, 0, 9), JsonMgt.GetValue('shippedNotInvoicedLCYNoVAT'), 'Sales line shipped not invoiced lcy does not match.');
         Assert.AreEqual(Format(SalesLine."Shipped Not Invoiced" / 1.0, 0, 9), JsonMgt.GetValue('shippedNotInvoiced'), 'Sales line shipped not invoiced does not match.');
         Assert.AreEqual(Format(SalesLine."Quantity Invoiced" / 1.0, 0, 9), JsonMgt.GetValue('quantityInvoiced'), 'Sales line quantity invoiced does not match.');
+        Assert.AreEqual(Format(SalesLine.Type), JsonMgt.GetValue('type'), 'Sales line type does not match.');
+        Assert.AreEqual(Format(SalesLine.Description), JsonMgt.GetValue('description'), 'Sales line description type does not match.');
+        Assert.AreEqual(Format(SalesLine."Job No."), JsonMgt.GetValue('projectNo'), 'Sales line project no. does not match.');
     end;
 
     [Test]
@@ -680,5 +694,385 @@ codeunit 139881 "PowerBI Sales Test"
         Assert.AreEqual(CloseOpportunityCode.Code, JsonMgt.GetValue('closeOpportunityCode'), 'Close opportunity code does not match.');
         Assert.AreEqual(CloseOpportunityCode.Description, JsonMgt.GetValue('closeOpportunityDescription'), 'Close opportunity description does not match.');
         Assert.AreEqual(Format(CloseOpportunityCode.Type), JsonMgt.GetValue('closeOpportunityType'), 'Close opportunity type does not match.');
+    end;
+
+    [Test]
+    procedure TestGetSalesCreditLines()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        Resource: Record Resource;
+        Uri: Codeunit Uri;
+        PostedSalesCreditMemoNo: Code[20];
+        TargetURL: Text;
+        Response: Text;
+        GLAccountCode: Code[20];
+    begin
+        Initialize();
+
+        // [GIVEN] A sales credit memo with multiple lines 
+        LibSales.CreateSalesCreditMemo(SalesHeader);
+
+        // Create setup data
+        GLAccountCode := LibERM.CreateGLAccountWithSalesSetup();
+        LibResource.CreateResourceNew(Resource);
+
+        LibSales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::"G/L Account", GLAccountCode, LibRandom.RandDecInRange(1, 10, 2));
+        LibSales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Resource, Resource."No.", LibRandom.RandDecInRange(1, 10, 2));
+        PostedSalesCreditMemoNo := LibSales.PostSalesDocument(SalesHeader, true, true);
+        Commit();
+
+        // [WHEN] Get request for sales credit line is made
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Credit Lines");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + PostedSalesCreditMemoNo + '''');
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the sales credit line information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        SalesCrMemoHeader.Get(PostedSalesCreditMemoNo);
+        SalesCrMemoLine.SetRange("Document No.", SalesCrMemoHeader."No.");
+        SalesCrMemoLine.SetFilter(Type, '%1|%2', SalesCrMemoLine.Type::"G/L Account", SalesCrMemoLine.Type::Resource);
+        if SalesCrMemoLine.FindSet() then
+            repeat
+                VerifySalesCreditLines(Response, SalesCrMemoHeader, SalesCrMemoLine);
+            until SalesCrMemoLine.Next() = 0;
+    end;
+
+    local procedure VerifySalesCreditLines(Response: Text; SalesCrMemoHeader: Record "Sales Cr.Memo Header"; SalesCrMemoLine: Record "Sales Cr.Memo Line")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.lineNo == ' + Format(SalesCrMemoLine."Line No.") + ')]'), 'Sales line not found.');
+        Assert.AreEqual(Format(SalesCrMemoLine."Posting Date", 0, 9), JsonMgt.GetValue('postingDate'), 'Posting date does not match.');
+        Assert.AreEqual(Format(SalesCrMemoLine.Type), JsonMgt.GetValue('type'), 'Type does not match.');
+        Assert.AreEqual(SalesCrMemoLine.Description, JsonMgt.GetValue('description'), 'Description does not match.');
+        Assert.AreEqual(SalesCrMemoLine."Document No.", JsonMgt.GetValue('documentNo'), 'Document no. does not match.');
+        Assert.AreEqual(Format(SalesCrMemoLine."Line No."), JsonMgt.GetValue('lineNo'), 'Type does not match.');
+        Assert.AreEqual(SalesCrMemoLine."No.", JsonMgt.GetValue('no'), 'No. does not match.');
+        Assert.AreEqual(SalesCrMemoLine."Location Code", JsonMgt.GetValue('locationCode'), 'Location code does not match.');
+        Assert.AreEqual(Format(SalesCrMemoLine."Quantity (Base)" / 1.0, 0, 9), JsonMgt.GetValue('quantityBase'), 'Quantity (base) does not match.');
+        Assert.AreEqual(Format(SalesCrMemoLine.Amount / 1.0, 0, 9), JsonMgt.GetValue('amount'), 'Amount does not match.');
+        Assert.AreEqual(Format(SalesCrMemoLine."Unit Cost (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('unitCostLCY'), 'Unit cost (LCY) does not match.');
+        Assert.AreEqual(SalesCrMemoLine."Return Reason Code", JsonMgt.GetValue('returnReasonCode'), 'Return reason code does not match.');
+        Assert.AreEqual(Format(SalesCrMemoLine."Shipment Date", 0, 9), JsonMgt.GetValue('shipmentDate'), 'Shipment date does not match.');
+        Assert.AreEqual(Format(SalesCrMemoLine."Dimension Set ID"), JsonMgt.GetValue('dimensionSetID'), 'Dimension set ID does not match.');
+        Assert.AreEqual(SalesCrMemoLine."Job No.", JsonMgt.GetValue('projectNo'), 'Project no. does not match.');
+        Assert.AreEqual(SalesCrMemoLine."Bill-to Customer No.", JsonMgt.GetValue('billToCustomerNo'), 'Bill-to Customer No. does not match.');
+        Assert.AreEqual(SalesCrMemoLine."Sell-to Customer No.", JsonMgt.GetValue('sellToCustomerNo'), 'Sell-to Customer No. does not match.');
+        Assert.AreEqual(SalesCrMemoHeader."No.", JsonMgt.GetValue('salesCreditDocumentNo'), 'Sales credit document no. does not match.');
+        Assert.AreEqual(SalesCrMemoHeader."Campaign No.", JsonMgt.GetValue('campaignNo'), 'Campaign no. does not match.');
+        Assert.AreEqual(SalesCrMemoHeader."Salesperson Code", JsonMgt.GetValue('salespersonCode'), 'Salesperson code does not match.');
+        Assert.AreEqual(SalesCrMemoHeader."Opportunity No.", JsonMgt.GetValue('opportunityNo'), 'Opportunity no. does not match.');
+    end;
+
+    [Test]
+    procedure TestGetSalesInvoiceLines()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        Resource: Record Resource;
+        Uri: Codeunit Uri;
+        PostedSalesInvoiceNo: Code[20];
+        TargetURL: Text;
+        Response: Text;
+        GLAccountCode: Code[20];
+    begin
+        Initialize();
+
+        // [GIVEN] A sales invoice with multiple lines 
+        LibSales.CreateSalesInvoice(SalesHeader);
+
+        // Create setup data
+        GLAccountCode := LibERM.CreateGLAccountWithSalesSetup();
+        LibResource.CreateResourceNew(Resource);
+
+        LibSales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::"G/L Account", GLAccountCode, LibRandom.RandDecInRange(1, 10, 2));
+        LibSales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Resource, Resource."No.", LibRandom.RandDecInRange(1, 10, 2));
+        PostedSalesInvoiceNo := LibSales.PostSalesDocument(SalesHeader, true, true);
+        Commit();
+
+        // [WHEN] Get request for sales invoice line is made
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Invoice Lines");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + PostedSalesInvoiceNo + '''');
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the sales invoice line information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        SalesInvoiceHeader.Get(PostedSalesInvoiceNo);
+        SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
+        SalesInvoiceLine.SetFilter(Type, '%1|%2', SalesInvoiceLine.Type::"G/L Account", SalesInvoiceLine.Type::Resource);
+        if SalesInvoiceLine.FindSet() then
+            repeat
+                VerifySalesInvoiceLines(Response, SalesInvoiceHeader, SalesInvoiceLine);
+            until SalesInvoiceLine.Next() = 0;
+    end;
+
+    local procedure VerifySalesInvoiceLines(Response: Text; SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceLine: Record "Sales Invoice Line")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.lineNo == ' + Format(SalesInvoiceLine."Line No.") + ')]'), 'Sales line not found.');
+        Assert.AreEqual(Format(SalesInvoiceLine."Posting Date", 0, 9), JsonMgt.GetValue('postingDate'), 'Posting date does not match.');
+        Assert.AreEqual(Format(SalesInvoiceLine.Type), JsonMgt.GetValue('type'), 'Type does not match.');
+        Assert.AreEqual(SalesInvoiceLine.Description, JsonMgt.GetValue('description'), 'Description does not match.');
+        Assert.AreEqual(SalesInvoiceLine."Document No.", JsonMgt.GetValue('documentNo'), 'Document no. does not match.');
+        Assert.AreEqual(Format(SalesInvoiceLine."Line No."), JsonMgt.GetValue('lineNo'), 'Type does not match.');
+        Assert.AreEqual(SalesInvoiceLine."No.", JsonMgt.GetValue('no'), 'No. does not match.');
+        Assert.AreEqual(SalesInvoiceLine."Location Code", JsonMgt.GetValue('locationCode'), 'Location code does not match.');
+        Assert.AreEqual(Format(SalesInvoiceLine."Quantity (Base)" / 1.0, 0, 9), JsonMgt.GetValue('quantityBase'), 'Quantity (base) does not match.');
+        Assert.AreEqual(Format(SalesInvoiceLine.Amount / 1.0, 0, 9), JsonMgt.GetValue('amount'), 'Amount does not match.');
+        Assert.AreEqual(Format(SalesInvoiceLine."Unit Cost (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('unitCostLCY'), 'Unit cost (LCY) does not match.');
+        Assert.AreEqual(SalesInvoiceLine."Return Reason Code", JsonMgt.GetValue('returnReasonCode'), 'Return reason code does not match.');
+        Assert.AreEqual(Format(SalesInvoiceLine."Shipment Date", 0, 9), JsonMgt.GetValue('shipmentDate'), 'Shipment date does not match.');
+        Assert.AreEqual(Format(SalesInvoiceLine."Dimension Set ID"), JsonMgt.GetValue('dimensionSetID'), 'Dimension set ID does not match.');
+        Assert.AreEqual(SalesInvoiceLine."Job No.", JsonMgt.GetValue('projectNo'), 'Project no. does not match.');
+        Assert.AreEqual(SalesInvoiceLine."Bill-to Customer No.", JsonMgt.GetValue('billToCustomerNo'), 'Bill-to Customer No. does not match.');
+        Assert.AreEqual(SalesInvoiceLine."Sell-to Customer No.", JsonMgt.GetValue('sellToCustomerNo'), 'Sell-to Customer No. does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."No.", JsonMgt.GetValue('salesInvoiceDocumentNo'), 'Sales invoice document no. does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."Campaign No.", JsonMgt.GetValue('campaignNo'), 'Campaign no. does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."Salesperson Code", JsonMgt.GetValue('salespersonCode'), 'Salesperson code does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."Opportunity No.", JsonMgt.GetValue('opportunityNo'), 'Opportunity no. does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."Quote No.", JsonMgt.GetValue('quoteNo'), 'Quote no. does not match.');
+    end;
+
+    [Test]
+    procedure TestGetSalesInvProjectLedgerEntry()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        Job: Record Job;
+        JobTask: Record "Job Task";
+        JobPlanningLine: Record "Job Planning Line";
+        JobLedgerEntry: Record "Job Ledger Entry";
+        JobCreateInvoice: Codeunit "Job Create-Invoice";
+        Uri: Codeunit Uri;
+        PostedSalesInvoiceNo: Code[20];
+        TargetURL: Text;
+        Response: Text;
+    begin
+        Initialize();
+
+        // [GIVEN] A project with project task and planning line.
+        LibJob.CreateJob(Job);
+        LibJob.CreateJobTask(Job, JobTask);
+        LibJob.CreateJobPlanningLine(
+            Enum::"Job Planning Line Line Type"::"Both Budget and Billable",
+            Enum::"Job Planning Line Type"::Item, JobTask, JobPlanningLine);
+
+        JobPlanningLine.Validate("Qty. to Transfer to Invoice", 1);
+        JobPlanningLine.Modify();
+
+        // [GIVEN] A sales invoice is posted for this project planning line
+        BindSubscription(this);
+        JobCreateInvoice.CreateSalesInvoice(JobPlanningLine, false);
+        UnbindSubscription(this);
+
+        JobPlanningLine.Validate("Qty. to Transfer to Invoice", 1);
+        JobPlanningLine.Modify();
+
+        SalesHeader.SetRange("Document Type", Enum::"Sales Document Type"::Invoice);
+        SalesHeader.SetRange("Sell-to Customer No.", Job."Sell-to Customer No.");
+        SalesHeader.FindLast();
+
+        PostedSalesInvoiceNo := LibSales.PostSalesDocument(SalesHeader, true, true);
+        Commit();
+
+        // [WHEN] Get request for sales invoice project ledger entry
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Inv Project Ledger Entry");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + PostedSalesInvoiceNo + '''');
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the sales invoice project ledger entry information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        SalesInvoiceHeader.Get(PostedSalesInvoiceNo);
+        JobLedgerEntry.SetRange(Type, JobLedgerEntry.Type::Item);
+        JobLedgerEntry.SetRange("Entry Type", JobLedgerEntry."Entry Type"::Sale);
+        JobLedgerEntry.SetRange("Document No.", PostedSalesInvoiceNo);
+        if JobLedgerEntry.FindSet() then
+            repeat
+                VerifySalesInvoiceProjectLedgerEntry(Response, SalesInvoiceHeader, JobLedgerEntry);
+            until JobLedgerEntry.Next() = 0;
+    end;
+
+    local procedure VerifySalesInvoiceProjectLedgerEntry(Response: Text; SalesInvoiceHeader: Record "Sales Invoice Header"; JobLedgerEntry: Record "Job Ledger Entry")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(JobLedgerEntry."Entry No.") + ')]'), 'Project ledger entry not found.');
+
+        // Project ledger entry assertions
+        Assert.AreEqual(Format(JobLedgerEntry."Posting Date", 0, 9), JsonMgt.GetValue('postingDate'), 'Project ledger entry posting date does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry.Type), JsonMgt.GetValue('type'), 'Project ledger entry type does not match.');
+        Assert.AreEqual(JobLedgerEntry.Description, JsonMgt.GetValue('description'), 'Project ledger entry description does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Entry No." / 1.0, 0, 9), JsonMgt.GetValue('entryNo'), 'Project ledger entry no. does not match.');
+        Assert.AreEqual(JobLedgerEntry."No.", JsonMgt.GetValue('no'), 'Project ledger entry no. does not match.');
+        Assert.AreEqual(JobLedgerEntry."Document No.", JsonMgt.GetValue('documentNo'), 'Project ledger entry document no. does not match.');
+        Assert.AreEqual(JobLedgerEntry."Location Code", JsonMgt.GetValue('locationCode'), 'Project ledger entry location code does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Quantity (Base)" / 1.0, 0, 9), JsonMgt.GetValue('quantityBase'), 'Project ledger entry quantity (base) does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Total Price (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('totalPriceLCY'), 'Project ledger entry total price (LCY) does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Total Cost (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('totalCostLCY'), 'Project ledger entry total cost (LCY) does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Unit Cost (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('unitCostLCY'), 'Project ledger entry unit cost (LCY) does not match.');
+        Assert.AreEqual(JobLedgerEntry."Reason Code", JsonMgt.GetValue('reasonCode'), 'Project ledger entry reason code does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Dimension Set ID" / 1.0, 0, 9), JsonMgt.GetValue('dimensionSetID'), 'Project ledger entry dimension set ID does not match.');
+        Assert.AreEqual(JobLedgerEntry."Job No.", JsonMgt.GetValue('projectNo'), 'Project ledger entry project no. does not match.');
+
+        // Sales invoice header assertions
+        Assert.AreEqual(SalesInvoiceHeader."No.", JsonMgt.GetValue('salesInvoiceDocumentNo'), 'Sales invoice document no. does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."Campaign No.", JsonMgt.GetValue('campaignNo'), 'Campaign no. does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."Salesperson Code", JsonMgt.GetValue('salespersonCode'), 'Salesperson code does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."Opportunity No.", JsonMgt.GetValue('opportunityNo'), 'Opportunity no. does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."Bill-to Customer No.", JsonMgt.GetValue('billToCustomerNo'), 'Bill-to customer does not match.');
+        Assert.AreEqual(SalesInvoiceHeader."Sell-to Customer No.", JsonMgt.GetValue('sellToCustomerNo'), 'Sell-to customer does not match.');
+    end;
+
+    [Test]
+    procedure TestGetSalesCrProjectLedgerEntry()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        Job: Record Job;
+        JobTask: Record "Job Task";
+        JobPlanningLine: Record "Job Planning Line";
+        JobLedgerEntry: Record "Job Ledger Entry";
+        JobCreateInvoice: Codeunit "Job Create-Invoice";
+        Uri: Codeunit Uri;
+        PostedSalesCreditMemoNo: Code[20];
+        TargetURL: Text;
+        Response: Text;
+    begin
+        Initialize();
+
+        // [GIVEN] A project with project task and planning line.
+        LibJob.CreateJob(Job);
+        LibJob.CreateJobTask(Job, JobTask);
+        LibJob.CreateJobPlanningLine(
+            Enum::"Job Planning Line Line Type"::"Both Budget and Billable",
+            Enum::"Job Planning Line Type"::Item, JobTask, JobPlanningLine);
+
+        JobPlanningLine.Validate("Qty. to Transfer to Invoice", 1);
+        JobPlanningLine.Modify();
+
+        BindSubscription(this);
+        JobCreateInvoice.CreateSalesInvoice(JobPlanningLine, false);
+        UnbindSubscription(this);
+
+        JobPlanningLine.Validate("Qty. to Transfer to Invoice", 1);
+        JobPlanningLine.Modify();
+
+        SalesHeader.SetRange("Document Type", Enum::"Sales Document Type"::Invoice);
+        SalesHeader.SetRange("Sell-to Customer No.", Job."Sell-to Customer No.");
+        SalesHeader.FindLast();
+
+        LibSales.PostSalesDocument(SalesHeader, true, true);
+
+        JobPlanningLine.FindLast();
+        JobPlanningLine.Validate("Qty. to Transfer to Invoice", 1);
+        JobPlanningLine.Modify();
+
+        // [GIVEN] A sales credit memo is posted for this project planning line
+        LibSales.CreateSalesHeader(SalesHeader, Enum::"Sales Document Type"::"Credit Memo", Job."Sell-to Customer No.");
+        LibSales.CreateSalesLineSimple(SalesLine, SalesHeader);
+        SalesLine.Validate(Type, Enum::"Sales Line Type"::Item);
+        SalesLine.Validate("No.", JobPlanningLine."No.");
+        SalesLine.Validate(Quantity, JobPlanningLine.Quantity);
+        SalesLine.Validate("Job No.", Job."No.");
+        SalesLine.Validate("Job Task No.", JobTask."Job Task No.");
+        SalesLine.Validate("Job Contract Entry No.", JobPlanningLine."Job Contract Entry No.");
+        SalesLine.Modify();
+
+        PostedSalesCreditMemoNo := LibSales.PostSalesDocument(SalesHeader, true, true);
+        Commit();
+
+        // [WHEN] Get request for sales credit project ledger entry
+        TargetURL := PowerBIAPIRequests.GetEndpointUrl(PowerBIAPIEndpoints::"Sales Cr Project Ledger Entries");
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddQueryParameter('$filter', 'documentNo eq ''' + PostedSalesCreditMemoNo + '''');
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the sales credit project ledger entry information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        SalesCrMemoHeader.Get(PostedSalesCreditMemoNo);
+        JobLedgerEntry.SetRange(Type, JobLedgerEntry.Type::Item);
+        JobLedgerEntry.SetRange("Entry Type", JobLedgerEntry."Entry Type"::Sale);
+        JobLedgerEntry.SetRange("Document No.", PostedSalesCreditMemoNo);
+        if JobLedgerEntry.FindSet() then
+            repeat
+                VerifySalesCreditProjectLedgerEntry(Response, SalesCrMemoHeader, JobLedgerEntry);
+            until JobLedgerEntry.Next() = 0;
+    end;
+
+    local procedure VerifySalesCreditProjectLedgerEntry(Response: Text; SalesCrMemoHeader: Record "Sales Cr.Memo Header"; JobLedgerEntry: Record "Job Ledger Entry")
+    var
+        JsonMgt: Codeunit "JSON Management";
+    begin
+        JsonMgt.InitializeObject(Response);
+        Assert.IsTrue(JsonMgt.SelectTokenFromRoot('$..value[?(@.entryNo == ' + Format(JobLedgerEntry."Entry No.") + ')]'), 'Project ledger entry not found.');
+
+        // Project ledger entry assertions
+        Assert.AreEqual(Format(JobLedgerEntry."Posting Date", 0, 9), JsonMgt.GetValue('postingDate'), 'Project ledger entry posting date does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry.Type), JsonMgt.GetValue('type'), 'Project ledger entry type does not match.');
+        Assert.AreEqual(JobLedgerEntry.Description, JsonMgt.GetValue('description'), 'Project ledger entry description does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Entry No." / 1.0, 0, 9), JsonMgt.GetValue('entryNo'), 'Project ledger entry no. does not match.');
+        Assert.AreEqual(JobLedgerEntry."No.", JsonMgt.GetValue('no'), 'Project ledger entry no. does not match.');
+        Assert.AreEqual(JobLedgerEntry."Document No.", JsonMgt.GetValue('documentNo'), 'Project ledger entry document no. does not match.');
+        Assert.AreEqual(JobLedgerEntry."Location Code", JsonMgt.GetValue('locationCode'), 'Project ledger entry location code does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Quantity (Base)" / 1.0, 0, 9), JsonMgt.GetValue('quantityBase'), 'Project ledger entry quantity (base) does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Total Price (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('totalPriceLCY'), 'Project ledger entry total price (LCY) does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Total Cost (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('totalCostLCY'), 'Project ledger entry total cost (LCY) does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Unit Cost (LCY)" / 1.0, 0, 9), JsonMgt.GetValue('unitCostLCY'), 'Project ledger entry unit cost (LCY) does not match.');
+        Assert.AreEqual(JobLedgerEntry."Reason Code", JsonMgt.GetValue('reasonCode'), 'Project ledger entry reason code does not match.');
+        Assert.AreEqual(Format(JobLedgerEntry."Dimension Set ID" / 1.0, 0, 9), JsonMgt.GetValue('dimensionSetID'), 'Project ledger entry dimension set ID does not match.');
+        Assert.AreEqual(JobLedgerEntry."Job No.", JsonMgt.GetValue('projectNo'), 'Project ledger entry project no. does not match.');
+
+        // Sales credit memo header assertions
+        Assert.AreEqual(SalesCrMemoHeader."No.", JsonMgt.GetValue('salesCreditDocumentNo'), 'Sales credit document no. does not match.');
+        Assert.AreEqual(SalesCrMemoHeader."Campaign No.", JsonMgt.GetValue('campaignNo'), 'Campaign no. does not match.');
+        Assert.AreEqual(SalesCrMemoHeader."Salesperson Code", JsonMgt.GetValue('salespersonCode'), 'Salesperson code does not match.');
+        Assert.AreEqual(SalesCrMemoHeader."Opportunity No.", JsonMgt.GetValue('opportunityNo'), 'Opportunity no. does not match.');
+        Assert.AreEqual(SalesCrMemoHeader."Bill-to Customer No.", JsonMgt.GetValue('billToCustomerNo'), 'Bill-to customer does not match.');
+        Assert.AreEqual(SalesCrMemoHeader."Sell-to Customer No.", JsonMgt.GetValue('sellToCustomerNo'), 'Sell-to customer does not match.');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Create-Invoice", OnCreateSalesInvoiceOnBeforeRunReport, '', true, true)]
+    local procedure JobCreateInvoice_OnCreateSalesInvoiceOnBeforeRunReport(var JobPlanningLine: Record "Job Planning Line"; var Done: Boolean; var NewInvoice: Boolean; var PostingDate: Date; var InvoiceNo: Code[20]; var IsHandled: Boolean; CrMemo: Boolean)
+    begin
+        NewInvoice := true;
+        Done := true;
+        PostingDate := Today();
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Create-Invoice", OnBeforeShowMessageLinesTransferred, '', true, true)]
+    local procedure JobCreateInvoice_OnBeforeShowMessageLinesTransferred(var JobPlanningLine: Record "Job Planning Line"; CrMemo: Boolean; var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmPostResJournalLineHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        if (Question = 'Do you want to post the journal lines?') then
+            Reply := true;
+    end;
+
+    [MessageHandler]
+    procedure ConfirmPostingMessageHandler(Message: Text[1024])
+    begin
+        Assert.AreEqual(Message, 'The journal lines were successfully posted.', 'The sales resource journal line was not posted.');
     end;
 }

@@ -132,13 +132,51 @@ page 10036 "IRS 1099 Form Documents"
                 begin
                     IRS1099FormDocHeader := Rec;
                     CurrPage.SetSelectionFilter(IRS1099FormDocHeader);
-                    IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Released);
+                    IRS1099FormDocHeader.SetFilter(Status, '%1|%2', IRS1099FormDocHeader.Status::Released, IRS1099FormDocHeader.Status::Submitted);
 
                     if IRS1099FormDocHeader.FindSet() then
                         repeat
                             IRS1099FormDocument.Reopen(IRS1099FormDocHeader);
                         until IRS1099FormDocHeader.Next() = 0;
                 end;
+            }
+            action(AllowCorrection)
+            {
+                Caption = 'Allow Correction';
+                Image = ResetStatus;
+                ToolTip = 'Allow correction for the selected submitted forms.';
+
+                trigger OnAction()
+                var
+                    IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+                    IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
+                begin
+                    IRS1099FormDocHeader := Rec;
+                    CurrPage.SetSelectionFilter(IRS1099FormDocHeader);
+                    IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Submitted);
+
+                    if IRS1099FormDocHeader.FindSet() then
+                        repeat
+                            IRS1099FormDocument.AllowCorrection(IRS1099FormDocHeader);
+                        until IRS1099FormDocHeader.Next() = 0;
+                end;
+            }
+            group(IRIS)
+            {
+                action(IRISTransmissions)
+                {
+                    Caption = 'IRIS Transmissions';
+                    Image = SendElectronicDocument;
+                    ToolTip = 'Show the IRIS transmissions.';
+                    RunObject = Page "Transmissions IRIS";
+                }
+                action(TransmissionLog)
+                {
+                    Caption = 'Transmission History';
+                    Image = ElectronicDoc;
+                    ToolTip = 'Show IRIS transmissions history.';
+                    RunObject = Page "Transmission Logs IRIS";
+                }
             }
             action(SendEmail)
             {
@@ -185,9 +223,11 @@ page 10036 "IRS 1099 Form Documents"
                 Caption = 'Process';
                 actionref(CreateForms_Promoted; CreateForms)
                 {
-
                 }
                 actionref(SendEmails_Promoted; SendEmail)
+                {
+                }
+                actionref(CreateIRISTransmission_Promoted; IRISTransmissions)
                 {
                 }
             }

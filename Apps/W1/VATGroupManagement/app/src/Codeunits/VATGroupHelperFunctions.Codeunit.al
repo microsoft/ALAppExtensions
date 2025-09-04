@@ -67,7 +67,7 @@ codeunit 4701 "VAT Group Helper Functions"
         TempVATGroupCalculation: Record "VAT Group Calculation" temporary;
     begin
         if VATGroupApprovedMember.FindSet() then begin
-            if VATReportHeader.Status > VATReportHeader.Status::Open then
+            if VATReportHeader.Status.AsInteger() > VATReportHeader.Status::Open.AsInteger() then
                 VATGroupSubmissionHeader.SetFiltersForLastSubmissionInAPeriod(
                     VATReportHeader."Start Date", VATReportHeader."End Date", true, VATReportHeader."No.")
             else
