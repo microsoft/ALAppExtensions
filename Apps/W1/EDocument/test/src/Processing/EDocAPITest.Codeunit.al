@@ -1,7 +1,7 @@
 codeunit 139501 "E-Doc. API Test"
 {
     Subtype = Test;
-    // TestType = IntegrationTest;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -13,8 +13,6 @@ codeunit 139501 "E-Doc. API Test"
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
         Assert: Codeunit Assert;
         Any: Codeunit Any;
-        IsInitialized: Boolean;
-        EDocsApiServiceNameTok: Label 'eDocuments', Locked = true;
 
     [Test]
     procedure GetEDocument()
@@ -23,6 +21,7 @@ codeunit 139501 "E-Doc. API Test"
         EDocument: Record "E-Document";
         TargetURL: Text;
         Response: Text;
+        EDocsApiServiceNameTok: Label 'eDocuments', Locked = true;
     begin
         // [SCENARIO] Get E-Document from api page
         Initialize();
@@ -49,6 +48,7 @@ codeunit 139501 "E-Doc. API Test"
         JSONRequest: Text;
         TargetURL: Text;
         Response: Text;
+        CreateEDocumentsServiceTxt: Label 'createEDocuments', Locked = true;
     begin
         // [SCENARIO] Create E-Document using api page
         Initialize();
@@ -60,19 +60,12 @@ codeunit 139501 "E-Doc. API Test"
         // [GIVEN] JSON containing e document data
         GetEDocumentCreateRequest(EDocumentService.Code, JSONRequest);
 
-        TargetURL := LibraryGraphMgt.CreateTargetURL('', Page::"Create E-Documents API", 'createEDocuments');
+        // [WHEN] Creating E-Document using API
+        TargetURL := LibraryGraphMgt.CreateTargetURL('', Page::"Create E-Documents API", CreateEDocumentsServiceTxt);
         asserterror LibraryGraphMgt.PostToWebService(TargetURL, JSONRequest, Response);
 
+        // [THEN] Response is empty
         Assert.AreEqual('', Response, 'Response should be empty.');
-    end;
-
-    procedure Initialize()
-    begin
-        if IsInitialized then
-            exit;
-        Commit();
-
-        IsInitialized := true;
     end;
 
     local procedure VerifyEDocumentResponse(EDocument: Record "E-Document"; Response: Text)
@@ -156,5 +149,4 @@ codeunit 139501 "E-Doc. API Test"
         JSONRequest := LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'fileType', Format(Enum::"E-Doc. File Format"::XML));
         JSONRequest := LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'processDocument', 'false');
     end;
-
 }
