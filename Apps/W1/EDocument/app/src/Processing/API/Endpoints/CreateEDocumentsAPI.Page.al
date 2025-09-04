@@ -63,7 +63,7 @@ page 6115 "Create E-Documents API"
                 field(fileName; Rec."File Name")
                 {
                 }
-                field(fileType; Format(FileType))
+                field(fileType; FileType)
                 {
                     Caption = 'File Type';
                     ToolTip = 'Type of the file being uploaded for the E-Document.';

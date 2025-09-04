@@ -46,7 +46,6 @@ codeunit 139501 "E-Doc. API Test"
     procedure CreateEDocument()
     var
         EDocumentService: Record "E-Document Service";
-        EDocument: Record "E-Document";
         JSONRequest: Text;
         TargetURL: Text;
         Response: Text;
@@ -59,14 +58,12 @@ codeunit 139501 "E-Doc. API Test"
         EDocumentService.Code := Any.AlphanumericText(20);
         EDocumentService.Insert(false);
         // [GIVEN] JSON containing e document data
-        LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'eDocumentService', EDocumentService.Code);
-        LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'fileName', Any.AlphanumericText(256));
-        LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'fileType', Format(Enum::"E-Doc. File Format"::XML));
-        LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'processDocument', 'false');
+        GetEDocumentCreateRequest(EDocumentService.Code, JSONRequest);
 
         TargetURL := LibraryGraphMgt.CreateTargetURL('', Page::"Create E-Documents API", 'createEDocuments');
-        LibraryGraphMgt.PostToWebService(Response, TargetURL, JSONRequest);
+        asserterror LibraryGraphMgt.PostToWebService(TargetURL, JSONRequest, Response);
 
+        Assert.AreEqual('', Response, 'Response should be empty.');
     end;
 
     procedure Initialize()
@@ -149,6 +146,15 @@ codeunit 139501 "E-Doc. API Test"
         PurchaseHeader."Document Type" := PurchaseHeader."Document Type"::Order;
         PurchaseHeader."No." := Any.AlphanumericText(20);
         PurchaseHeader.Insert(false);
+    end;
+
+    local procedure GetEDocumentCreateRequest(EDocumentServiceCode: Code[20]; var JSONRequest: Text)
+    begin
+        JSONRequest := LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'eDocumentService', EDocumentServiceCode);
+        JSONRequest := LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'base64file', NavApp.GetResourceAsText('API/base64file.txt', TextEncoding::UTF8));
+        JSONRequest := LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'fileName', 'test.xml');
+        JSONRequest := LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'fileType', Format(Enum::"E-Doc. File Format"::XML));
+        JSONRequest := LibraryGraphMgt.AddPropertytoJSON(JSONRequest, 'processDocument', 'false');
     end;
 
 }
