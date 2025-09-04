@@ -50,7 +50,7 @@ page 6119 "E-Doc. File Content API"
                 field(systemId; Rec.SystemId)
                 {
                 }
-                field(edocumentEntryNo; Rec."E-Doc Entry No.")
+                field(edocumentEntryNumber; Rec."E-Doc Entry No.")
                 {
                 }
                 field(edocumentServiceCode; Rec."E-Document Service Code")

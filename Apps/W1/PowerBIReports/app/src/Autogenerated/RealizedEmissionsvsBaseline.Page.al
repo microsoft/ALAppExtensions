@@ -1,3 +1,4 @@
+#if not CLEAN27
 namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
@@ -10,6 +11,9 @@ page 37086 "Realized Emissions vs Baseline"
     Caption = 'Realized Emissions vs. Baseline';
     AboutTitle = 'About Realized Emissions vs. Baseline';
     AboutText = 'The Realized Emissions by Bassline report breaks down your carbon emissions and allows for comparison against a defined baseline period. This allows you to track your progress against the baseline and monitor trends against a previous period.';
+    ObsoleteReason = 'Please use and extend page "Emissions vs Baseline Power BI" on the Sustainability app.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '27.0';
 
     layout
     {
@@ -39,18 +43,18 @@ page 37086 "Realized Emissions vs Baseline"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '56c99409880d5002ad2e', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var
         PowerBIReportsSetup: Record "PowerBI Reports Setup";
     begin
         SetupHelper.EnsureUserAcceptedPowerBITerms();
+#pragma warning disable AL0801
         ReportId := SetupHelper.GetReportIdAndEnsureSetup(CurrPage.Caption(), PowerBIReportsSetup.FieldNo("Sustainability Report ID"));
+#pragma warning restore AL0801
     end;
 }
-
+#endif

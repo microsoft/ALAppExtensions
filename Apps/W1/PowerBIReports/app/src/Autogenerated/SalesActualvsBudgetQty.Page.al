@@ -39,11 +39,9 @@ page 37007 "Sales Actual vs. Budget Qty."
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection05f91a4884be2b5c94ed', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

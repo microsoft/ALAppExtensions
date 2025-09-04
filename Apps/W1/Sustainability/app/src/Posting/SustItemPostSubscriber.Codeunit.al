@@ -24,6 +24,20 @@ codeunit 6256 "Sust. Item Post Subscriber"
             PostSustainabilityValueEntry(ItemJnlLine, ValueEntry, ItemLedgerEntry);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeInsertItemLedgEntry', '', false, false)]
+    local procedure OnBeforeInsertItemLedgEntry(ItemJournalLine: Record "Item Journal Line"; var ItemLedgerEntry: Record "Item Ledger Entry")
+    begin
+        if ItemJournalLine."Entry Type" <> ItemJournalLine."Entry Type"::Sale then
+            exit;
+
+        ItemLedgerEntry."Sust. Account No." := ItemJournalLine."Sust. Account No.";
+        ItemLedgerEntry."Sust. Account Name" := ItemJournalLine."Sust. Account Name";
+        ItemLedgerEntry."Sust. Account Category" := ItemJournalLine."Sust. Account Category";
+        ItemLedgerEntry."Sust. Account Subcategory" := ItemJournalLine."Sust. Account Subcategory";
+        ItemLedgerEntry."EPR Fee per Unit" := ItemJournalLine."EPR Fee Per Unit";
+        ItemLedgerEntry."Total EPR Fee" := ItemJournalLine."Total EPR Fee";
+    end;
+
     local procedure CanCreateSustValueEntry(ItemJournalLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry"): Boolean
     begin
         if ValueEntry."Order Type" = ValueEntry."Order Type"::Transfer then

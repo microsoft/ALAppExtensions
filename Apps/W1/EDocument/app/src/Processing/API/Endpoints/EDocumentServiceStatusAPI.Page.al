@@ -39,7 +39,7 @@ page 6118 "E-Document Service Status API"
                 field(systemId; Rec.SystemId)
                 {
                 }
-                field(edocumentEntryNo; Rec."E-Document Entry No")
+                field(edocumentEntryNumber; Rec."E-Document Entry No")
                 {
                 }
                 field(edocumentServiceCode; Rec."E-Document Service Code")

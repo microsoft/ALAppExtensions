@@ -11,7 +11,7 @@ query 36950 "PowerBI Dimension Set Entries"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'dimensionSetEntry';
     EntitySetName = 'dimensionSetEntries';
     DataAccessIntent = ReadOnly;

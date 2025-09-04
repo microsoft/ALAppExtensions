@@ -198,15 +198,27 @@ table 6220 "Sustainability Cue"
             Caption = 'Requests Sent for Approval';
             FieldClass = FlowField;
         }
-        field(40; "CO2e Emission"; Decimal)
+        field(40; "Pending User Tasks"; Integer)
+        {
+            Caption = 'Pending User Tasks';
+        }
+        field(41; "Tasks This Month"; Integer)
+        {
+            Caption = 'Tasks This Month';
+        }
+        field(42; "Overdue User Tasks"; Integer)
+        {
+            Caption = 'Overdue User Tasks';
+        }
+        field(43; "CO2e Emission"; Decimal)
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
-            Caption = 'Emission CO2';
+            Caption = 'CO2e Emission';
             FieldClass = FlowField;
             CalcFormula = sum("Sustainability Ledger Entry"."CO2e Emission" where("Posting Date" = field("Date Filter")));
         }
-        field(41; "DateTime Filter"; DateTime)
+        field(44; "DateTime Filter"; DateTime)
         {
             FieldClass = FlowFilter;
             Caption = 'DateTime Filter';
@@ -223,10 +235,6 @@ table 6220 "Sustainability Cue"
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
-        NoneStyleLbl: Label 'None';
-        FavorableStyleLbl: Label 'Favorable';
-        AmbiguousStyleLbl: Label 'Ambiguous';
-        UnfavorableStyleLbl: Label 'Unfavorable';
 
     internal procedure GetMyPendingUserTasksThisMonthCount(): Integer
     var
@@ -275,82 +283,5 @@ table 6220 "Sustainability Cue"
         UserTask.SetFilter("Due DateTime", '<>%1 & <%2', 0DT, CreateDateTime(WorkDate(), 0T));
         UserTaskList.SetTableView(UserTask);
         UserTaskList.Run();
-    end;
-
-    internal procedure GetEmissionCO2Style(): Text
-    begin
-        if Rec."Emission CO2" <= 1000 then
-            exit(FavorableStyleLbl);
-
-        if Rec."Emission CO2" <= 2500 then
-            exit(AmbiguousStyleLbl);
-
-        exit(UnfavorableStyleLbl);
-    end;
-
-    internal procedure GetPurchInvDueNextWeekStyle(): Text
-    begin
-        if Rec."Purch. Invoices Due Next Week" <= 5 then
-            exit(NoneStyleLbl);
-
-        if Rec."Purch. Invoices Due Next Week" <= 10 then
-            exit(AmbiguousStyleLbl);
-
-        exit(UnfavorableStyleLbl);
-    end;
-
-    internal procedure GetSalesInvDueNextWeekStyle(): Text
-    begin
-        if Rec."Sales Invoices Due Next Week" <= 10 then
-            exit(NoneStyleLbl);
-
-        if Rec."Sales Invoices Due Next Week" <= 30 then
-            exit(AmbiguousStyleLbl);
-
-        exit(UnfavorableStyleLbl);
-    end;
-
-    internal procedure GetRequestsSentForApprovalStyle(): Text
-    begin
-        if Rec."Requests Sent for Approval" <= 5 then
-            exit(FavorableStyleLbl);
-
-        if Rec."Requests Sent for Approval" <= 20 then
-            exit(AmbiguousStyleLbl);
-
-        exit(UnfavorableStyleLbl);
-    end;
-
-    internal procedure GetRequestsToApprovalStyle(): Text
-    begin
-        if Rec."Requests to Approve" <= 2 then
-            exit(FavorableStyleLbl);
-
-        if Rec."Requests to Approve" <= 5 then
-            exit(AmbiguousStyleLbl);
-
-        exit(UnfavorableStyleLbl);
-    end;
-
-    internal procedure GetTasksThisMonthStyle(): Text
-    begin
-        if Rec.GetMyPendingUserTasksThisMonthCount() <= 5 then
-            exit(FavorableStyleLbl);
-
-        if Rec.GetMyPendingUserTasksThisMonthCount() <= 10 then
-            exit(AmbiguousStyleLbl);
-
-        exit(UnfavorableStyleLbl);
-    end;
-
-    internal procedure GetOverdueTasksStyle(): Text
-    begin
-        if Rec.GetMyOverDueUserTasksCount() <= 1 then
-            exit(FavorableStyleLbl);
-
-        if Rec.GetMyOverDueUserTasksCount() <= 5 then
-            exit(AmbiguousStyleLbl);
-
-        exit(UnfavorableStyleLbl);
     end;
 }

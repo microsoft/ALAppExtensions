@@ -123,6 +123,14 @@ pageextension 36954 "Order Processor Role Center" extends "Order Processor Role 
                     RunObject = page "Sales by Location";
                     Tooltip = 'Open a Power BI Report that breaks down sales performance by location, highlighting metrics such as Sales Amount, Sales Quantity, Gross Profit and Gross Profit Margin.';
                 }
+                action("Sales Forecasting (Power BI)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Sales Forecasting (Power BI)';
+                    Image = "PowerBI";
+                    RunObject = page "Sales Forecasting";
+                    Tooltip = 'Open the Power BI Report that predicts your sales trends, including forecasting of sales metrics across item, customer, document type and salespeople.';
+                }
             }
         }
     }

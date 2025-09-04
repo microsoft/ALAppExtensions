@@ -297,7 +297,6 @@ table 6103 "E-Document Service"
             DataClassification = SystemMetadata;
         }
         #endregion [60-80] are reserved for purchase draft document settings.
-
     }
     keys
     {

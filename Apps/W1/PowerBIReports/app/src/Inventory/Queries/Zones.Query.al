@@ -9,7 +9,7 @@ query 36982 Zones
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'zone';
     EntitySetName = 'zones';
     DataAccessIntent = ReadOnly;

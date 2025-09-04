@@ -14,6 +14,13 @@
   "screenshots": [],
   "platform": "27.0.0.0",
   "application": "27.0.0.0",
+  "internalsVisibleTo": [
+    {
+      "id": "c9b38161-dd8d-40a9-8920-60ccbf8d7a59",
+      "name": "Dynamics SL Migration Tests",
+      "publisher": "Microsoft"
+    }
+  ],
   "dependencies": [
     {
       "id": "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
@@ -43,6 +50,5 @@
   "features": [
     "TranslationFile",
     "NoImplicitWith"
-  ],
-  "runtime": "14.0"
+  ]
 }

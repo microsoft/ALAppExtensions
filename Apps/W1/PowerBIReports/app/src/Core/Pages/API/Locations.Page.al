@@ -8,7 +8,7 @@ page 36957 Locations
     Caption = 'Power BI Locations';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'location';
     EntitySetName = 'locations';
     SourceTable = Location;

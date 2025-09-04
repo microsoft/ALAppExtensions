@@ -1,7 +1,9 @@
 namespace Microsoft.Test.Sustainability;
 
-using Microsoft.Sustainability.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
 using Microsoft.Foundation.UOM;
+using Microsoft.Sustainability.Setup;
 
 codeunit 148209 "Sust. Caption Class Test"
 {
@@ -12,6 +14,7 @@ codeunit 148209 "Sust. Caption Class Test"
         Assert: Codeunit "Assert";
         LibraryInventory: Codeunit "Library - Inventory";
         LibrarySustainability: Codeunit "Library - Sustainability";
+        LibraryERM: Codeunit "Library - ERM";
         NetChangeLbl: Label 'Net Change (%1)', Comment = '%1 = Emission Type';
         BalanceAtDateLbl: Label 'Balance at Date (%1)', Comment = '%1 = Emission Type';
         BalanceLbl: Label 'Balance (%1)', Comment = '%1 = Emission Type';
@@ -29,6 +32,8 @@ codeunit 148209 "Sust. Caption Class Test"
         CO2eForCO2Txt: Label 'CO2e for CO2';
         CO2eForCH4Txt: Label 'CO2e for CH4';
         CO2eForN2OTxt: Label 'CO2e for N2O';
+        TotalCBAMCostTxt: Label 'Total CBAM Cost';
+        PostedEmissionCostLbl: Label 'Posted %1', Comment = '%1 = Emission Type';
 
     [Test]
     procedure VerifyCaptionWhenUnitOfMeasureIsNotBlank()
@@ -44,6 +49,9 @@ codeunit 148209 "Sust. Caption Class Test"
 
         // [GIVEN] Get Sustainability Setup.
         SustainabilitySetup.Get();
+
+        // [GIVEN] Create and Update EU Country in Company Information.
+        CreateAndUpdateEUCountryInCompanyInformation();
 
         // [WHEN] Get Caption Class Test Page.
         CaptionClassTestPage.OpenEdit();
@@ -238,6 +246,16 @@ codeunit 148209 "Sust. Caption Class Test"
             StrSubstNo(TotalEmissionUnitOfMeasureLbl, CO2eForN2OTxt, SustainabilitySetup."Emission Unit of Measure Code"),
             CaptionClassTestPage.TotalEmissionUnitOfMeasureN2O.Caption(),
             StrSubstNo(CaptionValueMustBeEqualErr, CaptionClassTestPage.TotalEmissionUnitOfMeasureN2O.Caption(), StrSubstNo(TotalEmissionUnitOfMeasureLbl, CO2eForN2OTxt, SustainabilitySetup."Emission Unit of Measure Code"), CaptionClassTestPage.Caption));
+
+        Assert.AreEqual(
+            TotalCBAMCostTxt,
+            CaptionClassTestPage.TotalEmissionCost.Caption(),
+            StrSubstNo(CaptionValueMustBeEqualErr, CaptionClassTestPage.TotalEmissionCost.Caption(), TotalCBAMCostTxt, CaptionClassTestPage.Caption));
+
+        Assert.AreEqual(
+            StrSubstNo(PostedEmissionCostLbl, TotalCBAMCostTxt),
+            CaptionClassTestPage.PostedTotalEmissionCost.Caption(),
+            StrSubstNo(CaptionValueMustBeEqualErr, CaptionClassTestPage.PostedTotalEmissionCost.Caption(), StrSubstNo(PostedEmissionCostLbl, TotalCBAMCostTxt), CaptionClassTestPage.Caption));
     end;
 
     local procedure UpdateUnitOfMeasureAndUseAllGasesAsCO2eInSustainabilitySetup()
@@ -252,5 +270,27 @@ codeunit 148209 "Sust. Caption Class Test"
         SustainabilitySetup.Validate("Emission Unit of Measure Code", UnitOfMeasure.Code);
         SustainabilitySetup.Validate("Use All Gases As CO2e", true);
         SustainabilitySetup.Modify();
+    end;
+
+    local procedure CreateAndUpdateEUCountryInCompanyInformation()
+    var
+        CompanyInformation: Record "Company Information";
+        CountryRegion: Record "Country/Region";
+    begin
+        LibraryERM.CreateCountryRegion(CountryRegion);
+        UpdateEUCountryRegion(CountryRegion.Code);
+
+        CompanyInformation.Get();
+        CompanyInformation."Country/Region Code" := CountryRegion.Code;
+        CompanyInformation.Modify();
+    end;
+
+    local procedure UpdateEUCountryRegion(CountryCode: Code[10])
+    var
+        CountryRegion: Record "Country/Region";
+    begin
+        CountryRegion.Get(CountryCode);
+        CountryRegion."EU Country/Region Code" := CountryRegion.Code;
+        CountryRegion.Modify();
     end;
 }

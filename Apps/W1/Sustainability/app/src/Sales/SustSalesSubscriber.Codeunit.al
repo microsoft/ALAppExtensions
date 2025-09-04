@@ -56,25 +56,25 @@ codeunit 6253 "Sust. Sales Subscriber"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforeSalesShptLineInsert', '', false, false)]
     local procedure OnBeforeSalesShptLineInsert(SalesLine: Record "Sales Line"; var SalesShptLine: Record "Sales Shipment Line")
     begin
-        UpdatePostedSustainabilityEmission(SalesLine, SalesShptLine.Quantity, 1, SalesShptLine."Total CO2e");
+        UpdatePostedSustainabilityEmission(SalesLine, SalesShptLine.Quantity, 1, SalesShptLine."Total CO2e", SalesShptLine."Total EPR Fee");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforeReturnRcptLineInsert', '', false, false)]
     local procedure OnBeforeReturnRcptLineInsert(SalesLine: Record "Sales Line"; var ReturnRcptLine: Record "Return Receipt Line")
     begin
-        UpdatePostedSustainabilityEmission(SalesLine, ReturnRcptLine.Quantity, 1, ReturnRcptLine."Total CO2e");
+        UpdatePostedSustainabilityEmission(SalesLine, ReturnRcptLine.Quantity, 1, ReturnRcptLine."Total CO2e", ReturnRcptLine."Total EPR Fee");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforeSalesInvLineInsert', '', false, false)]
     local procedure OnBeforeSalesInvLineInsert(SalesLine: Record "Sales Line"; var SalesInvLine: Record "Sales Invoice Line")
     begin
-        UpdatePostedSustainabilityEmission(SalesLine, SalesInvLine.Quantity, 1, SalesInvLine."Total CO2e");
+        UpdatePostedSustainabilityEmission(SalesLine, SalesInvLine.Quantity, 1, SalesInvLine."Total CO2e", SalesInvLine."Total EPR Fee");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforeSalesCrMemoLineInsert', '', false, false)]
     local procedure OnBeforeSalesCrMemoLineInsert(SalesLine: Record "Sales Line"; var SalesCrMemoLine: Record "Sales Cr.Memo Line")
     begin
-        UpdatePostedSustainabilityEmission(SalesLine, SalesCrMemoLine.Quantity, 1, SalesCrMemoLine."Total CO2e");
+        UpdatePostedSustainabilityEmission(SalesLine, SalesCrMemoLine.Quantity, 1, SalesCrMemoLine."Total CO2e", SalesCrMemoLine."Total EPR Fee");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostUpdateOrderLineModifyTempLine', '', false, false)]
@@ -95,17 +95,23 @@ codeunit 6253 "Sust. Sales Subscriber"
         GHGCredit: Boolean;
         Sign: Integer;
         CO2eToPost: Decimal;
+        EPRFeeToPost: Decimal;
     begin
         GHGCredit := IsGHGCreditLine(SalesLine);
 
         Sign := GetPostingSign(SalesHeader, GHGCredit);
 
-        if ItemJournalLine."Invoiced Quantity" <> 0 then
-            CO2eToPost := SalesLine."CO2e per Unit" * Abs(ItemJournalLine."Invoiced Quantity") * SalesLine."Qty. per Unit of Measure"
-        else
+        if ItemJournalLine."Invoiced Quantity" <> 0 then begin
+            CO2eToPost := SalesLine."CO2e per Unit" * Abs(ItemJournalLine."Invoiced Quantity") * SalesLine."Qty. per Unit of Measure";
+            EPRFeeToPost := SalesLine."EPR Fee Per Unit" * Abs(ItemJournalLine."Invoiced Quantity") * SalesLine."Qty. per Unit of Measure";
+        end
+        else begin
             CO2eToPost := SalesLine."CO2e per Unit" * Abs(ItemJournalLine.Quantity) * SalesLine."Qty. per Unit of Measure";
+            EPRFeeToPost := SalesLine."EPR Fee Per Unit" * Abs(ItemJournalLine.Quantity) * SalesLine."Qty. per Unit of Measure";
+        end;
 
         CO2eToPost := CO2eToPost * Sign;
+        EPRFeeToPost := EPRFeeToPost * Sign;
 
         if not CanPostSustainabilityJnlLine(SalesLine."Sust. Account No.", SalesLine."Sust. Account Category", SalesLine."Sust. Account Subcategory", CO2eToPost) then
             exit;
@@ -116,24 +122,29 @@ codeunit 6253 "Sust. Sales Subscriber"
         ItemJournalLine."Sust. Account Subcategory" := SalesLine."Sust. Account Subcategory";
         ItemJournalLine."CO2e per Unit" := SalesLine."CO2e per Unit";
         ItemJournalLine."Total CO2e" := CO2eToPost;
+        ItemJournalLine."EPR Fee per Unit" := SalesLine."EPR Fee Per Unit";
+        ItemJournalLine."Total EPR Fee" := EPRFeeToPost;
     end;
 
     local procedure UpdatePostedSustainabilityEmissionOrderLine(SalesHeader: Record "Sales Header"; var TempSalesLine: Record "Sales Line" temporary)
     var
         PostedEmissionCO2e: Decimal;
+        PostedEmissionEPRFee: Decimal;
         GHGCredit: Boolean;
         Sign: Integer;
     begin
         GHGCredit := IsGHGCreditLine(TempSalesLine);
         Sign := GetPostingSign(SalesHeader, GHGCredit);
 
-        UpdatePostedSustainabilityEmission(TempSalesLine, TempSalesLine."Qty. to Invoice", Sign, PostedEmissionCO2e);
+        UpdatePostedSustainabilityEmission(TempSalesLine, TempSalesLine."Qty. to Invoice", Sign, PostedEmissionCO2e, PostedEmissionEPRFee);
         TempSalesLine."Posted Total CO2e" += PostedEmissionCO2e;
+        TempSalesLine."Posted Total EPR Fee" += PostedEmissionEPRFee;
     end;
 
-    local procedure UpdatePostedSustainabilityEmission(SalesLine: Record "Sales Line"; Quantity: Decimal; Sign: Integer; var PostedEmissionCO2e: Decimal)
+    local procedure UpdatePostedSustainabilityEmission(SalesLine: Record "Sales Line"; Quantity: Decimal; Sign: Integer; var PostedEmissionCO2e: Decimal; var PostedEmissionEPRFee: Decimal)
     begin
         PostedEmissionCO2e := (SalesLine."CO2e per Unit" * Abs(Quantity) * SalesLine."Qty. per Unit of Measure") * Sign;
+        PostedEmissionEPRFee := (SalesLine."EPR Fee Per Unit" * Abs(Quantity) * SalesLine."Qty. per Unit of Measure") * Sign;
     end;
 
     local procedure GetPostingSign(SalesHeader: Record "Sales Header"; GHGCredit: Boolean): Integer

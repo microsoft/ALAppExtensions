@@ -27,15 +27,16 @@ codeunit 13703 "Create VAT Setup Post.Grp. DK"
 
     local procedure CreateVatSetupPostingGrp()
     var
-        CreateVatPostingGroup: Codeunit "Create VAT Posting Groups";
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoVATStatement: Codeunit "Contoso VAT Statement";
-        CreateVatPostingGroupDK: Codeunit "Create VAT Posting Groups DK";
         CreateGLAccDK: Codeunit "Create GL Acc. DK";
     begin
+        FinanceModuleSetup.Get();
+
         ContosoVATStatement.SetOverwriteData(true);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.Standard(), true, 25, CreateGLAccDk.SalestaxpayableSalesTax(), CreateGLAccDk.SalestaxreceivableInputTax(), true, 1, NormalVatDescriptionLbl);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.Zero(), true, 0, CreateGLAccDk.SalestaxpayableSalesTax(), CreateGLAccDk.SalestaxreceivableInputTax(), true, 1, NoVatDescriptionLbl);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroupDK.Vat25Serv(), true, 25, CreateGLAccDk.SalestaxpayableSalesTax(), CreateGLAccDk.SalestaxreceivableInputTax(), true, 1, Vat25ServDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Standard", true, 25, CreateGLAccDk.SalestaxpayableSalesTax(), CreateGLAccDk.SalestaxreceivableInputTax(), true, 1, NormalVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", true, 0, CreateGLAccDk.SalestaxpayableSalesTax(), CreateGLAccDk.SalestaxreceivableInputTax(), true, 1, NoVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Reduced", true, 25, CreateGLAccDk.SalestaxpayableSalesTax(), CreateGLAccDk.SalestaxreceivableInputTax(), true, 1, Vat25ServDescriptionLbl);
         ContosoVATStatement.SetOverwriteData(false);
     end;
 

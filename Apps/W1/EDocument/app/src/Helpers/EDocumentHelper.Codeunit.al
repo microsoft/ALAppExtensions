@@ -31,6 +31,12 @@ codeunit 6148 "E-Document Helper"
     procedure IsElectronicDocument(var RecRef: RecordRef): Boolean
     var
         DocumentSendingProfile: Record "Document Sending Profile";
+    begin
+        exit(IsElectronicDocument(RecRef, DocumentSendingProfile));
+    end;
+
+    procedure IsElectronicDocument(var RecRef: RecordRef; var DocumentSendingProfile: Record "Document Sending Profile"): Boolean
+    var
         EDocumentProcessing: Codeunit "E-Document Processing";
     begin
         DocumentSendingProfile := EDocumentProcessing.GetDocSendingProfileForDocRef(RecRef);

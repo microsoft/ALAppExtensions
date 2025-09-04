@@ -1,11 +1,14 @@
 namespace Microsoft.Sustainability;
 
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.CBAM;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.CRM;
 using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Energy;
+using Microsoft.Sustainability.EPR;
 using Microsoft.Sustainability.ESGReporting;
+using Microsoft.Sustainability.ExciseTax;
 using Microsoft.Sustainability.FinancialReporting;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
@@ -59,5 +62,13 @@ permissionset 6211 "Sustainability Read"
         tabledata "Sust. Requirement Concept" = R,
         tabledata "Sust. Standard" = R,
         tabledata "Sust. Standard Requirement" = R,
-        tabledata "Sust. Unit" = R;
+        tabledata "Sust. Unit" = R,
+        tabledata "Sust. Item Mat. Comp. Header" = R,
+        tabledata "Sust. Item Mat. Comp. Line" = R,
+        tabledata "Sust. Excise Jnl. Line" = R,
+        tabledata "Sust. Excise Journal Batch" = R,
+        tabledata "Sust. Excise Journal Template" = R,
+        tabledata "Sust. Excise Taxes Trans. Log" = R,
+        tabledata "Sustainability Carbon Pricing" = R,
+        tabledata "Sustainability EPR Material" = R;
 }

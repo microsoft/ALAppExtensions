@@ -12,14 +12,7 @@
   "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
   "logo": "assets/ExtensionLogo.png",
   "target": "OnPrem",
-  "dependencies": [
-    {
-      "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
-      "name": "Sustainability",
-      "publisher": "Microsoft",
-      "version": "27.0.0.0"
-    }
-  ],
+  "dependencies": [],
   "internalsVisibleTo": [
     {
       "id": "b4e48c9c-0deb-49a4-ae70-662b33565b1b",
@@ -37,7 +30,7 @@
     },
     {
       "from": 37055,
-      "to": 37108
+      "to": 37119
     }
   ],
   "features": [

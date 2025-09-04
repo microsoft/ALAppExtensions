@@ -1,7 +1,6 @@
 namespace Microsoft.PowerBIReports;
 
 using Microsoft.Purchases.PowerBIReports;
-using Microsoft.Sustainability.PowerBIReports;
 using Microsoft.Sales.PowerBIReports;
 using Microsoft.Finance.PowerBIReports;
 using Microsoft.Manufacturing.PowerBIReports;
@@ -10,7 +9,6 @@ using Microsoft.Inventory.PowerBIReports;
 
 permissionset 36951 "PowerBi Report Basic"
 {
-    Access = Internal;
     Caption = 'Power BI Core Basic', MaxLength = 30;
     Assignable = true;
     Permissions =
@@ -27,7 +25,6 @@ permissionset 36951 "PowerBi Report Basic"
         codeunit Initialization = X,
         codeunit "Installation Handler" = X,
         codeunit "Manuf. Filter Helper" = X,
-        codeunit "PBI Sustain. Filter Helper" = X,
         codeunit "Project Filter Helper" = X,
         codeunit "Purchases Filter Helper" = X,
         codeunit "Sales Filter Helper" = X,
@@ -55,21 +52,16 @@ permissionset 36951 "PowerBi Report Basic"
         page "Working Days Subform" = X,
         page "Account Categories" = X,
         query "Account Categories" = X,
+        query "Resources - PBI API" = X,
         query "Assembly Headers - Order" = X,
         query "Assembly Lines - Item" = X,
         query Bins = X,
         query "Calendar Entries" = X,
         query "Capacity Ledger Entries" = X,
-        query "Country Region - PBI API" = X,
         query "Close Income Source - PBI API" = X,
         query "Customer Ledger Entries" = X,
         query Dimensions = X,
-        query "Emission Fees - PBI API" = X,
-        query "Employee Absence - PBI API" = X,
-        query "EmployeeLedgerEntry - PBI API" = X,
-        query "Employee Quali - PBI API" = X,
-        query "Employees - PBI API" = X,
-       query "G/L Account Categories" = X,
+        query "G/L Account Categories" = X,
         query "G/L Accounts" = X,
         query "G/L Budget Entries - PBI API" = X,
         query "G/L Budgets" = X,
@@ -113,22 +105,32 @@ permissionset 36951 "PowerBi Report Basic"
         query "Purch. Lines - Job Received" = X,
         query "Purch. Lines - Item Outstd." = X,
         query "Purchase Lines - Outstanding" = X,
+        query "Purchase Lines - PBI API" = X,
         query "Requisition Lines" = X,
-        query "Resp Centre - PBI API" = X,
+#if not CLEAN27
+#pragma warning disable AL0432
         query "Sales Line - PBI API" = X,
+#pragma warning restore AL0432
+#endif
+        query "Sales Line V2 - PBI API" = X,
         query "Sales Line - Item Outstanding" = X,
         query "Sales Line - Item Shipped" = X,
         query "Sales Lines - Outstanding" = X,
+        query "Sales Credit Lines - PBI API" = X,
+        query "Sales Cr Project Ledger Entry" = X,
+        query "Sales Inv Project Ledger Entry" = X,
+        query "Sales Invoice Lines - PBI API" = X,
         query "Service Lines - Order" = X,
-        query "SusSub Act Category - PBI API" = X,
-        query "Sust Account Cat - PBI API" = X,
-        query "Sust Accounts - PBI API" = X,
-        query "Sustainability Goals - PBI API" = X,
-        query "Sust Ledger Entries - PBI API" = X,
         query "Transfer Lines" = X,
         query "Value Entries - Item" = X,
+#if not CLEAN27
+#pragma warning disable AL0432
         query "Value Entries - Purch." = X,
         query "Value Entries - Sales" = X,
+#pragma warning restore AL0432
+#endif
+        query "Sales Value Entries - PBI API" = X,
+        query "Purch. Value Entries - PBI API" = X,
         query "Vendor Ledg. Entries - PBI API" = X,
         query "Dynamic Dimensions - PBI API" = X,
         query "Warehouse Activity Lines" = X,

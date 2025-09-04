@@ -7,7 +7,6 @@ using Microsoft.Manufacturing.PowerBIReports;
 using Microsoft.Projects.PowerBIReports;
 using Microsoft.Purchases.PowerBIReports;
 using Microsoft.Inventory.PowerBIReports;
-using Microsoft.Sustainability.PowerBIReports;
 
 codeunit 139792 "PowerBI API Requests"
 {
@@ -18,8 +17,6 @@ codeunit 139792 "PowerBI API Requests"
         ManufacturingFilterHelper: Codeunit "Manuf. Filter Helper";
         ProjectFilterHelper: Codeunit "Project Filter Helper";
         PurchasesFilterHelper: Codeunit "Purchases Filter Helper";
-        SustainabilityFilterHelper: Codeunit "PBI Sustain. Filter Helper";
-
     begin
         case Scenario of
             Scenario::"Finance Date":
@@ -34,8 +31,6 @@ codeunit 139792 "PowerBI API Requests"
                 exit(ProjectFilterHelper.GenerateJobLedgerDateFilter());
             Scenario::"Purchases Date":
                 exit(PurchasesFilterHelper.GenerateItemPurchasesReportDateFilter());
-            Scenario::"Sustainability Date":
-                exit(SustainabilityFilterHelper.GenerateSustainabilityReportDateFilter());
         end;
     end;
 
@@ -132,16 +127,12 @@ codeunit 139792 "PowerBI API Requests"
                 exit(GetQueryUrlFromObjectId(Query::"Item Budget Names"));
             PowerBIEndpoint::"Item Budget Entries - Purch.":
                 exit(GetQueryUrlFromObjectId(Query::"Item Budget Entries - Purch."));
-            PowerBIEndpoint::"Value Entries - Purch.":
-                exit(GetQueryUrlFromObjectId(Query::"Value Entries - Purch."));
             PowerBIEndpoint::"Purch. Lines - Item Received":
                 exit(GetQueryUrlFromObjectId(Query::"Purch. Lines - Item Received"));
             PowerBIEndpoint::"Sales Line - Item Outstanding":
                 exit(GetQueryUrlFromObjectId(Query::"Sales Line - Item Outstanding"));
             PowerBIEndpoint::"Item Budget Entries - Sales":
                 exit(GetQueryUrlFromObjectId(Query::"Item Budget Entries - Sales"));
-            PowerBIEndpoint::"Value Entries - Sales":
-                exit(GetQueryUrlFromObjectId(Query::"Value Entries - Sales"));
             PowerBIEndpoint::"Sales Line - Item Shipped":
                 exit(GetQueryUrlFromObjectId(Query::"Sales Line - Item Shipped"));
             PowerBIEndpoint::"Manufacturing Setup":
@@ -156,12 +147,6 @@ codeunit 139792 "PowerBI API Requests"
                 exit(GetQueryUrlFromObjectId(Query::"Manuf. Value Entries - PBI API"));
             PowerBIEndpoint::"Work Center Groups":
                 exit(GetQueryUrlFromObjectId(Query::"Work Center Groups - PBI API"));
-            PowerBIEndpoint::"Employee Ledger Entry":
-                exit(GetQueryUrlFromObjectId(Query::"EmployeeLedgerEntry - PBI API"));
-            PowerBIEndpoint::"Sustainability Ledger Entry":
-                exit(GetQueryUrlFromObjectId(Query::"Sust Ledger Entries - PBI API"));
-            PowerBIEndpoint::"Sales Lines":
-                exit(GetQueryUrlFromObjectId(Query::"Sales Line - PBI API"));
             PowerBIEndpoint::"Opportunity":
                 exit(GetQueryUrlFromObjectId(Query::"Opportunity - PBI API"));
             PowerBIEndpoint::"Opportunity Entries":
@@ -178,8 +163,40 @@ codeunit 139792 "PowerBI API Requests"
                 exit(GetPageUrlFromObjectId(Page::"Close Opp. Code - PBI API"));
             PowerBIEndpoint::"Sales Cycle Stages":
                 exit(GetPageUrlFromObjectId(Page::"Sales Cycle Stage - PBI API"));
-            PowerBIEndpoint::"Sustainability Goals":
-                exit(GetQueryUrlFromObjectId(Query::"Sustainability Goals - PBI API"));
+            PowerBIEndpoint::Resources:
+                exit(GetQueryUrlFromObjectId(Query::"Resources - PBI API"));
+            PowerBIEndpoint::"Purchase Lines":
+                exit(GetQueryUrlFromObjectId(Query::"Purchase Lines - PBI API"));
+            PowerBIEndpoint::"Purchase Invoice Lines":
+                exit(GetQueryUrlFromObjectId(Query::"Purchase Invoice Lines"));
+            PowerBIEndpoint::"Purchase Credit Lines":
+                exit(GetQueryUrlFromObjectId(Query::"Purchase Credit Lines"));
+            PowerBIEndpoint::"Sales Credit Lines":
+                exit(GetQueryUrlFromObjectId(Query::"Sales Credit Lines - PBI API"));
+            PowerBIEndpoint::"Sales Cr Project Ledger Entries":
+                exit(GetQueryUrlFromObjectId(Query::"Sales Cr Project Ledger Entry"));
+            PowerBIEndpoint::"Sales Invoice Lines":
+                exit(GetQueryUrlFromObjectId(Query::"Sales Invoice Lines - PBI API"));
+            PowerBIEndpoint::"Sales Inv Project Ledger Entry":
+                exit(GetQueryUrlFromObjectId(Query::"Sales Inv Project Ledger Entry"));
+            PowerBIEndpoint::"Sales Lines V2":
+                exit(GetQueryUrlFromObjectId(Query::"Sales Line V2 - PBI API"));
+            PowerBIEndpoint::"Sales Value Entries":
+                exit(GetQueryUrlFromObjectId(Query::"Sales Value Entries - PBI API"));
+            PowerBIEndpoint::"Purch. Value Entries":
+                exit(GetQueryUrlFromObjectId(Query::"Purch. Value Entries - PBI API"));
+        end;
+    end;
+
+    procedure GetEndpointURLForAPIObject(ObjectType: ObjectType; ObjectId: Integer): Text
+    begin
+        case ObjectType of
+            ObjectType::Page:
+                exit(GetPageUrlFromObjectId(ObjectId));
+            ObjectType::Query:
+                exit(GetQueryUrlFromObjectId(ObjectId));
+            else
+                Error('Invalid object type for getting a URL endpoint');
         end;
     end;
 

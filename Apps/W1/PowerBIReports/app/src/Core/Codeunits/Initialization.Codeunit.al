@@ -238,23 +238,37 @@ codeunit 36951 Initialization
     var
         PowerBIReportsSetup: Record "PowerBI Reports Setup";
         AuditLog: Codeunit "Audit Log";
+        FieldsMonitored: List of [Integer];
         PowerBIReportConfiguredLbl: Label 'Power BI report configured by UserSecurityId %1.', Locked = true;
     begin
         if RecRef.Number() <> Database::"PowerBI Reports Setup" then
             exit;
-        if not (FldRef.Number in [
-                PowerBIReportsSetup.FieldNo("Finance Report Id"),
-                PowerBIReportsSetup.FieldNo("Sales Report Id"),
-                PowerBIReportsSetup.FieldNo("Projects Report Id"),
-                PowerBIReportsSetup.FieldNo("Inventory Report Id"),
-                PowerBIReportsSetup.FieldNo("Purchases Report Id"),
-                PowerBIReportsSetup.FieldNo("Manufacturing Report Id"),
-                PowerBIReportsSetup.FieldNo("Inventory Val. Report Id"),
-                PowerBIReportsSetup.FieldNo("Sustainability Report Id")
-        ]) then
+
+        OnGettingSetupFieldsToAuditFromPowerBIReportsSetup(FieldsMonitored);
+        if not FieldsMonitored.Contains(PowerBIReportsSetup.FieldNo("Finance Report Id")) then
+            FieldsMonitored.Add(PowerBIReportsSetup.FieldNo("Finance Report Id"));
+        if not FieldsMonitored.Contains(PowerBIReportsSetup.FieldNo("Sales Report Id")) then
+            FieldsMonitored.Add(PowerBIReportsSetup.FieldNo("Sales Report Id"));
+        if not FieldsMonitored.Contains(PowerBIReportsSetup.FieldNo("Projects Report Id")) then
+            FieldsMonitored.Add(PowerBIReportsSetup.FieldNo("Projects Report Id"));
+        if not FieldsMonitored.Contains(PowerBIReportsSetup.FieldNo("Inventory Report Id")) then
+            FieldsMonitored.Add(PowerBIReportsSetup.FieldNo("Inventory Report Id"));
+        if not FieldsMonitored.Contains(PowerBIReportsSetup.FieldNo("Purchases Report Id")) then
+            FieldsMonitored.Add(PowerBIReportsSetup.FieldNo("Purchases Report Id"));
+        if not FieldsMonitored.Contains(PowerBIReportsSetup.FieldNo("Manufacturing Report Id")) then
+            FieldsMonitored.Add(PowerBIReportsSetup.FieldNo("Manufacturing Report Id"));
+        if not FieldsMonitored.Contains(PowerBIReportsSetup.FieldNo("Inventory Val. Report Id")) then
+            FieldsMonitored.Add(PowerBIReportsSetup.FieldNo("Inventory Val. Report Id"));
+
+        if not FieldsMonitored.Contains(FldRef.Number) then
             exit;
         ChangeLogEntry."Field Log Entry Feature" := "Field Log Entry Feature"::"Monitor Sensitive Fields";
         AuditLog.LogAuditMessage(StrSubstNo(PowerBIReportConfiguredLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 1, 0);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGettingSetupFieldsToAuditFromPowerBIReportsSetup(var FieldsMonitored: List of [Integer])
+    begin
     end;
 
 }

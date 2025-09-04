@@ -42,11 +42,9 @@ page 37008 "Sales Actual vs. Budget Amt."
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionce3be3bc80c816f2646b', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

@@ -22,8 +22,21 @@ codeunit 4410 "Trial Balance"
         DimensionValue: Record "Dimension Value";
         BusinessUnitFilters, Dimension1Filters, Dimension2Filters : List of [Code[20]];
     begin
-        if not GLAccount.FindSet() then
+        Session.LogMessage('0000PYA', 'Started collecting trial balance data', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'Excel Reports');
+        if not GLAccount.FindSet() then begin
+            Session.LogMessage('0000PYD', 'Finished collecting trial balance data', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'Excel Reports');
             exit;
+        end;
+#if not CLEAN27
+        if IsPerformantTrialBalanceFeatureActive() then
+#endif
+            // The feature currently doesn't consider breakdown for consolidation
+            if (not GlobalBreakdownByBusinessUnit) and GlobalBreakdownByDimension then begin
+                Session.LogMessage('0000PYC', 'Running query-based trial balance', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'Excel Reports');
+                InsertTrialBalanceReportDataFromQuery(GLAccount, Dimension1Values, Dimension2Values, TrialBalanceData);
+                Session.LogMessage('0000PYD', 'Finished collecting trial balance data', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'Excel Reports');
+                exit;
+            end;
 
         if GlobalBreakdownByDimension then begin
             DimensionValue.SetRange("Global Dimension No.", 1);
@@ -39,7 +52,17 @@ codeunit 4410 "Trial Balance"
         repeat
             InsertBreakdownForGLAccount(GLAccount, Dimension1Filters, Dimension2Filters, BusinessUnitFilters, TrialBalanceData, Dimension1Values, Dimension2Values);
         until GLAccount.Next() = 0;
+        Session.LogMessage('0000PYD', 'Finished collecting trial balance data', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', 'Excel Reports');
     end;
+
+#if not CLEAN27
+    local procedure IsPerformantTrialBalanceFeatureActive() Active: Boolean
+    begin
+#pragma warning disable AL0432
+        OnIsPerformantTrialBalanceFeatureActive(Active);
+#pragma warning restore AL0432
+    end;
+#endif
 
     local procedure InsertBusinessUnitFilters(var BusinessUnitFilters: List of [Code[20]])
     var
@@ -162,6 +185,85 @@ codeunit 4410 "Trial Balance"
         end;
     end;
 
+    local procedure InsertTrialBalanceReportDataFromQuery(var GLAccount: Record "G/L Account"; var Dimension1Values: Record "Dimension Value" temporary; var Dimension2Values: Record "Dimension Value" temporary; var TrialBalanceData: Record "EXR Trial Balance Buffer")
+    var
+        LocalGLAccount: Record "G/L Account";
+        EXRTrialBalanceQuery: Query "EXR Trial Balance";
+        StartDate, EndDate : Date;
+    begin
+        TrialBalanceData.DeleteAll();
+        // We get the dates of the first and last entries for the date filter in G/L Account,
+        // the trial balance returns starting balance, net change, and ending balance with regard to such dates
+        GetRangeDatesForGLAccountFilter(GLAccount.GetFilter("Date Filter"), StartDate, EndDate);
+
+        // We first get the balances at the ending date
+        EXRTrialBalanceQuery.SetFilter(EXRTrialBalanceQuery.PostingDate, '..%1', EndDate);
+        EXRTrialBalanceQuery.Open();
+        while EXRTrialBalanceQuery.Read() do begin
+            TrialBalanceData."G/L Account No." := EXRTrialBalanceQuery.AccountNumber;
+            TrialBalanceData."Dimension 1 Code" := EXRTrialBalanceQuery.DimensionValue1Code;
+            TrialBalanceData."Dimension 2 Code" := EXRTrialBalanceQuery.DimensionValue2Code;
+            // The balances at the ending date are filled in from the values returned in this query
+            TrialBalanceData.Validate(Balance, EXRTrialBalanceQuery.Amount);
+            TrialBalanceData.Validate("Balance (ACY)", EXRTrialBalanceQuery.ACYAmount);
+            // And also in Net Change (which will have later the value at the starting date subtracted)
+            TrialBalanceData.Validate("Net Change", EXRTrialBalanceQuery.Amount);
+            TrialBalanceData.Validate("Net Change (ACY)", EXRTrialBalanceQuery.ACYAmount);
+            TrialBalanceData.Insert(true);
+            InsertUsedDimensionValue(1, TrialBalanceData."Dimension 1 Code", Dimension1Values);
+            InsertUsedDimensionValue(2, TrialBalanceData."Dimension 2 Code", Dimension2Values);
+        end;
+        EXRTrialBalanceQuery.Close();
+
+        // And now we get the balances at the starting date and modify the ones we have already inserted
+        EXRTrialBalanceQuery.SetFilter(EXRTrialBalanceQuery.PostingDate, '..%1', StartDate - 1);
+        EXRTrialBalanceQuery.Open();
+        while EXRTrialBalanceQuery.Read() do begin
+            TrialBalanceData.SetRange("G/L Account No.", EXRTrialBalanceQuery.AccountNumber);
+            TrialBalanceData.SetRange("Dimension 1 Code", EXRTrialBalanceQuery.DimensionValue1Code);
+            TrialBalanceData.SetRange("Dimension 2 Code", EXRTrialBalanceQuery.DimensionValue2Code);
+            if not TrialBalanceData.FindFirst() then begin // This shouldn't happen, but we consider it regardless
+                TrialBalanceData."G/L Account No." := EXRTrialBalanceQuery.AccountNumber;
+                TrialBalanceData."Dimension 1 Code" := EXRTrialBalanceQuery.DimensionValue1Code;
+                TrialBalanceData."Dimension 2 Code" := EXRTrialBalanceQuery.DimensionValue2Code;
+                TrialBalanceData.Insert(true);
+            end;
+            // The balances at starting date are filled in from the values returned in this query
+            TrialBalanceData.Validate("Starting Balance", EXRTrialBalanceQuery.Amount);
+            TrialBalanceData.Validate("Starting Balance (ACY)", EXRTrialBalanceQuery.ACYAmount);
+            // The "Net Change" will be modified from what it had (balance at ending date) to the subtraction with the starting balance
+            TrialBalanceData.Validate("Net Change", TrialBalanceData."Net Change" - EXRTrialBalanceQuery.Amount);
+            TrialBalanceData.Validate("Net Change (ACY)", TrialBalanceData."Net Change (ACY)" - EXRTrialBalanceQuery.ACYAmount);
+            TrialBalanceData.Modify();
+            InsertUsedDimensionValue(1, TrialBalanceData."Dimension 1 Code", Dimension1Values);
+            InsertUsedDimensionValue(2, TrialBalanceData."Dimension 2 Code", Dimension2Values);
+        end;
+
+        // The query will just return entries for the "Posting" G/L Accounts and nothing for the End-Total accounts,
+        // to address that, we calculate the sums from the contents that we now have in the temporary TrialBalanceData table
+        LocalGLAccount.SetRange("Account Type", "G/L Account Type"::"End-Total");
+        if LocalGLAccount.FindSet() then
+            repeat
+                if LocalGLAccount.Totaling <> '' then begin
+                    TrialBalanceData.Reset();
+                    TrialBalanceData.SetFilter("G/L Account No.", LocalGLAccount.Totaling);
+                    TrialBalanceData.CalcSums(
+                        // LCY
+                        "Net Change", "Net Change (Debit)", "Net Change (Credit)",
+                        Balance, "Balance (Debit)", "Balance (Credit)",
+                        "Starting Balance", "Starting Balance (Debit)", "Starting Balance (Credit)",
+                        // ACY
+                        "Net Change (ACY)", "Net Change (Debit) (ACY)", "Net Change (Credit) (ACY)",
+                        Balance, "Balance (Debit) (ACY)", "Balance (Credit) (ACY)",
+                        "Starting Balance (ACY)", "Starting Balance (Debit) (ACY)", "Starting Balance (Credit)(ACY)"
+                    );
+                    TrialBalanceData."G/L Account No." := LocalGLAccount."No.";
+                    TrialBalanceData.Insert(true);
+                end
+            until LocalGLAccount.Next() = 0;
+        TrialBalanceData.Reset();
+    end;
+
     local procedure InsertUsedDimensionValue(GlobalDimensionNo: Integer; DimensionCode: Code[20]; var InsertedDimensionValues: Record "Dimension Value" temporary)
     var
         DimensionValue: Record "Dimension Value";
@@ -184,8 +286,30 @@ codeunit 4410 "Trial Balance"
         InsertedDimensionValues.Insert();
     end;
 
+    local procedure GetRangeDatesForGLAccountFilter(GLAccountDateFilter: Text; var StartDate: Date; var EndDate: Date)
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.SetFilter("Posting Date", GLAccountDateFilter);
+        GLEntry.SetLoadFields("Posting Date");
+        GLEntry.SetCurrentKey("Posting Date");
+        GLEntry.SetAscending("Posting Date", true);
+        if GLEntry.FindFirst() then
+            StartDate := GLEntry."Posting Date";
+        if GLEntry.FindLast() then
+            EndDate := GLEntry."Posting Date";
+    end;
+
     [IntegrationEvent(true, false)]
     local procedure OnBeforeInsertDimensionFiltersFromDimensionValues(var DimensionValue: Record "Dimension Value"; var DimensionFilters: List of [Code[20]]; var IsHandled: Boolean)
     begin
     end;
+
+#if not CLEAN27
+    [Obsolete('This event is temporary to try the functionality before it''s officially released as a feature in feature management.', '27.0')]
+    [IntegrationEvent(true, false)]
+    local procedure OnIsPerformantTrialBalanceFeatureActive(var Active: Boolean)
+    begin
+    end;
+#endif
 }

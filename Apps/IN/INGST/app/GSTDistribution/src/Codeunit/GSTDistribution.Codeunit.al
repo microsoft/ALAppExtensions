@@ -665,6 +665,7 @@ codeunit 18200 "GST Distribution"
         PostedGSTDistributionLine.TransferFields(GSTDistributionLine);
         PostedGSTDistributionLine."Distribution No." := DistributionNo;
         PostedGSTDistributionLine."Location ISD Document No." := NoSeries.GetNextNo(GSTDistributionLine."Location Posting No. Series");
+        PostedGSTDistributionLine."Location Posting No. Series" := GSTDistributionLine."Location Posting No. Series";
         PostedGSTDistributionLine.Insert(true);
     end;
 

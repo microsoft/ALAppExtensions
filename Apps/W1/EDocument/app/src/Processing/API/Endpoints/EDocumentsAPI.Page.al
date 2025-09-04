@@ -49,7 +49,7 @@ page 6112 "E-Documents API"
                 field(billPayNumber; Rec."Bill-to/Pay-to No.")
                 {
                 }
-                field(documentNo; Rec."Document No.")
+                field(documentNumber; Rec."Document No.")
                 {
                 }
                 field(documentType; Format(Rec."Document Type"))
@@ -68,7 +68,7 @@ page 6112 "E-Documents API"
                 field(amountExclVat; Rec."Amount Excl. VAT")
                 {
                 }
-                field(orderNo; Rec."Order No.")
+                field(orderNumber; Rec."Order No.")
                 {
                 }
                 field(postingDate; Rec."Posting Date")

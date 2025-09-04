@@ -5,7 +5,6 @@
 namespace Microsoft.eServices.EDocument;
 
 using System.Automation;
-
 codeunit 6139 "E-Document Workflow Setup"
 {
     Access = Public;
@@ -36,12 +35,30 @@ codeunit 6139 "E-Document Workflow Setup"
         Workflow.Modify();
     end;
 
-    internal procedure EDocReceived(): Code[128]
+    #region Workflow Events
+    procedure EDocCreated(): code[128];
+    begin
+        exit('EDOCCREATEDEVENT');
+    end;
+
+    internal procedure EventEDocImported(): Code[128]
     begin
         exit('EDOCRECEIVED');
     end;
 
-    internal procedure EDocImport(): Code[128]
+    internal procedure EventEDocStatusChanged(): code[128];
+    begin
+        exit('EDOCSENT');
+    end;
+
+    internal procedure EventEDocExported(): code[128];
+    begin
+        exit('Event-EDOC-EXPORTED');
+    end;
+    #endregion Workflow Events
+
+    #region Workflow Responses
+    internal procedure ResponseEDocImport(): Code[128]
     begin
         exit('EDOCIMPORT');
     end;
@@ -51,15 +68,22 @@ codeunit 6139 "E-Document Workflow Setup"
         exit('EDOCSendEDOCRESPONSE');
     end;
 
-    procedure EDocCreated(): code[128];
+    internal procedure ResponseEDocExport(): Code[128];
     begin
-        exit('EDOCCREATEDEVENT')
+        exit('Response-EDOC-EXPORT');
     end;
 
-    internal procedure EDocStatusChanged(): code[128];
+
+    internal procedure ResponseEDocSendToService(): Code[128];
     begin
-        exit('EDOCSENT')
+        exit('Response-EDOC-SEND-TO-SERVICE');
     end;
+
+    internal procedure ResponseEDocSentByEmail(): code[128];
+    begin
+        exit('Response-EDOC-SENT-BY-EMAIL');
+    end;
+    #endregion Workflow Responses
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Event Handling", 'OnAddWorkflowEventsToLibrary', '', true, true)]
     local procedure AddEDocWorkflowEventsToLibrary()
@@ -67,10 +91,10 @@ codeunit 6139 "E-Document Workflow Setup"
         WorkflowEventHandling: Codeunit "Workflow Event Handling";
     begin
         WorkflowEventHandling.AddEventToLibrary(EDocCreated(), Database::"E-Document", 'E-Document Created', 0, false);
-        WorkflowEventHandling.AddEventToLibrary(EDocStatusChanged(), Database::"E-Document Service Status", 'E-Document has changed', 0, false);
-        WorkflowEventHandling.AddEventToLibrary(EDocReceived(), Database::"E-Document", 'E-Document Imported', 0, false);
+        WorkflowEventHandling.AddEventToLibrary(EventEDocStatusChanged(), Database::"E-Document Service Status", 'E-Document has changed', 0, false);
+        WorkflowEventHandling.AddEventToLibrary(EventEDocImported(), Database::"E-Document", 'E-Document Imported', 0, false);
+        WorkflowEventHandling.AddEventToLibrary(EventEDocExported(), Database::"E-Document", 'E-Document has been exported', 0, false);
     end;
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAddWorkflowResponsesToLibrary', '', true, true)]
     local procedure AddEDocWorkflowResponsesToLibrary()
@@ -78,7 +102,10 @@ codeunit 6139 "E-Document Workflow Setup"
         WorkflowResponseHandling: Codeunit "Workflow Response Handling";
     begin
         WorkflowResponseHandling.AddResponseToLibrary(EDocSendEDocResponseCode(), Database::"E-Document", 'Send E-Document using setup: %1', 'GROUP 50100');
-        WorkflowResponseHandling.AddResponseToLibrary(EDocImport(), Database::"E-Document", 'Import E-Document using setup: %1', 'GROUP 50100');
+        WorkflowResponseHandling.AddResponseToLibrary(ResponseEDocImport(), Database::"E-Document", 'Import E-Document using setup: %1', 'GROUP 50100');
+        WorkflowResponseHandling.AddResponseToLibrary(ResponseEDocExport(), Database::"E-Document", 'Export E-Document using setup: %1', 'GROUP 50100');
+        WorkflowResponseHandling.AddResponseToLibrary(ResponseEDocSendToService(), Database::"E-Document", 'Send E-Document to service: %1', 'GROUP 50100');
+        WorkflowResponseHandling.AddResponseToLibrary(ResponseEDocSentByEmail(), Database::"E-Document", 'Send E-Document to customer', 'GROUP 50101');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Workflow Response Handling", 'OnAfterGetDescription', '', false, false)]
@@ -86,7 +113,10 @@ codeunit 6139 "E-Document Workflow Setup"
     begin
         case WorkflowResponse."Function Name" of
             EDocSendEDocResponseCode(),
-            EDocImport():
+            ResponseEDocImport(),
+            ResponseEDocExport(),
+            ResponseEDocSendToService(),
+            ResponseEDocSentByEmail():
                 Result := (CopyStr(StrSubstNo(WorkflowResponse.Description, WorkflowStepArgument."E-Document Service"), 1, 250));
         end;
     end;
@@ -100,7 +130,18 @@ codeunit 6139 "E-Document Workflow Setup"
             EDocSendEDocResponseCode():
                 begin
                     WorkflowResponseHandling.AddResponsePredecessor(EDocSendEDocResponseCode(), EDocCreated());
-                    WorkflowResponseHandling.AddResponsePredecessor(EDocSendEDocResponseCode(), EDocStatusChanged());
+                    WorkflowResponseHandling.AddResponsePredecessor(EDocSendEDocResponseCode(), EventEDocStatusChanged());
+                    WorkflowResponseHandling.AddResponsePredecessor(EDocSendEDocResponseCode(), EventEDocExported())
+                end;
+            ResponseEDocExport():
+                begin
+                    WorkflowResponseHandling.AddResponsePredecessor(ResponseEDocExport(), EDocCreated());
+                    WorkflowResponseHandling.AddResponsePredecessor(ResponseEDocExport(), EventEDocStatusChanged());
+                end;
+            ResponseEDocSentByEmail():
+                begin
+                    WorkflowResponseHandling.AddResponsePredecessor(ResponseEDocSentByEmail(), EventEDocStatusChanged());
+                    WorkflowResponseHandling.AddResponsePredecessor(ResponseEDocSentByEmail(), EventEDocExported());
                 end;
         end;
     end;
@@ -116,6 +157,21 @@ codeunit 6139 "E-Document Workflow Setup"
             EDocSendEDocResponseCode():
                 begin
                     EDocWorkflowProcessing.SendEDocument(Variant, ResponseWorkflowStepInstance);
+                    ResponseExecuted := true;
+                end;
+            ResponseEDocExport():
+                begin
+                    EDocWorkflowProcessing.ExportEDocument(Variant, ResponseWorkflowStepInstance);
+                    ResponseExecuted := true;
+                end;
+            ResponseEDocSendToService():
+                begin
+                    EDocWorkflowProcessing.SendEDocument(Variant, ResponseWorkflowStepInstance);
+                    ResponseExecuted := true;
+                end;
+            ResponseEDocSentByEmail():
+                begin
+                    EDocWorkflowProcessing.SendEDocFromEmail(Variant, ResponseWorkflowStepInstance);
                     ResponseExecuted := true;
                 end;
         end;

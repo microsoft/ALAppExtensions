@@ -28,7 +28,6 @@ table 6231 "Sust. Posted ESG Report Header"
         field(3; "No."; Code[20])
         {
             Caption = 'No.';
-            OptimizeForTextSearch = true;
         }
         field(4; Description; Text[100])
         {

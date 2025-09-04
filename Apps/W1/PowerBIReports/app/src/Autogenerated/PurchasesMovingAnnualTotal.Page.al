@@ -39,11 +39,9 @@ page 37013 "Purchases Moving Annual Total"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection26e891a305a24bb29884', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

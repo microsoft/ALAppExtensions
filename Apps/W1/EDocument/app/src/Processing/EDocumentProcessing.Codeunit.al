@@ -122,6 +122,39 @@ codeunit 6108 "E-Document Processing"
         EDocumentServiceStatus.Modify();
     end;
 
+    procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
+    var
+        EDocument: Record "E-Document";
+        EDocumentHelper: Codeunit "E-Document Helper";
+        EDocExport: Codeunit "E-Doc. Export";
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(Record);
+        EDocument.SetRange("Document Record ID", SourceDocumentHeader.RecordId);
+        if EDocumentHelper.IsElectronicDocument(SourceDocumentHeader) and EDocument.IsEmpty() then
+            EDocExport.CheckEDocument(SourceDocumentHeader, EDocumentProcPhase);
+    end;
+
+    procedure CreateEDocumentFromPostedDocumentPage(PostedRecord: Variant; DocumentType: Enum "E-Document Type"): Boolean
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        EDocumentHelper: Codeunit "E-Document Helper";
+        EDocumentSubscribers: Codeunit "E-Document Subscribers";
+        RecordRef: RecordRef;
+        ElectronicDocumentErr: Label 'Document sending profile %1 is not setup to send electronic documents.', Comment = '%1 - Document Sending Profile Code';
+    begin
+        if not PostedRecord.IsRecord() then
+            exit;
+
+        RecordRef.GetTable(PostedRecord);
+        if not EDocumentHelper.IsElectronicDocument(RecordRef, DocumentSendingProfile) then
+            Error(ElectronicDocumentErr, DocumentSendingProfile.Code);
+
+        RunEDocumentCheck(PostedRecord, Enum::"E-Document Processing Phase"::Post);
+        EDocumentSubscribers.CreateEDocumentFromPostedDocument(PostedRecord, DocumentSendingProfile, DocumentType);
+        exit(true);
+    end;
+
     procedure GetDocSendingProfileForDocRef(var RecRef: RecordRef): Record "Document Sending Profile";
     var
         SalesHeader: Record "Sales Header";

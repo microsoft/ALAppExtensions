@@ -227,6 +227,24 @@ page 40063 "Cloud Migration Management"
                     HybridCloudManagement.RunDataUpgrade(LastHybridReplicationSummary);
                 end;
             }
+            action(MigrateRecordLinks)
+            {
+                Enabled = IsSuper and IsSetupComplete;
+                Visible = not IsOnPrem;
+                ApplicationArea = All;
+                Caption = 'Migrate record links and notes';
+                ToolTip = 'Migrate record links and notes from the on-premises database to the cloud.';
+                Image = Links;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    WarnRecordLinkMigrationDoneBefore();
+                    HybridCloudManagement.MigrateRecordLinks();
+                    Message(RecordLinkMigrationCompletedTxt);
+                end;
+            }
 
             action(RunDiagnostic)
             {
@@ -831,6 +849,20 @@ page 40063 "Cloud Migration Management"
         UninitializedCompaniesNotification.Send();
     end;
 
+    local procedure WarnRecordLinkMigrationDoneBefore()
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        if not HybridCompanyStatus.Get() then
+            exit;
+
+        if not HybridCompanyStatus."Record Link Move Completed" then
+            exit;
+
+        if not Confirm(StrSubstNo(RecordLinkMigrationWasDoneContinueQst, HybridCompanyStatus."Last Record Link Move DateTime")) then
+            Error('');
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure CanRunDiagnostic(var CanRun: Boolean)
     begin
@@ -890,6 +922,8 @@ page 40063 "Cloud Migration Management"
         IntelligentCloudNotSetupMsg: Label 'Cloud migration is not enabled. To start the migration you must complete the setup.';
         RunReplicationConfirmQst: Label 'Are you sure you want to start data replication?';
         DataRepairNotCompletedMsg: Label 'Data repair has not completed. Before you complete the cloud migration or start an upgrade, invoke the ''Repair Companion Table Records'' action';
+        RecordLinkMigrationCompletedTxt: Label 'Record links and notes have been successfully migrated.';
+        RecordLinkMigrationWasDoneContinueQst: Label 'You already migrated record links in this migration on %1. If you migrate record links again, you might run into unwanted results. Are you sure that you want to continue?', Comment = '%1 - Date and time when the last record link migration was done';
         TotalSuccessfulTablesCount: Integer;
         TotalTablesFailedCount: Integer;
         TotalTablesRemainingCount: Integer;

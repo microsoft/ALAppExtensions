@@ -593,7 +593,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         if not NonDeductibleVATCZL.IsNonDeductibleVATEnabled() then
             exit;
 
-        if not PurchLinesExist() then
+        if not PurchLinesWithNonDeductVATExist() then
             exit;
 
         Field.Get(Database::"Purchase Header", ChangedFieldNo);
@@ -613,6 +613,25 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
                 PurchaseLine.UpdateVATAmounts();
                 PurchaseLine.Modify(false);
             until PurchaseLine.Next() = 0;
+    end;
+
+    local procedure PurchLinesWithNonDeductVATExist(): Boolean
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        VATPostingSetup.SetFilter("Allow Non-Deductible VAT", '%1|%2',
+            VATPostingSetup."Allow Non-Deductible VAT"::Allow, VATPostingSetup."Allow Non-Deductible VAT"::"Do Not Apply CZL");
+        if VATPostingSetup.FindSet() then
+            repeat
+                PurchLine.Reset();
+                PurchLine.ReadIsolation := IsolationLevel::ReadUncommitted;
+                PurchLine.SetRange("Document Type", "Document Type");
+                PurchLine.SetRange("Document No.", "No.");
+                PurchLine.SetRange("VAT Bus. Posting Group", VATPostingSetup."VAT Bus. Posting Group");
+                PurchLine.SetRange("VAT Prod. Posting Group", VATPostingSetup."VAT Prod. Posting Group");
+                if not PurchLine.IsEmpty() then
+                    exit(true);
+            until VATPostingSetup.Next() = 0;
     end;
 
     [IntegrationEvent(false, false)]

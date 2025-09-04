@@ -39,11 +39,9 @@ page 37010 "Purchases Decomposition"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectiond7fdf374ab65b2861937', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

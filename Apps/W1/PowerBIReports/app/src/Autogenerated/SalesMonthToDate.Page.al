@@ -39,11 +39,9 @@ page 37003 "Sales Month-To-Date"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection7d903e33b708c20e3be1', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

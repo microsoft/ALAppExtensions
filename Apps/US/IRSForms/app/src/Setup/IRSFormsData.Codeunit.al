@@ -4,6 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Foundation.Company;
+using System.Reflection;
+
 codeunit 10039 "IRS Forms Data"
 {
     Access = Internal;
@@ -305,5 +308,59 @@ codeunit 10039 "IRS Forms Data"
         IRS1099FormInstruction.Validate(Header, Header);
         IRS1099FormInstruction.Validate(Description, Description);
         IRS1099FormInstruction.Insert(true);
+    end;
+
+    procedure GetNameControl(): Code[4]
+    var
+        CompanyInformation: Record "Company Information";
+        TypeHelper: Codeunit "Type Helper";
+        CompanyName: Text;
+        TB: TextBuilder;
+        WordsCount: Integer;
+        Ch: Char;
+    begin
+        CompanyInformation.Get();
+        CompanyName := RemoveExtraSpaces(CompanyInformation.Name);
+        CompanyName := UpperCase(CompanyName);
+
+        // omit 'The' when it is followed by more than one word
+        if CompanyName.StartsWith('THE ') then begin
+            WordsCount := CompanyName.Split(' ').Count;
+            if WordsCount > 2 then
+                CompanyName := CompanyName.Substring(5);
+        end;
+
+        // allowed chars are A-Z, 0-9, hyphen, and ampersand
+        foreach Ch in CompanyName do
+            if TypeHelper.IsLatinLetter(Ch) or TypeHelper.IsDigit(Ch) or
+               (Ch = '-') or (Ch = '&')
+            then
+                TB.Append(Ch);
+
+        // take the first four characters of the name
+        exit(CopyStr(TB.ToText(), 1, 4));
+    end;
+
+    procedure RemoveExtraSpaces(InputText: Text): Text
+    var
+        TB: TextBuilder;
+        Ch: Char;
+        PrevIsSpace: Boolean;
+    begin
+        // remove leading and trailing spaces
+        InputText := InputText.Trim();
+
+        // remove adjacent spaces
+        foreach Ch in InputText do
+            if Ch = ' ' then begin
+                if not PrevIsSpace then
+                    TB.Append(Ch);
+                PrevIsSpace := true;
+            end else begin
+                TB.Append(Ch);
+                PrevIsSpace := false;
+            end;
+
+        exit(TB.ToText());
     end;
 }

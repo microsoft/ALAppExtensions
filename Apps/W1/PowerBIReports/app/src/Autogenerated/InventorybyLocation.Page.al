@@ -39,11 +39,9 @@ page 37024 "Inventory by Location"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection2765ed5a1005d04217d1', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var
