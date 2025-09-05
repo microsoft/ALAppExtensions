@@ -14,7 +14,7 @@ page 10068 "Setup IRIS User ID"
     InsertAllowed = false;
     DeleteAllowed = false;
     ShowFilter = false;
-    Permissions = tabledata "User Params IRIS" = rm;
+    Permissions = tabledata "User Params IRIS" = RM;
     InherentEntitlements = X;
     InherentPermissions = X;
 

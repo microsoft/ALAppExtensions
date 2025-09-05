@@ -8,7 +8,7 @@ using System.TestLibraries.Utilities;
 using Microsoft.Inventory.Item;
 using System.Integration;
 
-codeunit 47210 "SL Item Migrator Tests"
+codeunit 147610 "SL Item Migrator Tests"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;

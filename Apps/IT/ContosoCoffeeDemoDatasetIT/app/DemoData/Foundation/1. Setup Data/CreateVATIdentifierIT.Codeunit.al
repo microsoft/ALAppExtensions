@@ -26,7 +26,7 @@ codeunit 12219 "Create VAT Identifier IT"
         ContosoVATIdentifier.InsertVATIdentifier(E10(), TaxExemptArt10Lbl);
         ContosoVATIdentifier.InsertVATIdentifier(CreateVATPostingGroups.Reduced(), VAT10Lbl);
         ContosoVATIdentifier.InsertVATIdentifier(CreateVATPostingGroups.Standard(), VAT20Lbl);
-        ContosoVATIdentifier.InsertVATIdentifier(CreateVATPostingGroups.Zero(), NonTaxableLbl);
+        ContosoVATIdentifier.InsertVATIdentifier(CreateVATPostingGroups.NoVAT(), NonTaxableLbl);
     end;
 
     procedure E10(): Code[20]

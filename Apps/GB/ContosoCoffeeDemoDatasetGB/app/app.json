@@ -32,5 +32,8 @@
     "allowDebugging": true,
     "allowDownloadingSource": false,
     "includeSourceInSymbolFile": false
-  }
+  },
+  "features": [
+    "TranslationFile"
+  ]
 }

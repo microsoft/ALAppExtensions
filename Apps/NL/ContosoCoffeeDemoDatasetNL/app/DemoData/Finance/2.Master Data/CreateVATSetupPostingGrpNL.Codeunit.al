@@ -15,18 +15,21 @@ codeunit 11535 "Create VAT Setup PostingGrp NL"
 
     trigger OnRun()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoVATStatement: Codeunit "Contoso VAT Statement";
         CreateVatPostingGroup: Codeunit "Create VAT Posting Groups";
         CreateNLGLAccounts: Codeunit "Create NL GL Accounts";
     begin
+        FinanceModuleSetup.Get();
+
         ContosoVATStatement.SetOverwriteData(true);
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.FullNormal(), true, 0, '', '', true, 1, StrSubstNo(VATOnlyInvoicesDescriptionLbl, '21'));
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.FullRed(), true, 0, '', '', true, 1, StrSubstNo(VATOnlyInvoicesDescriptionLbl, '9'));
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.Reduced(), true, 9, CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), true, 1, ReducedVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Reduced", true, 9, CreateNLGLAccounts.SalesVATReduced(), CreateNLGLAccounts.PurchaseVATReduced(), true, 1, ReducedVatDescriptionLbl);
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.ServNormal(), true, 0, '', '', true, 1, StrSubstNo(MiscellaneousVATDescriptionLbl, '21'));
         ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.ServRed(), true, 0, '', '', true, 1, StrSubstNo(MiscellaneousVATDescriptionLbl, '9'));
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.Standard(), true, 21, CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), true, 1, NormalVatDescriptionLbl);
-        ContosoVATStatement.InsertVatSetupPostingGrp(CreateVatPostingGroup.Zero(), true, 0, CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), true, 1, NoVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. Standard", true, 21, CreateNLGLAccounts.SalesVATNormal(), CreateNLGLAccounts.PurchaseVATNormal(), true, 1, NormalVatDescriptionLbl);
+        ContosoVATStatement.InsertVatSetupPostingGrp(FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", true, 0, CreateNLGLAccounts.MiscVATPayables(), CreateNLGLAccounts.MiscVATReceivables(), true, 1, NoVatDescriptionLbl);
         ContosoVATStatement.SetOverwriteData(false);
     end;
 

@@ -562,7 +562,7 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
         PurchaseSubscriber: Codeunit "Sust. Purchase Subscriber";
         TotalCO2e: Decimal;
     begin
-        PurchaseHeader.Get(PurchLine."Document Type", PurchLine."Document No.");
+        PurchaseHeader := PurchLine.GetPurchHeader();
 
         FilterCarbonPricing(SustainabilityCarbonPricing, PurchaseHeader, PurchLine);
         if not SustainabilityCarbonPricing.FindLast() then

@@ -465,11 +465,19 @@ codeunit 10530 "MTD Mgt."
         VATReportArchive: Record "VAT Report Archive";
         TempBlob: Codeunit "Temp Blob";
         OutStream: OutStream;
+#if not CLEAN27        
         DummyGUID: Guid;
+#endif        
     begin
         TempBlob.CreateOutStream(OutStream, TEXTENCODING::UTF8);
         OutStream.WriteText(MessageText);
+#if not CLEAN27 
+#pragma warning disable AL0432       
         VATReportArchive.ArchiveResponseMessage(VATReportHeader."VAT Report Config. Code".AsInteger(), VATReportHeader."No.", TempBlob, DummyGUID);
+#else
+        VATReportArchive.ArchiveResponseMessage(VATReportHeader."VAT Report Config. Code".AsInteger(), VATReportHeader."No.", TempBlob);
+#pragma warning restore AL0432 
+#endif
     end;
 
     internal procedure CheckReturnPeriodLink(VATReportHeader: Record "VAT Report Header")
