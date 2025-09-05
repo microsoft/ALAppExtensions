@@ -6,8 +6,10 @@
 namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Projects.Project.Job;
+using System.Reflection;
 using Microsoft.Projects.Resources.Resource;
 using System.Integration;
+using System.DateTime;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 
@@ -179,7 +181,7 @@ codeunit 47006 "SL Project Migrator"
 
     internal procedure MigrateProjects(IncludePlanStatusProjects: Boolean);
     var
-        SLPJProj: Record "SL PJProj";
+        SLPJProj: Record "SL PJProj Buffer";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         ProjectStatusFilter: Text;
     begin
@@ -197,7 +199,7 @@ codeunit 47006 "SL Project Migrator"
         until SLPJProj.Next() = 0;
     end;
 
-    internal procedure CreateProject(SLPJProj: Record "SL PJProj")
+    internal procedure CreateProject(SLPJProj: Record "SL PJProj Buffer")
     var
         Customer: Record Customer;
         Job: Record Job;

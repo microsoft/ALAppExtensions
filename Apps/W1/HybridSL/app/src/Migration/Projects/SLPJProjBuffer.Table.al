@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47069 "SL PJProj"
+table 47078 "SL PJProj Buffer"
 {
     Access = Internal;
     Caption = 'SL PJProj';
@@ -89,7 +89,7 @@ table 47069 "SL PJProj"
         {
             Caption = 'customer';
         }
-        field(20; end_date; DateTime)
+        field(20; end_date; Date)
         {
             Caption = 'end_date';
         }
@@ -173,11 +173,11 @@ table 47069 "SL PJProj"
         {
             Caption = 'pm_id07';
         }
-        field(41; pm_id08; DateTime)
+        field(41; pm_id08; Date)
         {
             Caption = 'pm_id08';
         }
-        field(42; pm_id09; DateTime)
+        field(42; pm_id09; Date)
         {
             Caption = 'pm_id09';
         }
@@ -217,7 +217,7 @@ table 47069 "SL PJProj"
         {
             Caption = 'pm_id38';
         }
-        field(52; pm_id39; DateTime)
+        field(52; pm_id39; Date)
         {
             Caption = 'pm_id39';
         }
@@ -237,7 +237,7 @@ table 47069 "SL PJProj"
         {
             Caption = 'ProjCuryRateType';
         }
-        field(57; ProjCuryBudEffDate; DateTime)
+        field(57; ProjCuryBudEffDate; Date)
         {
             Caption = 'ProjCuryBudEffDate';
         }
@@ -293,11 +293,11 @@ table 47069 "SL PJProj"
         {
             Caption = 'S4Future06';
         }
-        field(71; S4Future07; DateTime)
+        field(71; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(72; S4Future08; DateTime)
+        field(72; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -325,7 +325,7 @@ table 47069 "SL PJProj"
         {
             Caption = 'slsperid';
         }
-        field(79; start_date; DateTime)
+        field(79; start_date; Date)
         {
             Caption = 'start_date';
         }
