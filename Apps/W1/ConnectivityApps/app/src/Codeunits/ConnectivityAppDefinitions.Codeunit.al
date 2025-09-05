@@ -30,6 +30,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterSUManGOAutoBank();
         RegisterYavrioOpenBanking();
         RegisterEOSOpenBanking();
+        RegisterBNKBanking();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -385,6 +386,34 @@ codeunit 20352 "Connectivity App Definitions"
 
         AddDescriptionTranslation(AppId, 'Collega i conti bancari tramite lo standard open banking, ottieni estratti conto e saldi, riconcilia le transazioni bancarie tramite una connessione permanente tra ERP e database bancari.', 1040);
         AddDescriptionTranslation(AppId, 'Stellen Sie über den Open-Banking-Standard eine Verbindung zu Bankkonten her, erhalten Sie Kontoauszüge und Kontostände und gleichen Sie Banktransaktionen über eine permanente Verbindung zwischen ERP- und Bankdatenbanken ab.', 1031);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+    local procedure RegisterBNKBanking()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app '365 business Banking' to DE,BE,FR,IT,NL,AT,RO,SK,SI,ES,CZ,HU
+        ***************************************************/
+
+        AppId := '2ddb5a5d-a539-46f7-8c68-2e37cf7d0dfb';
+        AppName := '365 business Banking';
+        AppPublisher := '365 business development';
+        AppDescription := '365 business Banking extends the standard payment functionality in Microsoft Dynamics 365 Business Central by introducing advanced banking features. It allows users to manage bank accounts, process payments, and handle bank reconciliations more efficiently. The app supports multiple payment methods, automates bank statement imports, and provides tools for managing cash flow effectively. With its user-friendly interface and seamless integration with Business Central, 365 business Banking simplifies financial operations and enhances overall productivity.';
+        AppProviderSupportURL := 'https://docs.365businessdev.com/en-us/365-business-banking/';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/DynamicsBC/PUBID.business_development_christoph_krieg%7CAID.365businessbanking%7CPAPPID.2ddb5a5d-a539-46f7-8c68-2e37cf7d0dfb';
+        AppApprovedFor := 'DE,BE,FR,IT,NL,AT,RO,SK,SI,ES,CZ,HU';
+        AppWorksOn := 'W1,DE,BE,FR,IT,NL,AT,RO,SK,SI,ES,CZ,HU';
+
+        AddDescriptionTranslation(AppId, '365 business Banking erweitert die Standard-Zahlungsfunktionalität in Microsoft Dynamics 365 Business Central um fortschrittliche Bankfunktionen. Es ermöglicht Benutzern, Bankkonten zu verwalten, Zahlungen zu verarbeiten und Bankabstimmungen effizienter durchzuführen. Die App unterstützt mehrere Zahlungsmethoden, automatisiert den Import von Kontoauszügen und bietet Tools zur effektiven Verwaltung des Cashflows. Mit der benutzerfreundlichen Oberfläche und nahtlosen Integration in Business Central vereinfacht 365 business Banking Finanzprozesse und steigert die Produktivität.', 1031);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
