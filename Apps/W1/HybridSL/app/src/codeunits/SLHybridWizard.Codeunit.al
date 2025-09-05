@@ -285,7 +285,7 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL PJEquip", 'PJEquip');
         UpdateOrInsertRecord(Database::"SL PJEQRate", 'PJEQRate');
         UpdateOrInsertRecord(Database::"SL PJPent", 'PJPent');
-        UpdateOrInsertRecord(Database::"SL PJProj", 'PJProj');
+        UpdateOrInsertRecord(Database::"SL PJProj Buffer", 'PJProj');
     end;
 
     internal procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])
