@@ -27,12 +27,13 @@ using Microsoft.Sales.Reminder;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using Microsoft.Service.Posting;
-using System.Automation;
 using Microsoft.EServices.EDocument.Processing;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.Purchases.Setup;
+using System.Automation;
 using System.Utilities;
+using System.Reflection;
 
 codeunit 6103 "E-Document Subscribers"
 {
@@ -46,7 +47,6 @@ codeunit 6103 "E-Document Subscribers"
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
         DeleteDocumentQst: Label 'This document is linked to E-Document %1. Do you want to continue?', Comment = '%1 - E-Document Entry No.';
         DocumentSendingProfileWithWorkflowErr: Label 'Workflow %1 defined for %2 in Document Sending Profile %3 is not found.', Comment = '%1 - The workflow code, %2 - Enum value set in Electronic Document, %3 - Document Sending Profile Code';
-
 
 
     #region Draft page user edits 
@@ -163,25 +163,6 @@ codeunit 6103 "E-Document Subscribers"
         LogAfterValidate(Rec."E-Document Entry No.", Rec.SystemId, 'Shortcut Dimension 2 Code');
     end;
 
-    local procedure LogAfterValidate(EDocumentEntryNo: Integer; LineSystemId: Guid; FieldName: Text)
-    var
-        EDocument: Record "E-Document";
-        EDocImpSessionTelemetry: Codeunit "E-Doc. Imp. Session Telemetry";
-        Telemetry: Codeunit Telemetry;
-        TelemetryDimensions: Dictionary of [Text, Text];
-        DraftChangeTok: Label 'Draft Field Validation', Locked = true;
-    begin
-        EDocument.SetLoadFields("Entry No");
-        EDocument.ReadIsolation(IsolationLevel::ReadUncommitted);
-        if not EDocument.Get(EDocumentEntryNo) then
-            exit;
-        TelemetryDimensions.Add('Field', FieldName);
-        TelemetryDimensions.Add(EDocImpSessionTelemetry.GetEDocSystemIdTok(), EDocImpSessionTelemetry.CreateSystemIdText(EDocument.SystemId));
-        if not IsNullGuid(LineSystemId) then
-            TelemetryDimensions.Add(EDocImpSessionTelemetry.GetEDocLineSystemIdTok(), EDocImpSessionTelemetry.CreateSystemIdText(LineSystemId));
-        Telemetry.LogMessage('0000PYF', DraftChangeTok, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
-    end;
-
     #endregion
 
     #region Release events
@@ -272,7 +253,6 @@ codeunit 6103 "E-Document Subscribers"
     begin
         if (PurchInvHdrNo = '') and (PurchCrMemoHdrNo = '') then
             exit;
-
         if PurchInvHdrNo <> '' then begin
             if PurchInvHeader.Get(PurchInvHdrNo) then
                 PointEDocumentToPostedDocument(PurchaseHeader, PurchInvHeader, PurchInvHdrNo, Enum::"E-Document Type"::"Purchase Invoice")
@@ -376,19 +356,12 @@ codeunit 6103 "E-Document Subscribers"
             CreateEDocumentFromPostedDocument(IssuedReminderHeader, DocumentSendingProfile, Enum::"E-Document Type"::"Issued Reminder");
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnCheckElectronicSendingEnabled', '', false, false)]
-    local procedure OnCheckElectronicSendingEnabled(var ExchServiceEnabled: Boolean)
+    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", OnCheckElectronicSendingEnabled, '', false, false)]
+    local procedure OnCheckElectronicSendingEnabled(Sender: Record "Document Sending Profile"; var ExchServiceEnabled: Boolean)
     begin
-        ExchServiceEnabled := true;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSend', '', false, false)]
-    local procedure BeforeSendEDocument(Sender: Record "Document Sending Profile"; RecordVariant: Variant; var IsHandled: Boolean)
-    begin
-        if Sender."Electronic Document" <> Sender."Electronic Document"::"Extended E-Document Service Flow" then
-            exit;
-
-        IsHandled := true;
+        // If document sending profile is Extended E-Document Service Flow, then this document sending profile is using "3rd party exchange service, aka E-Documents" 
+        if Sender."Electronic Document" = Sender."Electronic Document"::"Extended E-Document Service Flow" then
+            ExchServiceEnabled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterPostGLAcc', '', false, false)]
@@ -455,6 +428,7 @@ codeunit 6103 "E-Document Subscribers"
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Purchase Line History");
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Line - Field");
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"ED Purchase Line Field Setup");
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"EDoc Historical Matching Setup");
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Vendor Assign. History");
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Doc. Record Link");
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"E-Document Notification");
@@ -462,6 +436,79 @@ codeunit 6103 "E-Document Subscribers"
         DataClassificationEvalData.SetTableFieldsToNormal(Database::"EDoc. Purch. Line Field Setup");
 #endif
     end;
+
+
+    #region Send To Customer - Posted documents
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post and Send", OnBeforeValidateElectronicFormats, '', false, false)]
+    local procedure OnBeforeValidateElectronicFormats(DocumentSendingProfile: Record "Document Sending Profile"; var IsHandled: Boolean)
+    begin
+        // Skip validation if E-Document emailing is selected
+        if (DocumentSendingProfile."E-Mail" <> DocumentSendingProfile."E-Mail"::No) then
+            if DocumentSendingProfile."E-Mail Attachment" in [DocumentSendingProfile."E-Mail Attachment"::"E-Document",
+                                                                DocumentSendingProfile."E-Mail Attachment"::"PDF & E-Document"] then begin
+                VerifyCorrectFlowSetupOnProfile(DocumentSendingProfile);
+                IsHandled := true;
+            end;
+
+        // If the document sending profile is set to use the extended e-document service flow, then skip validation
+        if DocumentSendingProfile."Electronic Document" = DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow" then
+            IsHandled := true;
+
+    end;
+
+    /// <summary>
+    /// This event is fired as part of sending when posting. I called after document has been posted.
+    /// We subscribe to enable creating an e-document from posted document.
+    /// </summary>
+    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", OnAfterSend, '', false, false)]
+    local procedure OnAfterSendEDocument(ReportUsage: Integer; RecordVariant: Variant; DocNo: Code[20]; ToCust: Code[20]; DocName: Text[150]; CustomerFieldNo: Integer; DocumentNoFieldNo: Integer; DocumentSendingProfile: Record "Document Sending Profile")
+    var
+        TypeHelper: Codeunit "Type Helper";
+        RecordRef: RecordRef;
+        EDocumentType: Enum "E-Document Type";
+        UnsupportedRecordTypeErr: Label 'Unsupported record %1.', Comment = '%1 - Record Type';
+    begin
+        if DocumentSendingProfile."Electronic Document" <> Enum::"Doc. Sending Profile Elec.Doc."::"Extended E-Document Service Flow" then
+            exit;
+        if DocumentSendingProfile."Electronic Service Flow" = '' then
+            exit;
+
+        EDocumentType := EDocumentProcessing.GetTypeFromPostedSourceDocument(RecordVariant);
+        if EDocumentType = EDocumentType::None then begin
+            TypeHelper.CopyRecVariantToRecRef(RecordVariant, RecordRef);
+            Error(UnsupportedRecordTypeErr, RecordRef.Name());
+        end;
+
+        CreateEDocumentFromPostedDocument(RecordVariant, DocumentSendingProfile, EDocumentType);
+    end;
+
+    /// <summary>
+    /// This event is fired when after emailing has happened, but only in the case that no emailing was sent because of no match for email attachment, do we sent it here. 
+    /// For sending E-Document via email as attachment. 
+    /// </summary>
+    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", OnAfterSendToEMail, '', false, false)]
+    local procedure OnAfterSendToEMailEDocument(var DocumentSendingProfile: Record "Document Sending Profile"; ReportUsage: Enum "Report Selection Usage"; RecordVariant: Variant; DocNo: Code[20]; DocName: Text[150]; ToCust: Code[20]; DocNoFieldNo: Integer; ShowDialog: Boolean)
+    begin
+        if DocumentSendingProfile."E-Mail" = DocumentSendingProfile."E-Mail"::"No" then
+            exit;
+
+        if not (DocumentSendingProfile."E-Mail Attachment" in [Enum::"Document Sending Profile Attachment Type"::"E-Document",
+                                                                Enum::"Document Sending Profile Attachment Type"::"PDF & E-Document"]) then
+            exit;
+
+
+        EDocumentProcessing.ProcessEDocumentAsEmail(DocumentSendingProfile, ReportUsage, RecordVariant, DocNo, DocName, ToCust, ShowDialog);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", OnSendWithReportDistributionManagement, '', false, false)]
+    local procedure OnSendWithReportDistributionManagementDisableIfEDocument(var DocumentSendingProfile: Record "Document Sending Profile"; var SendWithReportDistributionManagement: Boolean)
+    begin
+        if DocumentSendingProfile."Electronic Document" = DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow" then
+            SendWithReportDistributionManagement := false;
+    end;
+
+    #endregion Send To Customer
 
     local procedure IsEDocumentLinkedToPurchaseDocument(var EDocument: Record "E-Document"; OpenRecord: Variant): Boolean
     var
@@ -494,6 +541,18 @@ codeunit 6103 "E-Document Subscribers"
             PurchaseHeader.Validate("E-Document Link", NullGuid);
             PurchaseHeader.Modify();
         end;
+    end;
+
+    local procedure VerifyCorrectFlowSetupOnProfile(DocumentSendingProfile: Record "Document Sending Profile")
+    var
+        Workflow: Record Workflow;
+    begin
+        DocumentSendingProfile.TestField("Electronic Document", DocumentSendingProfile."Electronic Document"::"Extended E-Document Service Flow");
+        DocumentSendingProfile.Validate("Electronic Service Flow");
+        Workflow.SetLoadFields(Enabled);
+        Workflow.ReadIsolation(IsolationLevel::ReadUncommitted);
+        Workflow.Get(DocumentSendingProfile."Electronic Service Flow");
+        Workflow.TestField(Enabled, true);
     end;
 
     local procedure UpdateToPostedPurchaseEDocument(var EDocument: Record "E-Document"; PostedRecord: Variant; PostedDocumentNo: Code[20]; DocumentType: Enum "E-Document Type")
@@ -540,6 +599,25 @@ codeunit 6103 "E-Document Subscribers"
             UpdateToPostedPurchaseEDocument(EDocument, PostedRecord, PostedDocumentNo, DocumentType);
             RemoveEDocumentLinkFromPurchaseDocument(OpenRecord);
         end;
+    end;
+
+    local procedure LogAfterValidate(EDocumentEntryNo: Integer; LineSystemId: Guid; FieldName: Text)
+    var
+        EDocument: Record "E-Document";
+        EDocImpSessionTelemetry: Codeunit "E-Doc. Imp. Session Telemetry";
+        Telemetry: Codeunit Telemetry;
+        TelemetryDimensions: Dictionary of [Text, Text];
+        DraftChangeTok: Label 'Draft Field Validation', Locked = true;
+    begin
+        EDocument.SetLoadFields("Entry No");
+        EDocument.ReadIsolation(IsolationLevel::ReadUncommitted);
+        if not EDocument.Get(EDocumentEntryNo) then
+            exit;
+        TelemetryDimensions.Add('Field', FieldName);
+        TelemetryDimensions.Add(EDocImpSessionTelemetry.GetEDocSystemIdTok(), EDocImpSessionTelemetry.CreateSystemIdText(EDocument.SystemId));
+        if not IsNullGuid(LineSystemId) then
+            TelemetryDimensions.Add(EDocImpSessionTelemetry.GetEDocLineSystemIdTok(), EDocImpSessionTelemetry.CreateSystemIdText(LineSystemId));
+        Telemetry.LogMessage('0000PYF', DraftChangeTok, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
     end;
 
 }

@@ -11,14 +11,16 @@ codeunit 139768 "UT Page Bank Deposit"
 
     var
         Assert: Codeunit Assert;
+        LibraryApplicationArea: Codeunit "Library - Application Area";
+        LibraryERM: Codeunit "Library - ERM";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryPurchase: Codeunit "Library - Purchase";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryReportDataset: Codeunit "Library - Report Dataset";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryUtility: Codeunit "Library - Utility";
         LibraryUTUtility: Codeunit "Library UT Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
-        LibraryReportDataset: Codeunit "Library - Report Dataset";
-        LibraryERM: Codeunit "Library - ERM";
-        LibraryUtility: Codeunit "Library - Utility";
-        LibraryApplicationArea: Codeunit "Library - Application Area";
-        LibraryPurchase: Codeunit "Library - Purchase";
         Initialized: Boolean;
         InitializeHandled: Boolean;
         ValueMustExistMsg: Label 'Value must exist.';
@@ -26,6 +28,7 @@ codeunit 139768 "UT Page Bank Deposit"
         FeatureKeyIdTok: Label 'StandardizedBankReconciliationAndDeposits', Locked = true;
         SourceCodeErr: Label 'Source Code are not equal.';
         AppliesToIDErr: Label 'Applies-to ID must contain Bank Deposit No. and Line No.';
+        AppliesToIDMustBeBlankErr: Label 'Applies-to ID must be blank in %1', Comment = '%1 = Gen. Journal Line';
 
     [Test]
     [HandlerFunctions('DepositTestReportRequestPageHandler')]
@@ -801,6 +804,55 @@ codeunit 139768 "UT Page Bank Deposit"
         Assert.AreEqual(StrSubstNo('%1-%2', BankDepositHeader."No.", GenJournalLine."Line No."), GenJournalLine."Applies-to ID", AppliesToIDErr);
     end;
 
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler')]
+    procedure AppliesToIDIsBlankInGenJnlLineIfAppliesToDocNoIsNotBlank()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        GenJournalLine: Record "Gen. Journal Line";
+        Item: Record Item;
+        SalesLine: Record "Sales Line";
+        CustomerNo: Code[20];
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO 592891] "Applies-to ID" is blank in Gen. Journal Line if 
+        // "Applies-to Doc. No." is not blank.
+        Initialize();
+
+        // [GIVEN] Create a Customer No.
+        CustomerNo := LibrarySales.CreateCustomerNo();
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Create and Post Sales Document.
+        DocumentNo := CreateAndPostSalesDocument(
+            SalesLine, CustomerNo, SalesLine."Document Type"::Order, SalesLine.Type::Item, Item."No.",
+            LibraryRandom.RandInt(10), LibraryRandom.RandDec(100, 2));
+
+        //[GIVEN] Create a Bank Deposit with one line for the Customer
+        CreateBankDeposit(BankDepositHeader, CustomerNo, GenJournalLine."Account Type"::Customer, 1);
+        BankDepositHeader."Total Deposit Amount" := -550;
+        GenJournalLine.SetRange("Journal Batch Name", BankDepositHeader."Journal Batch Name");
+        GenJournalLine.SetRange("Journal Template Name", BankDepositHeader."Journal Template Name");
+        GenJournalLine.FindLast();
+        GenJournalLine.Validate(Amount, 550);
+        GenJournalLine.Modify();
+        UpdateApplicationOnGenJournalLine(GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", DocumentNo, 0D, 550);
+
+        // [THEN] Applies-to ID is blank in Gen. Journal Line.
+        GenJournalLine.SetRange("Journal Template Name", BankDepositHeader."Journal Template Name");
+        GenJournalLine.SetRange("Journal Batch Name", BankDepositHeader."Journal Batch Name");
+        GenJournalLine.FindFirst();
+        Assert.AreEqual(
+            '',
+            GenJournalLine."Applies-to ID",
+            StrSubstNo(
+                AppliesToIDMustBeBlankErr,
+                GenJournalLine.TableCaption()));
+    end;
+
     local procedure GetBankDepositsFeature(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; ID: Text[50])
     begin
         if FeatureDataUpdateStatus.Get(ID, CompanyName()) then
@@ -1107,6 +1159,79 @@ codeunit 139768 "UT Page Bank Deposit"
         GenJournalLine.TestField("Amount (LCY)", -AmountLCY);
     end;
 
+    local procedure CreateAndPostSalesDocument(var SalesLine: Record "Sales Line"; CustomerNo: Code[20]; DocumentType: Enum "Sales Document Type"; Type: Enum "Sales Line Type"; No: Code[20]; Quantity: Decimal; UnitPrice: Decimal): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType, CustomerNo);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Type, No, Quantity);
+        SalesLine.Validate("Unit Price", UnitPrice);
+        SalesLine.Modify(true);
+
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure UpdateApplicationOnGenJournalLine(var GenJournalLine: Record "Gen. Journal Line"; JournalTemplateName: Code[10]; JournalBatchName: Code[10]; AppliestoDocNo: Code[20]; DueDate: Date; Amount: Decimal)
+    begin
+        GenJournalLine.SetRange("Journal Template Name", JournalTemplateName);
+        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+        GenJournalLine.FindFirst();
+        GenJournalLine.Validate(Amount, Amount);
+        GenJournalLine.Validate("Applies-to Doc. Type", GenJournalLine."Applies-to Doc. Type"::Invoice);
+        GenJournalLine.Validate("Applies-to Doc. No.", AppliestoDocNo);
+        GenJournalLine.Validate("Due Date", DueDate);
+        GenJournalLine.Modify(true);
+    end;
+
+    local procedure CreateBankDeposit(var BankDepositHeader: Record "Bank Deposit Header"; AccountNo: Code[20]; AccountType: Enum "Gen. Journal Account Type"; SignFactor: Integer)
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        CreateBankDeposit(BankDepositHeader, AccountNo, AccountType, SignFactor, GenJournalLine."Document Type"::Payment);
+    end;
+
+    local procedure CreateBankDeposit(var BankDepositHeader: Record "Bank Deposit Header"; AccountNo: Code[20]; AccountType: Enum "Gen. Journal Account Type"; SignFactor: Integer; DocumentType: Enum "Gen. Journal Document Type")
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+    begin
+        CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", DocumentType,
+          AccountType, AccountNo, LibraryRandom.RandInt(1000) * SignFactor);  // Using Random value for Deposit Amount.
+    end;
+
+    local procedure CreateGenJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch"; Type: Enum "Gen. Journal Template Type")
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        GenJournalTemplate.Validate(Type, Type);
+        GenJournalTemplate.Modify(true);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+    end;
+
+    local procedure CreateBankDepositHeaderWithBankAccount(var BankDepositHeader: Record "Bank Deposit Header"; GenJournalBatch: Record "Gen. Journal Batch")
+    var
+        BankAccount: Record "Bank Account";
+    begin
+        LibraryERM.CreateBankAccount(BankAccount);
+        CreateBankDepositHeader(BankDepositHeader, GenJournalBatch);
+        BankDepositHeader.Validate("Bank Account No.", BankAccount."No.");
+        BankDepositHeader.Modify(true);
+    end;
+
+    local procedure CreateBankDepositHeader(var BankDepositHeader: Record "Bank Deposit Header"; GenJournalBatch: Record "Gen. Journal Batch")
+    begin
+        BankDepositHeader.SetFilter("Journal Template Name", GenJournalBatch."Journal Template Name");
+        BankDepositHeader.SetFilter("Journal Batch Name", GenJournalBatch.Name);
+        BankDepositHeader.Init();
+        BankDepositHeader.Insert(true);
+    end;
+
+
     [ModalPageHandler]
     procedure EditDimensionSetEntriesPageHandler(var EditDimensionSetEntries: TestPage "Edit Dimension Set Entries")
     var
@@ -1201,6 +1326,12 @@ codeunit 139768 "UT Page Bank Deposit"
     procedure GenJournalBatchHandler(var GenJournalBatchPage: TestPage "General Journal Batches")
     begin
         // Handle the page which is already Open.
+    end;
+
+    [ModalPageHandler]
+    procedure GeneralJournalBatchesPageHandler(var GeneralJournalBatches: TestPage "General Journal Batches")
+    begin
+        GeneralJournalBatches.OK().Invoke();
     end;
 
     [IntegrationEvent(false, false)]

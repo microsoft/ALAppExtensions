@@ -55,6 +55,9 @@ codeunit 148213 "Sust. ESG Integration Test"
         // [GIVEN] Table Mapping is empty.
         Assert.TableIsEmpty(Database::"Integration Table Mapping");
 
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
+
         // [GIVEN] Connection is disabled.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(false);
 
@@ -62,7 +65,7 @@ codeunit 148213 "Sust. ESG Integration Test"
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
 
         // [THEN] "Integration Table Mapping" is filled.
-        Assert.RecordCount(IntegrationTableMapping, 5);
+        Assert.RecordCount(IntegrationTableMapping, 9);
     end;
 
     [Test]
@@ -95,8 +98,8 @@ codeunit 148213 "Sust. ESG Integration Test"
         SustainabilitySetup.ResetConfiguration.Invoke();
 
         // [THEN] Integration Table Mapping and Job Queue Entry tables are not empty.
-        Assert.RecordCount(IntegrationTableMapping, 5);
-        Assert.RecordCount(JobQueueEntry, 5);
+        Assert.RecordCount(IntegrationTableMapping, 9);
+        Assert.RecordCount(JobQueueEntry, 9);
 
         // [THEN] Verify Message "The default setup for Dynamics 365 Sales synchronization has completed successfully." should appears.
         Assert.ExpectedMessage(StrSubstNo(SetupSuccessfulMsg, CRMProductName.CDSServiceName()), LibraryVariableStorage.DequeueText());
@@ -107,6 +110,9 @@ codeunit 148213 "Sust. ESG Integration Test"
     begin
         // [SCENARIO 546883] Verify disabling CRM Connection move Sustainability CRM Job Queue Entries in "On Hold" status.
         Initialize();
+
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
 
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
@@ -127,6 +133,9 @@ codeunit 148213 "Sust. ESG Integration Test"
     begin
         // [SCENARIO 546883] Verify Reporting Unit should be created from Dataverse Unit.
         Initialize();
+
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
 
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
@@ -153,6 +162,9 @@ codeunit 148213 "Sust. ESG Integration Test"
     begin
         // [SCENARIO 546883] Verify CRM related controls on Reporting Unit List page must not be visible when CRM Connection is not configured.
         Initialize();
+
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
 
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
@@ -200,6 +212,9 @@ codeunit 148213 "Sust. ESG Integration Test"
         // [SCENARIO 546883] Verify Reporting Unit should be created from Dataverse Unit must be coupled.
         Initialize();
 
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
+
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
 
@@ -225,8 +240,10 @@ codeunit 148213 "Sust. ESG Integration Test"
         CRMBaseUnit: Record "Sust. Unit";
         ReportingUnit: Record "Sust. ESG Reporting Unit";
         IntegrationTableMapping: Record "Integration Table Mapping";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        ReportingUnitRecId: RecordId;
     begin
-        // [SCENARIO 546883] Verify Reporting Unit should not be created from Dataverse Unit.
+        // [SCENARIO 546883] Verify Reporting Unit should be created from Dataverse Unit.
         Initialize();
 
         // [GIVEN] Enable the connection.
@@ -249,8 +266,10 @@ codeunit 148213 "Sust. ESG Integration Test"
         CRMIntegrationManagement.CreateNewRecordsFromCRM(CRMUnit);
         LibraryCRMIntegration.RunJobQueueEntry(Database::"Sust. Unit", CRMUnit.GetView(), IntegrationTableMapping);
 
-        // [THEN] Verify Reporting Unit should not be created from Dataverse Unit.
-        Assert.ExpectedError(StrSubstNo(RecordMustBeCoupledErr, CRMUnit.TableCaption(), Format(CRMUnit.BaseUnit), ReportingUnit.TableCaption()));
+        // [THEN] Verify Reporting Unit should be created from Base Dataverse Unit must be coupled.
+        Assert.IsTrue(
+            CRMIntegrationRecord.FindRecordIDFromID(CRMBaseUnit.UnitId, Database::"Sust. ESG Reporting Unit", ReportingUnitRecId),
+            StrSubstNo(RecordMustBeCoupledErr, CRMUnit.TableCaption(), Format(CRMBaseUnit.UnitId), ReportingUnit.TableCaption));
     end;
 
     [Test]
@@ -262,6 +281,9 @@ codeunit 148213 "Sust. ESG Integration Test"
     begin
         // [SCENARIO 546883] Verify Standard should be created from CRM.
         Initialize();
+
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
 
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
@@ -276,7 +298,7 @@ codeunit 148213 "Sust. ESG Integration Test"
         LibraryCRMIntegration.RunJobQueueEntry(Database::"Sust. Standard", CRMStandard.GetView(), IntegrationTableMapping);
 
         // [THEN] Verify Standard should be created from CRM.
-        Standard.SetRange("No.", CRMStandard.Name);
+        Standard.SetRange("Standard ID", CRMStandard.StandardId);
         Assert.RecordIsNotEmpty(Standard);
     end;
 
@@ -288,6 +310,9 @@ codeunit 148213 "Sust. ESG Integration Test"
     begin
         // [SCENARIO 546883] Verify CRM related controls on Standard List page must not be visible when CRM Connection is not configured.
         Initialize();
+
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
 
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
@@ -335,6 +360,9 @@ codeunit 148213 "Sust. ESG Integration Test"
         // [SCENARIO 546883] Verify Standard should be created from Dataverse must be coupled.
         Initialize();
 
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
+
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
 
@@ -364,6 +392,9 @@ codeunit 148213 "Sust. ESG Integration Test"
         // [SCENARIO 546883] Verify ESG Reporting Name should be created from CRM.
         Initialize();
 
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
+
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
 
@@ -390,6 +421,9 @@ codeunit 148213 "Sust. ESG Integration Test"
     begin
         // [SCENARIO 546883] Verify CRM related controls on Reporting Name List page must not be visible when CRM Connection is not configured.
         Initialize();
+
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
 
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
@@ -437,6 +471,9 @@ codeunit 148213 "Sust. ESG Integration Test"
         // [SCENARIO 546883] Verify Reporting Name should be created from Dataverse must be coupled.
         Initialize();
 
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
+
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
 
@@ -465,6 +502,9 @@ codeunit 148213 "Sust. ESG Integration Test"
     begin
         // [SCENARIO 546883] Verify ESG Reporting Line should be created from CRM.
         Initialize();
+
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
 
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
@@ -496,6 +536,9 @@ codeunit 148213 "Sust. ESG Integration Test"
     begin
         // [SCENARIO 546883] Verify CRM related controls on Reporting Line List page must not be visible when CRM Connection is not configured.
         Initialize();
+
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
 
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
@@ -570,6 +613,9 @@ codeunit 148213 "Sust. ESG Integration Test"
         // [SCENARIO 546883] Verify Reporting Line should be created from Dataverse must be coupled.
         Initialize();
 
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
+
         // [GIVEN] Enable the connection.
         LibrarySustainability.UpdateDataverseIntegrationInSustainabilitySetup(true);
 
@@ -602,6 +648,9 @@ codeunit 148213 "Sust. ESG Integration Test"
     begin
         // [SCENARIO 546883] Verify CRM related controls on Posted Reporting Line List page must not be visible when CRM Connection is not configured.
         Initialize();
+
+        // [GIVEN] Update "ESG Standard Nos." in Sustainability Setup.
+        LibrarySustainability.UpdateESGStandardReportingNoInSustainabilitySetup();
 
         // [GIVEN] Update "Posted ESG Reporting Nos." in Sustainability Setup.
         LibrarySustainability.UpdatePostedESGReportingNoInSustainabilitySetup();

@@ -14,11 +14,11 @@ pageextension 10048 "IRS 1099 Vendor Ledger Entries" extends "Vendor Ledger Entr
 #pragma warning disable AL0432
         modify("IRS 1099 Code")
         {
-            Visible = not IsNewFeatureEnabled;
+            Visible = false;
         }
         modify("IRS 1099 Amount")
         {
-            Visible = not IsNewFeatureEnabled;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -28,46 +28,22 @@ pageextension 10048 "IRS 1099 Vendor Ledger Entries" extends "Vendor Ledger Entr
             {
                 ApplicationArea = BasicUS;
                 Tooltip = 'Specifies the IRS reporting period for the vendor ledger entry.';
-#if not CLEAN25
-                Visible = IsNewFeatureEnabled;
-#endif
             }
             field("IRS 1099 Form No."; Rec."IRS 1099 Form No.")
             {
                 ApplicationArea = BasicUS;
                 Tooltip = 'Specifies the IRS form number for the vendor ledger entry.';
-#if not CLEAN25
-                Visible = IsNewFeatureEnabled;
-#endif
             }
             field("IRS 1099 Form Box No."; Rec."IRS 1099 Form Box No.")
             {
                 ApplicationArea = BasicUS;
                 Tooltip = 'Specifies the IRS form box number for the vendor ledger entry.';
-#if not CLEAN25
-                Visible = IsNewFeatureEnabled;
-#endif
             }
             field("IRS 1099 Reporting Amount"; Rec."IRS 1099 Reporting Amount")
             {
                 ApplicationArea = BasicUS;
                 Tooltip = 'Specifies the IRS reporting amount for the vendor ledger entry.';
-#if not CLEAN25
-                Visible = IsNewFeatureEnabled;
-#endif
             }
         }
     }
-
-#if not CLEAN25
-    var
-        IsNewFeatureEnabled: Boolean;
-
-    trigger OnOpenPage()
-    var
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-    begin
-        IsNewFeatureEnabled := IRSFormsFeature.IsEnabled();
-    end;
-#endif
 }

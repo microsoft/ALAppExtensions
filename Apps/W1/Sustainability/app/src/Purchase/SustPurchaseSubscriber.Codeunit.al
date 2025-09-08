@@ -89,6 +89,17 @@ codeunit 6225 "Sust. Purchase Subscriber"
             CheckAndUpdateSustainabilityItemJournalLine(ItemJournalLine, PurchaseHeader, PurchaseLine, TempItemChargeAssignmentPurch);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineJobConsumptionOnBeforeRunItemJnlPostLineWithReservation', '', false, false)]
+    local procedure OnPostItemJnlLineJobConsumption(var ItemJournalLine: Record "Item Journal Line"; var PurchaseLine: Record "Purchase Line")
+    var
+        PurchHeader: Record "Purchase Header";
+        TempItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)" temporary;
+    begin
+        PurchHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+        if ((ItemJournalLine.Quantity <> 0) or (ItemJournalLine."Invoiced Quantity" <> 0)) then
+            CheckAndUpdateSustainabilityItemJournalLine(ItemJournalLine, PurchHeader, PurchaseLine, TempItemChargeAssignmentPurch);
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnNotHandledCopyFromGLAccount', '', false, false)]
     local procedure OnAfterAssignGLAccountValues(var PurchaseLine: Record "Purchase Line"; GLAccount: Record "G/L Account")
     begin
@@ -240,11 +251,13 @@ codeunit 6225 "Sust. Purchase Subscriber"
 
     local procedure CheckAndUpdateSustainabilityItemJournalLine(var ItemJournalLine: Record "Item Journal Line"; PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; var TempItemChargeAssgntPurch: Record "Item Charge Assignment (Purch)" temporary)
     var
+        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
         GHGCredit: Boolean;
         Sign: Integer;
         CO2ToPost: Decimal;
         CH4ToPost: Decimal;
         N2OToPost: Decimal;
+        CarbonFee: Decimal;
     begin
         GHGCredit := IsGHGCreditLine(PurchaseLine);
 
@@ -254,6 +267,9 @@ codeunit 6225 "Sust. Purchase Subscriber"
         end;
 
         Sign := GetPostingSign(PurchaseHeader, GHGCredit);
+
+        if (ItemJournalLine."Job No." <> '') and (ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::"Negative Adjmt.") then
+            Sign := -Sign;
 
         if ItemJournalLine."Invoiced Quantity" <> 0 then begin
             CO2ToPost := PurchaseLine."Emission CO2 Per Unit" * Abs(ItemJournalLine."Invoiced Quantity") * PurchaseLine."Qty. per Unit of Measure";
@@ -285,6 +301,8 @@ codeunit 6225 "Sust. Purchase Subscriber"
             ItemJournalLine."Emission CO2" := CO2ToPost;
             ItemJournalLine."Emission CH4" := CH4ToPost;
             ItemJournalLine."Emission N2O" := N2OToPost;
+            if (ItemJournalLine."Job No." <> '') and (ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::"Negative Adjmt.") then
+                SustainabilityPostMgt.UpdateCarbonFeeEmissionValues("Emission Scope"::" ", PurchaseHeader."Posting Date", PurchaseHeader."Buy-from Country/Region Code", CO2ToPost, N2OToPost, CH4ToPost, ItemJournalLine."Total CO2e", CarbonFee);
         end;
     end;
 

@@ -1,7 +1,21 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.Foundation.DataSearch;
+
+using Microsoft.Foundation.DataSearch;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Sales.Archive;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Pricing;
+using Microsoft.Utilities;
+
 codeunit 139508 "Test Data Search On Archives"
 {
     EventSubscriberInstance = Manual;
-    
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Search Events", 'OnGetFieldNoForTableType', '', true, true)]
     local procedure OnGetFieldNoForTableType(TableNo: Integer; var FieldNo: Integer)
     begin

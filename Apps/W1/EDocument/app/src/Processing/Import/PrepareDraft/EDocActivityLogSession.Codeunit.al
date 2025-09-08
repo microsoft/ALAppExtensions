@@ -23,25 +23,51 @@ codeunit 6175 "E-Doc. Activity Log Session"
     EventSubscriberInstance = Manual;
 
     var
-        ActivityLogInstances: Dictionary of [Text, Codeunit "Activity Log Builder"];
+        ActivityLogInstances: Dictionary of [Text, List of [Codeunit "Activity Log Builder"]];
 
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Activity Log Session", Get, '', false, false)]
     local procedure OnGet(ActivityLogName: Text; var ActivityLogBuilder: Codeunit "Activity Log Builder"; var Found: Boolean)
+    var
+        ActivityLogList: List of [Codeunit "Activity Log Builder"];
     begin
         Found := ActivityLogInstances.ContainsKey(ActivityLogName);
-        if Found then
-            ActivityLogBuilder := ActivityLogInstances.Get(ActivityLogName);
+        if Found then begin
+            ActivityLogList := ActivityLogInstances.Get(ActivityLogName);
+            if ActivityLogList.Count() > 0 then
+                ActivityLogBuilder := ActivityLogList.Get(1);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Activity Log Session", Set, '', false, false)]
     local procedure OnSet(ActivityLogName: Text; ActivityLogBuilder: Codeunit "Activity Log Builder")
+    var
+        ActivityLogList: List of [Codeunit "Activity Log Builder"];
     begin
-        ActivityLogInstances.Set(ActivityLogName, ActivityLogBuilder);
+        if ActivityLogInstances.ContainsKey(ActivityLogName) then
+            ActivityLogList := ActivityLogInstances.Get(ActivityLogName)
+        else
+            Clear(ActivityLogList);
+
+        ActivityLogList.Add(ActivityLogBuilder);
+        ActivityLogInstances.Set(ActivityLogName, ActivityLogList);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Activity Log Session", GetAll, '', false, false)]
+    local procedure OnGetAll(ActivityLogName: Text; var ActivityLogList: List of [Codeunit "Activity Log Builder"]; var Found: Boolean)
+    begin
+        Found := ActivityLogInstances.ContainsKey(ActivityLogName);
+        if Found then
+            ActivityLogList := ActivityLogInstances.Get(ActivityLogName);
     end;
 
     [IntegrationEvent(false, false)]
     procedure Get(ActivityLogName: Text; var ActivityLogBuilder: Codeunit "Activity Log Builder"; var Found: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure GetAll(ActivityLogName: Text; var ActivityLogList: List of [Codeunit "Activity Log Builder"]; var Found: Boolean)
     begin
     end;
 

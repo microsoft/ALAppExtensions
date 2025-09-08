@@ -42,6 +42,10 @@ table 6252 "Sust. ESG Reporting Unit"
             CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Sust. ESG Reporting Unit")));
             ToolTip = 'Specifies that the reporting unit is coupled to an unit in Dataverse.';
         }
+        field(30; "Unit ID"; Guid)
+        {
+            Caption = 'Unit ID';
+        }
     }
 
     keys

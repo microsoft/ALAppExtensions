@@ -1,3 +1,37 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.EServices.EDocument;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.BatchProcessing;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.Service.Item;
+using Microsoft.Service.Test;
+using Microsoft.Tests.EServices.EDocument;
+using System.Email;
+using System.Environment.Configuration;
+using System.TestLibraries.Utilities;
+using System.Utilities;
+
 codeunit 139515 "Digital Vouchers Tests"
 {
     Subtype = Test;
@@ -1372,7 +1406,9 @@ codeunit 139515 "Digital Vouchers Tests"
         ServInvHeader: Record "Service Invoice Header";
     begin
         LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+#pragma warning disable AA0210
         ServInvHeader.SetRange("Pre-Assigned No.", ServiceHeader."No.");
+#pragma warning restore AA0210
         ServInvHeader.FindFirst();
         exit(ServInvHeader."No.");
     end;
@@ -1390,7 +1426,9 @@ codeunit 139515 "Digital Vouchers Tests"
         ServCrMemoHeader: Record "Service Cr.Memo Header";
     begin
         LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+#pragma warning disable AA0210
         ServCrMemoHeader.SetRange("Pre-Assigned No.", ServiceHeader."No.");
+#pragma warning restore AA0210
         ServCrMemoHeader.FindFirst();
         exit(ServCrMemoHeader."No.");
     end;

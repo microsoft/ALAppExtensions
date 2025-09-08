@@ -1707,7 +1707,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         VATDifference := Abs(DocAmountVAT) - Abs(TotalDocAmountVAT);
         if Abs(VATDifference) > Currency."Max. VAT Difference Allowed" then
             Error(ErrorInfo.Create(
-                    StrSubstNo(MustNotBeMoreThanErr, FieldCaption("Doc. Amount VAT"), Format(DocAmountVAT)), true, Rec));
+                    StrSubstNo(MustNotBeMoreThanErr, FieldCaption("Doc. Amount VAT"), Format(TotalDocAmountVAT)), true, Rec));
     end;
 
     local procedure GetCurrency()

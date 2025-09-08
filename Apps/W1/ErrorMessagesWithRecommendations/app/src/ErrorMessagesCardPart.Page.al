@@ -121,7 +121,7 @@ page 7900 "Error Messages Card Part"
                     ApplicationArea = Basic, Suite;
                     Editable = false;
                     Caption = 'Timestamp';
-                    ToolTip = 'The time of error occurrence.';
+                    ToolTip = 'Specifies the time of error occurrence.';
                 }
             }
         }

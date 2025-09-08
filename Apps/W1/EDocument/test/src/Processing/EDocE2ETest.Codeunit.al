@@ -45,7 +45,7 @@ codeunit 139624 "E-Doc E2E Test"
 
         // [THEN] OnBeforeCreatedEDocument is fired and edocument is empty
         EDocImplState.GetVariableStorage(LibraryVariableStorage);
-        Assert.AreEqual(2, LibraryVariableStorage.Length(), IncorrectValueErr);
+        Assert.AreEqual(3, LibraryVariableStorage.Length(), IncorrectValueErr);
         LibraryVariableStorage.Dequeue(Variant);
         EDocument := Variant;
         Assert.AreEqual('', EDocument."Document No.", 'OnBeforeCreatedEDocument should give empty edocument');
@@ -257,7 +257,6 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryLowerPermission.SetTeamMember();
         LibraryEDoc.PostInvoice(Customer);
         EDocument.FindLast();
-        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
 
         // [WHEN] Posting document is not going to succeed
         EDocumentPage.OpenView();
@@ -318,7 +317,6 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryLowerPermission.SetTeamMember();
         LibraryEDoc.PostInvoice(Customer);
         EDocument.FindLast();
-        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
 
         EDocumentPage.OpenView();
         EDocumentPage.Last();
@@ -706,6 +704,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
         EDocumentServiceStatus.FindLast();
+        EDocument.FindLast();
 
         Assert.AreEqual(EDocument."Entry No", EDocumentServiceStatus."E-Document Entry No", IncorrectValueErr);
         Assert.AreEqual(EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", IncorrectValueErr);
@@ -1617,6 +1616,8 @@ codeunit 139624 "E-Doc E2E Test"
         // [FEATURE] [E-Document] [Processing] 
         // [SCENARIO] Check that E-Document is created when posting transfer shipment
         IsInitialized := false;
+        DocumentSendingProfile.DeleteAll();
+
         this.Initialize(Enum::"Service Integration"::"Mock");
         DocumentSendingProfile.FindLast();
         this.LibraryEDoc.AddEDocServiceSupportedType(this.EDocumentService, Enum::"E-Document Type"::"Transfer Shipment");
@@ -1910,12 +1911,12 @@ codeunit 139624 "E-Doc E2E Test"
         // [WHEN] Issue reminder
         IssuedReminderHeader := this.LibraryEDoc.IssueReminder(this.Customer);
 
-        // [THEN] Check that E-Document is created and status is "In Progress"
+        // [THEN] Check that E-Document is created and status is Processed
 #pragma warning disable AA0210
         EDocument.SetRange("Document No.", IssuedReminderHeader."No.");
 #pragma warning restore AA0210
         EDocument.FindLast();
-        this.Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, this.IncorrectValueErr);
         // [THEN] Check that xml file was created
         this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         this.CheckXmlCreated(EDocument);
@@ -1946,12 +1947,12 @@ codeunit 139624 "E-Doc E2E Test"
         // [WHEN] Issue finance charge memo
         IssuedFinChargeMemoHeader := this.LibraryEDoc.IssueFinChargeMemo(this.Customer);
 
-        // [THEN] Check that E-Document is created and status is "In Progress"
+        // [THEN] Check that E-Document is created and status is Processed
 #pragma warning disable AA0210
         EDocument.SetRange("Document No.", IssuedFinChargeMemoHeader."No.");
 #pragma warning restore AA0210
         EDocument.FindLast();
-        this.Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, this.IncorrectValueErr);
+        this.Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, this.IncorrectValueErr);
         // [THEN] Check that xml file was created
         this.LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         this.CheckXmlCreated(EDocument);
@@ -2183,6 +2184,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocument.RecordId);
         EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
         EDocumentServiceStatus.FindLast();
+        EDocument.FindLast();
 
         Assert.AreEqual(EDocument."Entry No", EDocumentServiceStatus."E-Document Entry No", IncorrectValueErr);
         Assert.AreEqual(EDocumentService.Code, EDocumentServiceStatus."E-Document Service Code", IncorrectValueErr);

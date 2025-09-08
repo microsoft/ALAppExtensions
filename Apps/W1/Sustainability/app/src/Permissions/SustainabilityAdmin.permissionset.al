@@ -62,5 +62,9 @@ permissionset 6212 "Sustainability Admin"
         tabledata "Sust. Excise Journal Batch" = IMD,
         tabledata "Sust. Excise Journal Template" = IMD,
         tabledata "Sust. Excise Taxes Trans. Log" = IMD,
-        tabledata "Sustainability Carbon Pricing" = IMD;
+        tabledata "Sustainability Carbon Pricing" = IMD,
+        tabledata "Sust. ESG Concept" = IMD,
+        tabledata "Sust. ESG Range Period" = IMD,
+        tabledata "Sust. ESG Requirement Concept" = IMD,
+        tabledata "Sust. ESG Standard Requirement" = IMD;
 }

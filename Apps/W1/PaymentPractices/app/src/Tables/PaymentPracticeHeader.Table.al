@@ -81,6 +81,8 @@ table 687 "Payment Practice Header"
         }
         field(8; "Pct Paid on Time"; Decimal)
         {
+            AutoFormatType = 0;
+
             trigger OnValidate()
             begin
                 Rec."Modified Manually" := true;

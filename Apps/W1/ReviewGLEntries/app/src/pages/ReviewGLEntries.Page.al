@@ -67,6 +67,13 @@ page 22207 "Review G/L Entries"
                     Editable = false;
                     ToolTip = 'Specifies the account no. that will be applied.';
                 }
+                field("Rec Review Policy"; Rec."Review Policy")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    Visible = false;
+                    ToolTip = 'Specifies the review policy for the G/L Account.';
+                }
                 field(Reviewer; Rec."Reviewed By")
                 {
                     ApplicationArea = Basic, Suite;

@@ -18,13 +18,11 @@ codeunit 4765 "Create Mfg Item Journal Setup"
     trigger OnRun()
     var
         SourceCodeSetup: Record "Source Code Setup";
-        ManufacturingDemoDataSetup: Record "Manufacturing Module Setup";
         ContosoItem: Codeunit "Contoso Item";
         ContosoUtilities: Codeunit "Contoso Utilities";
 
     begin
         SourceCodeSetup.Get();
-        ManufacturingDemoDataSetup.Get();
 
         ContosoItem.InsertItemJournalTemplate(ItemTemplateName(), ItemJournalLbl, "Item Journal Template Type"::Item, false, SourceCodeSetup."Item Journal");
         ContosoItem.InsertItemJournalTemplate(ConsumptionTemplateName(), ConsumptionJournalLbl, "Item Journal Template Type"::Consumption, false, SourceCodeSetup."Consumption Journal");

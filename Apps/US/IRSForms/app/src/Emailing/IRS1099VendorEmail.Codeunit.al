@@ -14,9 +14,6 @@ codeunit 10050 "IRS 1099 Vendor Email"
     InherentPermissions = X;
 
     var
-#if not CLEAN25
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-#endif
         EmailNotSpecifiedErr: Label 'Either E-Mail For IRS or E-mail must be specified to receive 1099 forms electronically.';
         PropagateFieldToOpenedFormDocumentsQst: Label 'Do you want to propagate the %1 to all opened 1099 form documents by this vendor?', Comment = '%1 = field name';
         PropagateFieldToSubmittedFormDocumentsQst: Label 'Do you want to propagate the %1 to all submitted 1099 form documents by this vendor?', Comment = '%1 = field name';
@@ -24,10 +21,6 @@ codeunit 10050 "IRS 1099 Vendor Email"
 
     procedure CheckEmailForIRS(Vendor: Record Vendor)
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         if GetEmailForIRSReporting(Vendor) = '' then
             error(EmailNotSpecifiedErr);
     end;
@@ -36,10 +29,6 @@ codeunit 10050 "IRS 1099 Vendor Email"
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         if GetEmailForIRSReporting(Vendor) = '' then begin
             if Vendor."Receiving 1099 E-Form Consent" then begin
                 IRS1099FormDocHeader.SetRange("Vendor No.", Vendor."No.");
@@ -56,10 +45,6 @@ codeunit 10050 "IRS 1099 Vendor Email"
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         ConfirmManagement: Codeunit "Confirm Management";
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         IRS1099FormDocHeader.SetRange("Vendor No.", Vendor."No.");
         IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Open);
         if not IRS1099FormDocHeader.IsEmpty() then
@@ -77,10 +62,6 @@ codeunit 10050 "IRS 1099 Vendor Email"
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         ConfirmManagement: Codeunit "Confirm Management";
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         IRS1099FormDocHeader.SetRange("Vendor No.", Vendor."No.");
         IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Open);
         if not IRS1099FormDocHeader.IsEmpty() then

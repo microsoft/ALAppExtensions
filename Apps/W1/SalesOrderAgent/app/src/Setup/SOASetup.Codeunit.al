@@ -38,7 +38,7 @@ codeunit 4400 "SOA Setup"
         TempAgentAccessControl: Record "Agent Access Control" temporary;
         TempSOASetup: Record "SOA Setup" temporary;
         TempAgent: Record Agent temporary;
-        TempEmailAccount: Record "Email Account" temporary;
+        DummyUserSettings: Record "User Settings";
     begin
         GetAgent(TempAgent);
         TempAgent.State := TempAgent.State::Enabled;
@@ -46,19 +46,14 @@ codeunit 4400 "SOA Setup"
         TempSOASetup."Email Monitoring" := false;
 
         GetDefaultAgentAccessControl(TempAgent."User Security ID", TempAgentAccessControl);
-        UpdateAgent(TempAgent, TempAgentAccessControl, TempSOASetup, TempEmailAccount, true, true);
+        UpdateAgent(TempAgent, TempAgentAccessControl, TempSOASetup, true, true, false, DummyUserSettings);
     end;
 
-    internal procedure CreateAgent(var TempAgent: Record Agent; var TempAgentAccessControl: Record "Agent Access Control" temporary; var TempSOASetup: Record "SOA Setup" temporary; var TempEmailAccount: Record "Email Account" temporary)
-    var
-        AllProfile: Record "All Profile";
+    local procedure CreateAgent(var TempAgent: Record Agent; var TempAgentAccessControl: Record "Agent Access Control" temporary; var TempSOASetup: Record "SOA Setup" temporary; var UserSettings: Record "User Settings")
     begin
         TempSOASetup."Agent User Security ID" := Agent.Create("Agent Metadata Provider"::"SO Agent", TempAgent."User Name", TempAgent."Display Name", TempAgentAccessControl);
         UpdateInstructions(TempSOASetup);
-
-        // TODO(qutreson) Remove this in favor System Application.
-        GetProfile(AllProfile);
-        Agent.SetProfile(TempSOASetup."Agent User Security ID", AllProfile);
+        Agent.UpdateLocalizationSettings(TempSOASetup."Agent User Security ID", UserSettings);
 
         if TempAgent.State = TempAgent.State::Enabled then
             UpdateSOASetupActivationDT(TempSOASetup);
@@ -99,7 +94,7 @@ codeunit 4400 "SOA Setup"
         exit(SOASetup.IsEmpty());
     end;
 
-    internal procedure UpdateAgent(var TempAgent: Record Agent; var TempAgentAccessControl: Record "Agent Access Control" temporary; var TempSOASetup: Record "SOA Setup" temporary; var TempEmailAccount: Record "Email Account" temporary; AccessUpdated: Boolean; Schedule: Boolean)
+    internal procedure UpdateAgent(var TempAgent: Record Agent; var TempAgentAccessControl: Record "Agent Access Control" temporary; var TempSOASetup: Record "SOA Setup" temporary; AccessUpdated: Boolean; Schedule: Boolean; LocalizationSettingsUpdated: Boolean; UserSettings: Record "User Settings")
     var
         AzureADGraphUser: Codeunit "Azure AD Graph User";
     begin
@@ -107,7 +102,7 @@ codeunit 4400 "SOA Setup"
             Error(DelegateAdminErr);
 
         if IsNullGuid(TempAgent."User Security ID") then begin
-            CreateAgent(TempAgent, TempAgentAccessControl, TempSOASetup, TempEmailAccount);
+            CreateAgent(TempAgent, TempAgentAccessControl, TempSOASetup, UserSettings);
             exit;
         end;
 
@@ -131,6 +126,9 @@ codeunit 4400 "SOA Setup"
 
         if AccessUpdated then
             Agent.UpdateAccess(TempAgent."User Security ID", TempAgentAccessControl);
+
+        if LocalizationSettingsUpdated then
+            Agent.UpdateLocalizationSettings(TempAgent."User Security ID", UserSettings);
     end;
 
     local procedure UpdateSOASetup(var TempSOASetup: Record "SOA Setup" temporary)
@@ -160,6 +158,7 @@ codeunit 4400 "SOA Setup"
             SOASetup."Known Sender In. Msg. Review" := TempSOASetup."Known Sender In. Msg. Review";
             SOASetup."Unknown Sender In. Msg. Review" := TempSOASetup."Unknown Sender In. Msg. Review";
             SOASetup."Instructions Last Sync At" := TempSOASetup."Instructions Last Sync At";
+            SOASetup."Message Limit" := TempSOASetup."Message Limit";
 
             SOASetup.Modify();
         end
@@ -237,12 +236,10 @@ codeunit 4400 "SOA Setup"
     end;
 
     internal procedure GetDefaultAgentAccessControl(AgentUserSecurityID: Guid; var TempAgentAccessControl: Record "Agent Access Control" temporary)
-    var
-        Agents: Codeunit Agent;
     begin
         if IsNullGuid(AgentUserSecurityID) then
             exit;
-        Agents.GetUserAccess(AgentUserSecurityID, TempAgentAccessControl);
+        Agent.GetUserAccess(AgentUserSecurityID, TempAgentAccessControl);
     end;
 
     internal procedure GetDefaultProfile(var TempAllProfile: Record "All Profile" temporary)
@@ -250,11 +247,7 @@ codeunit 4400 "SOA Setup"
         ModuleInfo: ModuleInfo;
     begin
         NavApp.GetCurrentModuleInfo(ModuleInfo);
-        TempAllProfile.Init();
-        TempAllProfile.Scope := TempAllProfile.Scope::Tenant;
-        TempAllProfile."App ID" := ModuleInfo.Id;
-        TempAllProfile."Profile ID" := SalesOrderAgentTok;
-        TempAllProfile.Insert();
+        Agent.PopulateDefaultProfile(SalesOrderAgentTok, ModuleInfo.Id, TempAllProfile);
     end;
 
     internal procedure GetDefaultAccessControls(var TempAccessControlBuffer: Record "Access Control Buffer" temporary)
@@ -294,20 +287,29 @@ codeunit 4400 "SOA Setup"
     var
         SOASetup: Record "SOA Setup";
     begin
-        if IsNullGuid(TempSOASetup."Agent User Security ID") then
+        if IsNullGuid(TempSOAgent."User Security ID") then begin
+            SetSOASetupDefaults(TempSOASetup, TempSOAgent."User Security ID");
+            exit;
+        end;
+
+        if IsNullGuid(TempSOASetup."Agent User Security ID") then begin
+            SOASetup.SetRange("Agent User Security ID", TempSOAgent."User Security ID");
             if SOASetup.FindFirst() then begin
                 TempSOASetup := SOASetup;
                 TempSOASetup.Insert();
-            end
-            else
-                SetSOASetupDefaults(TempSOASetup, TempSOAgent."User Security ID")
+                exit;
+            end;
+
+            SetSOASetupDefaults(TempSOASetup, TempSOAgent."User Security ID");
+            exit;
+        end;
+
+        if SOASetup.GetBasedOnAgentUserSecurityID(TempSOASetup."Agent User Security ID", false) then begin
+            TempSOASetup := SOASetup;
+            TempSOASetup.Insert();
+        end
         else
-            if SOASetup.GetBasedOnAgentUserSecurityID(TempSOASetup."Agent User Security ID", false) then begin
-                TempSOASetup := SOASetup;
-                TempSOASetup.Insert();
-            end
-            else
-                SetSOASetupDefaults(TempSOASetup, TempSOAgent."User Security ID");
+            SetSOASetupDefaults(TempSOASetup, TempSOAgent."User Security ID");
     end;
 
     internal procedure CheckSOASetupStillValid(var SOASetup: Record "SOA Setup"): Boolean
@@ -526,14 +528,6 @@ codeunit 4400 "SOA Setup"
         TempSOAgent."User Name" := GetSOAUsername();
         TempSOAgent."Display Name" := SalesOrderAgentDisplayNameLbl;
         TempSOAgent.Insert();
-    end;
-
-    local procedure GetProfile(var AllProfile: Record "All Profile")
-    var
-        CurrentModuleInfo: ModuleInfo;
-    begin
-        NavApp.GetCallerModuleInfo(CurrentModuleInfo);
-        AllProfile.Get(AllProfile.Scope::Tenant, CurrentModuleInfo.Id, SalesOrderAgentTok);
     end;
 
     local procedure GetSOAUsername(): Text[50]

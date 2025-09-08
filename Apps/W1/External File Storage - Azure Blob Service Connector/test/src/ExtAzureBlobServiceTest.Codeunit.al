@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.ExternalFileStorage;
+
+using System.Environment;
+using System.ExternalFileStorage;
+using System.TestLibraries.Utilities;
+
 codeunit 144566 "Ext. Azure Blob Service Test"
 {
     Subtype = Test;

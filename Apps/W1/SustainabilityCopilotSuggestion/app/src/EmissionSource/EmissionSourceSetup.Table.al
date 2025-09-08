@@ -107,6 +107,9 @@ table 6291 "Emission Source Setup"
         }
     }
 
+    var
+        DuplicateDescriptionLbl: Label 'The description %1 already exist for country %2 for this period. Check the content of the file or adjust the starting and ending dates.', Comment = '%1 = description, %2 = country';
+
     trigger OnDelete()
     var
         SourceCO2Emission: Record "Source CO2 Emission";
@@ -221,13 +224,13 @@ table 6291 "Emission Source Setup"
             SourceCO2Emission.Init();
             AddDescription(SourceCO2Emission, RowNo, LastColumnNo);
             SourceCO2Emission."Country/Region Code" := "Country/Region Code";
-            CheckSourceCO2EmissionExist(SourceCO2Emission);
             SourceCO2Emission.Id := 0;
             Evaluate(SourceCO2Emission."Emission Factor CO2", GetCellValue(Rowno, LastColumnNo));
             SourceCO2Emission."Emission Source ID" := Id;
             SourceCO2Emission."Source Description" := Description;
             SourceCO2Emission."Starting Date" := "Starting Date";
             SourceCO2Emission."Ending Date" := "Ending Date";
+            CheckSourceCO2EmissionExist(SourceCO2Emission);
             SourceCO2Emission.Insert(true);
         end;
         TempExcelBuffer.CloseBook();
@@ -259,18 +262,54 @@ table 6291 "Emission Source Setup"
 
     local procedure CheckSourceCO2EmissionExist(var SourceCO2Emission: Record "Source CO2 Emission"): Boolean
     var
-        PreviousSourceCO2Emission: Record "Source CO2 Emission";
-        DuplicateDescriptionLbl: Label 'The description %1 already exist for country %2 for this period. Check the content of the file or adjust the starting and ending dates.', Comment = '%1 = description, %2 = country';
+        ExistingSourceCO2Emission: Record "Source CO2 Emission";
     begin
-        PreviousSourceCO2Emission.SetCurrentKey("Description", "Country/Region Code");
-        PreviousSourceCO2Emission.SetRange(Description, SourceCO2Emission.Description);
-        PreviousSourceCO2Emission.SetRange("Country/Region Code", SourceCO2Emission."Country/Region Code");
-        if not PreviousSourceCO2Emission.FindFirst() then
+        ExistingSourceCO2Emission.SetLoadFields("Starting Date", "Ending Date");
+        ExistingSourceCO2Emission.SetCurrentKey("Description", "Country/Region Code");
+        ExistingSourceCO2Emission.SetRange(Description, SourceCO2Emission.Description);
+        ExistingSourceCO2Emission.SetRange("Country/Region Code", SourceCO2Emission."Country/Region Code");
+        if not ExistingSourceCO2Emission.FindFirst() then
             exit;
-        if (PreviousSourceCO2Emission."Starting Date" <= SourceCO2Emission."Ending Date") and
-            (PreviousSourceCO2Emission."Ending Date" >= SourceCO2Emission."Starting Date")
-        then
-            Error(DuplicateDescriptionLbl, SourceCO2Emission.Description, SourceCO2Emission."Country/Region Code");
+        CheckTwoPeriodsOfSourceCO2EmissionAreNotOverlapping(ExistingSourceCO2Emission, SourceCO2Emission);
+    end;
+
+    local procedure CheckSourceCO2EmissionExist()
+    var
+        OtherSourceCO2Emission, CurrentSourceCO2Emission : Record "Source CO2 Emission";
+    begin
+        CurrentSourceCO2Emission.SetRange("Emission Source ID", Rec.Id);
+        if not CurrentSourceCO2Emission.FindSet() then
+            exit;
+        repeat
+            OtherSourceCO2Emission.SetFilter("Emission Source ID", '<>%1', Rec.Id);
+            OtherSourceCO2Emission.SetRange(Description, CurrentSourceCO2Emission.Description);
+            OtherSourceCO2Emission.SetRange("Country/Region Code", "Country/Region Code");
+            if OtherSourceCO2Emission.FindSet() then
+                repeat
+                    CheckTwoPeriodsOfSourceCO2EmissionAreNotOverlapping(OtherSourceCO2Emission, CurrentSourceCO2Emission, Rec."Starting Date", Rec."Ending Date");
+                until OtherSourceCO2Emission.Next() = 0;
+        until CurrentSourceCO2Emission.Next() = 0;
+    end;
+
+    local procedure CheckTwoPeriodsOfSourceCO2EmissionAreNotOverlapping(ExistingSourceCO2Emission: Record "Source CO2 Emission"; CurrentSourceCO2Emission: Record "Source CO2 Emission")
+    begin
+        CheckTwoPeriodsOfSourceCO2EmissionAreNotOverlapping(ExistingSourceCO2Emission, CurrentSourceCO2Emission, CurrentSourceCO2Emission."Starting Date", CurrentSourceCO2Emission."Ending Date");
+    end;
+
+    local procedure CheckTwoPeriodsOfSourceCO2EmissionAreNotOverlapping(ExistingSourceCO2Emission: Record "Source CO2 Emission"; CurrentSourceCO2Emission: Record "Source CO2 Emission"; StartingDate: Date; EndingDate: Date)
+    var
+        ExistingStartingDate, ExistingEndingDate, CurrentStartingDate, CurrentEndingDate : Date;
+    begin
+        ExistingStartingDate := ExistingSourceCO2Emission."Starting Date";
+        ExistingEndingDate := ExistingSourceCO2Emission."Ending Date";
+        if ExistingEndingDate = 0D then
+            ExistingEndingDate := DMY2Date(31, 12, 9999);
+        CurrentStartingDate := StartingDate;
+        CurrentEndingDate := EndingDate;
+        if CurrentEndingDate = 0D then
+            CurrentEndingDate := DMY2Date(31, 12, 9999);
+        if (ExistingStartingDate <= CurrentEndingDate) and (ExistingEndingDate >= CurrentStartingDate) then
+            Error(DuplicateDescriptionLbl, CurrentSourceCO2Emission.Description, CurrentSourceCO2Emission."Country/Region Code");
     end;
 
     local procedure HandleStartingEndingDateUpdate()
@@ -283,6 +322,7 @@ table 6291 "Emission Source Setup"
             Error(StartingDateEmptyErr);
         if ("Ending Date" <> 0D) and ("Starting Date" > "Ending Date") then
             Error(StartingDateLaterEndingDateErr);
+        CheckSourceCO2EmissionExist();
         SourceCO2Emission.SetRange("Emission Source ID", Id);
         SourceCO2Emission.ModifyAll("Starting Date", "Starting Date");
         SourceCO2Emission.ModifyAll("Ending Date", "Ending Date");

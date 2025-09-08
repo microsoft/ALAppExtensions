@@ -4,11 +4,16 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Inventory.Item;
 using Microsoft.Projects.Project.Job;
 using Microsoft.Projects.Project.Journal;
 using Microsoft.Projects.Project.Planning;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Ledger;
 
 codeunit 148211 "Sust. Job Journal Test"
@@ -26,6 +31,7 @@ codeunit 148211 "Sust. Job Journal Test"
         LibraryInventory: Codeunit "Library - Inventory";
         LibrarySustainability: Codeunit "Library - Sustainability";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibraryPurchase: Codeunit "Library - Purchase";
         IsInitialized: Boolean;
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
@@ -918,6 +924,193 @@ codeunit 148211 "Sust. Job Journal Test"
         Assert.ExpectedError('');
     end;
 
+    [Test]
+    procedure VerifySustainabilityValueEntryShouldBeCreatedInPurchaseDocumentForJob()
+    var
+        JobTask: Record "Job Task";
+        CountryRegion: Record "Country/Region";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: array[2] of Record "Purchase Line";
+        EmissionFee: array[3] of Record "Emission Fee";
+        SustainabilityAccount: Record "Sustainability Account";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedDocumentNo: Code[20];
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+        ExpectedCO2eEmission: Decimal;
+    begin
+        // [SCENARIO 598640] Verify Sustainability Value Entry should be created in Purchase Document for Job.
+        Initialize();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Country/Region.
+        LibraryERM.CreateCountryRegion(CountryRegion);
+
+        // [GIVEN] Create Emission Fee.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", CountryRegion.Code);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandIntInRange(100, 100);
+        EmissionCH4 := LibraryRandom.RandIntInRange(200, 200);
+        EmissionN2O := LibraryRandom.RandIntInRange(300, 300);
+
+        // [GIVEN] Save Expected CO2e Emission.
+        ExpectedCO2eEmission := EmissionCH4 * EmissionFee[1]."Carbon Equivalent Factor" + EmissionCO2 * EmissionFee[2]."Carbon Equivalent Factor" + EmissionN2O * EmissionFee[3]."Carbon Equivalent Factor";
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader."Buy-from Country/Region Code" := CountryRegion.Code;
+        PurchaseHeader.Modify();
+
+        // [GIVEN] Create a Purchase Line with Item.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine[1], PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Sustainability Account No.", "Emission CO2", "Emission CH4", "Emission N2O" in Purchase Line.
+        PurchaseLine[1].Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
+        PurchaseLine[1].Validate("Sust. Account No.", AccountCode);
+        PurchaseLine[1].Validate("Emission CO2", EmissionCO2);
+        PurchaseLine[1].Validate("Emission CH4", EmissionCH4);
+        PurchaseLine[1].Validate("Emission N2O", EmissionN2O);
+        PurchaseLine[1].Validate("Job No.", JobTask."Job No.");
+        PurchaseLine[1].Validate("Job Task No.", JobTask."Job Task No.");
+        PurchaseLine[1].Validate("Job Line Type", PurchaseLine[1]."Job Line Type"::"Both Budget and Billable");
+        PurchaseLine[1].Modify();
+
+        // [GIVEN] Create a Purchase Line With "G/L Account".
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine[2], PurchaseHeader, "Purchase Line Type"::"G/L Account", LibraryERM.CreateGLAccountWithPurchSetup(), LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Sustainability Account No.", "Emission CO2", "Emission CH4", "Emission N2O" in Purchase Line.
+        PurchaseLine[2].Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
+        PurchaseLine[2].Validate("Sust. Account No.", AccountCode);
+        PurchaseLine[2].Validate("Emission CO2", EmissionCO2);
+        PurchaseLine[2].Validate("Emission CH4", EmissionCH4);
+        PurchaseLine[2].Validate("Emission N2O", EmissionN2O);
+        PurchaseLine[2].Validate("Job No.", JobTask."Job No.");
+        PurchaseLine[2].Validate("Job Task No.", JobTask."Job Task No.");
+        PurchaseLine[2].Validate("Job Line Type", PurchaseLine[2]."Job Line Type"::"Both Budget and Billable");
+        PurchaseLine[2].Modify();
+
+        // [WHEN] Post a Purchase Document.
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Verify Sustainability Value Entry should be created in Purchase Document for Job.
+        SustainabilityLedgerEntry.SetRange("Document No.", PostedDocumentNo);
+        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+
+        SustainabilityValueEntry.SetRange("Document No.", PostedDocumentNo);
+        Assert.RecordCount(SustainabilityValueEntry, 2);
+        VerifySustainabilitytValueEntry(PostedDocumentNo, JobTask."Job No.", -ExpectedCO2eEmission);
+    end;
+
+    [Test]
+    procedure VerifySustainabilityValueEntryShouldBeKnockedOffWhenCancelCreditMemoIsPostedForJob()
+    var
+        JobTask: Record "Job Task";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: array[2] of Record "Purchase Line";
+        EmissionFee: array[3] of Record "Emission Fee";
+        SustainabilityAccount: Record "Sustainability Account";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+    begin
+        // [SCENARIO 598640] Verify Sustainability Value entry should be Knocked Off when the Cancel Credit Memo is posted for Job.
+        Initialize();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Emission Fee.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandIntInRange(100, 100);
+        EmissionCH4 := LibraryRandom.RandIntInRange(200, 200);
+        EmissionN2O := LibraryRandom.RandIntInRange(300, 300);
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create a Purchase Line with Item.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine[1], PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Sustainability Account No.", "Emission CO2", "Emission CH4", "Emission N2O" in Purchase Line.
+        PurchaseLine[1].Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
+        PurchaseLine[1].Validate("Sust. Account No.", AccountCode);
+        PurchaseLine[1].Validate("Emission CO2", EmissionCO2);
+        PurchaseLine[1].Validate("Emission CH4", EmissionCH4);
+        PurchaseLine[1].Validate("Emission N2O", EmissionN2O);
+        PurchaseLine[1].Validate("Job No.", JobTask."Job No.");
+        PurchaseLine[1].Validate("Job Task No.", JobTask."Job Task No.");
+        PurchaseLine[1].Validate("Job Line Type", PurchaseLine[1]."Job Line Type"::"Both Budget and Billable");
+        PurchaseLine[1].Modify();
+
+        // [GIVEN] Create a Purchase Line With "G/L Account".
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine[2], PurchaseHeader, "Purchase Line Type"::"G/L Account", LibraryERM.CreateGLAccountWithPurchSetup(), LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Sustainability Account No.", "Emission CO2", "Emission CH4", "Emission N2O" in Purchase Line.
+        PurchaseLine[2].Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
+        PurchaseLine[2].Validate("Sust. Account No.", AccountCode);
+        PurchaseLine[2].Validate("Emission CO2", EmissionCO2);
+        PurchaseLine[2].Validate("Emission CH4", EmissionCH4);
+        PurchaseLine[2].Validate("Emission N2O", EmissionN2O);
+        PurchaseLine[2].Validate("Job No.", JobTask."Job No.");
+        PurchaseLine[2].Validate("Job Task No.", JobTask."Job Task No.");
+        PurchaseLine[2].Validate("Job Line Type", PurchaseLine[2]."Job Line Type"::"Both Budget and Billable");
+        PurchaseLine[2].Modify();
+
+        // [GIVEN] Update Reason Code in Purchase Header.
+        UpdateReasonCodeinPurchaseHeader(PurchaseHeader);
+
+        // [WHEN] Post a Purchase Document.
+        PostAndVerifyCancelCreditMemo(PurchaseHeader);
+
+        // [THEN] Verify Sustainability Value Entry should be Knocked Off when the Cancel Credit Memo is posted for Job.
+        SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
+        Assert.RecordCount(SustainabilityLedgerEntry, 4);
+
+        SustainabilityValueEntry.SetRange("Account No.", AccountCode);
+        Assert.RecordCount(SustainabilityValueEntry, 4);
+
+        SustainabilityValueEntry.SetRange("Account No.", AccountCode);
+        SustainabilityValueEntry.SetRange("Job No.", JobTask."Job No.");
+        SustainabilityValueEntry.CalcSums("CO2e Amount (Actual)", "CO2e Amount (Expected)");
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), 0, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
     local procedure Initialize()
     var
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
@@ -1038,6 +1231,76 @@ codeunit 148211 "Sust. Job Journal Test"
         GenJournalLine.Validate("Job Task No.", JobTaskNo);
         GenJournalLine.Validate("Job Quantity", Quantity);
         GenJournalLine.Modify(true);
+    end;
+
+    local procedure VerifySustainabilitytValueEntry(DocNo: Code[20]; JobNo: Code[20]; ExpectedCO2eEmission: Decimal)
+    var
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+    begin
+        SustainabilityValueEntry.SetRange("Document No.", DocNo);
+        SustainabilityValueEntry.SetRange("Job No.", JobNo);
+        SustainabilityValueEntry.FindFirst();
+        Assert.AreEqual(
+            ExpectedCO2eEmission,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), ExpectedCO2eEmission, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
+    local procedure CreateEmissionFeeWithEmissionScope(var EmissionFee: array[3] of Record "Emission Fee"; EmissionScope: Enum "Emission Scope"; CountryRegionCode: Code[10])
+    begin
+        LibrarySustainability.InsertEmissionFee(
+            EmissionFee[1],
+            "Emission Type"::CH4,
+            EmissionScope,
+            CalcDate('<-CM>', WorkDate()),
+            CalcDate('<CM>', WorkDate()),
+            CountryRegionCode,
+            LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
+
+        LibrarySustainability.InsertEmissionFee(
+            EmissionFee[2],
+            "Emission Type"::CO2,
+            EmissionScope,
+            CalcDate('<-CM>', WorkDate()),
+            CalcDate('<CM>', WorkDate()),
+            CountryRegionCode,
+            LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
+        EmissionFee[2].Validate("Carbon Fee", LibraryRandom.RandDecInDecimalRange(0.5, 2, 1));
+        EmissionFee[2].Modify();
+
+        LibrarySustainability.InsertEmissionFee(
+            EmissionFee[3],
+            "Emission Type"::N2O,
+            EmissionScope,
+            CalcDate('<-CM>', WorkDate()),
+            CalcDate('<CM>', WorkDate()),
+            CountryRegionCode,
+            LibraryRandom.RandDecInDecimalRange(0.5, 1, 1));
+    end;
+
+    local procedure UpdateReasonCodeinPurchaseHeader(var PurchaseHeader: Record "Purchase Header")
+    var
+        ReasonCode: Record "Reason Code";
+    begin
+        LibraryERM.CreateReasonCode(ReasonCode);
+
+        PurchaseHeader.Validate("Reason Code", ReasonCode.Code);
+        PurchaseHeader.Modify();
+    end;
+
+    local procedure PostAndVerifyCancelCreditMemo(PurchaseHeader: Record "Purchase Header")
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
+        PostedDocNumber: Code[20];
+    begin
+        PostedDocNumber := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchInvHeader.Get(PostedDocNumber);
+        CorrectPostedPurchInvoice.CancelPostedInvoice(PurchInvHeader);
     end;
 
     [ConfirmHandler]

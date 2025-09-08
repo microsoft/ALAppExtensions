@@ -22,7 +22,7 @@ page 5270 "Audit File Export Format Setup"
                 field(AuditFileExportFormat; Rec."Audit File Export Format")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Audit File Export Format';
+                    ToolTip = 'Specifies the Audit File Export Format';
                 }
                 field(AuditFileName; Rec."Audit File Name")
                 {
@@ -32,7 +32,7 @@ page 5270 "Audit File Export Format Setup"
                 field(ArchiveToZip; Rec."Archive to Zip")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Archive to Zip';
+                    ToolTip = 'Specifies whether to archive the audit file to a ZIP file.';
                 }
             }
         }
