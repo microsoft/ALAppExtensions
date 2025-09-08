@@ -3,6 +3,19 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Inventory.Item;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using System.Environment.Configuration;
+using System.Reflection;
+
 codeunit 139600 "Test Essential Bus. Headlines"
 {
     Subtype = Test;
@@ -700,20 +713,49 @@ codeunit 139600 "Test Essential Bus. Headlines"
         TestRecentlyOverdueInvoiceWithOverdueInvoices(5);
     end;
 
+    [Test]
+    procedure TestHeadlineCanBeHidden()
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        // [GIVEN] Initial state when no data is present
+        Initialize();
+
+        // [GIVEN] One invoice that was due yesterday
+        CreateInvoicesWithDueDateYesterday(1);
+
+        // [WHEN] Run the headline computation
+        EssentialBusHeadlineMgt.HandleRecentlyOverdueInvoices();
+
+        // [THEN] Recently overdue invoices headline is visible
+        Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices), 'Expected recently overdue invoices headline to be visible');
+
+        // [WHEN] Simulate no more overdue invoices by deleting all customer ledger entries
+        CustLedgerEntry.DeleteAll();
+
+        // [WHEN] Recompute the headline computation
+        EssentialBusHeadlineMgt.HandleRecentlyOverdueInvoices();
+
+        // [THEN] The headline is hidden
+        Assert.IsFalse(GetVisibility(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices), 'Expected recently overdue invoices headline to be not visible after recompute');
+    end;
+
     local procedure TestRecentlyOverdueInvoiceWithOverdueInvoices(NumberOfNewlyOverdueInvoices: Integer)
     var
         OverdueInvoicesTxt: Text;
         OverdueInvoicesAmountTxt: Text;
         TotalAmount: Decimal;
+        OverdueInvoicesLbl: Label 'Overdue invoices up by <emphasize>%1</emphasize>.', Locked = true;
+        OverdueInvoicesAmountLbl: Label 'You can collect <emphasize>%1</emphasize>', Locked = true;
     begin
 
         // [GIVEN] Initial step with one invoice that was due yesterday
         Initialize();
 
 
-        OverdueInvoicesTxt := StrSubstNo('Overdue invoices up by <emphasize>%1</emphasize>.', NumberOfNewlyOverdueInvoices);
+        OverdueInvoicesTxt := StrSubstNo(OverdueInvoicesLbl, NumberOfNewlyOverdueInvoices);
         TotalAmount := CreateInvoicesWithDueDateYesterday(NumberOfNewlyOverdueInvoices);
-        OverdueInvoicesAmountTxt := StrSubstNo('You can collect <emphasize>%1</emphasize>', EssentialBusHeadlineMgt.FormatLocalCurrency(TotalAmount));
+        OverdueInvoicesAmountTxt := StrSubstNo(OverdueInvoicesAmountLbl, EssentialBusHeadlineMgt.FormatLocalCurrency(TotalAmount));
         CreateRandomNumberOfOlderOverdueInvoices();
 
         // [WHEN] We run the computation
@@ -782,12 +824,10 @@ codeunit 139600 "Test Essential Bus. Headlines"
     var
         VATReturnPeriod: Record "VAT Return Period";
     begin
-        with VATReturnPeriod do begin
-            "No." := LibraryUtility.GenerateGUID();
-            Status := NewStatus;
-            "Due Date" := NewDueDate;
-            Insert();
-        end;
+        VATReturnPeriod."No." := LibraryUtility.GenerateGUID();
+        VATReturnPeriod.Status := NewStatus;
+        VATReturnPeriod."Due Date" := NewDueDate;
+        VATReturnPeriod.Insert();
     end;
 
     local procedure CreateInvoicesWithDueDateYesterday(NumberOfInvoices: Integer): Decimal
@@ -843,6 +883,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         DueDate: Date;
         RandomNumber: Integer;
         Count: Integer;
+        DateOffsetLbl: Label '<-%1D>', Locked = true;
     begin
         // Get random number between 0 and 5, inclusive
         RandomNumber := Random(6) - 1;
@@ -850,7 +891,7 @@ codeunit 139600 "Test Essential Bus. Headlines"
         // Create Random number of overdue invoices with due date before yesterday
         for Count := 1 to RandomNumber do begin
             // Get random date, 1 to 10 days before yesterday
-            DueDate := CalcDate(StrSubstNo('<-%1D>', Format(1 + Random(10))), WorkDate());
+            DueDate := CalcDate(StrSubstNo(DateOffsetLbl, Format(1 + Random(10))), WorkDate());
             CreateInvoiceWithDueDate(DueDate);
         end;
     end;
@@ -926,13 +967,12 @@ codeunit 139600 "Test Essential Bus. Headlines"
     var
         VATReportSetup: Record "VAT Report Setup";
         DateFormaula: DateFormula;
+        DateOffsetLbl: Label '<-%1D>', Locked = true;
     begin
-        with VATReportSetup do begin
-            Get();
-            Evaluate(DateFormaula, StrSubstNo('<%1D>', NewPeriodReminderTime));
-            "Period Reminder Calculation" := DateFormaula;
-            Modify();
-        end;
+        VATReportSetup.Get();
+        Evaluate(DateFormaula, StrSubstNo(DateOffsetLbl, NewPeriodReminderTime));
+        VATReportSetup."Period Reminder Calculation" := DateFormaula;
+        VATReportSetup.Modify();
     end;
 
     local procedure VerifyOverdueVATReturnPeriodHeadlineIsVisible(DueDate: Date; DaysCount: Integer)
@@ -940,17 +980,15 @@ codeunit 139600 "Test Essential Bus. Headlines"
         HeadlineMgt: Codeunit Headlines;
         OverdueVATReturnPeriodTxt: Text;
         VATReturnQualifierLbl: Text;
+        VATReturnQualifierPayloadLbl: Label '<qualifier>%1</qualifier><payload>%2</payload>', Locked = true;
     begin
         OverdueVATReturnPeriodTxt := EssentialBusHeadlineMgt.GetOverdueVATReturnPeriodText();
         VATReturnQualifierLbl := EssentialBusHeadlineMgt.GetVATReturnQualifierText();
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::OverdueVATReturn), 'OverdueVATReturn headline should be visible');
         Assert.AreEqual(
             StrSubstNo(
-                '<qualifier>%1</qualifier><payload>%2</payload>',
-                VATReturnQualifierLbl, StrSubstNo(OverdueVATReturnPeriodTxt, HeadlineMgt.Emphasize(Format(DueDate)), DaysCount)),
-            GetHeadlineText(EssentialBusinessHeadline."Headline Name"::OverdueVATReturn),
-            'Expected message to contain "Tax return is overdue since"');
-
+                VATReturnQualifierPayloadLbl, VATReturnQualifierLbl, StrSubstNo(OverdueVATReturnPeriodTxt, HeadlineMgt.Emphasize(Format(DueDate)), DaysCount)),
+                GetHeadlineText(EssentialBusinessHeadline."Headline Name"::OverdueVATReturn), 'Expected message to contain "Tax return is overdue since"');
         EssentialBusinessHeadline.DeleteAll();
         RCHeadlinesUserData.DeleteAll();
         HeadlineRcBusinessManagerPage.OpenView();
@@ -973,14 +1011,15 @@ codeunit 139600 "Test Essential Bus. Headlines"
         HeadlineMgt: Codeunit Headlines;
         OpenVATReturnPeriodTxt: Text;
         VATReturnQualifierLbl: Text;
+        VATReturnQualifierPayloadLbl: Label '<qualifier>%1</qualifier><payload>%2</payload>', Locked = true;
     begin
         OpenVATReturnPeriodTxt := EssentialBusHeadlineMgt.GetOpenVATReturnPeriodText();
         VATReturnQualifierLbl := EssentialBusHeadlineMgt.GetVATReturnQualifierText();
         Assert.IsTrue(GetVisibility(EssentialBusinessHeadline."Headline Name"::OpenVATReturn), 'OpenVATReturn headline should be visible');
         Assert.AreEqual(
             StrSubstNo(
-                '<qualifier>%1</qualifier><payload>%2</payload>',
-                VATReturnQualifierLbl, StrSubstNo(OpenVATReturnPeriodTxt, HeadlineMgt.Emphasize(Format(DueDate)), DaysCount)),
+        VATReturnQualifierPayloadLbl,
+        VATReturnQualifierLbl, StrSubstNo(OpenVATReturnPeriodTxt, HeadlineMgt.Emphasize(Format(DueDate)), DaysCount)),
             GetHeadlineText(EssentialBusinessHeadline."Headline Name"::OpenVATReturn),
             'Expected message to contain "Your VAT return is due"');
 

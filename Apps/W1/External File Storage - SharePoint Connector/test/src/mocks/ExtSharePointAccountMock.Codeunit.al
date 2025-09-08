@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.ExternalFileStorage;
+
 codeunit 144580 "Ext. SharePoint Account Mock"
 {
     Access = Internal;

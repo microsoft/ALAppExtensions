@@ -233,7 +233,9 @@ codeunit 148182 "Library - Sustainability"
         ESGReportingLines.Validate("Value Settings", ValueSettings);
         ESGReportingLines.Validate("Account Filter", AccountFilter);
         ESGReportingLines.Validate("Row Type", RowType);
-        ESGReportingLines.Validate("Row Totaling", RowTotaling);
+        if RowTotaling <> '' then
+            ESGReportingLines.Validate("Row Totaling", RowTotaling);
+
         ESGReportingLines.Validate("Calculate With", CalculateWith);
         ESGReportingLines.Validate(Show, Show);
         ESGReportingLines.Validate("Show With", ShowWith);
@@ -246,6 +248,15 @@ codeunit 148182 "Library - Sustainability"
     begin
         SustainabilitySetup.Get();
         SustainabilitySetup.Validate("Posted ESG Reporting Nos.", LibraryERM.CreateNoSeriesCode());
+        SustainabilitySetup.Modify();
+    end;
+
+    procedure UpdateESGStandardReportingNoInSustainabilitySetup()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("ESG Standard Reporting Nos.", LibraryERM.CreateNoSeriesCode());
         SustainabilitySetup.Modify();
     end;
 

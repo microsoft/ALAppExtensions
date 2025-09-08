@@ -17,11 +17,13 @@ codeunit 4399 "SOA Annotation"
 
     var
         SOAImpl: Codeunit "SOA Impl";
+        AnnotationProcessingLimitReachedCodeLbl: Label 'DAILYLIMITREACHED', Locked = true, MaxLength = 20;
         AnnotationAccessTokenCodeLbl: Label '1251', Locked = true;
         AnnotationAgentTaskFailureCodeLbl: Label '1252', Locked = true;
         AnnotationTooManyEntriesCodeLbl: Label '1253', Locked = true;
         AnnotationIrrelevantCodeLbl: Label '1254', Locked = true;
         AnnotationAccessTokenLbl: Label 'The agent can''t currently access the selected mailbox because the mailbox access token is missing. Please reactivate the agent after signing in to Business Central again.';
+        AnnotationProcessingLimitReachedLbl: Label 'You have reached today''s limit of %1 tasks. You can update this limit in the agent settings or return tomorrow to continue.', Comment = '%1 = Process Limit';
         AnnotationAgentTaskFailureLbl: Label 'The agent can''t currently access the selected mailbox.';
         AnnotationIrrelevantLbl: Label 'Note that this incoming message appears not to be relevant for %1', Comment = '%1 = Agent Name';
 
@@ -40,6 +42,8 @@ codeunit 4399 "SOA Annotation"
 
         Clear(Annotations);
 
+        if ShouldAddOverProcessLimitAnnotation(SOASetup) then
+            AddOverProcessLimitAnnotation(Annotations, SOASetup);
         if ShouldAddAccessTokenAnnotation() then
             AddAccessTokenAnnotation(Annotations)
         else
@@ -48,6 +52,34 @@ codeunit 4399 "SOA Annotation"
 
         if SOABilling.TooManyUnpaidEntries() then
             AddUnpaidEntriesAnnotation(Annotations);
+    end;
+
+    local procedure ShouldAddOverProcessLimitAnnotation(var SOASetup: Record "SOA Setup"): Boolean
+    var
+        SOAEmailMgt: Codeunit "SOA Email Setup";
+        Processed: Integer;
+        ProcessLimit: Integer;
+    begin
+        ProcessLimit := SOAImpl.GetProcessLimitPerDay(SOASetup);
+        Processed := SOAEmailMgt.GetEmailCountProcessedWithin24hrs();
+        exit(Processed >= ProcessLimit);
+    end;
+
+    local procedure AddOverProcessLimitAnnotation(var Annotations: Record "Agent Annotation"; var SOASetup: Record "SOA Setup")
+    var
+        CustomDimensions: Dictionary of [Text, Text];
+    begin
+        Clear(Annotations);
+        Annotations.Code := AnnotationProcessingLimitReachedCodeLbl;
+        Annotations.Message := StrSubstNo(AnnotationProcessingLimitReachedLbl, SOASetup."Message Limit");
+        Annotations.Severity := Annotations.Severity::Warning;
+
+        CustomDimensions := SOAImpl.GetCustomDimensions();
+        CustomDimensions.Add('Limit', Format(SOASetup."Message Limit"));
+        if Annotations.Insert() then
+            Session.LogMessage('0000PZ6', 'Daily message limit reached.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions)
+        else
+            Session.LogMessage('0000PZ7', 'Failed to insert annotation for daily message limit reached.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
     end;
 
     local procedure ShouldAddAccessTokenAnnotation(): Boolean
@@ -240,6 +272,6 @@ codeunit 4399 "SOA Annotation"
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
     begin
-        exit(AzureKeyVault.GetAzureKeyVaultSecret('BCSOA-Irrelevance-Prompt', Prompt));
+        exit(AzureKeyVault.GetAzureKeyVaultSecret('BCSOAIrrelevancePromptV27', Prompt));
     end;
 }

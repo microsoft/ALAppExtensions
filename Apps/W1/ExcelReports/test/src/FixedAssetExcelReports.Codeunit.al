@@ -1,9 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
 namespace Microsoft.Finance.ExcelReports.Test;
-using Microsoft.FixedAssets.Posting;
-using Microsoft.FixedAssets.FixedAsset;
+
 using Microsoft.FixedAssets.Depreciation;
-using System.TestLibraries.Utilities;
 using Microsoft.Finance.ExcelReports;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Posting;
+using System.TestLibraries.Utilities;
 
 codeunit 139545 "Fixed Asset Excel Reports"
 {

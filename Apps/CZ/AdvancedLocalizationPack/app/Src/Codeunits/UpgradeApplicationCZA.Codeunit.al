@@ -8,6 +8,7 @@ using Microsoft;
 using Microsoft.Assembly.Document;
 using Microsoft.Assembly.History;
 using Microsoft.Assembly.Setup;
+using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
@@ -50,6 +51,7 @@ codeunit 31251 "Upgrade Application CZA"
         BindSubscription(InstallApplicationsCZA);
         UpgradeDefaultBusinessPostingGroup();
         UpgradePostedDefaultBusinessPostingGroup();
+        UpgradeAutoCreateDefaultDimensionValuePosting();
         UnbindSubscription(InstallApplicationsCZA);
     end;
 
@@ -107,6 +109,24 @@ codeunit 31251 "Upgrade Application CZA"
         PostedAssemblyLineDataTransfer.CopyFields();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetPostedDefaultBusinessPostingGroupUpgradeTag());
+    end;
+
+    local procedure UpgradeAutoCreateDefaultDimensionValuePosting()
+    var
+        DefaultDimension: Record "Default Dimension";
+        DefaultDimensionDataTransfer: DataTransfer;
+        DefaultDimensionValuePosting: Enum "Default Dimension Value Posting Type";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetAutoCreateDefaultDimensionValuePostingUpgradeTag()) then
+            exit;
+
+        DefaultDimensionDataTransfer.SetTables(Database::"Default Dimension", Database::"Default Dimension");
+        DefaultDimensionDataTransfer.AddSourceFilter(DefaultDimension.FieldNo("Automatic Create CZA"), '=%1', true);
+        DefaultDimensionDataTransfer.AddConstantValue(DefaultDimensionValuePosting::" ", DefaultDimension.FieldNo("Value Posting"));
+        DefaultDimensionDataTransfer.UpdateAuditFields := false;
+        DefaultDimensionDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZA.GetAutoCreateDefaultDimensionValuePostingUpgradeTag());
     end;
 
     local procedure SetDatabaseUpgradeTags();

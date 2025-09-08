@@ -352,6 +352,12 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
     end;
     #endregion Use FA Ledger Check
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnCalcSLAmountOnAfterCalcFromSLPercent', '', false, false)]
+    local procedure RoundOnCalcSLAmountOnAfterCalcFromSLPercent(var Result: Decimal)
+    begin
+        Result := Round(Result, 0.0001);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Depreciation Calculation", 'OnBeforeCalcRounding', '', false, false)]
     local procedure RoundUpOnBeforeCalcRounding(DeprBook: Record "Depreciation Book"; OrigDeprAmount: Decimal; var DeprAmount: Decimal; var IsHandled: Boolean)
     begin

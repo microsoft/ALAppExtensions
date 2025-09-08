@@ -3,7 +3,7 @@
    "properties":{
       "reasoning":{
          "type":"string",
-         "description":"Reason for the matching the specific GL Account"
+         "description":"A concise professional reason why this account is appropriate. Do not mention confidence levels, uncertainty, or speculative language."
       },
       "lineId":{
          "type":"number",

@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.ExternalFileStorage;
+
+
+using System.Environment;
+using System.ExternalFileStorage;
+using System.TestLibraries.Utilities;
+
 codeunit 144571 "Ext. Azure File Service Test"
 {
     Subtype = Test;

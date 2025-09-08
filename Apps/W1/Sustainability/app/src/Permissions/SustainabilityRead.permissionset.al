@@ -70,5 +70,9 @@ permissionset 6211 "Sustainability Read"
         tabledata "Sust. Excise Journal Template" = R,
         tabledata "Sust. Excise Taxes Trans. Log" = R,
         tabledata "Sustainability Carbon Pricing" = R,
-        tabledata "Sustainability EPR Material" = R;
+        tabledata "Sustainability EPR Material" = R,
+        tabledata "Sust. ESG Concept" = R,
+        tabledata "Sust. ESG Range Period" = R,
+        tabledata "Sust. ESG Requirement Concept" = R,
+        tabledata "Sust. ESG Standard Requirement" = R;
 }

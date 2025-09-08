@@ -36,6 +36,7 @@ codeunit 4582 "SOA Retrieve Emails"
         TelemetryEmailInboxNotFoundLbl: Label 'Email inbox not found.', Locked = true;
         MessageTemplateLbl: Label '<b>Subject:</b> %1<br/><b>Body:</b> %2', Comment = '%1 = Subject, %2 = Body';
         TelemetrySOAEmailNotModifiedLbl: Label 'SOA Email record not modified.', Locked = true;
+        TelemetryProcessingLimitReachedLbl: Label 'Processing limit of emails reached.', Locked = true;
         TelemetryEmailHasAttachmentsLbl: Label 'Email has attachments.', Locked = true;
         ScheduleBillingTask: Boolean;
 
@@ -47,6 +48,8 @@ codeunit 4582 "SOA Retrieve Emails"
         Email: Codeunit "Email";
         SOASetupCU: Codeunit "SOA Setup";
         SOABillingTask: Codeunit "SOA Billing Task";
+        Processed: Integer;
+        ProcessLimit: Integer;
         CustomDimensions: Dictionary of [Text, Text];
         StartDateTime: DateTime;
     begin
@@ -54,6 +57,15 @@ codeunit 4582 "SOA Retrieve Emails"
             exit;
 
         CustomDimensions := SOAImpl.GetCustomDimensions();
+
+        ProcessLimit := SOAImpl.GetProcessLimitPerDay(SOASetup);
+        Processed := SOAMailSetup.GetEmailCountProcessedWithin24hrs();
+        if Processed >= ProcessLimit then begin
+            CustomDimensions.Set('Processed', Format(Processed));
+            CustomDimensions.Set('ProcessLimit', Format(ProcessLimit));
+            Session.LogMessage('0000O9Y', StrSubstNo(TelemetryProcessingLimitReachedLbl), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            exit;
+        end;
 
         TempFilters."Unread Emails" := true;
         TempFilters."Load Attachments" := true;
@@ -93,6 +105,15 @@ codeunit 4582 "SOA Retrieve Emails"
             if CurrentDateTime() - StartDateTime > 25000 then begin
                 Commit();
                 StartDateTime := CurrentDateTime();
+            end;
+
+            Processed += 1;
+            if Processed >= ProcessLimit then begin
+                CustomDimensions := SOAImpl.GetCustomDimensions();
+                CustomDimensions.Set('Processed', Format(Processed));
+                CustomDimensions.Set('ProcessLimit', Format(ProcessLimit));
+                Session.LogMessage('0000O9Z', StrSubstNo(TelemetryProcessingLimitReachedLbl), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+                break;
             end;
         until SOAEmail.Next() = 0;
 

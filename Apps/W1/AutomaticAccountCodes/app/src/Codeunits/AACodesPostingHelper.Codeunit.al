@@ -21,6 +21,9 @@ codeunit 4850 "AA Codes Posting Helper"
 {
     Access = Internal;
 
+    var
+        IsDeferralPosting: Boolean;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostGLAccOnBeforeDeferralPosting', '', false, false)]
     local procedure OnPostGLAccOnBeforeDeferralPosting(sender: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line")
     begin
@@ -126,6 +129,7 @@ codeunit 4850 "AA Codes Posting Helper"
                     GenJnlLine2.Validate("Source Currency Amount", GenJnlLine2."Source Currency Amount" - TotalAltAmount);
                 if (AccLine = NoOfAutoAccounts) and (TotalAltAmountLCY <> 0) and (TotalAmount = 0) then
                     GenJnlLine2.Validate("Amount (LCY)", GenJnlLine2."Amount (LCY)" - TotalAltAmountLCY);
+                GenJnlCheckLine.CheckDeferralPostingAllowed(IsDeferralPosting);
                 GenJnlCheckLine.RunCheck(GenJnlLine2);
 
                 sender.InitGLEntry(GenJnlLine2, GLEntry,
@@ -182,6 +186,8 @@ codeunit 4850 "AA Codes Posting Helper"
             TempGenJournalLine.Validate("Posting Date", PostingDate);
             TempGenJournalLine.Validate("Amount (LCY)", PostAmount);
             TempGenJournalLine.Validate("VAT Base Amount", PostAmount);
+            if GenJournalLine."Deferral Code" <> '' then
+                IsDeferralPostingAllowed(true);
             if PostingAccountNo <> '' then
                 TempGenJournalLine."Account No." := PostingAccountNo;
             PostAccGroup(sender, TempGenJournalLine);
@@ -252,4 +258,8 @@ codeunit 4850 "AA Codes Posting Helper"
         GenJournalLine.Modify();
     end;
 
+    local procedure IsDeferralPostingAllowed(DeferralPostingAllowed: Boolean)
+    begin
+        IsDeferralPosting := DeferralPostingAllowed;
+    end;
 }

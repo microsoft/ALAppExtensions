@@ -197,6 +197,30 @@ table 6232 "Sust. Posted ESG Report Line"
             CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Sust. Posted ESG Report Line")));
             ToolTip = 'Specifies that the posted reporting line is coupled to an esg fact in Dataverse.';
         }
+        field(60; "Assessment ID"; Guid)
+        {
+            Caption = 'Assessment ID';
+        }
+        field(61; "Standard Requirement ID"; Guid)
+        {
+            Caption = 'Standard Requirement ID';
+        }
+        field(62; "Parent Standard Requirement ID"; Guid)
+        {
+            Caption = 'Parent Standard Requirement ID';
+        }
+        field(63; "Requirement Concept ID"; Guid)
+        {
+            Caption = 'Requirement Concept ID';
+        }
+        field(64; "Concept ID"; Guid)
+        {
+            Caption = 'Concept ID';
+        }
+        field(65; "Assessment Requirement ID"; Guid)
+        {
+            Caption = 'Assessment Requirement ID';
+        }
     }
 
     keys

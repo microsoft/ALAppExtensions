@@ -9,6 +9,8 @@ namespace Microsoft.Agent.SalesOrderAgent;
 using System.Agents;
 using System.AI;
 using System.Email;
+using System.Environment.Configuration;
+using System.Globalization;
 using System.Security.AccessControl;
 
 page 4400 "SOA Setup"
@@ -55,7 +57,7 @@ page 4400 "SOA Setup"
                     field(State; Rec.State)
                     {
                         Caption = 'Active';
-                        ToolTip = 'Specifies the state of the sales order agent, such as enabled or disabled.';
+                        ToolTip = 'Specifies the state of the sales order agent, such as active or inactive.';
 
                         trigger OnValidate()
                         begin
@@ -83,6 +85,7 @@ page 4400 "SOA Setup"
                         end;
                     }
                 }
+
 
                 field(Summary; AgentSummary)
                 {
@@ -159,12 +162,50 @@ page 4400 "SOA Setup"
                             ConfigUpdated();
                         end;
                     }
+                    field(DailyEmailLimit; DailyEmailLimit)
+                    {
+                        Caption = 'Daily email limit';
+                        ToolTip = 'Specifies the maximum number of emails an agent can process per day.';
+
+                        trigger OnValidate()
+                        begin
+                            TempSOASetup."Message Limit" := DailyEmailLimit;
+                            ConfigUpdated();
+                        end;
+                    }
                     field(LastSync; LastSync)
                     {
                         Caption = 'Last sync';
                         ToolTip = 'Specifies the date and time of the last sync with the mailbox.';
                         Editable = false;
                         Visible = ShowLastSync;
+                    }
+                }
+                group(DefaultLanguage)
+                {
+                    Caption = 'Default language';
+                    InstructionalText = 'Used for task details and outgoing messages unless the recipient has a language set.';
+
+                    field(LanguageAndRegion; SelectedLanguageTxt)
+                    {
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Specifies the language and region settings for the sales order agent.';
+
+                        ApplicationArea = All;
+                        trigger OnDrillDown()
+                        var
+                            Language: Codeunit Language;
+                            AgentUserSettings: Page "Agent User Settings";
+                        begin
+                            AgentUserSettings.InitializeTemp(UserSettings);
+                            if AgentUserSettings.RunModal() in [Action::LookupOK, Action::OK] then begin
+                                AgentUserSettings.GetRecord(UserSettings);
+                                IsConfigUpdated := true;
+                                UserSettingsUpdated := true;
+                                SelectedLanguageTxt := Language.GetWindowsLanguageName(UserSettings."Language ID");
+                            end;
+                        end;
                     }
                 }
                 group(BillingInformationFirstSetup)
@@ -182,6 +223,7 @@ page 4400 "SOA Setup"
                         end;
                     }
                 }
+
                 group(BillingInformationSecondSetup)
                 {
                     Visible = not FirstConfig;
@@ -366,8 +408,13 @@ page 4400 "SOA Setup"
     end;
 
     trigger OnAfterGetRecord()
+    var
+        Agent: Codeunit Agent;
+        Language: Codeunit Language;
     begin
         UpdateControls();
+        Agent.GetUserSettings(Rec."User Security ID", UserSettings);
+        SelectedLanguageTxt := Language.GetWindowsLanguageName(UserSettings."Language ID");
         FirstConfig := IsFirstConfig();
     end;
 
@@ -408,6 +455,9 @@ page 4400 "SOA Setup"
                         exit(false);
             end;
 
+        if (TempSOASetup."Message Limit" <= 0) then
+            Error(DailyEmailLimitErr);
+
         if ShowDeactivateAgentEmailPermissionsWarning() then begin
             if User.Get(Rec.SystemModifiedBy) then;
             if not Confirm(StrSubstNo(DeactivateWarningLbl, User."User Name")) then
@@ -417,7 +467,7 @@ page 4400 "SOA Setup"
         if StateChanged() then
             SOASetupCU.UpdateSOASetupActivationDT(TempSOASetup);
 
-        SOASetupCU.UpdateAgent(Rec, TempAgentAccessControl, TempSOASetup, TempEmailAccount, AccessUpdated, ShouldScheduleTask());
+        SOASetupCU.UpdateAgent(Rec, TempAgentAccessControl, TempSOASetup, AccessUpdated, ShouldScheduleTask(), UserSettingsUpdated, UserSettings);
         exit(true);
     end;
 
@@ -468,6 +518,10 @@ page 4400 "SOA Setup"
             SOASetupCU.GetDefaultAgentAccessControl(Rec."User Security ID", TempAgentAccessControl);
 
         CreateOrderFromQuoteActive := TempSOASetup."Create Order from Quote";
+
+        DailyEmailLimit := TempSOASetup."Message Limit";
+        if DailyEmailLimit = 0 then
+            DailyEmailLimit := TempSOASetup.GetDefaultMessageLimit();
 
         CheckIsValidConfig();
     end;
@@ -528,6 +582,7 @@ page 4400 "SOA Setup"
     end;
 
     var
+        UserSettings: Record "User Settings";
         TempAgentAccessControl: Record "Agent Access Control" temporary;
         TempEmailAccount: Record "Email Account" temporary;
         TempSOASetup: Record "SOA Setup" temporary;
@@ -540,11 +595,15 @@ page 4400 "SOA Setup"
         ShowLastSync: Boolean;
         IsConfigUpdated: Boolean;
         AccessUpdated: Boolean;
+        UserSettingsUpdated: Boolean;
         FirstConfig: Boolean;
         CreateOrderFromQuoteActive: Boolean;
         MailboxChanged: Boolean;
+        DailyEmailLimit: Integer;
         InitialState: Option Enabled,Disabled;
         LearnMoreTxt: Label 'Learn more';
-        LearnMoreBillingDocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2298603';
+        LearnMoreBillingDocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2333517';
         ManageUserAccessLbl: Label 'Manage user access';
+        DailyEmailLimitErr: Label 'The daily email limit must be greater than zero.';
+        SelectedLanguageTxt: Text;
 }

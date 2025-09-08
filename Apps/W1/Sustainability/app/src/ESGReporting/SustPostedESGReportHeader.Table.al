@@ -60,6 +60,18 @@ table 6231 "Sust. Posted ESG Report Header"
             Caption = 'Country/Region Code';
             TableRelation = "Country/Region";
         }
+        field(30; "Standard ID"; Guid)
+        {
+            Caption = 'Standard ID';
+        }
+        field(31; "Range Period ID"; Guid)
+        {
+            Caption = 'Range Period ID';
+        }
+        field(32; "Assessment ID"; Guid)
+        {
+            Caption = 'Assessment ID';
+        }
     }
     keys
     {

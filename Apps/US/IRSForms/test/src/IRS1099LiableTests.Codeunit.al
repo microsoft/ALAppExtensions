@@ -101,11 +101,6 @@ codeunit 148019 "IRS 1099 Liable Tests"
         PurchaseLine: Record "Purchase Line";
         VendLedgEntry: Record "Vendor Ledger Entry";
         IRSReportingPeriod: Record "IRS Reporting Period";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
@@ -114,9 +109,6 @@ codeunit 148019 "IRS 1099 Liable Tests"
         // [SCENARIO 561321] Vendor ledger entry contains "IRS 1099 Reporting Amount" only from purchase lines which have "1099 Liable" option enabled
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         // [GIVEN] MISC-01 code is specified for vendor "X"
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
