@@ -93,6 +93,18 @@ table 6229 "Sust. ESG Reporting Name"
             CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Sust. ESG Reporting Name")));
             ToolTip = 'Specifies that the reporting name is coupled to an assessment in Dataverse.';
         }
+        field(30; "Standard ID"; Guid)
+        {
+            Caption = 'Standard ID';
+        }
+        field(31; "Range Period ID"; Guid)
+        {
+            Caption = 'Range Period ID';
+        }
+        field(32; "Assessment ID"; Guid)
+        {
+            Caption = 'Assessment ID';
+        }
     }
 
     keys

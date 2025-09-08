@@ -277,6 +277,7 @@ report 4810 "Intrastat Report Get Lines"
                         DecimalPlaces = 0 : 5;
                         MaxValue = 100;
                         MinValue = 0;
+                        AutoFormatType = 0;
                         Enabled = CostRegulationEnable;
                         ToolTip = 'Specifies the cost regulation percentage to cover freight and insurance. The statistical value of every line in the report is increased by this percentage.';
                     }

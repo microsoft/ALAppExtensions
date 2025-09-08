@@ -1,0 +1,118 @@
+[
+    {
+        "CaseID": "{C60D4ED2-E3FC-41BC-BB8D-F1B521984712}",
+        "Description": "GST on Advance Payment made to Vendor through General Journal.",
+        "Version": 3,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "GST HSN",
+        "TaxEntity": "Gen. Journal Line",
+        "ParentUseCase": "",
+        "ParentCaseId": "{00000000-0000-0000-0000-000000000000}",
+        "PresentationOrder": 975,
+        "Indent": 0,
+        "Attributes": [
+            {
+                "Name": "GST on Advance Payment",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": true,
+                            "TableName": "Gen. Journal Line"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "HSN/SAC",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": true,
+                            "TableName": "Gen. Journal Line"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "GST Group Code",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": true,
+                            "TableName": "Gen. Journal Line"
+                        }
+                    }
+                ]
+            }
+        ],
+        "RateColumns": [
+            {
+                "Name": "Date",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Posting Date"
+                        }
+                    }
+                ]
+            }
+        ],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Source Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Source Code Setup",
+                            "TableFieldName": "Inventory Post Cost",
+                            "Method": "First",
+                            "TableFilters": []
+                        }
+                    }
+                },
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "System-Created Entry"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                }
+            ]
+        }
+    }
+]

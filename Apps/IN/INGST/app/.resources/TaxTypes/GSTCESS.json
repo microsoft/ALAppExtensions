@@ -1,0 +1,395 @@
+[
+    {
+        "Code": "GST CESS",
+        "TaxTypeDescription": "GST Cess",
+        "Enable": true,
+        "Version": 5,
+        "MinorVersion": 0,
+        "ChangedBy": "Microsoft",
+        "TaxEntities": [
+            {
+                "TableName": "Location",
+                "Type": "Master"
+            },
+            {
+                "TableName": "G/L Account",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Customer",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Vendor",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Item",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Sales Header",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Sales Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Purchase Header",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Purchase Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Company Information",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Gen. Journal Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "General Posting Setup",
+                "Type": "Master"
+            },
+            {
+                "TableName": "FA Posting Group",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Transfer Header",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Transfer Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "GST Group",
+                "Type": "Master"
+            },
+            {
+                "TableName": "GST Posting Setup",
+                "Type": "Master"
+            }
+        ],
+        "Attributes": [
+            {
+                "TaxType": "",
+                "ID": 1,
+                "Name": "State",
+                "Type": "Text",
+                "LookupTable": "State",
+                "LookupField": "Code",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Vendor",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Company Information",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "Location State Code"
+                    },
+                    {
+                        "Entity": "Order Address",
+                        "MappingField": "State"
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 2,
+                "Name": "PAN No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "P.A.N. No."
+                    },
+                    {
+                        "Entity": "Vendor",
+                        "MappingField": "P.A.N. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 3,
+                "Name": "TCAN No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "T.C.A.N. No."
+                    },
+                    {
+                        "Entity": "Company Information",
+                        "MappingField": "T.C.A.N. No."
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "T.C.A.N. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 4,
+                "Name": "Customer GST Registration No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "GST Registration No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 5,
+                "Name": "TAN No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "T.A.N. No."
+                    },
+                    {
+                        "Entity": "Company Information",
+                        "MappingField": "T.A.N. No."
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "T.A.N. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST CESS",
+                "ID": 37,
+                "Name": "GST Group Code",
+                "Type": "Text",
+                "LookupTable": "GST Group",
+                "LookupField": "Code",
+                "LookupPage": "GST Group",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Sales Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Purchase Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Transfer Line",
+                        "MappingField": "GST Group Code"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST CESS",
+                "ID": 40,
+                "Name": "HSN/SAC Code",
+                "Type": "Text",
+                "LookupTable": "HSN/SAC",
+                "LookupField": "Code",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Sales Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Purchase Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Transfer Line",
+                        "MappingField": "HSN/SAC Code"
+                    }
+                ]
+            }
+        ],
+        "AccountingPeriod": {
+            "AccountingPeriodCode": "GST",
+            "AccountingPeriodDesc": "GST Accounting Periods"
+        },
+        "Components": [
+            {
+                "ID": 10000,
+                "Name": "CESS",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 20000,
+                "Name": "Before Threshold Cess",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 30000,
+                "Name": "Cess Base Amount",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": true,
+                "ComponentType": "Normal"
+            }
+        ],
+        "TaxRateColumnSetup": [
+            {
+                "Sequence": 1,
+                "ID": 51,
+                "ColumnType": "Tax Attributes",
+                "ColumnName": "GST Group Code",
+                "VisibleOnInterface": false,
+                "Type": "Text",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 3,
+                "ID": 52,
+                "ColumnType": "Value",
+                "ColumnName": "From State",
+                "VisibleOnInterface": false,
+                "Type": "Text",
+                "AllowBlank": false,
+                "LinkedAttributeName": "State"
+            },
+            {
+                "Sequence": 4,
+                "ID": 53,
+                "ColumnType": "Value",
+                "ColumnName": "Location State Code",
+                "VisibleOnInterface": false,
+                "Type": "Text",
+                "AllowBlank": false,
+                "LinkedAttributeName": "State"
+            },
+            {
+                "Sequence": 5,
+                "ID": 54,
+                "ColumnType": "Range From and Range To",
+                "ColumnName": "Date",
+                "VisibleOnInterface": false,
+                "Type": "Date",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 6,
+                "ID": 55,
+                "ColumnType": "Component",
+                "ColumnName": "CESS",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 7,
+                "ID": 56,
+                "ColumnType": "Component",
+                "ColumnName": "Before Threshold Cess",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 9,
+                "ID": 57,
+                "ColumnType": "Output Information",
+                "ColumnName": "Cess Amount per Unit Factor",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 8,
+                "ID": 58,
+                "ColumnType": "Output Information",
+                "ColumnName": "Threshold Amount",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 10,
+                "ID": 60,
+                "ColumnType": "Output Information",
+                "ColumnName": "Cess Factor Quantity",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 2,
+                "ID": 61,
+                "ColumnType": "Tax Attributes",
+                "ColumnName": "HSN/SAC Code",
+                "VisibleOnInterface": false,
+                "Type": "Text",
+                "AllowBlank": true
+            }
+        ]
+    }
+]

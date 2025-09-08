@@ -1,3 +1,17 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.Bank.StatementImport;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.Bank.StatementImport;
+using System.IO;
+using System.TestLibraries.Utilities;
+using System.Utilities;
+
 codeunit 148130 "Bank Stmt File Wizard Tests"
 {
     Subtype = Test;
@@ -35,7 +49,7 @@ codeunit 148130 "Bank Stmt File Wizard Tests"
         TempBlob: Codeunit "Temp Blob";
         BankStatementFileWizard: TestPage "Bank Statement File Wizard";
         DataExchDefinitionType: Enum "Data Exchange Definition Type";
-        FileName: Text;
+        FileName: Code[20];
         CsvFileName: Text;
     begin
         // [SCENARIO 397260] Load CSV file with semicolon csv separator and comma decimal separator to Bank Statement File Wizard. Run wizard through all steps.
@@ -361,8 +375,10 @@ codeunit 148130 "Bank Stmt File Wizard Tests"
     end;
 
     local procedure GenerateCsvFileName(FileName: Text): Text
+    var
+        CsvFileNamePatternLbl: Label '%1.csv', Locked = true;
     begin
-        exit(StrSubstNo('%1.csv', FileName));
+        exit(StrSubstNo(CsvFileNamePatternLbl, FileName));
     end;
 
     local procedure VerifyDataExchDef(DataExchDefCode: Code[20]; FileType: Option; DataExchDefinitionType: Enum "Data Exchange Definition Type"; HeaderLines: Integer)

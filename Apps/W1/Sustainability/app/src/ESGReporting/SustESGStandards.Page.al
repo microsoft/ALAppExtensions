@@ -26,6 +26,12 @@ page 6297 "Sust. ESG Standards"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the No. field.';
+
+                    trigger OnAssistEdit()
+                    begin
+                        if Rec.AssistEdit(xRec) then
+                            CurrPage.Update();
+                    end;
                 }
                 field(Description; Rec.Description)
                 {

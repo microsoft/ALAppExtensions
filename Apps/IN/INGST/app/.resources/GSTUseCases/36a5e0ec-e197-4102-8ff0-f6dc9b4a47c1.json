@@ -1,0 +1,422 @@
+[
+    {
+        "CaseID": "{36A5E0EC-E197-4102-8FF0-F6DC9B4A47C1}",
+        "Description": "Intra-State Purchase of Services from Registered Vendor when Input Tax Credit is Not Available purchase Quote.",
+        "Version": 3,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "8.7",
+        "TaxEntity": "Purchase Line",
+        "ParentUseCase": "Purchase of Services from Registered/Unregistered Vendor.",
+        "ParentCaseId": "{EA146DA9-BB20-4A42-9C06-7E83FDF9F943}",
+        "PresentationOrder": 475,
+        "Indent": 1,
+        "PostingTableName": "General Posting Setup",
+        "PostingTableFilters": [
+            {
+                "FiterFieldName": "Gen. Bus. Posting Group",
+                "FilterType": "Equals",
+                "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                        "SourceType": "Current Record",
+                        "TableName": "Purchase Line",
+                        "FieldName": "Gen. Bus. Posting Group"
+                    }
+                }
+            },
+            {
+                "FiterFieldName": "Gen. Prod. Posting Group",
+                "FilterType": "Equals",
+                "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                        "SourceType": "Current Record",
+                        "TableName": "Purchase Line",
+                        "FieldName": "Gen. Prod. Posting Group"
+                    }
+                }
+            }
+        ],
+        "Attributes": [],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "SGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "SGST",
+                    "Expression": "{Amount}*{SGST %}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{Amount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Purchase Line",
+                                    "FieldName": "Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{SGST %}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "SGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "CGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "CGST",
+                    "Expression": "{Amount}*{CGST %}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{Amount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Purchase Line",
+                                    "FieldName": "Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{CGST %}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "CGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "GST Base Amount",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "GST Base Amount",
+                    "Expression": "{GSTBASEAMt}",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBASEAMt}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Purchase Line",
+                                    "FieldName": "Line Amount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "Document Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Quote"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Purchase Header",
+                            "TableFieldName": "GST Vendor Type",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Registered"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Purchase Header",
+                            "TableFieldName": "POS Out Of India",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "No"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "Exempted"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "No"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "GST Reverse Charge"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "No"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "G/L Account"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Purchase Line",
+                            "FieldName": "GST Credit"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Non-Availment"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Purchase Header",
+                            "TableFieldName": "State",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Location",
+                            "TableFieldName": "State Code",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Location Code"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Purchase Header",
+                            "TableFieldName": "GST Input Service Distribution",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                }
+            ]
+        },
+        "TaxPostingSetup": [
+            {
+                "ComponentName": "SGST",
+                "TableName": "General Posting Setup",
+                "AccountSourceType": "Field",
+                "FieldName": "Purch. Account",
+                "AccountingImpact": "Debit",
+                "ReverseCharge": false,
+                "ReverseAccountSourceType": "Field",
+                "ReverseChargeFieldName": ""
+            },
+            {
+                "ComponentName": "CGST",
+                "TableName": "General Posting Setup",
+                "AccountSourceType": "Field",
+                "FieldName": "Purch. Account",
+                "AccountingImpact": "Debit",
+                "ReverseCharge": false,
+                "ReverseAccountSourceType": "Field",
+                "ReverseChargeFieldName": ""
+            }
+        ]
+    }
+]

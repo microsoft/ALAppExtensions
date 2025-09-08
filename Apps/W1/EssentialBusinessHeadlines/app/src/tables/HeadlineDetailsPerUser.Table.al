@@ -26,6 +26,8 @@ table 1437 "Headline Details Per User"
         field(3; Quantity; Decimal)
         {
             DataClassification = CustomerContent;
+            AutoFormatType = 0;
+
         }
 
         field(4; "Unit of Measure"; Code[10])
@@ -36,6 +38,8 @@ table 1437 "Headline Details Per User"
         field(5; "Amount (LCY)"; Decimal)
         {
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
 
         field(6; "Type"; Option)

@@ -1,0 +1,114 @@
+[
+    {
+        "CaseID": "{81A24E9D-52B9-4EFE-A18B-398C6BAD55ED}",
+        "Description": "Inter-state Subcontracting GST on GST Liability Line for Registered Vendor",
+        "Version": 2,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "GST Liability Line",
+        "ParentUseCase": "Subcontracting GST For GST Liability Line",
+        "ParentCaseId": "{BECB23D8-56A1-4EB4-BF02-D3903BC14DF1}",
+        "PresentationOrder": 938,
+        "Indent": 1,
+        "Attributes": [],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "GST Base Amount",
+                "Sequence": 1,
+                "Formula": {
+                    "VariableName": "GST Base Amount",
+                    "Expression": "{GSTBaseAmount}",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "GST Liability Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "IGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "IGST",
+                    "Expression": "{GSTBaseAmount}*{IGSTPer}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "GST Liability Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{IGSTPer}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "IGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "GST Liability Line",
+                            "FieldName": "Location State Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "GST Liability Line",
+                            "FieldName": "Vendor State Code"
+                        }
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "GST Liability Line",
+                            "FieldName": "GST Vendor Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Registered"
+                    }
+                }
+            ]
+        }
+    }
+]

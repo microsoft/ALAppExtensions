@@ -37,7 +37,8 @@ tableextension 11702 "Vendor CZL" extends Vendor
                     if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
                         LogNotVerified := false;
                         RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Vendor);
-                        ResultRecordRef.SetTable(Rec);
+                        if ResultRecordRef.Number <> 0 then
+                            ResultRecordRef.SetTable(Rec);
                     end;
 
                 if LogNotVerified then

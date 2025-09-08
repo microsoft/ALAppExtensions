@@ -61,11 +61,13 @@ codeunit 11539 "Create Imp./Exp. Protocol NL"
     var
         ContosoBankNL: Codeunit "Contoso Bank NL";
         CreateDataExchange: Codeunit "Create Data Exchange";
+        CreateDataExchangeNL: Codeunit "Create Data Exchange NL";
         ImportType: Option "TableData","Table",Form,"Report",,"Codeunit","XMLport",MenuSuite,"Page";
     begin
         ContosoBankNL.InsertImportProtocol(RABOMUTASC(), ImportType::Report, Report::"Import Rabobank mut.asc", RABOTelebankingDomesticLbl, true);
         ContosoBankNL.InsertImportProtocol(RABOVVMUTASCTok, ImportType::Report, Report::"Import Rabobank vvmut.asc", RABOTelebankingForeignLbl, true);
         ContosoBankNL.InsertImportProtocol(CreateDataExchange.SEPACAMT(), ImportType::Codeunit, Codeunit::"Import SEPA CAMT", SEPACAMTBankStatementsLbl, true);
+        ContosoBankNL.InsertImportProtocol(CreateDataExchangeNL.SEPACAMT05300108NL(), ImportType::Codeunit, Codeunit::"Import SEPA CAMT", SEPACAMT05300108BankStatementsLbl, true);
     end;
 
     local procedure InsertExportProtocol()
@@ -104,6 +106,7 @@ codeunit 11539 "Create Imp./Exp. Protocol NL"
         RABOTelebankingDomesticLbl: Label 'RABO Telebanking (Domestic)', MaxLength = 100;
         RABOTelebankingForeignLbl: Label 'RABO Telebanking (Foreign)', MaxLength = 100;
         SEPACAMTBankStatementsLbl: Label 'SEPA CAMT Bank Statements', MaxLength = 100;
+        SEPACAMT05300108BankStatementsLbl: Label 'SEPA CAMT 053.001.08 Bank Statements', MaxLength = 100;
         BBVTok: Label 'BBV', MaxLength = 20, Locked = true;
         BBVDescLbl: Label 'RABO Foreign Payments', MaxLength = 100;
         BTL91Tok: Label 'BTL91', MaxLength = 20, Locked = true;

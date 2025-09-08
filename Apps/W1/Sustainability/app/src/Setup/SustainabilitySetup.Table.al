@@ -215,6 +215,12 @@ table 6217 "Sustainability Setup"
             TableRelation = "No. Series";
             ToolTip = 'Specifies the code for the number series that will be used to assign numbers to Item Material Composition Nos.';
         }
+        field(32; "ESG Standard Reporting Nos."; Code[20])
+        {
+            Caption = 'ESG Standard Reporting Nos.';
+            TableRelation = "No. Series";
+            ToolTip = 'Specifies the code for the number series that will be used to assign numbers for standard records created by dataverse to ESG Standard Reporting.';
+        }
         field(40; "Is Dataverse Int. Enabled"; Boolean)
         {
             DataClassification = SystemMetadata;
@@ -224,9 +230,10 @@ table 6217 "Sustainability Setup"
             var
                 SustSetupDefaults: Codeunit "Sust. Setup Defaults";
             begin
-                if Rec."Is Dataverse Int. Enabled" then
-                    SustSetupDefaults.ResetConfiguration(Rec)
-                else
+                if Rec."Is Dataverse Int. Enabled" then begin
+                    Rec.TestField("ESG Standard Reporting Nos.");
+                    SustSetupDefaults.ResetConfiguration(Rec);
+                end else
                     UpdateSustJobQueueEntriesStatus();
             end;
         }
@@ -333,6 +340,22 @@ table 6217 "Sustainability Setup"
         exit(not SustainabilityLedgerEntry.IsEmpty());
     end;
 
+    internal procedure GetIntegrationTableIDFilter(): Text
+    begin
+        exit(
+          StrSubstNo(
+            '%1|%2|%3|%4|%5|%6|%7|%8|%9',
+            Database::"Sust. ESG Reporting Unit",
+            Database::"Sust. ESG Standard",
+            Database::"Sust. ESG Reporting Name",
+            Database::"Sust. ESG Reporting Line",
+            Database::"Sust. ESG Range Period",
+            Database::"Sust. ESG Standard Requirement",
+            Database::"Sust. ESG Requirement Concept",
+            Database::"Sust. ESG Concept",
+            Database::"Sust. Posted ESG Report Line"));
+    end;
+
     local procedure GetSustainabilitySetup()
     begin
         if not SustainabilitySetupRetrieved then begin
@@ -359,7 +382,7 @@ table 6217 "Sustainability Setup"
         IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::Dataverse);
         IntegrationTableMapping.SetRange("Synch. Codeunit ID", Codeunit::"CRM Integration Table Synch.");
         IntegrationTableMapping.SetRange("Delete After Synchronization", false);
-        IntegrationTableMapping.SetFilter("Table ID", StrSubstNo('%1|%2|%3|%4|%5', Database::"Sust. ESG Reporting Unit", Database::"Sust. ESG Standard", Database::"Sust. ESG Reporting Name", Database::"Sust. ESG Reporting Line", Database::"Sust. Posted ESG Report Line"));
+        IntegrationTableMapping.SetFilter("Table ID", GetIntegrationTableIDFilter());
         if IntegrationTableMapping.FindSet() then
             repeat
                 JobQueueEntry.SetRange("Record ID to Process", IntegrationTableMapping.RecordId());

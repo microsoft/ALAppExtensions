@@ -23,10 +23,18 @@ codeunit 6275 "Sust. Lookup CRM Tables"
         case CRMTableID of
             Database::"Sust. Standard":
                 Handled := LookupStandard(SavedCRMId, CRMId, IntTableFilter);
+            Database::"Sust. Range Period":
+                Handled := LookupRangePeriod(SavedCRMId, CRMId, IntTableFilter);
             Database::"Sust. Unit":
                 Handled := LookupUnit(SavedCRMId, CRMId, IntTableFilter);
             Database::"Sust. Assessment":
                 Handled := LookupAssessment(SavedCRMId, CRMId, IntTableFilter);
+            Database::"Sust. Standard Requirement":
+                Handled := LookupStandardRequirement(SavedCRMId, CRMId, IntTableFilter);
+            Database::"Sust. Concept":
+                Handled := LookupConcept(SavedCRMId, CRMId, IntTableFilter);
+            Database::"Sust. Requirement Concept":
+                Handled := LookupRequirementConcept(SavedCRMId, CRMId, IntTableFilter);
             Database::"Sust. Assessment Requirement":
                 Handled := LookupAssessmentRequirement(SavedCRMId, CRMId, IntTableFilter);
             Database::"Sust. ESG Fact":
@@ -56,6 +64,34 @@ codeunit 6275 "Sust. Lookup CRM Tables"
         if StandardList.RunModal() = Action::LookupOK then begin
             StandardList.GetRecord(Standard);
             CRMId := Standard.StandardId;
+            exit(true);
+        end;
+
+        exit(false);
+    end;
+
+    local procedure LookupRangePeriod(SavedCRMId: Guid; var CRMId: Guid; IntTableFilter: Text): Boolean
+    var
+        RangePeriod: Record "Sust. Range Period";
+        OriginalRangePeriod: Record "Sust. Range Period";
+        RangePeriodList: Page "Sust. Range Period List";
+    begin
+        if not IsNullGuid(CRMId) then begin
+            if RangePeriod.Get(CRMId) then
+                RangePeriodList.SetRecord(RangePeriod);
+            if not IsNullGuid(SavedCRMId) then
+                if OriginalRangePeriod.Get(SavedCRMId) then
+                    RangePeriodList.SetCurrentlyCoupledCRMRangePeriod(OriginalRangePeriod);
+        end;
+
+        RangePeriod.SetView(IntTableFilter);
+        RangePeriodList.SetTableView(RangePeriod);
+        RangePeriodList.LookupMode(true);
+        Commit();
+
+        if RangePeriodList.RunModal() = Action::LookupOK then begin
+            RangePeriodList.GetRecord(RangePeriod);
+            CRMId := RangePeriod.RangePeriodId;
             exit(true);
         end;
 
@@ -112,6 +148,90 @@ codeunit 6275 "Sust. Lookup CRM Tables"
         if AssessmentList.RunModal() = Action::LookupOK then begin
             AssessmentList.GetRecord(Assessment);
             CRMId := Assessment.AssessmentId;
+            exit(true);
+        end;
+
+        exit(false);
+    end;
+
+    local procedure LookupStandardRequirement(SavedCRMId: Guid; var CRMId: Guid; IntTableFilter: Text): Boolean
+    var
+        StandardRequirement: Record "Sust. Standard Requirement";
+        OriginalStandardRequirement: Record "Sust. Standard Requirement";
+        StandardRequirementList: Page "Sust. Std. Requirement List";
+    begin
+        if not IsNullGuid(CRMId) then begin
+            if StandardRequirement.Get(CRMId) then
+                StandardRequirementList.SetRecord(StandardRequirement);
+            if not IsNullGuid(SavedCRMId) then
+                if OriginalStandardRequirement.Get(SavedCRMId) then
+                    StandardRequirementList.SetCurrentlyCoupledCRMStandardRequirement(OriginalStandardRequirement);
+        end;
+
+        StandardRequirement.SetView(IntTableFilter);
+        StandardRequirementList.SetTableView(StandardRequirement);
+        StandardRequirementList.LookupMode(true);
+        Commit();
+
+        if StandardRequirementList.RunModal() = Action::LookupOK then begin
+            StandardRequirementList.GetRecord(StandardRequirement);
+            CRMId := StandardRequirement.StandardRequirementId;
+            exit(true);
+        end;
+
+        exit(false);
+    end;
+
+    local procedure LookupConcept(SavedCRMId: Guid; var CRMId: Guid; IntTableFilter: Text): Boolean
+    var
+        Concept: Record "Sust. Concept";
+        OriginalConcept: Record "Sust. Concept";
+        ConceptList: Page "Sust. Concept List";
+    begin
+        if not IsNullGuid(CRMId) then begin
+            if Concept.Get(CRMId) then
+                ConceptList.SetRecord(Concept);
+            if not IsNullGuid(SavedCRMId) then
+                if OriginalConcept.Get(SavedCRMId) then
+                    ConceptList.SetCurrentlyCoupledCRMConcept(OriginalConcept);
+        end;
+
+        Concept.SetView(IntTableFilter);
+        ConceptList.SetTableView(Concept);
+        ConceptList.LookupMode(true);
+        Commit();
+
+        if ConceptList.RunModal() = Action::LookupOK then begin
+            ConceptList.GetRecord(Concept);
+            CRMId := Concept.ConceptId;
+            exit(true);
+        end;
+
+        exit(false);
+    end;
+
+    local procedure LookupRequirementConcept(SavedCRMId: Guid; var CRMId: Guid; IntTableFilter: Text): Boolean
+    var
+        RequirementConcept: Record "Sust. Requirement Concept";
+        OriginalRequirementConcept: Record "Sust. Requirement Concept";
+        RequirementConceptList: Page "Sust. Requirement Concept List";
+    begin
+        if not IsNullGuid(CRMId) then begin
+            if RequirementConcept.Get(CRMId) then
+                RequirementConceptList.SetRecord(RequirementConcept);
+            if not IsNullGuid(SavedCRMId) then
+                if OriginalRequirementConcept.Get(SavedCRMId) then
+                    RequirementConceptList.SetCurrentlyCoupledCRMRequirementConcept(OriginalRequirementConcept);
+        end;
+
+        RequirementConcept.SetView(IntTableFilter);
+        RequirementConceptList.SetTableView(RequirementConcept);
+        RequirementConceptList.LookupMode(true);
+        Commit();
+
+        if RequirementConceptList.RunModal() = Action::LookupOK then begin
+            RequirementConceptList.GetRecord(RequirementConcept);
+            CRMId := RequirementConcept.ConceptId;
             exit(true);
         end;
 

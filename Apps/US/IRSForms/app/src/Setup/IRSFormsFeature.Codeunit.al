@@ -16,42 +16,19 @@ codeunit 10038 "IRS Forms Feature"
     InherentPermissions = X;
 
     var
-        FeatureKeyIdTok: Label 'IRSForm', Locked = true;
-        InstallFeatureNotificationMsg: Label 'The IRS Forms feature is not enabled. You can enable it in the Feature Management window.';
-        DataTransferInProgressNotificationMsg: Label 'The IRS Forms feature is enabled, but the data transfer is in progress. Refresh the page (F5), or come back later.';
         AssistedSetupTxt: Label 'Set up a IRS Forms feature';
         AssistedSetupDescriptionTxt: Label 'Setup 1099 forms to transmit the tax data to the IRS in the United States';
         AssistedSetupHelpTxt: Label 'https://learn.microsoft.com/en-us/dynamics365/business-central/localfunctionality/unitedstates/set-up-use-irs1099-form', Locked = true;
 
     procedure IsEnabled() Result: Boolean
-    var
-        FeatureManagementFacade: Codeunit "Feature Management Facade";
     begin
-        Result := FeatureManagementFacade.IsEnabled(FeatureKeyIdTok);
+        Result := true;
         OnAfterCheckFeatureEnabled(Result);
     end;
 
-    procedure GetFeatureKeyId(): Text
-    begin
-        exit(FeatureKeyIdTok);
-    end;
-
     procedure FeatureCanBeUsed(): Boolean
-    var
-        IRSFormsSetup: Record "IRS Forms Setup";
-        FeatureNotification: Notification;
     begin
-        IRSFormsSetup.InitSetup();
-        if IsEnabled() and not IRSFormsSetup.DataTransferInProgress() then
-            exit(true);
-        FeatureNotification.Id := GetFeatureNotificationId();
-        FeatureNotification.Recall();
-        if IsEnabled() then
-            FeatureNotification.Message := DataTransferInProgressNotificationMsg
-        else
-            FeatureNotification.Message := InstallFeatureNotificationMsg;
-        FeatureNotification.Send();
-        exit(false);
+        exit(true);
     end;
 
     procedure UpgradeFromBaseApplication()
@@ -65,24 +42,6 @@ codeunit 10038 "IRS Forms Feature"
             exit;
         end;
         Codeunit.Run(Codeunit::"IRS 1099 Transfer From BaseApp");
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterFeatureEnableConfirmed', '', true, true)]
-    local procedure OnAfterFeatureEnableConfirmed(var FeatureKey: Record "Feature Key")
-    var
-        IRSFormsGuide: Page "IRS Forms Guide";
-    begin
-        if FeatureKey.ID = GetFeatureKeyId() then begin
-            Commit();
-            if IRSFormsGuide.RunModal() = Action::OK then
-                if not IRSFormsGuide.IsSetupCompleted() then
-                    Error('');
-        end;
-    end;
-
-    local procedure GetFeatureNotificationId(): Guid
-    begin
-        exit('0200065a-8efe-4c00-a68f-ea20fe41e4e3');
     end;
 
     local procedure ScheduleTask(): Boolean;
@@ -160,6 +119,5 @@ codeunit 10038 "IRS Forms Feature"
     local procedure OnAfterCheckFeatureEnabled(var IsEnabled: Boolean)
     begin
     end;
-
 }
 #endif

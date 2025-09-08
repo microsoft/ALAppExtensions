@@ -7,6 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 using Microsoft.Purchases.Document;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Setup;
+using System.TestLibraries.Utilities;
 using Microsoft.Purchases.Payables;
 
 codeunit 148010 "IRS 1099 Document Tests"
@@ -23,6 +24,8 @@ codeunit 148010 "IRS 1099 Document Tests"
         LibraryIRS1099FormBox: Codeunit "Library IRS 1099 Form Box";
         LibraryIRS1099Document: Codeunit "Library IRS 1099 Document";
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit "Assert";
         LibraryRandom: Codeunit "Library - Random";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
@@ -34,6 +37,7 @@ codeunit 148010 "IRS 1099 Document Tests"
         CannotChangeIRSDataInEntryConnectedToFormDocumentErr: Label 'You cannot change the IRS data in the vendor ledger entry connected to the form document. Period = %1, Vendor No. = %2, Form No. = %3', Comment = '%1 = Period No., %2 = Vendor No., %3 = Form No.';
         PeriodNoFieldVisibleErr: Label 'Field Period No. should be visible.';
         PeriodNoNotVisibleErr: Label 'Field Period No. should not be visible.';
+        ChangingPostingDateInPurchHeaderWhileHavingLineMsg: Label 'You have changed the Posting Date on the purchase order, which might affect the prices and discounts on the purchase order lines.\You should review the lines and manually update prices and discounts if needed';
 
 
     trigger OnRun()
@@ -105,6 +109,59 @@ codeunit 148010 "IRS 1099 Document Tests"
         PurchaseHeader.Validate("Posting Date", ReportingDate);
         // [THEN]
         LibraryIRS1099Document.VerifyIRS1099CodeInPurchaseHeader(PurchaseHeader, FormNo, FormBoxNo);
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandler')]
+    procedure IRS1099CodeInPurchaseHeaderWhenChangePostingDateAfterAddingLine()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VendorLedgEntry: Record "Vendor Ledger Entry";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+        VendNo, FormNo, FormBoxNo, InvNo : Code[20];
+        ReportingDate: Date;
+    begin
+        // [SCENARIO 597572] IRS 1099 code in vendor ledger entry is taken from the purchase invoice when change the posting date of the purchase header after adding a line
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+        // [GIVEN] IRS Reporting Period is in 2026
+        // [GIVEN] Vendor "X" with form box for the period
+        ReportingDate := CalcDate('<1Y>', WorkDate());
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(ReportingDate);
+        FormNo :=
+            LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(ReportingDate, ReportingDate);
+        FormBoxNo :=
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(ReportingDate, ReportingDate, FormNo);
+        // [GIVEN] Purchase invoice with "Posting Date" in 2025 and vendor "X"
+        // [GIVEN] Purchase line in the invoice
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(ReportingDate, ReportingDate, FormNo, FormBoxNo);
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
+        LibraryPurchase.CreatePurchaseLineWithUnitCost(PurchaseLine, PurchaseHeader, LibraryInventory.CreateItemNo(), 1, 1);
+        // [GIVEN] Posting date is changed to 2026
+        LibraryVariableStorage.Enqueue(ChangingPostingDateInPurchHeaderWhileHavingLineMsg);
+        PurchaseHeader.Validate("Posting Date", ReportingDate);
+        PurchaseHeader.Modify(true);
+        // [WHEN] Post purchase invoice
+        InvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        // [THEN] Vendor ledger entry is created with IRS 1099 code taken from the vendor
+        LibraryERM.FindVendorLedgerEntry(VendorLedgEntry, VendorLedgEntry."Document Type"::Invoice, InvNo);
+        VendorLedgEntry.TestField("IRS 1099 Reporting Period", LibraryIRSReportingPeriod.GetReportingPeriod(ReportingDate));
+        VendorLedgEntry.TestField("IRS 1099 Form No.", FormNo);
+        VendorLedgEntry.TestField("IRS 1099 Form Box No.", FormBoxNo);
+        VendorLedgEntry.TestField("IRS 1099 Reporting Amount", -PurchaseLine."Amount Including VAT");
+        LibraryVariableStorage.AssertEmpty();
+
 #if not CLEAN25
         UnbindSubscription(IRSFormsEnableFeature);
 #endif
@@ -1050,5 +1107,11 @@ codeunit 148010 "IRS 1099 Document Tests"
         DocID := LibraryIRS1099Document.MockFormDocumentForVendor(PeriodNo, VendorNo, FormNo, Status);
         LibraryIRS1099Document.MockFormDocumentLineForVendor(DocID, PeriodNo, VendorNo, FormNo, FormBoxNo);
         IRS1099FormDocHeader.Get(DocID);
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Text: Text)
+    begin
+        Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Text);
     end;
 }

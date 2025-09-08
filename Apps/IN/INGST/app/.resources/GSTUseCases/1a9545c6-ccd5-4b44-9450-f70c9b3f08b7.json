@@ -1,0 +1,168 @@
+[
+    {
+        "CaseID": "{1A9545C6-CCD5-4B44-9450-F70C9B3F08B7}",
+        "Description": "(POS) Intra-State Purchase of Services for Overseas Place of Supply from Registered Vendor",
+        "Version": 3,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "GST HSN",
+        "TaxEntity": "Purchase Line",
+        "ParentUseCase": "",
+        "ParentCaseId": "{00000000-0000-0000-0000-000000000000}",
+        "PresentationOrder": 980,
+        "Indent": 0,
+        "Attributes": [
+            {
+                "Name": "GST Group Code",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": true,
+                            "TableName": "Purchase Line"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "HSN/SAC",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": true,
+                            "TableName": "Purchase Line"
+                        }
+                    }
+                ]
+            }
+        ],
+        "RateColumns": [
+            {
+                "Name": "From State",
+                "When": [
+                    {
+                        "Condition": {
+                            "Body": []
+                        },
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Purchase Header",
+                            "TableFieldName": "State",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Date",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Purchase Header",
+                            "TableFieldName": "Posting Date",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Location State Code",
+                "When": [
+                    {
+                        "Condition": {
+                            "Body": []
+                        },
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Location",
+                            "TableFieldName": "State Code",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Purchase Line",
+                                            "FieldName": "Location Code"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": []
+    }
+]

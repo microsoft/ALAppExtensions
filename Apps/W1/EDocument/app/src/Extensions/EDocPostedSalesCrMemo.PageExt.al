@@ -41,7 +41,7 @@ pageextension 6145 "E-Doc. Posted Sales Cr. Memo" extends "Posted Sales Credit M
                     var
                         EDocumentProcessing: Codeunit "E-Document Processing";
                     begin
-                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Sales Invoice") then
+                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Sales Credit Memo") then
                             Message(EDocumentCreatedMsg);
                     end;
                 }

@@ -148,6 +148,13 @@ table 4325 "SOA Setup"
             ToolTip = 'Specifies the date and time the agent last synchronized instructions.';
             DataClassification = SystemMetadata;
         }
+        field(24; "Message Limit"; Integer)
+        {
+            Caption = 'Message Limit';
+            ToolTip = 'Specifies the maximum number of messages the agent can process in a single day.';
+            DataClassification = SystemMetadata;
+            InitValue = 100;
+        }
     }
 
     keys
@@ -174,5 +181,10 @@ table 4325 "SOA Setup"
         if ErrorIfNotFound then
             Error(NotFoundErr);
         exit(false);
+    end;
+
+    internal procedure GetDefaultMessageLimit(): Integer
+    begin
+        exit(100);
     end;
 }

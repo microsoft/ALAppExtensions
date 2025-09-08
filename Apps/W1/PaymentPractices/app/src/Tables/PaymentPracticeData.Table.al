@@ -75,7 +75,8 @@ table 686 "Payment Practice Data"
         }
         field(16; "Invoice Amount"; Decimal)
         {
-
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
 
     }

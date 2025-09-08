@@ -1,0 +1,12 @@
+{
+    "taxTypes":[
+        {
+            "TDS": "TaxTypes/TDS.json"
+        }
+    ],
+    "useCases":[
+        {
+            "TDS": "TDSUseCases"
+        }   
+    ]
+}

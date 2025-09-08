@@ -62,6 +62,7 @@ codeunit 4014 "Notification Handler"
 
         ParseReplicationSummary(HybridReplicationSummary, NotificationText);
         UpdateReplicationSummaryDetailsStartAndEndTime(HybridReplicationSummary);
+        CheckForWarnings(HybridReplicationSummary);
         HybridCloudManagement.OnReplicationRunCompleted(HybridReplicationSummary."Run ID", WebhookNotification."Subscription ID", NotificationText);
     end;
 
@@ -276,6 +277,39 @@ codeunit 4014 "Notification Handler"
         end;
     end;
 
+    internal procedure CheckForWarnings(HybridReplicationSummary: Record "Hybrid Replication Summary")
+    var
+        CloudMigrationWarning: Record "Cloud Migration Warning";
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        ICloudMigrationWarning: Interface "Cloud Migration Warning";
+        CloudMigrationWarningType: Enum "Cloud Migration Warning Type";
+        WarningImplementations: List of [Integer];
+        WarningImplementation: Integer;
+    begin
+        if not (HybridReplicationSummary.Status in [HybridReplicationSummary.Status::UpgradePending, HybridReplicationSummary.Status::Completed]) then
+            exit;
+
+        if not (HybridReplicationSummary.ReplicationType in [HybridReplicationSummary.ReplicationType::Normal, HybridReplicationSummary.ReplicationType::Full]) then
+            exit;
+
+        WarningImplementations := CloudMigrationWarningType.Ordinals();
+        foreach WarningImplementation in WarningImplementations do begin
+            ICloudMigrationWarning := "Cloud Migration Warning Type".FromInteger(WarningImplementation);
+
+            if IntelligentCloudSetup.Get() then
+                if not SourceSupported(IntelligentCloudSetup."Product ID", "Cloud Migration Warning Type".FromInteger(WarningImplementation)) then
+                    continue;
+
+            if not ICloudMigrationWarning.CheckWarning() then
+                continue;
+
+            Clear(CloudMigrationWarning);
+            CloudMigrationWarning.Message := ICloudMigrationWarning.GetWarningMessage();
+            CloudMigrationWarning."Warning Type" := "Cloud Migration Warning Type".FromInteger(WarningImplementation);
+            CloudMigrationWarning.Insert();
+        end;
+    end;
+
     local procedure MarkInProgressDetailRecordsAsFailed(HybridReplicationSummary: Record "Hybrid Replication Summary")
     var
         HybridReplicationDetail: Record "Hybrid Replication Detail";
@@ -338,5 +372,15 @@ codeunit 4014 "Notification Handler"
     begin
         JSONManagement.InitializeObject(Details);
         JSONManagement.GetStringPropertyValueByName('pipelineRunId', PipelineRunId)
+    end;
+
+    local procedure SourceSupported(ProductId: Text[250]; WarningType: Enum "Cloud Migration Warning Type") Supported: Boolean
+    begin
+        OnSourceSupported(ProductId, WarningType, Supported);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSourceSupported(ProductId: Text[250]; WarningType: Enum "Cloud Migration Warning Type"; var Supported: Boolean)
+    begin
     end;
 }

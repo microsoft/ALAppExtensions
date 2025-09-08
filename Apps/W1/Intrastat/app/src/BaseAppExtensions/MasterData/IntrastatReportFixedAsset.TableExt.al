@@ -59,6 +59,7 @@ tableextension 4810 "Intrastat Report Fixed Asset" extends "Fixed Asset"
             DecimalPlaces = 0 : 5;
             MinValue = 0;
             ToolTip = 'Specifies the gross weight of the asset.';
+            AutoFormatType = 0;
         }
         field(4814; "Net Weight"; Decimal)
         {
@@ -67,6 +68,7 @@ tableextension 4810 "Intrastat Report Fixed Asset" extends "Fixed Asset"
             DecimalPlaces = 0 : 5;
             MinValue = 0;
             ToolTip = 'Specifies the net weight of the asset.';
+            AutoFormatType = 0;
         }
         field(4815; "Supplementary Unit of Measure"; Code[10])
         {

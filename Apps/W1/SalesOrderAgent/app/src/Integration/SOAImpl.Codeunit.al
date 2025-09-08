@@ -114,6 +114,11 @@ codeunit 4587 "SOA Impl"
         exit(4 * 60 * 60 * 1000) // 4 hours
     end;
 
+    internal procedure GetProcessLimitPerDay(var SOASetup: Record "SOA Setup"): Integer
+    begin
+        exit(SOASetup."Message Limit");
+    end;
+
     procedure RemoveTaskLogsOlderThan24hrs()
     var
         SOATask: Record "SOA Task";

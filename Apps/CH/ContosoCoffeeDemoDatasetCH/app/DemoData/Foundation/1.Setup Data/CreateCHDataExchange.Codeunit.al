@@ -17,6 +17,7 @@ codeunit 11633 "Create CH Data Exchange"
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + CEPACAMT054() + '.xml');
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + CEPACAMT05302() + '.xml');
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + CEPACAMT05304() + '.xml');
+        ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + CEPACAMT05308CH() + '.xml');
     end;
 
     procedure CEPACAMT054(): Code[20]
@@ -32,5 +33,10 @@ codeunit 11633 "Create CH Data Exchange"
     procedure CEPACAMT05304(): Code[20]
     begin
         exit('SEPA CAMT 053-04');
+    end;
+
+    procedure CEPACAMT05308CH(): Code[20]
+    begin
+        exit('SEPA CAMT 053-08-CH');
     end;
 }
