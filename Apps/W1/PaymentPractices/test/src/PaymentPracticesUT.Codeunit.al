@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.Finance.Analysis;
+
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+
 codeunit 134197 "Payment Practices UT"
 {
     Subtype = Test;

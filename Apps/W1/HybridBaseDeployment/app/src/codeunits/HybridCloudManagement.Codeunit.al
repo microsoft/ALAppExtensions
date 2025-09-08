@@ -114,6 +114,12 @@ codeunit 4001 "Hybrid Cloud Management"
         RecordLinksMigratedSuccessfullyLbl: Label 'Record links migrated successfully.', Locked = true;
         RecordLinksMigratedWithDataTransferLbl: Label 'Record links migrated with data transfer.', Locked = true;
         HybridCompanyStatusNotExistLbl: Label 'Hybrid company status does not exist.', Locked = true;
+        RecordLinkMigrationIncompleteMsg: Label 'The record link migration is not completed. Please complete the migration before proceeding with user mapping.';
+        LearnMoreLbl: Label 'Learn more';
+        DontShowThisAgainLbl: Label 'Don''t show this again.';
+        RecordLinkMigrationDocumentationHyperlinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2013440', Locked = true;
+        WarnRecordLinkMigrationNotificationsTxt: Label 'Cloud Migration - Record Link Migration Warning';
+        WarnRecordLinkMigrationDescriptionTxt: Label 'Warning to the users to read the documentation before managing the record links during cloud migration.';
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
@@ -1458,6 +1464,19 @@ codeunit 4001 "Hybrid Cloud Management"
         AddWebhookSubscription(ServiceSubscriptionId, ServiceClientState);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnBeforeRunReplication', '', false, false)]
+    local procedure SaveTenantMediaCountOnBeforeRunReplication()
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        TenantMedia: Record "Tenant Media";
+    begin
+        if not HybridCompanyStatus.Get() then
+            HybridCompanyStatus.Insert();
+
+        HybridCompanyStatus."Tenant Media Count" := TenantMedia.Count() + 1;
+        HybridCompanyStatus.Modify();
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterRenameEvent', '', false, false)]
     local procedure HandleCompanyRename(var Rec: Record Company; var xRec: Record Company; RunTrigger: Boolean)
     var
@@ -1666,34 +1685,8 @@ codeunit 4001 "Hybrid Cloud Management"
 
         RecordLink.FindSet();
         repeat
-            MapRecordLinkUsers(RecordLink);
-            RecordLink.Modify();
             CreateRecordLinkMapping(RecordLink."Link ID", RecordLink."Link ID", RecordLink.Company);
         until RecordLink.Next() = 0;
-    end;
-
-    internal procedure UserMappingCompleted(): Boolean
-    var
-        HybridCompanyStatus: Record "Hybrid Company Status";
-    begin
-        if not HybridCompanyStatus.Get() then
-            exit(false);
-
-        exit(HybridCompanyStatus."User Mapping Completed");
-    end;
-
-    local procedure MapRecordLinkUsers(var RecordLink: Record "Record Link")
-    var
-        UserMappingWork: Record "User Mapping Work";
-    begin
-        if not UserMappingCompleted() then
-            exit;
-
-        if UserMappingWork.Get(RecordLink."User ID") then
-            RecordLink."User ID" := UserMappingWork."Dest User ID";
-
-        if UserMappingWork.Get(RecordLink."To User ID") then
-            RecordLink."To User ID" := UserMappingWork."Dest User ID";
     end;
 
     local procedure CreateRecordLinkMapping(SourceID: Integer; TargetID: Integer; Company: Text[30])
@@ -1725,7 +1718,6 @@ codeunit 4001 "Hybrid Cloud Management"
         ReplicationRecordLinkBuffer.CalcFields(Note);
         RecordLink.TransferFields(ReplicationRecordLinkBuffer, false);
         RecordLink."Link ID" := LinkId;
-        MapRecordLinkUsers(RecordLink);
         RecordLink.Insert();
         CreateRecordLinkMapping(ReplicationRecordLinkBuffer."Link ID", RecordLink."Link ID", RecordLink.Company);
         LinkId += 1;
@@ -2153,6 +2145,69 @@ codeunit 4001 "Hybrid Cloud Management"
     procedure CompaniesWarningNotificationLearnMore(Notification: Notification)
     begin
         Hyperlink(CompanyManagementDocumentationHyperlinkTxt);
+    end;
+
+    internal procedure SendRecordLinkMigrationNotification()
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        MyNotifications: Record "My Notifications";
+        ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
+        RecordLinkMigrationNotification: Notification;
+    begin
+        if ReplicationRecordLinkBuffer.IsEmpty then
+            exit;
+
+        if HybridCompanyStatus.Get() then
+            if HybridCompanyStatus."Record Link Move Completed" then
+                exit;
+
+        if MyNotifications.IsEnabled(GetRecordLinkMigrationNotificationId()) then begin
+            RecordLinkMigrationNotification.Id := GetRecordLinkMigrationNotificationId();
+            RecordLinkMigrationNotification.Message := RecordLinkMigrationIncompleteMsg;
+            RecordLinkMigrationNotification.Scope := NotificationScope::LocalScope;
+            RecordLinkMigrationNotification.AddAction(LearnMoreLbl, Codeunit::"Hybrid Cloud Management", 'RecordLinkMigrationLearnMore');
+            RecordLinkMigrationNotification.AddAction(DontShowThisAgainLbl, Codeunit::"Hybrid Cloud Management", 'DontShowRecordLinkMigrationNotification');
+            RecordLinkMigrationNotification.Send();
+        end;
+    end;
+
+    local procedure GetRecordLinkMigrationNotificationId(): Guid
+    begin
+        exit('9347db62-fa51-4499-8083-4167cb3b5d91');
+    end;
+
+    procedure RecordLinkMigrationLearnMore(Notification: Notification)
+    begin
+        Hyperlink(RecordLinkMigrationDocumentationHyperlinkTxt);
+    end;
+
+    procedure DontShowRecordLinkMigrationNotification(Notification: Notification)
+    var
+        MyNotifications: Record "My Notifications";
+    begin
+        if not MyNotifications.SetStatus(GetRecordLinkMigrationNotificationId(), false) then
+            MyNotifications.InsertDefault(GetRecordLinkMigrationNotificationId(), WarnRecordLinkMigrationNotificationsTxt, WarnRecordLinkMigrationDescriptionTxt, false);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::User, 'OnAfterRenameUser', '', false, false)]
+    local procedure RenameRecordLinkUsers(OldUserName: Code[50]; NewUserName: Code[50])
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        RecordLink: Record "Record Link";
+    begin
+        if not HybridCompanyStatus.Get() then
+            exit;
+
+        if not HybridCompanyStatus."Record Link Move Completed" then
+            exit;
+
+        RecordLink.SetRange("User ID", OldUserName);
+        RecordLink.ModifyAll("User ID", NewUserName);
+
+        RecordLink.Reset();
+
+        RecordLink.SetRange("To User ID", OldUserName);
+        RecordLink.ModifyAll("To User ID", NewUserName);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::Companies, 'OnOpenPageEvent', '', false, false)]

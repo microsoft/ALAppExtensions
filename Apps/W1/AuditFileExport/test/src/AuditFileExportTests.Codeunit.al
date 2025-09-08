@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.Finance.AuditFileExport;
+
+using Microsoft.Finance.AuditFileExport;
+using Microsoft.CRM.Contact;
+using Microsoft.Finance.GeneralLedger.Journal;
+using System.IO;
+using System.Utilities;
+
 codeunit 148035 "Audit File Export Tests"
 {
     Subtype = Test;
@@ -294,7 +307,9 @@ codeunit 148035 "Audit File Export Tests"
         BlobOutStream: OutStream;
     begin
         Clear(TempBlob);
+#pragma warning disable AA0210
         AuditFile.SetFilter("File Name", AuditFileName);
+#pragma warning restore AA0210
         AuditFile.FindFirst();
         AuditFile.CalcFields("File Content");
         AuditFile."File Content".CreateInStream(FileInStream);

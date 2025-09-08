@@ -2,6 +2,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.Shared.Error;
+
+using Microsoft.Shared.Error;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.Dimension;
+using System.TestLibraries.Utilities;
+using System.Utilities;
+
 codeunit 139622 ErrorMessageRecommendedAction
 {
     Subtype = Test;
@@ -266,6 +276,7 @@ codeunit 139622 ErrorMessageRecommendedAction
         DimensionSetEntry: Record "Dimension Set Entry";
         DefaultDimension: Record "Default Dimension";
         PurchaseOrderPage: TestPage "Purchase Order";
+        AddDimensionSetLbl: Label 'Add %1 dimension set', Comment = '%1 = Dimension Code', Locked = true;
     begin
         // [SCENARIO] Extended Error Message fields are valid when the user gets an error message to use same dimension code while posting purchase order
         Initialize();
@@ -288,9 +299,11 @@ codeunit 139622 ErrorMessageRecommendedAction
         Assert.IsSubstring(TempErrorMessageGlobalRec.Title, 'A dimension set is required');
 
         LibraryDimension.FindDefaultDimension(DefaultDimension, Database::Vendor, PurchaseHeader."Buy-from Vendor No.");
+#pragma warning disable AA0210
         DefaultDimension.SetRange("Value Posting", DefaultDimension."Value Posting"::"Same Code");
+#pragma warning restore AA0210
         DefaultDimension.FindFirst();
-        TempErrorMessageGlobalRec.TestField("Recommended Action Caption", StrSubstNo('Add %1 dimension set', DefaultDimension."Dimension Code"));
+        TempErrorMessageGlobalRec.TestField("Recommended Action Caption", StrSubstNo(AddDimensionSetLbl, DefaultDimension."Dimension Code"));
 
         LibraryDimension.FindDimensionSetEntry(DimensionSetEntry, PurchaseHeader."Dimension Set ID");
         TempErrorMessageGlobalRec.TestField("Sub-Context Record ID", DimensionSetEntry.RecordId);

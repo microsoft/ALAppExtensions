@@ -98,6 +98,7 @@ codeunit 139631 "E-Doc. Flow Test"
         WorkflowStepArgument: Record "Workflow Step Argument";
         WorkflowStepInstance: Record "Workflow Step Instance";
         EDocWorkflowProcessing: Codeunit "E-Document WorkFlow Processing";
+        RecordRef: RecordRef;
         CustomerNo, DocSendProfileNo : Code[20];
     begin
         // [FEATURE] [E-Document] [Flow]
@@ -119,7 +120,8 @@ codeunit 139631 "E-Doc. Flow Test"
         // [THEN] An error message has been logged for the e-document
         ErrorMessage.DeleteAll();
         LibraryLowerPermission.SetTeamMember();
-        EDocWorkflowProcessing.SendEDocument(EDocument, WorkflowStepInstance);
+        RecordRef.GetTable(EDocument);
+        EDocWorkflowProcessing.SendEDocument(RecordRef, WorkflowStepInstance);
         Assert.IsFalse(ErrorMessage.IsEmpty(), WrongValueErr);
         ErrorMessage.FindLast();
         Assert.AreEqual(NoWorkflowArgumentErr, ErrorMessage.Message, WrongValueErr);

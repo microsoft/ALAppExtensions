@@ -20,6 +20,7 @@ codeunit 11587 "Create CH Bank Ex/Import"
         ContosoBank.ContosoBankExportImportSetup(SEPACAMT054(), SEPACAMT054Tok, 1, Codeunit::"Exp. Launcher Gen. Jnl.", 0, CreateCHDataExchange.CEPACAMT054(), true, 0);
         ContosoBank.ContosoBankExportImportSetup(SEPACAMT05302(), SEPACAMT05302Tok, 1, Codeunit::"Exp. Launcher Gen. Jnl.", 0, CreateCHDataExchange.CEPACAMT05302(), true, 0);
         ContosoBank.ContosoBankExportImportSetup(SEPACAMT05304(), SEPACAMT05304Tok, 1, Codeunit::"Exp. Launcher Gen. Jnl.", 0, CreateCHDataExchange.CEPACAMT05304(), true, 0);
+        ContosoBank.ContosoBankExportImportSetup(SEPACAMT05308(), SEPACAMT05308Tok, 1, Codeunit::"Exp. Launcher Gen. Jnl.", 0, CreateCHDataExchange.CEPACAMT05308CH(), true, 0);
 
         ContosoBank.ContosoBankExportImportSetup(SEPASwiss(), SEPASwissLbl, 0, Codeunit::"Swiss SEPA CT-Export File", Xmlport::"SEPA CT pain.001.001.03", '', false, Codeunit::"SEPA CT-Check Line");
         ContosoBank.ContosoBankExportImportSetup(SEPACTPAIN00100109(), SEPACTPAIN00100109Lbl, 0, Codeunit::"SEPA CT-Export File", Xmlport::"SEPA CT pain.001.001.09", '', false, Codeunit::"SEPA CT-Check Line");
@@ -43,6 +44,11 @@ codeunit 11587 "Create CH Bank Ex/Import"
     procedure SEPACAMT05304(): Code[20]
     begin
         exit(SEPACAMT05304Tok);
+    end;
+
+    procedure SEPACAMT05308(): Code[20]
+    begin
+        exit(SEPACAMT05308Tok);
     end;
 
     procedure SEPASwiss(): Code[20]
@@ -79,6 +85,7 @@ codeunit 11587 "Create CH Bank Ex/Import"
         SEPACAMT054Tok: Label 'SEPA CAMT 054', MaxLength = 20;
         SEPACAMT05302Tok: Label 'SEPA CAMT 053-02', MaxLength = 20;
         SEPACAMT05304Tok: Label 'SEPA CAMT 053-04', MaxLength = 20;
+        SEPACAMT05308Tok: Label 'SEPA CAMT 053-08-CH', MaxLength = 20;
         SEPASwissTok: Label 'SEPA SWISS', MaxLength = 20;
         SEPASwissLbl: Label 'Swiss SEPA Credit Transfer', MaxLength = 100;
         SEPACTPAIN00100109Tok: Label 'SEPACTPAIN00100109', MaxLength = 20;

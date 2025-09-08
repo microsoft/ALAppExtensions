@@ -27,6 +27,11 @@ codeunit 4589 "SOA Upgrade"
         AddBillingTypeToCapability();
     end;
 
+    trigger OnUpgradePerCompany()
+    begin
+        AddDailyEmailLimit();
+    end;
+
     local procedure RegisterCapability()
     var
         UpgradeTag: Codeunit "Upgrade Tag";
@@ -54,6 +59,21 @@ codeunit 4589 "SOA Upgrade"
         end;
     end;
 
+    local procedure AddDailyEmailLimit()
+    var
+        SOASetup: Record "SOA Setup";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if not UpgradeTag.HasUpgradeTag(GetSetDailyEmailLimitTag()) then begin
+            if SOASetup.FindFirst() then begin
+                SOASetup."Message Limit" := SOASetup.GetDefaultMessageLimit();
+                SOASetup.Modify();
+            end;
+
+            UpgradeTag.SetUpgradeTag(GetSetDailyEmailLimitTag());
+        end;
+    end;
+
     internal procedure GetRegisterSalesOrderAgentCapabilityTag(): Code[250]
     begin
         exit('MS-539550-SalesOrderAgentCapability-20240802');
@@ -62,6 +82,11 @@ codeunit 4589 "SOA Upgrade"
     internal procedure GetAddBillingTypeToSOACapabilityTag(): Code[250]
     begin
         exit('MS-581366-BillingTypeToSalesOrderAgentCapability-20250731');
+    end;
+
+    internal procedure GetSetDailyEmailLimitTag(): Code[250]
+    begin
+        exit('MS-597734-DailyEmailLimit-20250822');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", OnGetPerDatabaseUpgradeTags, '', false, false)]

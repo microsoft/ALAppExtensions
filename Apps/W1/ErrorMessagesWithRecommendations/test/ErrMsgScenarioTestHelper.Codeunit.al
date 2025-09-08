@@ -2,6 +2,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.Shared.Error;
+
+using System.Utilities;
+using Microsoft.Purchases.Document;
+using Microsoft.Finance.Dimension;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+
 codeunit 139620 ErrMsgScenarioTestHelper
 {
     Access = Internal;

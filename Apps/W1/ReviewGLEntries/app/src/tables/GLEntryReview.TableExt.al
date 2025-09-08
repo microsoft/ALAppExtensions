@@ -1,6 +1,7 @@
 namespace Microsoft.Finance.GeneralLedger.Review;
 
 using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Account;
 
 tableextension 22211 "G/L Entry Review" extends "G/L Entry"
 {
@@ -48,5 +49,13 @@ tableextension 22211 "G/L Entry Review" extends "G/L Entry"
             DataClassification = CustomerContent;
             ToolTip = 'Specifies the amount that will be reviewed.';
         }
+        field(22219; "Review Policy"; Enum "Review Policy Type")
+        {
+            Caption = 'Review Policy';
+            FieldClass = FlowField;
+            CalcFormula = lookup("G/L Account"."Review Policy" where("No." = field("G/L Account No.")));
+            ToolTip = 'Specifies the review policy for the G/L Account.';
+        }
+
     }
 }

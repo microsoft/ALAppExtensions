@@ -37,7 +37,6 @@ table 6090 "FA Ledg. Entry w. Issue"
         {
             Caption = 'Posting Date';
         }
-
         field(6; "Document Type"; Enum "Gen. Journal Document Type")
         {
             Caption = 'Document Type';
@@ -60,8 +59,9 @@ table 6090 "FA Ledg. Entry w. Issue"
         }
         field(14; Amount; Decimal)
         {
-            AutoFormatType = 1;
             Caption = 'Amount';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(6090; Corrected; Boolean)
         {

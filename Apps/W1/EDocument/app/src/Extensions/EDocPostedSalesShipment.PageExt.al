@@ -40,7 +40,7 @@ pageextension 6103 "E-Doc. Posted Sales Shipment" extends "Posted Sales Shipment
                     var
                         EDocumentProcessing: Codeunit "E-Document Processing";
                     begin
-                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Sales Invoice") then
+                        if EDocumentProcessing.CreateEDocumentFromPostedDocumentPage(Rec, Enum::"E-Document Type"::"Sales Shipment") then
                             Message(EDocumentCreatedMsg);
                     end;
                 }

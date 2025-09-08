@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Test.Finance.Analysis;
+
+using Microsoft.Finance.Analysis;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 codeunit 134196 "Payment Practices Library"
 {
     Subtype = Test;
@@ -133,8 +143,10 @@ codeunit 134196 "Payment Practices Library"
         PaymentPracticeLine: Record "Payment Practice Line";
     begin
         PaymentPracticeLine.SetRange("Header No.", PaymentPracticeHeaderNo);
+#pragma warning disable AA0210
         PaymentPracticeLine.SetRange("Payment Period Code", PaymentPeriodCode);
         PaymentPracticeLine.SetRange("Source Type", SourceType);
+#pragma warning restore AA0210
         PaymentPracticeLine.FindFirst();
         Assert.AreNearlyEqual(PctInPeriodExpected, PaymentPracticeLine."Pct Paid in Period", 0.1, '"Pct Paid in Period" is not as expected');
         Assert.AreNearlyEqual(PctInPeriodAmountExpected, PaymentPracticeLine."Pct Paid in Period (Amount)", 0.1, '"Pct Paid in Period (Amount)" is not as expected');

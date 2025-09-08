@@ -110,6 +110,9 @@ page 6221 "Sustainability Setup"
             group("Number Series")
             {
                 Caption = 'Number Series';
+                field("ESG Standard Reporting Nos."; Rec."ESG Standard Reporting Nos.")
+                {
+                }
                 field("Posted ESG Reporting Nos."; Rec."Posted ESG Reporting Nos.")
                 {
                 }

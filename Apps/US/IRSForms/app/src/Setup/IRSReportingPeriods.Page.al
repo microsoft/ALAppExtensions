@@ -164,13 +164,4 @@ page 10031 "IRS Reporting Periods"
             }
         }
     }
-
-#if not CLEAN25
-    trigger OnOpenPage()
-    var
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-    begin
-        CurrPage.Editable := IRSFormsFeature.FeatureCanBeUsed();
-    end;
-#endif
 }

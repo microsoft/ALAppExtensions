@@ -46,6 +46,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         table "E-Documents Setup" = X,
         table "E-Document Line - Field" = X,
         table "ED Purchase Line Field Setup" = X,
+        table "EDoc Historical Matching Setup" = X,
         codeunit "E-Document Import Job" = X,
         codeunit "E-Doc. Integration Management" = X,
         codeunit "E-Doc. Mapping" = X,

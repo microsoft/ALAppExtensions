@@ -41,14 +41,14 @@ page 6090 "FA Ledger Entries Issues"
                     ApplicationArea = FixedAssets;
                     ToolTip = 'Specifies the number of the related fixed asset. ';
                 }
-
-
                 field(OriginalAmount; OriginalAmount)
                 {
                     ApplicationArea = FixedAssets;
                     ToolTip = 'Specifies the entry amount in currency.';
                     DecimalPlaces = 0 : 15;
                     Caption = 'Amount';
+                    AutoFormatType = 1;
+                    AutoFormatExpression = '';
                 }
                 field(Amount; Rec.Amount)
                 {
@@ -62,9 +62,8 @@ page 6090 "FA Ledger Entries Issues"
                     ToolTip = 'Specifies the entry rounding';
                     DecimalPlaces = 0 : 15;
                     Caption = 'Rounding';
-
+                    AutoFormatType = 0;
                 }
-
                 field("FA Posting Type"; Rec."FA Posting Type")
                 {
                     ApplicationArea = FixedAssets;

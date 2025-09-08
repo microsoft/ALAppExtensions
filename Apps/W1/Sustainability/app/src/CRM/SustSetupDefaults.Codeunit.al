@@ -28,6 +28,10 @@ codeunit 6277 "Sust. Setup Defaults"
         ESGAssessmentTableMappingNameLbl: Label 'ESGNAME-ASSESS', Locked = true;
         ESGAssessmentRequirementTableMappingNameLbl: Label 'ESGLINE-ASSESS', Locked = true;
         ESGPostedFactTableMappingNameLbl: Label 'ESGPOSTED-FACT', Locked = true;
+        ESGRangePeriodTableMappingNameLbl: Label 'ESGRANGE-PERIOD', Locked = true;
+        ESGStandardRequirementTableMappingNameLbl: Label 'ESGSTANDARD-REQ', Locked = true;
+        ESGConceptTableMappingNameLbl: Label 'ESG-CONCEPT', Locked = true;
+        ESGRequirementConceptTableMappingNameLbl: Label 'ESGREQ-CONCEPT', Locked = true;
 
     internal procedure ResetConfiguration(var SustainabilitySetup: Record "Sustainability Setup")
     var
@@ -41,8 +45,12 @@ codeunit 6277 "Sust. Setup Defaults"
         CDSIntegrationMgt.ActivateConnection();
 
         ResetESGStandardMapping(ESGStandardTableMappingNameLbl, true);
+        ResetESGRangePeriodMapping(ESGRangePeriodTableMappingNameLbl, true);
         ResetESGReportingUnitMapping(ESGReportingUnitTableMappingNameLbl, true);
         ResetESGReportingNameAssessmentMapping(ESGAssessmentTableMappingNameLbl, true);
+        ResetESGStandardRequirementMapping(ESGStandardRequirementTableMappingNameLbl, true);
+        ResetESGConceptMapping(ESGConceptTableMappingNameLbl, true);
+        ResetESGRequirementConceptMapping(ESGRequirementConceptTableMappingNameLbl, true);
         ResetESGReportingLineAssessmentRequirementMapping(ESGAssessmentRequirementTableMappingNameLbl, true);
         ResetPostedESGReportingLineESGFactMapping(ESGPostedFactTableMappingNameLbl, true);
     end;
@@ -69,15 +77,73 @@ codeunit 6277 "Sust. Setup Defaults"
 
         InsertIntegrationFieldMapping(
             IntegrationTableMappingName,
-            ESGStandard.FieldNo("No."),
+            ESGStandard.FieldNo(Description),
             SustStandard.FieldNo(Name),
             IntegrationFieldMapping.Direction::FromIntegrationTable,
             '', true, false);
 
         InsertIntegrationFieldMapping(
             IntegrationTableMappingName,
-            ESGStandard.FieldNo(Description),
-            SustStandard.FieldNo(Name),
+            ESGStandard.FieldNo("Standard ID"),
+            SustStandard.FieldNo(StandardId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 5);
+    end;
+
+    internal procedure ResetESGRangePeriodMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        SustRangePeriod: Record "Sust. Range Period";
+        ESGRangePeriod: Record "Sust. ESG Range Period";
+    begin
+        SustRangePeriod.Reset();
+        SustRangePeriod.SetRange(StateCode, SustRangePeriod.StateCode::Active);
+
+        InsertIntegrationTableMapping(
+            IntegrationTableMapping, IntegrationTableMappingName,
+            Database::"Sust. ESG Range Period", Database::"Sust. Range Period",
+            SustRangePeriod.FieldNo(RangePeriodId), SustRangePeriod.FieldNo(ModifiedOn),
+            '', '', false);
+
+        IntegrationTableMapping.SetIntegrationTableFilter(GetTableFilterFromView(Database::"Sust. Range Period", SustRangePeriod.TableCaption(), SustRangePeriod.GetView()));
+        IntegrationTableMapping.SetTableFilter(GetTableFilterFromView(Database::"Sust. ESG Range Period", ESGRangePeriod.TableCaption(), ESGRangePeriod.GetView()));
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRangePeriod.FieldNo("No."),
+            SustRangePeriod.FieldNo(RangePeriodId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRangePeriod.FieldNo(Description),
+            SustRangePeriod.FieldNo(Name),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRangePeriod.FieldNo("Period Starting Date"),
+            SustRangePeriod.FieldNo(From),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRangePeriod.FieldNo("Period Ending Date"),
+            SustRangePeriod.FieldNo("To"),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRangePeriod.FieldNo("Range Period ID"),
+            SustRangePeriod.FieldNo(RangePeriodId),
             IntegrationFieldMapping.Direction::FromIntegrationTable,
             '', true, false);
 
@@ -132,6 +198,13 @@ codeunit 6277 "Sust. Setup Defaults"
             IntegrationFieldMapping.Direction::FromIntegrationTable,
             '', true, false);
 
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGReportingUnit.FieldNo("Unit ID"),
+            SustUnit.FieldNo(UnitId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
         RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 5);
     end;
 
@@ -183,8 +256,22 @@ codeunit 6277 "Sust. Setup Defaults"
 
         InsertIntegrationFieldMapping(
             IntegrationTableMappingName,
+            ESGReportingName.FieldNo("Standard ID"),
+            SustAssessment.FieldNo(Standard),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
             ESGReportingName.FieldNo(Standard),
             SustAssessment.FieldNo(Standard),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGReportingName.FieldNo("Range Period ID"),
+            SustAssessment.FieldNo(Period),
             IntegrationFieldMapping.Direction::FromIntegrationTable,
             '', true, false);
 
@@ -206,6 +293,173 @@ codeunit 6277 "Sust. Setup Defaults"
             IntegrationTableMappingName,
             ESGReportingName.FieldNo("Period Ending Date"),
             SustAssessment.FieldNo(Period),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGReportingName.FieldNo("Assessment ID"),
+            SustAssessment.FieldNo(AssessmentId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 5);
+    end;
+
+    internal procedure ResetESGStandardRequirementMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        SustStandardRequirement: Record "Sust. Standard Requirement";
+        ESGStandardRequirement: Record "Sust. ESG Standard Requirement";
+    begin
+        SustStandardRequirement.Reset();
+        SustStandardRequirement.SetRange(StateCode, SustStandardRequirement.StateCode::Active);
+
+        InsertIntegrationTableMapping(
+            IntegrationTableMapping, IntegrationTableMappingName,
+            Database::"Sust. ESG Standard Requirement", Database::"Sust. Standard Requirement",
+            SustStandardRequirement.FieldNo(StandardRequirementId), SustStandardRequirement.FieldNo(ModifiedOn),
+            '', '', false);
+
+        IntegrationTableMapping.SetIntegrationTableFilter(GetTableFilterFromView(Database::"Sust. Standard Requirement", SustStandardRequirement.TableCaption(), SustStandardRequirement.GetView()));
+        IntegrationTableMapping.SetTableFilter(GetTableFilterFromView(Database::"Sust. ESG Standard Requirement", ESGStandardRequirement.TableCaption(), ESGStandardRequirement.GetView()));
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGStandardRequirement.FieldNo("No."),
+            SustStandardRequirement.FieldNo(StandardRequirementId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGStandardRequirement.FieldNo(Description),
+            SustStandardRequirement.FieldNo(Description),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGStandardRequirement.FieldNo(Name),
+            SustStandardRequirement.FieldNo(Name),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGStandardRequirement.FieldNo("Parent Std. Requirement ID"),
+            SustStandardRequirement.FieldNo(ParentStdRequirementId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGStandardRequirement.FieldNo("Standard Requirement ID"),
+            SustStandardRequirement.FieldNo(StandardRequirementId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 5);
+    end;
+
+    internal procedure ResetESGConceptMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        SustConcept: Record "Sust. Concept";
+        ESGConcept: Record "Sust. ESG Concept";
+    begin
+        SustConcept.Reset();
+        SustConcept.SetRange(StateCode, SustConcept.StateCode::Active);
+
+        InsertIntegrationTableMapping(
+            IntegrationTableMapping, IntegrationTableMappingName,
+            Database::"Sust. ESG Concept", Database::"Sust. Concept",
+            SustConcept.FieldNo(ConceptId), SustConcept.FieldNo(ModifiedOn),
+            '', '', false);
+
+        IntegrationTableMapping.SetIntegrationTableFilter(GetTableFilterFromView(Database::"Sust. Concept", SustConcept.TableCaption(), SustConcept.GetView()));
+        IntegrationTableMapping.SetTableFilter(GetTableFilterFromView(Database::"Sust. ESG Concept", ESGConcept.TableCaption(), ESGConcept.GetView()));
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGConcept.FieldNo("No."),
+            SustConcept.FieldNo(ConceptId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGConcept.FieldNo(Description),
+            SustConcept.FieldNo(Name),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGConcept.FieldNo("Concept ID"),
+            SustConcept.FieldNo(ConceptId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 5);
+    end;
+
+    internal procedure ResetESGRequirementConceptMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        SustRequirementConcept: Record "Sust. Requirement Concept";
+        ESGRequirementConcept: Record "Sust. ESG Requirement Concept";
+    begin
+        SustRequirementConcept.Reset();
+        SustRequirementConcept.SetRange(StateCode, SustRequirementConcept.StateCode::Active);
+
+        InsertIntegrationTableMapping(
+            IntegrationTableMapping, IntegrationTableMappingName,
+            Database::"Sust. ESG Requirement Concept", Database::"Sust. Requirement Concept",
+            SustRequirementConcept.FieldNo(RequirementConceptId), SustRequirementConcept.FieldNo(ModifiedOn),
+            '', '', false);
+
+        IntegrationTableMapping.SetIntegrationTableFilter(GetTableFilterFromView(Database::"Sust. Requirement Concept", SustRequirementConcept.TableCaption(), SustRequirementConcept.GetView()));
+        IntegrationTableMapping.SetTableFilter(GetTableFilterFromView(Database::"Sust. ESG Requirement Concept", ESGRequirementConcept.TableCaption(), ESGRequirementConcept.GetView()));
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRequirementConcept.FieldNo("No."),
+            SustRequirementConcept.FieldNo(RequirementConceptId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRequirementConcept.FieldNo(Description),
+            SustRequirementConcept.FieldNo(Name),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRequirementConcept.FieldNo("Standard Requirement ID"),
+            SustRequirementConcept.FieldNo(StandardRequirement),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRequirementConcept.FieldNo("Concept ID"),
+            SustRequirementConcept.FieldNo(ConceptId),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGRequirementConcept.FieldNo("Requirement Concept ID"),
+            SustRequirementConcept.FieldNo(RequirementConceptId),
             IntegrationFieldMapping.Direction::FromIntegrationTable,
             '', true, false);
 
@@ -231,6 +485,7 @@ codeunit 6277 "Sust. Setup Defaults"
 
         IntegrationTableMapping.SetIntegrationTableFilter(GetTableFilterFromView(Database::"Sust. Assessment Requirement", SustAssessmentRequirement.TableCaption(), SustAssessmentRequirement.GetView()));
         IntegrationTableMapping.SetTableFilter(GetTableFilterFromView(Database::"Sust. ESG Reporting Line", ESGReportingLine.TableCaption(), ESGReportingLine.GetView()));
+        IntegrationTableMapping."Dependency Filter" := ESGStandardTableMappingNameLbl + '|' + ESGConceptTableMappingNameLbl + '|' + ESGStandardRequirementTableMappingNameLbl + '|' + ESGRequirementConceptTableMappingNameLbl;
         IntegrationTableMapping.Modify();
 
         InsertIntegrationFieldMapping(
@@ -239,6 +494,13 @@ codeunit 6277 "Sust. Setup Defaults"
             0,
             IntegrationFieldMapping.Direction::FromIntegrationTable,
             ESGReportingManagement.GetESGDefaultTemplate(), true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGReportingLine.FieldNo("Assessment ID"),
+            SustAssessmentRequirement.FieldNo(Assessment),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
 
         InsertIntegrationFieldMapping(
             IntegrationTableMappingName,
@@ -251,6 +513,20 @@ codeunit 6277 "Sust. Setup Defaults"
             IntegrationTableMappingName,
             ESGReportingLine.FieldNo("Reporting Code"),
             SustAssessmentRequirement.FieldNo(Name),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGReportingLine.FieldNo("Standard Requirement ID"),
+            SustAssessmentRequirement.FieldNo(StandardRequirement),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGReportingLine.FieldNo("Parent Standard Requirement ID"),
+            SustAssessmentRequirement.FieldNo(StandardRequirement),
             IntegrationFieldMapping.Direction::FromIntegrationTable,
             '', true, false);
 
@@ -270,6 +546,20 @@ codeunit 6277 "Sust. Setup Defaults"
 
         InsertIntegrationFieldMapping(
             IntegrationTableMappingName,
+            ESGReportingLine.FieldNo("Requirement Concept ID"),
+            SustAssessmentRequirement.FieldNo(StandardRequirement),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGReportingLine.FieldNo("Concept ID"),
+            SustAssessmentRequirement.FieldNo(StandardRequirement),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
             ESGReportingLine.FieldNo("Concept Link"),
             SustAssessmentRequirement.FieldNo(StandardRequirement),
             IntegrationFieldMapping.Direction::FromIntegrationTable,
@@ -279,6 +569,13 @@ codeunit 6277 "Sust. Setup Defaults"
             IntegrationTableMappingName,
             ESGReportingLine.FieldNo(Concept),
             SustAssessmentRequirement.FieldNo(StandardRequirement),
+            IntegrationFieldMapping.Direction::FromIntegrationTable,
+            '', true, false);
+
+        InsertIntegrationFieldMapping(
+            IntegrationTableMappingName,
+            ESGReportingLine.FieldNo("Assessment Requirement ID"),
+            SustAssessmentRequirement.FieldNo(AssessmentRequirementId),
             IntegrationFieldMapping.Direction::FromIntegrationTable,
             '', true, false);
 
@@ -320,7 +617,7 @@ codeunit 6277 "Sust. Setup Defaults"
 
         InsertIntegrationFieldMapping(
             IntegrationTableMappingName,
-            PostedESGReportingLine.FieldNo(Concept),
+            PostedESGReportingLine.FieldNo("Concept ID"),
             ESGFact.FieldNo(Concept),
             IntegrationFieldMapping.Direction::ToIntegrationTable,
             '', true, false);
@@ -488,10 +785,18 @@ codeunit 6277 "Sust. Setup Defaults"
         case BCTableNo of
             Database::"Sust. ESG Standard":
                 CDSTableNo := Database::"Sust. Standard";
+            Database::"Sust. ESG Range Period":
+                CDSTableNo := Database::"Sust. Range Period";
             Database::"Sust. ESG Reporting Unit":
                 CDSTableNo := Database::"Sust. Unit";
             Database::"Sust. ESG Reporting Name":
                 CDSTableNo := Database::"Sust. Assessment";
+            Database::"Sust. ESG Standard Requirement":
+                CDSTableNo := Database::"Sust. Standard Requirement";
+            Database::"Sust. ESG Concept":
+                CDSTableNo := Database::"Sust. Concept";
+            Database::"Sust. ESG Requirement Concept":
+                CDSTableNo := Database::"Sust. Requirement Concept";
             Database::"Sust. ESG Reporting Line":
                 CDSTableNo := Database::"Sust. Assessment Requirement";
             Database::"Sust. Posted ESG Report Line":
@@ -513,10 +818,18 @@ codeunit 6277 "Sust. Setup Defaults"
 
         CRMSetupDefaults.AddEntityTableMapping('msdyn_standard', Database::"Sust. ESG Standard", TempNameValueBuffer);
         CRMSetupDefaults.AddEntityTableMapping('msdyn_standard', Database::"Sust. Standard", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_rangeperiod', Database::"Sust. ESG Range Period", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_rangeperiod', Database::"Sust. Range Period", TempNameValueBuffer);
         CRMSetupDefaults.AddEntityTableMapping('msdyn_unit', Database::"Sust. ESG Reporting Unit", TempNameValueBuffer);
         CRMSetupDefaults.AddEntityTableMapping('msdyn_unit', Database::"Sust. Unit", TempNameValueBuffer);
         CRMSetupDefaults.AddEntityTableMapping('msdyn_assessment', Database::"Sust. ESG Reporting Name", TempNameValueBuffer);
         CRMSetupDefaults.AddEntityTableMapping('msdyn_assessment', Database::"Sust. Assessment", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_standardrequirement', Database::"Sust. ESG Standard Requirement", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_standardrequirement', Database::"Sust. Standard Requirement", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_concept', Database::"Sust. ESG Concept", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_concept', Database::"Sust. Concept", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_requirementconcept', Database::"Sust. ESG Requirement Concept", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_requirementconcept', Database::"Sust. Requirement Concept", TempNameValueBuffer);
         CRMSetupDefaults.AddEntityTableMapping('msdyn_assessmentrequirement', Database::"Sust. ESG Reporting Line", TempNameValueBuffer);
         CRMSetupDefaults.AddEntityTableMapping('msdyn_assessmentrequirement', Database::"Sust. Assessment Requirement", TempNameValueBuffer);
         CRMSetupDefaults.AddEntityTableMapping('msdyn_esgfact', Database::"Sust. Posted ESG Report Line", TempNameValueBuffer);
@@ -540,6 +853,11 @@ codeunit 6277 "Sust. Setup Defaults"
         PostedESGReportingLine: Record "Sust. Posted ESG Report Line";
         ESGFact: Record "Sust. ESG Fact";
         SustainabilitySetup: Record "Sustainability Setup";
+        ESGRangePeriod: Record "Sust. ESG Range Period";
+        ESGStandardRequirement: Record "Sust. ESG Standard Requirement";
+        Concept: Record "Sust. Concept";
+        ESGConcept: Record "Sust. ESG Concept";
+        ESGRequirementConcept: Record "Sust. ESG Requirement Concept";
     begin
         if not SustainabilitySetup.IsDataverseIntegrationEnabled() then
             exit;
@@ -557,16 +875,26 @@ codeunit 6277 "Sust. Setup Defaults"
                 FieldNo := ReportingUnit.FieldNo(Code);
             Database::"Sust. Unit":
                 FieldNo := Unit.FieldNo(Name);
+            Database::"Sust. ESG Range Period":
+                FieldNo := ESGRangePeriod.FieldNo(Description);
             Database::"Sust. Range Period":
                 FieldNo := RangePeriod.FieldNo(Name);
             Database::"Sust. ESG Reporting Line":
                 FieldNo := ESGReportingLine.FieldNo("ESG Reporting Name");
             Database::"Sust. Assessment Requirement":
                 FieldNo := AssessmentRequirement.FieldNo(Name);
+            Database::"Sust. ESG Standard Requirement":
+                FieldNo := ESGStandardRequirement.FieldNo(Name);
             Database::"Sust. Standard Requirement":
                 FieldNo := StandardRequirement.FieldNo(Name);
+            Database::"Sust. ESG Concept":
+                FieldNo := ESGConcept.FieldNo(Description);
+            Database::"Sust. Concept":
+                FieldNo := Concept.FieldNo(Name);
             Database::"Sust. Requirement Concept":
                 FieldNo := RequirementConcept.FieldNo(Name);
+            Database::"Sust. ESG Requirement Concept":
+                FieldNo := ESGRequirementConcept.FieldNo(Description);
             Database::"Sust. Posted ESG Report Line":
                 FieldNo := PostedESGReportingLine.FieldNo("Document No.");
             Database::"Sust. ESG Fact":
@@ -579,7 +907,10 @@ codeunit 6277 "Sust. Setup Defaults"
         IntegrationTableMapping: Record "Integration Table Mapping";
     begin
         case NAVTableID of
-            Database::"Sust. ESG Reporting Name", Database::"Sust. ESG Reporting Line", Database::"Sust. ESG Standard", Database::"Sust. ESG Reporting Unit":
+            Database::"Sust. ESG Reporting Name", Database::"Sust. ESG Reporting Line",
+            Database::"Sust. ESG Standard", Database::"Sust. ESG Reporting Unit",
+            Database::"Sust. ESG Range Period", Database::"Sust. ESG Standard Requirement",
+            Database::"Sust. ESG Concept", Database::"Sust. ESG Requirement Concept":
                 exit(IntegrationTableMapping.Direction::FromIntegrationTable);
             Database::"Sust. Posted ESG Report Line":
                 exit(IntegrationTableMapping.Direction::ToIntegrationTable);
@@ -613,6 +944,11 @@ codeunit 6277 "Sust. Setup Defaults"
                     ResetESGStandardMapping(ESGStandardTableMappingNameLbl, true);
                     IsHandled := true;
                 end;
+            ESGRangePeriodTableMappingNameLbl:
+                begin
+                    ResetESGRangePeriodMapping(ESGRangePeriodTableMappingNameLbl, true);
+                    IsHandled := true;
+                end;
             ESGReportingUnitTableMappingNameLbl:
                 begin
                     ResetESGReportingUnitMapping(ESGReportingUnitTableMappingNameLbl, true);
@@ -621,6 +957,21 @@ codeunit 6277 "Sust. Setup Defaults"
             ESGAssessmentTableMappingNameLbl:
                 begin
                     ResetESGReportingNameAssessmentMapping(ESGAssessmentTableMappingNameLbl, true);
+                    IsHandled := true;
+                end;
+            ESGStandardRequirementTableMappingNameLbl:
+                begin
+                    ResetESGStandardRequirementMapping(ESGStandardRequirementTableMappingNameLbl, true);
+                    IsHandled := true;
+                end;
+            ESGConceptTableMappingNameLbl:
+                begin
+                    ResetESGConceptMapping(ESGConceptTableMappingNameLbl, true);
+                    IsHandled := true;
+                end;
+            ESGRequirementConceptTableMappingNameLbl:
+                begin
+                    ResetESGRequirementConceptMapping(ESGRequirementConceptTableMappingNameLbl, true);
                     IsHandled := true;
                 end;
             ESGAssessmentRequirementTableMappingNameLbl:
