@@ -59,7 +59,12 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL PJEQRate" = R,
                   tabledata "SL PJEquip" = R,
                   tabledata "SL PJPent" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL PJProj" = R,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL PJProj Buffer" = R,
                   tabledata "SL POAddress" = R,
                   tabledata "SL POReceipt" = R,
                   tabledata "SL POSetup" = R,

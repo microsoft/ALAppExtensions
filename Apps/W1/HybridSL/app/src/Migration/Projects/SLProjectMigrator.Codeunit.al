@@ -254,11 +254,11 @@ codeunit 47006 "SL Project Migrator"
                 Job.Validate("Bill-to Contact", SLPJAddr.individual);
             end;
 
-            if SLPJProj.start_date.Year = 1900 then
+            if SLPJProj.start_date.Year <= 1900 then
                 Job."Starting Date" := 0D
             else
                 Job."Starting Date" := SLPJProj.start_date;
-            if SLPJProj.end_date.Year = 1900 then
+            if SLPJProj.end_date.Year <= 1900 then
                 Job."Ending Date" := 0D
             else
                 Job."Ending Date" := SLPJProj.end_date;

@@ -59,7 +59,12 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL PJEQRate" = X,
                   table "SL PJEquip" = X,
                   table "SL PJPent" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL PJProj" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL PJProj Buffer" = X,
                   table "SL POAddress" = X,
                   table "SL POReceipt" = X,
                   table "SL POSetup" = X,
