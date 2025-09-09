@@ -66,27 +66,61 @@ table 6241 "Sust. Excise Taxes Trans. Log"
             Caption = 'Document No.';
             NotBlank = true;
         }
+#if not CLEANSCHEMA29
         field(16; "Account No."; Code[20])
         {
             Caption = 'Account No.';
             TableRelation = "Sustainability Account" where("Account Type" = const(Posting), Blocked = const(false));
+            ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
         }
         field(17; "Account Name"; Text[100])
         {
             Caption = 'Account Name';
             DataClassification = CustomerContent;
+            ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
         }
         field(18; "Account Category"; Code[20])
         {
             Caption = 'Account Category';
             Editable = false;
             TableRelation = "Sustain. Account Category";
+            ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
         }
         field(19; "Account Subcategory"; Code[20])
         {
             Caption = 'Account Subcategory';
             TableRelation = "Sustain. Account Subcategory".Code where("Category Code" = field("Account Category"));
+            ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
         }
+#endif
         field(20; Description; Text[100])
         {
             Caption = 'Description';
@@ -332,10 +366,6 @@ table 6241 "Sust. Excise Taxes Trans. Log"
         Rec."Posting Date" := SustainabilityExciseJnlLine."Posting Date";
         Rec."Document Type" := SustainabilityExciseJnlLine."Document Type";
         Rec."Document No." := SustainabilityExciseJnlLine."Document No.";
-        Rec."Account No." := SustainabilityExciseJnlLine."Account No.";
-        Rec."Account Name" := SustainabilityExciseJnlLine."Account Name";
-        Rec."Account Category" := SustainabilityExciseJnlLine."Account Category";
-        Rec."Account Subcategory" := SustainabilityExciseJnlLine."Account Subcategory";
         Rec.Description := SustainabilityExciseJnlLine.Description;
         Rec."Partner Type" := SustainabilityExciseJnlLine."Partner Type";
         Rec."Partner No." := SustainabilityExciseJnlLine."Partner No.";

@@ -148,6 +148,8 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
 
                 if CurrFieldNo <> Rec.FieldNo("Emission CH4 Per Unit") then
                     UpdateEmissionPerUnit(Rec);
+
+                UpdateCarbonPricingInPurchLine(Rec);
             end;
         }
         field(6218; "Emission CH4"; Decimal)
@@ -164,6 +166,8 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Emission CH4"));
 
                 UpdateEmissionPerUnit(Rec);
+
+                UpdateCarbonPricingInPurchLine(Rec);
             end;
         }
         field(6219; "Emission N2O"; Decimal)
@@ -180,6 +184,8 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Emission N2O"));
 
                 UpdateEmissionPerUnit(Rec);
+
+                UpdateCarbonPricingInPurchLine(Rec);
             end;
         }
         field(6220; "Posted Emission CO2"; Decimal)
@@ -422,9 +428,6 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
         if PurchLine."Total Emission Cost" <> 0 then
             PurchLine."Emission Cost Per Unit" := PurchLine."Total Emission Cost" / Denominator;
 
-        if CurrFieldNo in [0, Rec.FieldNo("Emission CO2"), Rec.FieldNo("Emission CH4"), Rec.FieldNo("Emission N2O")] then
-            UpdateCarbonPricingInPurchLine(PurchLine);
-
         if Rec.Type = Rec.Type::"Charge (Item)" then
             Rec.UpdateItemChargeAssgnt();
     end;
@@ -433,13 +436,25 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
     var
         SustainabilityCarbonPricing: Record "Sustainability Carbon Pricing";
         ExistCarbonPrice: Boolean;
+        TotalCO2e: Decimal;
+        Denominator: Decimal;
     begin
-        FindCarbonPricingFromPurchaseLine(SustainabilityCarbonPricing, PurchLine, ExistCarbonPrice);
+        PurchLine."Emission Cost Per Unit" := 0;
+        PurchLine."Total Emission Cost" := 0;
+        if (Rec."Sust. Account No." = '') or (Rec.Type <> Rec.Type::Item) then
+            exit;
+
+        FindCarbonPricingFromPurchaseLine(SustainabilityCarbonPricing, PurchLine, ExistCarbonPrice, TotalCO2e);
         if not ExistCarbonPrice then
             exit;
 
-        PurchLine."Emission Cost Per Unit" := SustainabilityCarbonPricing."Carbon Price";
-        PurchLine."Total Emission Cost" := PurchLine."Emission Cost per Unit" * PurchLine."Qty. per Unit of Measure" * PurchLine.Quantity;
+        PurchLine."Total Emission Cost" := SustainabilityCarbonPricing."Carbon Price" * TotalCO2e;
+        if (PurchLine."Qty. per Unit of Measure" = 0) or (PurchLine.Quantity = 0) then
+            exit;
+
+        Denominator := PurchLine."Qty. per Unit of Measure" * PurchLine.Quantity;
+        if PurchLine."Total Emission Cost" <> 0 then
+            PurchLine."Emission Cost Per Unit" := PurchLine."Total Emission Cost" / Denominator;
     end;
 
     local procedure UpdateDefaultEmissionOnPurchLine(var PurchaseLine: Record "Purchase Line")
@@ -556,11 +571,10 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
         Rec.Validate("Renewable Energy", SustainAccountSubcategory."Renewable Energy");
     end;
 
-    local procedure FindCarbonPricingFromPurchaseLine(var SustainabilityCarbonPricing: Record "Sustainability Carbon Pricing"; var PurchLine: Record "Purchase Line"; var ExistCarbonPrice: Boolean)
+    local procedure FindCarbonPricingFromPurchaseLine(var SustainabilityCarbonPricing: Record "Sustainability Carbon Pricing"; var PurchLine: Record "Purchase Line"; var ExistCarbonPrice: Boolean; var TotalCO2e: Decimal)
     var
         PurchaseHeader: Record "Purchase Header";
         PurchaseSubscriber: Codeunit "Sust. Purchase Subscriber";
-        TotalCO2e: Decimal;
     begin
         PurchaseHeader := PurchLine.GetPurchHeader();
 
@@ -574,11 +588,16 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
     end;
 
     local procedure FilterCarbonPricing(var SustainabilityCarbonPricing: Record "Sustainability Carbon Pricing"; PurchaseHeader: Record "Purchase Header"; PurchLine: Record "Purchase Line")
+    var
+        Item: Record Item;
     begin
+        Item.Get(PurchLine."No.");
+
         SustainabilityCarbonPricing.Reset();
-        SustainabilityCarbonPricing.SetRange("Country/Region of Origin", PurchaseHeader."Buy-from Country/Region Code");
-        if PurchLine."Unit of Measure Code" <> '' then
-            SustainabilityCarbonPricing.SetFilter("Unit of Measure Code", '%1|%2', PurchLine."Unit of Measure Code", '');
+        if Item."Country/Region of Origin Code" <> '' then
+            SustainabilityCarbonPricing.SetRange("Country/Region of Origin", Item."Country/Region of Origin Code")
+        else
+            SustainabilityCarbonPricing.SetRange("Country/Region of Origin", PurchaseHeader."Buy-from Country/Region Code");
 
         SustainabilityCarbonPricing.SetFilter("Ending Date", '%1|>=%2', 0D, PurchaseHeaderStartDate(PurchaseHeader));
         SustainabilityCarbonPricing.SetRange("Starting Date", 0D, PurchaseHeaderStartDate(PurchaseHeader));

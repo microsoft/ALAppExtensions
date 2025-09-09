@@ -1500,6 +1500,149 @@ codeunit 148206 "Sust. ESG Reporting Test"
         Assert.ExpectedTestFieldError(ESGReportingLine[3].FieldCaption("Field Type"), Format(ESGReportingLine[3]."Field Type"::Formula));
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler')]
+    procedure TestReportingCodeIsFlowInPostedESGReportingLineForSustainabilityAccount()
+    var
+        EmissionFee: array[3] of Record "Emission Fee";
+        ESGReportingTemplate: Record "Sust. ESG Reporting Template";
+        ESGReportingName: Record "Sust. ESG Reporting Name";
+        ESGReportingLine: array[3] of Record "Sust. ESG Reporting Line";
+        PostedESGReportingLine: Record "Sust. Posted ESG Report Line";
+        SustainabilityAccount: Record "Sustainability Account";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        ESGReportingManagement: Codeunit "Sust. ESG Reporting Management";
+        ESGReportingAggregation: TestPage "Sust. ESG Report. Aggregation";
+        PostedESGReportSub: TestPage "Sust. Posted ESG Report Sub.";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
+    begin
+        // [SCENARIO 601077] Verify the "Reporting Code" in Posted ESG Reporting Data for Sustainability Account.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Posted ESG Reporting Nos." in Sustainability Setup.
+        LibrarySustainability.UpdatePostedESGReportingNoInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(5);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
+
+        // [GIVEN] Create Emission Fee With Emission Scope.
+        CreateEmissionFeeWithEmissionScope(EmissionFee, SustainabilityAccount."Emission Scope", '');
+
+        // [GIVEN] Create and Post Purchase Order with WorkDate().
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [GIVEN] Create and Post another Purchase Order with WorkDate().
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
+
+        // [GIVEN] Create ESG Reporting Template.
+        LibrarySustainability.CreateESGReportingTemplate(ESGReportingTemplate);
+
+        // [GIVEN] Create ESG Reporting Name.
+        LibrarySustainability.CreateESGReportingName(ESGReportingName, ESGReportingTemplate);
+        ESGReportingName.Validate("Period Name", Format(Date2DMY(WorkDate(), 3)));
+        ESGReportingName.Validate("Period Starting Date", CalcDate('<-CY>', WorkDate()));
+        ESGReportingName.Validate("Period Ending Date", CalcDate('<CY>', WorkDate()));
+        ESGReportingName.Modify();
+
+        // [GIVEN] Create ESG Reporting Line A.
+        LibrarySustainability.CreateESGReportingLine(
+            ESGReportingLine[1],
+            ESGReportingName,
+            10000,
+            '',
+            '10',
+            ESGReportingLine[1]."Field Type"::"Table Field",
+            Database::"Sustainability Ledger Entry",
+            SustainabilityLedgerEntry.FieldNo("CO2e Emission"),
+            ESGReportingLine[1]."Value Settings"::Sum,
+            AccountCode,
+            ESGReportingLine[1]."Row Type"::"Net Change",
+            '',
+            ESGReportingLine[1]."Calculate with"::Sign,
+            true,
+            ESGReportingLine[1]."Show with"::Sign);
+
+        // [GIVEN] Update "Reporting Code" in ESG Reporting Line.
+        ESGReportingLine[1].Validate("Reporting Code", LibraryRandom.RandText(100));
+        ESGReportingLine[1].Modify();
+
+        // [GIVEN] Create ESG Reporting Line B.
+        LibrarySustainability.CreateESGReportingLine(
+            ESGReportingLine[2],
+            ESGReportingName,
+            20000,
+            '',
+            '20',
+            ESGReportingLine[2]."Field Type"::"Table Field",
+            Database::"Sustainability Ledger Entry",
+            SustainabilityLedgerEntry.FieldNo("Carbon Fee"),
+            ESGReportingLine[2]."Value Settings"::Sum,
+            AccountCode,
+            ESGReportingLine[2]."Row Type"::"Net Change",
+            '',
+            ESGReportingLine[2]."Calculate with"::Sign,
+            true,
+            ESGReportingLine[2]."Show with"::Sign);
+
+        // [GIVEN] Update "Reporting Code" in ESG Reporting Line.
+        ESGReportingLine[2].Validate("Reporting Code", LibraryRandom.RandText(100));
+        ESGReportingLine[2].Modify();
+
+        // [GIVEN] Create ESG Reporting Line C.
+        LibrarySustainability.CreateESGReportingLine(
+            ESGReportingLine[3],
+            ESGReportingName,
+            30000,
+            '',
+            '30',
+            ESGReportingLine[3]."Field Type"::Formula,
+            0,
+            0,
+            ESGReportingLine[3]."Value Settings"::" ",
+            '',
+            ESGReportingLine[3]."Row Type"::"Net Change",
+            ESGReportingLine[1]."Row No." + '+' + ESGReportingLine[2]."Row No.",
+            ESGReportingLine[3]."Calculate with"::Sign,
+            true,
+            ESGReportingLine[3]."Show with"::Sign);
+
+        // [GIVEN] Update "Reporting Code" in ESG Reporting Line.
+        ESGReportingLine[3].Validate("Reporting Code", LibraryRandom.RandText(100));
+        ESGReportingLine[3].Modify();
+
+        // [GIVEN] Open ESG Reporting Aggregation.
+        ESGReportingAggregation.Trap();
+        ESGReportingManagement.TemplateSelectionFromBatch(ESGReportingName);
+
+        // [WHEN] Open Calculate and Post ESG Report.
+        ESGReportingAggregation."Calc. and Post ESG Report".Invoke();
+
+        // [THEN] Verify the Posted ESG Reporting Data.
+        PostedESGReportSub.OpenView();
+        FindPostedESGReportingLine(PostedESGReportingLine, ESGReportingLine[1]."Row No.");
+        PostedESGReportSub.GoToRecord(PostedESGReportingLine);
+        PostedESGReportSub."Reporting Code".AssertEquals(ESGReportingLine[1]."Reporting Code");
+
+        FindPostedESGReportingLine(PostedESGReportingLine, ESGReportingLine[2]."Row No.");
+        PostedESGReportSub.GoToRecord(PostedESGReportingLine);
+        PostedESGReportSub."Reporting Code".AssertEquals(ESGReportingLine[2]."Reporting Code");
+
+        FindPostedESGReportingLine(PostedESGReportingLine, ESGReportingLine[3]."Row No.");
+        PostedESGReportSub.GoToRecord(PostedESGReportingLine);
+        PostedESGReportSub."Reporting Code".AssertEquals(ESGReportingLine[3]."Reporting Code");
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);

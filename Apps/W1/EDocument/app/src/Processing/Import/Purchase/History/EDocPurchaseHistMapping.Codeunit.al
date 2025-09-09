@@ -185,10 +185,10 @@ codeunit 6120 "E-Doc. Purchase Hist. Mapping"
             if not IsNullGuid(PurchInvLine."Alloc. Purch. Line SystemId") then begin
                 EDocumentPurchaseLine."[BC] Purchase Line Type" := "Purchase Line Type"::"Allocation Account";
                 EDocumentPurchaseLine."[BC] Purchase Type No." := PurchInvLine."Allocation Account No.";
+            end else begin // Else we set whatever is on the invoice line
+                EDocumentPurchaseLine."[BC] Purchase Line Type" := PurchInvLine.Type;
+                EDocumentPurchaseLine."[BC] Purchase Type No." := PurchInvLine."No.";
             end;
-            // Else we set whatever is on the invoice line
-            EDocumentPurchaseLine."[BC] Purchase Line Type" := PurchInvLine.Type;
-            EDocumentPurchaseLine."[BC] Purchase Type No." := PurchInvLine."No.";
             // If we assigned something in this if-branch, we set the activity log
             if (EDocumentPurchaseLine."[BC] Purchase Line Type" <> "Purchase Line Type"::" ") or (EDocumentPurchaseLine."[BC] Purchase Type No." <> '') then
                 SetActivityLog(EDocumentPurchaseLine.SystemId, EDocumentPurchaseLine.FieldNo("[BC] Purchase Type No."), PurchInvHeader, CurrentExplanationTxt, AccountNumberActivityLog, EDocActivityLogSession.AccountNumberTok());

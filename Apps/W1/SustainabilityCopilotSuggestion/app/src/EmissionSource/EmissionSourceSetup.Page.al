@@ -153,9 +153,9 @@ page 6328 "Emission Source Setup"
 
     local procedure CalculateStyleExpr()
     begin
-        if (Rec."Starting Date" >= WorkDate()) or (Rec."Starting Date" = 0D) then
-            StyleExprTxt := ''
+        if (Rec."Ending Date" <> 0D) and (Rec."Ending Date" < WorkDate()) then
+            StyleExprTxt := 'Unfavorable'
         else
-            StyleExprTxt := 'Unfavorable';
+            StyleExprTxt := '';
     end;
 }

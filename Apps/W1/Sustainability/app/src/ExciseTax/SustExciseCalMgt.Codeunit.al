@@ -83,7 +83,6 @@ codeunit 6274 "Sust. Excise Cal. Mgt"
         SustExciseJournalLine.Validate("Entry Type", SustExciseJournalLine."Entry Type"::Purchase);
         SustExciseJournalLine.Validate("Document Type", SustExciseJournalLine."Document Type"::Invoice);
         SustExciseJournalLine.Validate("Document No.", NoSeriesBatch.GetNextNo(SustainabilityExciseJnlBatch."No Series", SustExciseJournalLine."Posting Date"));
-        SustExciseJournalLine.Validate("Account No.", PurchInvLine."Sust. Account No.");
         SustExciseJournalLine.Validate("Partner Type", SustExciseJournalLine."Partner Type"::Vendor);
         SustExciseJournalLine.Validate("Partner No.", PurchInvLine."Buy-from Vendor No.");
         SustExciseJournalLine.Validate("Source of Emission Data", PurchInvLine."Source of Emission Data");
@@ -124,7 +123,6 @@ codeunit 6274 "Sust. Excise Cal. Mgt"
         SustExciseJournalLine.Validate("Entry Type", SustExciseJournalLine."Entry Type"::Sales);
         SustExciseJournalLine.Validate("Document Type", SustExciseJournalLine."Document Type"::Invoice);
         SustExciseJournalLine.Validate("Document No.", NoSeriesBatch.GetNextNo(SustainabilityExciseJnlBatch."No Series", SustExciseJournalLine."Posting Date"));
-        SustExciseJournalLine.Validate("Account No.", ItemLedgerEntry."Sust. Account No.");
         SustExciseJournalLine.Validate("Partner Type", SustExciseJournalLine."Partner Type"::Customer);
 
         case ItemLedgerEntry."Document Type" of

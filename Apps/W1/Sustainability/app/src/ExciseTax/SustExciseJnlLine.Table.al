@@ -17,6 +17,7 @@ using Microsoft.Projects.Resources.Resource;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.CBAM;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.EPR;
 using Microsoft.Sustainability.Setup;
@@ -59,7 +60,6 @@ table 6240 "Sust. Excise Jnl. Line"
 
             trigger OnValidate()
             begin
-                Validate("Account No.", '');
                 Validate("Partner Type", "Partner Type"::" ");
                 if (Rec."Document Type" <> Rec."Document Type"::" ") then
                     ValidateSustainabilityExciseJournalLineByField(Rec, Rec.FieldNo("Entry Type"));
@@ -80,60 +80,61 @@ table 6240 "Sust. Excise Jnl. Line"
             Caption = 'Document No.';
             NotBlank = true;
         }
+#if not CLEANSCHEMA29
         field(8; "Account No."; Code[20])
         {
             Caption = 'Account No.';
             TableRelation = "Sustainability Account" where("Account Type" = const(Posting), Blocked = const(false));
-
-            trigger OnValidate()
-            var
-                SustainabilityAccount: Record "Sustainability Account";
-            begin
-                if "Account No." = '' then begin
-                    Validate("Account Category", '');
-                    "Account Name" := '';
-                    Validate("Partner Type", "Partner Type"::" ");
-                end else begin
-                    SustainabilityAccount.Get("Account No.");
-                    SustainabilityAccount.CheckAccountReadyForPosting();
-                    SustainabilityAccount.TestField("Direct Posting", true);
-
-                    Validate("Account Category", SustainabilityAccount.Category);
-                    Validate("Account Subcategory", SustainabilityAccount.Subcategory);
-
-                    if (Description = '') or (Description = "Account Name") then
-                        Validate(Description, SustainabilityAccount.Name);
-                    "Account Name" := SustainabilityAccount.Name;
-                end;
-
-                if Rec."Account No." <> xRec."Account No." then
-                    ClearEmissionInformation(Rec);
-
-                CreateDimFromDefaultDim(FieldNo("Account No."));
-            end;
+            ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
         }
         field(9; "Account Name"; Text[100])
         {
             Caption = 'Account Name';
             DataClassification = CustomerContent;
+            ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
         }
         field(10; "Account Category"; Code[20])
         {
             Caption = 'Account Category';
             Editable = false;
             TableRelation = "Sustain. Account Category";
-
-            trigger OnValidate()
-            begin
-                if "Account Category" <> xRec."Account Category" then
-                    Validate("Account Subcategory", '');
-            end;
+            ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
         }
         field(11; "Account Subcategory"; Code[20])
         {
             Caption = 'Account Subcategory';
             TableRelation = "Sustain. Account Subcategory".Code where("Category Code" = field("Account Category"));
+            ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
         }
+#endif
         field(12; Description; Text[100])
         {
             Caption = 'Description';
@@ -144,8 +145,6 @@ table 6240 "Sust. Excise Jnl. Line"
             trigger OnValidate()
             begin
                 if Rec."Partner Type" <> Rec."Partner Type"::" " then begin
-                    Rec.TestField("Account No.");
-
                     if Rec."Entry Type" = Rec."Entry Type"::Purchase then
                         Rec.TestField("Partner Type", "Partner Type"::Vendor);
 
@@ -153,8 +152,11 @@ table 6240 "Sust. Excise Jnl. Line"
                         Rec.TestField("Partner Type", "Partner Type"::Customer);
                 end;
 
-                Rec.Validate("Partner No.", '');
-                Rec.Validate("Source Type", Rec."Source Type"::" ");
+                if xRec."Partner Type" <> Rec."Partner Type" then begin
+                    Rec.Validate("Partner No.", '');
+                    Rec.Validate("Source Type", Rec."Source Type"::" ");
+                    ClearEmissionInformation(Rec);
+                end;
             end;
         }
         field(14; "Partner No."; Code[20])
@@ -166,10 +168,8 @@ table 6240 "Sust. Excise Jnl. Line"
 
             trigger OnValidate()
             begin
-                if Rec."Partner No." <> '' then begin
-                    Rec.TestField("Account No.");
+                if Rec."Partner No." <> '' then
                     Rec.TestField("Partner Type");
-                end;
 
                 CreateDimFromDefaultDim(FieldNo("Partner No."));
             end;
@@ -241,7 +241,6 @@ table 6240 "Sust. Excise Jnl. Line"
                     exit;
                 end;
 
-                Rec.TestField("Account No.");
                 Rec.TestField("Partner No.");
                 case "Source Type" of
                     Rec."Source Type"::Item:
@@ -430,6 +429,9 @@ table 6240 "Sust. Excise Jnl. Line"
                     ValidateSustainabilityExciseJournalLineByField(Rec, Rec.FieldNo("Total Embedded CO2e Emission"));
 
                 UpdateEmissionPerUnit(Rec);
+
+                if CurrFieldNo = Rec.FieldNo("Total Embedded CO2e Emission") then
+                    UpdateCarbonPricingInExciseJournalLine(Rec);
             end;
         }
         field(32; "CBAM Certificates Required"; Boolean)
@@ -658,7 +660,7 @@ table 6240 "Sust. Excise Jnl. Line"
 
         if IsPreviousLineValid then begin
             Validate("Posting Date", PreviousLine."Posting Date");
-            Validate("Document Type", PreviousLine."Document Type");
+            Validate("Entry Type", PreviousLine."Entry Type");
         end else
             Validate("Posting Date", WorkDate());
 
@@ -729,6 +731,49 @@ table 6240 "Sust. Excise Jnl. Line"
             exit(SustExciseJournalLine."Line No.");
     end;
 
+    internal procedure UpdateCarbonPricingInExciseJournalLine(var SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line")
+    var
+        SustainabilityCarbonPricing: Record "Sustainability Carbon Pricing";
+        ExistCarbonPrice: Boolean;
+    begin
+        if (SustainabilityExciseJnlLine."Source Type" <> SustainabilityExciseJnlLine."Source Type"::Item) then
+            exit;
+
+        SustainabilityExciseJnlLine."Emission Cost Per Unit" := 0;
+        SustainabilityExciseJnlLine."Total Emission Cost" := 0;
+        FindCarbonPricingFromExciseLine(SustainabilityCarbonPricing, SustainabilityExciseJnlLine, ExistCarbonPrice);
+        if not ExistCarbonPrice then
+            exit;
+
+        SustainabilityExciseJnlLine.Validate("Total Emission Cost", SustainabilityCarbonPricing."Carbon Price" * SustainabilityExciseJnlLine."Total Embedded CO2e Emission");
+    end;
+
+    local procedure FindCarbonPricingFromExciseLine(var SustainabilityCarbonPricing: Record "Sustainability Carbon Pricing"; var SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line"; var ExistCarbonPrice: Boolean)
+    begin
+        FilterCarbonPricing(SustainabilityCarbonPricing, SustainabilityExciseJnlLine);
+        if not SustainabilityCarbonPricing.FindLast() then
+            exit;
+
+        if (SustainabilityExciseJnlLine."Total Embedded CO2e Emission" > SustainabilityCarbonPricing."Threshold Quantity") then
+            ExistCarbonPrice := true;
+    end;
+
+    local procedure FilterCarbonPricing(var SustainabilityCarbonPricing: Record "Sustainability Carbon Pricing"; SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line")
+    var
+        Item: Record Item;
+    begin
+        Item.Get(SustainabilityExciseJnlLine."Source No.");
+
+        SustainabilityCarbonPricing.Reset();
+        if Item."Country/Region of Origin Code" <> '' then
+            SustainabilityCarbonPricing.SetRange("Country/Region of Origin", Item."Country/Region of Origin Code")
+        else
+            SustainabilityCarbonPricing.SetRange("Country/Region of Origin", SustainabilityExciseJnlLine."Country/Region Code");
+
+        SustainabilityCarbonPricing.SetFilter("Ending Date", '%1|>=%2', 0D, SustainabilityExciseJnlLine."Posting Date");
+        SustainabilityCarbonPricing.SetRange("Starting Date", 0D, SustainabilityExciseJnlLine."Posting Date");
+    end;
+
     local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
     begin
         if Rec."Partner Type" = Rec."Partner Type"::Customer then
@@ -738,11 +783,10 @@ table 6240 "Sust. Excise Jnl. Line"
             DimMgt.AddDimSource(DefaultDimSource, Database::Vendor, Rec."Partner No.", FieldNo = Rec.Fieldno("Partner No."));
 
         DimMgt.AddDimSource(DefaultDimSource, ExciseLineTypeToTableID(Rec."Source Type"), Rec."Source No.", FieldNo = Rec.FieldNo("Source No."));
-        DimMgt.AddDimSource(DefaultDimSource, Database::"Sustainability Account", "Account No.", FieldNo = Rec.FieldNo("Account No."));
         OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource, FieldNo);
     end;
 
-    local procedure ExciseLineTypeToTableID(LineType: Enum "Sust. Excise Jnl. Source Type"): Integer
+    internal procedure ExciseLineTypeToTableID(LineType: Enum "Sust. Excise Jnl. Source Type"): Integer
     begin
         case LineType of
             "Sust. Excise Jnl. Source Type"::" ":
@@ -792,7 +836,6 @@ table 6240 "Sust. Excise Jnl. Line"
             SustainabilityExciseJnlLine.FieldNo("Total Emission Cost"),
             SustainabilityExciseJnlLine.FieldNo("CO2e Emission per Unit"):
                 begin
-                    SustainabilityExciseJnlLine.TestField("Account No.");
                     SustainabilityExciseJnlLine.TestField("Source No.");
                     SustainabilityExciseJnlLine.TestField("Source Qty.");
                 end;
@@ -807,7 +850,6 @@ table 6240 "Sust. Excise Jnl. Line"
                     SustainabilityExciseJnlBatch.Get(SustainabilityExciseJnlLine."Journal Template Name", SustainabilityExciseJnlLine."Journal Batch Name");
 
                     SustainabilityExciseJnlBatch.TestField(Type, SustainabilityExciseJnlBatch.Type::CBAM);
-                    SustainabilityExciseJnlLine.TestField("Account No.");
                 end;
 
             SustainabilityExciseJnlLine.FieldNo("Already Paid Emission"),
@@ -817,7 +859,6 @@ table 6240 "Sust. Excise Jnl. Line"
                     SustainabilityExciseJnlBatch.Get(SustainabilityExciseJnlLine."Journal Template Name", SustainabilityExciseJnlLine."Journal Batch Name");
 
                     SustainabilityExciseJnlBatch.TestField(Type, SustainabilityExciseJnlBatch.Type::CBAM);
-                    SustainabilityExciseJnlLine.TestField("Account No.");
                     SustainabilityExciseJnlLine.TestField("Source No.");
                     SustainabilityExciseJnlLine.TestField("Source Qty.")
                 end;
@@ -827,7 +868,6 @@ table 6240 "Sust. Excise Jnl. Line"
             SustainabilityExciseJnlLine.FieldNo("Material Breakdown Weight"),
             SustainabilityExciseJnlLine.FieldNo("Material Breakdown UOM"):
                 begin
-                    SustainabilityExciseJnlLine.TestField("Account No.");
                     SustainabilityExciseJnlLine.TestField("Material Breakdown No.");
                     SustainabilityExciseJnlBatch.Get(SustainabilityExciseJnlLine."Journal Template Name", SustainabilityExciseJnlLine."Journal Batch Name");
 
