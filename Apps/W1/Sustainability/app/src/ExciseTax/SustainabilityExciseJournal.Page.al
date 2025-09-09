@@ -5,7 +5,9 @@
 namespace Microsoft.Sustainability.ExciseTax;
 
 using Microsoft.Finance.Dimension;
+#if not CLEAN28
 using Microsoft.Sustainability.Account;
+#endif
 using System.Utilities;
 
 page 6287 "Sustainability Excise Journal"
@@ -89,10 +91,15 @@ page 6287 "Sustainability Excise Journal"
                     ToolTip = 'Specifies the document number.';
                     ShowMandatory = true;
                 }
+#if not CLEAN28
                 field("Sustainability Account No."; Rec."Account No.")
                 {
                     ToolTip = 'Specifies the sustainability account number.';
                     ShowMandatory = true;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
 
                     trigger OnValidate()
                     var
@@ -106,20 +113,35 @@ page 6287 "Sustainability Excise Journal"
                 {
                     ToolTip = 'Specifies the sustainability account name.';
                     DrillDown = false;
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 field(Description; Rec.Description)
                 {
                     ToolTip = 'Specifies the description of the journal line.';
                     ShowMandatory = true;
                 }
+#if not CLEAN28
                 field("Sustainability Account Category"; Rec."Account Category")
                 {
                     ToolTip = 'Specifies the sustainability account category.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
                 field("Sustainability Account Subcategory"; Rec."Account Subcategory")
                 {
                     ToolTip = 'Specifies the sustainability account subcategory.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 field("Partner Type"; Rec."Partner Type")
                 {
                     ToolTip = 'Specifies the value of the Partner Type field.';
@@ -364,6 +386,7 @@ page 6287 "Sustainability Excise Journal"
                 {
                     Caption = 'Account';
                     Image = ChartOfAccounts;
+#if not CLEAN28
                     action(Card)
                     {
                         ApplicationArea = Basic, Suite;
@@ -371,8 +394,13 @@ page 6287 "Sustainability Excise Journal"
                         Image = EditLines;
                         RunObject = page "Sustainability Account Card";
                         RunPageLink = "No." = field("Account No.");
+                        Visible = false;
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'This action is no longer required and will be removed in a future release.';
+                        ObsoleteTag = '28.0';
                         ToolTip = 'View or change detailed information about the record on the document or journal line.';
                     }
+#endif
                 }
                 action(Dimension)
                 {

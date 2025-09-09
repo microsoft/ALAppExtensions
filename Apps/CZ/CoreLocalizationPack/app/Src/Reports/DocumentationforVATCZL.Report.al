@@ -109,7 +109,7 @@ report 11757 "Documentation for VAT CZL"
                 }
                 dataitem("VAT Entry"; "VAT Entry")
                 {
-                    DataItemTableView = sorting(Type, Closed, "VAT Bus. Posting Group", "VAT Prod. Posting Group", "Country/Region Code") where(Type = filter(Purchase | Sale));
+                    DataItemTableView = where(Type = filter(Purchase | Sale));
                     UseTemporary = true;
                     column(VATDate_VATEntry; "VAT Reporting Date")
                     {

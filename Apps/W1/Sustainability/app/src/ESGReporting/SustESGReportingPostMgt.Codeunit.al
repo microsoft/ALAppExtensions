@@ -94,7 +94,7 @@ codeunit 6261 "Sust. ESG Reporting Post. Mgt"
         if ESGReportingLine.FindSet() then
             repeat
                 PostedESGReportLine.Init();
-                PostedESGReportLine.TransferFields(ESGReportingLine);
+                PostedESGReportLine.CopyFromESGReportingLine(ESGReportingLine);
                 PostedESGReportLine."Document No." := PostedESGReportHeader."No.";
 
                 ESGReportingHelperMgt.CalcLineTotal(ESGReportingLine, PostedESGReportLine."Posted Amount", 0);

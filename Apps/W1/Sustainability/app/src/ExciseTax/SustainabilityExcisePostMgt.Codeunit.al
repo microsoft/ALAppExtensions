@@ -68,7 +68,7 @@ codeunit 6272 "Sustainability Excise Post Mgt"
 
     internal procedure GetPostConfirmMessage(): Text
     begin
-        exit(PostConfirmLbl);
+        exit(RegisterConfirmLbl);
     end;
 
     local procedure CopyDataFromBatch(var SustExciseTaxesTransactionLog: Record "Sust. Excise Taxes Trans. Log"; SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line")
@@ -141,6 +141,6 @@ codeunit 6272 "Sustainability Excise Post Mgt"
         CheckSustainabilityJournalLineLbl: Label 'Checking Sustainability Excise Journal Line: %1', Comment = '%1 = Line No.';
         ProcessingLineLbl: Label 'Processing Line: %1', Comment = '%1 = Line No.';
         JnlLinesPostedLbl: Label 'The journal lines were successfully posted.';
-        PostConfirmLbl: Label 'Do you want to post the journal lines?';
+        RegisterConfirmLbl: Label 'Do you want to register the journal lines?';
         SustainabilityLbl: Label 'Sustainability', Locked = true;
 }

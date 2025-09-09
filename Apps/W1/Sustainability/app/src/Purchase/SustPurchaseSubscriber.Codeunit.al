@@ -200,9 +200,15 @@ codeunit 6225 "Sust. Purchase Subscriber"
             PurchaseLine.TestField("Emission N2O Per Unit", 0);
         end;
 
-        CO2ToPost := PurchaseLine."Emission CO2 Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
-        CH4ToPost := PurchaseLine."Emission CH4 Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
-        N2OToPost := PurchaseLine."Emission N2O Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
+        if PurchaseLine.Type = PurchaseLine.Type::"Charge (Item)" then begin
+            CO2ToPost := PurchaseLine."Emission CO2 Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
+            CH4ToPost := PurchaseLine."Emission CH4 Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
+            N2OToPost := PurchaseLine."Emission N2O Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
+        end else begin
+            CO2ToPost := PurchaseLine."Emission CO2 Per Unit" * Abs(PurchaseLine.Quantity) * PurchaseLine."Qty. per Unit of Measure";
+            CH4ToPost := PurchaseLine."Emission CH4 Per Unit" * Abs(PurchaseLine.Quantity) * PurchaseLine."Qty. per Unit of Measure";
+            N2OToPost := PurchaseLine."Emission N2O Per Unit" * Abs(PurchaseLine.Quantity) * PurchaseLine."Qty. per Unit of Measure";
+        end;
         if not SustainabilitySetup.IsValueChainTrackingEnabled() then
             exit;
 

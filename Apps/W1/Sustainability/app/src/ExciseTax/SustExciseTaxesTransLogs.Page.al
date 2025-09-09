@@ -59,26 +59,46 @@ page 6288 "Sust. Excise Taxes Trans. Logs"
                 {
                     ToolTip = 'Specifies the document number.';
                 }
+#if not CLEAN28
                 field("Sustainability Account No."; Rec."Account No.")
                 {
                     ToolTip = 'Specifies the sustainability account number.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
                 field("Sustainability Account Name"; Rec."Account Name")
                 {
                     ToolTip = 'Specifies the sustainability account name.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 field(Description; Rec.Description)
                 {
                     ToolTip = 'Specifies the description of the journal line.';
                 }
+#if not CLEAN28
                 field("Sustainability Account Category"; Rec."Account Category")
                 {
                     ToolTip = 'Specifies the sustainability account category.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
                 field("Sustainability Account Subcategory"; Rec."Account Subcategory")
                 {
                     ToolTip = 'Specifies the sustainability account subcategory.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This field is no longer required and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 field("Partner Type"; Rec."Partner Type")
                 {
                     ToolTip = 'Specifies the value of the Partner Type field.';

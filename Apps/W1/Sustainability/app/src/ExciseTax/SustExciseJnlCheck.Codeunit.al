@@ -5,7 +5,8 @@
 namespace Microsoft.Sustainability.ExciseTax;
 
 using Microsoft.Finance.Dimension;
-using Microsoft.Sustainability.Account;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Sustainability.Setup;
 using System.Utilities;
 
@@ -48,7 +49,6 @@ codeunit 6273 "Sust. Excise Jnl.-Check"
     procedure CheckSustainabilityExciseJournalLine(SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line")
     var
         SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
-        SustainabilityAccount: Record "Sustainability Account";
     begin
         SustainabilityExciseJnlBatch.Get(SustainabilityExciseJnlLine."Journal Template Name", SustainabilityExciseJnlLine."Journal Batch Name");
         SustainabilityExciseJnlLine.TestField("Posting Date", ErrorInfo.Create());
@@ -60,9 +60,6 @@ codeunit 6273 "Sust. Excise Jnl.-Check"
         SustainabilityExciseJnlLine.Validate("Document Type");
         TestRequiredFieldsFromSetupForJnlLine(SustainabilityExciseJnlLine);
 
-        SustainabilityAccount.Get(SustainabilityExciseJnlLine."Account No.");
-        SustainabilityAccount.CheckAccountReadyForPosting();
-        SustainabilityAccount.TestField("Direct Posting", ErrorInfo.Create());
         if SustainabilityExciseJnlBatch.Type <> SustainabilityExciseJnlBatch.Type::EPR then
             SustainabilityExciseJnlLine.TestField("Material Breakdown No.", '');
 
@@ -126,8 +123,18 @@ codeunit 6273 "Sust. Excise Jnl.-Check"
         if not DimMgt.CheckDimIDComb(SustainabilityExciseJnlLine."Dimension Set ID") then
             Error(ErrorInfo.Create(DimMgt.GetDimCombErr(), true, SustainabilityExciseJnlLine));
 
-        TableID[1] := Database::"Sustainability Account";
-        No[1] := SustainabilityExciseJnlLine."Account No.";
+        if SustainabilityExciseJnlLine."Partner Type" = SustainabilityExciseJnlLine."Partner Type"::Customer then begin
+            TableID[1] := Database::Customer;
+            No[1] := SustainabilityExciseJnlLine."Partner No.";
+        end;
+
+        if SustainabilityExciseJnlLine."Partner Type" = SustainabilityExciseJnlLine."Partner Type"::Vendor then begin
+            TableID[1] := Database::Vendor;
+            No[1] := SustainabilityExciseJnlLine."Partner No.";
+        end;
+
+        TableID[2] := SustainabilityExciseJnlLine.ExciseLineTypeToTableID(SustainabilityExciseJnlLine."Source Type");
+        No[2] := SustainabilityExciseJnlLine."Source No.";
 
         if not DimMgt.CheckDimValuePosting(TableID, No, SustainabilityExciseJnlLine."Dimension Set ID") then
             Error(ErrorInfo.Create(DimMgt.GetDimValuePostingErr(), true, SustainabilityExciseJnlLine));
