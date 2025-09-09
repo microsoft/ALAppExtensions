@@ -59,7 +59,12 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL PJEQRate" = IMD,
                   tabledata "SL PJEquip" = IMD,
                   tabledata "SL PJPent" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL PJProj" = IMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL PJProj Buffer" = IMD,
                   tabledata "SL POAddress" = IMD,
                   tabledata "SL POReceipt" = IMD,
                   tabledata "SL POSetup" = IMD,

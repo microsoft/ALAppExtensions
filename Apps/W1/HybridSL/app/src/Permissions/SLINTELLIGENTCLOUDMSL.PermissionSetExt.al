@@ -56,7 +56,12 @@ permissionsetextension 47000 "SLINTELLIGENT CLOUD - MSL" extends "INTELLIGENT CL
                   tabledata "SL PJEQRate" = RIMD,
                   tabledata "SL PJEquip" = RIMD,
                   tabledata "SL PJPent" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL PJProj" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL PJProj Buffer" = RIMD,
                   tabledata "SL POAddress" = RIMD,
                   tabledata "SL POReceipt" = RIMD,
                   tabledata "SL POSetup" = RIMD,
