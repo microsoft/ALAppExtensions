@@ -15,7 +15,7 @@ query 42807 "SL Hist. ARInvoiceDocuments"
     Caption = 'Dynamics SL AR Invoice Documents';
     elements
     {
-        dataitem(SL_ARDocHist; "SL Hist. ARDoc")
+        dataitem(SL_ARDocHist; "SL Hist. ARDoc Archive")
         {
             DataItemTableFilter = Crtd_Prog = const('40690');
 

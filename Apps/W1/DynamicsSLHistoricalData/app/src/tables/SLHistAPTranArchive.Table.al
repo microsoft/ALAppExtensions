@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,18 +5,10 @@
 
 namespace Microsoft.DataMigration.SL.HistoricalData;
 
-table 42802 "SL Hist. APTran"
+table 42824 "SL Hist. APTran Archive"
 {
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL Hist. APTran Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -337,11 +328,11 @@ table 42802 "SL Hist. APTran"
         {
             Caption = 'S4Future06';
         }
-        field(80; S4Future07; DateTime)
+        field(80; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(81; S4Future08; DateTime)
+        field(81; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -361,7 +352,7 @@ table 42802 "SL Hist. APTran"
         {
             Caption = 'S4Future12';
         }
-        field(86; ServiceDate; DateTime)
+        field(86; ServiceDate; Date)
         {
             Caption = 'ServiceDate';
         }
@@ -441,7 +432,7 @@ table 42802 "SL Hist. APTran"
         {
             Caption = 'TranClass';
         }
-        field(106; TranDate; DateTime)
+        field(106; TranDate; Date)
         {
             Caption = 'TranDate';
         }
@@ -501,11 +492,11 @@ table 42802 "SL Hist. APTran"
         {
             Caption = 'User6';
         }
-        field(121; User7; DateTime)
+        field(121; User7; Date)
         {
             Caption = 'User7';
         }
-        field(122; User8; DateTime)
+        field(122; User8; Date)
         {
             Caption = 'User8';
         }
@@ -530,4 +521,3 @@ table 42802 "SL Hist. APTran"
         }
     }
 }
-#endif
