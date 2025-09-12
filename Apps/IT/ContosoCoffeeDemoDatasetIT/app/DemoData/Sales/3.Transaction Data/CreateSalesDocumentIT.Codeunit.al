@@ -32,6 +32,7 @@ codeunit 12222 "Create Sales Document IT"
         SalesHeader.SetFilter("Document Type", '%1|%2', SalesHeader."Document Type"::Order, SalesHeader."Document Type"::Invoice);
         if SalesHeader.FindSet() then
             repeat
+                SalesHeader.SetHideValidationDialog(true);
                 if SalesHeader."No." = '101001' then
                     SalesHeader.Validate("Posting Date", CalcDate('<+1D>', FromDate));
                 if SalesHeader."No." = '101002' then
