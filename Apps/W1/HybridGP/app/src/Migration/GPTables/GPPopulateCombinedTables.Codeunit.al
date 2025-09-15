@@ -11,7 +11,7 @@ codeunit 40125 "GP Populate Combined Tables"
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
-        PouplateGPFiscalPeriods();
+        PopulateGPFiscalPeriods();
 
         if GPCompanyAdditionalSettings.GetGLModuleEnabled() then begin
             PopulateGPAccount();
@@ -92,7 +92,7 @@ codeunit 40125 "GP Populate Combined Tables"
         until GPGL00100.Next() = 0;
     end;
 
-    internal procedure PouplateGPFiscalPeriods()
+    internal procedure PopulateGPFiscalPeriods()
     var
         GPSY40100: Record "GP SY40100";
         GPSY40101: Record "GP SY40101";
@@ -323,11 +323,10 @@ codeunit 40125 "GP Populate Combined Tables"
         GPRM00101: Record "GP RM00101";
         GPRM00103: Record "GP RM00103";
         GPSY01200: Record "GP SY01200";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         GPRM00101.SetRange(INACTIVE, false);
-        if GPCompanyMigrationSettings.Get(CompanyName()) then
-            if GPCompanyMigrationSettings."Migrate Inactive Customers" then
+        if GPCompanyAdditionalSettings.GetMigrateInactiveCustomers() then
                 GPRM00101.SetRange(INACTIVE);
 
         if not GPRM00101.FindSet() then
@@ -521,12 +520,11 @@ codeunit 40125 "GP Populate Combined Tables"
         GPPM00201VendorSum: Record "GP PM00201";
         GPSY01200NetAddresses: Record "GP SY01200";
         GPVendor: Record "GP Vendor";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         GPPM00200Vendor.SetFilter(VENDSTTS, '1|3');
-        if GPCompanyMigrationSettings.Get(CompanyName()) then
-            if GPCompanyMigrationSettings."Migrate Inactive Vendors" then
-                GPPM00200Vendor.SetRange(VENDSTTS);
+        if GPCompanyAdditionalSettings.GetMigrateInactiveVendors() then
+            GPPM00200Vendor.SetRange(VENDSTTS);
 
         if not GPPM00200Vendor.FindSet() then
             exit;

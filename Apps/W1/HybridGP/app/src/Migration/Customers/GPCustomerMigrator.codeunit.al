@@ -30,7 +30,7 @@ codeunit 4018 "GP Customer Migrator"
         GPCustomer.Get(RecordIdToMigrate);
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
         MigrateCustomerDetails(GPCustomer, Sender);
-        MigrateCustomerAddresses(GPCustomer);
+        MigrateCustomerAddresses(GPCustomer, Sender);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
@@ -263,7 +263,7 @@ codeunit 4018 "GP Customer Migrator"
         exit(ClassId);
     end;
 
-    local procedure MigrateCustomerDetails(MigrationGPCustomer: Record "GP Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
+    local procedure MigrateCustomerDetails(var MigrationGPCustomer: Record "GP Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
         GPKnownCountries: Record "GP Known Countries";
@@ -279,8 +279,13 @@ codeunit 4018 "GP Customer Migrator"
         FoundKnownCountry: Boolean;
         CountryCodeISO2: Code[2];
         CountryName: Text[50];
+        CustomerNo: Code[20];
+        CustomerName: Text[100];
     begin
-        if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(CopyStr(MigrationGPCustomer.CUSTNMBR, 1, 20), CopyStr(MigrationGPCustomer.CUSTNAME, 1, 50)) then
+        CustomerNo := CopyStr(MigrationGPCustomer.CUSTNMBR, 1, MaxStrLen(CustomerNo));
+        CustomerName := CopyStr(MigrationGPCustomer.CUSTNAME, 1, MaxStrLen(CustomerName));
+
+        if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(CustomerNo, CustomerName) then
             exit;
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(MigrationGPCustomer.RecordId));
@@ -318,7 +323,7 @@ codeunit 4018 "GP Customer Migrator"
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
 
         GPRM00101.SetLoadFields(ADRSCODE);
-        if GPRM00101.Get(MigrationGPCustomer.CUSTNMBR) then
+        if GPRM00101.Get(CustomerNo) then
             if GPSY01200.Get(CustomerEmailTypeCodeLbl, GPRM00101.CUSTNMBR, GPRM00101.ADRSCODE) then
                 CustomerDataMigrationFacade.SetEmail(CopyStr(GPSY01200.GetAllEmailAddressesText(MaxStrLen(Customer."E-Mail")), 1, MaxStrLen(Customer."E-Mail")));
 
@@ -382,11 +387,16 @@ codeunit 4018 "GP Customer Migrator"
                 GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, WarningContext, StrSubstNo(PhoneNumberContainsLettersMsg, MigrationGPCustomer.FAX));
     end;
 
-    local procedure MigrateCustomerAddresses(MigrationGPCustomer: Record "GP Customer")
+    local procedure MigrateCustomerAddresses(var MigrationGPCustomer: Record "GP Customer"; var Sender: Codeunit "Customer Data Migration Facade")
     var
         GPCustomerAddress: Record "GP Customer Address";
+        CustomerNo: Code[20];
     begin
-        GPCustomerAddress.SetRange(CUSTNMBR, MigrationGPCustomer.CUSTNMBR);
+        CustomerNo := CopyStr(MigrationGPCustomer.CUSTNMBR, 1, MaxStrLen(CustomerNo));
+        if not Sender.DoesCustomerExist(CustomerNo) then
+            exit;
+
+        GPCustomerAddress.SetRange(CUSTNMBR, CustomerNo);
         if GPCustomerAddress.FindSet() then
             repeat
                 GPCustomerAddress.MoveStagingData();

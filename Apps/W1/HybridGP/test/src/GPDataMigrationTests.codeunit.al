@@ -6,7 +6,6 @@ codeunit 139664 "GP Data Migration Tests"
 
     EventSubscriberInstance = Manual;
     Subtype = Test;
-    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var
@@ -53,6 +52,7 @@ codeunit 139664 "GP Data Migration Tests"
         PONumberTxt: Label 'PO001', Comment = 'PO number for Migrate Open POs setting tests', Locked = true;
         PostingGroupCodeTxt: Label 'GP', Locked = true;
         TestMoneyCurrencyCodeTxt: Label 'TESTMONEY', Locked = true;
+        CompanyNameLargeTxt: Label 'Completely Made Up Company Name That Exceeds Fifty Characters', Locked = true;
 
     [Test]
     procedure TestKnownCountries()
@@ -128,7 +128,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCompanyAdditionalSettings.Modify();
 
         // When adding Customers, update the expected count here
-        CustomerCount := 3;
+        CustomerCount := 4;
 
         // [WHEN] Data is imported
         CreateCustomerData();
@@ -245,6 +245,10 @@ codeunit 139664 "GP Data Migration Tests"
 
         Assert.IsTrue(ShipToAddress.Get('#1', 'OTHER'), 'Customer other address does not exist.');
         Assert.AreEqual('', ShipToAddress."E-Mail", 'Customer other address email should be empty.');
+
+        // Names >50 <=100 characters should not be truncated.
+        Customer.Get('BIGCUSTNAME');
+        Assert.AreEqual(CompanyNameLargeTxt, Customer.Name, 'Large Name of Migrated Customer is wrong');
     end;
 
     [Test]
@@ -312,7 +316,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCompanyAdditionalSettings.Modify();
 
         // When adding Customers, update the expected count here
-        CustomerCount := 3;
+        CustomerCount := 4;
 
         // [WHEN] Data is imported
         CreateCustomerData();
@@ -417,7 +421,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCompanyAdditionalSettings.Modify();
 
         // When adding Customers, update the expected count here
-        CustomerCount := 3;
+        CustomerCount := 4;
 
         // [WHEN] Data is imported
         CreateCustomerData();
@@ -462,7 +466,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] adding Customers, update the expected count here
-        CustomerCount := 3;
+        CustomerCount := 4;
 
         // [WHEN] Data is imported
         CreateCustomerData();
@@ -515,7 +519,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] adding Vendors, update the expected count here
-        VendorCount := 54;
+        VendorCount := 55;
 
         // [Then] the correct number of Vendors are imported
         Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendor read');
@@ -699,6 +703,10 @@ codeunit 139664 "GP Data Migration Tests"
 
         Assert.IsTrue(RemitAddress.Get('REMIT TO', 'ACETRAVE0001'), 'Vendor remit address does not exist.');
         Assert.AreEqual('', RemitAddress."E-Mail", 'Vendor remit address email should be empty.');
+
+        // Names >50 <=100 characters should not be truncated.
+        Vendor.Get('BIGVENDNAME');
+        Assert.AreEqual(CompanyNameLargeTxt, Vendor.Name, 'Large Name of Migrated Vendor is wrong');
     end;
 
     [Test]
@@ -735,8 +743,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] adding Vendors, update the expected count here
-        VendorCount := 54;
-        VendorsToMigrateCount := 53;
+        VendorCount := 55;
+        VendorsToMigrateCount := 54;
 
         // [Then] the correct number of Vendors are imported
         Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendor read');
@@ -1030,7 +1038,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] adding Vendors, update the expected count here
-        VendorCount := 54;
+        VendorCount := 55;
 
         Clear(GPVendor);
         Clear(Vendor);
@@ -1078,7 +1086,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPTestHelperFunctions.InitializeMigration();
 
         // [WHEN] adding Vendors, update the expected count here
-        VendorCount := 54;
+        VendorCount := 55;
 
         Clear(GPVendor);
         Clear(Vendor);
@@ -1123,7 +1131,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPTestHelperFunctions.InitializeMigration();
 
         // When adding Vendors, update the expected count here
-        VendorCount := 54;
+        VendorCount := 55;
 
         Clear(GPVendor);
         Clear(Vendor);
@@ -3060,6 +3068,39 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY01200.ADRSCODE := GPCustomerAddress.ADRSCODE;
         GPSY01200.INET1 := '';
         GPSY01200.Insert();
+
+        Clear(GPRM00101);
+        GPRM00101.CUSTNMBR := 'BIGCUSTNAME';
+        GPRM00101.CUSTNAME := CompanyNameLargeTxt;
+        GPRM00101.ADRSCODE := '';
+        GPRM00101.Insert();
+
+        Clear(GPCustomer);
+        GPCustomer.CUSTNMBR := GPRM00101.CUSTNMBR;
+        GPCustomer.CUSTNAME := GPRM00101.CUSTNAME;
+        GPCustomer.STMTNAME := GPRM00101.CUSTNAME;
+        GPCustomer.ADDRESS1 := '';
+        GPCustomer.ADDRESS2 := '123 Main St.';
+        GPCustomer.CITY := '';
+        GPCustomer.CNTCPRSN := 'Todd Scott';
+        GPCustomer.PHONE1 := '00000000000000';
+        GPCustomer.SALSTERR := 'MIDWEST';
+        GPCustomer.CRLMTAMT := 1000.00000;
+        GPCustomer.PYMTRMID := '2% EOM/Net 15th';
+        GPCustomer.SLPRSNID := 'KNOBL-CHUCK-001';
+        GPCustomer.SHIPMTHD := 'MAIL';
+        GPCustomer.COUNTRY := 'USA';
+        GPCustomer.AMOUNT := 3970.61000;
+        GPCustomer.STMTCYCL := true;
+        GPCustomer.FAX := '00000000000000';
+        GPCustomer.ZIPCODE := '49015';
+        GPCustomer.STATE := 'MI';
+        GPCustomer.INET1 := '';
+        GPCustomer.INET2 := '';
+        GPCustomer.TAXSCHID := 'S-N-NO-%S';
+        GPCustomer.UPSZONE := 'O4';
+        GPCustomer.TAXEXMT1 := '';
+        GPCustomer.Insert();
     end;
 
     local procedure CreateCustomerTrx()
@@ -4687,6 +4728,36 @@ codeunit 139664 "GP Data Migration Tests"
         Clear(GPPM00200);
         GPPM00200.VENDORID := 'V3130';
         GPPM00200.VADDCDPR := AddressCodePrimaryTxt;
+        GPPM00200.Insert();
+
+        Clear(GPVendor);
+        GPVendor.VENDORID := 'BIGVENDNAME';
+        GPVendor.VENDNAME := CompanyNameLargeTxt;
+        GPVendor.SEARCHNAME := CompanyNameLargeTxt;
+        GPVendor.VNDCHKNM := 'Light';
+        GPVendor.ADDRESS1 := '323 Walnut Street';
+        GPVendor.ADDRESS2 := '';
+        GPVendor.CITY := 'Lebanon';
+        GPVendor.VNDCNTCT := '';
+        GPVendor.PHNUMBR1 := '01321112300000';
+        GPVendor.PYMTRMID := '';
+        GPVendor.SHIPMTHD := '';
+        GPVendor.COUNTRY := '';
+        GPVendor.PYMNTPRI := '';
+        GPVendor.AMOUNT := 0.00000;
+        GPVendor.FAXNUMBR := '01321112500000';
+        GPVendor.ZIPCODE := '17042';
+        GPVendor.STATE := 'PA';
+        GPVendor.INET1 := '';
+        GPVendor.INET2 := ' ';
+        GPVendor.TAXSCHID := 'P-N-T&T-COMBO';
+        GPVendor.UPSZONE := '';
+        GPVendor.TXIDNMBR := '45-0029728';
+        GPVendor.Insert();
+
+        Clear(GPPM00200);
+        GPPM00200.VENDORID := CopyStr(GPVendor.VENDORID, 1, MaxStrLen(GPPM00200.VENDORID));
+        GPPM00200.VENDSTTS := 1;
         GPPM00200.Insert();
     end;
 

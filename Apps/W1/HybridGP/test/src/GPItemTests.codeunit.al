@@ -397,6 +397,7 @@ codeunit 139662 "GP Item Tests"
         GenBusPostingGroup: Record "Gen. Business Posting Group";
         GPIV00101: Record "GP IV00101";
         GPIV40400: Record "GP IV40400";
+        InventorySetup: Record "Inventory Setup";
     begin
         Clear(ItemDataMigrationFacade);
         Clear(GPItemMigrator);
@@ -410,6 +411,14 @@ codeunit 139662 "GP Item Tests"
         if not GenBusPostingGroup.Get(PostingGroupGPTok) then begin
             GenBusPostingGroup.Validate(GenBusPostingGroup.Code, PostingGroupGPTok);
             GenBusPostingGroup.Insert(true);
+        end;
+
+        if not InventorySetup.Get() then
+            InventorySetup.Insert(true);
+
+        if InventorySetup."Item Nos." = '' then begin
+            InventorySetup."Item Nos." := 'ITEM';
+            InventorySetup.Modify(true);
         end;
     end;
 

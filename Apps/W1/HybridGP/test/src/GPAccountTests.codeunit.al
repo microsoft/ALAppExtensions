@@ -4,7 +4,6 @@ codeunit 139661 "GP Account Tests"
 
     EventSubscriberInstance = Manual;
     Subtype = Test;
-    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var
@@ -33,6 +32,7 @@ codeunit 139661 "GP Account Tests"
         StatisticalAccount: Record "Statistical Account";
         StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
         StatisticalLedgerEntry: Record "Statistical Ledger Entry";
+        GPMigrationWarings: Record "GP Migration Warnings";
         HelperFunctions: Codeunit "Helper Functions";
         StartTime: DateTime;
     begin
@@ -41,9 +41,10 @@ codeunit 139661 "GP Account Tests"
             exit;
 
         StartTime := CurrentDateTime;
-        ClearTables();
+        Initialize();
 
         // [GIVEN] Some records are created in the staging tables
+        HelperFunctions.CreateSetupRecordsIfNeeded();
         GPTestHelperFunctions.CreateConfigurationSettings();
         CreateAccountData(GPAccount);
         CreateDimensionData(GPSegments, GPCodes);
@@ -65,6 +66,8 @@ codeunit 139661 "GP Account Tests"
 
         // [WHEN] Posting all transactions
         HelperFunctions.PostGLTransactions();
+
+        Assert.RecordCount(GPMigrationWarings, 0);
 
         // [THEN] G/L entries and Dimension Set entries are created
         Assert.RecordCount(GLEntry, 3);
@@ -119,7 +122,7 @@ codeunit 139661 "GP Account Tests"
         // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
         if not BindSubscription(MSGPAccountMigrationTests) then
             exit;
-        ClearTables();
+        Initialize();
 
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings."Migrate GL Module" := false;
@@ -158,7 +161,7 @@ codeunit 139661 "GP Account Tests"
         // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
         if not BindSubscription(MSGPAccountMigrationTests) then
             exit;
-        ClearTables();
+        Initialize();
 
         // [GIVEN] GL Master Data Only is enabled
         GPTestHelperFunctions.CreateConfigurationSettings();
@@ -204,7 +207,7 @@ codeunit 139661 "GP Account Tests"
         // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
         if not BindSubscription(MSGPAccountMigrationTests) then
             exit;
-        ClearTables();
+        Initialize();
 
         // [GIVEN] GL Master Data Only is enabled
         GPTestHelperFunctions.CreateConfigurationSettings();
@@ -247,7 +250,7 @@ codeunit 139661 "GP Account Tests"
     begin
         // [SCENARIO] Dimensions are created for account segments using old account migration from GP
         // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
-        ClearTables();
+        Initialize();
 
         // [GIVEN] Some records are created in the staging table
         CreateDimensionData(GPSegements, GPCodes);
@@ -291,7 +294,7 @@ codeunit 139661 "GP Account Tests"
         // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
         if not BindSubscription(MSGPAccountMigrationTests) then
             exit;
-        ClearTables();
+        Initialize();
 
         GPTestHelperFunctions.CreateConfigurationSettings();
 
@@ -345,7 +348,7 @@ codeunit 139661 "GP Account Tests"
         // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
         if not BindSubscription(MSGPAccountMigrationTests) then
             exit;
-        ClearTables();
+        Initialize();
 
         // [GIVEN] Some records are created in the staging table
         CreateAccountData(GPAccount);
@@ -376,7 +379,7 @@ codeunit 139661 "GP Account Tests"
         Assert.RecordCount(GenJournalLine, 0);
     end;
 
-    local procedure ClearTables()
+    local procedure Initialize()
     var
         GPGLTransactions: Record "GP GLTransactions";
         GPAccount: Record "GP Account";
@@ -393,6 +396,8 @@ codeunit 139661 "GP Account Tests"
         StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
         StatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
         StatisticalAccount: Record "Statistical Account";
+        GPMigrationWarings: Record "GP Migration Warnings";
+        SustainabilitySetup: Record "Sustainability Setup";
     begin
         GPTestHelperFunctions.DeleteAllSettings();
         GPAccount.DeleteAll();
@@ -410,6 +415,10 @@ codeunit 139661 "GP Account Tests"
         StatisticalAccJournalLine.DeleteAll();
         StatisticalAccJournalBatch.DeleteAll();
         StatisticalAccount.DeleteAll();
+        GPMigrationWarings.DeleteAll();
+
+        if not SustainabilitySetup.Get() then
+            SustainabilitySetup.Insert(true);
     end;
 
     local procedure Migrate(var GPAccount: Record "GP Account")
