@@ -17,14 +17,27 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL Account Staging Setup" = R,
                   tabledata "SL AcctHist" = R,
                   tabledata "SL APAdjust" = R,
-                  tabledata "SL APDoc" = R,
+                  tabledata "SL APDoc Buffer" = R,
                   tabledata "SL APSetup" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL APDoc" = R,
                   tabledata "SL APTran" = R,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL APTran Buffer" = R,
                   tabledata "SL AP_Balances" = R,
                   tabledata "SL ARAdjust" = R,
-                  tabledata "SL ARDoc" = R,
+
+                  tabledata "SL ARDoc Buffer" = R,
                   tabledata "SL ARSetup" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL ARDoc" = R,
                   tabledata "SL ARTran" = R,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL ARTran Buffer" = R,
                   tabledata "SL AR_Balances" = R,
                   tabledata "SL Batch" = R,
                   tabledata "SL Codes" = R,
@@ -35,7 +48,12 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL Fiscal Periods" = R,
                   tabledata "SL FlexDef" = R,
                   tabledata "SL GLSetup" = R,
-                  tabledata "SL GLTran" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL GLTran" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL GLTran Buffer" = R,
                   tabledata "SL Hist. Source Error" = R,
                   tabledata "SL Hist. Source Progress" = R,
                   tabledata "SL INSetup" = R,
@@ -59,7 +77,12 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL PJEQRate" = R,
                   tabledata "SL PJEquip" = R,
                   tabledata "SL PJPent" = R,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL PJProj" = R,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL PJProj Buffer" = R,
                   tabledata "SL POAddress" = R,
                   tabledata "SL POReceipt" = R,
                   tabledata "SL POSetup" = R,

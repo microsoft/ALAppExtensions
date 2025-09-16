@@ -15,14 +15,30 @@ permissionsetextension 47001 "SLD365 BASIC - MSL" extends "D365 BASIC"
                   tabledata "SL Account Staging Setup" = RIMD,
                   tabledata "SL AcctHist" = RIMD,
                   tabledata "SL APAdjust" = RIMD,
-                  tabledata "SL APDoc" = RIMD,
+                  tabledata "SL APDoc Buffer" = RIMD,
                   tabledata "SL APSetup" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL APDoc" = RIMD,
                   tabledata "SL APTran" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL APTran Buffer" = RIMD,
                   tabledata "SL AP_Balances" = RIMD,
                   tabledata "SL ARAdjust" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL ARDoc" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL ARDoc Buffer" = RIMD,
                   tabledata "SL ARSetup" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL ARTran" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL ARTran Buffer" = RIMD,
                   tabledata "SL AR_Balances" = RIMD,
                   tabledata "SL Batch" = RIMD,
                   tabledata "SL Codes" = RIMD,
@@ -33,7 +49,12 @@ permissionsetextension 47001 "SLD365 BASIC - MSL" extends "D365 BASIC"
                   tabledata "SL Fiscal Periods" = RIMD,
                   tabledata "SL FlexDef" = RIMD,
                   tabledata "SL GLSetup" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL GLTran" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL GLTran Buffer" = RIMD,
                   tabledata "SL Hist. Source Error" = RIMD,
                   tabledata "SL Hist. Source Progress" = RIMD,
                   tabledata "SL INSetup" = RIMD,
@@ -56,7 +77,12 @@ permissionsetextension 47001 "SLD365 BASIC - MSL" extends "D365 BASIC"
                   tabledata "SL PJEQRate" = RIMD,
                   tabledata "SL PJEquip" = RIMD,
                   tabledata "SL PJPent" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL PJProj" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL PJProj Buffer" = RIMD,
                   tabledata "SL POAddress" = RIMD,
                   tabledata "SL POReceipt" = RIMD,
                   tabledata "SL POSetup" = RIMD,

@@ -39,7 +39,7 @@ table 47000 "SL Account Staging"
         }
         field(7; Active; Boolean)
         {
-            Caption = 'Blocked';
+            Caption = 'Active';
         }
     }
 

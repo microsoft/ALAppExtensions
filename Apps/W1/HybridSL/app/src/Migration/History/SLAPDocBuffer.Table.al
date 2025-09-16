@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47021 "SL APDoc"
+table 47073 "SL APDoc Buffer"
 {
     Access = Internal;
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL APDoc Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -34,7 +25,7 @@ table 47021 "SL APDoc"
         {
             Caption = 'Apply Amount';
         }
-        field(4; ApplyDate; DateTime)
+        field(4; ApplyDate; Date)
         {
             Caption = 'Apply Date';
         }
@@ -66,7 +57,7 @@ table 47021 "SL APDoc"
         {
             Caption = 'ClearAmt';
         }
-        field(12; ClearDate; DateTime)
+        field(12; ClearDate; Date)
         {
             Caption = 'ClearDate';
         }
@@ -110,7 +101,7 @@ table 47021 "SL APDoc"
         {
             Caption = 'CuryDocBal';
         }
-        field(23; CuryEffDate; DateTime)
+        field(23; CuryEffDate; Date)
         {
             Caption = 'CuryEffDateDate';
         }
@@ -186,7 +177,7 @@ table 47021 "SL APDoc"
         {
             Caption = 'DiscBal';
         }
-        field(42; DiscDate; DateTime)
+        field(42; DiscDate; Date)
         {
             Caption = 'DiscDate';
         }
@@ -206,7 +197,7 @@ table 47021 "SL APDoc"
         {
             Caption = 'DocClass';
         }
-        field(47; DocDate; DateTime)
+        field(47; DocDate; Date)
         {
             Caption = 'DocDate';
         }
@@ -218,7 +209,7 @@ table 47021 "SL APDoc"
         {
             Caption = 'DocType';
         }
-        field(50; DueDate; DateTime)
+        field(50; DueDate; Date)
         {
             Caption = 'DueDate';
         }
@@ -242,7 +233,7 @@ table 47021 "SL APDoc"
         {
             Caption = 'InstallNbr';
         }
-        field(56; InvcDate; DateTime)
+        field(56; InvcDate; Date)
         {
             Caption = 'InvcDate';
         }
@@ -290,7 +281,7 @@ table 47021 "SL APDoc"
         {
             Caption = 'OrigDocAmt';
         }
-        field(68; PayDate; DateTime)
+        field(68; PayDate; Date)
         {
             Caption = 'PayDate';
         }
@@ -382,11 +373,11 @@ table 47021 "SL APDoc"
         {
             Caption = 'S4Future06';
         }
-        field(91; S4Future07; DateTime)
+        field(91; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(92; S4Future08; DateTime)
+        field(92; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -514,11 +505,11 @@ table 47021 "SL APDoc"
         {
             Caption = 'User6';
         }
-        field(124; User7; DateTime)
+        field(124; User7; Date)
         {
             Caption = 'User7';
         }
-        field(125; User8; DateTime)
+        field(125; User8; Date)
         {
             Caption = 'User8';
         }
@@ -543,4 +534,3 @@ table 47021 "SL APDoc"
         }
     }
 }
-#endif

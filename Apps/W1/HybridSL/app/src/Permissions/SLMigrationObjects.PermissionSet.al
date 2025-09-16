@@ -17,13 +17,29 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL AccountTransactions" = X,
                   table "SL AcctHist" = X,
                   table "SL APAdjust" = X,
+                  table "SL APDoc Buffer" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL APDoc" = X,
                   table "SL APTran" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL APTran Buffer" = X,
                   table "SL APSetup" = X,
                   table "SL AP_Balances" = X,
                   table "SL ARAdjust" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL ARDoc" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL ARDoc Buffer" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL ARTran" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL ARTran Buffer" = X,
                   table "SL ARSetup" = X,
                   table "SL AR_Balances" = X,
                   table "SL Batch" = X,
@@ -35,7 +51,12 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL Fiscal Periods" = X,
                   table "SL FlexDef" = X,
                   table "SL GLSetup" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL GLTran" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL GLTran Buffer" = X,
                   table "SL Hist. Source Error" = X,
                   table "SL Hist. Source Progress" = X,
                   table "SL INSetup" = X,
@@ -59,7 +80,12 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL PJEQRate" = X,
                   table "SL PJEquip" = X,
                   table "SL PJPent" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL PJProj" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL PJProj Buffer" = X,
                   table "SL POAddress" = X,
                   table "SL POReceipt" = X,
                   table "SL POSetup" = X,

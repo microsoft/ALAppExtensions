@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47024 "SL ARDoc"
+table 47074 "SL ARDoc Buffer"
 {
     Access = Internal;
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL ARDoc Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -66,7 +57,7 @@ table 47024 "SL ARDoc"
         {
             Caption = 'BatSeq';
         }
-        field(12; Cleardate; DateTime)
+        field(12; Cleardate; Date)
         {
             Caption = 'Cleardate';
         }
@@ -126,7 +117,7 @@ table 47024 "SL ARDoc"
         {
             Caption = 'CuryDocBal';
         }
-        field(27; CuryEffDate; DateTime)
+        field(27; CuryEffDate; Date)
         {
             Caption = 'CuryEffDate';
         }
@@ -206,7 +197,7 @@ table 47024 "SL ARDoc"
         {
             Caption = 'DiscBal';
         }
-        field(47; DiscDate; DateTime)
+        field(47; DiscDate; Date)
         {
             Caption = 'DiscDate';
         }
@@ -218,7 +209,7 @@ table 47024 "SL ARDoc"
         {
             Caption = 'DocClass';
         }
-        field(50; DocDate; DateTime)
+        field(50; DocDate; Date)
         {
             Caption = 'DocDate';
         }
@@ -234,7 +225,7 @@ table 47024 "SL ARDoc"
         {
             Caption = 'DraftIssued';
         }
-        field(54; DueDate; DateTime)
+        field(54; DueDate; Date)
         {
             Caption = 'DueDate';
         }
@@ -366,11 +357,11 @@ table 47024 "SL ARDoc"
         {
             Caption = 'S4Future06';
         }
-        field(91; S4Future07; DateTime)
+        field(91; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(92; S4Future08; DateTime)
+        field(92; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -410,7 +401,7 @@ table 47024 "SL ARDoc"
         {
             Caption = 'StmtBal';
         }
-        field(102; StmtDate; DateTime)
+        field(102; StmtDate; Date)
         {
             Caption = 'StmtDate';
         }
@@ -510,11 +501,11 @@ table 47024 "SL ARDoc"
         {
             Caption = 'User6';
         }
-        field(127; User7; DateTime)
+        field(127; User7; Date)
         {
             Caption = 'User7';
         }
-        field(128; User8; DateTime)
+        field(128; User8; Date)
         {
             Caption = 'User8';
         }
@@ -532,4 +523,3 @@ table 47024 "SL ARDoc"
         }
     }
 }
-#endif

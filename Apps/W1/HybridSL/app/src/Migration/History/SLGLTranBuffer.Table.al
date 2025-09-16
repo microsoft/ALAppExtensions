@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47050 "SL GLTran"
+table 47077 "SL GLTran Buffer"
 {
     Access = Internal;
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL GLTran Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -26,7 +17,7 @@ table 47050 "SL GLTran"
         {
             Caption = 'Acct';
         }
-        field(2; AppliedDate; DateTime)
+        field(2; AppliedDate; Date)
         {
             Caption = 'AppliedDate';
         }
@@ -70,7 +61,7 @@ table 47050 "SL GLTran"
         {
             Caption = 'CuryDrAmt';
         }
-        field(13; CuryEffDate; DateTime)
+        field(13; CuryEffDate; Date)
         {
             Caption = 'CuryEffDate';
         }
@@ -242,11 +233,11 @@ table 47050 "SL GLTran"
         {
             Caption = 'S4Future06';
         }
-        field(57; S4Future07; DateTime)
+        field(57; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(58; S4Future08; DateTime)
+        field(58; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -266,7 +257,7 @@ table 47050 "SL GLTran"
         {
             Caption = 'S4Future12';
         }
-        field(64; ServiceDate; DateTime)
+        field(64; ServiceDate; Date)
         {
             Caption = 'ServiceDate';
         }
@@ -278,7 +269,7 @@ table 47050 "SL GLTran"
         {
             Caption = 'TaskID';
         }
-        field(67; TranDate; DateTime)
+        field(67; TranDate; Date)
         {
             Caption = 'TranDate';
         }
@@ -318,11 +309,11 @@ table 47050 "SL GLTran"
         {
             Caption = 'User6';
         }
-        field(78; User7; DateTime)
+        field(78; User7; Date)
         {
             Caption = 'User7';
         }
-        field(79; User8; DateTime)
+        field(79; User8; Date)
         {
             Caption = 'User8';
         }
@@ -336,4 +327,3 @@ table 47050 "SL GLTran"
         }
     }
 }
-#endif

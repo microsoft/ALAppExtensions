@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47025 "SL ARTran"
+table 47076 "SL ARTran Buffer"
 {
     Access = Internal;
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL ARTran Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -266,11 +257,11 @@ table 47025 "SL ARTran"
         {
             Caption = 'S4Future06';
         }
-        field(62; S4Future07; DateTime)
+        field(62; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(63; S4Future08; DateTime)
+        field(63; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -298,7 +289,7 @@ table 47025 "SL ARTran"
         {
             Caption = 'ServiceCallLineNbr';
         }
-        field(70; ServiceDate; DateTime)
+        field(70; ServiceDate; Date)
         {
             Caption = 'ServiceDate';
         }
@@ -386,7 +377,7 @@ table 47025 "SL ARTran"
         {
             Caption = 'TranClass';
         }
-        field(92; TranDate; DateTime)
+        field(92; TranDate; Date)
         {
             Caption = 'TranDate';
         }
@@ -446,11 +437,11 @@ table 47025 "SL ARTran"
         {
             Caption = 'User6';
         }
-        field(107; User7; DateTime)
+        field(107; User7; Date)
         {
             Caption = 'User7';
         }
-        field(108; User8; DateTime)
+        field(108; User8; Date)
         {
             Caption = 'User8';
         }
@@ -468,4 +459,3 @@ table 47025 "SL ARTran"
         }
     }
 }
-#endif

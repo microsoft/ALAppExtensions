@@ -230,13 +230,13 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL AcctHist", 'AcctHist');
         UpdateOrInsertRecord(Database::"SL Batch", 'Batch');
         UpdateOrInsertRecord(Database::"SL GLSetup", 'GLSetup');
-        UpdateOrInsertRecord(Database::"SL GLTran", 'GLTran');
+        UpdateOrInsertRecord(Database::"SL GLTran Buffer", 'GLTran');
         // Payables
         UpdateOrInsertRecord(Database::"SL AP_Balances", 'AP_Balances');
         UpdateOrInsertRecord(Database::"SL APAdjust", 'APAdjust');
-        UpdateOrInsertRecord(Database::"SL APDoc", 'APDoc');
+        UpdateOrInsertRecord(Database::"SL APDoc Buffer", 'APDoc');
         UpdateOrInsertRecord(Database::"SL APSetup", 'APSetup');
-        UpdateOrInsertRecord(Database::"SL APTran", 'APTran');
+        UpdateOrInsertRecord(Database::"SL APTran Buffer", 'APTran');
         UpdateOrInsertRecord(Database::"SL POAddress", 'POAddress');
         UpdateOrInsertRecord(Database::"SL POReceipt", 'POReceipt');
         UpdateOrInsertRecord(Database::"SL POSetup", 'POSetup');
@@ -248,9 +248,9 @@ codeunit 47012 "SL Hybrid Wizard"
         // Receivables
         UpdateOrInsertRecord(Database::"SL AR_Balances", 'AR_Balances');
         UpdateOrInsertRecord(Database::"SL ARAdjust", 'ARAdjust');
-        UpdateOrInsertRecord(Database::"SL ARDoc", 'ARDoc');
+        UpdateOrInsertRecord(Database::"SL ARDoc Buffer", 'ARDoc');
         UpdateOrInsertRecord(Database::"SL ARSetup", 'ARSetup');
-        UpdateOrInsertRecord(Database::"SL ARTran", 'ARTran');
+        UpdateOrInsertRecord(Database::"SL ARTran Buffer", 'ARTran');
         UpdateOrInsertRecord(Database::"SL CustClass", 'CustClass');
         UpdateOrInsertRecord(Database::"SL Customer", 'Customer');
         UpdateOrInsertRecord(Database::"SL SOAddress", 'SOAddress');
@@ -285,7 +285,7 @@ codeunit 47012 "SL Hybrid Wizard"
         UpdateOrInsertRecord(Database::"SL PJEquip", 'PJEquip');
         UpdateOrInsertRecord(Database::"SL PJEQRate", 'PJEQRate');
         UpdateOrInsertRecord(Database::"SL PJPent", 'PJPent');
-        UpdateOrInsertRecord(Database::"SL PJProj", 'PJProj');
+        UpdateOrInsertRecord(Database::"SL PJProj Buffer", 'PJProj');
     end;
 
     internal procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])

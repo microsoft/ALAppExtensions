@@ -17,14 +17,30 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Account Staging Setup" = IMD,
                   tabledata "SL AcctHist" = IMD,
                   tabledata "SL APAdjust" = IMD,
-                  tabledata "SL APDoc" = IMD,
+                  tabledata "SL APDoc Buffer" = IMD,
                   tabledata "SL APSetup" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL APDoc" = IMD,
                   tabledata "SL APTran" = IMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL APTran Buffer" = IMD,
                   tabledata "SL AP_Balances" = IMD,
                   tabledata "SL ARAdjust" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL ARDoc" = IMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL ARDoc Buffer" = IMD,
                   tabledata "SL ARSetup" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL ARTran" = IMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL ARTran Buffer" = RIMD,
                   tabledata "SL AR_Balances" = IMD,
                   tabledata "SL Batch" = IMD,
                   tabledata "SL Codes" = IMD,
@@ -35,7 +51,11 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Fiscal Periods" = IMD,
                   tabledata "SL FlexDef" = IMD,
                   tabledata "SL GLSetup" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL GLTran" = IMD,
+#pragma warning restore AL0432
+#endif
                   tabledata "SL Hist. Source Error" = IMD,
                   tabledata "SL Hist. Source Progress" = IMD,
                   tabledata "SL INSetup" = IMD,
@@ -59,7 +79,12 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL PJEQRate" = IMD,
                   tabledata "SL PJEquip" = IMD,
                   tabledata "SL PJPent" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL PJProj" = IMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL PJProj Buffer" = IMD,
                   tabledata "SL POAddress" = IMD,
                   tabledata "SL POReceipt" = IMD,
                   tabledata "SL POSetup" = IMD,
