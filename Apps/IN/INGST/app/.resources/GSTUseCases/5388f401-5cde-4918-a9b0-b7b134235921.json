@@ -1,0 +1,145 @@
+[
+    {
+        "CaseID": "{5388F401-5CDE-4918-A9B0-B7B134235921}",
+        "Description": "Intra-state Subcontracting GST For Delivery Challan Line for Registered Vendor",
+        "Version": 2,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "Delivery Challan Line",
+        "ParentUseCase": "Subcontracting GST For Delivery Challan Line",
+        "ParentCaseId": "{23B7CD0D-EA02-4835-9AE8-875813B138F0}",
+        "PresentationOrder": 495,
+        "Indent": 1,
+        "Attributes": [],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "SGST",
+                "Sequence": 1,
+                "Formula": {
+                    "VariableName": "SGST",
+                    "Expression": "{GSTBaseAmount}*{GSTPer}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Delivery Challan Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{GSTPer}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "SGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "CGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "CGST",
+                    "Expression": "{GSTBaseAmount}*{GStPer}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Delivery Challan Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{GStPer}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "CGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "GST Base Amount",
+                "Sequence": 2,
+                "Formula": {
+                    "VariableName": "GST Base Amount",
+                    "Expression": "{GSTBaseAmount}",
+                    "Tokens": [
+                        {
+                            "TokenName": "{GSTBaseAmount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Delivery Challan Line",
+                                    "FieldName": "GST Base Amount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Delivery Challan Line",
+                            "FieldName": "Location State Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Delivery Challan Line",
+                            "FieldName": "Vendor State Code"
+                        }
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Delivery Challan Line",
+                            "FieldName": "GST Vendor Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Registered"
+                    }
+                }
+            ]
+        }
+    }
+]

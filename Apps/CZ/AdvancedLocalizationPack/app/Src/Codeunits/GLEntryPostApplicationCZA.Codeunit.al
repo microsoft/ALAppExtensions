@@ -411,8 +411,8 @@ codeunit 31370 "G/L Entry Post Application CZA"
     begin
         IsOk :=
             (GLEntry."G/L Account No." = ApplyingGLEntry."G/L Account No.") and
-            ((GLEntry.Amount * ApplyingGLEntry.Amount) < 0) and
-            (GLEntry.Amount <> 0);
+            ((GLEntry.Amount <> 0) and ((GLEntry.Amount * ApplyingGLEntry.Amount) < 0)) or
+            (GLEntry.Amount = 0);
         OnAfterIsAppliedEntry(GLEntry, ApplyingGLEntry, IsOk);
     end;
 

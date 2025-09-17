@@ -1,6 +1,7 @@
 codeunit 148041 "MX DIOT UT"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

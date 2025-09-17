@@ -36,6 +36,11 @@ pageextension 6218 "Sust. Purch. Statistics" extends "Purchase Statistics"
                     Caption = 'Emission N2O';
                     ToolTip = 'Specifies the Energy Consumption.';
                 }
+                field("Total Emission Cost"; Rec."Total Emission Cost")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the Total CBAM Cost for Purchase Order';
+                }
                 field("Posted Emission C02"; Rec."Posted Emission C02")
                 {
                     ApplicationArea = Basic, Suite;
@@ -59,6 +64,11 @@ pageextension 6218 "Sust. Purch. Statistics" extends "Purchase Statistics"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Posted Energy Consumption';
                     ToolTip = 'Specifies the posted Energy Consumption.';
+                }
+                field("Posted Total Emission Cost"; Rec."Posted Total Emission Cost")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the Posted Total Emission Cost for Purchase Order';
                 }
             }
         }

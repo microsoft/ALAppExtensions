@@ -1246,10 +1246,13 @@ codeunit 18143 "GST Sales Validation"
                 "GST Customer Type"::"SEZ Development",
                 "GST Customer Type"::"SEZ Unit",
                 "GST Customer Type"::Registered,
-                "GST Customer Type"::Unregistered]
+                "GST Customer Type"::Unregistered,
+                "GST Customer Type"::Export]
             then begin
-                ShipToAddress.TestField(State);
-                if SalesHeader."GST Customer Type" <> SalesHeader."GST Customer Type"::Unregistered then
+                if ShipToAddress."Ship-to GST Customer Type" <> "GST Customer Type"::" " then
+                    ShipToAddress.TestField(State);
+
+                if not (SalesHeader."GST Customer Type" in ["GST Customer Type"::Unregistered, "GST Customer Type"::Export]) then
                     if ShipToAddress."GST Registration No." = '' then
                         if ShipToAddress."ARN No." = '' then
                             Error(ShiptoGSTARNErr);

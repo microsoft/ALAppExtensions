@@ -7,6 +7,7 @@ namespace Microsoft.Finance.ExcelReports;
 
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.Consolidation;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 table 4402 "EXR Trial Balance Buffer"
 {
@@ -41,6 +42,8 @@ table 4402 "EXR Trial Balance Buffer"
         field(10; "Net Change"; Decimal)
         {
             Caption = 'Net Change';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
 
             trigger OnValidate()
             begin
@@ -57,14 +60,20 @@ table 4402 "EXR Trial Balance Buffer"
         field(11; "Net Change (Debit)"; Decimal)
         {
             Caption = 'Net Change (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(12; "Net Change (Credit)"; Decimal)
         {
             Caption = 'Net Change (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(13; Balance; Decimal)
         {
             Caption = 'Balance';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
 
             trigger OnValidate()
             begin
@@ -81,30 +90,72 @@ table 4402 "EXR Trial Balance Buffer"
         field(14; "Balance (Debit)"; Decimal)
         {
             Caption = 'Balance (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(15; "Balance (Credit)"; Decimal)
         {
             Caption = 'Balance (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
+        }
+        field(16; "Starting Balance"; Decimal)
+        {
+            Caption = 'Starting Balance';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
+
+            trigger OnValidate()
+            begin
+                if ("Starting Balance" > 0) then begin
+                    Validate("Starting Balance (Debit)", "Starting Balance");
+                    Validate("Starting Balance (Credit)", 0);
+                end
+                else begin
+                    Validate("Starting Balance (Credit)", -"Starting Balance");
+                    Validate("Starting Balance (Debit)", 0);
+                end;
+            end;
+        }
+        field(17; "Starting Balance (Debit)"; Decimal)
+        {
+            Caption = 'Starting Balance (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
+        }
+        field(18; "Starting Balance (Credit)"; Decimal)
+        {
+            Caption = 'Starting Balance (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(20; "Budget (Net)"; Decimal)
         {
             Caption = 'Budget';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(21; "% of Budget Net"; Decimal)
         {
             Caption = '% of Budget Net';
+            AutoFormatType = 0;
         }
         field(22; "Budget (Bal. at Date)"; Decimal)
         {
             Caption = 'Budget (Bal. at Date)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(23; "% of Budget Bal."; Decimal)
         {
             Caption = '% of Budget Bal.';
+            AutoFormatType = 0;
         }
         field(50; "Last Period Net"; Decimal)
         {
             Caption = 'Last Period Net';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
 
             trigger OnValidate()
             begin
@@ -121,14 +172,20 @@ table 4402 "EXR Trial Balance Buffer"
         field(51; "Last Period Net (Debit)"; Decimal)
         {
             Caption = 'Last Period Net (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(52; "Last Period Net (Credit)"; Decimal)
         {
             Caption = 'Last Period Net (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(60; "Last Period Bal."; Decimal)
         {
             Caption = 'Last Period Bal.';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
 
             trigger OnValidate()
             begin
@@ -145,34 +202,46 @@ table 4402 "EXR Trial Balance Buffer"
         field(61; "Last Period Bal. (Debit)"; Decimal)
         {
             Caption = 'Last Period Bal. (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(62; "Last Period Bal. (Credit)"; Decimal)
         {
             Caption = 'Last Period Bal. (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(70; "Net Variance"; Decimal)
         {
             Caption = 'Net Variance';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(71; "% of Net Variance"; Decimal)
         {
             Caption = '% of Net Variance';
+            AutoFormatType = 0;
         }
         field(80; "Bal. Variance"; Decimal)
         {
             Caption = 'Bal. Variance';
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
         field(81; "% of Bal. Variance"; Decimal)
         {
             Caption = '% of Bal. Variance';
+            AutoFormatType = 0;
         }
         field(110; "Net Change (ACY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
             Caption = 'Net Change';
 
             trigger OnValidate()
             begin
-                if ("Net Change" > 0) then begin
+                if ("Net Change (ACY)" > 0) then begin
                     Validate("Net Change (Debit) (ACY)", "Net Change (ACY)");
                     Validate("Net Change (Credit) (ACY)", 0);
                 end
@@ -185,18 +254,24 @@ table 4402 "EXR Trial Balance Buffer"
         field(111; "Net Change (Debit) (ACY)"; Decimal)
         {
             Caption = 'Net Change (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
         field(112; "Net Change (Credit) (ACY)"; Decimal)
         {
             Caption = 'Net Change (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
         field(113; "Balance (ACY)"; Decimal)
         {
             Caption = 'Balance';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
 
             trigger OnValidate()
             begin
-                if ("Balance" > 0) then begin
+                if ("Balance (ACY)" > 0) then begin
                     Validate("Balance (Debit) (ACY)", "Balance (ACY)");
                     Validate("Balance (Credit) (ACY)", 0);
                 end
@@ -209,18 +284,54 @@ table 4402 "EXR Trial Balance Buffer"
         field(114; "Balance (Debit) (ACY)"; Decimal)
         {
             Caption = 'Balance (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
         field(115; "Balance (Credit) (ACY)"; Decimal)
         {
             Caption = 'Balance (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
+        }
+        field(116; "Starting Balance (ACY)"; Decimal)
+        {
+            Caption = 'Starting Balance';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
+
+            trigger OnValidate()
+            begin
+                if ("Starting Balance (ACY)" > 0) then begin
+                    Validate("Starting Balance (Debit) (ACY)", "Starting Balance (ACY)");
+                    Validate("Starting Balance (Credit)(ACY)", 0);
+                end
+                else begin
+                    Validate("Starting Balance (Credit)(ACY)", -"Starting Balance (ACY)");
+                    Validate("Starting Balance (Debit) (ACY)", 0);
+                end;
+            end;
+        }
+        field(117; "Starting Balance (Debit) (ACY)"; Decimal)
+        {
+            Caption = 'Starting Balance (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
+        }
+        field(118; "Starting Balance (Credit)(ACY)"; Decimal)
+        {
+            Caption = 'Starting Balance (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
         field(150; "Last Period Net (ACY)"; Decimal)
         {
             Caption = 'Last Period Net';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
 
             trigger OnValidate()
             begin
-                if ("Last Period Net" > 0) then begin
+                if ("Last Period Net (ACY)" > 0) then begin
                     Validate("Last Period Net (Debit) (ACY)", "Last Period Net (ACY)");
                     Validate("Last Period Net (Credit) (ACY)", 0);
                 end
@@ -232,19 +343,25 @@ table 4402 "EXR Trial Balance Buffer"
         }
         field(151; "Last Period Net (Debit) (ACY)"; Decimal)
         {
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
             Caption = 'Last Period Net (Debit)';
         }
         field(152; "Last Period Net (Credit) (ACY)"; Decimal)
         {
             Caption = 'Last Period Net (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
         field(160; "Last Period Bal. (ACY)"; Decimal)
         {
             Caption = 'Last Period Bal.';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
 
             trigger OnValidate()
             begin
-                if ("Last Period Bal." > 0) then begin
+                if ("Last Period Bal. (ACY)" > 0) then begin
                     Validate("Last Period Bal. (Debit) (ACY)", "Last Period Bal. (ACY)");
                     Validate("Last Period Bal. (Cred.) (ACY)", 0);
                 end
@@ -257,26 +374,36 @@ table 4402 "EXR Trial Balance Buffer"
         field(161; "Last Period Bal. (Debit) (ACY)"; Decimal)
         {
             Caption = 'Last Period Bal. (Debit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
         field(162; "Last Period Bal. (Cred.) (ACY)"; Decimal)
         {
             Caption = 'Last Period Bal. (Credit)';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
         field(170; "Net Variance (ACY)"; Decimal)
         {
             Caption = 'Net Variance';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
         field(171; "% of Net Variance (ACY)"; Decimal)
         {
             Caption = '% of Net Variance';
+            AutoFormatType = 0;
         }
         field(180; "Bal. Variance (ACY)"; Decimal)
         {
             Caption = 'Bal. Variance';
+            AutoFormatType = 1;
+            AutoFormatExpression = GetAdditionalReportingCurrencyCode();
         }
         field(181; "% of Bal. Variance (ACY)"; Decimal)
         {
             Caption = '% of Bal. Variance';
+            AutoFormatType = 0;
         }
         field(200; "All Zero"; Boolean)
         {
@@ -313,6 +440,10 @@ table 4402 "EXR Trial Balance Buffer"
     begin
         CheckAllZero();
     end;
+
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        GLSetupRead: Boolean;
 
     internal procedure CalculateVariances()
     begin
@@ -371,5 +502,15 @@ table 4402 "EXR Trial Balance Buffer"
             ("Last Period Bal. (ACY)" = 0) and
             ("Net Variance (ACY)" = 0) and
             ("Bal. Variance (ACY)" = 0);
+    end;
+
+    local procedure GetAdditionalReportingCurrencyCode(): Code[10]
+    begin
+        if not GLSetupRead then begin
+            GeneralLedgerSetup.Get();
+            GLSetupRead := true;
+        end;
+
+        exit(GeneralLedgerSetup."Additional Reporting Currency");
     end;
 }

@@ -1,6 +1,7 @@
 codeunit 139769 "Bank Deposit Posting Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -817,7 +818,12 @@ codeunit 139769 "Bank Deposit Posting Tests"
         // [THEN] Posted Bank Deposit X has reversed = false
         // [THEN] Posted Bank Deposit Y has reversed = true
         // [THEN] Posted Bank Deposit Z has reversed = false
-        VerifyReversedOnPostedBankDepositList();
+        PostedBankDepositHeader.Get(BankDepositHeader[1]."No.");
+        VerifyReversedOnPostedBankDepositCard(PostedBankDepositHeader, false);
+        PostedBankDepositHeader.Get(BankDepositHeader[2]."No.");
+        VerifyReversedOnPostedBankDepositCard(PostedBankDepositHeader, true);
+        PostedBankDepositHeader.Get(BankDepositHeader[3]."No.");
+        VerifyReversedOnPostedBankDepositCard(PostedBankDepositHeader, false);
     end;
 
     [Test]
@@ -1218,19 +1224,17 @@ codeunit 139769 "Bank Deposit Posting Tests"
         exit(GenJournalBatch.Name);
     end;
 
-    local procedure VerifyReversedOnPostedBankDepositList()
+    local procedure VerifyReversedOnPostedBankDepositCard(var PostedBankDepositHeader: Record "Posted Bank Deposit Header"; ExpectedReversed: Boolean)
     var
-        PostedBankDepositList: TestPage "Posted Bank Deposit List";
+        PostedBankDepositCard: TestPage "Posted Bank Deposit";
+        ActualReversedValue: Boolean;
         ReversedErr: Label 'Reversed field is not calculated correctly.';
     begin
-        PostedBankDepositList.OpenEdit();
-        PostedBankDepositList.First();
-        Assert.IsFalse(PostedBankDepositList.Reversed.AsBoolean(), ReversedErr);
-        PostedBankDepositList.Next();
-        Assert.IsTrue(PostedBankDepositList.Reversed.AsBoolean(), ReversedErr);
-        PostedBankDepositList.Next();
-        Assert.IsFalse(PostedBankDepositList.Reversed.AsBoolean(), ReversedErr);
-        PostedBankDepositList.Close();
+        PostedBankDepositCard.OpenView();
+        PostedBankDepositCard.GoToRecord(PostedBankDepositHeader);
+        ActualReversedValue := PostedBankDepositCard.Reversed.AsBoolean();
+        PostedBankDepositCard.Close();
+        Assert.AreEqual(ActualReversedValue, ExpectedReversed, ReversedErr);
     end;
 
     [ModalPageHandler]

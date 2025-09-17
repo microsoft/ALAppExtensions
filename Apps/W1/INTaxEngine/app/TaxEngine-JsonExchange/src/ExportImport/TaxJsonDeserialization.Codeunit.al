@@ -2809,6 +2809,15 @@ codeunit 20361 "Tax Json Deserialization"
         exit(StrSubstNo(VersionLbl, Major, Minor));
     end;
 
+    procedure ExtractJTokenValue(JsonToken: JsonToken; TaxType: Text): Text
+    var
+        Token: JsonToken;
+    begin
+        foreach Token in JsonToken.AsArray() do
+            if Token.AsObject().Contains(TaxType) then
+                exit(GetText250PropertyValue(Token.AsObject(), TaxType));
+    end;
+
     var
         GlobalUseCase: Record "Tax Use Case";
         UseCaseMgmt: Codeunit "Use Case Mgmt.";

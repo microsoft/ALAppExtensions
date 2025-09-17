@@ -8,6 +8,7 @@ using Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.HumanResources.Employee;
+using Microsoft.Integration.Dataverse;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Scorecard;
@@ -16,6 +17,8 @@ using System.Reflection;
 table 6230 "Sust. ESG Reporting Line"
 {
     Caption = 'ESG Reporting Line';
+    LookupPageId = "Sust. ESG Reporting Lines";
+    DrillDownPageId = "Sust. ESG Reporting Lines";
     DataClassification = CustomerContent;
 
     fields
@@ -34,7 +37,7 @@ table 6230 "Sust. ESG Reporting Line"
         {
             Caption = 'Line No.';
         }
-        field(5; "Grouping"; Code[10])
+        field(5; "Grouping"; Text[100])
         {
             Caption = 'Grouping';
         }
@@ -42,11 +45,11 @@ table 6230 "Sust. ESG Reporting Line"
         {
             Caption = 'Row No.';
         }
-        field(7; Description; Text[100])
+        field(7; Description; Text[500])
         {
             Caption = 'Description';
         }
-        field(8; "Reporting Code"; Code[20])
+        field(8; "Reporting Code"; Text[100])
         {
             Caption = 'Reporting Code';
         }
@@ -58,6 +61,9 @@ table 6230 "Sust. ESG Reporting Line"
             begin
                 if (Rec."Field Type" <> Rec."Field Type"::"Table Field") and (xRec."Field Type" = Rec."Field Type"::"Table Field") then
                     Rec.Validate("Table No.", 0);
+
+                if Rec."Field Type" <> xRec."Field Type" then
+                    Rec."Row Totaling" := '';
             end;
         }
         field(10; "Table No."; Integer)
@@ -145,6 +151,7 @@ table 6230 "Sust. ESG Reporting Line"
         field(25; "Reporting Unit"; Code[20])
         {
             Caption = 'Reporting Unit';
+            TableRelation = "Sust. ESG Reporting Unit".Code;
         }
         field(27; "Row Type"; Option)
         {
@@ -155,6 +162,13 @@ table 6230 "Sust. ESG Reporting Line"
         field(28; "Row Totaling"; Text[50])
         {
             Caption = 'Row Totaling';
+
+            trigger OnValidate()
+            begin
+                Rec.TestField("Field Type", Rec."Field Type"::Formula);
+
+                CheckFormula(UpperCase(Rec."Row Totaling"));
+            end;
         }
         field(30; "Calculate With"; Option)
         {
@@ -180,6 +194,51 @@ table 6230 "Sust. ESG Reporting Line"
         {
             Caption = 'Goal SystemID';
         }
+        field(36; "Concept Link"; Text[840])
+        {
+            Caption = 'Concept Link';
+        }
+        field(37; "Concept"; Text[400])
+        {
+            Caption = 'Concept';
+        }
+        field(40; "Coupled to Dataverse"; Boolean)
+        {
+            FieldClass = FlowField;
+            Caption = 'Coupled to Dataverse';
+            Editable = false;
+            CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Sust. ESG Reporting Line")));
+            ToolTip = 'Specifies that the reporting line is coupled to an assessment requirement in Dataverse.';
+        }
+        field(55; "Derived From SystemId"; Guid)
+        {
+            Caption = 'Derived From SystemId';
+            TableRelation = "Sust. ESG Reporting Line".SystemId;
+        }
+        field(60; "Assessment ID"; Guid)
+        {
+            Caption = 'Assessment ID';
+        }
+        field(61; "Standard Requirement ID"; Guid)
+        {
+            Caption = 'Standard Requirement ID';
+        }
+        field(62; "Parent Standard Requirement ID"; Guid)
+        {
+            Caption = 'Parent Standard Requirement ID';
+        }
+        field(63; "Requirement Concept ID"; Guid)
+        {
+            Caption = 'Requirement Concept ID';
+        }
+        field(64; "Concept ID"; Guid)
+        {
+            Caption = 'Concept ID';
+        }
+        field(65; "Assessment Requirement ID"; Guid)
+        {
+            Caption = 'Assessment Requirement ID';
+        }
     }
 
     keys
@@ -192,6 +251,11 @@ table 6230 "Sust. ESG Reporting Line"
 
     var
         EmptyGuid: Guid;
+        MisPlacedParenthesisErr: Label 'The parenthesis at position %1 is misplaced.', Comment = '%1 = Position No.';
+        ConsecutiveOperatorsErr: Label 'You cannot have two consecutive operators. The error occurred at position %1.', Comment = '%1 = Position No.';
+        MissingOperandErr: Label 'There is an operand missing after position %1.', Comment = '%1 = Position No.';
+        MoreLeftParenthesesThanRightErr: Label 'There are more left parentheses than right parentheses.';
+        MoreRightParenthesesThanLeftErr: Label 'There are more right parentheses than left parentheses.';
 
     procedure LookupTotaling()
     var
@@ -237,5 +301,43 @@ table 6230 "Sust. ESG Reporting Line"
                         Validate("Account Filter", EmployeeList.GetSelectionFilter());
                 end;
         end;
+    end;
+
+    local procedure CheckFormula(Formula: Code[250])
+    var
+        Position: Integer;
+        ParenthesesLevel: Integer;
+        HasOperator: Boolean;
+    begin
+        ParenthesesLevel := 0;
+        for Position := 1 to StrLen(Formula) do begin
+            if Formula[Position] = '(' then
+                ParenthesesLevel := ParenthesesLevel + 1
+            else
+                if Formula[Position] = ')' then
+                    ParenthesesLevel := ParenthesesLevel - 1;
+
+            if ParenthesesLevel < 0 then
+                Error(MisPlacedParenthesisErr, Position);
+
+            if Formula[Position] in ['+', '-', '*', '/', '^'] then begin
+                if HasOperator then
+                    Error(ConsecutiveOperatorsErr, Position);
+
+                HasOperator := true;
+                if Position = StrLen(Formula) then
+                    Error(MissingOperandErr, Position);
+
+                if Formula[Position + 1] = ')' then
+                    Error(MissingOperandErr, Position);
+            end else
+                HasOperator := false;
+        end;
+
+        if ParenthesesLevel > 0 then
+            Error(MoreLeftParenthesesThanRightErr);
+
+        if ParenthesesLevel < 0 then
+            Error(MoreRightParenthesesThanLeftErr);
     end;
 }

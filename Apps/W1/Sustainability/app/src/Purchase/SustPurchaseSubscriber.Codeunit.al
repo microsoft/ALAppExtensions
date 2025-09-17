@@ -19,12 +19,13 @@ codeunit 6225 "Sust. Purchase Subscriber"
     local procedure OnValidateQuantityOnBeforeResetAmounts(var PurchaseLine: Record "Purchase Line")
     begin
         PurchaseLine.UpdateSustainabilityEmission(PurchaseLine);
+        PurchaseLine.UpdateCarbonPricingInPurchLine(PurchaseLine);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchLine', '', false, false)]
     local procedure OnAfterPostPurchLine(var PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; SrcCode: Code[10]; GenJnlLineDocNo: Code[20])
     begin
-        if (PurchaseHeader.Invoice) and (PurchaseLine."Qty. to Invoice" <> 0) and (PurchaseLine.Type <> PurchaseLine.Type::"Charge (Item)") then
+        if (PurchaseHeader.Invoice) and (PurchaseLine."Qty. to Invoice" <> 0) then
             PostSustainabilityLine(PurchaseHeader, PurchaseLine, SrcCode, GenJnlLineDocNo);
     end;
 
@@ -38,25 +39,25 @@ codeunit 6225 "Sust. Purchase Subscriber"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnInsertReceiptLineOnAfterInitPurchRcptLine', '', false, false)]
     local procedure OnInsertReceiptLineOnAfterInitPurchRcptLine(PurchLine: Record "Purchase Line"; var PurchRcptLine: Record "Purch. Rcpt. Line")
     begin
-        UpdatePostedSustainabilityEmission(PurchLine, PurchRcptLine.Quantity, 1, PurchRcptLine."Emission CO2", PurchRcptLine."Emission CH4", PurchRcptLine."Emission N2O", PurchRcptLine."Energy Consumption");
+        UpdatePostedSustainabilityEmission(PurchLine, PurchRcptLine.Quantity, 1, PurchRcptLine."Emission CO2", PurchRcptLine."Emission CH4", PurchRcptLine."Emission N2O", PurchRcptLine."Energy Consumption", PurchRcptLine."Total Emission Cost");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnInsertReturnShipmentLineOnAfterReturnShptLineInit', '', false, false)]
     local procedure OnInsertReturnShipmentLineOnAfterReturnShptLineInit(PurchLine: Record "Purchase Line"; var ReturnShptLine: Record "Return Shipment Line")
     begin
-        UpdatePostedSustainabilityEmission(PurchLine, ReturnShptLine.Quantity, 1, ReturnShptLine."Emission CO2", ReturnShptLine."Emission CH4", ReturnShptLine."Emission N2O", ReturnShptLine."Energy Consumption");
+        UpdatePostedSustainabilityEmission(PurchLine, ReturnShptLine.Quantity, 1, ReturnShptLine."Emission CO2", ReturnShptLine."Emission CH4", ReturnShptLine."Emission N2O", ReturnShptLine."Energy Consumption", ReturnShptLine."Total Emission Cost");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePurchInvLineInsert', '', false, false)]
     local procedure OnBeforePurchInvLineInsert(var PurchaseLine: Record "Purchase Line"; var PurchInvLine: Record "Purch. Inv. Line")
     begin
-        UpdatePostedSustainabilityEmission(PurchaseLine, PurchInvLine.Quantity, 1, PurchInvLine."Emission CO2", PurchInvLine."Emission CH4", PurchInvLine."Emission N2O", PurchInvLine."Energy Consumption");
+        UpdatePostedSustainabilityEmission(PurchaseLine, PurchInvLine.Quantity, 1, PurchInvLine."Emission CO2", PurchInvLine."Emission CH4", PurchInvLine."Emission N2O", PurchInvLine."Energy Consumption", PurchInvLine."Total Emission Cost");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePurchCrMemoLineInsert', '', false, false)]
     local procedure OnBeforePurchCrMemoLineInsert(PurchLine: Record "Purchase Line"; var PurchCrMemoLine: Record "Purch. Cr. Memo Line")
     begin
-        UpdatePostedSustainabilityEmission(PurchLine, PurchCrMemoLine.Quantity, 1, PurchCrMemoLine."Emission CO2", PurchCrMemoLine."Emission CH4", PurchCrMemoLine."Emission N2O", PurchCrMemoLine."Energy Consumption");
+        UpdatePostedSustainabilityEmission(PurchLine, PurchCrMemoLine.Quantity, 1, PurchCrMemoLine."Emission CO2", PurchCrMemoLine."Emission CH4", PurchCrMemoLine."Emission N2O", PurchCrMemoLine."Energy Consumption", PurchCrMemoLine."Total Emission Cost");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Preview", 'OnAfterBindSubscription', '', false, false)]
@@ -86,6 +87,17 @@ codeunit 6225 "Sust. Purchase Subscriber"
         PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
         if (ItemJournalLine.Quantity <> 0) or (ItemJournalLine."Invoiced Quantity" <> 0) then
             CheckAndUpdateSustainabilityItemJournalLine(ItemJournalLine, PurchaseHeader, PurchaseLine, TempItemChargeAssignmentPurch);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineJobConsumptionOnBeforeRunItemJnlPostLineWithReservation', '', false, false)]
+    local procedure OnPostItemJnlLineJobConsumption(var ItemJournalLine: Record "Item Journal Line"; var PurchaseLine: Record "Purchase Line")
+    var
+        PurchHeader: Record "Purchase Header";
+        TempItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)" temporary;
+    begin
+        PurchHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+        if ((ItemJournalLine.Quantity <> 0) or (ItemJournalLine."Invoiced Quantity" <> 0)) then
+            CheckAndUpdateSustainabilityItemJournalLine(ItemJournalLine, PurchHeader, PurchaseLine, TempItemChargeAssignmentPurch);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnNotHandledCopyFromGLAccount', '', false, false)]
@@ -180,7 +192,7 @@ codeunit 6225 "Sust. Purchase Subscriber"
         N2OToPost: Decimal;
         CarbonFee: Decimal;
     begin
-        PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+        PurchaseHeader := PurchaseLine.GetPurchHeader();
         GHGCredit := IsGHGCreditLine(PurchaseLine);
 
         if GHGCredit then begin
@@ -188,9 +200,15 @@ codeunit 6225 "Sust. Purchase Subscriber"
             PurchaseLine.TestField("Emission N2O Per Unit", 0);
         end;
 
-        CO2ToPost := PurchaseLine."Emission CO2 Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
-        CH4ToPost := PurchaseLine."Emission CH4 Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
-        N2OToPost := PurchaseLine."Emission N2O Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
+        if PurchaseLine.Type = PurchaseLine.Type::"Charge (Item)" then begin
+            CO2ToPost := PurchaseLine."Emission CO2 Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
+            CH4ToPost := PurchaseLine."Emission CH4 Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
+            N2OToPost := PurchaseLine."Emission N2O Per Unit" * Abs(PurchaseLine."Qty. to Invoice") * PurchaseLine."Qty. per Unit of Measure";
+        end else begin
+            CO2ToPost := PurchaseLine."Emission CO2 Per Unit" * Abs(PurchaseLine.Quantity) * PurchaseLine."Qty. per Unit of Measure";
+            CH4ToPost := PurchaseLine."Emission CH4 Per Unit" * Abs(PurchaseLine.Quantity) * PurchaseLine."Qty. per Unit of Measure";
+            N2OToPost := PurchaseLine."Emission N2O Per Unit" * Abs(PurchaseLine.Quantity) * PurchaseLine."Qty. per Unit of Measure";
+        end;
         if not SustainabilitySetup.IsValueChainTrackingEnabled() then
             exit;
 
@@ -239,11 +257,13 @@ codeunit 6225 "Sust. Purchase Subscriber"
 
     local procedure CheckAndUpdateSustainabilityItemJournalLine(var ItemJournalLine: Record "Item Journal Line"; PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; var TempItemChargeAssgntPurch: Record "Item Charge Assignment (Purch)" temporary)
     var
+        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
         GHGCredit: Boolean;
         Sign: Integer;
         CO2ToPost: Decimal;
         CH4ToPost: Decimal;
         N2OToPost: Decimal;
+        CarbonFee: Decimal;
     begin
         GHGCredit := IsGHGCreditLine(PurchaseLine);
 
@@ -253,6 +273,9 @@ codeunit 6225 "Sust. Purchase Subscriber"
         end;
 
         Sign := GetPostingSign(PurchaseHeader, GHGCredit);
+
+        if (ItemJournalLine."Job No." <> '') and (ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::"Negative Adjmt.") then
+            Sign := -Sign;
 
         if ItemJournalLine."Invoiced Quantity" <> 0 then begin
             CO2ToPost := PurchaseLine."Emission CO2 Per Unit" * Abs(ItemJournalLine."Invoiced Quantity") * PurchaseLine."Qty. per Unit of Measure";
@@ -284,6 +307,8 @@ codeunit 6225 "Sust. Purchase Subscriber"
             ItemJournalLine."Emission CO2" := CO2ToPost;
             ItemJournalLine."Emission CH4" := CH4ToPost;
             ItemJournalLine."Emission N2O" := N2OToPost;
+            if (ItemJournalLine."Job No." <> '') and (ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::"Negative Adjmt.") then
+                SustainabilityPostMgt.UpdateCarbonFeeEmissionValues("Emission Scope"::" ", PurchaseHeader."Posting Date", PurchaseHeader."Buy-from Country/Region Code", CO2ToPost, N2OToPost, CH4ToPost, ItemJournalLine."Total CO2e", CarbonFee);
         end;
     end;
 
@@ -293,25 +318,28 @@ codeunit 6225 "Sust. Purchase Subscriber"
         PostedEmissionCH4: Decimal;
         PostedEmissionN2O: Decimal;
         PostedEnergyConsumption: Decimal;
+        PostedEmissionCost: Decimal;
         GHGCredit: Boolean;
         Sign: Integer;
     begin
         GHGCredit := IsGHGCreditLine(TempPurchLine);
         Sign := GetPostingSign(PurchHeader, GHGCredit);
 
-        UpdatePostedSustainabilityEmission(TempPurchLine, TempPurchLine."Qty. to Invoice", Sign, PostedEmissionCO2, PostedEmissionCH4, PostedEmissionN2O, PostedEnergyConsumption);
+        UpdatePostedSustainabilityEmission(TempPurchLine, TempPurchLine."Qty. to Invoice", Sign, PostedEmissionCO2, PostedEmissionCH4, PostedEmissionN2O, PostedEnergyConsumption, PostedEmissionCost);
         TempPurchLine."Posted Emission CO2" += PostedEmissionCO2;
         TempPurchLine."Posted Emission CH4" += PostedEmissionCH4;
         TempPurchLine."Posted Emission N2O" += PostedEmissionN2O;
         TempPurchLine."Posted Energy Consumption" += PostedEnergyConsumption;
+        TempPurchLine."Posted Total Emission Cost" += PostedEmissionCost;
     end;
 
-    local procedure UpdatePostedSustainabilityEmission(PurchaseLine: Record "Purchase Line"; Quantity: Decimal; Sign: Integer; var PostedEmissionCO2: Decimal; var PostedEmissionCH4: Decimal; var PostedEmissionN2O: Decimal; var PostedEnergyConsumption: Decimal)
+    local procedure UpdatePostedSustainabilityEmission(PurchaseLine: Record "Purchase Line"; Quantity: Decimal; Sign: Integer; var PostedEmissionCO2: Decimal; var PostedEmissionCH4: Decimal; var PostedEmissionN2O: Decimal; var PostedEnergyConsumption: Decimal; var PostedEmissionCost: Decimal)
     begin
         PostedEmissionCO2 := (PurchaseLine."Emission CO2 Per Unit" * Abs(Quantity) * PurchaseLine."Qty. per Unit of Measure") * Sign;
         PostedEmissionCH4 := (PurchaseLine."Emission CH4 Per Unit" * Abs(Quantity) * PurchaseLine."Qty. per Unit of Measure") * Sign;
         PostedEmissionN2O := (PurchaseLine."Emission N2O Per Unit" * Abs(Quantity) * PurchaseLine."Qty. per Unit of Measure") * Sign;
         PostedEnergyConsumption := (PurchaseLine."Energy Consumption Per Unit" * Abs(Quantity) * PurchaseLine."Qty. per Unit of Measure") * Sign;
+        PostedEmissionCost := (PurchaseLine."Emission Cost Per Unit" * Abs(Quantity) * PurchaseLine."Qty. per Unit of Measure") * Sign;
     end;
 
     local procedure PostSustainabilityLine(PurchaseHeader: Record "Purchase Header"; var PurchaseLine: Record "Purchase Line"; SrcCode: Code[10]; GenJnlLineDocNo: Code[20])

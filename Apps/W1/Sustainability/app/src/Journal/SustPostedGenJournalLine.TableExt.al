@@ -57,6 +57,20 @@ tableextension 6225 "Sust. Posted Gen. Journal Line" extends "Posted Gen. Journa
             CaptionClass = '102,12,3';
             DataClassification = CustomerContent;
         }
+        field(6221; "CO2e per Unit"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'CO2e per Unit';
+            DataClassification = CustomerContent;
+        }
+        field(6222; "Total CO2e"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Total CO2e';
+            DataClassification = CustomerContent;
+        }
     }
 
     var

@@ -3,6 +3,7 @@ codeunit 139848 "APIV2 - Sales Ship. Lines E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

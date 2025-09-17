@@ -90,6 +90,16 @@
       "justification": "The 'application' property must be specified in the app.json file."
     },
     {
+      "id": "AS0138",
+      "action": "None",
+      "justification": "TODO(#572306) - This will require a multi-release effort."
+    },
+    {
+      "id": "AS0139",
+      "action": "None",
+      "justification": "TODO(#595767) - This will be enabled after branching to BC 27."
+    },
+    {
       "id": "PTE0001",
       "action": "None",
       "justification": "Object ID must be in free range."
@@ -125,6 +135,11 @@
       "justification": "We allow moved symbols for Microsoft apps because we run PTECop on the entire codebase which includes global apps."
     },
     {
+      "id": "PTE0026",
+      "action": "None",
+      "justification": "A similar rule (i.e. AS0138) is defined in AppSourceCop."
+    },
+    {
       "id": "AW0006",
       "action": "None",
       "justification": "Pages and reports should use the UsageCategory and ApplicationArea properties to be searchable."
@@ -138,26 +153,6 @@
       "id": "AL0678",
       "action": "None",
       "justification": "Information diagnostic reported on obsolete symbols contributing to metadata name conflicts, ex: 'My Page' and 'My_Page'."
-    },
-    {
-      "id": "AA0471",
-      "action": "None",
-      "justification": "AutoformatType should be defined for decimal fields in Page objects to ensure proper formatting behavior."
-    },
-    {
-      "id": "AA0472",
-      "action": "None",
-      "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
-    },
-    {
-      "id": "AA0473",
-      "action": "None",
-      "justification": "AutoformatType should be defined for decimal fields in Table objects to ensure proper formatting behavior."
-    },
-    {
-      "id": "AA0474",
-      "action": "None",
-      "justification": "AutoformatExpression should be defined when AutoformatType is not default to ensure proper formatting behavior."
     }
   ]
 }

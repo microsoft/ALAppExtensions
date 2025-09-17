@@ -6,16 +6,11 @@ using System.DateTime;
 using System.Security.User;
 using System.Utilities;
 
-#pragma warning disable AS0125
-#pragma warning disable AS0030
 page 36950 "PowerBI Assisted Setup"
-#pragma warning restore AS0030
-#pragma warning restore AS0125
 {
     PageType = NavigatePage;
-    Caption = 'Power BI Assisted Setup';
+    Caption = 'Power BI Content Assisted Setup';
     SourceTable = "PowerBI Reports Setup";
-    Extensible = false;
 
     layout
     {
@@ -363,20 +358,32 @@ page 36950 "PowerBI Assisted Setup"
                                 ApplicationArea = All;
                                 ToolTip = 'Specifies the date type for Item Sales report filter.';
                             }
-                            field(ItmSlsRepStartDate; Rec."Item Sales Start Date")
+                            group(ItmSlsRepLoadStartEndDateFilters)
                             {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the start date for Item Sales report filter.';
+                                ShowCaption = false;
+                                Visible = Rec."Item Sales Load Date Type" = Rec."Item Sales Load Date Type"::"Start/End Date";
+
+                                field(ItmSlsRepStartDate; Rec."Item Sales Start Date")
+                                {
+                                    ApplicationArea = All;
+                                    ToolTip = 'Specifies the start date for Item Sales report filter.';
+                                }
+                                field(ItmSlsRepEndDate; Rec."Item Sales End Date")
+                                {
+                                    ApplicationArea = All;
+                                    ToolTip = 'Specifies the end date for Item Sales report filter.';
+                                }
                             }
-                            field(ItmSlsRepEndDate; Rec."Item Sales End Date")
+                            group(ItmSlsRepRelativeDateFilter)
                             {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the end date for Item Sales report filter.';
-                            }
-                            field(ItmSlsRepDateFormula; Rec."Item Sales Date Formula")
-                            {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the date formula for Item Sales report filter.';
+                                ShowCaption = false;
+                                Visible = Rec."Item Purch. Load Date Type" = Rec."Item Purch. Load Date Type"::"Relative Date";
+
+                                field(ItmSlsRepDateFormula; Rec."Item Sales Date Formula")
+                                {
+                                    ApplicationArea = All;
+                                    ToolTip = 'Specifies the date formula for Item Sales report filter.';
+                                }
                             }
                         }
                         field(SalesShowLess; ShowLessTxt)
@@ -434,20 +441,32 @@ page 36950 "PowerBI Assisted Setup"
                                 ApplicationArea = All;
                                 ToolTip = 'Specifies the date type for Item Purchases report filter.';
                             }
-                            field(ItmPchRepStartDate; Rec."Item Purch. Start Date")
+                            group(ItmPchRepStartEndDateFilters)
                             {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the start date for Item Purchases report filter.';
+                                ShowCaption = false;
+                                Visible = Rec."Item Purch. Load Date Type" = Rec."Item Purch. Load Date Type"::"Start/End Date";
+
+                                field(ItmPchRepStartDate; Rec."Item Purch. Start Date")
+                                {
+                                    ApplicationArea = All;
+                                    ToolTip = 'Specifies the start date for Item Purchases report filter.';
+                                }
+                                field(ItmPchRepEndDate; Rec."Item Purch. End Date")
+                                {
+                                    ApplicationArea = All;
+                                    ToolTip = 'Specifies the end date for Item Purchases report filter.';
+                                }
                             }
-                            field(ItmPchRepEndDate; Rec."Item Purch. End Date")
+                            group(ItmPchRepRelativeDateFilter)
                             {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the end date for Item Purchases report filter.';
-                            }
-                            field(ItmPchRepDateFormula; Rec."Item Purch. Date Formula")
-                            {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the date formula for Item Purchases report filter.';
+                                ShowCaption = false;
+                                Visible = Rec."Item Purch. Load Date Type" = Rec."Item Purch. Load Date Type"::"Relative Date";
+
+                                field(ItmPchRepDateFormula; Rec."Item Purch. Date Formula")
+                                {
+                                    ApplicationArea = All;
+                                    ToolTip = 'Specifies the date formula for Item Purchases report filter.';
+                                }
                             }
                         }
                         field(PurchShowLess; ShowLessTxt)
@@ -591,27 +610,41 @@ page 36950 "PowerBI Assisted Setup"
                         Visible = ManufacturingTabVisible;
                         group(ManufacturingRecordFilters)
                         {
-                            Caption = 'Manufacturing Document and Entry Filters';
-                            InstructionalText = 'Filters Manufacturing Data';
+                            ShowCaption = false;
+                            InstructionalText = 'Configure the volume of data that is sent to your Power BI semantic models (optional).';
+
                             field(ManuRepLoadDateType; Rec."Manufacturing Load Date Type")
                             {
                                 ApplicationArea = All;
                                 ToolTip = 'Specifies the date type for Manufacturing report filter.';
                             }
-                            field(ManuRepStartDate; Rec."Manufacturing Start Date")
+                            group(ManuRepStartEndDateFilters)
                             {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the start date for Manufacturing report filter.';
+                                ShowCaption = false;
+                                Visible = Rec."Manufacturing Load Date Type" = Rec."Manufacturing Load Date Type"::"Start/End Date";
+
+                                field(ManuRepStartDate; Rec."Manufacturing Start Date")
+                                {
+                                    ApplicationArea = All;
+                                    ToolTip = 'Specifies the start date for Manufacturing report filter.';
+                                }
+                                field(ManuRepEndDate; Rec."Manufacturing End Date")
+                                {
+                                    ApplicationArea = All;
+                                    ToolTip = 'Specifies the end date for Manufacturing report filter.';
+                                }
                             }
-                            field(ManuRepEndDate; Rec."Manufacturing End Date")
+
+                            group(ManuRepRelativeDateFilter)
                             {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the end date for Manufacturing report filter.';
-                            }
-                            field(ManuRepDateFormula; Rec."Manufacturing Date Formula")
-                            {
-                                ApplicationArea = All;
-                                ToolTip = 'Specifies the date formula for Manufacturing report filter.';
+                                ShowCaption = false;
+                                Visible = Rec."Manufacturing Load Date Type" = Rec."Manufacturing Load Date Type"::"Relative Date";
+
+                                field(ManuRepDateFormula; Rec."Manufacturing Date Formula")
+                                {
+                                    ApplicationArea = All;
+                                    ToolTip = 'Specifies the date formula for Manufacturing report filter.';
+                                }
                             }
                         }
                         field(ManuShowLess; ShowLessTxt)
@@ -625,26 +658,37 @@ page 36950 "PowerBI Assisted Setup"
                         }
                     }
                 }
+#if not CLEAN28
                 group(SubscriptionBillingReportSetup)
                 {
                     Caption = 'Subscription Billing';
                     InstructionalText = 'Configure the Power BI Subscription Billing App.';
+                    ObsoleteReason = 'Moved to the Subscription Billing app, please add it to your dependencies and extend instead "SubBill PBI Assisted Setup"';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '28.0';
+                    Visible = false;
+#pragma warning disable AL0801
                     field("Subscription Billing Report Name"; Rec."Subs. Billing Report Name")
                     {
                         Caption = 'Power BI Subscription Billing Report';
                         ToolTip = 'Specifies the Power BI Subscription Billing Report.';
                         ApplicationArea = All;
                         Editable = false;
+                        ObsoleteReason = 'Moved to the Subscription Billing app, please add it to your dependencies and extend instead "SubBill PBI Assisted Setup"';
+                        ObsoleteState = Pending;
+                        ObsoleteTag = '28.0';
+                        Visible = false;
+
                         trigger OnAssistEdit()
                         begin
                             SetupHelper.EnsureUserAcceptedPowerBITerms();
                             SetupHelper.LookupPowerBIReport(Rec."Subscription Billing Report ID", Rec."Subs. Billing Report Name");
                         end;
                     }
+#pragma warning restore AL0801
                 }
-
+#endif
             }
-
             group(Step6)
             {
                 Visible = CurrentStep = Steps::Finish;
@@ -748,7 +792,7 @@ page 36950 "PowerBI Assisted Setup"
         GuidedExperience: Codeunit "Guided Experience";
         TimeZoneSelection: Codeunit "Time Zone Selection";
         EnvironmentInformation: Codeunit "Environment Information";
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         Steps: Option Intro,DateTableConfig,UTCOffset,WorkingDays,Setting,Finish;
         PrevStep: Option;
         CurrentStep: Option;

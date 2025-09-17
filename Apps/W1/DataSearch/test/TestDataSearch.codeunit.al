@@ -3,12 +3,30 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.Test.Foundation.DataSearch;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Foundation.DataSearch;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Archive;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Reminder;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using System.Reflection;
+using System.TestLibraries.Utilities;
+
 /// <summary>
 /// This codeunit tests data search scenarios.
 /// </summary>
 codeunit 139507 "Test Data Search"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
 
     var
         LibraryAssert: Codeunit "Library Assert";
@@ -376,6 +394,7 @@ codeunit 139507 "Test Data Search"
         i := jToken.AsValue().AsInteger(); // to verify that it can be read as an integer
         jObject.Get('tableSearchFieldNos', jToken);
         jArray := jToken.AsArray();
+        LibraryAssert.IsTrue(i <> 0, 'No integer was read.');
         LibraryAssert.IsTrue(jArray.Count() > 0, 'tableSearchFieldNos not provided.');
     end;
 

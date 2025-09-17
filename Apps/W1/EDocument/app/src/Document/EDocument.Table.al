@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -16,7 +16,11 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
+using Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.Processing.Import.Purchase;
+#if not CLEAN27
+using Microsoft.Purchases.Document;
+#endif
 
 table 6121 "E-Document"
 {
@@ -24,6 +28,14 @@ table 6121 "E-Document"
     LookupPageId = "E-Documents";
     DrillDownPageId = "E-Documents";
     DataClassification = CustomerContent;
+
+    Permissions =
+        tabledata "E-Document" = i,
+        tabledata "E-Document Service Status" = d,
+        tabledata "E-Document Log" = d,
+        tabledata "E-Document Integration Log" = d,
+        tabledata "E-Doc. Mapping Log" = d;
+
 
     fields
     {
@@ -271,6 +283,21 @@ table 6121 "E-Document"
             ToolTip = 'Specifies the implementation to use for processing the draft received.';
         }
         #endregion
+
+        #region Clearance Model
+        field(60; "Clearance Date"; DateTime)
+        {
+            Caption = 'Clearance Date';
+            ToolTip = 'Specifies date and time when document was cleared by authority';
+            DataClassification = SystemMetadata;
+        }
+        field(61; "Last Clearance Request Time"; DateTime)
+        {
+            Caption = 'Last Clearance Request Time';
+            DataClassification = SystemMetadata;
+        }
+
+        #endregion
     }
     keys
     {
@@ -310,11 +337,8 @@ table 6121 "E-Document"
     /// <summary>
     /// Inserts a new E-Document record with the specified parameters.
     /// </summary>
-    internal procedure Create(
-        EDocumentDirection: Enum "E-Document Direction";
-                                EDocumentType: Enum "E-Document Type";
-                                EDocumentService: Record "E-Document Service"
-    )
+    [InherentPermissions(PermissionObjectType::TableData, Database::"E-Document", 'i')]
+    internal procedure Create(EDocumentDirection: Enum "E-Document Direction"; EDocumentType: Enum "E-Document Type"; EDocumentService: Record "E-Document Service")
     begin
         Rec."Entry No" := 0;
         Rec.Direction := EDocumentDirection;
@@ -327,7 +351,6 @@ table 6121 "E-Document"
     internal procedure IsDuplicate(ShowMessage: Boolean): Boolean
     var
         EDocument: Record "E-Document";
-
     begin
         EDocument.ReadIsolation := EDocument.ReadIsolation::ReadUncommitted;
         EDocument.SetRange("Incoming E-Document No.", Rec."Incoming E-Document No.");
@@ -374,8 +397,15 @@ table 6121 "E-Document"
         EDocMappingLog: Record "E-Doc. Mapping Log";
         EDocumentIntegrationLog: Record "E-Document Integration Log";
         EDocumentLog: Record "E-Document Log";
+        EDocImportedLine: Record "E-Doc. Imported Line";
         EDocumentServiceStatus: Record "E-Document Service Status";
+#if not CLEAN27
+        PurchaseHeader: Record "Purchase Header";
+#endif
         IProcessStructuredData: Interface IProcessStructuredData;
+#if not CLEAN27
+        NullGuid: Guid;
+#endif
     begin
         EDocumentLog.SetRange("E-Doc. Entry No", Rec."Entry No");
         if not EDocumentLog.IsEmpty() then
@@ -398,6 +428,18 @@ table 6121 "E-Document"
         if not EDocMappingLog.IsEmpty() then
             EDocMappingLog.DeleteAll(true);
 
+        EDocImportedLine.SetRange("E-Document Entry No.", Rec."Entry No");
+        if not EDocImportedLine.IsEmpty() then
+            EDocImportedLine.DeleteAll(true);
+
+#if not CLEAN27
+        // Version 1 processing cleanup
+        // Can be removed soon as version 1 is fully migrated to version 2
+        PurchaseHeader.SetRange("E-Document Link", Rec.SystemId);
+        PurchaseHeader.ModifyAll("E-Document Link", NullGuid, false);
+#endif
+
+        // Version 2 processing cleanup
         IProcessStructuredData := Rec."Process Draft Impl.";
         IProcessStructuredData.CleanUpDraft(Rec);
     end;

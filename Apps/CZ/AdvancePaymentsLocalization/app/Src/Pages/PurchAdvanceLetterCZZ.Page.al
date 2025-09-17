@@ -65,6 +65,14 @@ page 31181 "Purch. Advance Letter CZZ"
                     ShowMandatory = true;
                     ToolTip = 'Specifies the name of the vendor sending the invoice.';
                 }
+                field("Pay-to Name 2"; Rec."Pay-to Name 2")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                    QuickEntry = false;
+                    Visible = false;
+                    ToolTip = 'Specifies the name 2 of the vendor sending the invoice.';
+                }
                 group("Pay-to")
                 {
                     Caption = 'Pay-to';

@@ -1,6 +1,7 @@
 codeunit 148125 "Intrastat CZ Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

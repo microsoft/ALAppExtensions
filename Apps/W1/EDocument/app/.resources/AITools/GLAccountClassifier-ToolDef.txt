@@ -1,0 +1,27 @@
+{
+   "type":"object",
+   "properties":{
+      "reasoning":{
+         "type":"string",
+         "description":"A concise professional reason why this account is appropriate. Do not mention confidence levels, uncertainty, or speculative language."
+      },
+      "lineId":{
+         "type":"number",
+         "description":"Line number."
+      },
+      "accountId":{
+         "type":"string",
+         "description":"G/L Account number."
+      },
+      "totalNumberOfPotentialAccounts":{
+         "type":"number",
+         "description":"Number of equally good GL account candidates for the lineId."
+      }
+   },
+   "required":[
+      "reasoning",
+      "lineId",
+      "accountId",
+      "totalNumberOfPotentialAccounts"
+   ]
+}

@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Foundation.Reporting;
+using Microsoft.Inventory.Transfer;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Sales.Document;
@@ -58,14 +59,32 @@ codeunit 6102 "E-Doc. Export"
     var
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
+        EDocumentServiceStatus: Record "E-Document Service Status";
         EDocWorkFlowProcessing: Codeunit "E-Document WorkFlow Processing";
+        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
     begin
-        if not EDocWorkFlowProcessing.GetEDocumentServicesInWorkflow(WorkFlow, EDocumentService) then
+        if not EDocWorkFlowProcessing.GetServicesFromEntryPointResponseInWorkflow(WorkFlow, EDocumentService) then
             exit;
 
         WorkFlow.TestField(Enabled);
         EDocument."Workflow Code" := WorkFlow.Code;
-        CreateEDocument(EDocument, DocumentHeader, EDocumentService, EDocumentType);
+
+        if not CreateEDocument(EDocument, DocumentHeader, EDocumentService, EDocumentType) then
+            exit;
+
+        // For each service supporting the document type, export it before creating E-Document Created Flow
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+        EDocumentServiceStatus.SetRange(Status, EDocumentServiceStatus.Status::Created);
+        if EDocumentServiceStatus.FindSet() then
+            repeat
+                EDocumentService.Get(EDocumentServiceStatus."E-Document Service Code");
+                if EDocumentService."Use Batch Processing" then
+                    continue;
+
+                ExportEDocument(EDocument, EDocumentService);
+            until EDocumentServiceStatus.Next() = 0;
+
+        EDocumentBackgroundJobs.StartEDocumentCreatedFlow(EDocument);
     end;
 
     /// <summary>
@@ -74,16 +93,15 @@ codeunit 6102 "E-Doc. Export"
     /// If services do not support the document type they are filtered out
     ///
     /// </summary>
-    local procedure CreateEDocument(EDocument: Record "E-Document"; var DocumentHeader: RecordRef; var EDocumentService: Record "E-Document Service"; EDocumentType: Enum "E-Document Type")
+    local procedure CreateEDocument(var EDocument: Record "E-Document"; var DocumentHeader: RecordRef; var EDocumentService: Record "E-Document Service"; EDocumentType: Enum "E-Document Type"): Boolean
     var
         EDocumentLog: Codeunit "E-Document Log";
-        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
         SupportedServices: List of [Code[20]];
         Code: Code[20];
     begin
         EDocument.SetRange("Document Record ID", DocumentHeader.RecordId);
         if not EDocument.IsEmpty() then
-            exit;
+            exit(false);
 
         if EDocumentService.FindSet() then
             repeat
@@ -92,7 +110,7 @@ codeunit 6102 "E-Doc. Export"
             until EDocumentService.Next() = 0;
 
         if SupportedServices.Count() = 0 then
-            exit;
+            exit(false);
 
         OnBeforeCreateEDocument(EDocument, DocumentHeader);
 
@@ -117,14 +135,14 @@ codeunit 6102 "E-Doc. Export"
             EDocumentProcessing.ModifyEDocumentStatus(EDocument);
         end;
 
-        EDocumentBackgroundJobs.StartEDocumentCreatedFlow(EDocument);
+        exit(true);
     end;
-
 
     internal procedure ExportEDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service") Success: Boolean
     var
         TempEDocMapping: Record "E-Doc. Mapping" temporary;
         EDocLog: Record "E-Document Log";
+        EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentLog: Codeunit "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
         SourceDocumentHeaderMapped, SourceDocumentLineMapped : RecordRef;
@@ -146,7 +164,14 @@ codeunit 6102 "E-Doc. Export"
 
         EDocLog := EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocServiceStatus);
         EDocumentLog.InsertMappingLog(EDocLog, TempEDocMapping);
-        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
+
+        EDocumentServiceStatus.ReadIsolation(IsolationLevel::ReadUncommitted);
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+        EDocumentServiceStatus.SetRange("E-Document Service Code", EDocumentService.Code);
+        if EDocumentServiceStatus.IsEmpty() then
+            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, EDocServiceStatus)
+        else
+            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
         EDocumentProcessing.ModifyEDocumentStatus(EDocument);
     end;
 
@@ -345,7 +370,12 @@ codeunit 6102 "E-Doc. Export"
                     EDocument."Amount Excl. VAT" := SourceDocumentHeader.Field(PurchHeader.FieldNo(Amount)).Value;
                     EDocument."Amount Incl. VAT" := SourceDocumentHeader.Field(PurchHeader.FieldNo("Amount Including VAT")).Value;
                 end;
+            Database::"Sales Shipment Header":
+                PopulateShipmentEDocument(EDocument, SourceDocumentHeader);
+            Database::"Transfer Shipment Header":
+                this.PopulateTransferShipmentEDocument(EDocument, SourceDocumentHeader);
         end;
+
     end;
 
     local procedure CreateEDocument(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
@@ -367,6 +397,34 @@ codeunit 6102 "E-Doc. Export"
         // After interface call, reread the EDocument for the latest values.
         EDocument.Get(EDocument."Entry No");
         Telemetry.LogMessage('0000LBG', EDocTelemetryCreateScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
+    end;
+
+    local procedure PopulateShipmentEDocument(var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef)
+    var
+        SalesShipmentHeader: Record "Sales Shipment Header";
+    begin
+        EDocument."Document Type" := EDocument."Document Type"::"Sales Shipment";
+        EDocument."Document No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("No.")).Value;
+        EDocument."Order No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Order No.")).Value;
+        EDocument."Bill-to/Pay-to No." := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Bill-to Customer No.")).Value;
+        EDocument."Bill-to/Pay-to Name" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Bill-to Name")).Value;
+        EDocument."Posting Date" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Posting Date")).Value;
+        EDocument."Document Date" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Document Date")).Value;
+        EDocument."Due Date" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Due Date")).Value;
+        EDocument."Source Type" := EDocument."Source Type"::Customer;
+        EDocument."Currency Code" := SourceDocumentHeader.Field(SalesShipmentHeader.FieldNo("Currency Code")).Value;
+    end;
+
+    local procedure PopulateTransferShipmentEDocument(var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef)
+    var
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+    begin
+        EDocument."Document Type" := EDocument."Document Type"::"Transfer Shipment";
+        EDocument."Document No." := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("No.")).Value;
+        EDocument."Posting Date" := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("Posting Date")).Value;
+        EDocument."Bill-to/Pay-to No." := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("Transfer-to Code")).Value;
+        EDocument."Bill-to/Pay-to Name" := SourceDocumentHeader.Field(TransferShipmentHeader.FieldNo("Transfer-to Name")).Value;
+        EDocument."Source Type" := EDocument."Source Type"::Location;
     end;
 
     local procedure CreateEDocumentBatch(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
@@ -405,7 +463,6 @@ codeunit 6102 "E-Doc. Export"
         SalesDocumentType: Enum "Sales Document Type";
         ServiceDocumentType: Enum "Service Document Type";
         PurchDocumentType: Enum "Purchase Document Type";
-
     begin
         case SourceDocumentHeader.Number of
             Database::"Sales Header":
@@ -532,7 +589,7 @@ codeunit 6102 "E-Doc. Export"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCreateEdocument(var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef)
+    local procedure OnAfterCreateEDocument(var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef)
     begin
     end;
 }

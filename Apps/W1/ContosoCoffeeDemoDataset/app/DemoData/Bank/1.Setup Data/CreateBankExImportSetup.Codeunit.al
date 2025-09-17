@@ -21,6 +21,7 @@ codeunit 5306 "Create Bank Ex/Import Setup"
         CreateDataExchange: Codeunit "Create Data Exchange";
     begin
         ContosoBank.ContosoBankExportImportSetup(SEPACAMT(), SEPACAMTTok, 1, Codeunit::"Exp. Launcher Gen. Jnl.", 0, CreateDataExchange.SEPACAMT(), true, 0);
+        ContosoBank.ContosoBankExportImportSetup(SEPACAMT05300108(), SEPACAMT05300108Tok, 1, Codeunit::"Exp. Launcher Gen. Jnl.", 0, CreateDataExchange.SEPACAMT05300108(), true, 0);
         ContosoBank.ContosoBankExportImportSetup(SEPACT(), SEPACTDescLbl, 0, Codeunit::"SEPA CT-Export File", Xmlport::"SEPA CT pain.001.001.03", '', false, Codeunit::"SEPA CT-Check Line");
         ContosoBank.ContosoBankExportImportSetup(SEPADD(), SEPADDDescLbl, 0, Codeunit::"SEPA DD-Export File", Xmlport::"SEPA DD pain.008.001.02", '', false, Codeunit::"SEPA DD-Check Line");
     end;
@@ -28,6 +29,11 @@ codeunit 5306 "Create Bank Ex/Import Setup"
     procedure SEPACAMT(): Code[20]
     begin
         exit(SEPACAMTTok);
+    end;
+
+    procedure SEPACAMT05300108(): Code[20]
+    begin
+        exit(SEPACAMT05300108Tok);
     end;
 
     procedure SEPACT(): Code[20]
@@ -42,6 +48,7 @@ codeunit 5306 "Create Bank Ex/Import Setup"
 
     var
         SEPACAMTTok: Label 'SEPA CAMT', MaxLength = 20;
+        SEPACAMT05300108Tok: Label 'SEPA CAMT 053.001.08', Locked = true;
         SEPACTTok: Label 'SEPACT', MaxLength = 20;
         SEPADDTok: Label 'SEPADD', MaxLength = 20;
         SEPACTDescLbl: Label 'SEPA Credit Transfer', MaxLength = 100;

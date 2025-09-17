@@ -13,7 +13,7 @@ query 36960 "G/L Budget Entries - PBI API"
     Caption = 'Power BI G/L Budget Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'generalLedgerBudgetEntry';
     EntitySetName = 'generalLedgerBudgetEntries';
     DataAccessIntent = ReadOnly;

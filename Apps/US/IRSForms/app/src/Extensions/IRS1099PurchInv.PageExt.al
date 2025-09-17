@@ -14,7 +14,7 @@ pageextension 10052 "IRS 1099 Purch. Inv." extends "Purchase Invoice"
 #pragma warning disable AL0432
         modify("IRS 1099 Code")
         {
-            Visible = not IsNewFeatureEnabled;
+            Visible = false;
         }
 #pragma warning restore AL0432
 #endif
@@ -24,43 +24,27 @@ pageextension 10052 "IRS 1099 Purch. Inv." extends "Purchase Invoice"
             {
                 ApplicationArea = BasicUS;
                 Tooltip = 'Specifies the IRS reporting period for the document.';
-#if not CLEAN25
-                Visible = IsNewFeatureEnabled;
-#endif
             }
             field("IRS 1099 Form No."; Rec."IRS 1099 Form No.")
             {
                 ApplicationArea = BasicUS;
                 Tooltip = 'Specifies the IRS form number for the document.';
-#if not CLEAN25
-                Visible = IsNewFeatureEnabled;
                 Editable = NewFieldsAreEditable;
-#endif
             }
             field("IRS 1099 Form Box No."; Rec."IRS 1099 Form Box No.")
             {
                 ApplicationArea = BasicUS;
                 Tooltip = 'Specifies the IRS form box number.';
-#if not CLEAN25
-                Visible = IsNewFeatureEnabled;
                 Editable = NewFieldsAreEditable;
-#endif
             }
         }
     }
 
-#if not CLEAN25
     var
-        IsNewFeatureEnabled: Boolean;
         NewFieldsAreEditable: Boolean;
-#endif
 
-#if not CLEAN25
     trigger OnOpenPage()
-    var
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
     begin
-        IsNewFeatureEnabled := IRSFormsFeature.IsEnabled();
         UpdateNewFieldsAreVisible();
     end;
 
@@ -76,7 +60,6 @@ pageextension 10052 "IRS 1099 Purch. Inv." extends "Purchase Invoice"
 
     local procedure UpdateNewFieldsAreVisible()
     begin
-        NewFieldsAreEditable := IsNewFeatureEnabled and (Rec."IRS 1099 Reporting Period" <> '');
+        NewFieldsAreEditable := Rec."IRS 1099 Reporting Period" <> '';
     end;
-#endif
 }

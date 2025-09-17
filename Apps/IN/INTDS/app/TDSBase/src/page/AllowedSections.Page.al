@@ -46,6 +46,11 @@ page 18687 "Allowed Sections"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Select the check mark in this field to overlook the TDS Threshold amount.';
                 }
+                field("Payment Overlook"; Rec."Payment Overlook")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Select the check mark in this field to overlook the TDS Payment amount and Calculate only on Invoice amount.';
+                }
                 field("Surcharge Overlook"; Rec."Surcharge Overlook")
                 {
                     ApplicationArea = Basic, Suite;

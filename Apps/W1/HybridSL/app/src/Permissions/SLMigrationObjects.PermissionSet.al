@@ -64,6 +64,7 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL POReceipt" = X,
                   table "SL POSetup" = X,
                   table "SL POTran" = X,
+                  table "SL ProductClass" = X,
                   table "SL PurchOrd" = X,
                   table "SL PurOrdDet" = X,
                   table "SL SalesTax" = X,

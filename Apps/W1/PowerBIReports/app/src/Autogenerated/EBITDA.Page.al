@@ -39,11 +39,9 @@ page 36991 "EBITDA"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSectionab3743c6203831d31beb', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

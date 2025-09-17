@@ -64,6 +64,14 @@ page 31171 "Sales Advance Letter CZZ"
                     ShowMandatory = true;
                     ToolTip = 'Specifies the name of the customer who will receive the products and be billed by default.';
                 }
+                field("Bill-to Name 2"; Rec."Bill-to Name 2")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                    QuickEntry = false;
+                    Visible = false;
+                    ToolTip = 'Specifies the name 2 of the customer who will receive the products and be billed by default.';
+                }
                 group("Bill-to")
                 {
                     Caption = 'Bill-to';

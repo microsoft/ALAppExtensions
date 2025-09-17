@@ -7,6 +7,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Payables;
+using Microsoft.Utilities;
 
 codeunit 10032 "IRS 1099 BaseApp Subscribers"
 {
@@ -15,35 +16,7 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
     InherentPermissions = X;
 
     var
-#if not CLEAN25
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-#endif
         IRSReportingPeriod: Codeunit "IRS Reporting Period";
-#if not CLEAN25
-        OldIRS1099LiableFieldUsedErr: Label 'You need to use the "1099 Liable" field instead of the "IRS 1099 Liable" field.';
-        NewExcludeFrom1099FieldUsedErr: Label 'You need to use the "IRS 1099 Liable" field instead of the "1099 Liable" field.';
-#endif
-
-
-#if not CLEAN25
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'IRS 1099 Liable', false, false)]
-    local procedure ThrowErrorWhenOldIRS1099LiableFieldUsed(var Rec: Record "Purchase Line")
-    begin
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-        error(OldIRS1099LiableFieldUsedErr);
-    end;
-#pragma warning restore AL0432
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', '1099 Liable', false, false)]
-    local procedure ThrowErrorWhenNewExcludeFrom1099FieldUsed(var Rec: Record "Purchase Line")
-    begin
-        if IRSFormsFeature.IsEnabled() then
-            exit;
-        error(NewExcludeFrom1099FieldUsedErr);
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeader', '', false, false)]
     local procedure UpdateIRSDataOnAfterCopyGenJnlLineFromPurchHeader(PurchaseHeader: Record "Purchase Header"; var GenJournalLine: Record "Gen. Journal Line")
@@ -51,10 +24,6 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         PurchLine: Record "Purchase Line";
         IRS1099ReportingAmount: Decimal;
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         if not (GenJournalLine."Document Type" in [GenJournalLine."Document Type"::Invoice, GenJournalLine."Document Type"::"Credit Memo"]) then
             exit;
         GenJournalLine.Validate("IRS 1099 Reporting Period", PurchaseHeader."IRS 1099 Reporting Period");
@@ -81,10 +50,6 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Vendor Ledger Entry", 'OnAfterCopyVendLedgerEntryFromGenJnlLine', '', false, false)]
     local procedure UpdateIRSDataOnAfterCopyVendLedgerEntryFromGenJnlLine(var VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         if GenJournalLine."IRS 1099 Reporting Amount" = 0 then
             exit;
         VendorLedgerEntry."IRS 1099 Subject For Reporting" := true;
@@ -151,10 +116,6 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vend. Entry-Edit", 'OnBeforeVendLedgEntryModify', '', false, false)]
     local procedure UpdateIRSDataOnBeforeVendLedgEntryModify(var VendLedgEntry: Record "Vendor Ledger Entry"; FromVendLedgEntry: Record "Vendor Ledger Entry")
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
         VendLedgEntry."IRS 1099 Reporting Period" := FromVendLedgEntry."IRS 1099 Reporting Period";
         VendLedgEntry."IRS 1099 Form No." := FromVendLedgEntry."IRS 1099 Form No.";
         VendLedgEntry."IRS 1099 Form Box No." := FromVendLedgEntry."IRS 1099 Form Box No.";
@@ -168,15 +129,23 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         PurchLine."1099 Liable" := (PurchHeader."IRS 1099 Form Box No." <> '')
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Page Management", 'OnConditionalCardPageIDNotFound', '', true, true)]
+    local procedure OnConditionalCardPageIDNotFound(RecordRef: RecordRef; var CardPageID: Integer);
+    begin
+        case RecordRef.Number of
+            Database::"IRS Forms Setup":
+                CardPageID := Page::"IRS Forms Setup";
+        end;
+    end;
+
     procedure UpdateIRSDataInPurchHeader(var PurchHeader: Record "Purchase Header"; ModifyRecord: Boolean)
     var
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
+        PurchaseLine: Record "Purchase Line";
         PeriodNo: Code[20];
+        OldFormBoxNo: Code[20];
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit;
-#endif
+        OldFormBoxNo := PurchHeader."IRS 1099 Form Box No.";
         PeriodNo := IRSReportingPeriod.GetReportingPeriod(PurchHeader."Posting Date");
         if PeriodNo <> '' then
             if not IRS1099VendorFormBoxSetup.Get(PeriodNo, PurchHeader."Pay-To Vendor No.") then
@@ -186,6 +155,12 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         PurchHeader.Validate("IRS 1099 Form Box No.", IRS1099VendorFormBoxSetup."Form Box No.");
         if ModifyRecord and (PurchHeader."No." <> '') then
             if PurchHeader.Modify(true) then;
+        if OldFormBoxNo <> PurchHeader."IRS 1099 Form Box No." then begin
+            PurchaseLine.ReadIsolation(IsolationLevel::ReadCommitted);
+            PurchaseLine.SetRange("Document Type", PurchHeader."Document Type");
+            PurchaseLine.SetRange("Document No.", PurchHeader."No.");
+            PurchaseLine.ModifyAll("1099 Liable", PurchHeader."IRS 1099 Form Box No." <> '');
+        end;
     end;
 
     procedure UpdateIRSDataInGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")
@@ -223,10 +198,6 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
 
     local procedure SyncIRSDataInGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"): Boolean
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
-            exit(false);
-#endif
         if GenJnlLine.IsTemporary() then
             exit(false);
         exit(GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::"Credit Memo"]);

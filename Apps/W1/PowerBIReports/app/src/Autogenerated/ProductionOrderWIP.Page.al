@@ -39,11 +39,9 @@ page 37107 "Production Order WIP"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label '6acf7a1bcebe65700b22', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

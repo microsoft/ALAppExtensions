@@ -202,7 +202,7 @@ codeunit 139684 "Migration Vendor 1099 Tests"
 
         // [THEN] The Vendor record will have correct 1099 data
         Assert.IsTrue(Vendor.Get(TestVendorNoLbl), 'Vendor not found.');
-        IRS1099VendorFormBoxSetup.Get('2022', Vendor."No.");
+        IRS1099VendorFormBoxSetup.Get(GPCompanyAdditionalSettings.Get1099TaxYear().ToText(), Vendor."No.");
         Assert.AreEqual('NEC-01', IRS1099VendorFormBoxSetup."Form Box No.", 'Incorrect IRS 1099 Code.');
         Assert.AreEqual('123456789', Vendor."Federal ID No.", 'Incorrect Federal ID No.');
         Assert.AreEqual(Vendor."Tax Identification Type"::"Legal Entity", Vendor."Tax Identification Type", 'Incorrect Tax Identification Type.');

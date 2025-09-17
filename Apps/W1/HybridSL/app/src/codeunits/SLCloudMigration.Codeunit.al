@@ -141,6 +141,14 @@ codeunit 47001 "SL Cloud Migration"
             Commit();
         end;
 
+        if SLCompanyAdditionalSettings."Migrate Inventory Module" then begin
+            SLHelperFunctions.DeleteExistingInventoryPostingSetups();
+            SLHelperFunctions.DeleteExistingInventoryPostingGroups();
+            SLHelperFunctions.DeleteExistingGeneralPostingSetups();
+            SLHelperFunctions.DeleteExistingGenProductPostingGroups();
+            Commit();
+        end;
+
         Flag := false;
         SLHelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
         if Flag then begin

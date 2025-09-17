@@ -8,6 +8,7 @@ using Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.HumanResources.Employee;
+using Microsoft.Integration.Dataverse;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Scorecard;
@@ -17,6 +18,8 @@ table 6232 "Sust. Posted ESG Report Line"
 {
     Caption = 'Posted ESG Report Line';
     DataClassification = CustomerContent;
+    LookupPageId = "Sust. Posted ESG Report Lines";
+    DrillDownPageId = "Sust. Posted ESG Report Lines";
 
     fields
     {
@@ -33,13 +36,12 @@ table 6232 "Sust. Posted ESG Report Line"
         field(3; "Document No."; Code[20])
         {
             Caption = 'Document No.';
-            OptimizeForTextSearch = true;
         }
         field(4; "Line No."; Integer)
         {
             Caption = 'Line No.';
         }
-        field(5; "Grouping"; Code[10])
+        field(5; "Grouping"; Text[100])
         {
             Caption = 'Grouping';
         }
@@ -47,14 +49,18 @@ table 6232 "Sust. Posted ESG Report Line"
         {
             Caption = 'Row No.';
         }
-        field(7; Description; Text[100])
+        field(7; Description; Text[500])
         {
             Caption = 'Description';
         }
-        field(8; "Reporting Code"; Code[20])
+#pragma warning disable AS0086
+#pragma warning disable AS0004
+        field(8; "Reporting Code"; Text[100])
         {
             Caption = 'Reporting Code';
         }
+#pragma warning restore AS0004
+#pragma warning restore AS0086
         field(9; "Field Type"; Enum "Sust. ESG Reporting Field Type")
         {
             Caption = 'Field Type';
@@ -143,6 +149,7 @@ table 6232 "Sust. Posted ESG Report Line"
         field(25; "Reporting Unit"; Code[20])
         {
             Caption = 'Reporting Unit';
+            TableRelation = "Sust. ESG Reporting Unit".Code;
         }
         field(27; "Row Type"; Option)
         {
@@ -174,9 +181,58 @@ table 6232 "Sust. Posted ESG Report Line"
         {
             Caption = 'Rounding';
         }
+        field(35; "Goal SystemID"; Guid)
+        {
+            Caption = 'Goal SystemID';
+        }
+        field(36; "Concept Link"; Text[840])
+        {
+            Caption = 'Concept Link';
+        }
+        field(37; "Concept"; Text[400])
+        {
+            Caption = 'Concept';
+        }
         field(40; "Posted Amount"; Decimal)
         {
             Caption = 'Posted Amount';
+        }
+        field(50; "Coupled to Dataverse"; Boolean)
+        {
+            FieldClass = FlowField;
+            Caption = 'Coupled to Dataverse';
+            Editable = false;
+            CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Sust. Posted ESG Report Line")));
+            ToolTip = 'Specifies that the posted reporting line is coupled to an esg fact in Dataverse.';
+        }
+        field(55; "Derived From SystemId"; Guid)
+        {
+            Caption = 'Derived From SystemId';
+            TableRelation = "Sust. ESG Reporting Line".SystemId;
+        }
+        field(60; "Assessment ID"; Guid)
+        {
+            Caption = 'Assessment ID';
+        }
+        field(61; "Standard Requirement ID"; Guid)
+        {
+            Caption = 'Standard Requirement ID';
+        }
+        field(62; "Parent Standard Requirement ID"; Guid)
+        {
+            Caption = 'Parent Standard Requirement ID';
+        }
+        field(63; "Requirement Concept ID"; Guid)
+        {
+            Caption = 'Requirement Concept ID';
+        }
+        field(64; "Concept ID"; Guid)
+        {
+            Caption = 'Concept ID';
+        }
+        field(65; "Assessment Requirement ID"; Guid)
+        {
+            Caption = 'Assessment Requirement ID';
         }
     }
 
@@ -222,5 +278,41 @@ table 6232 "Sust. Posted ESG Report Line"
                         Validate("Account Filter", EmployeeList.GetSelectionFilter());
                 end;
         end;
+    end;
+
+    internal procedure CopyFromESGReportingLine(ESGReportingLine: Record "Sust. ESG Reporting Line");
+    begin
+        Rec."ESG Reporting Template Name" := ESGReportingLine."ESG Reporting Template Name";
+        Rec."ESG Reporting Name" := ESGReportingLine."ESG Reporting Name";
+        Rec."Line No." := ESGReportingLine."Line No.";
+        Rec.Grouping := ESGReportingLine.Grouping;
+        Rec."Row No." := ESGReportingLine."Row No.";
+        Rec.Description := ESGReportingLine.Description;
+        Rec."Reporting Code" := ESGReportingLine."Reporting Code";
+        Rec."Field Type" := ESGReportingLine."Field Type";
+        Rec."Table No." := ESGReportingLine."Table No.";
+        Rec."Field No." := ESGReportingLine."Field No.";
+        Rec.Source := ESGReportingLine.Source;
+        Rec."Field Caption" := ESGReportingLine."Field Caption";
+        Rec."Value Settings" := ESGReportingLine."Value Settings";
+        Rec."Account Filter" := ESGReportingLine."Account Filter";
+        Rec."Date Filter" := ESGReportingLine."Date Filter";
+        Rec."Reporting Unit" := ESGReportingLine."Reporting Unit";
+        Rec."Row Type" := ESGReportingLine."Row Type";
+        Rec."Row Totaling" := ESGReportingLine."Row Totaling";
+        Rec."Calculate With" := ESGReportingLine."Calculate With";
+        Rec.Show := ESGReportingLine.Show;
+        Rec."Show With" := ESGReportingLine."Show With";
+        Rec."Rounding" := ESGReportingLine."Rounding";
+        Rec."Goal SystemID" := ESGReportingLine."Goal SystemID";
+        Rec."Concept Link" := ESGReportingLine."Concept Link";
+        Rec."Concept" := ESGReportingLine."Concept";
+        Rec."Derived From SystemId" := ESGReportingLine."Derived From SystemId";
+        Rec."Assessment ID" := ESGReportingLine."Assessment ID";
+        Rec."Standard Requirement ID" := ESGReportingLine."Standard Requirement ID";
+        Rec."Parent Standard Requirement ID" := ESGReportingLine."Parent Standard Requirement ID";
+        Rec."Requirement Concept ID" := ESGReportingLine."Requirement Concept ID";
+        Rec."Concept ID" := ESGReportingLine."Concept ID";
+        Rec."Assessment Requirement ID" := ESGReportingLine."Assessment Requirement ID";
     end;
 }

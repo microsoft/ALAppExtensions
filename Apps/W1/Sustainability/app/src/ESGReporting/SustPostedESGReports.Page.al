@@ -4,12 +4,16 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.ESGReporting;
 
+using Microsoft.Sustainability.Reports;
+
 page 6256 "Sust. Posted ESG Reports"
 {
     Caption = 'Posted ESG Reports';
     Editable = false;
     PageType = List;
     UsageCategory = History;
+    ApplicationArea = Basic, Suite;
+    SourceTableView = order(descending);
     CardPageId = "Sust. Posted ESG Report";
     SourceTable = "Sust. Posted ESG Report Header";
 
@@ -35,12 +39,12 @@ page 6256 "Sust. Posted ESG Reports"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a description of the ESG reporting name.';
                 }
-                field("Standard Type"; Rec."Standard Type")
+                field("Standard"; Rec."Standard")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies a Standard Type of the ESG reporting name.';
+                    ToolTip = 'Specifies a Standard of the ESG reporting name.';
                 }
-                field(Period; Rec.Period)
+                field("Period Name"; Rec."Period Name")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a period of the ESG reporting name.';
@@ -63,6 +67,20 @@ page 6256 "Sust. Posted ESG Reports"
             {
                 ApplicationArea = Notes;
                 Visible = false;
+            }
+        }
+    }
+    actions
+    {
+        area(Reporting)
+        {
+            action("CSRD Preparation Report")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'CSRD Preparation Report';
+                Image = "Report";
+                RunObject = Report "Sust. CSRD Preparation";
+                ToolTip = 'Executes the CSRD Preparation Report action.';
             }
         }
     }

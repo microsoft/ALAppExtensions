@@ -44,7 +44,6 @@ codeunit 10663 "Create Currency NO"
             CreateCurrency.MXN(),
             CreateCurrency.MYR(),
             CreateCurrency.MZN(),
-            CreateCurrency.NOK(),
             CreateCurrency.NZD(),
             CreateCurrency.NGN(),
             CreateCurrency.PHP(),

@@ -365,6 +365,8 @@ codeunit 11755 "Registration Log Mgt. CZL"
         RegNoFieldRef: FieldRef;
         RegNo: Text[20];
     begin
+        if EntryNo = '' then
+            exit;
         DataTypeManagement.GetRecordRef(RecordVariant, RecordRef);
         if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
             if not DataTypeManagement.FindFieldByName(RecordRef, RegNoFieldRef, Contact.FieldName("Registration Number")) then

@@ -12,7 +12,7 @@ page 36959 "Vendors - PBI API"
     Caption = 'Power BI Vendors';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'vendor';
     EntitySetName = 'vendors';
     SourceTable = Vendor;

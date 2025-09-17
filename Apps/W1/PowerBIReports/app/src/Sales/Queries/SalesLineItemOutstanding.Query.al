@@ -9,7 +9,7 @@ query 37003 "Sales Line - Item Outstanding"
     Caption = 'Power BI Outstanding SO';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'itemOutstandingSalesLine';
     EntitySetName = 'itemOutstandingSalesLines';
     DataAccessIntent = ReadOnly;

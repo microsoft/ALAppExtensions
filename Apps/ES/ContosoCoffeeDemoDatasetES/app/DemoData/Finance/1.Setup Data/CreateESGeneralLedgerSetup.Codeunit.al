@@ -5,7 +5,6 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.DemoData.Foundation;
 
@@ -21,11 +20,9 @@ codeunit 10827 "Create ES General Ledger Setup"
 
     local procedure UpdateGeneralLedgerSetup()
     var
-        Currency: Record Currency;
         CreateCurrency: Codeunit "Create Currency";
     begin
-        Currency.Get(CreateCurrency.EUR());
-        ValidateRecordFields(CreateCurrency.EUR(), LocalCurrencySymbolLbl, Currency.Description, 0.001, '2:5');
+        ValidateRecordFields(CreateCurrency.EUR(), LocalCurrencySymbolLbl, EuroLbl, 0.001, '2:5');
     end;
 
     local procedure ValidateRecordFields(LCYCode: Code[10]; LocalCurrencySymbol: Text[10]; LocalCurrencyDescription: Text[60]; UnitAmountRoundingPrecision: Decimal; UnitAmountDecimalPlaces: Text[5])
@@ -49,4 +46,6 @@ codeunit 10827 "Create ES General Ledger Setup"
 
     var
         LocalCurrencySymbolLbl: Label '€', Locked = true;
+        EuroLbl: Label 'Euro', MaxLength = 30;
+
 }

@@ -1,0 +1,12 @@
+[
+  {
+    "codeunitId": 139600,
+    "codeunitName": "Test Essential Bus. Headlines",
+    "method": "TestBothUpcomingAndOverdueVATReturnHeadlinesAreVisible"
+  },
+  {
+    "codeunitId": 139600,
+    "codeunitName": "Test Essential Bus. Headlines",
+    "method": "TestUpcomingOpenVATReturnHeadlineIsVisible"
+  }
+]

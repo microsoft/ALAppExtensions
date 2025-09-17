@@ -9,7 +9,7 @@ query 37018 "Opportunity Entries - PBI API"
     Caption = 'Power BI Opportunity Entries';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'opportunityEntry';
     EntitySetName = 'opportunityEntries';
     DataAccessIntent = ReadOnly;

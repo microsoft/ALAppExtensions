@@ -2,9 +2,29 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.Shared.Error;
+
+using System.TestLibraries.Utilities;
+using Microsoft.Purchases.Document;
+using System.Utilities;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.Dimension;
+using Microsoft.Shared.Error;
+using Microsoft.Sales.Receivables;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Utilities;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Purchases.Vendor;
+
 codeunit 139621 ErrorMessageExtensibilityTests
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

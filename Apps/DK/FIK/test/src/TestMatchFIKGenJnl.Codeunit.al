@@ -7,6 +7,7 @@ Codeunit 148032 TestMatchFIKGenJnl
 {
 
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     VAR

@@ -8,7 +8,7 @@ page 36954 Customers
     Caption = 'Power BI Customers';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'customer';
     EntitySetName = 'customers';
     SourceTable = Customer;

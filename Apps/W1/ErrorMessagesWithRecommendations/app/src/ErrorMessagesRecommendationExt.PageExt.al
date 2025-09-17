@@ -67,7 +67,7 @@ pageextension 7900 ErrorMessagesRecommendationExt extends "Error Messages"
             {
                 ApplicationArea = All;
                 Caption = 'Recommended action';
-                ToolTip = 'This is the recommended action by the system for the error message.';
+                ToolTip = 'Specifies that this is the recommended action by the system for the error message.';
 
                 trigger OnDrillDown()
                 var
@@ -81,7 +81,7 @@ pageextension 7900 ErrorMessagesRecommendationExt extends "Error Messages"
             {
                 ApplicationArea = All;
                 Caption = 'Status';
-                ToolTip = 'This shows the status of the error message based on the execution of recommended action.';
+                ToolTip = 'Specifies the status of the error message based on the execution of recommended action.';
                 StyleExpr = StyleText;
             }
         }

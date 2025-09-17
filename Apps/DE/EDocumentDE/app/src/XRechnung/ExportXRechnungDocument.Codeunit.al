@@ -113,7 +113,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertAccountingSupplierParty(RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesInvoiceHeader);
         InsertDelivery(RootXMLNode, SalesInvoiceHeader);
-        InsertPaymentMeans(RootXMLNode, '68', 'PayeeFinancialAccount');
+        InsertPaymentMeans(RootXMLNode, '68', 'PayeeFinancialAccount', SalesInvoiceHeader."Company Bank Account Code");
         InsertPaymentTerms(RootXMLNode, SalesInvoiceHeader."Payment Terms Code");
         InsertVATAmounts(SalesInvLine, LineVATAmount, LineAmount, LineDiscAmount, SalesInvoiceHeader."Prices Including VAT", Currency);
         InsertInvDiscountAllowanceCharge(LineAmounts, SalesInvLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
@@ -157,7 +157,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertAccountingSupplierParty(RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesCrMemoHeader);
         InsertDelivery(RootXMLNode, SalesCrMemoHeader);
-        InsertPaymentMeans(RootXMLNode, '68', '');
+        InsertPaymentMeans(RootXMLNode, '68', '', SalesCrMemoHeader."Company Bank Account Code");
         InsertPaymentTerms(RootXMLNode, SalesCrMemoHeader."Payment Terms Code");
         InsertVATAmounts(SalesCrMemoLine, LineVATAmount, LineAmount, LineDiscAmount, SalesCrMemoHeader."Prices Including VAT", Currency);
         InsertInvDiscountAllowanceCharge(LineAmounts, SalesCrMemoLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
@@ -363,7 +363,7 @@ codeunit 13916 "Export XRechnung Document"
         AddressElement.Add(CountryElement);
     end;
 
-    local procedure InsertPaymentMeans(var RootXMLNode: XmlElement; PaymentMeansCode: Text[10]; PayeeFinancialAccount: Text[30])
+    local procedure InsertPaymentMeans(var RootXMLNode: XmlElement; PaymentMeansCode: Text[10]; PayeeFinancialAccount: Text[30]; CompanyBankAccountCode: Code[20])
     var
         PaymentMeansElement: XmlElement;
     begin
@@ -372,16 +372,19 @@ codeunit 13916 "Export XRechnung Document"
         PaymentMeansElement := XmlElement.Create('PaymentMeans', XmlNamespaceCAC);
         PaymentMeansElement.Add(XmlElement.Create('PaymentMeansCode', XmlNamespaceCBC, PaymentMeansCode));
         if PayeeFinancialAccount <> '' then
-            InsertPayeeFinancialAccount(PaymentMeansElement, PayeeFinancialAccount);
+            InsertPayeeFinancialAccount(PaymentMeansElement, PayeeFinancialAccount, CompanyBankAccountCode);
         RootXMLNode.Add(PaymentMeansElement);
     end;
 
-    local procedure InsertPayeeFinancialAccount(var PaymentMeansElement: XmlElement; PayeeFinancialAccount: Text[30]);
+    local procedure InsertPayeeFinancialAccount(var PaymentMeansElement: XmlElement; PayeeFinancialAccount: Text[30]; CompanyBankAccountCode: Code[20]);
     var
         PayeeFinancialAccountElement: XmlElement;
     begin
         PayeeFinancialAccountElement := XmlElement.Create(PayeeFinancialAccount, XmlNamespaceCAC);
-        PayeeFinancialAccountElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, CompanyInformation."Bank Account No."));
+        if CompanyBankAccountCode <> '' then
+            PayeeFinancialAccountElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, CompanyBankAccountCode))
+        else
+            PayeeFinancialAccountElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, CompanyInformation."Bank Account No."));
         InsertFinancialInstitutionBranch(PayeeFinancialAccountElement);
         PaymentMeansElement.Add(PayeeFinancialAccountElement);
     end;

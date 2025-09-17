@@ -17,15 +17,15 @@ pageextension 6146 "E-Doc. Posted Purch. Inv." extends "Posted Purchase Invoice"
                 action("OpenEDocument")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'Open E-Document';
-                    Image = CopyDocument;
-                    ToolTip = 'Opens the electronic document card.';
+                    Caption = 'Open';
+                    Image = Open;
+                    ToolTip = 'Opens the E-Document card page.';
 
                     trigger OnAction()
                     var
                         EDocument: Record "E-Document";
                     begin
-                        EDocument.OpenEdocument(Rec.RecordId);
+                        EDocument.OpenEDocument(Rec.RecordId);
                     end;
                 }
             }

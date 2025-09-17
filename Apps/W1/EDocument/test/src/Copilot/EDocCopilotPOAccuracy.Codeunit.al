@@ -12,6 +12,7 @@ using System.TestLibraries.Environment;
 codeunit 133502 EDocCopilotPOAccuracy
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

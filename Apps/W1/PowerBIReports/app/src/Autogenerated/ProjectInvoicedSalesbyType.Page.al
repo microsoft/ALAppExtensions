@@ -39,11 +39,9 @@ page 37038 "Project Invoiced Sales by Type"
     }
 
     var
-        SetupHelper: Codeunit "Setup Helper";
+        SetupHelper: Codeunit "Power BI Report Setup";
         ReportId: Guid;
-#pragma warning disable AA0240
         ReportPageLbl: Label 'ReportSection355bfd7d0ab99d6a0620', Locked = true;
-#pragma warning restore AA0240
 
     trigger OnOpenPage()
     var

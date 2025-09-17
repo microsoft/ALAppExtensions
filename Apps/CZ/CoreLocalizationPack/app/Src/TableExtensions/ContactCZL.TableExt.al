@@ -32,7 +32,8 @@ tableextension 11700 "Contact CZL" extends Contact
                     if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
                         LogNotVerified := false;
                         RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Contact);
-                        ResultRecordRef.SetTable(Rec);
+                        if ResultRecordRef.Number <> 0 then
+                            ResultRecordRef.SetTable(Rec);
                     end;
 
                 if LogNotVerified then

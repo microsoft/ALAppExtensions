@@ -27,7 +27,6 @@ table 31258 "Iss. Payment Order Header CZB"
         field(1; "No."; Code[20])
         {
             Caption = 'No.';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(2; "No. Series"; Code[20])

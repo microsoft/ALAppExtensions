@@ -3,9 +3,21 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.Test.Purchases.Vendor.RemittanceAdvice;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Reports;
+using Microsoft.Purchases.Vendor;
+using System.Email;
+using System.TestLibraries.Utilities;
+
 codeunit 139610 SendRemittanceAdvice
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -100,7 +112,7 @@ codeunit 139610 SendRemittanceAdvice
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::SendRemittanceAdvice);
     end;
 
-    local procedure CreateVendorRemittanceReportSelection(ReportSelectionUsage: Option; VendorNo: Code[20])
+    local procedure CreateVendorRemittanceReportSelection(ReportSelectionUsage: Enum "Report Selection Usage"; VendorNo: Code[20])
     var
         CustomReportSelection: Record "Custom Report Selection";
         ReportSelections: Record "Report Selections";
@@ -112,14 +124,14 @@ codeunit 139610 SendRemittanceAdvice
         CustomReportSelection."Source Type" := 23;
         CustomReportSelection."Source No." := VendorNo;
         CustomReportSelection.Usage := ReportSelectionUsage;
-        CASE CustomReportSelection.Usage OF
+        case CustomReportSelection.Usage of
             CustomReportSelection.Usage::"V.Remittance":
                 CustomReportSelection."Report ID" := REPORT::"Remittance Advice - Journal";
             CustomReportSelection.Usage::"P.V.Remit.":
                 CustomReportSelection."Report ID" := REPORT::"Remittance Advice - Entries";
-        END;
-        CustomReportSelection."Use for Email Attachment" := TRUE;
-        CustomReportSelection.INSERT();
+        end;
+        CustomReportSelection."Use for Email Attachment" := true;
+        CustomReportSelection.Insert();
 
         ReportSelections.Init();
         ReportSelections.Validate(Usage, ReportSelectionUsage);
@@ -199,18 +211,16 @@ codeunit 139610 SendRemittanceAdvice
     var
         DocumentSendingProfile: Record "Document Sending Profile";
     begin
-        with DocumentSendingProfile do begin
-            SetRange(Default, true);
-            DeleteAll();
+        DocumentSendingProfile.SetRange(Default, true);
+        DocumentSendingProfile.DeleteAll();
 
-            Validate(Default, true);
-            Validate(Description, LibraryUtility.GenerateGUID());
-            Validate(Disk, Disk::No);
-            Validate(Printer, Printer::No);
-            Validate("E-Mail", "E-Mail"::No);
-            Validate("Electronic Document", "Electronic Document"::No);
-            Insert();
-        end;
+        DocumentSendingProfile.Validate(Default, true);
+        DocumentSendingProfile.Validate(Description, LibraryUtility.GenerateGUID());
+        DocumentSendingProfile.Validate(Disk, DocumentSendingProfile.Disk::No);
+        DocumentSendingProfile.Validate(Printer, DocumentSendingProfile.Printer::No);
+        DocumentSendingProfile.Validate("E-Mail", DocumentSendingProfile."E-Mail"::No);
+        DocumentSendingProfile.Validate("Electronic Document", DocumentSendingProfile."Electronic Document"::No);
+        DocumentSendingProfile.Insert();
     end;
 
     [ModalPageHandler]

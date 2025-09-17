@@ -23,6 +23,7 @@ codeunit 6174 "E-Document ADI Handler" implements IStructureReceivedEDocument, I
         StructuredData: Text;
         FileFormat: Enum "E-Doc. File Format";
         ReadIntoDraftImpl: Enum "E-Doc. Read into Draft";
+        FeatureNameTxt: label 'E-Document Matching Assistance', Locked = true;
 
     procedure StructureReceivedEDocument(EDocumentDataStorage: Record "E-Doc. Data Storage"): Interface IStructuredDataType
     var
@@ -155,12 +156,15 @@ codeunit 6174 "E-Document ADI Handler" implements IStructureReceivedEDocument, I
 
 #pragma warning disable AA0139 // false positive: overflow handled by EDocumentJsonHelper.EDocumentJsonHelper.SetStringValueInField
     local procedure PopulateEDocumentPurchaseHeader(FieldsJsonObject: JsonObject; var TempEDocPurchaseHeader: Record "E-Document Purchase Header" temporary)
+    var
+        ConfidenceScore: Decimal;
     begin
         EDocumentJsonHelper.SetStringValueInField('customerName', MaxStrLen(TempEDocPurchaseHeader."Customer Company Name"), FieldsJsonObject, TempEDocPurchaseHeader."Customer Company Name");
         EDocumentJsonHelper.SetStringValueInField('customerId', MaxStrLen(TempEDocPurchaseHeader."Customer Company Id"), FieldsJsonObject, TempEDocPurchaseHeader."Customer Company Id");
         EDocumentJsonHelper.SetStringValueInField('purchaseOrder', MaxStrLen(TempEDocPurchaseHeader."Purchase Order No."), FieldsJsonObject, TempEDocPurchaseHeader."Purchase Order No.");
         EDocumentJsonHelper.SetStringValueInField('invoiceId', MaxStrLen(TempEDocPurchaseHeader."Sales Invoice No."), FieldsJsonObject, TempEDocPurchaseHeader."Sales Invoice No.");
         EDocumentJsonHelper.SetDateValueInField('dueDate', FieldsJsonObject, TempEDocPurchaseHeader."Due Date");
+        EDocumentJsonHelper.SetDateValueInField('invoiceDate', FieldsJsonObject, TempEDocPurchaseHeader."Document Date");
         EDocumentJsonHelper.SetStringValueInField('vendorName', MaxStrLen(TempEDocPurchaseHeader."Vendor Company Name"), FieldsJsonObject, TempEDocPurchaseHeader."Vendor Company Name");
         EDocumentJsonHelper.SetStringValueInField('vendorAddress', MaxStrLen(TempEDocPurchaseHeader."Vendor Address"), FieldsJsonObject, TempEDocPurchaseHeader."Vendor Address");
         EDocumentJsonHelper.SetStringValueInField('vendorAddressRecipient', MaxStrLen(TempEDocPurchaseHeader."Vendor Address Recipient"), FieldsJsonObject, TempEDocPurchaseHeader."Vendor Address Recipient");
@@ -182,6 +186,9 @@ codeunit 6174 "E-Document ADI Handler" implements IStructureReceivedEDocument, I
         EDocumentJsonHelper.SetStringValueInField('vendorTaxId', MaxStrLen(TempEDocPurchaseHeader."Vendor VAT Id"), FieldsJsonObject, TempEDocPurchaseHeader."Vendor VAT Id");
         EDocumentJsonHelper.SetStringValueInField('customerTaxId', MaxStrLen(TempEDocPurchaseHeader."Customer VAT Id"), FieldsJsonObject, TempEDocPurchaseHeader."Customer VAT Id");
         EDocumentJsonHelper.SetStringValueInField('paymentTerm', MaxStrLen(TempEDocPurchaseHeader."Payment Terms"), FieldsJsonObject, TempEDocPurchaseHeader."Payment Terms");
+        EDocumentJsonHelper.SetNumberValueInField('confidence', FieldsJsonObject, ConfidenceScore);
+        if ConfidenceScore > 0 then
+            Session.LogMessage('0000PVR', 'Confidence score for the document extracted with ADI.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureNameTxt, 'ConfidenceScore', Format(ConfidenceScore));
     end;
 
     local procedure PopulateEDocumentPurchaseLine(FieldsJsonObject: JsonObject; var TempEDocPurchaseLine: Record "E-Document Purchase Line" temporary)
@@ -196,7 +203,8 @@ codeunit 6174 "E-Document ADI Handler" implements IStructureReceivedEDocument, I
         EDocumentJsonHelper.SetStringValueInField('unit', MaxStrLen(TempEDocPurchaseLine."Unit of Measure"), FieldsJsonObject, TempEDocPurchaseLine."Unit of Measure");
         EDocumentJsonHelper.SetDateValueInField('date', FieldsJsonObject, TempEDocPurchaseLine.Date);
         EDocumentJsonHelper.SetCurrencyValueInField('tax', FieldsJsonObject, TempEDocPurchaseLine."VAT Rate", TempEDocPurchaseLine."Currency Code");
-        TempEDocPurchaseLine."Total Discount" := (TempEDocPurchaseLine."Unit Price" * TempEDocPurchaseLine.Quantity) - TempEDocPurchaseLine."Sub Total";
+        if TempEDocPurchaseLine."Unit Price" <> 0 then
+            TempEDocPurchaseLine."Total Discount" := (TempEDocPurchaseLine."Unit Price" * TempEDocPurchaseLine.Quantity) - TempEDocPurchaseLine."Sub Total";
     end;
 #pragma warning restore AA0139
 

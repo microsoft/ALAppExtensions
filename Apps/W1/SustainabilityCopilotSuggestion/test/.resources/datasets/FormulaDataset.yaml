@@ -1,0 +1,86 @@
+tests:
+  - name: Airflight kilometer
+    input:
+      Line_No.: 60000
+      Account_No.: 9904
+      Account_Name: Flight short - economy
+      Description: London-Frankfurt roundtrip
+      Unit_of_Measure: FLIGHT
+      Custom_Amount: 1
+    expressions:
+      - name: "Total Emission"
+        left_operand_type: "expression"
+        left_operand_name: ["Total Distance", "Flight Distance Emission"]
+        operator: "*"
+        right_operand_type: "value"
+        right_operand_name: ["Emission Factor"]
+      - name: "Total Distance"
+        left_operand_type: "value"
+        left_operand_name: ["Distance London to Frankfurt"]
+        operator: "+"
+        right_operand_type: "value"
+        right_operand_name: ["Distance Frankfurt to London"]
+  - name: Hotel stay
+    input:
+      Line_No.: 70000
+      Account_No.: 9902
+      Account_Name: Hotel stay 4-star
+      Description: standard room
+      Unit_of_Measure: NIGHT
+      Custom_Amount: 1
+    expressions:
+      - name: "Total Emission"
+        left_operand_type: "value"
+        left_operand_name: ["Number of Nights"]
+        left_operand_value: 1
+        operator: "*"
+        right_operand_type: "value"
+        right_operand_name: ["Emission Factor"]
+  - name: Power plant unkown energy source
+    input:
+      Line_No.: 80000
+      Account_No.: 9901
+      Account_Name: Electricity - domestic vendor
+      Description: UK Power plant - unknown energy source
+      Unit_of_Measure: KWH
+      Fuel/Electricity: 2850
+    expressions:
+      - name: "Total Emission"
+        left_operand_type: "value"
+        left_operand_name: ["Electricity Consumption"]
+        left_operand_value: 2850
+        operator: "*"
+        right_operand_type: "value"
+        right_operand_name: ["Emission Factor"]
+  - name: Food waste in tonnes
+    input:
+      Line_No.: 90000
+      Account_No.: 9905
+      Account_Name: Waste food and drink
+      Description: Food from restaurant and halfopened bear and juices
+      Unit_of_Measure: T
+      Custom_Amount: 4.82
+    expressions:
+      - name: "Total Emission"
+        left_operand_type: "value"
+        left_operand_name: ["Weight of Waste"]
+        left_operand_value: 4.82
+        operator: "*"
+        right_operand_type: "value"
+        right_operand_name: ["Emission Factor"]
+  - name: Food waste in kilograms
+    input:
+      Line_No.: 100000
+      Account_No.: 9905
+      Account_Name: Waste food and drink
+      Description: Food from restaurant and halfopened bear and juices
+      Unit_of_Measure: KG
+      Custom_Amount: 4820
+    expressions:
+      - name: "Total Emission"
+        left_operand_type: "value"
+        left_operand_name: ["Weight of Waste"]
+        left_operand_value: 4820
+        operator: "*"
+        right_operand_type: "value"
+        right_operand_name: ["Emission Factor"]

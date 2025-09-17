@@ -2,6 +2,7 @@ codeunit 139530 "MigrationQBO Tests"
 {
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

@@ -9,7 +9,7 @@ query 36995 Jobs
     Caption = 'Power BI Project';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'job';
     EntitySetName = 'jobs';
     DataAccessIntent = ReadOnly;

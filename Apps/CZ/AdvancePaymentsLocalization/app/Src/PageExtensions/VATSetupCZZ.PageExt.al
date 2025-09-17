@@ -8,17 +8,8 @@ pageextension 31235 "VAT Setup CZZ" extends "VAT Setup"
             field(UseForAdvanceCZZ; Rec."Use For Advances CZZ")
             {
                 ApplicationArea = Basic, Suite;
-                Enabled = UseForAdvanceEnable;
+                Enabled = Rec."Enable Non-Deductible VAT" and Rec."Enable Non-Deductible VAT CZL";
             }
         }
     }
-
-    trigger OnOpenPage()
-    begin
-        UseForAdvanceEnable := NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
-    end;
-
-    var
-        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
-        UseForAdvanceEnable: Boolean;
 }

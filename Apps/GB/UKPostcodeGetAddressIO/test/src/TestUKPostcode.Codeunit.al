@@ -2,7 +2,8 @@
 codeunit 139500 "Test UK Postcode"
 {
     Subtype = Test;
-
+    TestType = IntegrationTest;
+    RequiredTestIsolation = Disabled;
     trigger OnRun()
     begin
     end;

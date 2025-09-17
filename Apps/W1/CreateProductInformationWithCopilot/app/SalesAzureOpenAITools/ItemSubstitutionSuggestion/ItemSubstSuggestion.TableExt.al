@@ -17,6 +17,7 @@ tableextension 7410 "Item Subst. Suggestion" extends "Item Substitution"
         {
             Caption = 'Score';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(7332; "Primary Search Terms"; Blob)
         {

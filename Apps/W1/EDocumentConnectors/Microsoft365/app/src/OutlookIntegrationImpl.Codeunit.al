@@ -53,7 +53,7 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
                 exit(false);
         end;
         EmailAccounts.EnableLookupMode();
-        EmailAccounts.FilterConnectorV3Accounts(true);
+        EmailAccounts.FilterConnectorV3AccountsOnly(true);
         if EmailAccounts.RunModal() <> Action::LookupOK then
             exit(false);
 

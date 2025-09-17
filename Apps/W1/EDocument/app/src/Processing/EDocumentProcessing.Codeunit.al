@@ -4,9 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.Processing.Import;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Vendor;
@@ -18,13 +21,20 @@ using Microsoft.Sales.Reminder;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.Reflection;
-using Microsoft.eServices.EDocument.Processing.Import;
+using System.Automation;
+using System.Utilities;
 
 codeunit 6108 "E-Document Processing"
 {
     Access = Internal;
     Permissions = tabledata "E-Document Service Status" = rim,
                 tabledata "E-Document" = m;
+
+    var
+        RelatedRecordCaptionWithDashTxt: Label '%1 - %2', Comment = '%1 - Record Text, %2 - Record Caption', Locked = true;
+        EDocTelemetryCategoryLbl: Label 'E-Document', Locked = true;
+        EDocTelemetryIdLbl: Label 'E-Doc %1', Locked = true;
+        EDocTok: Label 'W1 E-Document', Locked = true;
 
     /// <summary>
     /// Inserts E-Document Service Status record. Throws runtime error if record does exists.
@@ -37,6 +47,8 @@ codeunit 6108 "E-Document Processing"
         EDocumentServiceStatus.Validate("E-Document Service Code", EDocumentService.Code);
         EDocumentServiceStatus.Validate(Status, EDocumentStatus);
         EDocumentServiceStatus.Insert();
+
+        OnAfterModifyServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
     end;
 
     /// <summary>
@@ -50,6 +62,8 @@ codeunit 6108 "E-Document Processing"
         EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
         EDocumentServiceStatus.Validate(Status, EDocumentStatus);
         EDocumentServiceStatus.Modify();
+
+        OnAfterModifyServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
     end;
 
     /// <summary>
@@ -97,6 +111,8 @@ codeunit 6108 "E-Document Processing"
         else
             EDocument.Validate(Status, EDocument.Status::Processed);
         EDocument.Modify(true);
+
+        OnAfterModifyEDocumentStatus(EDocument, EDocumentServiceStatus);
     end;
 
     procedure ModifyEDocumentProcessingStatus(EDocument: Record "E-Document"; NewStatus: Enum "Import E-Doc. Proc. Status")
@@ -108,15 +124,102 @@ codeunit 6108 "E-Document Processing"
         EDocumentServiceStatus.Modify();
     end;
 
+    procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
+    var
+        EDocument: Record "E-Document";
+        EDocumentHelper: Codeunit "E-Document Helper";
+        EDocExport: Codeunit "E-Doc. Export";
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(Record);
+        EDocument.SetRange("Document Record ID", SourceDocumentHeader.RecordId);
+        if EDocumentHelper.IsElectronicDocument(SourceDocumentHeader) and EDocument.IsEmpty() then
+            EDocExport.CheckEDocument(SourceDocumentHeader, EDocumentProcPhase);
+    end;
+
+    procedure CreateEDocumentFromPostedDocumentPage(PostedRecord: Variant; DocumentType: Enum "E-Document Type"): Boolean
+    var
+        DocumentSendingProfile: Record "Document Sending Profile";
+        EDocumentHelper: Codeunit "E-Document Helper";
+        EDocumentSubscribers: Codeunit "E-Document Subscribers";
+        RecordRef: RecordRef;
+        ElectronicDocumentErr: Label 'Document sending profile %1 is not setup to send electronic documents.', Comment = '%1 - Document Sending Profile Code';
+    begin
+        if not PostedRecord.IsRecord() then
+            exit;
+
+        RecordRef.GetTable(PostedRecord);
+        if not EDocumentHelper.IsElectronicDocument(RecordRef, DocumentSendingProfile) then
+            Error(ElectronicDocumentErr, DocumentSendingProfile.Code);
+
+        RunEDocumentCheck(PostedRecord, Enum::"E-Document Processing Phase"::Post);
+        EDocumentSubscribers.CreateEDocumentFromPostedDocument(PostedRecord, DocumentSendingProfile, DocumentType);
+        exit(true);
+    end;
+
+    procedure ProcessEDocumentAsEmail(DocumentSendingProfile: Record "Document Sending Profile"; ReportUsage: Enum "Report Selection Usage"; RecordVariant: Variant;
+                                        DocNo: Code[20]; DocName: Text[150]; ToCust: Code[20]; ShowDialog: Boolean)
+    var
+        EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
+        EDocumentEmailing: Codeunit "E-Document Emailing";
+        EDocumentLog: Codeunit "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+        TempBlobList: Codeunit "Temp Blob List";
+        TypeHelper: Codeunit "Type Helper";
+        SourceReference: RecordRef;
+    begin
+        // Email if attachment is E-Document or PDF & E-Document
+        TypeHelper.CopyRecVariantToRecRef(RecordVariant, SourceReference);
+
+        EDocument.SetRange("Document Record ID", SourceReference.RecordId());
+        if not EDocument.FindFirst() then
+            exit;
+
+        GetEDocumentServicesFromWorkflow(EDocument, EDocumentService);
+
+        // Find exported blobs for all services and add them to email attachments
+        if EDocumentService.FindSet() then
+            repeat
+                Clear(TempBlob);
+                if EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported) then
+                    TempBlobList.Add(TempBlob);
+            until EDocumentService.Next() = 0;
+
+        EDocumentEmailing.SetAttachments(TempBlobList);
+        EDocumentEmailing.SendEDocumentEmail(DocumentSendingProfile, ReportUsage, RecordVariant, DocNo, DocName, ToCust, ShowDialog);
+    end;
+
+    local procedure GetEDocumentServicesFromWorkflow(EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"): Boolean
+    var
+        Workflow: Record "Workflow";
+        WorkflowStepInstance: Record "Workflow Step Instance";
+        EDocumentWorkflowProcessing: Codeunit "E-Document WorkFlow Processing";
+    begin
+        // Get E-Document Service from previous Send or Export response in workflow, otherwise entry point
+        if IsNullGuid(EDocument."Workflow Step Instance ID") then begin
+            if not Workflow.Get(EDocument."Workflow Code") then
+                exit(false);
+            exit(EDocumentWorkflowProcessing.GetServicesFromEntryPointResponseInWorkflow(Workflow, EDocumentService));
+        end;
+
+        WorkflowStepInstance.SetRange("Workflow Code", EDocument."Workflow Code");
+        WorkflowStepInstance.SetRange(ID, EDocument."Workflow Step Instance ID");
+        if WorkflowStepInstance.FindFirst() then;
+        exit(EDocumentWorkflowProcessing.GetEDocumentServiceFromPreviousSendOrExportResponse(WorkflowStepInstance, EDocumentService));
+    end;
+
     procedure GetDocSendingProfileForDocRef(var RecRef: RecordRef): Record "Document Sending Profile";
     var
         SalesHeader: Record "Sales Header";
         PurchaseHeader: Record "Purchase Header";
         FinChargeMemoHeader: Record "Finance Charge Memo Header";
+        TransferHeader: Record "Transfer Header";
     begin
         case RecRef.Number of
             Database::"Sales Header", Database::"Sales Invoice Header", Database::"Sales Cr.Memo Header",
-            Database::"Service Header", Database::"Service Invoice Header", Database::"Service Cr.Memo Header":
+            Database::"Service Header", Database::"Service Invoice Header", Database::"Service Cr.Memo Header",
+            Database::"Sales Shipment Header":
                 exit(GetDocSendingProfileForCustVend(RecRef.Field(SalesHeader.FieldNo("Bill-to Customer No.")).Value, ''));
 
             Database::"Finance Charge Memo Header", Database::"Issued Fin. Charge Memo Header",
@@ -125,6 +228,9 @@ codeunit 6108 "E-Document Processing"
 
             Database::"Purchase Header", Database::"Purch. Inv. Header", Database::"Purch. Cr. Memo Hdr.":
                 exit(GetDocSendingProfileForCustVend('', RecRef.Field(PurchaseHeader.FieldNo("Pay-to Vendor No.")).Value));
+
+            Database::"Transfer Shipment Header":
+                exit(GetDocSendingProfileForTransferShipment(RecRef.Field(TransferHeader.FieldNo("Transfer-to Code")).Value));
         end;
     end;
 
@@ -171,7 +277,57 @@ codeunit 6108 "E-Document Processing"
                     SourceDocumentLines.Open(Database::"Issued Reminder Line");
                     SourceDocumentLines.Field(1).SetRange(EDocument."Document No.");
                 end;
+            EDocument."Document Type"::"Sales Shipment":
+                begin
+                    SourceDocumentLines.Open(Database::"Sales Shipment Line");
+                    SourceDocumentLines.Field(3).SetRange(EDocument."Document No.");
+                end;
+            EDocument."Document Type"::"Transfer Shipment":
+                begin
+                    SourceDocumentLines.Open(Database::"Transfer Shipment Line");
+                    SourceDocumentLines.Field(1).SetRange(EDocument."Document No.");
+                end;
         end;
+    end;
+
+    procedure GetTypeFromPostedSourceDocument(RecordVariant: Variant): Enum "E-Document Type"
+    var
+        TypeHelper: Codeunit "Type Helper";
+        RecordRef: RecordRef;
+        EDocumentType: Enum "E-Document Type";
+    begin
+        if not RecordVariant.IsRecord() then
+            exit(Enum::"E-Document Type"::None);
+
+        TypeHelper.CopyRecVariantToRecRef(RecordVariant, RecordRef);
+        case RecordRef.Number() of
+            Database::"Sales Invoice Header":
+                exit(EDocumentType::"Sales Invoice");
+            Database::"Sales Cr.Memo Header":
+                exit(EDocumentType::"Sales Credit Memo");
+            Database::"Purch. Inv. Header":
+                exit(EDocumentType::"Purchase Invoice");
+            Database::"Purch. Cr. Memo Hdr.":
+                exit(EDocumentType::"Purchase Credit Memo");
+            Database::"Service Invoice Header":
+                exit(EDocumentType::"Service Invoice");
+            Database::"Service Cr.Memo Header":
+                exit(EDocumentType::"Service Credit Memo");
+            Database::"Issued Fin. Charge Memo Header":
+                exit(EDocumentType::"Issued Finance Charge Memo");
+            Database::"Issued Reminder Header":
+                exit(EDocumentType::"Issued Reminder");
+            Database::"Gen. Journal Line":
+                exit(EDocumentType::"General Journal");
+            Database::"G/L Entry":
+                exit(EDocumentType::"G/L Entry");
+            Database::"Sales Shipment Header":
+                exit(EDocumentType::"Sales Shipment");
+            Database::"Transfer Shipment Header":
+                exit(EDocumentType::"Transfer Shipment");
+        end;
+        OnAfterGetTypeFromPostedSourceDocument(RecordVariant, EDocumentType);
+        exit(EDocumentType);
     end;
 
     procedure GetEDocumentCount(Status: Enum "E-Document Status"; Direction: Enum "E-Document Direction"): Integer
@@ -323,6 +479,30 @@ codeunit 6108 "E-Document Processing"
             exit(true);
     end;
 
+    local procedure GetDocSendingProfileForTransferShipment(LocationCode: Code[20]) DocumentSendingProfile: Record "Document Sending Profile"
+    begin
+        GetDocSendingProfileForTransferShipment(DocumentSendingProfile, LocationCode);
+    end;
+
+    /// <summary>
+    /// Get the document sending profile for transfer shipment.
+    /// </summary>
+    /// <param name="DocumentSendingProfile">Return value: Document sending profile used for provided location code.</param>
+    /// <param name="LocationCode">Transfer To location code.</param>
+    /// <returns>True if document sending profile for Transfer Shipment was found.</returns>
+    internal procedure GetDocSendingProfileForTransferShipment(var DocumentSendingProfile: Record "Document Sending Profile"; LocationCode: Code[20]): Boolean
+    var
+        Location: Record "Location";
+    begin
+        if Location.Get(LocationCode) then
+            if DocumentSendingProfile.Get(Location."Transfer Doc. Sending Profile") then
+                exit(true);
+
+        DocumentSendingProfile.SetRange(Default, true);
+        if DocumentSendingProfile.FindFirst() then
+            exit(true);
+    end;
+
     local procedure GetPostedRecord(var EDocument: Record "E-Document"; var RelatedRecord: Variant): Boolean
     var
         RelatedRecordRef: RecordRef;
@@ -449,9 +629,18 @@ codeunit 6108 "E-Document Processing"
         exit(RecCaption);
     end;
 
-    var
-        RelatedRecordCaptionWithDashTxt: Label '%1 - %2', Comment = '%1 - Record Text, %2 - Record Caption', Locked = true;
-        EDocTelemetryCategoryLbl: Label 'E-Document', Locked = true;
-        EDocTelemetryIdLbl: Label 'E-Doc %1', Locked = true;
-        EDocTok: Label 'W1 E-Document', Locked = true;
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetTypeFromPostedSourceDocument(RecordVariant: Variant; var EDocumentType: Enum "E-Document Type")
+    begin
+    end;
+
+    [InternalEvent(false, false)]
+    local procedure OnAfterModifyEDocumentStatus(var EDocument: Record "E-Document"; var EDocumentServiceStatus: Record "E-Document Service Status")
+    begin
+    end;
+
+    [InternalEvent(false, false)]
+    local procedure OnAfterModifyServiceStatus(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
+    begin
+    end;
 }

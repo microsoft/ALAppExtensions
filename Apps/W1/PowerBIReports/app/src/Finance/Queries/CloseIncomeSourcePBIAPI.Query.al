@@ -6,7 +6,7 @@ query 37013 "Close Income Source - PBI API"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'closeIncomeStmtSourceCode';
     EntitySetName = 'closeIncomeStmtSourceCodes';
     DataAccessIntent = ReadOnly;

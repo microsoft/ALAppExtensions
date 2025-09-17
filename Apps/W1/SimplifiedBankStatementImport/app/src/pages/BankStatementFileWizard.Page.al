@@ -1427,7 +1427,7 @@ page 8850 "Bank Statement File Wizard"
         end;
     end;
 
-    local procedure ReadLineSeparator(FileSeparatorInStream: InStream; var LineSeparator: Option "CRLF","CR","LF")
+    local procedure ReadLineSeparator(FileSeparatorInStream: InStream; var LineSeparatorParam: Option "CRLF","CR","LF")
     var
         TypeHelper: Codeunit "Type Helper";
         FileStart: Text;
@@ -1437,17 +1437,17 @@ page 8850 "Bank Statement File Wizard"
         FileSeparatorInStream.Read(FileStart, 4000); // Read first 4000 characters to determine the line separator
 
         if FileStart.Contains(CRLF) then begin
-            LineSeparator := LineSeparator::CRLF;
+            LineSeparatorParam := LineSeparatorParam::CRLF;
             exit;
         end;
 
         if FileStart.Contains(CRLF[1]) then begin
-            LineSeparator := LineSeparator::CR;
+            LineSeparatorParam := LineSeparatorParam::CR;
             exit;
         end;
 
         if FileStart.Contains(CRLF[2]) then begin
-            LineSeparator := LineSeparator::LF;
+            LineSeparatorParam := LineSeparatorParam::LF;
             exit;
         end;
     end;

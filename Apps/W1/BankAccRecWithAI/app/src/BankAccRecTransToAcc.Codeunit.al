@@ -74,15 +74,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         BestGLAccountNo := '';
         BankAccReconciliationLine.MarkedOnly(true);
         if not BankAccReconciliationLine.IsEmpty() then begin
-#if not CLEAN27
-#pragma warning disable AS0105    
-#pragma warning disable AL0432
-            AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oPreview());
-#pragma warning restore AL0432
-#pragma warning restore AS0105            
-#else
             AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
-#endif
             AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation");
             AOAIChatCompletionParams.SetMaxTokens(BankRecAIMatchingImpl.MaxTokens());
             AOAIChatCompletionParams.SetTemperature(0);

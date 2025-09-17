@@ -18,7 +18,7 @@ codeunit 6385 "Outlook Processing"
     Permissions = tabledata "E-Document" = m,
                   tabledata "E-Document Service Status" = m,
                   tabledata "Email Inbox" = r,
-                  tabledata "Outlook Setup" = r;
+                  tabledata "Outlook Setup" = rim;
     InherentPermissions = X;
     InherentEntitlements = X;
 
@@ -70,7 +70,6 @@ codeunit 6385 "Outlook Processing"
         TempFilters."Load Attachments" := true;
         TempFilters."Max No. of Emails" := GetMaxNoOfEmails();
         TempFilters."Earliest Email" := OutlookSetup."Last Sync At";
-        TempFilters."Last Message Only" := true;
         OutlookProcessing.ConfigureForEmailRetrieval(TempFilters);
         if not OutlookProcessing.Run() then begin // Email.RetrieveEmails() called this way to "catch" and recover
             // If email retrieval fails, the problem may be triggered by a specific email, so we attempt to recover by pushing the date of the emails retrieved so that we skip the problematic email

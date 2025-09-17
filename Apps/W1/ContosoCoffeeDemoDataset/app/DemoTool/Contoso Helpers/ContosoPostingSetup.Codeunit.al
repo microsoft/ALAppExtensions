@@ -151,7 +151,7 @@ codeunit 5136 "Contoso Posting Setup"
             VATClause.Insert(true);
     end;
 
-    procedure InsertInventoryPostingSetup(LocationCode: Code[10]; InventoryPostingGroupCode: Code[20]; InventoryAccount: Code[20]; InventoryAccountInterim: Code[20]; WIPAccount: Code[20]; MaterialVarianceAccount: Code[20]; CapacityVarianceAccount: Code[20]; SubcontractedVarianceAccount: Code[20]; CapOverheadVarianceAccount: Code[20]; MfgOverheadVarianceAccount: Code[20])
+    procedure InsertInventoryPostingSetup(LocationCode: Code[10]; InventoryPostingGroupCode: Code[20]; InventoryAccount: Code[20]; InventoryAccountInterim: Code[20]; WIPAccount: Code[20]; MaterialVarianceAccount: Code[20]; CapacityVarianceAccount: Code[20]; SubcontractedVarianceAccount: Code[20]; CapOverheadVarianceAccount: Code[20]; MfgOverheadVarianceAccount: Code[20]; MaterialNonInvVarianceAccount: Code[20])
     var
         InventoryPostingSetup: Record "Inventory Posting Setup";
         Exists: Boolean;
@@ -173,6 +173,7 @@ codeunit 5136 "Contoso Posting Setup"
         InventoryPostingSetup.Validate("Subcontracted Variance Account", SubcontractedVarianceAccount);
         InventoryPostingSetup.Validate("Cap. Overhead Variance Account", CapOverheadVarianceAccount);
         InventoryPostingSetup.Validate("Mfg. Overhead Variance Account", MfgOverheadVarianceAccount);
+        InventoryPostingSetup.Validate("Mat. Non-Inv. Variance Acc.", MaterialNonInvVarianceAccount);
 
         if Exists then
             InventoryPostingSetup.Modify(true)
@@ -180,8 +181,13 @@ codeunit 5136 "Contoso Posting Setup"
             InventoryPostingSetup.Insert(true);
     end;
 
+    procedure InsertInventoryPostingSetup(LocationCode: Code[10]; InventoryPostingGroupCode: Code[20]; InventoryAccount: Code[20]; InventoryAccountInterim: Code[20]; WIPAccount: Code[20]; MaterialVarianceAccount: Code[20]; CapacityVarianceAccount: Code[20]; SubcontractedVarianceAccount: Code[20]; CapOverheadVarianceAccount: Code[20]; MfgOverheadVarianceAccount: Code[20])
+    begin
+        InsertInventoryPostingSetup(LocationCode, InventoryPostingGroupCode, InventoryAccount, InventoryAccountInterim, WIPAccount, MaterialVarianceAccount, CapacityVarianceAccount, SubcontractedVarianceAccount, CapOverheadVarianceAccount, MfgOverheadVarianceAccount, '');
+    end;
+
     procedure InsertInventoryPostingSetup(LocationCode: Code[10]; InventoryPostingGroupCode: Code[20]; InventoryAccount: Code[20]; InventoryAccountInterim: Code[20])
     begin
-        InsertInventoryPostingSetup(LocationCode, InventoryPostingGroupCode, InventoryAccount, InventoryAccountInterim, '', '', '', '', '', '');
+        InsertInventoryPostingSetup(LocationCode, InventoryPostingGroupCode, InventoryAccount, InventoryAccountInterim, '', '', '', '', '', '', '');
     end;
 }

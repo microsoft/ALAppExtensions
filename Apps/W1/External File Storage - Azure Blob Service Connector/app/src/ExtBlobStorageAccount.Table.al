@@ -41,7 +41,7 @@ table 4560 "Ext. Blob Storage Account"
         {
             Access = Internal;
             Caption = 'Authorization Type';
-            ToolTip = 'The way of authorizing used to access the Blob Storage.';
+            ToolTip = 'Specifies the way of authorization used to access the Blob Storage.';
         }
         field(8; "Secret Key"; Guid)
         {

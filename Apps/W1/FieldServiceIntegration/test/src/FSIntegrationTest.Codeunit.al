@@ -35,6 +35,7 @@ using System.TestLibraries.Utilities;
 codeunit 139204 "FS Integration Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -44,7 +45,6 @@ codeunit 139204 "FS Integration Test"
 
     var
         CRMProductName: Codeunit "CRM Product Name";
-        CRMSetupTest: Codeunit "CRM Setup Test";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         FSIntegrationTestLibrary: Codeunit "FS Integration Test Library";
         Assert: Codeunit Assert;
@@ -1584,7 +1584,6 @@ codeunit 139204 "FS Integration Test"
             CryptographyManagement.DisableEncryption(true);
         Assert.IsFalse(EncryptionEnabled(), 'Encryption should be disabled');
 
-        Clear(CRMSetupTest);
         UnregisterTableConnection(TableConnectionType::CRM, '');
         UnregisterTableConnection(TableConnectionType::CRM, GetDefaultTableConnection(TableConnectionType::CRM));
         Assert.AreEqual(

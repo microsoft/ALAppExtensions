@@ -9,7 +9,7 @@ query 37006 "Sales Line - Item Shipped"
     Caption = 'Power BI Shipped Not Invd. SO';
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'itemShippedNotInvoicedSalesLine';
     EntitySetName = 'itemShippedNotInvoicedSalesLines';
     DataAccessIntent = ReadOnly;

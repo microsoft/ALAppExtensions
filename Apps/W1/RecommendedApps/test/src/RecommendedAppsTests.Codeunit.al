@@ -1,6 +1,7 @@
 codeunit 139527 "Recommended Apps Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

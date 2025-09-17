@@ -9,7 +9,7 @@ query 36967 "Value Entries - Item"
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'itemValueEntry';
     EntitySetName = 'itemValueEntries';
     DataAccessIntent = ReadOnly;

@@ -8,6 +8,7 @@ using System.TestLibraries.Utilities;
 codeunit 133511 "Item Srch. In Doc. Lookup Test"
 {
     Subtype = Test;
+    TestType = AITest;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 

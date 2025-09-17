@@ -10,7 +10,7 @@ query 36989 "Prod. Order Lines - Manuf."
     QueryType = API;
     APIPublisher = 'microsoft';
     APIGroup = 'analytics';
-    APIVersion = 'v0.5';
+    ApiVersion = 'v0.5', 'v1.0';
     EntityName = 'manufacturingProdOrderLines';
     EntitySetName = 'manufacturingProdOrderLines';
     DataAccessIntent = ReadOnly;

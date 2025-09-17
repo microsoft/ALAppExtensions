@@ -3,6 +3,7 @@ codeunit 139715 "APIV1 - Balance Sheet E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()
