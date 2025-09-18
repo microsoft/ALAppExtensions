@@ -110,6 +110,8 @@ codeunit 139664 "GP Data Migration Tests"
         Customer: Record "Customer";
         GenJournalLine: Record "Gen. Journal Line";
         ShipToAddress: Record "Ship-to Address";
+        StandardSalesLine: Record "Standard Sales Line";
+        StandardCustomerSalesCode: Record "Standard Customer Sales Code";
         InitialGenJournalLineCount: Integer;
         CustomerCount: Integer;
     begin
@@ -212,21 +214,21 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.RecordCount(GenJournalLine, 2 + InitialGenJournalLineCount);
 
         // [WHEN] Customer classes are migrated
-        Assert.AreEqual('100', HelperFunctions.GetPostingAccountNumber('ReceivablesAccount'), 'Default Receivables account is incorrect.');
+        Assert.AreEqual('AR100', HelperFunctions.GetPostingAccountNumber('ReceivablesAccount'), 'Default Receivables account is incorrect.');
 
         // [THEN] The class Receivables account will be used for transactions when an account is configured for the class with an account number
         Clear(GenJournalLine);
         GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Customer);
         GenJournalLine.SetRange("Account No.", '!WOW!');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
-        Assert.AreEqual('TEST987', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+        Assert.AreEqual('ARTEST987', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line. !WOW!');
 
         // [THEN] The default account will be set for the Bal. Account No. where class has no account configured
         Clear(GenJournalLine);
         GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Customer);
         GenJournalLine.SetRange("Account No.", '#1');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
-        Assert.AreEqual(HelperFunctions.GetPostingAccountNumber('ReceivablesAccount'), GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+        Assert.AreEqual(HelperFunctions.GetPostingAccountNumber('ReceivablesAccount'), GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line. #1');
 
         // [WHEN] Customer addresses are migrated
         // [THEN] Email addresses are included with the addresses when they are valid
@@ -245,6 +247,51 @@ codeunit 139664 "GP Data Migration Tests"
 
         Assert.IsTrue(ShipToAddress.Get('#1', 'OTHER'), 'Customer other address does not exist.');
         Assert.AreEqual('', ShipToAddress."E-Mail", 'Customer other address email should be empty.');
+
+
+        // [THEN] Assigned sales codes/recurring lines will be correct.
+
+        // Defined at Customer Class level
+        StandardCustomerSalesCode.SetRange("Customer No.", '!WOW!');
+        Assert.IsTrue(StandardCustomerSalesCode.FindFirst(), 'Could not locate StandardCustomerSalesCode for !WOW!.');
+        Assert.AreEqual('Accounts Receivable (One, Administration)', StandardCustomerSalesCode.Description, 'Standard Code is not correct. !WOW!');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos", 'Cr. Memos is not correct.');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Invoices", 'Invoices is not correct.');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Orders", 'Orders is not correct.');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Quotes", 'Quotes is not correct.');
+
+        StandardSalesLine.SetRange("Standard Sales Code", StandardCustomerSalesCode.Code);
+        Assert.IsTrue(StandardSalesLine.FindFirst(), 'Cound not find StandardSalesLine');
+        Assert.AreEqual('ARTEST987', StandardSalesLine."No.", 'Account number is incorrect for StandardSalesLine. !WOW!');
+        Assert.AreEqual(StandardSalesLine.Quantity, 1, 'Quantity is incorrect.');
+
+        // Defined at Customer level
+        StandardCustomerSalesCode.SetRange("Customer No.", '"AMERICAN"');
+        Assert.IsTrue(StandardCustomerSalesCode.FindFirst(), 'Could not locate StandardCustomerSalesCode for "AMERICAN".');
+        Assert.AreEqual('Test account 2 (One, 000)', StandardCustomerSalesCode.Description, 'Standard Code is not correct. "AMERICAN"');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos", 'Cr. Memos is not correct.');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Invoices", 'Invoices is not correct.');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Orders", 'Orders is not correct.');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Quotes", 'Quotes is not correct.');
+
+        StandardSalesLine.SetRange("Standard Sales Code", StandardCustomerSalesCode.Code);
+        Assert.IsTrue(StandardSalesLine.FindFirst(), 'Cound not find StandardSalesLine');
+        Assert.AreEqual('AR2', StandardSalesLine."No.", 'Account number is incorrect for StandardSalesLine "AMERICAN"');
+        Assert.AreEqual(StandardSalesLine.Quantity, 1, 'Quantity is incorrect.');
+
+        // Fallback method - Sales account, because not defined at Customer or Class levels
+        StandardCustomerSalesCode.SetRange("Customer No.", '#1');
+        Assert.IsTrue(StandardCustomerSalesCode.FindFirst(), 'Could not locate StandardCustomerSalesCode for #1.');
+        Assert.AreEqual('Test account 100 (One, Administration)', StandardCustomerSalesCode.Description, 'Standard Code is not correct. #1');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos", 'Cr. Memos is not correct.');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Invoices", 'Invoices is not correct.');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Orders", 'Orders is not correct.');
+        Assert.AreEqual(StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardCustomerSalesCode."Insert Rec. Lines On Quotes", 'Quotes is not correct.');
+
+        StandardSalesLine.SetRange("Standard Sales Code", StandardCustomerSalesCode.Code);
+        Assert.IsTrue(StandardSalesLine.FindFirst(), 'Cound not find StandardSalesLine');
+        Assert.AreEqual('AR100', StandardSalesLine."No.", 'Account number is incorrect for StandardSalesLine. #1');
+        Assert.AreEqual(StandardSalesLine.Quantity, 1, 'Quantity is incorrect.');
 
         // Names >50 <=100 characters should not be truncated.
         Customer.Get('BIGCUSTNAME');
@@ -494,6 +541,8 @@ codeunit 139664 "GP Data Migration Tests"
         OrderAddress: Record "Order Address";
         RemitAddress: Record "Remit Address";
         GenJournalLine: Record "Gen. Journal Line";
+        StandardPurchaseLine: Record "Standard Purchase Line";
+        StandardVendorPurchaseCode: Record "Standard Vendor Purchase Code";
         InitialGenJournalLineCount: Integer;
         Country: Code[10];
         VendorCount: Integer;
@@ -674,14 +723,14 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.RecordCount(GenJournalLine, 2 + InitialGenJournalLineCount);
 
         // [WHEN] Vendor classes are migrated
-        Assert.AreEqual('1', HelperFunctions.GetPostingAccountNumber('PayablesAccount'), 'Default Payables account is incorrect.');
+        Assert.AreEqual('AP1', HelperFunctions.GetPostingAccountNumber('PayablesAccount'), 'Default Payables account is incorrect.');
 
         // [THEN] The class Payables account will be used for transactions when an account is configured for the class
         Clear(GenJournalLine);
         GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Vendor);
         GenJournalLine.SetRange("Account No.", '1160');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
-        Assert.AreEqual('TEST123', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+        Assert.AreEqual('APTEST123', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
 
         // [THEN] The default Payables account is used when no class is set on the Vender
         Clear(GenJournalLine);
@@ -703,6 +752,50 @@ codeunit 139664 "GP Data Migration Tests"
 
         Assert.IsTrue(RemitAddress.Get('REMIT TO', 'ACETRAVE0001'), 'Vendor remit address does not exist.');
         Assert.AreEqual('', RemitAddress."E-Mail", 'Vendor remit address email should be empty.');
+
+        // [THEN] Assigned purchase codes/recurring lines will be correct.
+
+        // Defined at Vendor Class level
+        StandardVendorPurchaseCode.SetRange("Vendor No.", 'ADEMCO');
+        Assert.IsTrue(StandardVendorPurchaseCode.FindFirst(), 'Could not locate StandardVendorPurchaseCode for ADEMCO.');
+        Assert.AreEqual('Purchases Discounts Available (One, Administration)', StandardVendorPurchaseCode.Description, 'Standard Code is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos", 'Cr. Memos is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Invoices", 'Invoices is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Orders", 'Orders is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Quotes", 'Quotes is not correct.');
+
+        StandardPurchaseLine.SetRange("Standard Purchase Code", StandardVendorPurchaseCode.Code);
+        Assert.IsTrue(StandardPurchaseLine.FindFirst(), 'Cound not find StandardPurchaseLine');
+        Assert.AreEqual(StandardPurchaseLine."No.", 'AP2', 'Account number is incorrect.');
+        Assert.AreEqual(StandardPurchaseLine.Quantity, 1, 'Quantity is incorrect.');
+
+        // Defined at Vendor level
+        StandardVendorPurchaseCode.SetRange("Vendor No.", '100000');
+        Assert.IsTrue(StandardVendorPurchaseCode.FindFirst(), 'Could not locate StandardVendorPurchaseCode for 100000.');
+        Assert.AreEqual('Purchases Discounts Taken (00, Administration)', StandardVendorPurchaseCode.Description, 'Standard Code is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos", 'Cr. Memos is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Invoices", 'Invoices is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Orders", 'Orders is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Quotes", 'Quotes is not correct.');
+
+        StandardPurchaseLine.SetRange("Standard Purchase Code", StandardVendorPurchaseCode.Code);
+        Assert.IsTrue(StandardPurchaseLine.FindFirst(), 'Cound not find StandardPurchaseLine');
+        Assert.AreEqual(StandardPurchaseLine."No.", 'AP3', 'Account number is incorrect.');
+        Assert.AreEqual(StandardPurchaseLine.Quantity, 1, 'Quantity is incorrect.');
+
+        // Fallback method - Purchase account, because not defined at Vendor or Class levels
+        StandardVendorPurchaseCode.SetRange("Vendor No.", '11460');
+        Assert.IsTrue(StandardVendorPurchaseCode.FindFirst(), 'Could not locate StandardVendorPurchaseCode for 11460.');
+        Assert.AreEqual('Accounts Payable (00, 000)', StandardVendorPurchaseCode.Description, 'Standard Code is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos", 'Cr. Memos is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Invoices", 'Invoices is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Orders", 'Orders is not correct.');
+        Assert.AreEqual(StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic, StandardVendorPurchaseCode."Insert Rec. Lines On Quotes", 'Quotes is not correct.');
+
+        StandardPurchaseLine.SetRange("Standard Purchase Code", StandardVendorPurchaseCode.Code);
+        Assert.IsTrue(StandardPurchaseLine.FindFirst(), 'Cound not find StandardPurchaseLine');
+        Assert.AreEqual(StandardPurchaseLine."No.", 'AP1', 'Account number is incorrect.');
+        Assert.AreEqual(StandardPurchaseLine.Quantity, 1, 'Quantity is incorrect.');
 
         // Names >50 <=100 characters should not be truncated.
         Vendor.Get('BIGVENDNAME');
@@ -733,6 +826,7 @@ codeunit 139664 "GP Data Migration Tests"
         // Disable temporary Vendors
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Temporary Vendors", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", true);
         GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] Data is imported
@@ -899,14 +993,14 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.RecordCount(GenJournalLine, 2 + InitialGenJournalLineCount);
 
         // [WHEN] Vendor classes are migrated
-        Assert.AreEqual('1', HelperFunctions.GetPostingAccountNumber('PayablesAccount'), 'Default Payables account is incorrect.');
+        Assert.AreEqual('AP1', HelperFunctions.GetPostingAccountNumber('PayablesAccount'), 'Default Payables account is incorrect.');
 
         // [THEN] The class Payables account will be used for transactions when an account is configured for the class
         Clear(GenJournalLine);
         GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Vendor);
         GenJournalLine.SetRange("Account No.", '1160');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
-        Assert.AreEqual('TEST123', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+        Assert.AreEqual('APTEST123', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
 
         // [THEN] The default Payables account is used when no class is set on the Vender
         Clear(GenJournalLine);
@@ -2633,17 +2727,17 @@ codeunit 139664 "GP Data Migration Tests"
         VendorPostingGroup.Get('USA-US-C');
         Assert.AreEqual('USA-US-C', VendorPostingGroup.Code, 'Code of VendorPostingGroup is incorrect.');
         Assert.AreEqual('U.S. Vendors-Contract Services', VendorPostingGroup.Description, 'Description of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('1', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('4', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('3', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('2', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('AP1', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('AP4', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('AP3', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('AP2', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Debit Acc.", 'Payment Tolerance Debit Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Tolerance Credit Acc.", 'Payment Tolerance Credit Acc. of VendorPostingGroup is incorrect.');
 
         VendorPostingGroup.Get('USA-US-M');
         Assert.AreEqual('USA-US-M', VendorPostingGroup.Code, 'Code of VendorPostingGroup is incorrect.');
         Assert.AreEqual('U.S. Vendors-Misc. Expenses', VendorPostingGroup.Description, 'Description of VendorPostingGroup is incorrect.');
-        Assert.AreEqual('1', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
+        Assert.AreEqual('AP1', VendorPostingGroup."Payables Account", 'Payables Account of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Service Charge Acc.", 'Service Charge Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of VendorPostingGroup is incorrect.');
         Assert.AreEqual('', VendorPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of VendorPostingGroup is incorrect.');
@@ -2718,17 +2812,17 @@ codeunit 139664 "GP Data Migration Tests"
         CustomerPostingGroup.Get('USA-TEST-1');
         Assert.AreEqual('USA-TEST-1', CustomerPostingGroup.Code, 'Code of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('Test cust class 1', CustomerPostingGroup.Description, 'Description of CustomerPostingGroup is incorrect.');
-        Assert.AreEqual('1', CustomerPostingGroup."Receivables Account", 'Receivables Account of CustomerPostingGroup is incorrect.');
-        Assert.AreEqual('2', CustomerPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of CustomerPostingGroup is incorrect.');
-        Assert.AreEqual('1', CustomerPostingGroup."Additional Fee Account", 'Additional Fee Account of CustomerPostingGroup is incorrect.');
-        Assert.AreEqual('2', CustomerPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of CustomerPostingGroup is incorrect.');
+        Assert.AreEqual('AR1', CustomerPostingGroup."Receivables Account", 'Receivables Account of CustomerPostingGroup is incorrect.');
+        Assert.AreEqual('AR2', CustomerPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of CustomerPostingGroup is incorrect.');
+        Assert.AreEqual('AR1', CustomerPostingGroup."Additional Fee Account", 'Additional Fee Account of CustomerPostingGroup is incorrect.');
+        Assert.AreEqual('AR2', CustomerPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('', CustomerPostingGroup."Payment Tolerance Debit Acc.", 'Payment Tolerance Debit Acc. of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('', CustomerPostingGroup."Payment Tolerance Credit Acc.", 'Payment Tolerance Credit Acc. of CustomerPostingGroup is incorrect.');
 
         CustomerPostingGroup.Get('USA-TEST-2');
         Assert.AreEqual('USA-TEST-2', CustomerPostingGroup.Code, 'Code of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('Test cust class 2', CustomerPostingGroup.Description, 'Description of CustomerPostingGroup is incorrect.');
-        Assert.AreEqual('100', CustomerPostingGroup."Receivables Account", 'Receivables Account of CustomerPostingGroup is incorrect.');
+        Assert.AreEqual('AR100', CustomerPostingGroup."Receivables Account", 'Receivables Account of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('', CustomerPostingGroup."Payment Disc. Debit Acc.", 'Payment Disc. Debit Acc. of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('', CustomerPostingGroup."Additional Fee Account", 'Additional Fee Account of CustomerPostingGroup is incorrect.');
         Assert.AreEqual('', CustomerPostingGroup."Payment Disc. Credit Acc.", 'Payment Disc. Credit Acc. of CustomerPostingGroup is incorrect.');
@@ -2801,6 +2895,7 @@ codeunit 139664 "GP Data Migration Tests"
     [Normal]
     local procedure Initialize()
     var
+        GLSetup: Record "General Ledger Setup";
         DataMigrationEntity: Record "Data Migration Entity";
         GenBusPostingGroup: Record "Gen. Business Posting Group";
         VendorPostingGroup: Record "Vendor Posting Group";
@@ -2809,6 +2904,13 @@ codeunit 139664 "GP Data Migration Tests"
         PurchaseHeader: Record "Purchase Header";
         GenProductPostingGroup: Record "Gen. Product Posting Group";
         InventoryPostingGroup: Record "Inventory Posting Group";
+        NoSeries: Record "No. Series";
+        StandardSalesCode: Record "Standard Sales Code";
+        StandardSalesLine: Record "Standard Sales Line";
+        StandardCustomerSalesCode: Record "Standard Customer Sales Code";
+        StandardPurchaseCode: Record "Standard Purchase Code";
+        StandardPurchaseLine: Record "Standard Purchase Line";
+        StandardVendorPurchaseCode: Record "Standard Vendor Purchase Code";
     begin
         if not BindSubscription(GPDataMigrationTests) then
             exit;
@@ -2829,6 +2931,9 @@ codeunit 139664 "GP Data Migration Tests"
         GPPOP10110.DeleteAll();
         GPSY01200.DeleteAll();
 
+        if not GLSetup.Get() then
+            GLSetup.Insert();
+
         if not GenBusPostingGroup.Get(PostingGroupCodeTxt) then begin
             GenBusPostingGroup.Validate("Code", PostingGroupCodeTxt);
             GenBusPostingGroup.Insert(true);
@@ -2840,8 +2945,12 @@ codeunit 139664 "GP Data Migration Tests"
         end;
 
         if not GPPostingAccounts.Get() then begin
-            GPPostingAccounts.PayablesAccount := '1';
-            GPPostingAccounts.ReceivablesAccount := '100';
+            GPPostingAccounts.PayablesAccount := 'AP1';
+            GPPostingAccounts.PurchAccount := 'AP1';
+            GPPostingAccounts.ReceivablesAccount := 'AR100';
+            GPPostingAccounts.SalesAccount := 'AR100';
+            GPPostingAccounts.SalesAccountIdx := 100;
+            GPPostingAccounts.PurchAccountIdx := 35;
             GPPostingAccounts.Insert();
         end;
 
@@ -2855,8 +2964,251 @@ codeunit 139664 "GP Data Migration Tests"
             InventoryPostingGroup.Insert();
         end;
 
+        if NoSeries.Get('GP-SSC') then
+            NoSeries.Delete(true);
+
+        if NoSeries.Get('GP-SPC') then
+            NoSeries.Delete(true);
+
+        StandardCustomerSalesCode.DeleteAll();
+        StandardSalesLine.DeleteAll();
+        StandardSalesCode.DeleteAll();
+
+        StandardPurchaseCode.DeleteAll();
+        StandardPurchaseLine.DeleteAll();
+        StandardVendorPurchaseCode.DeleteAll();
+
+        HelperFunctions.CreatePreMigrationData();
+        CreateDimensions();
+        CreateAccounts();
+
         if UnbindSubscription(GPDataMigrationTests) then
             exit;
+    end;
+
+    local procedure CreateDimensions()
+    var
+        GLSetup: Record "General Ledger Setup";
+        Dimension: Record Dimension;
+        GPSegments: Record "GP Segments";
+        DimDepartment: Code[20];
+        DimDivision: Code[20];
+    begin
+        DimDepartment := 'DEPARTMENT';
+        DimDivision := 'DIVISION';
+
+        if not GPSegments.Get(DimDepartment) then begin
+            GPSegments.Id := DimDepartment;
+            GPSegments.SegmentNumber := 1;
+            GPSegments.Insert();
+        end;
+
+        if not GPSegments.Get(DimDivision) then begin
+            GPSegments.Id := DimDivision;
+            GPSegments.SegmentNumber := 3;
+            GPSegments.Insert();
+        end;
+
+        if not Dimension.Get(DimDepartment) then begin
+            Dimension.Code := DimDepartment;
+            Dimension.Name := DimDepartment;
+            Dimension.Insert(true);
+
+            CreateDimVal(DimDepartment, '00', '');
+            CreateDimVal(DimDepartment, '01', 'One');
+        end;
+
+        if not Dimension.Get(DimDivision) then begin
+            Dimension.Code := DimDivision;
+            Dimension.Name := DimDivision;
+            Dimension.Insert(true);
+
+            CreateDimVal(DimDivision, '000', '');
+            CreateDimVal(DimDivision, '100', 'Administration');
+        end;
+
+        GLSetup.Get();
+        GLSetup."Global Dimension 1 Code" := DimDepartment;
+        GLSetup."Global Dimension 2 Code" := DimDivision;
+        GLSetup.Modify();
+    end;
+
+    local procedure CreateDimVal(DimCode: Code[20]; DimValCode: Code[20]; DimValName: Text[50])
+    var
+        DimensionValue: Record "Dimension Value";
+    begin
+        DimensionValue."Dimension Code" := DimCode;
+        DimensionValue.Code := DimValCode;
+        DimensionValue.Name := DimValName;
+        DimensionValue.Insert(true);
+    end;
+
+    local procedure CreateAccounts()
+    var
+        GLAccount: Record "G/L Account";
+        GPAccount: Record "GP Account";
+    begin
+        if not GPAccount.Get(35) then begin
+            Clear(GPAccount);
+            GPAccount.AcctNum := 'AP1';
+            GPAccount.AcctIndex := 35;
+            GPAccount.Name := 'Accounts Payable';
+            GPAccount.Active := true;
+            GPAccount.ACTNUMBR_1 := '00';
+            GPAccount.ACTNUMBR_2 := 'AP1';
+            GPAccount.ACTNUMBR_3 := '000';
+            GPAccount.Insert();
+
+            Clear(GLAccount);
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
+
+        if not GPAccount.Get(36) then begin
+            Clear(GPAccount);
+            GPAccount.AcctNum := 'AP2';
+            GPAccount.AcctIndex := 36;
+            GPAccount.Name := 'Purchases Discounts Available';
+            GPAccount.Active := true;
+            GPAccount.ACTNUMBR_1 := '01';
+            GPAccount.ACTNUMBR_2 := 'AP2';
+            GPAccount.ACTNUMBR_3 := '100';
+            GPAccount.Insert();
+
+            Clear(GLAccount);
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
+
+        if not GPAccount.Get(139) then begin
+            Clear(GPAccount);
+            GPAccount.AcctNum := 'AP3';
+            GPAccount.AcctIndex := 139;
+            GPAccount.Name := 'Purchases Discounts Taken';
+            GPAccount.Active := true;
+            GPAccount.ACTNUMBR_1 := '00';
+            GPAccount.ACTNUMBR_2 := 'AP3';
+            GPAccount.ACTNUMBR_3 := '100';
+            GPAccount.Insert();
+
+            Clear(GLAccount);
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
+
+        if not GPAccount.Get(190) then begin
+            Clear(GPAccount);
+            GPAccount.AcctNum := 'AP4';
+            GPAccount.AcctIndex := 190;
+            GPAccount.Name := 'Finance Charge Expense';
+            GPAccount.Active := true;
+            GPAccount.ACTNUMBR_1 := '01';
+            GPAccount.ACTNUMBR_2 := 'AP4';
+            GPAccount.ACTNUMBR_3 := '000';
+            GPAccount.Insert();
+
+            Clear(GLAccount);
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
+
+        if not GPAccount.Get(999) then begin
+            Clear(GPAccount);
+            GPAccount.AcctNum := 'APTEST123';
+            GPAccount.AcctIndex := 999;
+            GPAccount.Name := 'Test 123';
+            GPAccount.Active := true;
+            GPAccount.ACTNUMBR_1 := '00';
+            GPAccount.ACTNUMBR_2 := 'APTEST123';
+            GPAccount.ACTNUMBR_3 := '000';
+            GPAccount.Insert();
+
+            Clear(GLAccount);
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
+
+        if not GPAccount.Get(1) then begin
+            Clear(GPAccount);
+            GPAccount.AcctNum := 'AR1';
+            GPAccount.AcctIndex := 1;
+            GPAccount.Name := 'Test account 1';
+            GPAccount.Active := true;
+            GPAccount.ACTNUMBR_1 := '00';
+            GPAccount.ACTNUMBR_2 := 'AR1';
+            GPAccount.ACTNUMBR_3 := '000';
+            GPAccount.Insert();
+
+            Clear(GLAccount);
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
+
+        if not GPAccount.Get(2) then begin
+            Clear(GPAccount);
+            GPAccount.AcctNum := 'AR2';
+            GPAccount.AcctIndex := 2;
+            GPAccount.Name := 'Test account 2';
+            GPAccount.Active := true;
+            GPAccount.ACTNUMBR_1 := '01';
+            GPAccount.ACTNUMBR_2 := 'AR2';
+            GPAccount.ACTNUMBR_3 := '000';
+            GPAccount.Insert();
+
+            Clear(GLAccount);
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
+
+        if not GPAccount.Get(100) then begin
+            Clear(GPAccount);
+            GPAccount.AcctNum := 'AR100';
+            GPAccount.AcctIndex := 100;
+            GPAccount.Name := 'Test account 100';
+            GPAccount.Active := true;
+            GPAccount.ACTNUMBR_1 := '01';
+            GPAccount.ACTNUMBR_2 := 'AR100';
+            GPAccount.ACTNUMBR_3 := '100';
+            GPAccount.Insert();
+
+            Clear(GLAccount);
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
+
+        if not GPAccount.Get(1000) then begin
+            Clear(GPAccount);
+            GPAccount.AcctNum := 'ARTEST987';
+            GPAccount.AcctIndex := 1000;
+            GPAccount.Name := 'Accounts Receivable';
+            GPAccount.Active := true;
+            GPAccount.ACTNUMBR_1 := '01';
+            GPAccount.ACTNUMBR_2 := 'ARTEST987';
+            GPAccount.ACTNUMBR_3 := '100';
+            GPAccount.Insert();
+
+            Clear(GLAccount);
+            GLAccount.Validate("No.", GPAccount.AcctNum);
+            GLAccount.Validate(Name, GPAccount.Name);
+            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+            GLAccount.Insert();
+        end;
     end;
 
     local procedure MigrateCustomers(var GPCustomers: Record "GP Customer")
@@ -2923,6 +3275,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomer.TAXSCHID := 'S-N-NO-%S';
         GPCustomer.UPSZONE := 'O4';
         GPCustomer.TAXEXMT1 := '';
+        GPCustomer.CUSTCLAS := 'TEST';
         GPCustomer.Insert();
 
         Clear(GPRM00101);
@@ -2956,6 +3309,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomer.TAXSCHID := 'S-N-NO-%AD-%S';
         GPCustomer.UPSZONE := 'T3';
         GPCustomer.TAXEXMT1 := '';
+        GPCustomer.RMSLSACC := 2;
         GPCustomer.Insert();
 
         Clear(GPRM00101);
@@ -3131,55 +3485,7 @@ codeunit 139664 "GP Data Migration Tests"
     end;
 
     local procedure CreateCustomerClassData()
-    var
-        GLAccount: Record "G/L Account";
-        GPAccount: Record "GP Account";
     begin
-        if not GPAccount.Get('1') then begin
-            GPAccount.AcctNum := '1';
-            GPAccount.AcctIndex := 1;
-            GPAccount.Name := 'Test account 1';
-            GPAccount.Active := true;
-            GPAccount.Insert();
-        end;
-
-        if not GLAccount.Get(GPAccount.AcctNum) then begin
-            GLAccount.Validate("No.", GPAccount.AcctNum);
-            GLAccount.Validate(Name, GPAccount.Name);
-            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
-            GLAccount.Insert();
-        end;
-
-        if not GPAccount.Get('2') then begin
-            GPAccount.AcctNum := '2';
-            GPAccount.AcctIndex := 2;
-            GPAccount.Name := 'Test account 2';
-            GPAccount.Active := true;
-            GPAccount.Insert();
-        end;
-
-        if not GLAccount.Get(GPAccount.AcctNum) then begin
-            GLAccount.Validate("No.", GPAccount.AcctNum);
-            GLAccount.Validate(Name, GPAccount.Name);
-            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
-            GLAccount.Insert();
-        end;
-
-        if not GPAccount.Get('100') then begin
-            GPAccount.AcctNum := '100';
-            GPAccount.AcctIndex := 100;
-            GPAccount.Name := 'Test account 100';
-            GPAccount.Active := true;
-            GPAccount.Insert();
-        end;
-
-        if not GLAccount.Get(GPAccount.AcctNum) then begin
-            GLAccount.Validate("No.", GPAccount.AcctNum);
-            GLAccount.Validate(Name, GPAccount.Name);
-            GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
-            GLAccount.Insert();
-        end;
-
         GPRM00201.Init();
         GPRM00201.CLASSID := 'USA-TEST-1';
         GPRM00201.CLASDSCR := 'Test cust class 1';
@@ -3190,7 +3496,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPRM00201.RMWRACC := 0;
         GPRM00201.Insert();
 
-        GPRM00201.Init();
+        Clear(GPRM00201);
         GPRM00201.CLASSID := 'USA-TEST-2';
         GPRM00201.CLASDSCR := 'Test cust class 2';
         GPRM00201.RMARACC := 0;
@@ -3204,34 +3510,37 @@ codeunit 139664 "GP Data Migration Tests"
         GPRM00101.CUSTCLAS := 'TEST';
         GPRM00101.Modify();
 
+        GPCustomer.Get(GPRM00101.CUSTNMBR);
+        GPCustomer.CUSTCLAS := GPRM00101.CUSTCLAS;
+        GPCustomer.Modify();
+
         GPRM00101.Get('"AMERICAN"');
         GPRM00101.CUSTCLAS := 'USA-TEST-1';
         GPRM00101.Modify();
+
+        GPCustomer.Get(GPRM00101.CUSTNMBR);
+        GPCustomer.CUSTCLAS := GPRM00101.CUSTCLAS;
+        GPCustomer.Modify();
 
         GPRM00101.Get('#1');
         GPRM00101.CUSTCLAS := 'USA-TEST-2';
         GPRM00101.Modify();
 
-        GPAccount.Init();
-        GPAccount.AcctNum := 'TEST987';
-        GPAccount.AcctIndex := 1000;
-        GPAccount.Name := 'Accounts Receivable';
-        GPAccount.Active := true;
-        GPAccount.Insert();
-
-        GLAccount.Init();
-        GLAccount.Validate("No.", GPAccount.AcctNum);
-        GLAccount.Validate(Name, GPAccount.Name);
-        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
-        GLAccount.Insert();
+        GPCustomer.Get(GPRM00101.CUSTNMBR);
+        GPCustomer.CUSTCLAS := GPRM00101.CUSTCLAS;
+        GPCustomer.Modify();
 
         Clear(GPRM00201);
         GPRM00201.CLASSID := 'TEST';
+        GPRM00201.CLASDSCR := 'Test class';
         GPRM00201.RMARACC := 1000;
+        GPRM00201.RMSLSACC := 1000;
         GPRM00201.Insert();
     end;
 
     local procedure CreateVendorData()
+    var
+        GPSY01100: Record "GP SY01100";
     begin
         Clear(GPVendor);
         GPVendor.VENDORID := '%#$!<>';
@@ -3361,6 +3670,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.TAXSCHID := 'P-N-TAX-A/U*0';
         GPVendor.UPSZONE := 'K3';
         GPVendor.TXIDNMBR := '45-0029728';
+        GPVendor.PMPRCHIX := 139;
         GPVendor.Insert();
 
         Clear(GPVendor);
@@ -3561,6 +3871,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.TAXSCHID := 'P-N-TXB-%P*6';
         GPVendor.UPSZONE := 'T3';
         GPVendor.TXIDNMBR := '45-0029728';
+        GPVendor.VNDCLSID := 'TEST';
         GPVendor.Insert();
 
         Clear(GPVendor);
@@ -4185,6 +4496,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.TAXSCHID := 'P-T-TXB-%PTA/U';
         GPVendor.UPSZONE := 'L3';
         GPVendor.TXIDNMBR := '45-0029728';
+        GPVendor.VNDCLSID := 'USA-US-I';
         GPVendor.Insert();
 
         Clear(GPVendor);
@@ -5209,75 +5521,7 @@ codeunit 139664 "GP Data Migration Tests"
     end;
 
     local procedure CreateVendorClassData()
-    var
-        GLAccount: Record "G/L Account";
-        GPAccount: Record "GP Account";
     begin
-        GPAccount.Init();
-        GPAccount.AcctNum := '1';
-        GPAccount.AcctIndex := 35;
-        GPAccount.Name := 'Accounts Payable';
-        GPAccount.Active := true;
-        GPAccount.Insert();
-
-        GLAccount.Init();
-        GLAccount.Validate("No.", GPAccount.AcctNum);
-        GLAccount.Validate(Name, GPAccount.Name);
-        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
-        GLAccount.Insert();
-
-        GPAccount.Init();
-        GPAccount.AcctNum := '2';
-        GPAccount.AcctIndex := 36;
-        GPAccount.Name := 'Purchases Discounts Available';
-        GPAccount.Active := true;
-        GPAccount.Insert();
-
-        GLAccount.Init();
-        GLAccount.Validate("No.", GPAccount.AcctNum);
-        GLAccount.Validate(Name, GPAccount.Name);
-        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
-        GLAccount.Insert();
-
-        GPAccount.Init();
-        GPAccount.AcctNum := '3';
-        GPAccount.AcctIndex := 139;
-        GPAccount.Name := 'Purchases Discounts Taken';
-        GPAccount.Active := true;
-        GPAccount.Insert();
-
-        GLAccount.Init();
-        GLAccount.Validate("No.", GPAccount.AcctNum);
-        GLAccount.Validate(Name, GPAccount.Name);
-        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
-        GLAccount.Insert();
-
-        GPAccount.Init();
-        GPAccount.AcctNum := '4';
-        GPAccount.AcctIndex := 190;
-        GPAccount.Name := 'Finance Charge Expense';
-        GPAccount.Active := true;
-        GPAccount.Insert();
-
-        GLAccount.Init();
-        GLAccount.Validate("No.", GPAccount.AcctNum);
-        GLAccount.Validate(Name, GPAccount.Name);
-        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
-        GLAccount.Insert();
-
-        GPAccount.Init();
-        GPAccount.AcctNum := 'TEST123';
-        GPAccount.AcctIndex := 999;
-        GPAccount.Name := 'Test 123';
-        GPAccount.Active := true;
-        GPAccount.Insert();
-
-        GLAccount.Init();
-        GLAccount.Validate("No.", GPAccount.AcctNum);
-        GLAccount.Validate(Name, GPAccount.Name);
-        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
-        GLAccount.Insert();
-
         GPPM00100.Init();
         GPPM00100.VNDCLSID := 'USA-US-C';
         GPPM00100.VNDCLDSC := 'U.S. Vendors-Contract Services';
@@ -5309,7 +5553,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPPM00100.PMFRTIDX := 281;
         GPPM00100.PMTAXIDX := 83;
         GPPM00100.PMWRTIDX := 0;
-        GPPM00100.PMPRCHIX := 18;
+        GPPM00100.PMPRCHIX := 36;
         GPPM00100.PMRTNGIX := 0;
         GPPM00100.PMTDSCIX := 0;
         GPPM00100.ACPURIDX := 447;
@@ -5360,6 +5604,7 @@ codeunit 139664 "GP Data Migration Tests"
         Clear(GPPM00100);
         GPPM00100.VNDCLSID := 'TEST';
         GPPM00100.PMAPINDX := 999;
+        GPPM00100.PMPRCHIX := 999;
         GPPM00100.Insert();
     end;
 

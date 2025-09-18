@@ -7,10 +7,16 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using System.Email;
 using Microsoft.Purchases.Remittance;
 using Microsoft.Bank.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Purchases.Document;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 4022 "GP Vendor Migrator"
 {
     TableNo = "GP Vendor";
+    Permissions = tabledata "Standard Purchase Code" = RIM,
+        tabledata "Standard Purchase Line" = RIM,
+        tabledata "Standard Vendor Purchase Code" = RIM;
 
     var
         GlobalDocumentNo: Text[30];
@@ -25,6 +31,7 @@ codeunit 4022 "GP Vendor Migrator"
         TemporaryVendorHasOpenPOsTxt: Label 'it has open POs.';
         TemporaryVendorHasOpenAPTrxTxt: Label 'it has open AP transactions.';
         PhoneNumberContainsLettersMsg: Label 'Phone/Fax number skipped because it contains letters. Value=%1', Comment = '%1 is the phone/fax number.';
+        NoSeriesStandardPurchaseCodeTok: Label 'GP-SPC', Locked = true;
 
 #pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
@@ -40,6 +47,7 @@ codeunit 4022 "GP Vendor Migrator"
 
         MigrateVendorDetails(GPVendor, Sender);
         MigrateVendorAddresses(GPVendor, Sender);
+        CreateRecurringPurchaseLines(GPVendor, Sender);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
@@ -527,6 +535,115 @@ codeunit 4022 "GP Vendor Migrator"
 #pragma warning restore AA0139
 
         RemitAddress.Modify();
+    end;
+
+    local procedure CreateRecurringPurchaseLines(var GPVendor: Record "GP Vendor"; var Sender: Codeunit "Vendor Data Migration Facade")
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPPM00100: Record "GP PM00100";
+        GPPM00101: Record "GP PM00101";
+        GPPM00203: Record "GP PM00203";
+        GPPostingAccounts: Record "GP Posting Accounts";
+        VendorNo: Code[20];
+    begin
+        if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
+            exit;
+
+        VendorNo := CopyStr(GPVendor.VENDORID, 1, MaxStrLen(VendorNo));
+        if not Sender.DoesVendorExist(VendorNo) then
+            exit;
+
+        // Vendor level
+        if GPVendor.PMPRCHIX > 0 then begin
+            CreateRecurringLineFromAccount(VendorNo, GPVendor.PMPRCHIX);
+
+            // Additional Vendor accounts
+            GPPM00203.SetRange(VENDORID, VendorNo);
+            if GPPM00203.FindSet() then
+                repeat
+                    if GPPM00203.ACTINDX > 0 then
+                        CreateRecurringLineFromAccount(VendorNo, GPPM00203.ACTINDX);
+                until GPPM00203.Next() = 0;
+
+            exit;
+        end;
+
+        // Vendor class level
+        if GPCompanyAdditionalSettings.GetMigrateVendorClasses() then
+            if GPPM00100.Get(GPVendor.VNDCLSID) then
+                if GPPM00100.PMPRCHIX > 0 then begin
+                    CreateRecurringLineFromAccount(VendorNo, GPPM00100.PMPRCHIX);
+
+                    // Additional Vendor class accounts
+                    GPPM00101.SetRange(VNDCLSID, GPVendor.VNDCLSID);
+                    if GPPM00101.FindSet() then
+                        repeat
+                            if GPPM00101.ACTINDX > 0 then
+                                CreateRecurringLineFromAccount(VendorNo, GPPM00101.ACTINDX);
+                        until GPPM00101.Next() = 0;
+                    exit;
+                end;
+
+        // Fallback - Purchase Account
+        if GPPostingAccounts.FindFirst() then
+            if GPPostingAccounts.PurchAccountIdx > 0 then
+                CreateRecurringLineFromAccount(VendorNo, GPPostingAccounts.PurchAccountIdx);
+    end;
+
+    local procedure CreateRecurringLineFromAccount(VendorNo: Code[20]; GPActIdx: Integer)
+    var
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+    begin
+        if not GPAccount.Get(GPActIdx) then
+            exit;
+
+        if not GLAccount.Get(GPAccount.AcctNum) then
+            exit;
+
+        CreateRecurringPurchaseLineImp(VendorNo, GPAccount);
+    end;
+
+    local procedure CreateRecurringPurchaseLineImp(VendorNo: Code[20]; var GPAccount: Record "GP Account")
+    var
+        StandardPurchaseCode: Record "Standard Purchase Code";
+        StandardPurchaseLine: Record "Standard Purchase Line";
+        StandardVendorPurchaseCode: Record "Standard Vendor Purchase Code";
+        NoSeries: Codeunit "No. Series";
+        HelperFunctions: Codeunit "Helper Functions";
+        DimSetID: Integer;
+    begin
+        if GPAccount."Standard Purchase Code" = '' then begin
+            GPAccount."Standard Purchase Code" := CopyStr(NoSeries.GetNextNo(NoSeriesStandardPurchaseCodeTok), 1, MaxStrLen(GPAccount."Standard Purchase Code"));
+
+            StandardPurchaseCode.Validate("Code", GPAccount."Standard Purchase Code");
+            StandardPurchaseCode.Validate(Description, CopyStr(HelperFunctions.GenerateStandardCodeDescriptionFromAccount(GPAccount), 1, MaxStrLen(StandardPurchaseCode.Description)));
+            StandardPurchaseCode.Insert(true);
+
+            StandardPurchaseLine.Validate("Standard Purchase Code", StandardPurchaseCode."Code");
+            StandardPurchaseLine.Validate("Line No.", 1);
+            StandardPurchaseLine.Validate(Type, "Purchase Line Type"::"G/L Account");
+            StandardPurchaseLine.Validate("No.", CopyStr(GPAccount.AcctNum, 1, MaxStrLen(StandardPurchaseLine."No.")));
+            StandardPurchaseLine.Validate(Quantity, 1);
+
+            DimSetID := HelperFunctions.CreateDimSet(GPAccount.ACTNUMBR_1, GPAccount.ACTNUMBR_2, GPAccount.ACTNUMBR_3, GPAccount.ACTNUMBR_4, GPAccount.ACTNUMBR_5, GPAccount.ACTNUMBR_6, GPAccount.ACTNUMBR_7, GPAccount.ACTNUMBR_8);
+            if DimSetID > 0 then
+                StandardPurchaseLine.Validate("Dimension Set ID", DimSetID);
+
+            StandardPurchaseLine.Insert(true);
+
+            GPAccount.Modify();
+        end;
+
+        if not StandardVendorPurchaseCode.Get(VendorNo, GPAccount."Standard Purchase Code") then begin
+            StandardVendorPurchaseCode.Validate("Vendor No.", VendorNo);
+            StandardVendorPurchaseCode.Validate("Code", GPAccount."Standard Purchase Code");
+            StandardVendorPurchaseCode.Validate("Insert Rec. Lines On Quotes", StandardVendorPurchaseCode."Insert Rec. Lines On Quotes"::Automatic);
+            StandardVendorPurchaseCode.Validate("Insert Rec. Lines On Orders", StandardVendorPurchaseCode."Insert Rec. Lines On Orders"::Automatic);
+            StandardVendorPurchaseCode.Validate("Insert Rec. Lines On Invoices", StandardVendorPurchaseCode."Insert Rec. Lines On Invoices"::Automatic);
+            StandardVendorPurchaseCode.Validate("Insert Rec. Lines On Cr. Memos", StandardVendorPurchaseCode."Insert Rec. Lines On Cr. Memos"::Automatic);
+            StandardVendorPurchaseCode.Insert(true);
+        end;
     end;
 
     internal procedure ShouldMigrateVendor(VendorNo: Text[75]; var IsTemporaryVendor: Boolean; var HasOpenPurchaseOrders: Boolean; var HasOpenTransactions: Boolean): Boolean

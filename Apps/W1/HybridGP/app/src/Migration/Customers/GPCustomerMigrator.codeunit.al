@@ -3,10 +3,16 @@ namespace Microsoft.DataMigration.GP;
 using System.Integration;
 using Microsoft.Sales.Customer;
 using Microsoft.Foundation.Company;
+using Microsoft.Sales.Document;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 4018 "GP Customer Migrator"
 {
     TableNo = "GP Customer";
+    Permissions = tabledata "Standard Sales Code" = RIM,
+        tabledata "Standard Sales Line" = RIM,
+        tabledata "Standard Customer Sales Code" = RIM;
 
     var
         GlobalDocumentNo: Text[30];
@@ -17,6 +23,7 @@ codeunit 4018 "GP Customer Migrator"
         CustomerEmailTypeCodeLbl: Label 'CUS', Locked = true;
         MigrationLogAreaTxt: Label 'Customer', Locked = true;
         PhoneNumberContainsLettersMsg: Label 'Phone/Fax number skipped because it contains letters. Value=%1', Comment = '%1 is the phone/fax number.';
+        NoSeriesStandardSalesCodeTok: Label 'GP-SSC', Locked = true;
 
 #pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
@@ -31,6 +38,7 @@ codeunit 4018 "GP Customer Migrator"
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
         MigrateCustomerDetails(GPCustomer, Sender);
         MigrateCustomerAddresses(GPCustomer, Sender);
+        CreateRecurringSalesLines(GPCustomer, Sender);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
@@ -46,6 +54,7 @@ codeunit 4018 "GP Customer Migrator"
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
             exit;
+
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
 
         if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
@@ -401,6 +410,95 @@ codeunit 4018 "GP Customer Migrator"
             repeat
                 GPCustomerAddress.MoveStagingData();
             until GPCustomerAddress.Next() = 0;
+    end;
+
+    local procedure CreateRecurringSalesLines(var GPCustomer: Record "GP Customer"; var Sender: Codeunit "Customer Data Migration Facade")
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPRM00201: Record "GP RM00201";
+        GPPostingAccounts: Record "GP Posting Accounts";
+        CustomerNo: Code[20];
+    begin
+        if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
+            exit;
+
+        CustomerNo := CopyStr(GPCustomer.CUSTNMBR, 1, MaxStrLen(CustomerNo));
+        if not Sender.DoesCustomerExist(CustomerNo) then
+            exit;
+
+        // Customer level
+        if GPCustomer.RMSLSACC > 0 then begin
+            CreateRecurringLineFromAccount(CustomerNo, GPCustomer.RMSLSACC);
+            exit;
+        end;
+
+        // Customer class level
+        if GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+            if GPRM00201.Get(GPCustomer.CUSTCLAS) then
+                if GPRM00201.RMSLSACC > 0 then begin
+                    CreateRecurringLineFromAccount(CustomerNo, GPRM00201.RMSLSACC);
+                    exit;
+                end;
+
+        // Fallback - Sales Account
+        if GPPostingAccounts.FindFirst() then
+            if GPPostingAccounts.SalesAccountIdx > 0 then
+                CreateRecurringLineFromAccount(CustomerNo, GPPostingAccounts.SalesAccountIdx);
+    end;
+
+    local procedure CreateRecurringLineFromAccount(CustomerNo: Code[20]; GPActIdx: Integer)
+    var
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+    begin
+        if not GPAccount.Get(GPActIdx) then
+            exit;
+
+        if not GLAccount.Get(GPAccount.AcctNum) then
+            exit;
+
+        CreateRecurringSalesLineImp(CustomerNo, GPAccount);
+    end;
+
+    local procedure CreateRecurringSalesLineImp(CustomerNo: Code[20]; var GPAccount: Record "GP Account")
+    var
+        StandardSalesCode: Record "Standard Sales Code";
+        StandardSalesLine: Record "Standard Sales Line";
+        StandardCustomerSalesCode: Record "Standard Customer Sales Code";
+        NoSeries: Codeunit "No. Series";
+        HelperFunctions: Codeunit "Helper Functions";
+        DimSetID: Integer;
+    begin
+        if GPAccount."Standard Sales Code" = '' then begin
+            GPAccount."Standard Sales Code" := CopyStr(NoSeries.GetNextNo(NoSeriesStandardSalesCodeTok), 1, MaxStrLen(GPAccount."Standard Sales Code"));
+
+            StandardSalesCode.Validate("Code", GPAccount."Standard Sales Code");
+            StandardSalesCode.Validate(Description, CopyStr(HelperFunctions.GenerateStandardCodeDescriptionFromAccount(GPAccount), 1, MaxStrLen(StandardSalesCode.Description)));
+            StandardSalesCode.Insert(true);
+
+            StandardSalesLine.Validate("Standard Sales Code", StandardSalesCode."Code");
+            StandardSalesLine.Validate("Line No.", 1);
+            StandardSalesLine.Validate(Type, "Sales Line Type"::"G/L Account");
+            StandardSalesLine.Validate("No.", CopyStr(GPAccount.AcctNum, 1, MaxStrLen(StandardSalesLine."No.")));
+            StandardSalesLine.Validate(Quantity, 1);
+
+            DimSetID := HelperFunctions.CreateDimSet(GPAccount.ACTNUMBR_1, GPAccount.ACTNUMBR_2, GPAccount.ACTNUMBR_3, GPAccount.ACTNUMBR_4, GPAccount.ACTNUMBR_5, GPAccount.ACTNUMBR_6, GPAccount.ACTNUMBR_7, GPAccount.ACTNUMBR_8);
+            if DimSetID > 0 then
+                StandardSalesLine.Validate("Dimension Set ID", DimSetID);
+
+            StandardSalesLine.Insert(true);
+            GPAccount.Modify();
+        end;
+
+        if not StandardCustomerSalesCode.Get(CustomerNo, GPAccount."Standard Sales Code") then begin
+            StandardCustomerSalesCode.Validate("Customer No.", CustomerNo);
+            StandardCustomerSalesCode.Validate("Code", GPAccount."Standard Sales Code");
+            StandardCustomerSalesCode.Validate("Insert Rec. Lines On Quotes", StandardCustomerSalesCode."Insert Rec. Lines On Quotes"::Automatic);
+            StandardCustomerSalesCode.Validate("Insert Rec. Lines On Orders", StandardCustomerSalesCode."Insert Rec. Lines On Orders"::Automatic);
+            StandardCustomerSalesCode.Validate("Insert Rec. Lines On Invoices", StandardCustomerSalesCode."Insert Rec. Lines On Invoices"::Automatic);
+            StandardCustomerSalesCode.Validate("Insert Rec. Lines On Cr. Memos", StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic);
+            StandardCustomerSalesCode.Insert(true);
+        end;
     end;
 
     procedure PopulateStagingTable(JArray: JsonArray)

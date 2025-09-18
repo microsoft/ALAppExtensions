@@ -38,6 +38,7 @@ using Microsoft.DataMigration;
 using Microsoft.Utilities;
 using Microsoft.Inventory.Posting;
 using Microsoft.Finance.Analysis.StatisticalAccount;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 4037 "Helper Functions"
 {
@@ -76,7 +77,9 @@ codeunit 4037 "Helper Functions"
                     tabledata "Accounting Period" = rimd,
                     tabledata "Data Migration Error" = rimd,
                     tabledata "Statistical Acc. Journal Batch" = rimd,
-                    tabledata "Statistical Acc. Journal Line" = rimd;
+                    tabledata "Statistical Acc. Journal Line" = rimd,
+                    tabledata "No. Series" = rimd,
+                    tabledata "No. Series Line" = rimd;
 
     var
         GPConfiguration: Record "GP Configuration";
@@ -602,6 +605,36 @@ codeunit 4037 "Helper Functions"
             SourceCodeSetup.Init();
             SourceCodeSetup.Insert(true);
         end;
+    end;
+
+    local procedure CreateNoSeries()
+    begin
+        CreateNoSeriesForStandardCode('GP-SSC', 'Standard Sales Code', 'SC00000001');
+        CreateNoSeriesForStandardCode('GP-SPC', 'Standard Purchase Code', 'PC00000001');
+    end;
+
+    local procedure CreateNoSeriesForStandardCode(NoSeriesCode: Code[20]; Description: text[100]; StartingNo: Code[20])
+    var
+        NoSeries: Record "No. Series";
+        NoSeriesLine: Record "No. Series Line";
+    begin
+        if NoSeries.Get(NoSeriesCode) then
+            exit;
+
+        NoSeries.Init();
+        NoSeries.Code := NoSeriesCode;
+        NoSeries.Description := Description;
+        NoSeries."Default Nos." := true;
+        NoSeries."Manual Nos." := true;
+        NoSeries.Insert();
+
+        NoSeriesLine.Init();
+        NoSeriesLine."Series Code" := NoSeriesCode;
+        NoSeriesLine."Starting No." := StartingNo;
+        NoSeriesLine."Starting Date" := Today();
+        NoSeriesLine."Increment-by No." := 1;
+        NoSeriesLine.Implementation := "No. Series Implementation"::Normal;
+        NoSeriesLine.Insert();
     end;
 
     internal procedure CalculateDueDateFormula(GPPaymentTerms: Record "GP Payment Terms"; Use_Discount_Calc: Boolean; Discount_Calc: Text[32]): Text[50]
@@ -2037,6 +2070,8 @@ codeunit 4037 "Helper Functions"
                 exit(false);
         end;
 
+        CreateNoSeries();
+
         exit(true)
     end;
 
@@ -2241,6 +2276,139 @@ codeunit 4037 "Helper Functions"
     begin
         if not Dimension.IsEmpty() then
             Dimension.DeleteAll(true);
+    end;
+
+    internal procedure CreateDimSet(ACTNUMBR_1: Code[20]; ACTNUMBR_2: Code[20]; ACTNUMBR_3: Code[20]; ACTNUMBR_4: Code[20]; ACTNUMBR_5: Code[20]; ACTNUMBR_6: Code[20]; ACTNUMBR_7: Code[20]; ACTNUMBR_8: Code[20]): Integer
+    var
+        TempDimensionSetEntry: Record "Dimension Set Entry" temporary;
+        DimensionValue: Record "Dimension Value";
+        GPSegments: Record "GP Segments";
+        DimensionManagement: Codeunit DimensionManagement;
+        NewDimSetID: Integer;
+    begin
+        if GPSegments.FindSet() then
+            repeat
+                if DimensionValue.Get(CheckDimensionName(GPSegments.Id), GetSegmentValue(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8, GPSegments.SegmentNumber)) then begin
+                    TempDimensionSetEntry.Init();
+                    TempDimensionSetEntry.Validate("Dimension Code", DimensionValue."Dimension Code");
+                    TempDimensionSetEntry.Validate("Dimension Value Code", DimensionValue.Code);
+                    TempDimensionSetEntry.Validate("Dimension Value ID", DimensionValue."Dimension Value ID");
+                    TempDimensionSetEntry.Insert(true);
+                end;
+            until GPSegments.Next() = 0;
+
+        NewDimSetID := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
+        TempDimensionSetEntry.DeleteAll();
+        exit(NewDimSetID);
+    end;
+
+    internal procedure GetSegmentValue(ACTNUMBR_1: Code[20]; ACTNUMBR_2: Code[20]; ACTNUMBR_3: Code[20]; ACTNUMBR_4: Code[20]; ACTNUMBR_5: Code[20]; ACTNUMBR_6: Code[20]; ACTNUMBR_7: Code[20]; ACTNUMBR_8: Code[20]; SegmentNumber: Integer): Code[20]
+    begin
+        case SegmentNumber of
+            1:
+                exit(ACTNUMBR_1);
+            2:
+                exit(ACTNUMBR_2);
+            3:
+                exit(ACTNUMBR_3);
+            4:
+                exit(ACTNUMBR_4);
+            5:
+                exit(ACTNUMBR_5);
+            6:
+                exit(ACTNUMBR_6);
+            7:
+                exit(ACTNUMBR_7);
+            8:
+                exit(ACTNUMBR_8);
+        end;
+    end;
+
+    internal procedure GetSegmentNumbersFromGPAccountIndex(GPAccountIndex: Integer; var ACTNUMBR_1: Code[20]; var ACTNUMBR_2: Code[20]; var ACTNUMBR_3: Code[20]; var ACTNUMBR_4: Code[20]; var ACTNUMBR_5: Code[20]; var ACTNUMBR_6: Code[20]; var ACTNUMBR_7: Code[20]; var ACTNUMBR_8: Code[20]): Code[20]
+    var
+        GPGL00100: Record "GP GL00100";
+    begin
+        if GPGL00100.Get(GPAccountIndex) then begin
+            ACTNUMBR_1 := GPGL00100.ACTNUMBR_1;
+            ACTNUMBR_2 := GPGL00100.ACTNUMBR_2;
+            ACTNUMBR_3 := GPGL00100.ACTNUMBR_3;
+            ACTNUMBR_4 := GPGL00100.ACTNUMBR_4;
+            ACTNUMBR_5 := GPGL00100.ACTNUMBR_5;
+            ACTNUMBR_6 := GPGL00100.ACTNUMBR_6;
+            ACTNUMBR_7 := GPGL00100.ACTNUMBR_7;
+            ACTNUMBR_8 := GPGL00100.ACTNUMBR_8;
+        end;
+    end;
+
+    internal procedure AreAllSegmentNumbersEmpty(ACTNUMBR_1: Code[20]; ACTNUMBR_2: Code[20]; ACTNUMBR_3: Code[20]; ACTNUMBR_4: Code[20]; ACTNUMBR_5: Code[20]; ACTNUMBR_6: Code[20]; ACTNUMBR_7: Code[20]; ACTNUMBR_8: Code[20]): Boolean
+    begin
+        exit(
+                CodeIsEmpty(ACTNUMBR_1) and
+                CodeIsEmpty(ACTNUMBR_2) and
+                CodeIsEmpty(ACTNUMBR_3) and
+                CodeIsEmpty(ACTNUMBR_4) and
+                CodeIsEmpty(ACTNUMBR_5) and
+                CodeIsEmpty(ACTNUMBR_6) and
+                CodeIsEmpty(ACTNUMBR_7) and
+                CodeIsEmpty(ACTNUMBR_8)
+            );
+    end;
+
+    internal procedure CodeIsEmpty(TheCode: Code[20]): Boolean
+    var
+        CodeText: Text[20];
+    begin
+        CodeText := TheCode;
+        CodeText := CopyStr(CodeText.Trim(), 1, MaxStrLen(CodeText));
+        exit(CodeText = '');
+    end;
+
+    internal procedure GenerateStandardCodeDescriptionFromAccount(var GPAccount: Record "GP Account"): Text
+    var
+        GLSetup: Record "General Ledger Setup";
+        GLAccount: Record "G/L Account";
+        Dim1Desc: Text;
+        Dim2Desc: Text;
+        DescriptionBuilder: TextBuilder;
+    begin
+        if not GLAccount.Get(GPAccount.AcctNum) then
+            exit;
+
+        if not GLSetup.Get() then
+            exit(GLAccount.Name);
+
+        DescriptionBuilder.Append(GLAccount.Name);
+
+        if GLSetup."Global Dimension 1 Code" <> '' then begin
+            Dim1Desc := GetDimensionValueDescription(GPAccount, GLSetup."Global Dimension 1 Code");
+
+            if GLSetup."Global Dimension 2 Code" <> '' then
+                Dim2Desc := GetDimensionValueDescription(GPAccount, GLSetup."Global Dimension 2 Code");
+
+            if Dim1Desc <> '' then
+                if Dim2Desc <> '' then
+                    DescriptionBuilder.Append(' (' + Dim1Desc + ', ' + Dim2Desc + ')')
+                else
+                    DescriptionBuilder.Append(' (' + Dim1Desc + ')');
+
+            exit(DescriptionBuilder.ToText());
+        end;
+    end;
+
+    local procedure GetDimensionValueDescription(var GPAccount: Record "GP Account"; DimensionCode: Code[20]): Text
+    var
+        GPSegment: Record "GP Segments";
+        DimensionValue: Record "Dimension Value";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        if GPSegment.Get(DimensionCode) then
+            if DimensionValue.Get(HelperFunctions.CheckDimensionName(GPSegment.Id), HelperFunctions.GetSegmentValue(GPAccount.ACTNUMBR_1, GPAccount.ACTNUMBR_2, GPAccount.ACTNUMBR_3, GPAccount.ACTNUMBR_4, GPAccount.ACTNUMBR_5, GPAccount.ACTNUMBR_6, GPAccount.ACTNUMBR_7, GPAccount.ACTNUMBR_8, GPSegment.SegmentNumber)) then
+                if DimensionValue.Name <> '' then
+                    exit(DimensionValue.Name)
+                else
+                    exit(DimensionValue.Code);
+
+        exit('');
     end;
 
     [IntegrationEvent(false, false)]
