@@ -6,6 +6,7 @@
 namespace Microsoft.DataMigration.SL;
 
 using System.Integration;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Purchases.Vendor;
 using System.EMail;
@@ -73,7 +74,6 @@ codeunit 47021 "SL Vendor Migrator"
         VendorPostingGroup: Record "Vendor Posting Group";
         SLHelperFunctions: Codeunit "SL Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
-        PaymentTermsFormula: DateFormula;
         Country: Code[10];
         ContactAddressFormatToSet: Option First,"After Company Name",Last;
         AddressFormatToSet: Option "Post Code+City","City+Post Code","City+County+Post Code","Blank Line+Post Code+City";
@@ -122,12 +122,6 @@ codeunit 47021 "SL Vendor Migrator"
         VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, MaxStrLen(VendorPostingGroup.Code)));
         VendorDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, MaxStrLen(GenBusinessPostingGroup.Code)));
 
-        if (SLVendor.Terms <> '') then begin
-            Evaluate(PaymentTermsFormula, '');
-            VendorDataMigrationFacade.CreatePaymentTermsIfNeeded(SLVendor.Terms, SLVendor.Terms, PaymentTermsFormula);
-            VendorDataMigrationFacade.SetPaymentTermsCode(SLVendor.Terms);
-        end;
-
         if (SLVendor.RemitName.TrimEnd() <> '') then begin
             VendorName2 := CopyStr(SLHelperFunctions.NameFlip(SLVendor.RemitName.TrimEnd()), 1, MaxStrLen(VendorName2));
             VendorDataMigrationFacade.SetName2(VendorName2);
@@ -164,9 +158,9 @@ codeunit 47021 "SL Vendor Migrator"
         SLAPSetup: Record "SL APSetup";
         SLVendor: Record "SL Vendor";
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        GenJournalLine: Record "Gen. Journal Line";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
-        PaymentTermsFormula: DateFormula;
         BalancingAccount: Code[20];
         DocTypeToSet: Option " ",Payment,Invoice,"Credit Memo";
         GLDocNbr: Text[20];
@@ -258,10 +252,12 @@ codeunit 47021 "SL Vendor Migrator"
                 Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
                 Sender.SetGeneralJournalLineExternalDocumentNo(SLAPDoc.RefNbr.TrimEnd() + '-' + SLAPDoc.InvcNbr.TrimEnd());
 
-                if (SLAPDoc.Terms.TrimEnd() <> '') then begin
-                    Evaluate(PaymentTermsFormula, '');
-                    Sender.CreatePaymentTermsIfNeeded(SLAPDoc.Terms, SLAPDoc.Terms, PaymentTermsFormula);
-                    Sender.SetGeneralJournalLinePaymentTerms(SLAPDoc.Terms);
+                // Temporary code to set the Due Date on Invoices until the Payment Terms migration is implemented.
+                GenJournalLine.SetRange("Journal Batch Name", VendorBatchNameTxt);
+                GenJournalLine.SetRange("Document No.", GLDocNbr);
+                if GenJournalLine.FindLast() then begin
+                    GenJournalLine."Due Date" := SLAPDoc.DueDate;
+                    GenJournalLine.Modify();
                 end;
             until SLAPDoc.Next() = 0;
 
@@ -298,10 +294,12 @@ codeunit 47021 "SL Vendor Migrator"
                 Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
                 Sender.SetGeneralJournalLineExternalDocumentNo(SLAPDoc.RefNbr.TrimEnd() + '-' + SLAPDoc.InvcNbr.TrimEnd());
 
-                if (SLAPDoc.Terms.TrimEnd() <> '') then begin
-                    Evaluate(PaymentTermsFormula, '');
-                    Sender.CreatePaymentTermsIfNeeded(SLAPDoc.Terms, SLAPDoc.Terms, PaymentTermsFormula);
-                    Sender.SetGeneralJournalLinePaymentTerms(SLAPDoc.Terms);
+                // Temporary code to set the Due Date on Credit Memos until the Payment Terms migration is implemented.
+                GenJournalLine.SetRange("Journal Batch Name", VendorBatchNameTxt);
+                GenJournalLine.SetRange("Document No.", GLDocNbr);
+                if GenJournalLine.FindLast() then begin
+                    GenJournalLine."Due Date" := SLAPDoc.DueDate;
+                    GenJournalLine.Modify();
                 end;
             until SLAPDoc.Next() = 0;
     end;
