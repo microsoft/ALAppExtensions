@@ -120,6 +120,12 @@ codeunit 4037 "Helper Functions"
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
         NotAllJournalLinesPostedMsg: Label 'Not all journal lines were posted. Number of unposted lines - %1.', Comment = '%1 Number of unposted lines';
         MigrationLogAreaBatchPostingTxt: Label 'Batch Posting', Locked = true;
+        NoSeriesStandardSalesCodeTok: Label 'GP-SSC', Locked = true;
+        NoSeriesStandardSalesCodeStartingNoTok: Label 'SC00000001', Locked = true;
+        NoSeriesStandardSalesCodeDescriptionLbl: Label 'Standard Sales Code';
+        NoSeriesStandardPurchaseCodeTok: Label 'GP-SPC', Locked = true;
+        NoSeriesStandardPurchaseCodeStartingNoTok: Label 'PC00000001', Locked = true;
+        NoSeriesStandardPurchaseCodeDescriptionLbl: Label 'Standard Purchase Code';
 
     procedure GetTextFromJToken(JToken: JsonToken; Path: Text): Text
     var
@@ -609,8 +615,8 @@ codeunit 4037 "Helper Functions"
 
     local procedure CreateNoSeries()
     begin
-        CreateNoSeriesForStandardCode('GP-SSC', 'Standard Sales Code', 'SC00000001');
-        CreateNoSeriesForStandardCode('GP-SPC', 'Standard Purchase Code', 'PC00000001');
+        CreateNoSeriesForStandardCode(NoSeriesStandardSalesCodeTok, NoSeriesStandardSalesCodeDescriptionLbl, NoSeriesStandardSalesCodeStartingNoTok);
+        CreateNoSeriesForStandardCode(NoSeriesStandardPurchaseCodeTok, NoSeriesStandardPurchaseCodeDescriptionLbl, NoSeriesStandardPurchaseCodeStartingNoTok);
     end;
 
     local procedure CreateNoSeriesForStandardCode(NoSeriesCode: Code[20]; Description: text[100]; StartingNo: Code[20])
@@ -621,20 +627,18 @@ codeunit 4037 "Helper Functions"
         if NoSeries.Get(NoSeriesCode) then
             exit;
 
-        NoSeries.Init();
-        NoSeries.Code := NoSeriesCode;
-        NoSeries.Description := Description;
-        NoSeries."Default Nos." := true;
-        NoSeries."Manual Nos." := true;
-        NoSeries.Insert();
+        NoSeries.Validate(Code, NoSeriesCode);
+        NoSeries.Validate(Description, Description);
+        NoSeries.Validate("Default Nos.", true);
+        NoSeries.Validate("Manual Nos.", true);
+        NoSeries.Insert(true);
 
-        NoSeriesLine.Init();
-        NoSeriesLine."Series Code" := NoSeriesCode;
-        NoSeriesLine."Starting No." := StartingNo;
-        NoSeriesLine."Starting Date" := Today();
-        NoSeriesLine."Increment-by No." := 1;
-        NoSeriesLine.Implementation := "No. Series Implementation"::Normal;
-        NoSeriesLine.Insert();
+        NoSeriesLine.Validate("Series Code", NoSeriesCode);
+        NoSeriesLine.Validate("Starting No.", StartingNo);
+        NoSeriesLine.Validate("Starting Date", Today());
+        NoSeriesLine.Validate("Increment-by No.", 1);
+        NoSeriesLine.Validate(Implementation, "No. Series Implementation"::Normal);
+        NoSeriesLine.Insert(true);
     end;
 
     internal procedure CalculateDueDateFormula(GPPaymentTerms: Record "GP Payment Terms"; Use_Discount_Calc: Boolean; Discount_Calc: Text[32]): Text[50]
@@ -2286,16 +2290,18 @@ codeunit 4037 "Helper Functions"
         DimensionManagement: Codeunit DimensionManagement;
         NewDimSetID: Integer;
     begin
-        if GPSegments.FindSet() then
-            repeat
-                if DimensionValue.Get(CheckDimensionName(GPSegments.Id), GetSegmentValue(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8, GPSegments.SegmentNumber)) then begin
-                    TempDimensionSetEntry.Init();
-                    TempDimensionSetEntry.Validate("Dimension Code", DimensionValue."Dimension Code");
-                    TempDimensionSetEntry.Validate("Dimension Value Code", DimensionValue.Code);
-                    TempDimensionSetEntry.Validate("Dimension Value ID", DimensionValue."Dimension Value ID");
-                    TempDimensionSetEntry.Insert(true);
-                end;
-            until GPSegments.Next() = 0;
+        if not GPSegments.FindSet() then
+            exit;
+
+        repeat
+            if DimensionValue.Get(CheckDimensionName(GPSegments.Id), GetSegmentValue(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8, GPSegments.SegmentNumber)) then begin
+                Clear(TempDimensionSetEntry);
+                TempDimensionSetEntry.Validate("Dimension Code", DimensionValue."Dimension Code");
+                TempDimensionSetEntry.Validate("Dimension Value Code", DimensionValue.Code);
+                TempDimensionSetEntry.Validate("Dimension Value ID", DimensionValue."Dimension Value ID");
+                TempDimensionSetEntry.Insert(true);
+            end;
+        until GPSegments.Next() = 0;
 
         NewDimSetID := DimensionManagement.GetDimensionSetID(TempDimensionSetEntry);
         TempDimensionSetEntry.DeleteAll();
@@ -2393,6 +2399,8 @@ codeunit 4037 "Helper Functions"
 
             exit(DescriptionBuilder.ToText());
         end;
+
+        exit(GLAccount.Name);
     end;
 
     local procedure GetDimensionValueDescription(var GPAccount: Record "GP Account"; DimensionCode: Code[20]): Text

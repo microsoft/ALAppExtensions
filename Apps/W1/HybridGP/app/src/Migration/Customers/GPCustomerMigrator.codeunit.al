@@ -419,6 +419,9 @@ codeunit 4018 "GP Customer Migrator"
         GPPostingAccounts: Record "GP Posting Accounts";
         CustomerNo: Code[20];
     begin
+        if not GPCompanyAdditionalSettings.GetRecurringSalesLinesEnabled() then
+            exit;
+
         if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
 
@@ -477,7 +480,7 @@ codeunit 4018 "GP Customer Migrator"
             StandardSalesCode.Insert(true);
 
             StandardSalesLine.Validate("Standard Sales Code", StandardSalesCode."Code");
-            StandardSalesLine.Validate("Line No.", 1);
+            StandardSalesLine.Validate("Line No.", 10000);
             StandardSalesLine.Validate(Type, "Sales Line Type"::"G/L Account");
             StandardSalesLine.Validate("No.", CopyStr(GPAccount.AcctNum, 1, MaxStrLen(StandardSalesLine."No.")));
             StandardSalesLine.Validate(Quantity, 1);

@@ -546,6 +546,9 @@ codeunit 4022 "GP Vendor Migrator"
         GPPostingAccounts: Record "GP Posting Accounts";
         VendorNo: Code[20];
     begin
+        if not GPCompanyAdditionalSettings.GetRecurringPurchasingLinesEnabled() then
+            exit;
+
         if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
 
@@ -621,7 +624,7 @@ codeunit 4022 "GP Vendor Migrator"
             StandardPurchaseCode.Insert(true);
 
             StandardPurchaseLine.Validate("Standard Purchase Code", StandardPurchaseCode."Code");
-            StandardPurchaseLine.Validate("Line No.", 1);
+            StandardPurchaseLine.Validate("Line No.", 10000);
             StandardPurchaseLine.Validate(Type, "Purchase Line Type"::"G/L Account");
             StandardPurchaseLine.Validate("No.", CopyStr(GPAccount.AcctNum, 1, MaxStrLen(StandardPurchaseLine."No.")));
             StandardPurchaseLine.Validate(Quantity, 1);

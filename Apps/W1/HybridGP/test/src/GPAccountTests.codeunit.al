@@ -36,12 +36,13 @@ codeunit 139661 "GP Account Tests"
         HelperFunctions: Codeunit "Helper Functions";
         StartTime: DateTime;
     begin
+        Initialize();
+
         // [SCENARIO] G/L and Statistical accounts are migrated from GP
         if not BindSubscription(MSGPAccountMigrationTests) then
             exit;
 
         StartTime := CurrentDateTime;
-        Initialize();
 
         // [GIVEN] Some records are created in the staging tables
         HelperFunctions.CreateSetupRecordsIfNeeded();

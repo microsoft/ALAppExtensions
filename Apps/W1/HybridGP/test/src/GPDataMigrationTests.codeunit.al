@@ -127,6 +127,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Receivables Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", true);
+        GPCompanyAdditionalSettings.Validate("Recurring Sales Lines", true);
         GPCompanyAdditionalSettings.Modify();
 
         // When adding Customers, update the expected count here
@@ -558,6 +559,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", true);
+        GPCompanyAdditionalSettings.Validate("Recurring Purchasing Lines", true);
         GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] Data is imported
