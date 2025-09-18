@@ -8,24 +8,13 @@ namespace Microsoft.Sales.ExcelReports;
 using Microsoft.Sales.Customer;
 using Microsoft.Finance.ExcelReports;
 
-pageextension 4450 "EXR Customer List" extends "Customer List"
+pageextension 4438 "EXR Customer List" extends "Customer List"
 {
     actions
     {
-        addfirst(SalesReports)
-        {
-            action("Customer Top List - Excel")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Customer - Top List (Excel)';
-                Image = "Report";
-                RunObject = Report "EXR Customer Top List";
-                ToolTip = 'View which customers purchase the most or owe the most in a selected period. Only customers that have either purchases during the period or a balance at the end of the period will be included.';
-            }
-        }
         addafter("Customer Register")
         {
-            action("Customer Top List - Excel1")
+            action("Customer Top List - Excel")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Customer - Top List (Excel)';

@@ -81,7 +81,7 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
                 ToolTip = 'Open an Excel workbook that shows posted fixed asset ledger entries and projected fixed asset ledger entries.';
             }
         }
-        addfirst("G/L Reports")
+        addlast(reporting)
         {
             action(EXRTrialBalanceExcel)
             {
@@ -91,9 +91,6 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
                 RunObject = report "EXR Trial Balance Excel";
                 ToolTip = 'Open a spreadsheet that shows Trial Balance Excel data.';
             }
-        }
-        addafter("Bu&dget")
-        {
             action(EXRTrialBalanceBudgetExcel)
             {
                 ApplicationArea = Basic, Suite;
@@ -102,9 +99,6 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
                 RunObject = report "EXR Trial BalanceBudgetExcel";
                 ToolTip = 'Open a spreadsheet that shows Trial Balance/Budget data.';
             }
-        }
-        addfirst("Customers and Vendors")
-        {
             action(EXRAgedAccountsRecExcel)
             {
                 ApplicationArea = Basic, Suite;

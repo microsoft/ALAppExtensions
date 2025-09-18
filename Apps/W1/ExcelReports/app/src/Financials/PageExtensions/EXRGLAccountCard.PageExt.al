@@ -10,7 +10,7 @@ pageextension 4430 "EXR G/L Account Card" extends "G/L Account Card"
 {
     actions
     {
-        addafter("Detail Trial Balance")
+        addlast(reporting)
         {
             action("Trial Balance - Excel")
             {

@@ -10,7 +10,7 @@ pageextension 4427 "EXR Chart of Accounts" extends "Chart of Accounts"
 {
     actions
     {
-        addafter("Detail Trial Balance")
+        addlast(reporting)
         {
             action("Trial Balance - Excel")
             {
@@ -21,7 +21,7 @@ pageextension 4427 "EXR Chart of Accounts" extends "Chart of Accounts"
                 ToolTip = 'View the chart of accounts that have balances and net changes.';
             }
         }
-        addafter("Detail Trial Balance_Promoted")
+        addlast(Category_Report)
         {
             actionref(TrialBalanceExcel_Promoted; "Trial Balance - Excel")
             {

@@ -10,7 +10,7 @@ pageextension 4420 "EXR Purchasing Manager RC" extends "Purchasing Manager Role 
 {
     actions
     {
-        addafter("Vendor - Detail Trial Balance")
+        addlast(reporting)
         {
             action(EXRVendorTopListExcel)
             {

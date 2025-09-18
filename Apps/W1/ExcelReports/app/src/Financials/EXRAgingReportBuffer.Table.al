@@ -7,6 +7,7 @@ namespace Microsoft.Finance.ExcelReports;
 
 table 4401 "EXR Aging Report Buffer"
 {
+    AllowInCustomizations = Never;
     Caption = 'Aging Report Buffer';
     DataClassification = CustomerContent;
     TableType = Temporary;
