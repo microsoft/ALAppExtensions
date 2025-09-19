@@ -450,9 +450,16 @@ page 4050 "GP Migration Configuration"
                             until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
+            }
+
+            group(RecurringLines)
+            {
+                Caption = 'Recurring Lines';
+                InstructionalText = 'Select these options to generate recurring sales or purchasing lines using the default sales or purchasing accounts defined on the Vendor, Customer, Class or Posting Setup in GP.';
+
                 field("Recurring Purchasing Lines"; Rec."Recurring Purchasing Lines")
                 {
-                    Caption = 'Recurring Purchasing Lines';
+                    Caption = 'Purchasing Lines';
                     ToolTip = 'Specifies whether to migrate recurring purchasing lines.';
                     ApplicationArea = All;
 
@@ -467,7 +474,7 @@ page 4050 "GP Migration Configuration"
                 }
                 field("Recurring Sales Lines"; Rec."Recurring Sales Lines")
                 {
-                    Caption = 'Recurring Sales Lines';
+                    Caption = 'Sales Lines';
                     ToolTip = 'Specifies whether to migrate recurring sales lines.';
                     ApplicationArea = All;
 
