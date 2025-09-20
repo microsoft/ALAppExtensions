@@ -36,8 +36,9 @@ codeunit 47000 "SL Account Migrator"
         AccountNum: Code[20];
         AccountType: Option Posting;
     begin
+        if not SLAccountStaging.Active then
+            exit;
         AccountNum := CopyStr(SLAccountStaging.AcctNum, 1, MaxStrLen(SLAccountStaging.AcctNum));
-
         if not GLAccDataMigrationFacade.CreateGLAccountIfNeeded(AccountNum, CopyStr(SLAccountStaging.Name, 1, MaxStrLen(SLAccountStaging.Name)), AccountType::Posting) then
             exit;
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLAccountStaging.RecordId));
@@ -65,6 +66,11 @@ codeunit 47000 "SL Account Migrator"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", OnMigratePostingGroups, '', true, true)]
     local procedure OnMigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    begin
+        MigratePostingGroups(Sender, RecordIdToMigrate);
+    end;
+
+    internal procedure MigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         SLAccountStaging: Record "SL Account Staging";
         SLHelperFunctions: Codeunit "SL Helper Functions";
@@ -72,6 +78,8 @@ codeunit 47000 "SL Account Migrator"
         if RecordIdToMigrate.TableNo <> Database::"SL Account Staging" then
             exit;
         SLAccountStaging.Get(RecordIdToMigrate);
+        if not SLAccountStaging.Active then
+            exit;
         Sender.CreateGenBusinessPostingGroupIfNeeded(PostingGroupCodeTxt, PostingGroupDescriptionTxt);
         Sender.CreateGenProductPostingGroupIfNeeded(PostingGroupCodeTxt, PostingGroupDescriptionTxt);
         Sender.CreateGeneralPostingSetupIfNeeded(PostingGroupCodeTxt);
@@ -112,12 +120,16 @@ codeunit 47000 "SL Account Migrator"
         DimSetID: Integer;
         DescriptionTrxTxt: Label 'Migrated transaction', Locked = true;
         PostingGroupCode: Text;
+        PostingGroupPeriod: Text;
     begin
         SLAccountTransactions.SetCurrentKey(Year, PERIODID, AcctNum);
         SLAccountTransactions.SetFilter(AcctNum, '= %1', SLAccountStaging.AcctNum);
         if SLAccountTransactions.FindSet() then
             repeat
-                PostingGroupCode := 'SL' + Format(SLAccountTransactions.Year) + '-' + Format(SLAccountTransactions.PERIODID);
+                PostingGroupPeriod := Format(SLAccountTransactions.PERIODID);
+                if SLAccountTransactions.PERIODID < 10 then
+                    PostingGroupPeriod := '0' + PostingGroupPeriod;
+                PostingGroupCode := 'SL' + Format(SLAccountTransactions.Year) + '-' + PostingGroupPeriod;
 
                 if SLAccountTransactions.Balance = 0 then
                     exit;

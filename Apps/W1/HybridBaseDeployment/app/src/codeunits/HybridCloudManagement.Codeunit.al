@@ -117,7 +117,7 @@ codeunit 4001 "Hybrid Cloud Management"
         RecordLinkMigrationIncompleteMsg: Label 'The record link migration is not completed. Please complete the migration before proceeding with user mapping.';
         LearnMoreLbl: Label 'Learn more';
         DontShowThisAgainLbl: Label 'Don''t show this again.';
-        RecordLinkMigrationDocumentationHyperlinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2013440', Locked = true;
+        RecordLinkMigrationDocumentationHyperlinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2335385', Locked = true;
         WarnRecordLinkMigrationNotificationsTxt: Label 'Cloud Migration - Record Link Migration Warning';
         WarnRecordLinkMigrationDescriptionTxt: Label 'Warning to the users to read the documentation before managing the record links during cloud migration.';
 
@@ -1634,6 +1634,8 @@ codeunit 4001 "Hybrid Cloud Management"
 
         if RecordLink.IsEmpty() then begin
             PopulateRecordLinks();
+            Session.LogMessage('0000PY7', RecordLinksMigratedSuccessfullyLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
+            UpdateCompanyRecordLinkMigrationStatus();
             exit;
         end;
 

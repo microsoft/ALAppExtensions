@@ -162,17 +162,6 @@ page 4400 "SOA Setup"
                             ConfigUpdated();
                         end;
                     }
-                    field(DailyEmailLimit; DailyEmailLimit)
-                    {
-                        Caption = 'Daily email limit';
-                        ToolTip = 'Specifies the maximum number of emails an agent can process per day.';
-
-                        trigger OnValidate()
-                        begin
-                            TempSOASetup."Message Limit" := DailyEmailLimit;
-                            ConfigUpdated();
-                        end;
-                    }
                     field(LastSync; LastSync)
                     {
                         Caption = 'Last sync';
@@ -300,12 +289,9 @@ page 4400 "SOA Setup"
                         {
                             Caption = 'Include capable to promise';
                             ToolTip = 'Specifies whether the agent includes in the search results items that are currently unavailable but can be ordered for a later shipment date.';
-
+                            Editable = OnlyAvailableItemsActive;
                             trigger OnValidate()
                             begin
-                                if TempSOASetup."Incl. Capable to Promise" then
-                                    TempSOASetup."Search Only Available Items" := true;
-
                                 ConfigUpdated();
                             end;
                         }
@@ -320,25 +306,29 @@ page 4400 "SOA Setup"
 
                 group(QuoteSetup)
                 {
-                    Caption = 'Create quotes for sales inquiries';
-
-                    group(RequestQuoteReviewGrp)
+                    ShowCaption = false;
+                    field(RequestQuoteReview; TempSOASetup."Quote Review")
                     {
                         Caption = 'Review quotes when created and updated';
-                        field(RequestQuoteReview; TempSOASetup."Quote Review")
-                        {
+                        ToolTip = 'Specifies if the agent requests review when a quote is created and updated.';
 
-                            ShowCaption = false;
-                            ToolTip = 'Specifies if the agent requests review when a quote is created and updated.';
-
-                            trigger OnValidate()
-                            begin
-                                ConfigUpdated();
-                            end;
-                        }
+                        trigger OnValidate()
+                        begin
+                            ConfigUpdated();
+                        end;
                     }
+                    field(SendSalesQuote; TempSOASetup."Send Sales Quote")
+                    {
+                        Caption = 'Send quotes for confirmation';
+                        ToolTip = 'Specifies if the agent sends sales quotes for confirmation.';
 
+                        trigger OnValidate()
+                        begin
+                            ConfigUpdated();
+                        end;
+                    }
                 }
+
                 group(OrderSetup)
                 {
                     ShowCaption = false;
@@ -350,14 +340,14 @@ page 4400 "SOA Setup"
                         field(CreateOrderFromQuote; TempSOASetup."Create Order from Quote")
                         {
                             Caption = 'Make orders from quotes';
-                            ToolTip = 'Specifies if the agent makes orders from quotes that are accepted.';
+                            ToolTip = 'Specifies if the agent makes orders from quotes.';
                             ShowCaption = false;
 
                             trigger OnValidate()
                             begin
-                                ConfigUpdated();
                                 if not TempSOASetup."Create Order from Quote" then
                                     TempSOASetup."Order Review" := false;
+                                ConfigUpdated();
                             end;
                         }
                         field(RequestOrderReview; TempSOASetup."Order Review")
@@ -374,25 +364,111 @@ page 4400 "SOA Setup"
                     }
                 }
             }
+
+            group(SOAManageMailboxConfigCard)
+            {
+                Caption = 'Manage mailbox';
+                InstructionalText = 'Send and receive email using the selected account.';
+
+                group(IncomingMail)
+                {
+                    Caption = 'Incoming mail';
+                    InstructionalText = 'Analyze new messages to determine the sender''s intent and how to respond.';
+
+                    group(AnalyzeAttachmentsGrp)
+                    {
+                        Caption = 'Analyze attachments';
+                        InstructionalText = 'Includes attachments when analyzing intent. Supported formats: PDF, PNG, JPG.';
+
+                        field(AnalyzeAttachments; TempSOASetup."Analyze Attachments")
+                        {
+                            Caption = 'Analyze attachments';
+                            ToolTip = 'Includes attachments when analyzing intent. Supported formats: PDF, PNG, JPG.';
+                            ShowCaption = false;
+
+                            trigger OnValidate()
+                            begin
+                                ConfigUpdated();
+                            end;
+                        }
+                    }
+                }
+
+                group(ProcessingLimits)
+                {
+                    Caption = 'Processing Limits';
+                    InstructionalText = 'Process up to this many incoming emails per day. Display an alert when the limit is reached.';
+
+                    field(DailyEmailLimit; DailyEmailLimit)
+                    {
+                        Caption = 'Daily email limit';
+                        ToolTip = 'Specifies the maximum number of emails an agent can process per day.';
+                        ShowMandatory = true;
+
+                        trigger OnValidate()
+                        begin
+                            TempSOASetup."Message Limit" := DailyEmailLimit;
+                            ConfigUpdated();
+                        end;
+                    }
+                }
+
+            }
+
+            group(OutputMailGroup)
+            {
+                Caption = 'Format outgoing messages';
+                InstructionalText = 'Prepare the content and style of outgoing messages in certain ways.';
+                group(EmailTemplateGroup)
+                {
+                    Caption = 'Mail Signature';
+
+                    group(EmailSignatureGroup)
+                    {
+                        Caption = 'Include a custom signature in the replies';
+
+                        field(ConfigureEmailSignature; TempSOASetup."Configure Email Template")
+                        {
+                            ShowCaption = false;
+                            ToolTip = 'Specifies if the agent includes a custom mail signature below the message body when preparing outgoing mails.';
+
+                            trigger OnValidate()
+                            begin
+                                IsConfigUpdated := true;
+                                MailTemplateEditable := TempSOASetup."Configure Email Template";
+                            end;
+                        }
+                        field(EmailTemplate; EmailSignatureModifyLbl)
+                        {
+                            ShowCaption = false;
+                            Enabled = MailTemplateEditable;
+                            trigger OnDrillDown()
+                            begin
+                                UpdateEmailSignature();
+                            end;
+
+                        }
+                    }
+                }
+            }
+
         }
     }
     actions
     {
         area(SystemActions)
         {
-#pragma warning disable AA0218
             systemaction(OK)
-#pragma warning restore AA0218
             {
                 Caption = 'Update';
                 Enabled = IsConfigUpdated;
+                ToolTip = 'Apply the changes to the agent setup.';
             }
 
-#pragma warning disable AA0218
             systemaction(Cancel)
-#pragma warning restore AA0218
             {
                 Caption = 'Cancel';
+                ToolTip = 'Discards the changes and closes the setup page.';
             }
         }
     }
@@ -507,17 +583,20 @@ page 4400 "SOA Setup"
                 InitialState := Rec.State::Disabled;
         end;
 
-        if TempSOASetup.IsEmpty() then begin
+        if TempSOASetup.IsEmpty() or (TempSOASetup."Agent User Security ID" <> Rec."User Security ID") then begin
             SOASetupCU.GetDefaultSOASetup(TempSOASetup, Rec);
             MailboxName := TempSOASetup."Email Address";
             ShowLastSync := CheckIsValidConfig() and (TempSOASetup."Last Sync At" <> 0DT);
             LastSync := Format(TempSOASetup."Last Sync At");
         end;
 
+        MailTemplateEditable := TempSOASetup."Configure Email Template";
+
         if TempAgentAccessControl.IsEmpty() then
             SOASetupCU.GetDefaultAgentAccessControl(Rec."User Security ID", TempAgentAccessControl);
 
         CreateOrderFromQuoteActive := TempSOASetup."Create Order from Quote";
+        OnlyAvailableItemsActive := TempSOASetup."Search Only Available Items";
 
         DailyEmailLimit := TempSOASetup."Message Limit";
         if DailyEmailLimit = 0 then
@@ -531,6 +610,7 @@ page 4400 "SOA Setup"
         IsConfigUpdated := true;
         CheckIsValidConfig();
         CreateOrderFromQuoteActive := TempSOASetup."Create Order from Quote";
+        OnlyAvailableItemsActive := TempSOASetup."Search Only Available Items";
 
         if EnabledAgentFirstConfig() then
             Rec.State := Rec.State::Enabled;
@@ -581,6 +661,21 @@ page 4400 "SOA Setup"
         until SourceTempAgentAccessControl.Next() = 0;
     end;
 
+    local procedure UpdateEmailSignature()
+    var
+        EmailTemplatePage: Page "SOA Email Template";
+    begin
+        if not TempSOASetup."Configure Email Template" then
+            exit;
+        EmailTemplatePage.SetCurrentSignatureAsTxt(TempSOASetup.GetEmailSignatureAsTxt());
+        EmailTemplatePage.RunModal();
+        if EmailTemplatePage.IsValueUpdated() then begin
+            TempSOASetup.SetEmailSignature(EmailTemplatePage.GetNewSignatureAsTxt());
+            TempSOASetup.Modify();
+            IsConfigUpdated := true;
+        end;
+    end;
+
     var
         UserSettings: Record "User Settings";
         TempAgentAccessControl: Record "Agent Access Control" temporary;
@@ -597,7 +692,9 @@ page 4400 "SOA Setup"
         AccessUpdated: Boolean;
         UserSettingsUpdated: Boolean;
         FirstConfig: Boolean;
+        MailTemplateEditable: Boolean;
         CreateOrderFromQuoteActive: Boolean;
+        OnlyAvailableItemsActive: Boolean;
         MailboxChanged: Boolean;
         DailyEmailLimit: Integer;
         InitialState: Option Enabled,Disabled;
@@ -605,5 +702,7 @@ page 4400 "SOA Setup"
         LearnMoreBillingDocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2333517';
         ManageUserAccessLbl: Label 'Manage user access';
         DailyEmailLimitErr: Label 'The daily email limit must be greater than zero.';
+        EmailSignatureModifyLbl: Label 'Edit signature';
         SelectedLanguageTxt: Text;
+
 }

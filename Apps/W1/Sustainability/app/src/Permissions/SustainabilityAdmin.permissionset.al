@@ -66,5 +66,6 @@ permissionset 6212 "Sustainability Admin"
         tabledata "Sust. ESG Concept" = IMD,
         tabledata "Sust. ESG Range Period" = IMD,
         tabledata "Sust. ESG Requirement Concept" = IMD,
-        tabledata "Sust. ESG Standard Requirement" = IMD;
+        tabledata "Sust. ESG Standard Requirement" = IMD,
+        tabledata "Sustainability Disclaimer" = IMD;
 }

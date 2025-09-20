@@ -74,5 +74,6 @@ permissionset 6211 "Sustainability Read"
         tabledata "Sust. ESG Concept" = R,
         tabledata "Sust. ESG Range Period" = R,
         tabledata "Sust. ESG Requirement Concept" = R,
-        tabledata "Sust. ESG Standard Requirement" = R;
+        tabledata "Sust. ESG Standard Requirement" = R,
+        tabledata "Sustainability Disclaimer" = R;
 }

@@ -306,10 +306,17 @@ codeunit 18001 "GST Base Validation"
                 Rec."GST Base Amount" := Abs(Rec."GST Base Amount") * SignFactor;
                 Rec."GST Amount" := Abs(Rec."GST Amount") * SignFactor;
             end
-            else begin
-                Rec."GST Base Amount" := Rec."GST Base Amount";
-                Rec."GST Amount" := Rec."GST Amount";
-            end;
+            else
+                case Rec."Document Type" of
+                    Rec."Document Type"::"Credit Memo":
+                        begin
+                            Rec."GST Base Amount" := Abs(Rec."GST Base Amount");
+                            Rec."GST Amount" := Abs(Rec."GST Amount");
+                        end
+                    else
+                        Rec."GST Base Amount" := Rec."GST Base Amount";
+                        Rec."GST Amount" := Rec."GST Amount";
+                end;
 
         if Rec."Document Type" = Rec."Document Type"::"Credit Memo" then
             Rec.Quantity := Abs(Rec.Quantity)

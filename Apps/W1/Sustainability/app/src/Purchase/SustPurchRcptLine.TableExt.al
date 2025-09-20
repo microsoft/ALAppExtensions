@@ -1,10 +1,11 @@
 namespace Microsoft.Sustainability.Purchase;
 
+using Microsoft.Foundation.UOM;
+using Microsoft.Purchases.History;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.Energy;
 using Microsoft.Sustainability.Setup;
-using Microsoft.Purchases.History;
 
 tableextension 6216 "Sust. Purch. Rcpt. Line" extends "Purch. Rcpt. Line"
 {
@@ -134,6 +135,44 @@ tableextension 6216 "Sust. Purch. Rcpt. Line" extends "Purch. Rcpt. Line"
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Total Emission Cost';
             CaptionClass = '102,15,5';
+            DataClassification = CustomerContent;
+        }
+        field(6234; "Unit for Sust. Formulas"; Code[10])
+        {
+            Caption = 'Unit for Sust. Formulas';
+            TableRelation = "Unit of Measure";
+            DataClassification = CustomerContent;
+        }
+        field(6235; "Fuel/Electricity"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Fuel/El. Decimal Places"));
+            Caption = 'Fuel/Electricity';
+            DataClassification = CustomerContent;
+        }
+        field(6236; Distance; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Distance Decimal Places"));
+            Caption = 'Distance';
+            DataClassification = CustomerContent;
+        }
+        field(6237; "Custom Amount"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Custom Amt. Decimal Places"));
+            Caption = 'Custom Amount';
+            DataClassification = CustomerContent;
+        }
+        field(6238; "Installation Multiplier"; Decimal)
+        {
+            Caption = 'Installation Multiplier';
+            DataClassification = CustomerContent;
+        }
+        field(6239; "Time Factor"; Decimal)
+        {
+            Caption = 'Time Factor';
+            MaxValue = 1;
             DataClassification = CustomerContent;
         }
     }

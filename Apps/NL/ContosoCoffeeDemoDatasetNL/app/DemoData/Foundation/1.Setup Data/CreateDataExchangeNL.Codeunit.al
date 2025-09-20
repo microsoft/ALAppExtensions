@@ -16,6 +16,7 @@ codeunit 11548 "Create Data Exchange NL"
     begin
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + SEPACAMTNL() + '.xml');
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + SEPACAMT05300108NL() + '.xml');
+        ContosoDataExchange.UpdateSEPACAMT05300108DataExchDefLabels();
     end;
 
     procedure SEPACAMTNL(): Code[20]

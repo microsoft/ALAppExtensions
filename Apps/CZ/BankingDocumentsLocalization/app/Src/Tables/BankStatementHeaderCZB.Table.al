@@ -457,8 +457,13 @@ table 31252 "Bank Statement Header CZB"
     procedure UpdateBankStatementLine(ChangedFieldName: Text; AskQuestion: Boolean)
     var
         BankStatementLineCZB: Record "Bank Statement Line CZB";
+        IsHandled: Boolean;
         UpdateLinesQst: Label 'You have modified %1.\Do you want update lines?', Comment = '%1 = FieldCaption';
     begin
+        OnBeforeUpdateBankStatementLine(Rec, ChangedFieldName, AskQuestion, IsHandled);
+        if IsHandled then
+            exit;
+
         if not BankStmtLinesExist() then
             exit;
         if AskQuestion then
@@ -618,6 +623,11 @@ table 31252 "Bank Statement Header CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterImportBankStatement(var BankStatementHeaderCZB: Record "Bank Statement Header CZB")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateBankStatementLine(BankStatementHeaderCZB: Record "Bank Statement Header CZB"; ChangedFieldName: Text; AskQuestion: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

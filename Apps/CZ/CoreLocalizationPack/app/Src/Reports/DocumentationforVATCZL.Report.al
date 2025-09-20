@@ -109,8 +109,8 @@ report 11757 "Documentation for VAT CZL"
                 }
                 dataitem("VAT Entry"; "VAT Entry")
                 {
-                    DataItemTableView = where(Type = filter(Purchase | Sale));
                     UseTemporary = true;
+                    RequestFilterFields = Type, "Document Type";
                     column(VATDate_VATEntry; "VAT Reporting Date")
                     {
                         IncludeCaption = true;
@@ -242,6 +242,7 @@ report 11757 "Documentation for VAT CZL"
                     begin
                         "VAT Entry".Reset();
                         "VAT Entry".SetCurrentKey(Type, Closed, "VAT Bus. Posting Group", "VAT Prod. Posting Group", "Country/Region Code");
+                        "VAT Entry".CopyFilters(VATEntryFiltered);
 
                         Clear(CountrySubTotalAmt);
                         Clear(VATEntrySubtotalAmt);
@@ -516,9 +517,13 @@ report 11757 "Documentation for VAT CZL"
         else
             VATEntry.SetRange("VAT Reporting Date", StartDateReq, EndDateReq);
         VATDateFilter := VATEntry.GetFilter("VAT Reporting Date");
+        VATEntryFiltered.CopyFilters("VAT Entry");
+        if VATEntryFiltered.GetFilter(Type) = '' then
+            VATEntryFiltered.SetFilter(Type, '%1|%2', VATEntry.Type::Purchase, VATEntry.Type::Sale);
     end;
 
     var
+        VATEntryFiltered: Record "VAT Entry";
         VATEntry: Record "VAT Entry";
         GeneralLedgerSetup: Record "General Ledger Setup";
         VATPeriodCZL: Record "VAT Period CZL";

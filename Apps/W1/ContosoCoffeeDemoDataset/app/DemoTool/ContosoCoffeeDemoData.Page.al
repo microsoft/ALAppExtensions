@@ -26,6 +26,10 @@ page 4762 "Contoso Coffee Demo Data"
                 {
                     ToolTip = 'Specifies the Starting Year that you want to create the demo data with.';
                 }
+                field("Starting Date"; Rec."Starting Date")
+                {
+                    ToolTip = 'Specifies the Starting Date that you want to create the demo date with. In the Analytics module, this will generate data for the past six months from this date. By default, the starting date is set to today''s date and going back six months.';
+                }
                 field("Company Type"; Rec."Company Type")
                 {
                     ToolTip = 'Specifies the Company Type that you want to create the demo data with.';

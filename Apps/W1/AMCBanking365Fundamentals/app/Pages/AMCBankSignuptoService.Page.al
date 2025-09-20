@@ -193,7 +193,7 @@ page 20109 "AMC Bank Signup to Service"
         end;
     end;
 
-
+    [NonDebuggable]
     local procedure GetLoginURL(): Text
     var
         CountryRegion: Record "Country/Region";
@@ -248,7 +248,6 @@ page 20109 "AMC Bank Signup to Service"
 
         //Send Request to webservice
         Handled := false;
-        AMCBankRESTRequestMgt.OnBeforeSendRestRequest(Handled, HttpRequestMessage, HttpResponseMessage, restcall, AMCBankingMgt.GetAppCaller(), true);
         AMCBankRESTRequestMgt.SendRestRequest(Handled, HttpRequestMessage, HttpResponseMessage, restcall, AMCBankingMgt.GetAppCaller(), true);
         AMCBankRESTRequestMgt.GetRestResponse(HttpResponseMessage, EasyRegistrationTempBlob);
         if (not AMCBankRESTRequestMgt.HasResponseErrors(EasyRegistrationTempBlob, restcall, 'syslog', ResponseResult, AMCBankingMgt.GetAppCaller())) then begin

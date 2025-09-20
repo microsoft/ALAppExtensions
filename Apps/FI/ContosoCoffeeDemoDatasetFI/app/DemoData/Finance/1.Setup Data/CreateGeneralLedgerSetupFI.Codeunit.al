@@ -32,6 +32,7 @@ codeunit 13431 "Create General Ledger Setup FI"
 
         GeneralLedgerSetup.Validate("Local Currency Symbol", '');
         GeneralLedgerSetup.Validate("Local Currency Description", '');
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", LCYCode);
         GeneralLedgerSetup.Validate("Enable Data Check", DataCheck);
         GeneralLedgerSetup.Validate("EMU Currency", EMUCurrency);

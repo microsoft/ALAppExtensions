@@ -1734,6 +1734,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         GeneralLedgerSetup.GET();
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.VALIDATE("LCY Code", LCYCode);
         GeneralLedgerSetup.MODIFY(true);
     end;

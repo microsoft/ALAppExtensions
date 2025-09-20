@@ -179,7 +179,7 @@ codeunit 47006 "SL Project Migrator"
 
     internal procedure MigrateProjects(IncludePlanStatusProjects: Boolean);
     var
-        SLPJProj: Record "SL PJProj";
+        SLPJProj: Record "SL PJProj Buffer";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         ProjectStatusFilter: Text;
     begin
@@ -197,7 +197,7 @@ codeunit 47006 "SL Project Migrator"
         until SLPJProj.Next() = 0;
     end;
 
-    internal procedure CreateProject(SLPJProj: Record "SL PJProj")
+    internal procedure CreateProject(SLPJProj: Record "SL PJProj Buffer")
     var
         Customer: Record Customer;
         Job: Record Job;
@@ -252,9 +252,15 @@ codeunit 47006 "SL Project Migrator"
                 Job.Validate("Bill-to Contact", SLPJAddr.individual);
             end;
 
-            Job."Creation Date" := DT2Date(SLPJProj.crtd_datetime);
-            Job."Starting Date" := DT2Date(SLPJProj.start_date);
-            Job."Ending Date" := DT2Date(SLPJProj.end_date);
+            if SLPJProj.start_date.Year <= 1900 then
+                Job."Starting Date" := 0D
+            else
+                Job."Starting Date" := SLPJProj.start_date;
+            if SLPJProj.end_date.Year <= 1900 then
+                Job."Ending Date" := 0D
+            else
+                Job."Ending Date" := SLPJProj.end_date;
+
             if SLCompanyAdditionalSettings.GetResourceMasterOnly() then
                 Job."Person Responsible" := SLPJProj.manager2;
             Job.Insert(true);

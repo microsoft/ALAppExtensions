@@ -15,6 +15,7 @@ table 4325 "SOA Setup"
     Extensible = false;
     InherentEntitlements = RIMDX;
     InherentPermissions = RIMDX;
+    DataClassification = CustomerContent;
     ReplicateData = false;
 
     fields
@@ -121,7 +122,6 @@ table 4325 "SOA Setup"
         {
             Caption = 'Email Address';
             ToolTip = 'Specifies the email address of the agent.';
-            DataClassification = SystemMetadata;
         }
         field(20; "Known Sender In. Msg. Review"; Enum "SOA Input Message Review")
         {
@@ -155,6 +155,28 @@ table 4325 "SOA Setup"
             DataClassification = SystemMetadata;
             InitValue = 100;
         }
+        field(25; "Analyze Attachments"; Boolean)
+        {
+            Caption = 'Analyze attachments';
+            ToolTip = 'Specifies whether the agent analyzes attachments when determining intent.';
+            DataClassification = SystemMetadata;
+        }
+        field(26; "Send Sales Quote"; Boolean)
+        {
+            Caption = 'Send Sales Quote';
+            ToolTip = 'Specifies if the agent sends sales quotes for confirmation.';
+            DataClassification = SystemMetadata;
+        }
+        field(27; "Email Template"; Blob)
+        {
+            Caption = 'Email Signature';
+            ToolTip = 'Specifies the email signature for the sales order agent.';
+        }
+        field(28; "Configure Email Template"; Boolean)
+        {
+            Caption = 'Configure Email Signature';
+            ToolTip = 'Specifies whether the email signature is configured for the sales order agent.';
+        }
     }
 
     keys
@@ -186,5 +208,42 @@ table 4325 "SOA Setup"
     internal procedure GetDefaultMessageLimit(): Integer
     begin
         exit(100);
+    end;
+
+    internal procedure SetEmailSignature(EmailSignatureAsTxt: Text)
+    var
+        OutStream: OutStream;
+    begin
+        Clear(Rec."Email Template");
+        Rec."Email Template".CreateOutStream(OutStream, TextEncoding::UTF8);
+        OutStream.WriteText(EmailSignatureAsTxt);
+    end;
+
+    internal procedure GetEmailSignatureAsTxt(): Text
+    var
+        InStream: InStream;
+    begin
+        Rec.CalcFields("Email Template");
+        if not Rec."Email Template".HasValue() then
+            exit('');
+
+        Rec."Email Template".CreateInStream(InStream, TextEncoding::UTF8);
+        exit(ReadAsTextWithSeparator(InStream, ' '));
+    end;
+
+    local procedure ReadAsTextWithSeparator(InStream: InStream; LineSeparator: Text): Text
+    var
+        Tb: TextBuilder;
+        ContentLine: Text;
+    begin
+        InStream.ReadText(ContentLine);
+        Tb.Append(ContentLine);
+        while not InStream.EOS do begin
+            InStream.ReadText(ContentLine);
+            Tb.Append(LineSeparator);
+            Tb.Append(ContentLine);
+        end;
+
+        exit(Tb.ToText());
     end;
 }

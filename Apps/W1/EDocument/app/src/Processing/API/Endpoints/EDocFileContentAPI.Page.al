@@ -72,12 +72,20 @@ page 6119 "E-Doc. File Content API"
     var
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
+        EDocumentLogRec: Record "E-Document Log";
         EDocumentLog: Codeunit "E-Document Log";
         TempBlob: Codeunit "Temp Blob";
         EDocumentServiceStatus: Enum "E-Document Service Status";
         Instream: InStream;
         OutStream: OutStream;
+        DataStorageSystemId: Guid;
     begin
+        DataStorageSystemId := Rec.SystemId;
+        if Rec.GetFilter(Rec.SystemId) <> '' then begin
+            Evaluate(DataStorageSystemId, Rec.GetFilter(Rec.SystemId));
+            exit(GetFromEDocLogSystemId(DataStorageSystemId));
+        end;
+
         EDocument.ReadIsolation(IsolationLevel::ReadUncommitted);
         EDocument.SetLoadFields(Direction);
         if not EDocument.Get(Rec.GetFilter("E-Doc Entry No.")) then
@@ -94,10 +102,11 @@ page 6119 "E-Doc. File Content API"
                 EDocumentServiceStatus := EDocumentServiceStatus::Exported;
         end;
 
-        EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus);
+        EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus, EDocumentLogRec);
         TempBlob.CreateInStream(Instream, TextEncoding::UTF8);
 
         Rec.Init();
+        Rec.SystemId := EDocumentLogRec.SystemId;
         Rec."E-Doc Entry No." := EDocument."Entry No";
         Rec."E-Document Service Code" := CopyStr(Rec.GetFilter("E-Document Service Code"), 1, MaxStrLen(Rec."E-Document Service Code"));
         if Evaluate(Rec."E-Document Service Status", Rec.GetFilter("E-Document Service Status")) then;
@@ -106,4 +115,25 @@ page 6119 "E-Doc. File Content API"
         exit(Rec.Insert());
     end;
 
+    local procedure GetFromEDocLogSystemId(DataStorageSystemId: Guid): Boolean
+    var
+        EDocumentLog: Record "E-Document Log";
+        TempBlob: Codeunit "Temp Blob";
+        Instream: InStream;
+        OutStream: OutStream;
+    begin
+        if not EDocumentLog.GetBySystemId(DataStorageSystemId) then
+            exit;
+
+        Rec.Init();
+        Rec.SystemId := DataStorageSystemId;
+        Rec."E-Doc Entry No." := EDocumentLog."E-Doc. Entry No";
+        Rec."E-Document Service Code" := EDocumentLog."Service Code";
+
+        EDocumentLog.GetDataStorage(TempBlob);
+        TempBlob.CreateInStream(Instream, TextEncoding::UTF8);
+        Rec.Content.CreateOutStream(OutStream, TextEncoding::UTF8);
+        CopyStream(OutStream, Instream);
+        exit(Rec.Insert());
+    end;
 }

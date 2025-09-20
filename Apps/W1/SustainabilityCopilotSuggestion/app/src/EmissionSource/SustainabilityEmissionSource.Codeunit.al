@@ -12,6 +12,7 @@ codeunit 6332 "Sustainability Emission Source"
 
     procedure KeepRelevantSourceCO2EmissionBuffer(var SustainEmissionSuggestion: Record "Sustain. Emission Suggestion"; var SourceCO2EmissionBuffer: Record "Source CO2 Emission Buffer")
     begin
+        SourceCO2EmissionBuffer.Reset();
         if not SourceCO2EmissionBuffer.FindSet(true) then
             exit;
         repeat

@@ -152,6 +152,8 @@ codeunit 11755 "Registration Log Mgt. CZL"
                 Address[5] := Value;  // Orientation No. Letter
             if GetValue(AddressObject, AddressTextKeyTok, Value) then
                 AddressText := Value;  // Address Text
+
+            OnLogVerificationOnAfterSetDataFromAddressObject(AddressObject, NewRegistrationLogCZL);
         end;
 
         NewRegistrationLogCZL."Verified Address" := CopyStr(FormatAddress(Address), 1, MaxStrLen(NewRegistrationLogCZL."Verified Address"));
@@ -449,6 +451,11 @@ codeunit 11755 "Registration Log Mgt. CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeAssistEditRegNo(AccountType: Enum "Reg. Log Account Type CZL"; AccountNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnLogVerificationOnAfterSetDataFromAddressObject(AddressObject: JsonObject; var NewRegistrationLogCZL: Record "Registration Log CZL")
     begin
     end;
 }

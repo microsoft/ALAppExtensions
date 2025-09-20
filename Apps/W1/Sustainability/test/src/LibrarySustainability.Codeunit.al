@@ -269,6 +269,16 @@ codeunit 148182 "Library - Sustainability"
         SustainabilitySetup.Modify();
     end;
 
+    procedure EnableFormulaInPurchDocsInSustainabilitySetup()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Use Emissions In Purch. Doc.", true);
+        SustainabilitySetup.Validate("Use Formulas In Purch. Docs", true);
+        SustainabilitySetup.Modify();
+    end;
+
     procedure CreateReportingUnit(var ReportingUnit: Record "Sust. ESG Reporting Unit")
     begin
         ReportingUnit.Init();
@@ -460,6 +470,7 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityExciseJnlBatch: Record "Sust. Excise Journal Batch";
         SustainabilityExciseJnlLine: Record "Sust. Excise Jnl. Line";
         SustExciseTransactionLog: Record "Sust. Excise Taxes Trans. Log";
+        SustainabilityDisclaimer: Record "Sustainability Disclaimer";
     begin
         SustainabilityJnlTemplate.DeleteAll();
         SustainabilityJnlBatch.DeleteAll();
@@ -483,5 +494,6 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityExciseJnlBatch.DeleteAll();
         SustainabilityExciseJnlLine.DeleteAll();
         SustExciseTransactionLog.DeleteAll();
+        SustainabilityDisclaimer.DeleteAll();
     end;
 }

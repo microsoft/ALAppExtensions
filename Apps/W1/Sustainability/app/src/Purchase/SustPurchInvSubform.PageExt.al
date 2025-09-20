@@ -24,6 +24,42 @@ pageextension 6214 "Sust. Purch. Inv. Subform" extends "Purch. Invoice Subform"
         }
         addafter("Qty. Assigned")
         {
+            field("Unit for Sust. Formulas"; Rec."Unit for Sust. Formulas")
+            {
+                Visible = SustainabilityFormulasFieldVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the unit of measure used for formulas to calculate total emissions based on inbound information.';
+            }
+            field("Fuel/Electricity"; Rec."Fuel/Electricity")
+            {
+                Visible = SustainabilityFormulasFieldVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the fuel or electricity of the purchase line.';
+            }
+            field(Distance; Rec.Distance)
+            {
+                Visible = SustainabilityFormulasFieldVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the distance of the purchase line.';
+            }
+            field("Custom Amount"; Rec."Custom Amount")
+            {
+                Visible = SustainabilityFormulasFieldVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the custom amount of the purchase line.';
+            }
+            field("Installation Multiplier"; Rec."Installation Multiplier")
+            {
+                Visible = SustainabilityFormulasFieldVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the installation multiplier of the purchase line.';
+            }
+            field("Time Factor"; Rec."Time Factor")
+            {
+                Visible = SustainabilityFormulasFieldVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the time factor of the purchase line.';
+            }
             field("Renewable Energy"; Rec."Renewable Energy")
             {
                 Visible = SustainabilityVisible;
@@ -93,8 +129,10 @@ pageextension 6214 "Sust. Purch. Inv. Subform" extends "Purch. Invoice Subform"
         SustainabilitySetup.Get();
 
         SustainabilityVisible := SustainabilitySetup."Use Emissions In Purch. Doc.";
+        SustainabilityFormulasFieldVisible := SustainabilitySetup."Use Formulas In Purch. Docs";
     end;
 
     var
         SustainabilityVisible: Boolean;
+        SustainabilityFormulasFieldVisible: Boolean;
 }

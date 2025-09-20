@@ -126,6 +126,10 @@ page 6334 "Sust. Posted ESG Report Line"
                 {
                     Caption = 'Rounding';
                 }
+                field(postedAmount; Rec."Posted Amount")
+                {
+                    Caption = 'Posted Amount';
+                }
             }
         }
     }

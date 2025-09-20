@@ -3,7 +3,7 @@ namespace Microsoft.DataMigration;
 codeunit 40023 "Record Link Migration Warning" implements "Cloud Migration Warning"
 {
     var
-        RecordLinkMigrationUrlLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2013440', Locked = true;
+        RecordLinkMigrationUrlLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2335385', Locked = true;
         RecordLinkMigrationWarningMsg: Label 'Record link table has not been migrated since the last replication.';
 
     procedure CheckWarning(): Boolean
@@ -48,7 +48,6 @@ codeunit 40023 "Record Link Migration Warning" implements "Cloud Migration Warni
         FilterTxt: Text;
     begin
         SearchCloudMigrationWarning.SetRange("Warning Type", SearchCloudMigrationWarning."Warning Type"::"Record Link");
-        CloudMigrationWarning.SetRange(Ignored, false);
         if HybridCompanyStatus.Get() then
             SearchCloudMigrationWarning.SetFilter(SystemCreatedAt, '>%1', HybridCompanyStatus."Last Record Link Move DateTime");
 
@@ -70,7 +69,7 @@ codeunit 40023 "Record Link Migration Warning" implements "Cloud Migration Warni
     begin
         CloudMigrationWarning.SetRange("Warning Type", CloudMigrationWarning."Warning Type"::"Record Link");
         CloudMigrationWarning.SetRange(Ignored, false);
-        if HybridCompanyStatus.FindLast() then
+        if HybridCompanyStatus.Get() then
             CloudMigrationWarning.SetFilter(SystemCreatedAt, '>%1', HybridCompanyStatus."Last Record Link Move DateTime");
 
         exit(CloudMigrationWarning.Count());

@@ -10,7 +10,11 @@ using Microsoft.Inventory.Ledger;
 
 page 6614 "FS Item Avail. by Location"
 {
+#if CLEAN28
+    APIVersion = 'v1.0';
+#else
     APIVersion = 'v2.0';
+#endif
     EntityCaption = 'Item Availability by Location';
     EntitySetCaption = 'Items Availability by Location';
     Editable = false;
@@ -19,6 +23,14 @@ page 6614 "FS Item Avail. by Location"
     InsertAllowed = false;
     ModifyAllowed = false;
     DeleteAllowed = false;
+#if CLEAN28
+    APIGroup = 'dataverse';
+    APIPublisher = 'microsoft';
+#else
+    ObsoleteState = Pending;
+    ObsoleteReason = 'API pages without a group and publisher shows up as part of standard API. This API page is not a part of standard API.';
+    ObsoleteTag = '28.0';
+#endif
     PageType = API;
     SourceTable = "Item Ledger Entry";
     SourceTableTemporary = true;

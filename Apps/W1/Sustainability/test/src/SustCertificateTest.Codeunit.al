@@ -6529,6 +6529,283 @@ codeunit 148187 "Sust. Certificate Test"
         SustainabilitySetupPage.Close();
     end;
 
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPurchaseInvoiceWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PurchaseInvoice: TestPage "Purchase Invoice";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Invoice.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Invoice with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Open Purchase Invoice Line.
+        PurchaseInvoice.OpenEdit();
+        PurchaseInvoice.GotoRecord(PurchaseHeader);
+        PurchaseInvoice.PurchLines.GotoRecord(PurchaseLine);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Purchase Invoice Line.
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Fuel/Electricity".Caption(), PurchaseInvoice.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Distance".Caption(), PurchaseInvoice.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Custom amount".Caption(), PurchaseInvoice.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Installation multiplier".Caption(), PurchaseInvoice.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Time Factor".Caption(), PurchaseInvoice.PurchLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPurchaseOrderWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PurchaseOrder: TestPage "Purchase Order";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Order.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Order with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Open Purchase Order line.
+        PurchaseOrder.OpenEdit();
+        PurchaseOrder.GotoRecord(PurchaseHeader);
+        PurchaseOrder.PurchLines.GotoRecord(PurchaseLine);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Purchase Order Line.
+        Assert.IsTrue(PurchaseOrder.PurchLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Fuel/Electricity".Caption(), PurchaseOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseOrder.PurchLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Distance".Caption(), PurchaseOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseOrder.PurchLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Custom amount".Caption(), PurchaseOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseOrder.PurchLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Installation multiplier".Caption(), PurchaseOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseOrder.PurchLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Time Factor".Caption(), PurchaseOrder.PurchLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPurchaseCrMemoWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PurchaseCreditMemo: TestPage "Purchase Credit Memo";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Credit Memo.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::"Credit Memo", LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Credit Memo with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Open Purchase Credit Memo Line.
+        PurchaseCreditMemo.OpenEdit();
+        PurchaseCreditMemo.GotoRecord(PurchaseHeader);
+        PurchaseCreditMemo.PurchLines.GotoRecord(PurchaseLine);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Purchase Credit Memo Line.
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Fuel/Electricity".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Distance".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Custom amount".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Installation multiplier".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Time Factor".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPurchaseReturnOrderWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PurchaseReturnOrder: TestPage "Purchase Return Order";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Return Order.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::"Return Order", LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Return Order with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Open Purchase Return Order Line.
+        PurchaseReturnOrder.OpenEdit();
+        PurchaseReturnOrder.GotoRecord(PurchaseHeader);
+        PurchaseReturnOrder.PurchLines.GotoRecord(PurchaseLine);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Purchase Return Order Line.
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Fuel/Electricity".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Distance".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Custom amount".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Installation multiplier".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Time Factor".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPostedPurchaseInvoiceWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseInvHeader: Record "Purch. Inv. Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedPurchaseInvoice: TestPage "Posted Purchase Invoice";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Order.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Order with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [GIVEN] Post the Purchase Order.
+        PurchaseInvHeader.Get(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+
+        // [WHEN] Open Posted Purchase Invoice line.
+        PostedPurchaseInvoice.OpenEdit();
+        PostedPurchaseInvoice.GotoRecord(PurchaseInvHeader);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Posted Purchase Invoice line.
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Fuel/Electricity".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Distance".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Custom amount".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Installation multiplier".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Time Factor".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPostedPurchaseCrMemoWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedPurchaseCreditMemo: TestPage "Posted Purchase Credit Memo";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Credit Memo.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::"Credit Memo", LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Credit Memo with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [GIVEN] Post the Purchase Cr Memo.
+        PurchaseCrMemoHeader.Get(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+
+        // [WHEN] Open Posted Purchase Credit Memo Line.
+        PostedPurchaseCreditMemo.OpenEdit();
+        PostedPurchaseCreditMemo.GotoRecord(PurchaseCrMemoHeader);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Posted Purchase Credit Memo Line.
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Fuel/Electricity".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Distance".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Custom amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Custom amount".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Installation multiplier".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Time Factor".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSystemMustThrowAnErrorWhenEnablingUseFormulasInPurchDocsWhenUseEmissionsInPurchDocIsDisabledInSustSetup()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        // [SCENARIO 580123] Verify that the system must throw an error when enabling 'Use Formulas In Purch. Docs'.
+        // when 'Use Emissions In Purch. Doc.' is disabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Use Emissions In Purch. Doc." and "Use Formulas In Purch. Docs" to false in Sustainability Setup.
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Use Formulas In Purch. Docs", false);
+        SustainabilitySetup.Validate("Use Emissions In Purch. Doc.", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Save a transaction.
+        Commit();
+
+        // [WHEN] Update "Use Formulas In Purch. Docs" to true in Sustainability Setup.
+        asserterror SustainabilitySetup.Validate("Use Formulas In Purch. Docs", true);
+
+        // [THEN] Verify that the system must throw an error when enabling "Use Formulas In Purch. Docs".
+        Assert.ExpectedTestFieldError(SustainabilitySetup.FieldCaption("Use Emissions In Purch. Doc."), Format(true));
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [WHEN] Update "Use Formulas In Purch. Docs" to false in Sustainability Setup.
+        SustainabilitySetup.Get();
+        asserterror SustainabilitySetup.Validate("Use Emissions In Purch. Doc.", false);
+
+        // [THEN] Verify that the system must throw an error when "Use Formulas In Purch. Docs" is set to false in Sustainability Setup.
+        Assert.ExpectedTestFieldError(SustainabilitySetup.FieldCaption("Use Formulas In Purch. Docs"), Format(false));
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);
