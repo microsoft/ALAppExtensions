@@ -131,6 +131,14 @@ table 4093 "GP Customer"
             Caption = 'Tax Exempt 1';
             DataClassification = CustomerContent;
         }
+        field(25; CUSTCLAS; Text[15])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(26; RMSLSACC; Integer)
+        {
+            DataClassification = CustomerContent;
+        }
     }
 
     keys
