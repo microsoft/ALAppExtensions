@@ -211,9 +211,12 @@ codeunit 10047 "Process Response IRIS"
         // Record Errors
         XPath := Helper.AddPrefixToXPath('ErrorInformationGrp', AckNamespacePrefixTxt);
         if RecordResultGrpNode.SelectNodes(XPath, NamespaceManager, CurrNodeList) then
-            foreach CurrXmlNode in CurrNodeList do
-                if ParseErrorInfoGroup(CurrXmlNode, NamespaceManager, ErrorCode, ErrorMessage, ErrorValue, XmlElementPath) then
-                    CreateErrorInfoTempRec(TempErrorInfo, Enum::"Entity Type IRIS"::RecordType, SubmissionId, RecordIdValue, ErrorCode, ErrorMessage, ErrorValue, XmlElementPath);
+            if CurrNodeList.Count() = 0 then
+                CreateErrorInfoTempRec(TempErrorInfo, Enum::"Entity Type IRIS"::RecordType, SubmissionId, RecordIdValue, '', '', '', '')    // record was processed by IRS without errors
+            else
+                foreach CurrXmlNode in CurrNodeList do
+                    if ParseErrorInfoGroup(CurrXmlNode, NamespaceManager, ErrorCode, ErrorMessage, ErrorValue, XmlElementPath) then
+                        CreateErrorInfoTempRec(TempErrorInfo, Enum::"Entity Type IRIS"::RecordType, SubmissionId, RecordIdValue, ErrorCode, ErrorMessage, ErrorValue, XmlElementPath);
     end;
 
     local procedure ParseErrorInfoGroup(ErrorInfoGrpNode: XmlNode; NamespaceManager: XmlNamespaceManager; var ErrorCode: Text; var ErrorMessage: Text; var ErrorValue: Text; var XmlElementPath: Text): Boolean

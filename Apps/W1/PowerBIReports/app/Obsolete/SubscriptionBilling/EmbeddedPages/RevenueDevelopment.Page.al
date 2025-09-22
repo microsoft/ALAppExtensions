@@ -1,4 +1,8 @@
-//#if not CLEAN28
+#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 namespace Microsoft.PowerBIReports;
 
 using System.Integration.PowerBI;
@@ -11,9 +15,9 @@ page 37071 "Revenue Development"
     Caption = 'Revenue Development';
     AboutTitle = 'About Revenue Development';
     AboutText = 'The Revenue Development report shows the change in monthly recurring revenue and helps to identify its various sources such as churn, downgrades, new subscriptions or upgrades.';
-    //ObsoleteReason = 'Please use and extend page "Revenue Development Power BI" on the Subscription Billing app.';
-    //ObsoleteState = Pending;
-    //ObsoleteTag = '28.0';
+    ObsoleteReason = 'Please use and extend page "Revenue Development Power BI" on the Subscription Billing app.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     layout
     {
@@ -47,20 +51,18 @@ page 37071 "Revenue Development"
         ReportId: Guid;
         ReportPageLbl: Label '8bb19f8625a990d30466', Locked = true;
 
-#if not CLEAN28  // Temporary while uptake of the move of the table extension gets to BCApps
     trigger OnOpenPage()
     var
         PowerBIReportsSetup: Record "PowerBI Reports Setup";
     begin
         SetupHelper.EnsureUserAcceptedPowerBITerms();
-        //#if not CLEAN28
+#if not CLEAN28
 #pragma warning disable AL0801
-        //#endif
+#endif
         ReportId := SetupHelper.GetReportIdAndEnsureSetup(CurrPage.Caption(), PowerBIReportsSetup.FieldNo("Subscription Billing Report Id"));
-        //#if not CLEAN28
+#if not CLEAN28
 #pragma warning restore AL0801
-        //#endif
+#endif
     end;
-#endif  // Temporary while uptake of the move of the table extension gets to BCApps
 }
-//#endif
+#endif

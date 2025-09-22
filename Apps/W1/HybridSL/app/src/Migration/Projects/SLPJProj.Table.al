@@ -11,7 +11,7 @@ table 47069 "SL PJProj"
     Access = Internal;
     Caption = 'SL PJProj';
     DataClassification = CustomerContent;
-    ObsoleteReason = 'Replaced by table SL PJProj Buffer.';
+    ObsoleteReason = 'Replaced by table SL PJProj Buffer.';
 #if not CLEAN28
     ObsoleteState = Pending;
     ObsoleteTag = '28.0';

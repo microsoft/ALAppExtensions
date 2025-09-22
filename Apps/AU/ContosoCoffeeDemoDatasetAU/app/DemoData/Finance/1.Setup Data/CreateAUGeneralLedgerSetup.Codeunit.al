@@ -29,6 +29,7 @@ codeunit 17148 "Create AU General Ledger Setup"
         GeneralLedgerSetup.Validate("Full GST on Prepayment", true);
         GeneralLedgerSetup.Validate("Min. WHT Calc only on Inv. Amt", true);
         GeneralLedgerSetup.Validate("GST Report", true);
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.AUD());
         GeneralLedgerSetup.Validate("Local Currency Symbol", '$');
         GeneralLedgerSetup.Validate("Local Currency Description", AustraliandollarLbl);

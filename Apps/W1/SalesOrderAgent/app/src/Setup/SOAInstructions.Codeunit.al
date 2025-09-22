@@ -38,8 +38,8 @@ codeunit 4598 "SOA Instructions"
     var
         InstructionsSecret: SecretText;
     begin
-        if not GetAzureKeyVaultSecretLogTelemetryError(InstructionsSecret, 'BCSOAInstructionsV27',
-            '0000NKG', GetFeatureName(), 'Get instructions from Key Vault', TelemetryGetInstructionsFailedErr) then
+        if not GetAzureKeyVaultSecretLogTelemetryError(InstructionsSecret, GetSOAInstructionsLbl(),
+            '0000NKG', SOASetup.GetFeatureName(), 'Get instructions from Key Vault - SOAInstructions', TelemetryGetInstructionsFailedErr) then
             Error(SOASetupFailedErr);
         exit(InstructionsSecret);
     end;
@@ -48,8 +48,8 @@ codeunit 4598 "SOA Instructions"
     var
         BroaderItemSearchPrompt: SecretText;
     begin
-        if not GetAzureKeyVaultSecretLogTelemetryError(BroaderItemSearchPrompt, 'BCSOABroaderItemSearchPromptV27',
-            '0000MJE', GetFeatureName(), 'Get prompt from Key Vault', TelemetryGetInstructionsFailedErr) then
+        if not GetAzureKeyVaultSecretLogTelemetryError(BroaderItemSearchPrompt, GetBroaderItemSearchPromptLbl(),
+            '0000MJE', SOASetup.GetFeatureName(), 'Get prompt from Key Vault', TelemetryGetInstructionsFailedErr) then
             Error(ConstructingPromptFailedErr);
         exit(BroaderItemSearchPrompt);
     end;
@@ -59,7 +59,7 @@ codeunit 4598 "SOA Instructions"
         BroaderItemSearchSystemPrompt: SecretText;
     begin
         if not GetAzureKeyVaultSecretLogTelemetryError(BroaderItemSearchSystemPrompt, GetBroaderItemSearchSystemPromptLbl(),
-            '0000MJE', GetFeatureName(), 'Get prompt from Key Vault', TelemetryGetInstructionsFailedErr) then
+            '0000MJE', SOASetup.GetFeatureName(), 'Get prompt from Key Vault', TelemetryGetInstructionsFailedErr) then
             Error(ConstructingPromptFailedErr);
         AddCultureToBroaderItemSearchSystemPrompt(BroaderItemSearchSystemPrompt);
         exit(BroaderItemSearchSystemPrompt);
@@ -68,7 +68,6 @@ codeunit 4598 "SOA Instructions"
     [NonDebuggable]
     local procedure AddCultureToBroaderItemSearchSystemPrompt(var Prompt: SecretText)
     var
-        SOASetup: Codeunit "SOA Setup";
         AgentSession: Codeunit "Agent Session";
         Language: Codeunit "Language";
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -84,9 +83,65 @@ codeunit 4598 "SOA Instructions"
             LanguageID := Language.GetLanguageId(LanguageCode);
             CultureName := Language.GetCultureName(LanguageID);
             if not TryFormatInstructionsText(InstructionsText, CultureName) then
-                FeatureTelemetry.LogError('0000PN7', GetFeatureName(), GetBroaderItemSearchSystemPromptLbl(), FailedToFormatInstructionsTextErr);
+                FeatureTelemetry.LogError('0000PN7', SOASetup.GetFeatureName(), GetBroaderItemSearchSystemPromptLbl(), FailedToFormatInstructionsTextErr);
             Prompt := InstructionsText;
         end;
+    end;
+
+    internal procedure GetOutputMessageSignatureUpdateTool(): SecretText
+    var
+        OutputMessageSignatureUpdateTool: SecretText;
+    begin
+        if not GetAzureKeyVaultSecretLogTelemetryError(
+            OutputMessageSignatureUpdateTool,
+            GetOutputMessageSignatureUpdateToolLbl(),
+            '0000NKG', SOASetup.GetFeatureName(), 'Get prompt from Key Vault - SignatureUpdateTool', TelemetryGetInstructionsFailedErr)
+        then
+            Error(ConstructingPromptFailedErr);
+
+        exit(OutputMessageSignatureUpdateTool);
+    end;
+
+    internal procedure GetOutputMessageSignatureUpdateSystemPrompt(): SecretText
+    var
+        OutputMessageSignatureUpdateSystemPrompt: SecretText;
+    begin
+        if not GetAzureKeyVaultSecretLogTelemetryError(
+            OutputMessageSignatureUpdateSystemPrompt,
+            GetOutputMessageSignatureUpdateSystemPromptLbl(),
+            '0000NKG', SOASetup.GetFeatureName(), 'Get prompt from Key Vault - SignatureUpdateSystemPrompt', TelemetryGetInstructionsFailedErr)
+        then
+            Error(ConstructingPromptFailedErr);
+
+        exit(OutputMessageSignatureUpdateSystemPrompt);
+    end;
+
+    internal procedure GetMailTemplateCheckTool(): SecretText
+    var
+        MailTemplateCheckTool: SecretText;
+    begin
+        if not GetAzureKeyVaultSecretLogTelemetryError(
+            MailTemplateCheckTool,
+            GetMailTemplateCheckToolLbl(),
+            '0000NKG', SOASetup.GetFeatureName(), 'Get prompt from Key Vault - MailTemplateCheckTool', TelemetryGetInstructionsFailedErr)
+        then
+            Error(ConstructingPromptFailedErr);
+
+        exit(MailTemplateCheckTool);
+    end;
+
+    internal procedure GetMailTemplateCheckSystemPrompt(): SecretText
+    var
+        MailTemplateCheckSystemPrompt: SecretText;
+    begin
+        if not GetAzureKeyVaultSecretLogTelemetryError(
+            MailTemplateCheckSystemPrompt,
+            GetMailTemplateCheckInstructionsLbl(),
+            '0000NKG', SOASetup.GetFeatureName(), 'Get prompt from Key Vault - MailTemplateCheckSystemPrompt', TelemetryGetInstructionsFailedErr)
+        then
+            Error(ConstructingPromptFailedErr);
+
+        exit(MailTemplateCheckSystemPrompt);
     end;
 
     [TryFunction]
@@ -96,17 +151,43 @@ codeunit 4598 "SOA Instructions"
         InstructionsText := StrSubstNo(InstructionsText, CultureName);
     end;
 
-    internal procedure GetBroaderItemSearchSystemPromptLbl(): Text
+    local procedure GetOutputMessageSignatureUpdateSystemPromptLbl(): Text
+    begin
+        exit('BCSOAOutputMessageSignatureUpdateInstructionsV27');
+    end;
+
+    local procedure GetOutputMessageSignatureUpdateToolLbl(): Text
+    begin
+        exit('BCSOAOutputMessageSignatureUpdateToolV27');
+    end;
+
+    local procedure GetMailTemplateCheckInstructionsLbl(): Text
+    begin
+        exit('BCSOAMailTemplateCheckInstructionsV27');
+    end;
+
+    local procedure GetMailTemplateCheckToolLbl(): Text
+    begin
+        exit('BCSOAMailTemplateCheckToolV27');
+    end;
+
+    local procedure GetBroaderItemSearchSystemPromptLbl(): Text
     begin
         exit('BCSOABroaderItemSearchTaskPromptV27');
     end;
 
-    local procedure GetFeatureName(): Text
+    local procedure GetBroaderItemSearchPromptLbl(): Text
     begin
-        exit('Sales Order Agent');
+        exit('BCSOABroaderItemSearchPromptV27');
+    end;
+
+    local procedure GetSOAInstructionsLbl(): Text
+    begin
+        exit('BCSOAInstructionsV271');
     end;
 
     var
+        SOASetup: Codeunit "SOA Setup";
         ConstructingPromptFailedErr: label 'There was an error with sending the call to Copilot. Log a Business Central support request about this.', Comment = 'Copilot is a Microsoft service name and must not be translated';
         TelemetryGetInstructionsFailedErr: label 'There was an error getting instructions from the Key Vault.', Locked = true;
         SOASetupFailedErr: label 'There was an error setting up the Sales Order Copilot. Log a Business Central support request about this.';

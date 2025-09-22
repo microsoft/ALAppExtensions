@@ -11,7 +11,7 @@ using System.AI;
 codeunit 4399 "SOA Annotation"
 {
     Access = Internal;
-    Permissions = tabledata "Agent Task Message" = r;
+    Permissions = tabledata "Agent Task Message" = r, tabledata "Agent Task Message Attachment" = rM;
     InherentEntitlements = X;
     InherentPermissions = X;
 
@@ -171,7 +171,7 @@ codeunit 4399 "SOA Annotation"
         IrrelevanceReason: Text;
         CustomDimensions: Dictionary of [Text, Text];
     begin
-        if CheckIfMessageRelevant(AgentTaskMessage."Task ID", IrrelevanceReason) then
+        if CheckReleavanceOfAgentTaskMessage(AgentTaskMessage, IrrelevanceReason) then
             exit; // Message is relevant, no annotation needed
 
         CustomDimensions := SOAImpl.GetCustomDimensions();
@@ -186,6 +186,117 @@ codeunit 4399 "SOA Annotation"
             Session.LogMessage('0000PPH', 'Irrelevant message detected for agent.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions)
         else
             Session.LogMessage('0000PQC', 'Failed to insert annotation for irrelevant message.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+    end;
+
+    local procedure CheckReleavanceOfAgentTaskMessage(var AgentTaskMessage: Record "Agent Task Message"; var IrrelevanceReason: Text): Boolean
+    var
+        IsMessageRelevant: Boolean;
+        IsAttachmentRelevant: Boolean;
+    begin
+        IsMessageRelevant := CheckIfMessageRelevant(AgentTaskMessage."Task ID", IrrelevanceReason);
+        IsAttachmentRelevant := CheckIfAttachmentRelevant(AgentTaskMessage);
+
+        //If the message is deemed irrelevant, but at least one attachment is relevant, then the message should be considered relevant.
+        if not IsMessageRelevant and IsAttachmentRelevant then
+            IsMessageRelevant := true;
+
+        exit(IsMessageRelevant);
+    end;
+
+    internal procedure CheckIfAttachmentRelevant(var AgentTaskMessage: Record "Agent Task Message"): Boolean
+    var
+        AgentTaskMessageAttachment: Record "Agent Task Message Attachment";
+        IrrelevanceReason: Text;
+        IsAttachmentRelevant: Boolean;
+    begin
+        AgentTaskMessageAttachment.ReadIsolation(IsolationLevel::ReadCommitted);
+        AgentTaskMessageAttachment.SetRange("Task ID", AgentTaskMessage."Task ID");
+        AgentTaskMessageAttachment.SetRange("Message ID", AgentTaskMessage.ID);
+        if not AgentTaskMessageAttachment.FindSet() then
+            exit(false);
+
+        repeat
+            // Check each attachment for relevance
+            if not CheckIfAttachmentRelevant(AgentTaskMessage, AgentTaskMessageAttachment, IrrelevanceReason) then begin
+                AgentTaskMessageAttachment.Ignored := true;
+                AgentTaskMessageAttachment.Modify();
+            end
+            else
+                IsAttachmentRelevant := true;
+        until AgentTaskMessageAttachment.Next() = 0;
+        Commit();
+        exit(IsAttachmentRelevant);
+    end;
+
+    local procedure CheckIfAttachmentRelevant(AgentTaskMessage: Record "Agent Task Message"; AgentTaskMessageAttachment: Record "Agent Task Message Attachment"; var IrrelevanceReason: Text): Boolean
+    var
+        AzureOpenAI: Codeunit "Azure OpenAI";
+        AOAIDeployments: Codeunit "AOAI Deployments";
+        AOAIChatMessages: Codeunit "AOAI Chat Messages";
+        AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params";
+        AOAIOperationResponse: Codeunit "AOAI Operation Response";
+        SOAValidationFunc: Codeunit "SOA Validation Function";
+        Prompt: SecretText;
+        AgentTaskMessageTxt: Text;
+        AgentAttachmentTxt: Text;
+        InStream: InStream;
+        CustomDimensions: Dictionary of [Text, Text];
+        IrrelevantValidationErr: Label 'SOA attachment irrelevant validation failed. Status: %1, Error: %2', Comment = '%1 = Status Code, %2 = Error', Locked = true;
+        AttachmentUserMessageTxt: Label '<message>%1</message> <attachment>%2</attachment>', Locked = true;
+    begin
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
+
+        CustomDimensions := SOAImpl.GetCustomDimensions();
+        CustomDimensions.Add('taskid', Format(AgentTaskMessageAttachment."Task ID"));
+        CustomDimensions.Add('messageid', Format(AgentTaskMessageAttachment."Message ID"));
+
+        if not GetIrrelevantAttachmentPrompt(Prompt) then begin
+            Session.LogMessage('0000Q7L', 'Unable to retrieve SOA Irrelevant Prompt from Azure Key Vault.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            exit(false);
+        end;
+
+        AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Sales Order Agent");
+
+        AOAIChatMessages.SetPrimarySystemMessage(Prompt);
+        AOAIChatMessages.AddTool(SOAValidationFunc);
+        AOAIChatMessages.SetToolInvokePreference(Enum::"AOAI Tool Invoke Preference"::"Invoke Tools Only");
+
+        SetAOAIParameters(AOAIChatMessages, AOAIChatCompletionParams);
+
+        AgentTaskMessage.CalcFields(Content);
+        AgentTaskMessage.Content.CreateInStream(InStream, TextEncoding::UTF8);
+        InStream.Read(AgentTaskMessageTxt);
+
+        AgentTaskMessageAttachment.CalcFields("Text Content");
+        AgentTaskMessageAttachment."Text Content".CreateInStream(InStream, TextEncoding::UTF8);
+        InStream.Read(AgentAttachmentTxt);
+
+        if AgentAttachmentTxt = '' then begin
+            Session.LogMessage('0000Q7M', 'No attachment content found for the task.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            exit(false);
+        end;
+
+        AOAIChatMessages.AddUserMessage(StrSubstNo(AttachmentUserMessageTxt, AgentTaskMessageTxt, AgentAttachmentTxt));
+        AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
+
+        if not AOAIOperationResponse.IsSuccess() then begin
+            Session.LogMessage('0000Q7N', StrSubstNo(IrrelevantValidationErr, AOAIOperationResponse.GetStatusCode(), AOAIOperationResponse.GetError()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            exit(false);
+        end;
+
+        if not AOAIOperationResponse.IsFunctionCall() then begin
+            Session.LogMessage('0000Q7O', 'SOA attachment irrelevant validation: response did not contain a function call.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            exit(false);
+        end;
+
+        if not SOAValidationFunc.IsIrrelevant() then begin
+            Session.LogMessage('0000Q7P', 'SOA attachment determined as relevant.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            exit(true);
+        end;
+
+        Session.LogMessage('0000Q7Q', 'SOA attachment determined as irrelevant.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+        IrrelevanceReason := SOAValidationFunc.GetIrrelevantReason();
+        exit(false);
     end;
 
     local procedure CheckIfMessageRelevant(TaskId: BigInteger; var IrrelevanceReason: Text): Boolean
@@ -208,7 +319,7 @@ codeunit 4399 "SOA Annotation"
         CustomDimensions := SOAImpl.GetCustomDimensions();
         CustomDimensions.Add('taskid', Format(TaskId));
 
-        if not GetIrrelevantPrompt(Prompt) then begin
+        if not GetIrrelevantMessagePrompt(Prompt) then begin
             Session.LogMessage('0000PPC', 'Unable to retrieve SOA Irrelevant Prompt from Azure Key Vault.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
             exit(true);
         end;
@@ -268,10 +379,35 @@ codeunit 4399 "SOA Annotation"
         AOAIChatCompletionParams.SetTemperature(0);
     end;
 
-    local procedure GetIrrelevantPrompt(var Prompt: SecretText): Boolean
+    [NonDebuggable]
+    local procedure GetIrrelevantMessagePrompt(var Prompt: SecretText): Boolean
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        BCSOAResponsibilitiesPrompt: SecretText;
+        BCSOAIrrelevanceMessage: SecretText;
     begin
-        exit(AzureKeyVault.GetAzureKeyVaultSecret('BCSOAIrrelevancePromptV27', Prompt));
+        if not AzureKeyVault.GetAzureKeyVaultSecret('BCSOAResponsibilitiesV27', BCSOAResponsibilitiesPrompt) then
+            exit(false);
+        if not AzureKeyVault.GetAzureKeyVaultSecret('BCSOAIrrelevanceMessageV27', BCSOAIrrelevanceMessage) then
+            exit(false);
+
+        Prompt := SecretStrSubstNo(BCSOAIrrelevanceMessage.Unwrap(), BCSOAResponsibilitiesPrompt);
+        exit(true);
+    end;
+
+    [NonDebuggable]
+    local procedure GetIrrelevantAttachmentPrompt(var Prompt: SecretText): Boolean
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        BCSOAResponsibilitiesPrompt: SecretText;
+        BCSOAIrrelevanceAttachment: SecretText;
+    begin
+        if not AzureKeyVault.GetAzureKeyVaultSecret('BCSOAResponsibilitiesV27', BCSOAResponsibilitiesPrompt) then
+            exit(false);
+        if not AzureKeyVault.GetAzureKeyVaultSecret('BCSOAIrrelevanceAttachmentV27', BCSOAIrrelevanceAttachment) then
+            exit(false);
+
+        Prompt := SecretStrSubstNo(BCSOAIrrelevanceAttachment.Unwrap(), BCSOAResponsibilitiesPrompt);
+        exit(true);
     end;
 }

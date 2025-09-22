@@ -434,6 +434,7 @@ codeunit 148099 "SAF-T Test Helper"
         CompanyInformation.Validate(City, PostCode.City);
         CompanyInformation.Modify(true);
         GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", LibraryUtility.GenerateGUID());
         GeneralLedgerSetup.Modify();
     end;

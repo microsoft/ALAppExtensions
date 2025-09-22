@@ -43,6 +43,7 @@ permissionset 4405 "SOA - Edit"
                              "SOA - Read";
 
     Permissions = tabledata "Agent Task Message" = r,
+                  tabledata "Agent Task Message Attachment" = rM,
                   tabledata "Assemble-to-Order Link" = IMD,
                   tabledata "Assembly Header" = IMD,
                   tabledata "Assembly Line" = IMD,

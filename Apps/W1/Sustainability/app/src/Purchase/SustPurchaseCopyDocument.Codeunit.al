@@ -35,6 +35,12 @@ codeunit 6229 "Sust. Purchase Copy Document"
         if ToPurchLine."Sust. Account Subcategory" <> FromPurchaseLine."Sust. Account Subcategory" then
             ToPurchLine.Validate("Sust. Account Subcategory", FromPurchaseLine."Sust. Account Subcategory");
 
+        ToPurchLine.Validate("Unit for Sust. Formulas", FromPurchaseLine."Unit for Sust. Formulas");
+        ToPurchLine.Validate("Fuel/Electricity", FromPurchaseLine."Fuel/Electricity");
+        ToPurchLine.Validate(Distance, FromPurchaseLine.Distance);
+        ToPurchLine.Validate("Custom Amount", FromPurchaseLine."Custom Amount");
+        ToPurchLine.Validate("Installation Multiplier", FromPurchaseLine."Installation Multiplier");
+        ToPurchLine.Validate("Time Factor", FromPurchaseLine."Time Factor");
         ToPurchLine.Validate("Emission CO2 Per Unit", FromPurchaseLine."Emission CO2 Per Unit");
         ToPurchLine.Validate("Emission CH4 Per Unit", FromPurchaseLine."Emission CH4 Per Unit");
         ToPurchLine.Validate("Emission N2O Per Unit", FromPurchaseLine."Emission N2O Per Unit");
@@ -59,6 +65,12 @@ codeunit 6229 "Sust. Purchase Copy Document"
         if ToPurchLine."Sust. Account Subcategory" <> FromPurchRcptLine."Sust. Account Subcategory" then
             ToPurchLine.Validate("Sust. Account Subcategory", FromPurchRcptLine."Sust. Account Subcategory");
 
+        ToPurchLine.Validate("Unit for Sust. Formulas", FromPurchRcptLine."Unit for Sust. Formulas");
+        ToPurchLine.Validate("Fuel/Electricity", FromPurchRcptLine."Fuel/Electricity");
+        ToPurchLine.Validate(Distance, FromPurchRcptLine.Distance);
+        ToPurchLine.Validate("Custom Amount", FromPurchRcptLine."Custom Amount");
+        ToPurchLine.Validate("Installation Multiplier", FromPurchRcptLine."Installation Multiplier");
+        ToPurchLine.Validate("Time Factor", FromPurchRcptLine."Time Factor");
         ToPurchLine.Validate("Emission CO2 Per Unit", FromPurchRcptLine."Emission CO2 Per Unit");
         ToPurchLine.Validate("Emission CH4 Per Unit", FromPurchRcptLine."Emission CH4 Per Unit");
         ToPurchLine.Validate("Emission N2O Per Unit", FromPurchRcptLine."Emission N2O Per Unit");

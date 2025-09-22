@@ -117,13 +117,13 @@ page 18321 "GST Settlement"
                 {
                     Caption = 'Bank Reference No.';
                     ApplicationArea = Basic, Suite;
-                    Tooltip = 'Specifies bank reference number.';
+                    Tooltip = 'Specifies bank reference / Cheque number';
                 }
                 field("Bank Reference Date"; BankReferenceDate)
                 {
                     Caption = 'Bank Reference Date';
                     ApplicationArea = Basic, Suite;
-                    Tooltip = 'Specifies bank reference date.';
+                    Tooltip = 'Specifies bank reference / Cheque date.';
                 }
                 field("Date Filter"; DateFilter)
                 {

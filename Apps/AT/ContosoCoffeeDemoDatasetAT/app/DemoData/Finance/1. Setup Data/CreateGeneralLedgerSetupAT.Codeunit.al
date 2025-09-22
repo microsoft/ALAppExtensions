@@ -24,6 +24,7 @@ codeunit 11147 "Create General Ledger Setup AT"
     begin
         GeneralLedgerSetup.Get();
         GeneralLedgerSetup.Validate("EMU Currency", true);
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.EUR());
         GeneralLedgerSetup.Validate("Currency Code For EURO", '');
         GeneralLedgerSetup."Unit-Amount Rounding Precision" := 0.001;

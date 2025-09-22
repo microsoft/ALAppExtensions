@@ -42,6 +42,7 @@ codeunit 11382 "Contoso DE Gen ledger Setup"
         GeneralLedgerSetup.Validate("Amount Decimal Places", AmountDecimalPlaces);
         GeneralLedgerSetup.Validate("Unit-Amount Decimal Places", UnitAmountDecimalPlaces);
         GeneralLedgerSetup.Validate("EMU Currency", EMUCurrency);
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", LCYCode);
         GeneralLedgerSetup.Validate("Amount Rounding Precision", AmountRoundingPrecision);
         GeneralLedgerSetup.Validate("Unit-Amount Rounding Precision", UnitAmountRoundingPrecision);

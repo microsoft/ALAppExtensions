@@ -5,7 +5,7 @@ using System.Environment;
 codeunit 40024 "Tenant Media Warning" implements "Cloud Migration Warning"
 {
     var
-        TenantMediaMigrationUrlLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2013440', Locked = true;
+        TenantMediaMigrationUrlLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2335185', Locked = true;
         TenantMediaWarningMsg: Label 'Number of records in Tenant Media table decreased after last replication.';
 
     procedure CheckWarning(): Boolean
@@ -39,7 +39,6 @@ codeunit 40024 "Tenant Media Warning" implements "Cloud Migration Warning"
         FilterTxt: Text;
     begin
         SearchCloudMigrationWarning.SetRange("Warning Type", SearchCloudMigrationWarning."Warning Type"::"Tenant Media");
-        CloudMigrationWarning.SetRange(Ignored, false);
         HybridReplicationSummary.SetCurrentKey("Start Time");
         if HybridReplicationSummary.FindLast() then
             SearchCloudMigrationWarning.SetFilter(SystemCreatedAt, '>%1', HybridReplicationSummary."End Time");

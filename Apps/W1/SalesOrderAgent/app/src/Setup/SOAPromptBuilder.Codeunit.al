@@ -13,7 +13,7 @@ codeunit 4002 "SOA Prompt Builder"
     begin
         InstructionsSecret := SOAInstructions.GetSOAInstructions();
         BuildPromptBasedOnSetup(InstructionsSecret, SOASetup);
-        BuildSignature(InstructionsSecret);
+        BuildSignature(InstructionsSecret, SOASetup);
     end;
 
     [NonDebuggable]
@@ -169,6 +169,10 @@ codeunit 4002 "SOA Prompt Builder"
     local procedure CheckShouldBeIncluded(var SOASetup: Record "SOA Setup"; ValueName: Text): Boolean
     begin
         case ValueName of
+            SendSalesQuoteLbl:
+                exit(SOASetup."Send Sales Quote");
+            DoNotSendSalesQuoteLbl:
+                exit(not SOASetup."Send Sales Quote");
             CrateSalesOrderLbl:
                 exit(SOASetup."Create Order from Quote" or not SOASetup."Sales Doc. Configuration");
             NoSalesOrderLbl:
@@ -181,28 +185,40 @@ codeunit 4002 "SOA Prompt Builder"
                 exit(SOASetup."Search Only Available Items");
             CapableToPromiseLbl:
                 exit(SOASetup."Incl. Capable to Promise");
+            CustomSignatureOffLbl:
+                exit(not SOASetup."Configure Email Template");
+            CustomSignatureOnLbl:
+                exit(SOASetup."Configure Email Template");
             else
                 exit(true);
         end;
     end;
 
     [NonDebuggable]
-    local procedure BuildSignature(var InstructionsSecretValue: SecretText)
+    local procedure BuildSignature(var InstructionsSecretValue: SecretText; var SOASetup: Record "SOA Setup")
     var
+        SOASetupCU: Codeunit "SOA Setup";
         InstructionsText: Text;
     begin
+        if SOASetup."Configure Email Template" then
+            exit;
+
         InstructionsText := InstructionsSecretValue.Unwrap();
-        InstructionsText := StrSubstNo(InstructionsText, CompanyName(), SignatureClosingLbl, SignatureNoteLbl);
+        InstructionsText := StrSubstNo(InstructionsText, SOASetupCU.GetDefaultEmailSignatureAsTxt());
         InstructionsSecretValue := InstructionsText;
     end;
 
     var
         CrateSalesOrderLbl: Label 'create_sales_order', Locked = true;
+        SendSalesQuoteLbl: Label 'send_sales_quote', Locked = true;
+        DoNotSendSalesQuoteLbl: Label 'do_not_send_sales_quote', Locked = true;
         NoSalesOrderLbl: Label 'no_sales_order', Locked = true;
         ReviewQuoteBeforeSendLbl: Label 'review_quote_before_send', Locked = true;
         ReviewOrderBeforeSendLbl: Label 'review_order_before_send', Locked = true;
         ItemAvailabilityLbl: Label 'item_availability', Locked = true;
         CapableToPromiseLbl: Label 'capable_to_promise', Locked = true;
+        CustomSignatureOffLbl: Label 'custom_signature_off', Locked = true;
+        CustomSignatureOnLbl: Label 'custom_signature_on', Locked = true;
         JobjectStepsIncludeNumberingLbl: Label 'steps_include_numbering', Locked = true;
         JobjectNameLbl: Label 'name', Locked = true;
         JobjectValueLbl: Label 'value', Locked = true;
@@ -213,6 +229,4 @@ codeunit 4002 "SOA Prompt Builder"
         PageSpecInstructionTagEndLbl: Label '%}', Locked = true;
         StepDelimiterLbl: Label '.', Locked = true;
         StepSuffixLbl: Label '. ', Locked = true;
-        SignatureClosingLbl: Label 'Best regards';
-        SignatureNoteLbl: Label 'We write mails with AI. We review and send with care.';
 }

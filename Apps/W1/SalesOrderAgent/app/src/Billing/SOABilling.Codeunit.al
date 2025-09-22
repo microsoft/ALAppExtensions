@@ -64,6 +64,12 @@ codeunit 4590 "SOA Billing"
         exit(true);
     end;
 
+    procedure LogAnalyzeAttachment(AgentTaskMessageAttachmentID: Guid; AgentTaskID: BigInteger)
+    begin
+        LogSOATrackingRecord(AgentTaskID, "SOA Billing Operation"::"Analyze Attachment", AgentTaskMessageAttachmentID, Database::"Agent Task Message Attachment", AnalyzedAttachmentLbl, BlankSOABillingLog."Copilot Quota Usage Type"::"Autonomous Action");
+    end;
+
+
     procedure GetDescription(var SOABillingLog: Record "SOA Billing Log"): Text
     var
         DetailsInStream: InStream;
@@ -214,6 +220,7 @@ codeunit 4590 "SOA Billing"
         QuoteUpdateLbl: Label 'Updated quote';
         OrderUpdatedLbl: Label 'Updated order';
         AnalyzedIncomingEmailLbl: Label 'Analyzed incoming email';
+        AnalyzedAttachmentLbl: Label 'Analyzed attachment';
         GeneratedOutgoingEmailLbl: Label 'Generated outgoing email';
         CreatedSOABillingOperationMsg: Label 'Created SOA billing operation', Locked = true;
         TheAgentCannotRunTooManyUnpaidEntriesMsg: Label 'There are too many unpaid entries. The agent will not be able to start until they are paid. Open the page 4585 - "Sales Order Agent - Billing Overview" and invoke the "Pay entries" action. To open the page, use the following link: %1', Locked = true;

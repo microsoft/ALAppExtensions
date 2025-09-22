@@ -91,6 +91,8 @@ page 40035 "Cloud Migration Warnings"
                 RecFilter := RecFilter + FilterTxt + '|';
         end;
         RecFilter := RecFilter.TrimEnd('|');
+        if RecFilter = '' then
+            RecFilter := '0'; // No warnings found, set filter to something that yields no results.
         Rec.SetFilter("Entry No.", RecFilter);
         Rec.SetRange(Ignored, false);
     end;

@@ -1,0 +1,51 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Manufacturing.PowerBIReports;
+
+using Microsoft.Manufacturing.Capacity;
+
+query 36983 "Calendar Entries"
+{
+    Access = Internal;
+    Caption = 'Power BI Calendar Entries';
+    QueryType = API;
+    APIPublisher = 'microsoft';
+    APIGroup = 'analytics';
+    ApiVersion = 'v0.5', 'v1.0';
+    EntityName = 'calendarEntry';
+    EntitySetName = 'calendarEntries';
+    DataAccessIntent = ReadOnly;
+
+    elements
+    {
+        dataitem(CalendarEntry; "Calendar Entry")
+        {
+            column(capacityType; "Capacity Type") { }
+            column(no; "No.") { }
+            column(workCenterGroupCode; "Work Center Group Code") { }
+            column(workShiftCode; "Work Shift Code") { }
+            column(date; Date) { }
+            column(capacityEffective; "Capacity (Effective)")
+            {
+                Method = Sum;
+            }
+            column(capacityTotal; "Capacity (Total)")
+            {
+                Method = Sum;
+            }
+            column(workCenterNo; "Work Center No.") { }
+        }
+    }
+
+    trigger OnBeforeOpen()
+    var
+        PBIMgt: Codeunit "Manuf. Filter Helper";
+        DateFilterText: Text;
+    begin
+        DateFilterText := PBIMgt.GenerateManufacturingReportDateFilter();
+        if DateFilterText <> '' then
+            CurrQuery.SetFilter(date, DateFilterText);
+    end;
+}

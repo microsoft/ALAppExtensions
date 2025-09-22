@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
+using Microsoft.Upgrade;
 using System.IO;
 
 codeunit 5308 "Contoso Data Exchange"
@@ -28,5 +29,12 @@ codeunit 5308 "Contoso Data Exchange"
         DataExchangeType.Validate(Description, Description);
         DataExchangeType.Validate("Data Exch. Def. Code", DataExchangeDefinitionCode);
         if DataExchangeType.Insert(false) then;
+    end;
+
+    procedure UpdateSEPACAMT05300108DataExchDefLabels()
+    var
+        UpgradeBaseApp: Codeunit "Upgrade - BaseApp";
+    begin
+        UpgradeBaseApp.UpdateSEPACAMT05300108DataExchDefLabels()
     end;
 }

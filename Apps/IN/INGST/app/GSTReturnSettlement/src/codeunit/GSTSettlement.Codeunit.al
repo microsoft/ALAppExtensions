@@ -13,6 +13,7 @@ using Microsoft.Finance.GST.Base;
 using Microsoft.Finance.GST.Distribution;
 using Microsoft.Finance.GST.Payments;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TaxBase;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Inventory.Journal;
@@ -2801,7 +2802,6 @@ codeunit 18318 "GST Settlement"
                         TotalPaymentTxt),
                     GSTPaymentBuffer."Dimension Set ID");
         end;
-
         Window.Close();
     end;
 
@@ -2813,6 +2813,7 @@ codeunit 18318 "GST Settlement"
                                          DimensionSetID: Integer)
     var
         GenJournalLine2: Record "Gen. Journal Line";
+        TaxBaseLibrary: Codeunit "Tax Base Library";
         AmountType2: Text[50];
     begin
         AmountType2 := CopyStr(AmountType, 1, 50);
@@ -2837,6 +2838,7 @@ codeunit 18318 "GST Settlement"
             GenJournalLine2."Shortcut Dimension 1 Code",
             GenJournalLine2."Shortcut Dimension 2 Code");
 
+        TaxBaseLibrary.SetChequeNo(GenJournalLine2, ChequeNo, ChequeDate);
         GenJnlPostLine.RunWithCheck(GenJournalLine2);
     end;
 

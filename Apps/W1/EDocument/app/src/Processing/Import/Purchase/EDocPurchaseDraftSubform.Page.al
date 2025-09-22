@@ -38,6 +38,7 @@ page 6183 "E-Doc. Purchase Draft Subform"
                 {
                     ApplicationArea = All;
                     Lookup = true;
+                    ShowMandatory = true;
                 }
                 field("Item Reference No."; Rec."[BC] Item Reference No.")
                 {
