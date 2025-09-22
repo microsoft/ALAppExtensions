@@ -26,6 +26,7 @@ codeunit 17143 "Create NZ General Ledger Setup"
         GeneralLedgerSetup.Validate("Local Address Format", GeneralLedgerSetup."Local Address Format"::"City+County+Post Code (no comma)");
         GeneralLedgerSetup.Validate("Enable IRD No.", true);
         GeneralLedgerSetup.Validate("Enable VAT Registration No.", true);
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", LCYCodeLbl);
         GeneralLedgerSetup.Validate("Local Currency Description", LCYDescriptionLbl);
         GeneralLedgerSetup.Validate("Local Currency Symbol", '$');

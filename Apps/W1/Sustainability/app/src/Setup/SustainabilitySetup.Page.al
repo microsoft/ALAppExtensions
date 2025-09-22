@@ -135,6 +135,10 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies the number of decimal places that are shown for custom amounts. The default setting, 2:5, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 5 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
                 }
+                field("Use Formulas In Purch. Docs"; Rec."Use Formulas In Purch. Docs")
+                {
+                    ToolTip = 'Specifies if the formula-based calculations are enabled for purchase documents.';
+                }
             }
             group(Reporting)
             {
@@ -235,12 +239,20 @@ page 6221 "Sustainability Setup"
                 RunObject = Page "Emission Fees";
                 ToolTip = 'Set up internal carbon fees and CO2 equivalent.';
             }
+            action(Disclaimer)
+            {
+                Caption = 'Disclaimer';
+                Image = Info;
+                RunObject = Page "Sustainability Disclaimer";
+                ToolTip = 'View or add disclaimer for sustainability reports.';
+            }
         }
         area(Promoted)
         {
             actionref(SustainAccountCategory_Promoted; SustainAccountCategory) { }
             actionref(SustainabilityJournalTemplate_Promoted; SustainabilityJournalTemplate) { }
             actionref(EmissionFees_Promoted; EmissionFees) { }
+            actionref(Disclaimer_Promoted; Disclaimer) { }
         }
     }
     trigger OnOpenPage()

@@ -9,6 +9,7 @@ using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Calculation;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Setup;
@@ -17,8 +18,14 @@ codeunit 6225 "Sust. Purchase Subscriber"
 {
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnValidateQuantityOnBeforeResetAmounts', '', false, false)]
     local procedure OnValidateQuantityOnBeforeResetAmounts(var PurchaseLine: Record "Purchase Line")
+    var
+        SustainabilityCalcMgt: Codeunit "Sustainability Calc. Mgt.";
     begin
-        PurchaseLine.UpdateSustainabilityEmission(PurchaseLine);
+        if PurchaseLine.IsSustainabilityFormulaPurchaseLine() then
+            SustainabilityCalcMgt.CalculationEmissions(PurchaseLine)
+        else
+            PurchaseLine.UpdateSustainabilityEmission(PurchaseLine);
+
         PurchaseLine.UpdateCarbonPricingInPurchLine(PurchaseLine);
     end;
 
@@ -395,7 +402,16 @@ codeunit 6225 "Sust. Purchase Subscriber"
         SustainabilityJnlLine.Validate("Reason Code", PurchaseHeader."Reason Code");
         SustainabilityJnlLine.Validate("Account Category", PurchaseLine."Sust. Account Category");
         SustainabilityJnlLine.Validate("Account Subcategory", PurchaseLine."Sust. Account Subcategory");
-        SustainabilityJnlLine.Validate("Unit of Measure", PurchaseLine."Unit of Measure Code");
+        if PurchaseLine."Unit for Sust. Formulas" <> '' then
+            SustainabilityJnlLine.Validate("Unit of Measure", PurchaseLine."Unit for Sust. Formulas")
+        else
+            SustainabilityJnlLine.Validate("Unit of Measure", PurchaseLine."Unit of Measure Code");
+
+        SustainabilityJnlLine."Fuel/Electricity" := PurchaseLine."Fuel/Electricity";
+        SustainabilityJnlLine.Distance := PurchaseLine.Distance;
+        SustainabilityJnlLine."Installation Multiplier" := PurchaseLine."Installation Multiplier";
+        SustainabilityJnlLine."Custom Amount" := PurchaseLine."Custom Amount";
+        SustainabilityJnlLine."Time Factor" := PurchaseLine."Time Factor";
         SustainabilityJnlLine.Validate("Energy Source Code", PurchaseLine."Energy Source Code");
         SustainabilityJnlLine."Dimension Set ID" := PurchaseLine."Dimension Set ID";
         SustainabilityJnlLine."Shortcut Dimension 1 Code" := PurchaseLine."Shortcut Dimension 1 Code";

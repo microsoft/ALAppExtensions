@@ -463,6 +463,7 @@ table 31257 "Payment Order Line CZB"
                                 VendorLedgerEntries.SetRecord(VendorLedgerEntry);
                             if "No." <> '' then
                                 VendorLedgerEntry.SetRange("Vendor No.", "No.");
+                            OnAppliesToCVEEntryNoLookupOnAfterSetVendorLedgerEntryFilters(VendorLedgerEntry);
                             VendorLedgerEntries.SetTableView(VendorLedgerEntry);
                             VendorLedgerEntries.LookupMode(true);
                             if VendorLedgerEntries.RunModal() = Action::LookupOK then begin
@@ -481,6 +482,7 @@ table 31257 "Payment Order Line CZB"
                                 CustomerLedgerEntries.SetRecord(CustLedgerEntry);
                             if "No." <> '' then
                                 CustLedgerEntry.SetRange("Customer No.", "No.");
+                            OnAppliesToCVEEntryNoLookupOnAfterSetCustomerLedgerEntryFilters(CustLedgerEntry);
                             CustomerLedgerEntries.SetTableView(CustLedgerEntry);
                             CustomerLedgerEntries.LookupMode(true);
                             if CustomerLedgerEntries.RunModal() = Action::LookupOK then begin
@@ -497,6 +499,7 @@ table 31257 "Payment Order Line CZB"
                                 EmployeeLedgerEntries.SetRecord(EmployeeLedgerEntry);
                             if "No." <> '' then
                                 EmployeeLedgerEntry.SetRange("Employee No.", "No.");
+                            OnAppliesToCVEEntryNoLookupOnAfterSetEmployeeLedgerEntryFilters(EmployeeLedgerEntry);
                             EmployeeLedgerEntries.SetTableView(EmployeeLedgerEntry);
                             EmployeeLedgerEntries.LookupMode(true);
                             if EmployeeLedgerEntries.RunModal() = Action::LookupOK then begin
@@ -1380,6 +1383,21 @@ table 31257 "Payment Order Line CZB"
 
     [IntegrationEvent(true, false)]
     local procedure OnAfterReplacePlaceholdersWithValues(PlaceholderText: Text[100]; PlaceholderValues: List of [Text[100]]; var ReplacedText: Text[100])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCVEEntryNoLookupOnAfterSetVendorLedgerEntryFilters(var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCVEEntryNoLookupOnAfterSetCustomerLedgerEntryFilters(var CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCVEEntryNoLookupOnAfterSetEmployeeLedgerEntryFilters(var EmployeeLedgerEntry: Record "Employee Ledger Entry")
     begin
     end;
 }

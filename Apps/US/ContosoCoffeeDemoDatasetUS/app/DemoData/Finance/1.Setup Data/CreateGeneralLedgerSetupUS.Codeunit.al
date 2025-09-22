@@ -28,6 +28,7 @@ codeunit 11485 "Create General Ledger Setup US"
         GeneralLedgerSetup.Validate("Local Address Format", GeneralLedgerSetup."Local Address Format"::"City+County+Post Code");
         GeneralLedgerSetup.Validate("Local Currency Symbol", '');
         GeneralLedgerSetup.Validate("Local Currency Description", '');
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.USD());
         GeneralLedgerSetup.Validate("Payment Tolerance %", 0.1);
         GeneralLedgerSetup.Validate("Max. Payment Tolerance Amount", 1);

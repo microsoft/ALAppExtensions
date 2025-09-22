@@ -38,7 +38,10 @@
       <DataExchColumnDef ColumnNo="35" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/BldgNm" Show="true" DataType="0" Description="BldgNm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/BldgNm" />
       <DataExchColumnDef ColumnNo="36" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/StrtNm" Show="true" DataType="0" Description="StrtNm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/StrtNm" />
       <DataExchColumnDef ColumnNo="37" Name="Stmt/Ntry/NtryDtls/TxDtls/RmtInf/Strd/RfrdDocInf/Nb" Show="true" DataType="0" Description="Nb" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RmtInf/Strd/RfrdDocInf/Nb" />
-      <DataExchColumnDef ColumnNo="130000" Name="" Show="false" DataType="0" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="38" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Pty/PstlAdr/BldgNb" Show="true" DataType="0" Description="BldgNb" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Pty/PstlAdr/BldgNb" />
+      <DataExchColumnDef ColumnNo="39" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Pty/PstlAdr/Flr" Show="true" DataType="0" Description="Flr" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Pty/PstlAdr/Flr" />
+      <DataExchColumnDef ColumnNo="40" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/BldgNb" Show="true" DataType="0" Description="BldgNb" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/BldgNb" />
+      <DataExchColumnDef ColumnNo="41" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/Flr" Show="true" DataType="0" Description="Flr" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/Flr" />
       <DataExchMapping TableId="81" Name="SEPA CAMT to Gen. Journal Line" MappingCodeunit="1260" DataExchNoFieldID="1220" DataExchLineFieldID="1223">
         <DataExchFieldMapping ColumnNo="9" FieldID="13" Multiplier="-1.00" />
         <DataExchFieldMapping ColumnNo="11" FieldID="13" />
@@ -68,14 +71,17 @@
         <DataExchFieldMapping ColumnNo="26" FieldID="24" Optional="true" />
         <DataExchFieldMapping ColumnNo="27" FieldID="25" Optional="true" Priority="1" />
         <DataExchFieldMapping ColumnNo="28" FieldID="26" Optional="true" />
-        <DataExchFieldMapping ColumnNo="29" FieldID="70" Optional="true" TransformationRule="DELETE_NOTPROVIDED" />
-        <DataExchFieldMapping ColumnNo="32" FieldID="70" Optional="true" TransformationRule="DELETE_NOTPROVIDED" />
+        <DataExchFieldMapping ColumnNo="29" FieldID="70" Optional="true" />
+        <DataExchFieldMapping ColumnNo="32" FieldID="70" Optional="true" />
         <DataExchFieldMapping ColumnNo="33" FieldID="25" Optional="true" Priority="2" />
-        <DataExchFieldMapping ColumnNo="34" FieldID="25" Optional="true" Priority="4" />
+        <DataExchFieldMapping ColumnNo="34" FieldID="25" Optional="true" Priority="5" />
         <DataExchFieldMapping ColumnNo="35" FieldID="25" Optional="true" Priority="2" />
-        <DataExchFieldMapping ColumnNo="36" FieldID="25" Optional="true" Priority="4" />
+        <DataExchFieldMapping ColumnNo="36" FieldID="25" Optional="true" Priority="5" />
         <DataExchFieldMapping ColumnNo="37" FieldID="4" Optional="true" />
-        <DataExchFieldMapping ColumnNo="130000" FieldID="25" UseDefaultValue="true" DefaultValue=" " Priority="3" />
+        <DataExchFieldMapping ColumnNo="38" FieldID="25" Optional="true" Priority="4" />
+        <DataExchFieldMapping ColumnNo="39" FieldID="25" Optional="true" Priority="3" />
+        <DataExchFieldMapping ColumnNo="40" FieldID="25" Optional="true" Priority="4" />
+        <DataExchFieldMapping ColumnNo="41" FieldID="25" Optional="true" Priority="3" />
       </DataExchMapping>
       <DataExchMapping TableId="11401" Name="SEPA CAMT to CBG Statement Line" MappingCodeunit="11405" DataExchNoFieldID="11401" DataExchLineFieldID="11402" PreMappingCodeunit="11406" PostMappingCodeunit="11407">
         <DataExchFieldMapping ColumnNo="9" FieldID="20" Multiplier="-1.00" />
@@ -115,7 +121,10 @@
       <DataExchColumnDef ColumnNo="38" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/BldgNm" Show="true" DataType="0" Description="BldgNm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/BldgNm" />
       <DataExchColumnDef ColumnNo="39" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/StrtNm" Show="true" DataType="0" Description="StrtNm" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/StrtNm" />
       <DataExchColumnDef ColumnNo="40" Name="Stmt/Ntry/NtryDtls/TxDtls/RmtInf/Strd/RfrdDocInf/Nb" Show="true" DataType="0" Description="Nb" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RmtInf/Strd/RfrdDocInf/Nb" />
-      <DataExchColumnDef ColumnNo="130000" Name="" Show="false" DataType="0" TextPaddingRequired="false" />
+      <DataExchColumnDef ColumnNo="41" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Pty/PstlAdr/BldgNb" Show="true" DataType="0" Description="BldgNb" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Pty/PstlAdr/BldgNb" />
+      <DataExchColumnDef ColumnNo="42" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Pty/PstlAdr/Flr" Show="true" DataType="0" Description="Flr" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Cdtr/Pty/PstlAdr/Flr" />
+      <DataExchColumnDef ColumnNo="43" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/BldgNb" Show="true" DataType="0" Description="BldgNb" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/BldgNb" />
+      <DataExchColumnDef ColumnNo="44" Name="Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/Flr" Show="true" DataType="0" Description="Flr" Path="/Document/BkToCstmrStmt/Stmt/Ntry/NtryDtls/TxDtls/RltdPties/Dbtr/Pty/PstlAdr/Flr" />
       <DataExchMapping TableId="81" Name="SEPA CAMT TX to Gen. Journal Line" MappingCodeunit="1260" DataExchNoFieldID="1220" DataExchLineFieldID="1223">
         <DataExchFieldMapping ColumnNo="9" FieldID="13" Optional="true" Multiplier="-1.00" />
         <DataExchFieldMapping ColumnNo="12" FieldID="5" Optional="true" />
@@ -149,14 +158,17 @@
         <DataExchFieldMapping ColumnNo="30" FieldID="7" Optional="true" />
         <DataExchFieldMapping ColumnNo="31" FieldID="7" Optional="true" />
         <DataExchFieldMapping ColumnNo="33" FieldID="7" Optional="true" />
-        <DataExchFieldMapping ColumnNo="34" FieldID="70" Optional="true" TransformationRule="DELETE_NOTPROVIDED" />
-        <DataExchFieldMapping ColumnNo="35" FieldID="70" Optional="true" TransformationRule="DELETE_NOTPROVIDED" />
+        <DataExchFieldMapping ColumnNo="34" FieldID="70" Optional="true" />
+        <DataExchFieldMapping ColumnNo="35" FieldID="70" Optional="true" />
         <DataExchFieldMapping ColumnNo="36" FieldID="25" Optional="true" Priority="2" />
-        <DataExchFieldMapping ColumnNo="37" FieldID="25" Optional="true" Priority="4" />
+        <DataExchFieldMapping ColumnNo="37" FieldID="25" Optional="true" Priority="5" />
         <DataExchFieldMapping ColumnNo="38" FieldID="25" Optional="true" Priority="2" />
-        <DataExchFieldMapping ColumnNo="39" FieldID="25" Optional="true" Priority="4" />
+        <DataExchFieldMapping ColumnNo="39" FieldID="25" Optional="true" Priority="5" />
         <DataExchFieldMapping ColumnNo="40" FieldID="4" Optional="true" />
-        <DataExchFieldMapping ColumnNo="130000" FieldID="25" UseDefaultValue="true" DefaultValue=" " Priority="3" />
+        <DataExchFieldMapping ColumnNo="41" FieldID="25" Optional="true" Priority="4" />
+        <DataExchFieldMapping ColumnNo="42" FieldID="25" Optional="true" Priority="3" />
+        <DataExchFieldMapping ColumnNo="43" FieldID="25" Optional="true" Priority="4" />
+        <DataExchFieldMapping ColumnNo="44" FieldID="25" Optional="true" Priority="3" />
       </DataExchMapping>
       <DataExchMapping TableId="11401" Name="SEPA CAMT TX to CBG Statement Line" MappingCodeunit="11405" DataExchNoFieldID="11401" DataExchLineFieldID="11402" PostMappingCodeunit="11407">
         <DataExchFieldMapping ColumnNo="9" FieldID="20" Optional="true" Multiplier="-1.00" />

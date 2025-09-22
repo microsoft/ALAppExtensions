@@ -85,7 +85,7 @@ codeunit 47021 "SL Vendor Migrator"
         SLTaxTypeGroupTxt: Label 'G', Locked = true;
     begin
         if SLVendor.Status = StatusInactiveTxt then
-            if SLCompanyAdditionalSettings.Get(CompanyName) then
+            if SLCompanyAdditionalSettings.Get(CompanyName()) then
                 if not SLCompanyAdditionalSettings."Migrate Inactive Vendors" then begin
                     DecrementMigratedCount();
                     exit;
@@ -189,9 +189,10 @@ codeunit 47021 "SL Vendor Migrator"
             exit;
         if SLCompanyAdditionalSettings.GetMigrateOnlyPayablesMaster() then
             exit;
-
-        SLVendor.Get(RecordIdToMigrate);
-        SLAPSetup.Get(APSetupIDTxt);
+        if not SLVendor.Get(RecordIdToMigrate) then
+            exit;
+        if not SLAPSetup.Get(APSetupIDTxt) then
+            exit;
 
         Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(VendorBatchNameTxt, 1, MaxStrLen(VendorBatchNameTxt)), '', '');
         SLAPDoc.SetRange(CpnyID, CompanyName);
@@ -365,7 +366,7 @@ codeunit 47021 "SL Vendor Migrator"
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
         ClassID := SLVendor.ClassID;
-        if ClassID = '' then
+        if ClassID.TrimEnd() = '' then
             exit;
         SLVendClass.Get(ClassID);
 

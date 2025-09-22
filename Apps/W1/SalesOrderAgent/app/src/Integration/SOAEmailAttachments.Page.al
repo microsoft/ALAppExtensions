@@ -37,6 +37,14 @@ page 4405 "SOA Email Attachments"
                         DownloadAttachment();
                     end;
                 }
+                field(Status; AttachmentStatus)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Status';
+                    ToolTip = 'Specifies the review status of the attachment';
+                    Style = Attention;
+                    StyleExpr = AttentionReviewStatus;
+                }
                 field(FileSize; AttachmentFileSize)
                 {
                     ApplicationArea = All;
@@ -51,6 +59,9 @@ page 4405 "SOA Email Attachments"
     trigger OnAfterGetRecord()
     begin
         AttachmentFileSize := FormatFileSize(Rec.Content.Length());
+        AttachmentStatus := GetReviewStatus();
+
+        AttentionReviewStatus := (AttachmentStatus <> AttachmentStatus::Reviewed);
     end;
 
     internal procedure FormatFileSize(SizeInBytes: Integer): Text
@@ -66,6 +77,25 @@ page 4405 "SOA Email Attachments"
             FileSizeUnit := 'MB'
         end;
         exit(StrSubstNo(FileSizeTxt, Round(FileSizeConverted, 1, '>'), FileSizeUnit));
+    end;
+
+    local procedure GetReviewStatus(): Enum "SOA Email Attachment Status"
+    var
+        AgentTaskMessageAttachment: Record "Agent Task Message Attachment";
+        SOASetup: Codeunit "SOA Setup";
+    begin
+        AgentTaskMessageAttachment.ReadIsolation(IsolationLevel::ReadCommitted);
+        AgentTaskMessageAttachment.SetLoadFields(Ignored);
+        AgentTaskMessageAttachment.SetRange("Task ID", Rec."Task ID");
+        AgentTaskMessageAttachment.SetRange("File ID", Rec.ID);
+        if AgentTaskMessageAttachment.FindFirst() then
+            if AgentTaskMessageAttachment.Ignored then
+                if not SOASetup.SupportedAttachmentContentType(Rec."File MIME Type") then
+                    exit(AttachmentStatus::UnsupportedFormat)
+                else
+                    exit(AttachmentStatus::NoRelevantContent);
+
+        exit(AttachmentStatus::Reviewed);
     end;
 
     internal procedure LoadRecords(var AgentTaskMessage: Record "Agent Task Message")
@@ -120,5 +150,7 @@ page 4405 "SOA Email Attachments"
 
     var
         AttachmentFileSize: Text;
+        AttachmentStatus: Enum "SOA Email Attachment Status";
+        AttentionReviewStatus: Boolean;
         FileSizeTxt: Label '%1 %2', Comment = '%1 = File Size, %2 = Unit of measurement', Locked = true;
 }

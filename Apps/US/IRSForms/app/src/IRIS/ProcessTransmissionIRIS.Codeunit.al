@@ -483,35 +483,41 @@ codeunit 10056 "Process Transmission IRIS"
         if not TempErrorInfo.FindSet() then
             exit;
 
+        // remove previous record related errors
         repeat
-            // remove previous record related errors
             if TempErrorInfo."Entity Type" = Enum::"Entity Type IRIS"::RecordType then begin
                 ErrorInfo.SetRange("Entity Type", TempErrorInfo."Entity Type");
                 ErrorInfo.SetRange("Submission ID", TempErrorInfo."Submission ID");
                 ErrorInfo.SetRange("Record ID", TempErrorInfo."Record ID");
                 ErrorInfo.DeleteAll(true);
             end;
-            ErrorInfo.Reset();
-
-            // find related IRS 1099 Form Document
-            FormDocID := 0;
-            IRS1099FormDocHeader.SetRange("IRIS Transmission Document ID", TransmissionDocumentID);
-            IRS1099FormDocHeader.SetRange("IRIS Submission ID", TempErrorInfo."Submission ID");
-            IRS1099FormDocHeader.SetRange("IRIS Record ID", TempErrorInfo."Record ID");
-            if IRS1099FormDocHeader.FindFirst() then
-                FormDocID := IRS1099FormDocHeader.ID;
-
-            ErrorInfo.LockTable();
-            ErrorInfo.InitRecord();     // assign new Line ID
-            LineID := ErrorInfo."Line ID";
-
-            ErrorInfo := TempErrorInfo;
-            ErrorInfo."Line ID" := LineID;
-            ErrorInfo."Transmission Document ID" := TransmissionDocumentID;
-            ErrorInfo."Unique Transmission ID" := UniqueTransmissionId;
-            ErrorInfo."IRS 1099 Form Doc. ID" := FormDocID;
-            ErrorInfo.Insert(true);
         until TempErrorInfo.Next() = 0;
+        ErrorInfo.Reset();
+
+        // add new errors
+        TempErrorInfo.Reset();
+        TempErrorInfo.SetFilter("Error Code", '<>%1', '');
+        if TempErrorInfo.FindSet() then
+            repeat
+                // find related IRS 1099 Form Document
+                FormDocID := 0;
+                IRS1099FormDocHeader.SetRange("IRIS Transmission Document ID", TransmissionDocumentID);
+                IRS1099FormDocHeader.SetRange("IRIS Submission ID", TempErrorInfo."Submission ID");
+                IRS1099FormDocHeader.SetRange("IRIS Record ID", TempErrorInfo."Record ID");
+                if IRS1099FormDocHeader.FindFirst() then
+                    FormDocID := IRS1099FormDocHeader.ID;
+
+                ErrorInfo.LockTable();
+                ErrorInfo.InitRecord();     // assign new Line ID
+                LineID := ErrorInfo."Line ID";
+
+                ErrorInfo := TempErrorInfo;
+                ErrorInfo."Line ID" := LineID;
+                ErrorInfo."Transmission Document ID" := TransmissionDocumentID;
+                ErrorInfo."Unique Transmission ID" := UniqueTransmissionId;
+                ErrorInfo."IRS 1099 Form Doc. ID" := FormDocID;
+                ErrorInfo.Insert(true);
+            until TempErrorInfo.Next() = 0;
     end;
 
     procedure FilterErrorInformation(var ErrorInformation: Record "Error Information IRIS"; TransmissionDocumentID: Integer; SubmissionId: Text[20]; RecordId: Text[20])

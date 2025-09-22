@@ -18,6 +18,7 @@ codeunit 11633 "Create CH Data Exchange"
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + CEPACAMT05302() + '.xml');
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + CEPACAMT05304() + '.xml');
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + CEPACAMT05308CH() + '.xml');
+        ContosoDataExchange.UpdateSEPACAMT05300108DataExchDefLabels();
     end;
 
     procedure CEPACAMT054(): Code[20]

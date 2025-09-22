@@ -51,6 +51,8 @@ page 40063 "Cloud Migration Management"
                         Editable = false;
                         Caption = 'Warnings';
                         ToolTip = 'Specifies the number of warnings for the selected migration.';
+                        Style = Unfavorable;
+                        StyleExpr = (NumberOfWarnings > 0);
 
                         trigger OnDrillDown()
                         begin

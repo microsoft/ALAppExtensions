@@ -25,6 +25,7 @@ codeunit 12168 "Create General Ledger Setup IT"
         GeneralLedgerSetup.Get();
 
         GeneralLedgerSetup.Validate("EMU Currency", true);
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.EUR());
         GeneralLedgerSetup.Validate("Show Amounts", GeneralLedgerSetup."Show Amounts"::"Debit/Credit Only");
         GeneralLedgerSetup.Validate("Use Document Date in Currency", true);

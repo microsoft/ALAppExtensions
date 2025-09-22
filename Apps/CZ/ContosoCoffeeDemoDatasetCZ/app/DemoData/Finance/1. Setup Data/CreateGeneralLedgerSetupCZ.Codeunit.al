@@ -30,6 +30,7 @@ codeunit 31186 "Create General Ledger Setup CZ"
         GeneralLedgerSetup.Get();
         GeneralLedgerSetup.Validate("Local Currency Symbol", '');
         GeneralLedgerSetup.Validate("Local Currency Description", CzechCrownLbl);
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.CZK());
         GeneralLedgerSetup.Validate("Acc. Schedule Results Nos. CZL", CreateNoSeriesCZ.AccountingScheduleResult());
         GeneralLedgerSetup."VAT Reporting Date Usage" := "VAT Reporting Date Usage"::"Enabled (Prevent modification)";

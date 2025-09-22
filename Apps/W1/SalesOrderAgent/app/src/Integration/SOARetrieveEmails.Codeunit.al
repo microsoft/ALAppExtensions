@@ -184,7 +184,8 @@ codeunit 4582 "SOA Retrieve Emails"
 
         AgentMessageBuilder.Initialize(EmailInbox."Sender Address", MessageText)
             .SetMessageExternalID(EmailInbox."External Message Id")
-            .SetRequiresReview(SOATaskMessage.MessageRequiresReview(SOASetup, EmailInbox, true));
+            .SetRequiresReview(SOATaskMessage.MessageRequiresReview(SOASetup, EmailInbox, true))
+            .SetIgnoreAttachment(not SOASetup."Analyze Attachments");
 
         AgentTaskBuilder.Initialize(SOASetup."Agent User Security ID", AgentTaskTitle)
             .SetExternalId(EmailInbox."Conversation Id")
@@ -197,24 +198,46 @@ codeunit 4582 "SOA Retrieve Emails"
         SOAEmail.SetAgentMessageFields(AgentTaskMessage);
         SOAEmail.Modify();
         SOABilling.LogEmailRead(AgentTaskMessage.ID, AgentTaskMessage."Task ID");
-        ScheduleBillingTask := true;
+        LogAnalyzeAttachmentForBilling(AgentTaskMessage);
 
+        ScheduleBillingTask := true;
         Session.LogMessage('0000NDP', TelemetryEmailAddedAsTaskLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
     end;
 
     local procedure AddEmailAttachmentToTaskMessage(AgentTaskMessageBuilder: Codeunit "Agent Task Message Builder"; var EmailMessage: Codeunit "Email Message")
     var
+        SOASetup: Codeunit "SOA Setup";
         InStream: InStream;
+        FileMIMEType: Text[100];
     begin
         if not EmailMessage.Attachments_First() then
             exit;
 
         repeat
             EmailMessage.Attachments_GetContent(InStream);
-            AgentTaskMessageBuilder.AddAttachment(EmailMessage.Attachments_GetName(), CopyStr(EmailMessage.Attachments_GetContentType(), 1, 100), InStream);
+            FileMIMEType := CopyStr(EmailMessage.Attachments_GetContentType(), 1, 100);
+            AgentTaskMessageBuilder.AddAttachment(EmailMessage.Attachments_GetName(), FileMIMEType, InStream, not SOASetup.SupportedAttachmentContentType(FileMIMEType));
         until EmailMessage.Attachments_Next() = 0;
 
         Session.LogMessage('0000PN1', TelemetryEmailHasAttachmentsLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+    end;
+
+    local procedure LogAnalyzeAttachmentForBilling(AgentTaskMessage: Record "Agent Task Message")
+    var
+        AgentTaskMessageAttachment: Record "Agent Task Message Attachment";
+        SOABilling: Codeunit "SOA Billing";
+    begin
+        AgentTaskMessageAttachment.ReadIsolation(IsolationLevel::ReadCommitted);
+        AgentTaskMessageAttachment.LoadFields(SystemId, Ignored);
+        AgentTaskMessageAttachment.SetRange("Task ID", AgentTaskMessage."Task ID");
+        AgentTaskMessageAttachment.SetRange("Message ID", AgentTaskMessage.ID);
+
+        if not AgentTaskMessageAttachment.FindSet() then
+            exit;
+        repeat
+            if not AgentTaskMessageAttachment.Ignored then
+                SOABilling.LogAnalyzeAttachment(AgentTaskMessageAttachment.SystemId, AgentTaskMessage."Task ID");
+        until AgentTaskMessageAttachment.Next() = 0;
     end;
 
     procedure AddEmailToExistingAgentTask(SOASetup: Record "SOA Setup"; EmailInbox: Record "Email Inbox"; var SOAEmail: Record "SOA Email")
@@ -247,6 +270,7 @@ codeunit 4582 "SOA Retrieve Emails"
         AgentTaskMessageBuilder.Initialize(EmailInbox."Sender Address", MessageText)
             .SetMessageExternalID(EmailInbox."External Message Id")
             .SetRequiresReview(SOATaskMessage.MessageRequiresReview(SOASetup, EmailInbox, false))
+            .SetIgnoreAttachment(not SOASetup."Analyze Attachments")
             .SetAgentTask(AgentTaskRecord);
 
         AddEmailAttachmentToTaskMessage(AgentTaskMessageBuilder, EmailMessage);
@@ -257,6 +281,7 @@ codeunit 4582 "SOA Retrieve Emails"
         SOAEmail.Modify();
 #pragma warning restore AA0214
         SOABilling.LogEmailRead(AgentTaskMessage.ID, AgentTaskMessage."Task ID");
+        LogAnalyzeAttachmentForBilling(AgentTaskMessage);
         ScheduleBillingTask := true;
 
         Session.LogMessage('0000NGP', TelemetryEmailAddedToExistingTaskLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());

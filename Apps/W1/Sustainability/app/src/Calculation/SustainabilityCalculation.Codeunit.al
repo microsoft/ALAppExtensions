@@ -1,5 +1,6 @@
 namespace Microsoft.Sustainability.Calculation;
 
+using Microsoft.Purchases.Document;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Account;
 
@@ -63,6 +64,57 @@ codeunit 6215 "Sustainability Calculation"
         end;
     end;
 
+    internal procedure CalculateScope1Emissions(var PurchaseLine: Record "Purchase Line"; SustainabilityAccountCategory: Record "Sustain. Account Category"; SustainabilityAccountSubcategory: Record "Sustain. Account Subcategory")
+    begin
+        case SustainabilityAccountCategory."Calculation Foundation" of
+            Enum::"Calculation Foundation"::"Fuel/Electricity":
+                CalculateFuelOrElectricityEmissions(PurchaseLine, SustainabilityAccountSubcategory);
+            Enum::"Calculation Foundation"::Distance:
+                CalculateDistanceEmissions(PurchaseLine, SustainabilityAccountSubcategory);
+            Enum::"Calculation Foundation"::Installations:
+                CalculateInstallationsEmissions(PurchaseLine, SustainabilityAccountSubcategory)
+            else
+                Error(CalculationNotSupportedErr, SustainabilityAccountCategory."Calculation Foundation", SustainabilityAccountCategory."Emission Scope");
+        end;
+    end;
+
+    internal procedure CalculateScope2Emissions(var PurchaseLine: Record "Purchase Line"; SustainabilityAccountCategory: Record "Sustain. Account Category"; SustainabilitySubCategory: Record "Sustain. Account Subcategory")
+    begin
+        case SustainabilityAccountCategory."Calculation Foundation" of
+            Enum::"Calculation Foundation"::"Fuel/Electricity":
+                CalculateFuelOrElectricityEmissions(PurchaseLine, SustainabilitySubCategory);
+            Enum::"Calculation Foundation"::Custom:
+                CalculateCustomEmissions(PurchaseLine, SustainabilitySubCategory);
+            else
+                Error(CalculationNotSupportedErr, SustainabilityAccountCategory."Calculation Foundation", SustainabilityAccountCategory."Emission Scope");
+        end;
+    end;
+
+    internal procedure CalculateScope3Emissions(var PurchaseLine: Record "Purchase Line"; SustainabilityAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
+    begin
+        case SustainabilityAccountCategory."Calculation Foundation" of
+            Enum::"Calculation Foundation"::"Fuel/Electricity":
+                CalculateFuelOrElectricityEmissions(PurchaseLine, SustainAccountSubcategory);
+            Enum::"Calculation Foundation"::Distance:
+                begin
+                    PurchaseLine.Validate("Emission CO2", PurchaseLine.Distance * SustainAccountSubcategory."Emission Factor CO2" * PurchaseLine."Installation Multiplier");
+
+                    PurchaseLine.Validate("Emission CH4", PurchaseLine.Distance * SustainAccountSubcategory."Emission Factor CH4" * PurchaseLine."Installation Multiplier");
+
+                    PurchaseLine.Validate("Emission N2O", PurchaseLine.Distance * SustainAccountSubcategory."Emission Factor N2O" * PurchaseLine."Installation Multiplier");
+                end;
+            Enum::"Calculation Foundation"::Custom:
+                CalculateCustomEmissions(PurchaseLine, SustainAccountSubcategory);
+            else
+                Error(CalculationNotSupportedErr, SustainabilityAccountCategory."Calculation Foundation", SustainabilityAccountCategory."Emission Scope");
+        end;
+    end;
+
+    internal procedure CalculateWaterOrWaste(var PurchaseLine: Record "Purchase Line"; SustainAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
+    begin
+        Error(CalculationNotSupportedErr, SustainAccountCategory."Calculation Foundation", SustainAccountCategory."Emission Scope");
+    end;
+
     local procedure CalculateFuelOrElectricityEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
     begin
         SustainabilityJnlLine.Validate("Emission CO2", SustainabilityJnlLine."Fuel/Electricity" * SustainAccountSubcategory."Emission Factor CO2");
@@ -108,6 +160,47 @@ codeunit 6215 "Sustainability Calculation"
     local procedure CalculateInstallationEmission(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Decimal
     begin
         exit(SustainabilityJnlLine."Installation Multiplier" * SustainabilityJnlLine."Custom Amount" * SustainabilityJnlLine."Time Factor" / 100);
+    end;
+
+    local procedure CalculateFuelOrElectricityEmissions(var PurchaseLine: Record "Purchase Line"; SustainabilitySubcategory: Record "Sustain. Account Subcategory")
+    begin
+        PurchaseLine.Validate("Emission CO2", PurchaseLine."Fuel/Electricity" * SustainabilitySubcategory."Emission Factor CO2");
+
+        PurchaseLine.Validate("Emission CH4", PurchaseLine."Fuel/Electricity" * SustainabilitySubcategory."Emission Factor CH4");
+
+        PurchaseLine.Validate("Emission N2O", PurchaseLine."Fuel/Electricity" * SustainabilitySubcategory."Emission Factor N2O");
+    end;
+
+    local procedure CalculateDistanceEmissions(var PurchaseLine: Record "Purchase Line"; SustainabilitySubcategory: Record "Sustain. Account Subcategory")
+    begin
+        PurchaseLine.Validate("Emission CO2", PurchaseLine.Distance * SustainabilitySubcategory."Emission Factor CO2");
+
+        PurchaseLine.Validate("Emission CH4", PurchaseLine.Distance * SustainabilitySubcategory."Emission Factor CH4");
+
+        PurchaseLine.Validate("Emission N2O", PurchaseLine.Distance * SustainabilitySubcategory."Emission Factor N2O");
+    end;
+
+    local procedure CalculateInstallationsEmissions(var PurchaseLine: Record "Purchase Line"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
+    begin
+        PurchaseLine.Validate("Emission CO2", CalculateInstallationEmission(PurchaseLine) * SustainAccountSubcategory."Emission Factor CO2");
+
+        PurchaseLine.Validate("Emission CH4", CalculateInstallationEmission(PurchaseLine) * SustainAccountSubcategory."Emission Factor CH4");
+
+        PurchaseLine.Validate("Emission N2O", CalculateInstallationEmission(PurchaseLine) * SustainAccountSubcategory."Emission Factor N2O");
+    end;
+
+    local procedure CalculateCustomEmissions(var PurchaseLine: Record "Purchase Line"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
+    begin
+        PurchaseLine.Validate("Emission CO2", PurchaseLine."Custom Amount" * SustainAccountSubcategory."Emission Factor CO2");
+
+        PurchaseLine.Validate("Emission CH4", PurchaseLine."Custom Amount" * SustainAccountSubcategory."Emission Factor CH4");
+
+        PurchaseLine.Validate("Emission N2O", PurchaseLine."Custom Amount" * SustainAccountSubcategory."Emission Factor N2O");
+    end;
+
+    local procedure CalculateInstallationEmission(PurchaseLine: Record "Purchase Line"): Decimal
+    begin
+        exit(PurchaseLine."Installation Multiplier" * PurchaseLine."Custom Amount" * PurchaseLine."Time Factor" / 100);
     end;
 
     var

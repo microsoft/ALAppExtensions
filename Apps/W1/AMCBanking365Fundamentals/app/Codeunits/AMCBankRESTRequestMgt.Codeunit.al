@@ -10,10 +10,9 @@ using System.Reflection;
 using System.Security.AccessControl;
 using System.Text;
 using System.Utilities;
-
+#pragma warning disable AS0018
 codeunit 20124 "AMC Bank REST Request Mgt."
 {
-
     //new procedure for handling REST http call - as we can't use Codeunit 1290, as functions are missing
     var
         GlobalProgressDialogEnabled: Boolean;
@@ -168,21 +167,16 @@ codeunit 20124 "AMC Bank REST Request Mgt."
             exit(true);
     end;
 
-    [IntegrationEvent(true, false)] //Used for mockup testing
-    procedure OnBeforeSendRestRequest(var Handled: Boolean; Var RestHttpRequestMessage: HttpRequestMessage; Var HttpResponseMessage: HttpResponseMessage; webCall: Text; AppCaller: text[30]; CheckHttpStatus: Boolean)
-    begin
-    end;
-
     procedure CheckHttpCallStatus(webCall: Text; AppCaller: text[30]; Var HttpResponseMessage: HttpResponseMessage): Boolean;
     var
         Error_Text: Text;
     begin
-        if (NOT HttpResponseMessage.IsSuccessStatusCode()) then begin
+        if (not HttpResponseMessage.IsSuccessStatusCode()) then begin
             Error_Text := TryLoadErrorLbl + StrSubstNo(WebLoadErrorLbl, FORMAT(HttpResponseMessage.HttpStatusCode()) + ' ' + HttpResponseMessage.ReasonPhrase());
             LogHttpActivity(webCall, AppCaller, Error_Text, '', '', HttpResponseMessage.Content(), 'error');
             ERROR(Error_Text);
         end;
-        exit(TRUE);
+        exit(true);
     end;
 
     procedure GetRestResponse(Var HttpResponseMessage: HttpResponseMessage; Var ResponseTempBlob: Codeunit "Temp Blob")
@@ -374,6 +368,5 @@ codeunit 20124 "AMC Bank REST Request Mgt."
     begin
         EXIT('GetEasyRegistartionURL');
     end;
-
-
 }
+#pragma warning restore AS0018

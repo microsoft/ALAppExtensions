@@ -6,6 +6,7 @@
 #pragma warning disable AS0007
 namespace Microsoft.Agent.SalesOrderAgent;
 
+using Microsoft.Utilities;
 using System.Environment.Configuration;
 
 codeunit 4592 "SOA Events"
@@ -33,5 +34,13 @@ codeunit 4592 "SOA Events"
 
         SOAEmail.ChangeCompany(NewCompanyName);
         SOAEmail.DeleteAll();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Classification Eval. Data", 'OnCreateEvaluationDataOnAfterClassifyTablesToNormal', '', false, false)]
+    local procedure ClassifyDataSensitivity()
+    var
+        DataClassificationEvalData: Codeunit "Data Classification Eval. Data";
+    begin
+        DataClassificationEvalData.SetTableFieldsToNormal(Database::"SOA Setup");
     end;
 }

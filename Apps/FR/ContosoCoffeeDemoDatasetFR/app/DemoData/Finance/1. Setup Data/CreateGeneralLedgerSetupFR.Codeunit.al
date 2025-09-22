@@ -24,6 +24,7 @@ codeunit 10889 "Create General Ledger Setup FR"
     begin
         GeneralLedgerSetup.Get();
         GeneralLedgerSetup.Validate("EMU Currency", true);
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.EUR());
         GeneralLedgerSetup.Validate("Local Currency Symbol", LocalCurrencySymbolLbl);
         GeneralLedgerSetup.Validate("Local Currency Description", LocalCurrecyEuroLbl);

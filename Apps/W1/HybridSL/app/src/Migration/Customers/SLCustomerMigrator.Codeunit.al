@@ -70,9 +70,10 @@ codeunit 47018 "SL Customer Migrator"
             exit;
         if SLCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
             exit;
-
-        SLCustomer.Get(RecordIdToMigrate);
-        SLARSetup.Get(ARSetupIDTxt);
+        if not SLCustomer.Get(RecordIdToMigrate) then
+            exit;
+        if not SLARSetup.Get(ARSetupIDTxt) then
+            exit;
 
         Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)), '', '');
         SLARDoc.SetRange(CpnyID, CompanyName);
@@ -238,6 +239,10 @@ codeunit 47018 "SL Customer Migrator"
         PaymentTermsFormula: DateFormula;
         Country: Code[10];
         ShipViaID: Code[10];
+        Address1: Text[50];
+        Address2: Text[50];
+        BillName: Text[50];
+        CustomerName: Text[50];
         CustomerBlocked: Boolean;
         ContactAddressFormatToSet: Option First,"After Company Name",Last;
         AddressFormatToSet: Option "Post Code+City","City+Post Code","City+County+Post Code","Blank Line+Post Code+City";
@@ -251,7 +256,7 @@ codeunit 47018 "SL Customer Migrator"
                 end else
                     CustomerBlocked := true;
 
-        if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(SLCustomer.CustId, CopyStr(SLHelperFunctions.NameFlip(SLCustomer.Name), 1, 50)) then
+        if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(SLCustomer.CustId, CopyStr(SLHelperFunctions.NameFlip(SLCustomer.Name), 1, MaxStrLen(CustomerName))) then
             exit;
 
         if CustomerBlocked then
@@ -268,8 +273,8 @@ codeunit 47018 "SL Customer Migrator"
             CustomerDataMigrationFacade.CreatePostCodeIfNeeded(SLCustomer.Zip,
                 SLCustomer.City, SLCustomer.State, Country);
 
-        CustomerDataMigrationFacade.SetAddress(CopyStr(SLCustomer.Addr1, 1, 50),
-            CopyStr(SLCustomer.Addr2, 1, 50), Country, SLCustomer.Zip,
+        CustomerDataMigrationFacade.SetAddress(CopyStr(SLCustomer.Addr1, 1, MaxStrLen(Address1)),
+            CopyStr(SLCustomer.Addr2, 1, MaxStrLen(Address2)), Country, SLCustomer.Zip,
             SLCustomer.City);
 
         CustomerDataMigrationFacade.SetContact(SLCustomer.Attn);
@@ -301,7 +306,7 @@ codeunit 47018 "SL Customer Migrator"
             CustomerDataMigrationFacade.SetPaymentTermsCode(SLCustomer.Terms);
         end;
 
-        CustomerDataMigrationFacade.SetName2(CopyStr(SLHelperFunctions.NameFlip(SLCustomer.BillName), 1, 50));
+        CustomerDataMigrationFacade.SetName2(CopyStr(SLHelperFunctions.NameFlip(SLCustomer.BillName), 1, MaxStrLen(BillName)));
 
         if (SLCustomer.Territory <> '') then begin
             CustomerDataMigrationFacade.CreateTerritoryCodeIfNeeded(SLCustomer.Territory, '');
@@ -387,7 +392,7 @@ codeunit 47018 "SL Customer Migrator"
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
         ClassID := SLCustomer.ClassId;
-        if ClassID = '' then
+        if ClassID.TrimEnd() = '' then
             exit;
         SLCustClass.Get(ClassID);
 

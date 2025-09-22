@@ -23,6 +23,7 @@ codeunit 5307 "Create Data Exchange"
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + PeppolInvoice() + '.xml');
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + SEPACAMT() + '.xml');
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + SEPACAMT05300108() + '.xml');
+        ContosoDataExchange.UpdateSEPACAMT05300108DataExchDefLabels();
         ContosoDataExchange.ImportDataExchangeDefinition(FolderNameLbl + '/' + ECBExchangeRate() + '.xml');
     end;
 

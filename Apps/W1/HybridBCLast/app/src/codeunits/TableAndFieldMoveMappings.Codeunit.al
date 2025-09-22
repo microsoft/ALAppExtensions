@@ -2,6 +2,7 @@ namespace Microsoft.DataMigration;
 
 using System.Migration;
 using System.Reflection;
+using System.Apps;
 using Microsoft.Foundation.NoSeries;
 using System.Environment;
 using Microsoft.Foundation.AuditCodes;
@@ -111,6 +112,9 @@ codeunit 40030 "Table and Field Move Mappings"
         FieldNos: List of [Integer];
         AppliesFromVersion: Version;
     begin
+        if not IsAppInstalled(SubBillingAppIdLbl) then
+            exit;
+
         AppliesFromVersion := Version.Create(26, 0);
 
         TableNos.AddRange(8051, 8004, 8001, 8002, 8019, 8062, 8065, 8066, 8072, 8010, 8008, 8009, 8007, 8068, 8069, 8056, 8016, 8053, 8052, 8063, 8058, 8005, 8054, 8055, 8012);
@@ -362,6 +366,13 @@ codeunit 40030 "Table and Field Move Mappings"
     begin
         ValidChars := PadStr('', StrLen(SQLInvalidCharsLbl), '_');
         exit(ConvertStr(Name, SQLInvalidCharsLbl, ValidChars));
+    end;
+
+    local procedure IsAppInstalled(AppId: Guid): Boolean
+    var
+        InstalledApp: Record "NAV App Installed App";
+    begin
+        exit(InstalledApp.Get(AppId));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnInsertDefaultTableMappings, '', false, false)]

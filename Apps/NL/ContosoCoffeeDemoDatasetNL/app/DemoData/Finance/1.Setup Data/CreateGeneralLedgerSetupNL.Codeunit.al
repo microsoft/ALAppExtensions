@@ -29,6 +29,7 @@ codeunit 11510 "Create General Ledger Setup NL"
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", LCYCode);
         GeneralLedgerSetup.Validate("Local Currency", GeneralLedgerSetup."Local Currency"::Euro);
         GeneralLedgerSetup.Validate("Local Currency Symbol", LocalCurrencySymbol);

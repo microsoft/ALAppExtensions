@@ -143,7 +143,7 @@ codeunit 4400 "SOA Setup"
                 SOASetup."Email Connector" := TempSOASetup."Email Connector";
                 SOASetup."Email Address" := TempSOASetup."Email Address";
             end;
-
+            SOASetup."Analyze Attachments" := TempSOASetup."Analyze Attachments";
             SOASetup."Activated At" := TempSOASetup."Activated At";
             SOASetup."Earliest Sync At" := TempSOASetup."Earliest Sync At";
             SOASetup."Last Sync At" := TempSOASetup."Last Sync At";
@@ -158,7 +158,10 @@ codeunit 4400 "SOA Setup"
             SOASetup."Known Sender In. Msg. Review" := TempSOASetup."Known Sender In. Msg. Review";
             SOASetup."Unknown Sender In. Msg. Review" := TempSOASetup."Unknown Sender In. Msg. Review";
             SOASetup."Instructions Last Sync At" := TempSOASetup."Instructions Last Sync At";
+            SOASetup."Configure Email Template" := TempSOASetup."Configure Email Template";
+            CopyMailSignatureField(TempSOASetup, SOASetup);
             SOASetup."Message Limit" := TempSOASetup."Message Limit";
+            SOASetup."Send Sales Quote" := TempSOASetup."Send Sales Quote";
 
             SOASetup.Modify();
         end
@@ -178,6 +181,32 @@ codeunit 4400 "SOA Setup"
         SOASetup."Create Order from Quote" := true;
         SOASetup."Search Only Available Items" := true;
         SOASetup."Incl. Capable to Promise" := false;
+        SOASetup."Send Sales Quote" := true;
+    end;
+
+    local procedure CopyMailSignatureField(var FromSOASetup: Record "SOA Setup"; var ToSOASetup: Record "SOA Setup")
+    var
+        InStream: InStream;
+        OutStream: OutStream;
+    begin
+        Clear(ToSOASetup."Email Template");
+
+        FromSOASetup.CalcFields("Email Template");
+        if FromSOASetup."Email Template".HasValue() then begin
+            FromSOASetup."Email Template".CreateInStream(InStream, TextEncoding::UTF8);
+            ToSOASetup."Email Template".CreateOutStream(OutStream, TextEncoding::UTF8);
+            CopyStream(OutStream, InStream);
+        end;
+    end;
+
+    local procedure SetDefaultEmailSignature(var SOASetup: Record "SOA Setup")
+    begin
+        SOASetup.SetEmailSignature(GetDefaultEmailSignatureAsTxt());
+    end;
+
+    internal procedure GetDefaultEmailSignatureAsTxt(): Text
+    begin
+        exit(StrSubstNo(EmailSignatureLbl, SignatureClosingLbl, CompanyName(), SignatureNoteLbl));
     end;
 
     internal procedure UpdateInstructions(var TempSOASetup: Record "SOA Setup" temporary)
@@ -295,6 +324,7 @@ codeunit 4400 "SOA Setup"
         if IsNullGuid(TempSOASetup."Agent User Security ID") then begin
             SOASetup.SetRange("Agent User Security ID", TempSOAgent."User Security ID");
             if SOASetup.FindFirst() then begin
+                SOASetup.CalcFields("Email Template");
                 TempSOASetup := SOASetup;
                 TempSOASetup.Insert();
                 exit;
@@ -518,7 +548,9 @@ codeunit 4400 "SOA Setup"
         TempSOASetup."Incoming Monitoring" := true;
         TempSOASetup."Email Monitoring" := true;
         SetDefaultSalesDocConfig(TempSOASetup, true);
+        TempSOASetup."Analyze Attachments" := true;
         TempSOASetup."Agent User Security ID" := AgentUserSecurityID;
+        SetDefaultEmailSignature(TempSOASetup);
         TempSOASetup.Insert();
     end;
 
@@ -618,6 +650,25 @@ codeunit 4400 "SOA Setup"
         EmailsCount := SOATestSetup.GetEmailCount();
     end;
 
+    procedure SupportedAttachmentContentType(FileMIMEType: Text): Boolean
+    begin
+        if FileMIMEType = 'application/pdf' then
+            exit(true);
+        if FileMIMEType = 'image/jpeg' then
+            exit(true);
+        if FileMIMEType = 'image/jpg' then
+            exit(true);
+        if FileMIMEType = 'image/png' then
+            exit(true);
+
+        exit(false);
+    end;
+
+    internal procedure GetFeatureName(): Text
+    begin
+        exit('Sales Order Agent');
+    end;
+
     var
         SOAImpl: Codeunit "SOA Impl";
         Agent: Codeunit Agent;
@@ -648,4 +699,7 @@ codeunit 4400 "SOA Setup"
         NewEmailsSinceDeactivationLbl: Label 'New e-mails (%1) have arrived since %2 but haven''t been processed yet. Should Sales Order Agent also process these?', Comment = '%1 - Number of emails, %2 - Date and time of deactivation.';
         SOAAttemptedConnectionFailedErr: Label 'The agent can''t be activated because the connection to the selected Microsoft 365 mailbox failed. Ask your Microsoft 365 administrator to check if the user configuring the agent has permission to access the mailbox.';
         SOAAttemptedConnectionHttpRequestFailedErr: Label 'The agent can''t be activated because its settings don''t allow Http Requests. Ask your administrator to update this setting and try again.';
+        EmailSignatureLbl: Label '%1<div>%2</div><div><br></div><div><em>%3</em></div>', Locked = true;
+        SignatureClosingLbl: Label 'Best regards';
+        SignatureNoteLbl: Label 'We write mails with AI. We review and send with care.';
 }
