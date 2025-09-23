@@ -89,8 +89,8 @@ codeunit 42800 "SL Hist. Migration Status Mgmt"
         SLHistARTran: Record "SL Hist. ARTran Archive";
         SLHistBatch: Record "SL Hist. Batch";
         SLHistGLTran: Record "SL Hist. GLTran Archive";
-        SLHistINTran: Record "SL Hist. INTran";
-        SLHistLotSerT: Record "SL Hist. LotSerT";
+        SLHistINTran: Record "SL Hist. INTran Archive";
+        SLHistLotSerT: Record "SL Hist. LotSerT Archive";
         SLHistPOReceipt: Record "SL Hist. POReceipt";
         SLHistPOTran: Record "SL Hist. POTran";
         SLHistPurchOrd: Record "SL Hist. PurchOrd";
@@ -135,10 +135,10 @@ codeunit 42800 "SL Hist. Migration Status Mgmt"
             BatchDeleteAll(Database::"SL Hist. POReceipt", SLHistPOReceipt.FieldNo(SLHistPOReceipt.RcptNbr));
 
         if not SLHistLotSerT.IsEmpty() then
-            BatchDeleteAll(Database::"SL Hist. LotSerT", SLHistLotSerT.FieldNo(SLHistLotSerT.LotSerNbr));
+            BatchDeleteAll(Database::"SL Hist. LotSerT Archive", SLHistLotSerT.FieldNo(SLHistLotSerT.LotSerNbr));
 
         if not SLHistINTran.IsEmpty() then
-            BatchDeleteAll(Database::"SL Hist. INTran", SLHistINTran.FieldNo(SLHistINTran.InvtID));
+            BatchDeleteAll(Database::"SL Hist. INTran Archive", SLHistINTran.FieldNo(SLHistINTran.InvtID));
 
         if not SLHistGLTran.IsEmpty() then
             BatchDeleteAll(Database::"SL Hist. GLTran Archive", SLHistGLTran.FieldNo(SLHistGLTran.Module));

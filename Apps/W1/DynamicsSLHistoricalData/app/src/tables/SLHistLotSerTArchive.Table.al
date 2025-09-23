@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,18 +5,10 @@
 
 namespace Microsoft.DataMigration.SL.HistoricalData;
 
-table 42807 "SL Hist. LotSerT"
+table 42829 "SL Hist. LotSerT Archive"
 {
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL Hist. LotSerT Archive.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -31,7 +22,7 @@ table 42807 "SL Hist. LotSerT"
         }
         field(3; Crtd_DateTime; DateTime)
         {
-            Caption = 'Crtd_DateTimeDateTime';
+            Caption = 'Crtd_DateTime';
         }
         field(4; Crtd_Prog; Text[8])
         {
@@ -45,7 +36,7 @@ table 42807 "SL Hist. LotSerT"
         {
             Caption = 'CustID';
         }
-        field(7; ExpDate; DateTime)
+        field(7; ExpDate; Date)
         {
             Caption = 'ExpDate';
         }
@@ -161,11 +152,11 @@ table 42807 "SL Hist. LotSerT"
         {
             Caption = 'S4Future06';
         }
-        field(36; S4Future07; DateTime)
+        field(36; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(37; S4Future08; DateTime)
+        field(37; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -205,7 +196,7 @@ table 42807 "SL Hist. LotSerT"
         {
             Caption = 'ToWhseLoc';
         }
-        field(47; TranDate; DateTime)
+        field(47; TranDate; Date)
         {
             Caption = 'TranDate';
         }
@@ -213,7 +204,7 @@ table 42807 "SL Hist. LotSerT"
         {
             Caption = 'TranSrc';
         }
-        field(49; TranTime; DateTime)
+        field(49; TranTime; Date)
         {
             Caption = 'TranTime';
         }
@@ -253,15 +244,15 @@ table 42807 "SL Hist. LotSerT"
         {
             Caption = 'User6';
         }
-        field(59; User7; DateTime)
+        field(59; User7; Date)
         {
             Caption = 'User7';
         }
-        field(60; User8; DateTime)
+        field(60; User8; Date)
         {
             Caption = 'User8';
         }
-        field(61; WarrantyDate; DateTime)
+        field(61; WarrantyDate; Date)
         {
             Caption = 'WarrantyDate';
         }
@@ -279,4 +270,3 @@ table 42807 "SL Hist. LotSerT"
         }
     }
 }
-#endif

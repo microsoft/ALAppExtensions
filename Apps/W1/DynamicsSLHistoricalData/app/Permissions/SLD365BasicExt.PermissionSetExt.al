@@ -33,11 +33,13 @@ permissionsetextension 42800 "SL D365 Basic Ext." extends "D365 BASIC"
 #if not CLEAN28
 #pragma warning disable AL0432
                   tabledata "SL Hist. GLTran" = R,
+                  tabledata "SL Hist. INTran" = R,
+                  tabledata "SL Hist. LotSerT" = R,
 #pragma warning restore AL0432
 #endif
                   tabledata "SL Hist. GLTran Archive" = R,
-                  tabledata "SL Hist. INTran" = R,
-                  tabledata "SL Hist. LotSerT" = R,
+                  tabledata "SL Hist. INTran Archive" = R,
+                  tabledata "SL Hist. LotSerT Archive" = R,
                   tabledata "SL Hist. Migration Cur. Status" = R,
                   tabledata "SL Hist. Migration Step Status" = R,
                   tabledata "SL Hist. POReceipt" = R,

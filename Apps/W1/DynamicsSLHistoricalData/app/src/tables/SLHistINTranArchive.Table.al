@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,18 +5,10 @@
 
 namespace Microsoft.DataMigration.SL.HistoricalData;
 
-table 42808 "SL Hist. INTran"
+table 42828 "SL Hist. INTran Archive"
 {
     DataClassification = CustomerContent;
     ReplicateData = false;
-    ObsoleteReason = 'Replaced by table SL Hist. INTran Archive.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -49,7 +40,7 @@ table 42808 "SL Hist. INTran"
         {
             Caption = 'BMICuryID';
         }
-        field(8; BMIEffDate; DateTime)
+        field(8; BMIEffDate; Date)
         {
             Caption = 'BMIEffDate';
         }
@@ -285,7 +276,7 @@ table 42808 "SL Hist. INTran"
         {
             Caption = 'QtyUnCosted';
         }
-        field(68; RcptDate; DateTime)
+        field(68; RcptDate; Date)
         {
             Caption = 'RcptDate';
         }
@@ -337,11 +328,11 @@ table 42808 "SL Hist. INTran"
         {
             Caption = 'S4Future06';
         }
-        field(81; S4Future07; DateTime)
+        field(81; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(82; S4Future08; DateTime)
+        field(82; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -393,7 +384,7 @@ table 42808 "SL Hist. INTran"
         {
             Caption = 'SpecificCostID';
         }
-        field(95; SrcDate; DateTime)
+        field(95; SrcDate; Date)
         {
             Caption = 'SrcDate';
         }
@@ -441,7 +432,7 @@ table 42808 "SL Hist. INTran"
         {
             Caption = 'TranAmt';
         }
-        field(107; TranDate; DateTime)
+        field(107; TranDate; Date)
         {
             Caption = 'TranDate';
         }
@@ -493,11 +484,11 @@ table 42808 "SL Hist. INTran"
         {
             Caption = 'User6';
         }
-        field(120; User7; DateTime)
+        field(120; User7; Date)
         {
             Caption = 'User7';
         }
-        field(121; User8; DateTime)
+        field(121; User8; Date)
         {
             Caption = 'User8';
         }
@@ -519,4 +510,3 @@ table 42808 "SL Hist. INTran"
         }
     }
 }
-#endif
