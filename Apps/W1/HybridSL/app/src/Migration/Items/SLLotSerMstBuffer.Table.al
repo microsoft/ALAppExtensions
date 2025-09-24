@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47042 "SL LotSerMst"
+table 47087 "SL LotSerMst Buffer"
 {
     Access = Internal;
     Caption = 'SL LotSerMst';
     DataClassification = CustomerContent;
-    ObsoleteReason = 'Replaced by table SL LotSerMst Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -38,7 +29,7 @@ table 47042 "SL LotSerMst"
         {
             Caption = 'Crtd_User';
         }
-        field(5; ExpDate; DateTime)
+        field(5; ExpDate; Date)
         {
             Caption = 'ExpDate';
         }
@@ -46,7 +37,7 @@ table 47042 "SL LotSerMst"
         {
             Caption = 'InvtID';
         }
-        field(7; LIFODate; DateTime)
+        field(7; LIFODate; Date)
         {
             Caption = 'LIFODate';
         }
@@ -146,7 +137,7 @@ table 47042 "SL LotSerMst"
         {
             Caption = 'QtyWORlsedDemand';
         }
-        field(32; RcptDate; DateTime)
+        field(32; RcptDate; Date)
         {
             Caption = 'RcptDate';
         }
@@ -174,11 +165,11 @@ table 47042 "SL LotSerMst"
         {
             Caption = 'S4Future06';
         }
-        field(39; S4Future07; DateTime)
+        field(39; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(40; S4Future08; DateTime)
+        field(40; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -222,7 +213,7 @@ table 47042 "SL LotSerMst"
         {
             Caption = 'Status';
         }
-        field(51; StatusDate; DateTime)
+        field(51; StatusDate; Date)
         {
             Caption = 'StatusDate';
         }
@@ -250,15 +241,15 @@ table 47042 "SL LotSerMst"
         {
             Caption = 'User6';
         }
-        field(58; User7; DateTime)
+        field(58; User7; Date)
         {
             Caption = 'User7';
         }
-        field(59; User8; DateTime)
+        field(59; User8; Date)
         {
             Caption = 'User8';
         }
-        field(60; WarrantyDate; DateTime)
+        field(60; WarrantyDate; Date)
         {
             Caption = 'WarrantyDate';
         }
@@ -276,4 +267,3 @@ table 47042 "SL LotSerMst"
         }
     }
 }
-#endif

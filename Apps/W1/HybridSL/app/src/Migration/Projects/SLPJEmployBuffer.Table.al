@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47065 "SL PJEmploy"
+table 47079 "SL PJEmploy Buffer"
 {
     Access = Internal;
     Caption = 'SL PJEmploy';
     DataClassification = CustomerContent;
-    ObsoleteReason = 'Replaced by table SL PJEmploy Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -50,11 +41,11 @@ table 47065 "SL PJEmploy"
         {
             Caption = 'CuryRateType';
         }
-        field(8; date_hired; DateTime)
+        field(8; date_hired; Date)
         {
             Caption = 'date_hired';
         }
-        field(9; date_terminated; DateTime)
+        field(9; date_terminated; Date)
         {
             Caption = 'date_terminated';
         }
@@ -102,11 +93,11 @@ table 47065 "SL PJEmploy"
         {
             Caption = 'em_id07';
         }
-        field(21; em_id08; DateTime)
+        field(21; em_id08; Date)
         {
             Caption = 'em_id08';
         }
-        field(22; em_id09; DateTime)
+        field(22; em_id09; Date)
         {
             Caption = 'em_id09';
         }
@@ -146,7 +137,7 @@ table 47065 "SL PJEmploy"
         {
             Caption = 'em_id18';
         }
-        field(32; em_id19; DateTime)
+        field(32; em_id19; Date)
         {
             Caption = 'em_id19';
         }
@@ -254,11 +245,11 @@ table 47065 "SL PJEmploy"
         {
             Caption = 'S4Future06';
         }
-        field(59; S4Future07; DateTime)
+        field(59; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(60; S4Future08; DateTime)
+        field(60; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -326,7 +317,7 @@ table 47065 "SL PJEmploy"
         {
             Caption = 'VacaTaskID';
         }
-        field(77; VacaLUpd; DateTime)
+        field(77; VacaLUpd; Date)
         {
             Caption = 'VacaLUpd';
         }
@@ -340,4 +331,3 @@ table 47065 "SL PJEmploy"
         }
     }
 }
-#endif

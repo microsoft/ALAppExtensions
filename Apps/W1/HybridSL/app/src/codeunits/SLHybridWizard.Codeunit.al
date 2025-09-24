@@ -264,11 +264,11 @@ codeunit 47012 "SL Hybrid Wizard"
         // Items
         UpdateOrInsertRecord(Database::"SL INSetup", 'INSetup');
         UpdateOrInsertRecord(Database::"SL INTran", 'INTran');
-        UpdateOrInsertRecord(Database::"SL Inventory", 'Inventory');
+        UpdateOrInsertRecord(Database::"SL Inventory Buffer", 'Inventory');
         UpdateOrInsertRecord(Database::"SL InventoryADG", 'InventoryADG');
-        UpdateOrInsertRecord(Database::"SL ItemCost", 'ItemCost');
-        UpdateOrInsertRecord(Database::"SL ItemSite", 'ItemSite');
-        UpdateOrInsertRecord(Database::"SL LotSerMst", 'LotSerMst');
+        UpdateOrInsertRecord(Database::"SL ItemCost Buffer", 'ItemCost');
+        UpdateOrInsertRecord(Database::"SL ItemSite Buffer", 'ItemSite');
+        UpdateOrInsertRecord(Database::"SL LotSerMst Buffer", 'LotSerMst');
         UpdateOrInsertRecord(Database::"SL LotSerT", 'LotSerT');
         UpdateOrInsertRecord(Database::"SL ProductClass", 'ProductClass');
         UpdateOrInsertRecord(Database::"SL Site", 'Site');
@@ -280,11 +280,11 @@ codeunit 47012 "SL Hybrid Wizard"
         // Projects
         UpdateOrInsertRecord(Database::"SL PJAddr", 'PJAddr');
         UpdateOrInsertRecord(Database::"SL PJCode", 'PJCode');
-        UpdateOrInsertRecord(Database::"SL PJEmploy", 'PJEmploy');
-        UpdateOrInsertRecord(Database::"SL PJEmpPjt", 'PJEmpPjt');
-        UpdateOrInsertRecord(Database::"SL PJEquip", 'PJEquip');
-        UpdateOrInsertRecord(Database::"SL PJEQRate", 'PJEQRate');
-        UpdateOrInsertRecord(Database::"SL PJPent", 'PJPent');
+        UpdateOrInsertRecord(Database::"SL PJEmploy Buffer", 'PJEmploy');
+        UpdateOrInsertRecord(Database::"SL PJEmpPjt Buffer", 'PJEmpPjt');
+        UpdateOrInsertRecord(Database::"SL PJEquip Buffer", 'PJEquip');
+        UpdateOrInsertRecord(Database::"SL PJEQRate Buffer", 'PJEQRate');
+        UpdateOrInsertRecord(Database::"SL PJPent Buffer", 'PJPent');
         UpdateOrInsertRecord(Database::"SL PJProj Buffer", 'PJProj');
     end;
 

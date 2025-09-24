@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47015 "SL Inventory"
+table 47084 "SL Inventory Buffer"
 {
     Access = Internal;
     Caption = 'SL Inventory';
     DataClassification = CustomerContent;
-    ObsoleteReason = 'Replaced by table SL Inventory Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -258,7 +249,7 @@ table 47015 "SL Inventory"
         {
             Caption = 'IRDemandID';
         }
-        field(60; IRFutureDate; DateTime)
+        field(60; IRFutureDate; Date)
         {
             Caption = 'IRFutureDate';
         }
@@ -350,7 +341,7 @@ table 47015 "SL Inventory"
         {
             Caption = 'LastCost';
         }
-        field(83; LastCountDate; DateTime)
+        field(83; LastCountDate; Date)
         {
             Caption = 'LastCountDate';
         }
@@ -502,7 +493,7 @@ table 47015 "SL Inventory"
         {
             Caption = 'PStdCost';
         }
-        field(121; PStdCostDate; DateTime)
+        field(121; PStdCostDate; Date)
         {
             Caption = 'PStdCostDate';
         }
@@ -566,11 +557,11 @@ table 47015 "SL Inventory"
         {
             Caption = 'S4Future06';
         }
-        field(137; S4Future07; DateTime)
+        field(137; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(138; S4Future08; DateTime)
+        field(138; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -634,7 +625,7 @@ table 47015 "SL Inventory"
         {
             Caption = 'StdCost';
         }
-        field(154; StdCostDate; DateTime)
+        field(154; StdCostDate; Date)
         {
             Caption = 'StdCostDate';
         }
@@ -738,11 +729,11 @@ table 47015 "SL Inventory"
         {
             Caption = 'User6';
         }
-        field(180; User7; DateTime)
+        field(180; User7; Date)
         {
             Caption = 'User7';
         }
-        field(181; User8; DateTime)
+        field(181; User8; Date)
         {
             Caption = 'User8';
         }
@@ -772,4 +763,3 @@ table 47015 "SL Inventory"
         }
     }
 }
-#endif

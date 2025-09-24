@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47068 "SL PJPent"
+table 47083 "SL PJPent Buffer"
 {
     Access = Internal;
     Caption = 'SL PJPent';
     DataClassification = CustomerContent;
-    ObsoleteReason = 'Replaced by table SL PJPent Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -38,7 +29,7 @@ table 47068 "SL PJPent"
         {
             Caption = 'crtd_user';
         }
-        field(5; end_date; DateTime)
+        field(5; end_date; Date)
         {
             Caption = 'end_date';
         }
@@ -118,11 +109,11 @@ table 47068 "SL PJPent"
         {
             Caption = 'pe_id07';
         }
-        field(25; pe_id08; DateTime)
+        field(25; pe_id08; Date)
         {
             Caption = 'pe_id08';
         }
-        field(26; pe_id09; DateTime)
+        field(26; pe_id09; Date)
         {
             Caption = 'pe_id09';
         }
@@ -162,7 +153,7 @@ table 47068 "SL PJPent"
         {
             Caption = 'pe_id38';
         }
-        field(36; pe_id39; DateTime)
+        field(36; pe_id39; Date)
         {
             Caption = 'pe_id39';
         }
@@ -182,7 +173,7 @@ table 47068 "SL PJPent"
         {
             Caption = 'project';
         }
-        field(41; start_date; DateTime)
+        field(41; start_date; Date)
         {
             Caption = 'start_date';
         }
@@ -292,4 +283,3 @@ table 47068 "SL PJPent"
         }
     }
 }
-#endif

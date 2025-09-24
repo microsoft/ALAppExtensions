@@ -60,13 +60,21 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL Hist. Source Error" = X,
                   table "SL Hist. Source Progress" = X,
                   table "SL INSetup" = X,
-                  table "SL ItemCost" = X,
+                  table "SL ItemCost Buffer" = X,
                   table "SL INTran" = X,
-                  table "SL Inventory" = X,
+                  table "SL Inventory Buffer" = X,
                   table "SL InventoryADG" = X,
+                  table "SL ItemSite Buffer" = X,
+                  table "SL LotSerMst Buffer" = X,
+                  table "SL LotSerT" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  table "SL Inventory" = X,
+                  table "SL ItemCost" = X,
                   table "SL ItemSite" = X,
                   table "SL LotSerMst" = X,
-                  table "SL LotSerT" = X,
+#pragma warning restore AL0432
+#endif
                   table "SL Migration Config" = X,
                   table "SL Migration Error Overview" = X,
                   table "SL Migration Errors" = X,
@@ -75,17 +83,22 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL Period List Work Table" = X,
                   table "SL PJAddr" = X,
                   table "SL PJCode" = X,
+                  table "SL PJEmploy Buffer" = X,
+                  table "SL PJEmpPjt Buffer" = X,
+                  table "SL PJEQRate Buffer" = X,
+                  table "SL PJEquip Buffer" = X,
+                  table "SL PJPent Buffer" = X,
+                  table "SL PJProj Buffer" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL PJEmploy" = X,
                   table "SL PJEmpPjt" = X,
                   table "SL PJEQRate" = X,
                   table "SL PJEquip" = X,
                   table "SL PJPent" = X,
-#if not CLEAN28
-#pragma warning disable AL0432
                   table "SL PJProj" = X,
 #pragma warning restore AL0432
-#endif
-                  table "SL PJProj Buffer" = X,
+#endif                  
                   table "SL POAddress" = X,
                   table "SL POReceipt" = X,
                   table "SL POSetup" = X,

@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47066 "SL PJEmpPjt"
+table 47081 "SL PJEmpPjt Buffer"
 {
     Access = Internal;
     Caption = 'SL PJEmpPjt';
     DataClassification = CustomerContent;
-    ObsoleteReason = 'Replaced by table SL PJEmpPjt Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -66,11 +57,11 @@ table 47066 "SL PJEmpPjt"
         {
             Caption = 'ep_id07';
         }
-        field(12; ep_id08; DateTime)
+        field(12; ep_id08; Date)
         {
             Caption = 'ep_id08';
         }
-        field(13; ep_id09; DateTime)
+        field(13; ep_id09; Date)
         {
             Caption = 'ep_id09';
         }
@@ -78,7 +69,7 @@ table 47066 "SL PJEmpPjt"
         {
             Caption = 'ep_id10';
         }
-        field(15; effect_date; DateTime)
+        field(15; effect_date; Date)
         {
             Caption = 'effect_date';
         }
@@ -136,4 +127,3 @@ table 47066 "SL PJEmpPjt"
         }
     }
 }
-#endif

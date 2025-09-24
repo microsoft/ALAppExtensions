@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47020 "SL ItemCost"
+table 47085 "SL ItemCost Buffer"
 {
     Access = Internal;
     Caption = 'SL ItemCost';
     DataClassification = CustomerContent;
-    ObsoleteReason = 'Replaced by table SL ItemCost Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -98,7 +89,7 @@ table 47020 "SL ItemCost"
         {
             Caption = 'QtyShipNotInv';
         }
-        field(20; RcptDate; DateTime)
+        field(20; RcptDate; Date)
         {
             Caption = 'RcptDate';
         }
@@ -130,11 +121,11 @@ table 47020 "SL ItemCost"
         {
             Caption = 'S4Future06';
         }
-        field(28; S4Future07; DateTime)
+        field(28; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(29; S4Future08; DateTime)
+        field(29; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -194,11 +185,11 @@ table 47020 "SL ItemCost"
         {
             Caption = 'User6';
         }
-        field(44; User7; DateTime)
+        field(44; User7; Date)
         {
             Caption = 'User7';
         }
-        field(45; User8; DateTime)
+        field(45; User8; Date)
         {
             Caption = 'User8';
         }
@@ -212,4 +203,3 @@ table 47020 "SL ItemCost"
         }
     }
 }
-#endif

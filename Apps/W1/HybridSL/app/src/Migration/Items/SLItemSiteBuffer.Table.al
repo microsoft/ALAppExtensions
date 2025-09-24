@@ -1,4 +1,3 @@
-#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6,19 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-table 47041 "SL ItemSite"
+table 47086 "SL ItemSite Buffer"
 {
     Access = Internal;
     Caption = 'SL ItemSite';
     DataClassification = CustomerContent;
-    ObsoleteReason = 'Replaced by table SL ItemSite Buffer.';
-#if not CLEAN28
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
-#else
-    ObsoleteState = Removed;
-    ObsoleteTag = '31.0';
-#endif
 
     fields
     {
@@ -218,7 +209,7 @@ table 47041 "SL ItemSite"
         {
             Caption = 'IRDemandID';
         }
-        field(50; IRFutureDate; DateTime)
+        field(50; IRFutureDate; Date)
         {
             Caption = 'IRFutureDate';
         }
@@ -398,11 +389,11 @@ table 47041 "SL ItemSite"
         {
             Caption = 'LastCost';
         }
-        field(95; LastCountDate; DateTime)
+        field(95; LastCountDate; Date)
         {
             Caption = 'LastCountDate';
         }
-        field(96; LastPurchaseDate; DateTime)
+        field(96; LastPurchaseDate; Date)
         {
             Caption = 'LastPurchaseDate';
         }
@@ -506,7 +497,7 @@ table 47041 "SL ItemSite"
         {
             Caption = 'PrjINQtyShipNotInv';
         }
-        field(122; PStdCostDate; DateTime)
+        field(122; PStdCostDate; Date)
         {
             Caption = 'PStdCostDate';
         }
@@ -658,11 +649,11 @@ table 47041 "SL ItemSite"
         {
             Caption = 'S4Future06';
         }
-        field(160; S4Future07; DateTime)
+        field(160; S4Future07; Date)
         {
             Caption = 'S4Future07';
         }
-        field(161; S4Future08; DateTime)
+        field(161; S4Future08; Date)
         {
             Caption = 'S4Future08';
         }
@@ -722,7 +713,7 @@ table 47041 "SL ItemSite"
         {
             Caption = 'StdCost';
         }
-        field(176; StdCostDate; DateTime)
+        field(176; StdCostDate; Date)
         {
             Caption = 'StdCostDate';
         }
@@ -766,11 +757,11 @@ table 47041 "SL ItemSite"
         {
             Caption = 'User6';
         }
-        field(187; User7; DateTime)
+        field(187; User7; Date)
         {
             Caption = 'User7';
         }
-        field(188; User8; DateTime)
+        field(188; User8; Date)
         {
             Caption = 'User8';
         }
@@ -792,4 +783,3 @@ table 47041 "SL ItemSite"
         }
     }
 }
-#endif
