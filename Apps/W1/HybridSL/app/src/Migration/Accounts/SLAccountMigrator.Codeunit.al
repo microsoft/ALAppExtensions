@@ -16,7 +16,7 @@ codeunit 47000 "SL Account Migrator"
     var
         PostingGroupCodeTxt: Label 'SL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from SL', Locked = true;
-        GlDocNoLbl: Label 'G000000001', Locked = true;
+        GLModuleIDLbl: Label 'GL', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", OnMigrateGlAccount, '', true, true)]
     local procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
@@ -118,7 +118,9 @@ codeunit 47000 "SL Account Migrator"
         SLFiscalPeriods: Record "SL Fiscal Periods";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         DimSetID: Integer;
-        DescriptionTrxTxt: Label 'Migrated transaction', Locked = true;
+        DescriptionTrxTxt: Label 'SL migrated account balance for period ', Locked = true;
+        BatchDescription: Text[50];
+        BatchDocumentNo: Code[20];
         PostingGroupCode: Text;
         PostingGroupPeriod: Text;
     begin
@@ -129,7 +131,7 @@ codeunit 47000 "SL Account Migrator"
                 PostingGroupPeriod := Format(SLAccountTransactions.PERIODID);
                 if SLAccountTransactions.PERIODID < 10 then
                     PostingGroupPeriod := '0' + PostingGroupPeriod;
-                PostingGroupCode := 'SL' + Format(SLAccountTransactions.Year) + '-' + PostingGroupPeriod;
+                PostingGroupCode := PostingGroupCodeTxt + Format(SLAccountTransactions.Year) + '-' + PostingGroupPeriod;
 
                 if SLAccountTransactions.Balance = 0 then
                     exit;
@@ -139,13 +141,15 @@ codeunit 47000 "SL Account Migrator"
                     SLAccountTransactions.Balance := (-1 * SLAccountTransactions.Balance);
 
                 CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10));
+                BatchDocumentNo := PostingGroupCodeTxt + GLModuleIDLbl + SLAccountTransactions.Year + PostingGroupPeriod;
+                BatchDescription := DescriptionTrxTxt + SLAccountTransactions.Year + '-' + PostingGroupPeriod;
 
                 if SLFiscalPeriods.Get(SLAccountTransactions.PERIODID, SLAccountTransactions.Year) then
                     DataMigrationFacadeHelper.CreateGeneralJournalLine(
                     GenJournalLine,
                     CopyStr(PostingGroupCode, 1, 10),
-                    CopyStr(GlDocNoLbl, 1, MaxStrLen(GlDocNoLbl)),
-                    CopyStr(DescriptionTrxTxt, 1, MaxStrLen(DescriptionTrxTxt)),
+                    CopyStr(BatchDocumentNo, 1, MaxStrLen(BatchDocumentNo)),
+                    CopyStr(BatchDescription, 1, MaxStrLen(BatchDescription)),
                     GenJournalLine."Account Type"::"G/L Account",
                     CopyStr(SLAccountStaging.AcctNum, 1, MaxStrLen(SLAccountStaging.AcctNum)),
                     SLFiscalPeriods.PerEndDT,

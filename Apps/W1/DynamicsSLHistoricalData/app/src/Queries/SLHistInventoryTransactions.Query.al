@@ -15,7 +15,7 @@ query 42801 "SL Hist. InventoryTransactions"
     Caption = 'Dynamics SL Inventory Transactions';
     elements
     {
-        dataitem(SL_INTransactionsAmountsHist; "SL Hist. INTran")
+        dataitem(SL_INTransactionsAmountsHist; "SL Hist. INTran Archive")
         {
             column(CpnyID; CpnyID)
             {
