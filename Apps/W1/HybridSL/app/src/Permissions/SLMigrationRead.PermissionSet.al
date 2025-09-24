@@ -57,19 +57,21 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL Hist. Source Error" = R,
                   tabledata "SL Hist. Source Progress" = R,
                   tabledata "SL INSetup" = R,
-                  tabledata "SL INTran" = R,
+                  tabledata "SL INTran Buffer" = R,
                   tabledata "SL Inventory Buffer" = R,
                   tabledata "SL InventoryADG" = R,
                   tabledata "SL ItemCost Buffer" = R,
                   tabledata "SL ItemSite Buffer" = R,
                   tabledata "SL LotSerMst Buffer" = R,
-                  tabledata "SL LotSerT" = R,
+                  tabledata "SL LotSerT Buffer" = R,
 #if not CLEAN28
 #pragma warning disable AL0432
+                  tabledata "SL INTran" = R,
                   tabledata "SL Inventory" = R,
                   tabledata "SL ItemCost" = R,
                   tabledata "SL ItemSite" = R,
                   tabledata "SL LotSerMst" = R,
+                  tabledata "SL LotSerT" = R,
 #pragma warning restore AL0432
 #endif
                   tabledata "SL Migration Config" = R,

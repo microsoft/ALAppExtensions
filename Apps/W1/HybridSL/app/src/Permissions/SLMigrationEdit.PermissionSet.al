@@ -59,19 +59,21 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Hist. Source Error" = IMD,
                   tabledata "SL Hist. Source Progress" = IMD,
                   tabledata "SL INSetup" = IMD,
-                  tabledata "SL INTran" = IMD,
+                  tabledata "SL INTran Buffer" = IMD,
                   tabledata "SL Inventory Buffer" = IMD,
                   tabledata "SL InventoryADG" = IMD,
                   tabledata "SL ItemCost Buffer" = IMD,
                   tabledata "SL ItemSite Buffer" = IMD,
                   tabledata "SL LotSerMst Buffer" = IMD,
-                  tabledata "SL LotSerT" = IMD,
+                  tabledata "SL LotSerT Buffer" = IMD,
 #if not CLEAN28
 #pragma warning disable AL0432
+                  tabledata "SL INTran" = IMD,
                   tabledata "SL Inventory" = IMD,
                   tabledata "SL ItemCost" = IMD,
                   tabledata "SL ItemSite" = IMD,
                   tabledata "SL LotSerMst" = IMD,
+                  tabledata "SL LotSerT" = IMD,
 #pragma warning restore AL0432
 #endif
                   tabledata "SL Migration Config" = IMD,

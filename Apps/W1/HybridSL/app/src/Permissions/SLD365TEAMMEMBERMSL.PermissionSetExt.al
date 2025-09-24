@@ -58,19 +58,21 @@ permissionsetextension 47003 "SLD365 TEAM MEMBER - MSL" extends "D365 TEAM MEMBE
                   tabledata "SL Hist. Source Error" = RIMD,
                   tabledata "SL Hist. Source Progress" = RIMD,
                   tabledata "SL INSetup" = RIMD,
-                  tabledata "SL INTran" = RIMD,
+                  tabledata "SL INTran Buffer" = RIMD,
                   tabledata "SL Inventory Buffer" = RIMD,
                   tabledata "SL InventoryADG" = RIMD,
                   tabledata "SL ItemCost Buffer" = RIMD,
                   tabledata "SL ItemSite Buffer" = RIMD,
                   tabledata "SL LotSerMst Buffer" = RIMD,
-                  tabledata "SL LotSerT" = RIMD,
+                  tabledata "SL LotSerT Buffer" = RIMD,
 #if not CLEAN28
 #pragma warning disable AL0432
+                  tabledata "SL INTran" = RIMD,
                   tabledata "SL Inventory" = RIMD,
                   tabledata "SL ItemCost" = RIMD,
                   tabledata "SL ItemSite" = RIMD,
                   tabledata "SL LotSerMst" = RIMD,
+                  tabledata "SL LotSerT" = RIMD,
 #pragma warning restore AL0432
 #endif
                   tabledata "SL Migration Config" = RIMD,

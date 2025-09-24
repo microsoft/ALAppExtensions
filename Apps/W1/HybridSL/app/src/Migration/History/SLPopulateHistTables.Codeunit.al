@@ -542,12 +542,12 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalINTran()
     var
-        SLINTran: Record "SL INTran";
-        SLHistINTran: Record "SL Hist. INTran";
+        SLINTran: Record "SL INTran Buffer";
+        SLHistINTran: Record "SL Hist. INTran Archive";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL INTran";
+        SourceTableId := Database::"SL INTran Buffer";
         if InitialHistYear > 0 then
             SLINTran.SetFilter(TranDate, '>= %1', InitialDateTime);
 
@@ -573,12 +573,12 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalLotSerT()
     var
-        SLLotSerT: Record "SL LotSerT";
-        SLHistLotSerT: Record "SL Hist. LotSerT";
+        SLLotSerT: Record "SL LotSerT Buffer";
+        SLHistLotSerT: Record "SL Hist. LotSerT Archive";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL LotSerT";
+        SourceTableId := Database::"SL LotSerT Buffer";
         if InitialHistYear > 0 then
             SLLotSerT.SetFilter(TranDate, '>= %1', InitialDateTime);
 

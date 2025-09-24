@@ -61,18 +61,20 @@ permissionset 47005 "SL Migration-Objects"
                   table "SL Hist. Source Progress" = X,
                   table "SL INSetup" = X,
                   table "SL ItemCost Buffer" = X,
-                  table "SL INTran" = X,
+                  table "SL INTran Buffer" = X,
                   table "SL Inventory Buffer" = X,
                   table "SL InventoryADG" = X,
                   table "SL ItemSite Buffer" = X,
                   table "SL LotSerMst Buffer" = X,
-                  table "SL LotSerT" = X,
+                  table "SL LotSerT Buffer" = X,
 #if not CLEAN28
 #pragma warning disable AL0432
+                  table "SL INTran" = X,
                   table "SL Inventory" = X,
                   table "SL ItemCost" = X,
                   table "SL ItemSite" = X,
                   table "SL LotSerMst" = X,
+                  table "SL LotSerT" = X,
 #pragma warning restore AL0432
 #endif
                   table "SL Migration Config" = X,
