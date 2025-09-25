@@ -7,7 +7,7 @@ namespace Microsoft.ExcelReports;
 using Microsoft.Finance.RoleCenters;
 using Microsoft.Finance.ExcelReports;
 
-pageextension 4424 "EXR Bookkeeper RC" extends "Bookkeeper Role Center"
+pageextension 4442 "EXR Bookkeeper RC" extends "Bookkeeper Role Center"
 {
     actions
     {
