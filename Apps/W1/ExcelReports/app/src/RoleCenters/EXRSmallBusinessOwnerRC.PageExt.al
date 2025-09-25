@@ -8,7 +8,7 @@ namespace Microsoft.Sales.ExcelReports;
 using Microsoft.RoleCenters;
 using Microsoft.Finance.ExcelReports;
 
-pageextension 4411 "EXR Small Business Owner RC" extends "Small Business Owner RC"
+pageextension 4440 "EXR Small Business Owner RC" extends "Small Business Owner RC"
 {
     actions
     {
