@@ -40,9 +40,18 @@
     "Official-Build"
   ],
   "CICDPushBranches": [],
-  "CICDSchedule": "0 2 * * *",
   "CICDPullRequestBranches": [
     "main"
+  ],
+  "conditionalSettings": [
+    {
+        "workflows": [ "CI/CD" ],
+        "settings": {
+            "workflowSchedule": {
+                "cron": "0 2 * * *"
+            }
+        }
+    }
   ],
   "enableCodeCop": true,
   "enableAppSourceCop": false,
