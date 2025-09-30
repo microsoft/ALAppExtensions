@@ -11,7 +11,7 @@ codeunit 40125 "GP Populate Combined Tables"
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
-        PouplateGPFiscalPeriods();
+        PopulateGPFiscalPeriods();
 
         if GPCompanyAdditionalSettings.GetGLModuleEnabled() then begin
             PopulateGPAccount();
@@ -77,6 +77,14 @@ codeunit 40125 "GP Populate Combined Tables"
             Clear(GPAccount);
 #pragma warning disable AA0139
             GPAccount.AcctNum := GPGL00100.MNACSGMT.Trim();
+            GPAccount.ACTNUMBR_1 := GPGL00100.ACTNUMBR_1.Trim();
+            GPAccount.ACTNUMBR_2 := GPGL00100.ACTNUMBR_2.Trim();
+            GPAccount.ACTNUMBR_3 := GPGL00100.ACTNUMBR_3.Trim();
+            GPAccount.ACTNUMBR_4 := GPGL00100.ACTNUMBR_4.Trim();
+            GPAccount.ACTNUMBR_5 := GPGL00100.ACTNUMBR_5.Trim();
+            GPAccount.ACTNUMBR_6 := GPGL00100.ACTNUMBR_6.Trim();
+            GPAccount.ACTNUMBR_7 := GPGL00100.ACTNUMBR_7.Trim();
+            GPAccount.ACTNUMBR_8 := GPGL00100.ACTNUMBR_8.Trim();
 #pragma warning restore AA0139
             GPAccount.AcctIndex := GPGL00100.ACTINDX;
             GPAccount.Name := CopyStr(AccountDescription.Trim(), 1, MaxStrLen(GPAccount.Name));
@@ -92,7 +100,7 @@ codeunit 40125 "GP Populate Combined Tables"
         until GPGL00100.Next() = 0;
     end;
 
-    internal procedure PouplateGPFiscalPeriods()
+    internal procedure PopulateGPFiscalPeriods()
     var
         GPSY40100: Record "GP SY40100";
         GPSY40101: Record "GP SY40101";
@@ -323,11 +331,10 @@ codeunit 40125 "GP Populate Combined Tables"
         GPRM00101: Record "GP RM00101";
         GPRM00103: Record "GP RM00103";
         GPSY01200: Record "GP SY01200";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         GPRM00101.SetRange(INACTIVE, false);
-        if GPCompanyMigrationSettings.Get(CompanyName()) then
-            if GPCompanyMigrationSettings."Migrate Inactive Customers" then
+        if GPCompanyAdditionalSettings.GetMigrateInactiveCustomers() then
                 GPRM00101.SetRange(INACTIVE);
 
         if not GPRM00101.FindSet() then
@@ -355,6 +362,8 @@ codeunit 40125 "GP Populate Combined Tables"
             GPCustomer.TAXSCHID := GPRM00101.TAXSCHID.Trim();
             GPCustomer.UPSZONE := GPRM00101.UPSZONE.Trim();
             GPCustomer.TAXEXMT1 := GPRM00101.TAXEXMT1.Trim();
+            GPCustomer.CUSTCLAS := GPRM00101.CUSTCLAS.Trim();
+            GPCustomer.RMSLSACC := GPRM00101.RMSLSACC;
 #pragma warning restore AA0139   
 
             if GPRM00101.PHONE1.Contains('E+') then
@@ -521,12 +530,11 @@ codeunit 40125 "GP Populate Combined Tables"
         GPPM00201VendorSum: Record "GP PM00201";
         GPSY01200NetAddresses: Record "GP SY01200";
         GPVendor: Record "GP Vendor";
-        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         GPPM00200Vendor.SetFilter(VENDSTTS, '1|3');
-        if GPCompanyMigrationSettings.Get(CompanyName()) then
-            if GPCompanyMigrationSettings."Migrate Inactive Vendors" then
-                GPPM00200Vendor.SetRange(VENDSTTS);
+        if GPCompanyAdditionalSettings.GetMigrateInactiveVendors() then
+            GPPM00200Vendor.SetRange(VENDSTTS);
 
         if not GPPM00200Vendor.FindSet() then
             exit;
@@ -551,7 +559,10 @@ codeunit 40125 "GP Populate Combined Tables"
             GPVendor.TAXSCHID := GPPM00200Vendor.TAXSCHID.TrimEnd();
             GPVendor.UPSZONE := GPPM00200Vendor.UPSZONE.TrimEnd();
             GPVendor.TXIDNMBR := GPPM00200Vendor.TXIDNMBR.TrimEnd();
+            GPVendor.VNDCLSID := GPPM00200Vendor.VNDCLSID.TrimEnd();
 #pragma warning restore AA0139    
+
+            GPVendor.PMPRCHIX := GPPM00200Vendor.PMPRCHIX;
 
             if GPPM00200Vendor.PHNUMBR1.Contains('E+') then
                 GPVendor.PHNUMBR1 := '00000000000000'

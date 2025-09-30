@@ -170,6 +170,18 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specify whether to migrate item classes.';
                     ApplicationArea = All;
                 }
+                field("Recurring Purchasing Lines"; Rec."Recurring Purchasing Lines")
+                {
+                    Caption = 'Recurring Purchasing Lines';
+                    ToolTip = 'Specify whether to migrate recurring purchasing lines.';
+                    ApplicationArea = All;
+                }
+                field("Recurring Sales Lines"; Rec."Recurring Sales Lines")
+                {
+                    Caption = 'Recurring Sales Lines';
+                    ToolTip = 'Specify whether to migrate recurring sales lines.';
+                    ApplicationArea = All;
+                }
                 field("Oldest Hist. Year to Migrate"; Rec."Oldest Hist. Year to Migrate")
                 {
                     Caption = 'Oldest Snapshot year';
