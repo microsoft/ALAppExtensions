@@ -82,15 +82,15 @@ codeunit 42800 "SL Hist. Migration Status Mgmt"
     var
         SLHistMigrationCurStatus: Record "SL Hist. Migration Cur. Status";
         SLHistAPAdjust: Record "SL Hist. APAdjust";
-        SLHistAPDoc: Record "SL Hist. APDoc";
-        SLHistAPTran: Record "SL Hist. APTran";
+        SLHistAPDoc: Record "SL Hist. APDoc Archive";
+        SLHistAPTran: Record "SL Hist. APTran Archive";
         SLHistARAdjust: Record "SL Hist. ARAdjust";
-        SLHistARDoc: Record "SL Hist. ARDoc";
-        SLHistARTran: Record "SL Hist. ARTran";
+        SLHistARDoc: Record "SL Hist. ARDoc Archive";
+        SLHistARTran: Record "SL Hist. ARTran Archive";
         SLHistBatch: Record "SL Hist. Batch";
-        SLHistGLTran: Record "SL Hist. GLTran";
-        SLHistINTran: Record "SL Hist. INTran";
-        SLHistLotSerT: Record "SL Hist. LotSerT";
+        SLHistGLTran: Record "SL Hist. GLTran Archive";
+        SLHistINTran: Record "SL Hist. INTran Archive";
+        SLHistLotSerT: Record "SL Hist. LotSerT Archive";
         SLHistPOReceipt: Record "SL Hist. POReceipt";
         SLHistPOTran: Record "SL Hist. POTran";
         SLHistPurchOrd: Record "SL Hist. PurchOrd";
@@ -135,31 +135,31 @@ codeunit 42800 "SL Hist. Migration Status Mgmt"
             BatchDeleteAll(Database::"SL Hist. POReceipt", SLHistPOReceipt.FieldNo(SLHistPOReceipt.RcptNbr));
 
         if not SLHistLotSerT.IsEmpty() then
-            BatchDeleteAll(Database::"SL Hist. LotSerT", SLHistLotSerT.FieldNo(SLHistLotSerT.LotSerNbr));
+            BatchDeleteAll(Database::"SL Hist. LotSerT Archive", SLHistLotSerT.FieldNo(SLHistLotSerT.LotSerNbr));
 
         if not SLHistINTran.IsEmpty() then
-            BatchDeleteAll(Database::"SL Hist. INTran", SLHistINTran.FieldNo(SLHistINTran.InvtID));
+            BatchDeleteAll(Database::"SL Hist. INTran Archive", SLHistINTran.FieldNo(SLHistINTran.InvtID));
 
         if not SLHistGLTran.IsEmpty() then
-            BatchDeleteAll(Database::"SL Hist. GLTran", SLHistGLTran.FieldNo(SLHistGLTran.Module));
+            BatchDeleteAll(Database::"SL Hist. GLTran Archive", SLHistGLTran.FieldNo(SLHistGLTran.Module));
 
         if not SLHistBatch.IsEmpty() then
             BatchDeleteAll(Database::"SL Hist. Batch", SLHistBatch.FieldNo(SLHistBatch.Module));
 
         if not SLHistARTran.IsEmpty() then
-            BatchDeleteAll(Database::"SL Hist. ARTran", SLHistARTran.FieldNo(SLHistARTran.CustId));
+            BatchDeleteAll(Database::"SL Hist. ARTran Archive", SLHistARTran.FieldNo(SLHistARTran.CustId));
 
         if not SLHistARDoc.IsEmpty() then
-            BatchDeleteAll(Database::"SL Hist. ARDoc", SLHistARDoc.FieldNo(SLHistARDoc.CustId));
+            BatchDeleteAll(Database::"SL Hist. ARDoc Archive", SLHistARDoc.FieldNo(SLHistARDoc.CustId));
 
         if not SLHistARAdjust.IsEmpty() then
             BatchDeleteAll(Database::"SL Hist. ARAdjust", SLHistARAdjust.FieldNo(SLHistARAdjust.AdjdRefNbr));
 
         if not SLHistAPTran.IsEmpty() then
-            BatchDeleteAll(Database::"SL Hist. APTran", SLHistAPTran.FieldNo(SLHistAPTran.BatNbr));
+            BatchDeleteAll(Database::"SL Hist. APTran Archive", SLHistAPTran.FieldNo(SLHistAPTran.BatNbr));
 
         if not SLHistAPDoc.IsEmpty() then
-            BatchDeleteAll(Database::"SL Hist. APDoc", SLHistAPDoc.FieldNo(SLHistAPDoc.Acct));
+            BatchDeleteAll(Database::"SL Hist. APDoc Archive", SLHistAPDoc.FieldNo(SLHistAPDoc.Acct));
 
         if not SLHistAPAdjust.IsEmpty() then
             BatchDeleteAll(Database::"SL Hist. APAdjust", SLHistAPAdjust.FieldNo(SLHistAPAdjust.AdjdRefNbr));
