@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/32e66d69cfd2c1e3eca39e416e27c6aa58de6df3/Actions/.Modules/settings.schema.json",
+  "$schema": "https://raw.githubusercontent.com/microsoft/AL-Go/55f06533726d052e7603277236f2bcbcd67fa6cf/Actions/.Modules/settings.schema.json",
   "type": "PTE",
   "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
   "bcContainerHelperVersion": "latest",
@@ -45,12 +45,14 @@
   ],
   "conditionalSettings": [
     {
-        "workflows": [ "CI/CD" ],
-        "settings": {
-            "workflowSchedule": {
-                "cron": "0 2 * * *"
-            }
+      "workflows": [
+        "CI/CD"
+      ],
+      "settings": {
+        "workflowSchedule": {
+          "cron": "0 2 * * *"
         }
+      }
     }
   ],
   "enableCodeCop": true,
@@ -66,5 +68,5 @@
   ],
   "UpdateALGoSystemFilesEnvironment": "Official-Build",
   "PullRequestTrigger": "pull_request",
-  "templateSha": "8edc212cf392aa985d35e99ae22756762607f974"
+  "templateSha": "cb1099b0e43feda0a5b7a10e106fdf936002898e"
 }
