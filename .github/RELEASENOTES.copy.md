@@ -2,6 +2,12 @@
 
 Note that when using the preview version of AL-Go for GitHub, we recommend you Update your AL-Go system files, as soon as possible when informed that an update is available.
 
+### Mechanism to overwrite complex settings type
+
+By default, AL-Go merges settings from various places (see [settings levels](https://aka.ms/algosettings#where-are-the-settings-located)). Basic setting types such as `string` and `integer` are overwritten, but settings with complex types such as `array` and `object` are merged.
+
+However, sometimes it is useful to avoid merging complex types. This can be achieved by specifying `overwriteSettings` property on a settings object. The purpose of the property is to list settings, for which the value will be overwritten, instead of merged. Read more at [overwriteSettings property](https://aka.ms/algosettings#overwriteSettings)
+
 ### AL Code Analysis tracked in GitHub
 
 AL-Go already supports AL code analysis, but up until now this was not tracked in GitHub. It is now possible to track code analysis issues automatically in the GitHub security tab, as well as having any new issues posted as a comment in Pull Requests.
@@ -13,6 +19,7 @@ Please note that some automated features are premium and require the use of [Git
 ### Issues
 
 - Discussion 1885 Conditional settings for CI/CD are not applied
+- Discussion 1899 Remove optional properties from "required" list in settings.schema.json
 
 ## v7.3
 
@@ -35,7 +42,7 @@ Example
 
 AL-Go now offers a dataexplorer dashboard to get started with AL-Go telemetry. Additionally, we've updated the documentation to include a couple of kusto queries if you would rather build your own reports.
 
-### Support for AL-Go settings as GitHub environment variable: ALGoEnvSettings
+### Support for AL-Go settings as GitHub environment variable: ALGoEnvironmentSettings
 
 AL-Go settings can now be defined in GitHub environment variables. To use this feature, create a new variable under your GitHub environment called `ALGoEnvironmentSettings`. Please note that this variable should not include your environment name.
 
