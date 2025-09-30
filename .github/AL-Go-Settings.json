@@ -52,6 +52,7 @@
             }
         }
     }
+  ],
   "enableCodeCop": true,
   "enableAppSourceCop": false,
   "enablePerTenantExtensionCop": true,
