@@ -11,4 +11,5 @@ enum 6108 "E-Document Status"
     value(0; "In Progress") { Caption = 'In progress'; }
     value(1; "Processed") { Caption = 'Processed'; }
     value(2; "Error") { Caption = 'Error'; }
+    value(3; "Exported") { Caption = 'Exported'; }
 }
