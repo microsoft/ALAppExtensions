@@ -244,7 +244,54 @@ codeunit 5692 "Create Extended Sales Document"
         CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateItem: Codeunit "Create Item";
         CreateSalesDocument: Codeunit "Create Sales Document";
+        CreateShippingData: Codeunit "Create Shipping Data";
+        CreateSalespersonPurchaser: Codeunit "Create Salesperson/Purchaser";
     begin
+        // Orders
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticAdatumCorporation(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-15W>'), CreatePaymentTerms.PaymentTermsCM(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.RomeGuestChairGreen(), 24);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AntwerpConferenceTable(), 6);
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.ExportSchoolofArt(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-9W>'), CreatePaymentTerms.PaymentTermsCM(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MoscowSwivelChairRed(), 12);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.SeoulGuestChairRed(), 8);
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticRelecloud(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-5W>'), CreatePaymentTerms.PaymentTermsCM(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.TokyoGuestChairBlue(), 8);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.RomeGuestChairGreen(), 24);
+
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.EUAlpineSkiHouse(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-4W>'), CreatePaymentTerms.PaymentTermsCM(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.SydneySwivelChairGreen(), 9);
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticRelecloud(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-4W>'), CreatePaymentTerms.PaymentTermsCM(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 12);
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticAdatumCorporation(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-2W>'), CreatePaymentTerms.PaymentTermsCM(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.ParisGuestChairBlack(), 20);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AntwerpConferenceTable(), 1);
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticTreyResearch(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-1W>'), CreatePaymentTerms.PaymentTermsCM(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 10);
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.ExportSchoolofArt(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19030422D), ContosoUtilities.AdjustDate(19030422D), CreatePaymentTerms.PaymentTermsCM(), '', ContosoUtilities.AdjustDate(19030422D), '', CreateShippingData.DHL(), ContosoUtilities.AdjustDate(19030423D), CreateShippingData.OverNight(), '', CreateSalespersonPurchaser.JimOlive());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AntwerpConferenceTable(), 12);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 10);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensMobilePedestal(), 10);
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.EUAlpineSkiHouse(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19030513D), ContosoUtilities.AdjustDate(19030513D), CreatePaymentTerms.PaymentTermsM8D(), '', ContosoUtilities.AdjustDate(19030513D), '', CreateShippingData.UPS(), ContosoUtilities.AdjustDate(19030514D), CreateShippingData.OverNight(), '', CreateSalespersonPurchaser.LinaTownsend());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AmsterdamLamp(), 16);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.BerlingGuestChairYellow(), 20);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.TokyoGuestChairBlue(), 7);
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticRelecloud(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19030422D), ContosoUtilities.AdjustDate(19030422D), CreatePaymentTerms.PaymentTermsCM(), '', ContosoUtilities.AdjustDate(19030422D), '', CreateShippingData.Fedex(), ContosoUtilities.AdjustDate(19030423D), CreateShippingData.Standard(), '', CreateSalespersonPurchaser.OtisFalls());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensDesk(), 6);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.SeoulGuestChairRed(), 12);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MunichSwivelChairYellow(), 6);
+
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticAdatumCorporation(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19030422D), ContosoUtilities.AdjustDate(19030422D), CreatePaymentTerms.PaymentTermsCM(), '', ContosoUtilities.AdjustDate(19030422D), '', CreateShippingData.DHL(), ContosoUtilities.AdjustDate(19030423D), CreateShippingData.Standard(), '', CreateSalespersonPurchaser.JimOlive());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MoscowSwivelChairRed(), 20);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MexicoSwivelChairBlack(), 20);
 
         // Quotes
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Quote, CreateCustomer.DomesticAdatumCorporation(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-15W>'), CreatePaymentTerms.PaymentTermsCM(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '');
