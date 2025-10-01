@@ -24,6 +24,11 @@ codeunit 5124 "Contoso Sales"
     end;
 
     procedure InsertSalesHeader(DocumentType: Enum "Sales Document Type"; SelltoCustomerNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; DocumentDate: Date; PaymentMethodCode: Code[10]; ShippingAgentCode: Code[10]; RequestedDeliveryDate: Date; ShippingAgentServiceCode: Code[10]; ExternalDocumentNo: Code[35]): Record "Sales Header"
+    begin
+        exit(InsertSalesHeader(DocumentType, SelltoCustomerNo, YourReference, OrderDate, PostingDate, PaymentTermsCode, LocationCode, DocumentDate, PaymentTermsCode, ShippingAgentCode, RequestedDeliveryDate, ShippingAgentServiceCode, ExternalDocumentNo, ''));
+    end;
+
+    procedure InsertSalesHeader(DocumentType: Enum "Sales Document Type"; SelltoCustomerNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; DocumentDate: Date; PaymentMethodCode: Code[10]; ShippingAgentCode: Code[10]; RequestedDeliveryDate: Date; ShippingAgentServiceCode: Code[10]; ExternalDocumentNo: Code[35]; SalespersonCode: Code[20]): Record "Sales Header"
     var
         SalesHeader: Record "Sales Header";
     begin
@@ -46,6 +51,8 @@ codeunit 5124 "Contoso Sales"
         SalesHeader.Validate("Shipping Agent Service Code", ShippingAgentServiceCode);
         SalesHeader.Validate("External Document No.", ExternalDocumentNo);
         SalesHeader.Validate("Location Code", LocationCode);
+        if SalespersonCode <> '' then
+            SalesHeader.Validate("Salesperson Code", SalespersonCode);
         SalesHeader.Modify(true);
 
         exit(SalesHeader);
