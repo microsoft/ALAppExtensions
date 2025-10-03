@@ -59,6 +59,11 @@ codeunit 5124 "Contoso Sales"
     end;
 
     procedure InsertSalesLineWithItem(SalesHeader: Record "Sales Header"; ItemNo: Code[20]; Quantity: Decimal)
+    begin
+        InsertSalesLineWithItem(SalesHeader, ItemNo, Quantity, '');
+    end;
+
+    procedure InsertSalesLineWithItem(SalesHeader: Record "Sales Header"; ItemNo: Code[20]; Quantity: Decimal; DeferralCode: Code[10])
     var
         Item: Record Item;
         SalesLine: Record "Sales Line";
@@ -74,6 +79,8 @@ codeunit 5124 "Contoso Sales"
         SalesLine.Validate("No.", Item."No.");
         SalesLine.Validate("Unit of Measure Code", Item."Base Unit of Measure");
         SalesLine.Validate("Quantity", Quantity);
+        if DeferralCode <> '' then
+            SalesLine.Validate("Deferral Code", DeferralCode);
         SalesLine.Insert(true);
     end;
 
