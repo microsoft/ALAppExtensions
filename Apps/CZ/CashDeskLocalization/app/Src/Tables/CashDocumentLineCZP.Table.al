@@ -924,6 +924,16 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'FA Posting Type';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Account Type" <> "Account Type"::"Fixed Asset" then
+                    exit;
+
+                if "FA Posting Type" = "FA Posting Type"::"Acquisition Cost" then
+                    if FASetup.IsFAAcquisitionAsCustom2CZL() then
+                        "FA Posting Type" := "FA Posting Type"::"Custom 2";
+            end;
         }
         field(91; "Depreciation Book Code"; Code[10])
         {
@@ -1253,6 +1263,7 @@ table 11733 "Cash Document Line CZP"
         CashDeskEventCZP: Record "Cash Desk Event CZP";
         TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary;
         FixedAsset: Record "Fixed Asset";
+        FASetup: Record "FA Setup";
         DimensionManagement: Codeunit DimensionManagement;
         ConfirmManagement: Codeunit "Confirm Management";
         RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = TableCaption';
@@ -1788,7 +1799,6 @@ table 11733 "Cash Document Line CZP"
     var
         PostedGLAccount: Record "G/L Account";
         FAPostingGroup: Record "FA Posting Group";
-        FASetup: Record "FA Setup";
         FADepreciationBook: Record "FA Depreciation Book";
         SetFADeprBook: Record "FA Depreciation Book";
         FADeprBook: Record "FA Depreciation Book";
@@ -1821,7 +1831,7 @@ table 11733 "Cash Document Line CZP"
                 exit;
         end;
         if "FA Posting Type" = "FA Posting Type"::" " then
-            "FA Posting Type" := "FA Posting Type"::"Acquisition Cost";
+            "FA Posting Type" := FASetup.IsFAAcquisitionAsCustom2CZL() ? "FA Posting Type"::"Custom 2" : "FA Posting Type"::"Acquisition Cost";
         FADepreciationBook.Get("Account No.", "Depreciation Book Code");
         FADepreciationBook.TestField("FA Posting Group");
         FAPostingGroup.Get(FADepreciationBook."FA Posting Group");

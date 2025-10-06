@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -13,6 +14,10 @@ using System.Utilities;
 #pragma warning disable AS0018
 codeunit 20124 "AMC Bank REST Request Mgt."
 {
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+
     //new procedure for handling REST http call - as we can't use Codeunit 1290, as functions are missing
     var
         GlobalProgressDialogEnabled: Boolean;
@@ -369,4 +374,6 @@ codeunit 20124 "AMC Bank REST Request Mgt."
         EXIT('GetEasyRegistartionURL');
     end;
 }
+#endif
 #pragma warning restore AS0018
+

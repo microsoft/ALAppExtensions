@@ -357,7 +357,9 @@ codeunit 4019 "GP Item Migrator"
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransactions.RecordId));
 #if not CLEAN25
+#pragma warning disable AL0432
         TempTrackingSpecification.InitFromItemJnlLine(ItemJnlLine);
+#pragma warning restore AL0432
 #else
         ItemJnlLineReserve.InitFromItemJnlLine(TempTrackingSpecification, ItemJnlLine);
 #endif

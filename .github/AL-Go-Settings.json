@@ -6,7 +6,7 @@
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/28.0.39754.0/base",
+  "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/28.0.40558.0/base",
   "country": "base",
   "useProjectDependencies": true,
   "repoVersion": "28.0",
@@ -45,12 +45,14 @@
   ],
   "conditionalSettings": [
     {
-        "workflows": [ "CI/CD" ],
-        "settings": {
-            "workflowSchedule": {
-                "cron": "0 2 * * *"
-            }
+      "workflows": [
+        "CI/CD"
+      ],
+      "settings": {
+        "workflowSchedule": {
+          "cron": "0 2 * * *"
         }
+      }
     }
   ],
   "enableCodeCop": true,

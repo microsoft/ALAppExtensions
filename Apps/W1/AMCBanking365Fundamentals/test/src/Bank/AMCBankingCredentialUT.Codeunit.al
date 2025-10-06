@@ -1,8 +1,12 @@
+#if not CLEAN28
 codeunit 132558 "AMC Banking Credential UT"
 {
     Subtype = Test;
     TestType = Uncategorized;
     TestPermissions = Disabled;
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     begin
@@ -628,3 +632,4 @@ codeunit 132558 "AMC Banking Credential UT"
         AMCBankingSetupPage.OK().Invoke();
     end;
 }
+#endif

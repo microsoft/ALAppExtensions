@@ -14,6 +14,7 @@ page 4026 "GP Posting Accounts"
     ObsoleteState = Pending;
     ObsoleteReason = 'Removing the GP staging table pages because they cause confusion and should not be used.';
     ObsoleteTag = '26.0';
+#pragma warning disable AA0219
 
     layout
     {
@@ -143,4 +144,5 @@ page 4026 "GP Posting Accounts"
         }
     }
 }
+#pragma warning restore AA0219
 #endif

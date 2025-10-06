@@ -9,6 +9,7 @@ namespace Microsoft.Agent.SalesOrderAgent;
 using Microsoft.CRM.Contact;
 using Microsoft.Sales.Customer;
 using System.Agents;
+using System.Telemetry;
 
 codeunit 4305 "SOA Filters Impl."
 {
@@ -18,20 +19,22 @@ codeunit 4305 "SOA Filters Impl."
     Permissions = tabledata "Agent Task Message" = r;
 
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         ExcludeAllFilterTok: Label '<>*', Locked = true;
 
     internal procedure GetSecurityFiltersForCustomers(ContactsFilter: Text): Text
     var
         Contact: Record Contact;
         Customer: Record Customer;
-        SOAImpl: Codeunit "SOA Impl";
+        SOASetupCU: Codeunit "SOA Setup";
         ProcessedCustomers: List of [Text];
         CustomerFilter: Text;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         Contact.SetFilter("No.", ContactsFilter);
 
         if not Contact.FindSet() then begin
-            Session.LogMessage('0000O31', NoContactsFoundTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000O31', SOASetupCU.GetFeatureName(), NoContactsFoundTxt, TelemetryDimensions);
             exit(ExcludeAllFilterTok);
         end;
 
@@ -69,15 +72,16 @@ codeunit 4305 "SOA Filters Impl."
     var
         AgentTaskMessage: Record "Agent Task Message";
         Contact: Record Contact;
-        SOAImpl: Codeunit "SOA Impl";
+        SOASetup: Codeunit "SOA Setup";
         From: Text;
         ProcessedFromEmails: List of [Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         AgentTaskMessage.SetRange(Type, AgentTaskMessage.Type::Input);
         AgentTaskMessage.SetRange("Task ID", AgentTaskID);
 
         if not AgentTaskMessage.FindSet() then begin
-            Session.LogMessage('0000O32', NoTaskMessagesFoundTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogError('0000O32', SOASetup.GetFeatureName(), 'Get Agent Task Message', NoTaskMessagesFoundTxt, GetLastErrorCallStack(), TelemetryDimensions);
             exit;
         end;
 

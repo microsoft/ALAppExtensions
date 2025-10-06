@@ -27,8 +27,16 @@ enum 4586 "SOA Billing Operation"
     {
         Caption = 'Order Action';
     }
-    value(5; "Analyze Attachment")
+    value(5; "Relevant Attachment")
     {
-        Caption = 'Analyze Attachment';
+        Caption = 'Relevant Attachment';
+    }
+    value(6; "Irrelevant Attachment")
+    {
+        Caption = 'Irrelevant Attachment';
+    }
+    value(7; "Item Availability")
+    {
+        Caption = 'Item Availability';
     }
 }

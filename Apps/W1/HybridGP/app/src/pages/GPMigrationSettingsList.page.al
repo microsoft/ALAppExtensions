@@ -23,7 +23,9 @@ page 4021 "GP Migration Settings List"
                 {
                     ApplicationArea = Basic, Suite;
                     Editable = false;
+#pragma warning disable AA0219
                     ToolTip = 'Name of the company';
+#pragma warning restore AA0219
                     Width = 6;
                 }
             }

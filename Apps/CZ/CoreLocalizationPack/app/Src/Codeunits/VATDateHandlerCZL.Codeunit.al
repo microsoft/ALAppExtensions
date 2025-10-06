@@ -91,10 +91,13 @@ codeunit 11742 "VAT Date Handler CZL"
         GLEntry."VAT Reporting Date" := FromGLEntry."VAT Reporting Date";
         GLEntry."External Document No." := FromGLEntry."External Document No.";
     end;
-
+#if not CLEAN28
+    [Obsolete('Replaced by CheckDateAllowed function in VAT Reporting Date Mgt. codeunit.', '28.0')]
     procedure VATPeriodCZLCheck(VATDate: Date)
     var
+#pragma warning disable AL0432
         VATPeriodCZL: Record "VAT Period CZL";
+#pragma warning restore AL0432
         VATPeriodNotExistErr: Label '%1 does not exist for date %2.', Comment = '%1 = VAT Period TableCaption, %2 = VAT Date';
     begin
         VATPeriodCZL.SetRange("Starting Date", 0D, VATDate);
@@ -103,6 +106,7 @@ codeunit 11742 "VAT Date Handler CZL"
         else
             Error(VATPeriodNotExistErr, VATPeriodCZL.TableCaption(), VATDate);
     end;
+#endif
 
     internal procedure IsVATDateInAllowedPeriod(VATDate: Date; var SetupRecordID: RecordID; var FieldNo: Integer): Boolean
     var
@@ -122,21 +126,15 @@ codeunit 11742 "VAT Date Handler CZL"
     procedure CheckVATDateCZL(GenJournalLine: Record "Gen. Journal Line")
     begin
         if not VATReportingDateMgt.IsVATDateEnabled() then
-            GenJournalLine.TestField("VAT Reporting Date", GenJournalLine."Posting Date")
-        else begin
-            GenJournalLine.TestField("VAT Reporting Date");
-            VATPeriodCZLCheck(GenJournalLine."VAT Reporting Date");
-        end;
+            GenJournalLine.TestField("VAT Reporting Date", GenJournalLine."Posting Date");
+        GenJournalLine.TestField("VAT Reporting Date");
     end;
 
     procedure CheckVATDateCZL(var SalesHeader: Record "Sales Header")
     begin
         if not VATReportingDateMgt.IsVATDateEnabled() then
-            SalesHeader.TestField("VAT Reporting Date", SalesHeader."Posting Date")
-        else begin
-            SalesHeader.TestField("VAT Reporting Date");
-            VATPeriodCZLCheck(SalesHeader."VAT Reporting Date");
-        end;
+            SalesHeader.TestField("VAT Reporting Date", SalesHeader."Posting Date");
+        SalesHeader.TestField("VAT Reporting Date");
     end;
 
     procedure CheckVATDateCZL(var PurchaseHeader: Record "Purchase Header")
@@ -147,7 +145,6 @@ codeunit 11742 "VAT Date Handler CZL"
             PurchaseHeader.TestField("VAT Reporting Date", PurchaseHeader."Posting Date")
         else begin
             PurchaseHeader.TestField("VAT Reporting Date");
-            VATPeriodCZLCheck(PurchaseHeader."VAT Reporting Date");
             if PurchaseHeader.Invoice then
                 PurchaseHeader.TestField("Original Doc. VAT Date CZL");
             if PurchaseHeader."Original Doc. VAT Date CZL" > PurchaseHeader."VAT Reporting Date" then
@@ -158,11 +155,8 @@ codeunit 11742 "VAT Date Handler CZL"
     procedure CheckVATDateCZL(var ServiceHeader: Record "Service Header")
     begin
         if not VATReportingDateMgt.IsVATDateEnabled() then
-            ServiceHeader.TestField("VAT Reporting Date", ServiceHeader."Posting Date")
-        else begin
-            ServiceHeader.TestField("VAT Reporting Date");
-            VATPeriodCZLCheck(ServiceHeader."VAT Reporting Date");
-        end;
+            ServiceHeader.TestField("VAT Reporting Date", ServiceHeader."Posting Date");
+        ServiceHeader.TestField("VAT Reporting Date");
     end;
 
     procedure InitVATDateFromRecordCZL(TableNo: Integer)

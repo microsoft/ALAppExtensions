@@ -130,7 +130,6 @@ page 31187 "Sales Adv. Usage FactBox CZZ"
 
         SalesPost.GetSalesLines(SalesHeader, TempSalesLine, 1);
         TempSalesLine.CalcVATAmountLines(1, SalesHeader, TempSalesLine, TempVATAmountLine);
-        TempSalesLine.UpdateVATOnLines(1, SalesHeader, TempSalesLine, TempVATAmountLine);
         TotalAmountInclVAT := TempVATAmountLine.GetTotalAmountInclVAT();
 
         AdvanceCount := TempAdvanceLetterApplication.Count();

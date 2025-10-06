@@ -50,13 +50,27 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Starting Date';
-                        TableRelation = "VAT Period CZL";
                         ToolTip = 'Specifies the first date in the period for which VAT statement were exported.';
                         Visible = ExportType = ExportType::VATStatement;
                         Enabled = ExportType = ExportType::VATStatement;
 
                         trigger OnValidate()
                         begin
+                            StartDateOnAfterValidate();
+                        end;
+
+                        trigger OnLookup(var Text: Text): Boolean
+                        var
+                            VATReturnPeriod: Record "VAT Return Period";
+                            VATReturnPeriodList: Page "VAT Return Period List";
+                        begin
+                            VATReturnPeriodList.LookupMode := true;
+                            if VATReturnPeriodList.RunModal() <> Action::LookupOK then
+                                exit(false);
+
+                            VATReturnPeriodList.GetRecord(VATReturnPeriod);
+                            StartDate := VATReturnPeriod."Start Date";
+                            EndDate := VATReturnPeriod."End Date";
                             StartDateOnAfterValidate();
                         end;
                     }
@@ -358,12 +372,14 @@ report 31003 "Export VAT Stmt. Dialog CZL"
 
     local procedure StartDateOnAfterValidate()
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
     begin
-        VATPeriodCZL.SetFilter("Starting Date", '%1..', StartDate);
-        VATPeriodCZL.FindSet();
-        if VATPeriodCZL.Next() > 0 then
-            EndDate := CalcDate('<-1D>', VATPeriodCZL."Starting Date");
+        if StartDate <> 0D then begin
+            VATReturnPeriod.SetRange("Start Date", StartDate);
+            VATReturnPeriod.FindLast();
+            EndDate := VATReturnPeriod."End Date";
+        end;
+
         UpdateDateParameters();
         Attachments := CalcAttachmentsCount();
         Comments := CalcCommentsCount();

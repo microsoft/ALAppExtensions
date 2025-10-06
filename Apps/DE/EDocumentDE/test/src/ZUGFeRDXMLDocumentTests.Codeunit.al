@@ -18,6 +18,7 @@ using Microsoft.Finance.Currency;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.PaymentTerms;
+
 codeunit 13922 "ZUGFeRD XML Document Tests"
 {
     Subtype = Test;

@@ -136,6 +136,17 @@ page 31276 "Compensation Proposal CZC"
                 end;
             }
         }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+
+                actionref(RecalculateBalance_Promoted; RecalculateBalance)
+                {
+                }
+            }
+        }
     }
 
     trigger OnAfterGetCurrRecord()

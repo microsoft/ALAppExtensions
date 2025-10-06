@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,8 +9,11 @@ using System.Utilities;
 
 report 11792 "Create VAT Period CZL"
 {
-    Caption = 'Create VAT Period';
+    Caption = 'Create VAT Period (Obsolete)';
     ProcessingOnly = true;
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+    ObsoleteReason = 'Replaced by Create VAT Return Period report.';
 
     requestpage
     {
@@ -96,3 +100,4 @@ report 11792 "Create VAT Period CZL"
         CreateVatYearQst: Label 'Once you create the new VAT year you cannot change its starting date.\\Do you want to create the VAT year?';
         OnlyOnePeriodErr: Label 'It is only possible to create new VAT years before or after the existing ones.';
 }
+#endif

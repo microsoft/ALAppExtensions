@@ -31,7 +31,6 @@ codeunit 11747 "Guided Experience Handler CZL"
         RegisterRegNoServiceConfig();
         RegisterUnrelPayerServiceSetup();
         RegisterVATCtrlReportSection();
-        RegisterVATPeriods();
         RegisterStatutoryReportingSetup();
         RegisterCompanyOfficials();
         RegisterDocumentFooter();
@@ -84,16 +83,6 @@ codeunit 11747 "Guided Experience Handler CZL"
     begin
         GuidedExperience.InsertManualSetup(VATCtrlReportSectionNameTxt, VATCtrlReportSectionNameTxt, VATCtrlReportSectionDescriptionTxt,
           30, ObjectType::Page, Page::"VAT Ctrl. Report Sections CZL", ManualSetupCategory::Finance, VATCtrlReportSectionKeywordsTxt);
-    end;
-
-    local procedure RegisterVATPeriods()
-    var
-        VATPeriodsNameTxt: Label 'VAT Periods';
-        VATPeriodsDescriptionTxt: Label 'Set up the number of VAT periods, such as 12 monthly periods, within the fiscal year. VAT periods can be set separately from accounting periods (eg if you are a quarterly VAT payer).';
-        VATPeriodsKeywordsTxt: Label 'VAT, Period';
-    begin
-        GuidedExperience.InsertManualSetup(VATPeriodsNameTxt, VATPeriodsNameTxt, VATPeriodsDescriptionTxt,
-          2, ObjectType::Page, Page::"VAT Periods CZL", ManualSetupCategory::Finance, VATPeriodsKeywordsTxt);
     end;
 
     local procedure RegisterStatutoryReportingSetup()

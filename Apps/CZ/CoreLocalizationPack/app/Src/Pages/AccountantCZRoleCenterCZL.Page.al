@@ -872,13 +872,27 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = page "VAT Entries";
                     ToolTip = 'Views all VAT entries.';
                 }
+#if not CLEAN28
                 action("VAT Periods")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'VAT Periods';
+                    Caption = 'VAT Periods (Obsolete)';
                     RunObject = page "VAT Periods CZL";
                     Image = Period;
                     ToolTip = 'View and set VAT periods.';
+                    Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'The VAT Periods CZL page is obsolete. Use the VAT Return Periods action instead.';
+                    ObsoleteTag = '28.0';
+                }
+#endif
+                action(VATReturnPeriod)
+                {
+                    Caption = 'VAT Return Periods';
+                    ApplicationArea = Basic, Suite;
+                    Image = Period;
+                    RunObject = page "VAT Return Period List";
+                    Tooltip = 'Open the VAT return periods page.';
                 }
                 action("Get All Unreliable Payers")
                 {

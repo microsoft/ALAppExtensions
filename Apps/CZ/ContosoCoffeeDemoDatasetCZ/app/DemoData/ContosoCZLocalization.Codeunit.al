@@ -150,7 +150,6 @@ codeunit 31215 "Contoso CZ Localization"
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create VAT Period CZ");
                     Codeunit.Run(Codeunit::"Create VAT Return Period CZ");
                     CreateStatRepSetupCZ.CreateFinanceStatutoryReportingSetup();
                     CreateVatPostingGroupsCZ.DeleteVATProductPostingGroups();

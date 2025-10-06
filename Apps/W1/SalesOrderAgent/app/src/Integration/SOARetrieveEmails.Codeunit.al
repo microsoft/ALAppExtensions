@@ -8,6 +8,7 @@ namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.Agents;
 using System.Email;
+using System.Telemetry;
 
 codeunit 4582 "SOA Retrieve Emails"
 {
@@ -24,8 +25,10 @@ codeunit 4582 "SOA Retrieve Emails"
 
     var
         SOAImpl: Codeunit "SOA Impl";
+        SOASetupCU: Codeunit "SOA Setup";
         SOAMailSetup: Codeunit "SOA Email Setup";
         SOATaskMessage: Codeunit "SOA Task Message";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryNoEmailsFoundLbl: Label 'No emails found.', Locked = true;
         TelemetryEmailsFoundLbl: Label 'Emails found.', Locked = true;
         AgentTaskTitleLbl: Label 'Email from %1', Comment = '%1 = Sender Name';
@@ -37,8 +40,6 @@ codeunit 4582 "SOA Retrieve Emails"
         MessageTemplateLbl: Label '<b>Subject:</b> %1<br/><b>Body:</b> %2', Comment = '%1 = Subject, %2 = Body';
         TelemetrySOAEmailNotModifiedLbl: Label 'SOA Email record not modified.', Locked = true;
         TelemetryProcessingLimitReachedLbl: Label 'Processing limit of emails reached.', Locked = true;
-        TelemetryEmailHasAttachmentsLbl: Label 'Email has attachments.', Locked = true;
-        ScheduleBillingTask: Boolean;
 
     local procedure RetrieveEmails(SOASetup: Record "SOA Setup")
     var
@@ -46,24 +47,20 @@ codeunit 4582 "SOA Retrieve Emails"
         TempFilters: Record "Email Retrieval Filters" temporary;
         SOAEmail: Record "SOA Email";
         Email: Codeunit "Email";
-        SOASetupCU: Codeunit "SOA Setup";
-        SOABillingTask: Codeunit "SOA Billing Task";
         Processed: Integer;
         ProcessLimit: Integer;
-        CustomDimensions: Dictionary of [Text, Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
         StartDateTime: DateTime;
     begin
         if not SOASetupCU.CheckSOASetupStillValid(SOASetup) then
             exit;
 
-        CustomDimensions := SOAImpl.GetCustomDimensions();
-
         ProcessLimit := SOAImpl.GetProcessLimitPerDay(SOASetup);
         Processed := SOAMailSetup.GetEmailCountProcessedWithin24hrs();
         if Processed >= ProcessLimit then begin
-            CustomDimensions.Set('Processed', Format(Processed));
-            CustomDimensions.Set('ProcessLimit', Format(ProcessLimit));
-            Session.LogMessage('0000O9Y', StrSubstNo(TelemetryProcessingLimitReachedLbl), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            TelemetryDimensions.Set('Processed', Format(Processed));
+            TelemetryDimensions.Set('ProcessLimit', Format(ProcessLimit));
+            FeatureTelemetry.LogUsage('0000O9Y', SOASetupCU.GetFeatureName(), StrSubstNo(TelemetryProcessingLimitReachedLbl), TelemetryDimensions);
             exit;
         end;
 
@@ -76,11 +73,11 @@ codeunit 4582 "SOA Retrieve Emails"
         Email.RetrieveEmails(SOASetup."Email Account ID", SOASetup."Email Connector", EmailInbox, TempFilters);
 
         if not EmailInbox.FindSet() then begin
-            Session.LogMessage('0000NDN', TelemetryNoEmailsFoundLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogUsage('0000NDN', SOASetupCU.GetFeatureName(), TelemetryNoEmailsFoundLbl, TelemetryDimensions);
             exit;
         end;
 
-        Session.LogMessage('0000NDO', TelemetryEmailsFoundLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+        FeatureTelemetry.LogUsage('0000NDO', SOASetupCU.GetFeatureName(), TelemetryEmailsFoundLbl, TelemetryDimensions);
 
         if not SOASetupCU.CheckSOASetupStillValid(SOASetup) then
             exit;
@@ -109,25 +106,23 @@ codeunit 4582 "SOA Retrieve Emails"
 
             Processed += 1;
             if Processed >= ProcessLimit then begin
-                CustomDimensions := SOAImpl.GetCustomDimensions();
-                CustomDimensions.Set('Processed', Format(Processed));
-                CustomDimensions.Set('ProcessLimit', Format(ProcessLimit));
-                Session.LogMessage('0000O9Z', StrSubstNo(TelemetryProcessingLimitReachedLbl), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+                TelemetryDimensions.Set('Processed', Format(Processed));
+                TelemetryDimensions.Set('ProcessLimit', Format(ProcessLimit));
+                FeatureTelemetry.LogUsage('0000O9Z', SOASetupCU.GetFeatureName(), StrSubstNo(TelemetryProcessingLimitReachedLbl), TelemetryDimensions);
                 break;
             end;
         until SOAEmail.Next() = 0;
-
-        if ScheduleBillingTask then
-            SOABillingTask.ScheduleBillingTask();
     end;
 
     local procedure AddEmailToAgentTask(SOASetup: Record "SOA Setup"; var SOAEmail: Record "SOA Email")
     var
         EmailInbox: Record "Email Inbox";
         AgentTaskBuilder: Codeunit "Agent Task Builder";
+        SOABillingTask: Codeunit "SOA Billing Task";
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if not EmailInbox.Get(SOAEmail."Email Inbox ID") then begin
-            Session.LogMessage('0000NJT', TelemetryEmailInboxNotFoundLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000NJT', SOASetupCU.GetFeatureName(), TelemetryEmailInboxNotFoundLbl, TelemetryDimensions);
             SOAEmail.Delete(true);
             exit;
         end;
@@ -137,6 +132,7 @@ codeunit 4582 "SOA Retrieve Emails"
         else
             AddEmailToNewAgentTask(SOASetup, EmailInbox, SOAEmail);
 
+        SOABillingTask.ScheduleBillingTask();
         OnAfterProcessEmail(SOAEmail."Email Inbox ID");
     end;
 
@@ -177,6 +173,7 @@ codeunit 4582 "SOA Retrieve Emails"
         SOABilling: Codeunit "SOA Billing";
         MessageText: Text;
         AgentTaskTitle: Text[150];
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         EmailMessage.Get(EmailInbox."Message Id");
         MessageText := StrSubstNo(MessageTemplateLbl, EmailMessage.GetSubject(), EmailMessage.GetBody());
@@ -196,12 +193,10 @@ codeunit 4582 "SOA Retrieve Emails"
 
         AgentTaskMessage := AgentTaskBuilder.GetAgentTaskMessageCreated();
         SOAEmail.SetAgentMessageFields(AgentTaskMessage);
+        SetAttachmentsTransferred(SOAEmail, EmailMessage);
         SOAEmail.Modify();
         SOABilling.LogEmailRead(AgentTaskMessage.ID, AgentTaskMessage."Task ID");
-        LogAnalyzeAttachmentForBilling(AgentTaskMessage);
-
-        ScheduleBillingTask := true;
-        Session.LogMessage('0000NDP', TelemetryEmailAddedAsTaskLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+        FeatureTelemetry.LogUsage('0000NDP', SOASetupCU.GetFeatureName(), TelemetryEmailAddedAsTaskLbl, TelemetryDimensions);
     end;
 
     local procedure AddEmailAttachmentToTaskMessage(AgentTaskMessageBuilder: Codeunit "Agent Task Message Builder"; var EmailMessage: Codeunit "Email Message")
@@ -209,6 +204,9 @@ codeunit 4582 "SOA Retrieve Emails"
         SOASetup: Codeunit "SOA Setup";
         InStream: InStream;
         FileMIMEType: Text[100];
+        IsFileMimeTypeSupported: Boolean;
+        SupportedAttachmentLbl: Label 'Email has supported attachment: %1', Locked = true, Comment = '%1 = MIME type of the attachment';
+        UnsupportedAttachmentLbl: Label 'Email has unsupported attachment: %1', Locked = true, Comment = '%1 = MIME type of the attachment';
     begin
         if not EmailMessage.Attachments_First() then
             exit;
@@ -216,28 +214,20 @@ codeunit 4582 "SOA Retrieve Emails"
         repeat
             EmailMessage.Attachments_GetContent(InStream);
             FileMIMEType := CopyStr(EmailMessage.Attachments_GetContentType(), 1, 100);
-            AgentTaskMessageBuilder.AddAttachment(EmailMessage.Attachments_GetName(), FileMIMEType, InStream, not SOASetup.SupportedAttachmentContentType(FileMIMEType));
-        until EmailMessage.Attachments_Next() = 0;
+            IsFileMimeTypeSupported := SOASetup.SupportedAttachmentContentType(FileMIMEType);
+            AgentTaskMessageBuilder.AddAttachment(EmailMessage.Attachments_GetName(), FileMIMEType, InStream, not IsFileMimeTypeSupported);
 
-        Session.LogMessage('0000PN1', TelemetryEmailHasAttachmentsLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            // Log telemetry for SOA session
+            if IsFileMimeTypeSupported then
+                FeatureTelemetry.LogUsage('0000QBM', SOASetup.GetFeatureName(), StrSubstNo(SupportedAttachmentLbl, FileMIMEType))
+            else
+                FeatureTelemetry.LogUsage('0000QBN', SOASetup.GetFeatureName(), StrSubstNo(UnsupportedAttachmentLbl, FileMIMEType))
+        until EmailMessage.Attachments_Next() = 0;
     end;
 
-    local procedure LogAnalyzeAttachmentForBilling(AgentTaskMessage: Record "Agent Task Message")
-    var
-        AgentTaskMessageAttachment: Record "Agent Task Message Attachment";
-        SOABilling: Codeunit "SOA Billing";
+    local procedure SetAttachmentsTransferred(var SOAEmail: Record "SOA Email"; EmailMessage: Codeunit "Email Message")
     begin
-        AgentTaskMessageAttachment.ReadIsolation(IsolationLevel::ReadCommitted);
-        AgentTaskMessageAttachment.LoadFields(SystemId, Ignored);
-        AgentTaskMessageAttachment.SetRange("Task ID", AgentTaskMessage."Task ID");
-        AgentTaskMessageAttachment.SetRange("Message ID", AgentTaskMessage.ID);
-
-        if not AgentTaskMessageAttachment.FindSet() then
-            exit;
-        repeat
-            if not AgentTaskMessageAttachment.Ignored then
-                SOABilling.LogAnalyzeAttachment(AgentTaskMessageAttachment.SystemId, AgentTaskMessage."Task ID");
-        until AgentTaskMessageAttachment.Next() = 0;
+        SOAEmail."Attachment Transferred" := not EmailMessage.Attachments_First();
     end;
 
     procedure AddEmailToExistingAgentTask(SOASetup: Record "SOA Setup"; EmailInbox: Record "Email Inbox"; var SOAEmail: Record "SOA Email")
@@ -248,11 +238,12 @@ codeunit 4582 "SOA Retrieve Emails"
         EmailMessage: Codeunit "Email Message";
         SOABilling: Codeunit "SOA Billing";
         MessageText: Text;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         AgentTaskRecord.ReadIsolation(IsolationLevel::ReadCommitted);
         AgentTaskRecord.SetRange("External ID", EmailInbox."Conversation Id");
         if not AgentTaskRecord.FindFirst() then begin
-            Session.LogMessage('0000NDX', TelemetryAgentTaskNotFoundLbl, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogError('0000NDX', SOASetupCU.GetFeatureName(), 'Find Agent Task', TelemetryAgentTaskNotFoundLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit;
         end;
 
@@ -260,7 +251,7 @@ codeunit 4582 "SOA Retrieve Emails"
         AgentTaskMessage.SetRange("Task ID", AgentTaskRecord.ID);
         AgentTaskMessage.SetRange("External ID", EmailInbox."External Message Id");
         if AgentTaskMessage.Count() >= 1 then begin
-            Session.LogMessage('0000OFS', TelemetryAgentTaskMessageExistsLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000OFS', SOASetupCU.GetFeatureName(), TelemetryAgentTaskMessageExistsLbl, TelemetryDimensions);
             exit;
         end;
 
@@ -277,14 +268,12 @@ codeunit 4582 "SOA Retrieve Emails"
         AgentTaskMessage := AgentTaskMessageBuilder.Create();
 
         SOAEmail.SetAgentMessageFields(AgentTaskMessage);
+        SetAttachmentsTransferred(SOAEmail, EmailMessage);
 #pragma warning disable AA0214
         SOAEmail.Modify();
 #pragma warning restore AA0214
         SOABilling.LogEmailRead(AgentTaskMessage.ID, AgentTaskMessage."Task ID");
-        LogAnalyzeAttachmentForBilling(AgentTaskMessage);
-        ScheduleBillingTask := true;
-
-        Session.LogMessage('0000NGP', TelemetryEmailAddedToExistingTaskLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+        FeatureTelemetry.LogUsage('0000NGP', SOASetupCU.GetFeatureName(), TelemetryEmailAddedToExistingTaskLbl, TelemetryDimensions);
     end;
 
     [InternalEvent(false, true)]
@@ -296,14 +285,13 @@ codeunit 4582 "SOA Retrieve Emails"
     local procedure OnAfterEmailProcessed(EmailInboxId: BigInteger)
     var
         SOAEmail: Record "SOA Email";
-        CustomDimensions: Dictionary of [Text, Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         SOAEmail.Get(EmailInboxId);
         SOAEmail.Processed := true;
         if not SOAEmail.Modify() then begin
-            CustomDimensions := SOAImpl.GetCustomDimensions();
-            CustomDimensions.Set('EmailInboxID', Format(EmailInboxId));
-            Session.LogMessage('0000OA0', TelemetrySOAEmailNotModifiedLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            TelemetryDimensions.Set('EmailInboxID', Format(EmailInboxId));
+            FeatureTelemetry.LogUsage('0000OA0', SOASetupCU.GetFeatureName(), TelemetrySOAEmailNotModifiedLbl, TelemetryDimensions);
         end;
     end;
 

@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Environment.Configuration;
 using System.Security.AccessControl;
 using System.Utilities;
+using Microsoft.Foundation.Attachment;
 
 permissionset 4405 "SOA - Edit"
 {
@@ -43,7 +44,9 @@ permissionset 4405 "SOA - Edit"
                              "SOA - Read";
 
     Permissions = tabledata "Agent Task Message" = r,
-                  tabledata "Agent Task Message Attachment" = rM,
+                  tabledata "Agent Task Message Attachment" = RM,
+                  tabledata "Agent Task File" = R,
+                  tabledata "Document Attachment" = IMD,
                   tabledata "Assemble-to-Order Link" = IMD,
                   tabledata "Assembly Header" = IMD,
                   tabledata "Assembly Line" = IMD,

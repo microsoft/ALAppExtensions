@@ -1253,7 +1253,12 @@ codeunit 18001 "GST Base Validation"
     var
         PurchaseLine: Record "Purchase Line";
         CalculateTax: Codeunit "Calculate Tax";
+        IsHandled: Boolean;
     begin
+        OnBeforeCallTaxEngineOnPurchHeader(PurchaseHeader, IsHandled);
+        if IsHandled then
+            exit;
+
         PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
         if PurchaseLine.FindSet() then
@@ -1463,4 +1468,8 @@ codeunit 18001 "GST Base Validation"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCallTaxEngineOnPurchHeader(PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
+    begin
+    end;
 }

@@ -1,9 +1,12 @@
+#if not CLEAN28
 codeunit 135081 "Base64 Decoding / Encoding"
 {
     Subtype = Test;
     TestType = Uncategorized;
     TestPermissions = NonRestrictive;
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
         // [FEATURE] [Data Exchange] [Base64]
@@ -302,4 +305,4 @@ codeunit 135081 "Base64 Decoding / Encoding"
             Reply := false;
     end;
 }
-
+#endif

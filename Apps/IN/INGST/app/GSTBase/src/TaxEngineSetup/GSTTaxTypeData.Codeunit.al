@@ -19,8 +19,8 @@ codeunit 18005 "GST Tax Type Data"
         exit(GSTTaxTypeLbl);
     end;
 
-#if not CLEAN28
-    [Obsolete('Removal of procedure as all Use cases covered in GSTBaseTaxEngineSetup Codeunit', '28.0')]
+#if not CLEAN27
+    [Obsolete('Removal of procedure as all Use cases covered in GSTBaseTaxEngineSetup Codeunit', '27.0')]
     procedure GetConfig(CaseID: Guid; var Handled: Boolean): Text
     var
         "{F37442C1-AB50-445F-A7C3-8DCA84931B69}Lbl": Label 'GST Use Cases';

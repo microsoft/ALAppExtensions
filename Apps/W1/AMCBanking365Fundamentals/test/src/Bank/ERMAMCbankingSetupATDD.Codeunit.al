@@ -1,9 +1,12 @@
+#if not CLEAN28
 codeunit 134410 "ERM AMC banking Setup ATDD"
 {
     Subtype = Test;
     RequiredTestIsolation = Disabled;
     TestPermissions = NonRestrictive;
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
         // [FEATURE] [AMC Banking Fundamentals]
@@ -729,3 +732,4 @@ codeunit 134410 "ERM AMC banking Setup ATDD"
         DataEncryptionManagement.Close();
     end;
 }
+#endif

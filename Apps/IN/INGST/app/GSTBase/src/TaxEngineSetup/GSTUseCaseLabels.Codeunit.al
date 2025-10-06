@@ -1,4 +1,4 @@
-﻿#if not CLEAN28
+﻿#if not CLEAN27
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -8,7 +8,7 @@ namespace Microsoft.Finance.TaxEngine.JsonExchange;
 
 codeunit 18019 "GST Use Case Labels"
 {
-    ObsoleteTag = '28.0';
+    ObsoleteTag = '27.0';
     ObsoleteState = Pending;
     ObsoleteReason = 'Removal of procedure as all Use cases covered in GSTBaseTaxEngineSetup Codeunit';
 

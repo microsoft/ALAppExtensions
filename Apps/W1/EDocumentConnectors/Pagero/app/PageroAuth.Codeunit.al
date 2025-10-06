@@ -104,7 +104,7 @@ codeunit 6364 "Pagero Auth."
         OAuth20Setup: Record "OAuth 2.0 Setup";
     begin
         GetOAuth2Setup(OAuth20Setup);
-        exit(OAuth20Setup.RefreshAccessToken(HttpError));
+        exit(RefreshAccessToken(OAuth20Setup, HttpError));
     end;
 
     [NonDebuggable]
@@ -239,6 +239,19 @@ codeunit 6364 "Pagero Auth."
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
         EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+    begin
+        if not EDocExtConnectionSetup.Get() then
+            exit;
+
+        Processed := true;
+
+        Result := RequestAccessToken(OAuth20Setup, AuthorizationCode, MessageText)
+    end;
+
+    [NonDebuggable]
+    local procedure RequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var MessageText: Text) Result: Boolean
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
         RequestJSON: Text;
         AccessToken: SecretText;
         RefreshToken: SecretText;
@@ -247,8 +260,6 @@ codeunit 6364 "Pagero Auth."
     begin
         if not EDocExtConnectionSetup.Get() then
             exit;
-
-        Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
@@ -267,6 +278,20 @@ codeunit 6364 "Pagero Auth."
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
         EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+    begin
+        if not EDocExtConnectionSetup.Get() then
+            exit;
+        if not GetOAuth2Setup(OAuth20Setup) or Processed then
+            exit;
+        Processed := true;
+
+        Result := RefreshAccessToken(MessageText)
+    end;
+
+    [NonDebuggable]
+    local procedure RefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var MessageText: Text) Result: Boolean
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
         RequestJSON: Text;
         AccessToken: SecretText;
         RefreshToken: SecretText;
@@ -275,12 +300,11 @@ codeunit 6364 "Pagero Auth."
     begin
         if not EDocExtConnectionSetup.Get() then
             exit;
-        if not GetOAuth2Setup(OAuth20Setup) or Processed then
+
+        if not GetOAuth2Setup(OAuth20Setup) then
             exit;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
-
-        Processed := true;
 
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
         RefreshToken := GetToken(OAuth20Setup."Refresh Token", TokenDataScope);
@@ -330,7 +354,7 @@ codeunit 6364 "Pagero Auth."
 
         if AuthorizationCode <> '' then begin
             OAuth20Setup.Get(OAuth20Setup.Code);
-            if not OAuth20Setup.RequestAccessToken(auth_error, AuthorizationCode) then
+            if not RequestAccessToken(OAuth20Setup, AuthorizationCode, auth_error) then
                 Error(auth_error);
         end;
     end;

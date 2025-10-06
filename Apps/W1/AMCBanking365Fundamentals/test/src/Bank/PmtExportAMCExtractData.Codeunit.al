@@ -1,3 +1,4 @@
+#if not CLEAN28
 codeunit 134411 "Pmt. Export AMC - Extract Data"
 {
     Permissions = TableData "Data Exch." = i,
@@ -5,6 +6,9 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
     Subtype = Test;
     TestType = IntegrationTest;
     TestPermissions = NonRestrictive;
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     begin
@@ -860,5 +864,5 @@ codeunit 134411 "Pmt. Export AMC - Extract Data"
     begin
     end;
 }
-
+#endif
 

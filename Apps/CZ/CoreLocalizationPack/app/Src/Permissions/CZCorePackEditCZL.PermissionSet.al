@@ -49,7 +49,11 @@ permissionset 11731 "CZ Core Pack - Edit CZL"
                   tabledata "VAT Ctrl. Report Line CZL" = IMD,
                   tabledata "VAT Ctrl. Report Section CZL" = IMD,
                   tabledata "VAT LCY Correction Buffer CZL" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "VAT Period CZL" = IMD,
+#pragma warning restore AL0432
+#endif
                   tabledata "VAT Stmt. Report Line Data CZL" = IMD,
                   tabledata "VAT Statement Attachment CZL" = IMD,
                   tabledata "VAT Statement Comment Line CZL" = IMD,

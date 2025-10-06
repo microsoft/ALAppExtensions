@@ -22,8 +22,8 @@ codeunit 4586 "SOA Dispatcher"
 
     var
         SOAImpl: Codeunit "SOA Impl";
-        SOASetup: Codeunit "SOA Setup";
-        Telemetry: Codeunit Telemetry;
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryAgentNotEnabledLbl: Label 'Sales order agent is not enabled', Locked = true;
         TelemetryAgentCapabilityNotEnabledLbl: Label 'Sales order agent capability is not enabled', Locked = true;
         TelemetryAgentEmailMonitoringNotEnabledLbl: Label 'Sales order agent email monitoring is not enabled', Locked = true;
@@ -46,21 +46,20 @@ codeunit 4586 "SOA Dispatcher"
         RetrievalSuccess: Boolean;
         ReplySuccess: Boolean;
         TaskSuccess: Boolean;
-        CustomDimensions: Dictionary of [Text, Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
         LastSync: DateTime;
     begin
-        if not SOASetup.CheckSOASetupStillValid(Setup) then
+        if not SOASetupCU.CheckSOASetupStillValid(Setup) then
             exit;
 
-        CustomDimensions := SOAImpl.GetCustomDimensions();
-        CustomDimensions.Add('SOASetupId', Format(Setup.ID));
+        TelemetryDimensions.Add('SOASetupId', Format(Setup.ID));
 
         if not CanRunTask(Setup) then
             exit;
 
         AddTask(SOATask);
 
-        if not SOASetup.CheckSOASetupStillValid(Setup) then
+        if not SOASetupCU.CheckSOASetupStillValid(Setup) then
             exit;
 
         QuotaCanConsume := CopilotQuota.CanConsume();
@@ -69,25 +68,25 @@ codeunit 4586 "SOA Dispatcher"
             LastSync := CurrentDateTime();
             RetrievalSuccess := Codeunit.Run(Codeunit::"SOA Retrieve Emails", Setup);
             if RetrievalSuccess then
-                Telemetry.LogMessage('0000NIU', TelemetryRetrieveEmailsSuccessLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions)
+                FeatureTelemetry.LogUsage('0000NIU', SOASetupCU.GetFeatureName(), TelemetryRetrieveEmailsSuccessLbl, TelemetryDimensions)
             else
-                Telemetry.LogMessage('0000NIV', TelemetryRetrieveEmailsFailedLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+                FeatureTelemetry.LogError('0000NIV', SOASetupCU.GetFeatureName(), 'Retrieve emails', TelemetryRetrieveEmailsFailedLbl, GetLastErrorCallStack(), TelemetryDimensions);
         end;
 
         // Send emails
-        if not SOASetup.CheckSOASetupStillValid(Setup) then
+        if not SOASetupCU.CheckSOASetupStillValid(Setup) then
             exit;
 
         ReplySuccess := Codeunit.Run(Codeunit::"SOA Send Replies", Setup);
         if ReplySuccess then
-            Telemetry.LogMessage('0000NIW', TelemetrySendEmailRepliesSuccessLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions)
+            FeatureTelemetry.LogUsage('0000NIW', SOASetupCU.GetFeatureName(), TelemetrySendEmailRepliesSuccessLbl, TelemetryDimensions)
         else
-            Telemetry.LogMessage('0000NIX', TelemetrySendEmailRepliesFailedLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000NIX', SOASetupCU.GetFeatureName(), 'Send email replies', TelemetrySendEmailRepliesFailedLbl, GetLastErrorCallStack(), TelemetryDimensions);
 
         TaskSuccess := (RetrievalSuccess or not QuotaCanConsume) and ReplySuccess;
 
         // Reschedule
-        if not SOASetup.CheckSOASetupStillValid(Setup) then
+        if not SOASetupCU.CheckSOASetupStillValid(Setup) then
             exit;
 
         SOAImpl.ScheduleSOAgent(Setup);
@@ -109,24 +108,23 @@ codeunit 4586 "SOA Dispatcher"
     var
         Agent: Codeunit Agent;
         AzureOpenAI: Codeunit "Azure OpenAI";
-        CustomDimensions: Dictionary of [Text, Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
-        CustomDimensions := SOAImpl.GetCustomDimensions();
-        CustomDimensions.Add('SOASetupId', Format(Setup.ID));
+        TelemetryDimensions.Add('SOASetupId', Format(Setup.ID));
 
         if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Order Agent", true) then begin
-            Telemetry.LogMessage('0000NF5', TelemetryAgentCapabilityNotEnabledLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000NF5', SOASetupCU.GetFeatureName(), 'Sales order agent capability check', TelemetryAgentCapabilityNotEnabledLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit(false);
         end;
 
         // Check if the agent is enabled
         if not Agent.IsActive(Setup."Agent User Security ID") then begin
-            Telemetry.LogMessage('0000NDL', TelemetryAgentNotEnabledLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000NDL', SOASetupCU.GetFeatureName(), 'Agent enable check', TelemetryAgentNotEnabledLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit(false);
         end;
 
         if not Setup."Email Monitoring" then begin
-            Telemetry.LogMessage('0000NGL', TelemetryAgentEmailMonitoringNotEnabledLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000NGL', SOASetupCU.GetFeatureName(), 'Email monitoring check', TelemetryAgentEmailMonitoringNotEnabledLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit(false);
         end;
 

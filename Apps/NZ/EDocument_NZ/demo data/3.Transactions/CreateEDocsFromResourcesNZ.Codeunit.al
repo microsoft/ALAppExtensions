@@ -5,6 +5,7 @@
 namespace Microsoft.DemoData.Localization;
 
 using Microsoft.eServices.EDocument.Format;
+using Microsoft.eServices.EDocument.DemoData;
 using Microsoft.DemoData.Finance;
 using Microsoft.Purchases.Document;
 
