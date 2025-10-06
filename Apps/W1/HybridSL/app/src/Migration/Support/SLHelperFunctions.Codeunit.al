@@ -147,7 +147,7 @@ codeunit 47023 "SL Helper Functions"
     internal procedure GetNumberOfItems(): Integer;
     var
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
-        SLInventory: Record "SL Inventory";
+        SLInventory: Record "SL Inventory Buffer";
     begin
         if not SLCompanyAdditionalSettings.GetInventoryModuleEnabled() then
             exit(0);

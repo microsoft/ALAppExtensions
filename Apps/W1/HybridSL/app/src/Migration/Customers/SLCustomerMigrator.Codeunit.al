@@ -6,6 +6,7 @@
 namespace Microsoft.DataMigration.SL;
 
 using System.Integration;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Sales.Customer;
 
 codeunit 47018 "SL Customer Migrator"
@@ -34,199 +35,8 @@ codeunit 47018 "SL Customer Migrator"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", OnMigrateCustomerTransactions, '', true, true)]
     local procedure OnMigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-    var
-        SLARDoc: Record "SL ARDoc";
-        SLARSetup: Record "SL ARSetup";
-        SLCustomer: Record "SL Customer";
-        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
-        DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
-        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
-        PaymentTermsFormula: DateFormula;
-        BalancingAccount: Code[20];
-        DocTypeToSet: Option " ",Payment,Invoice,"Credit Memo","Finance Charge Memo";
-        GLDocNbr: Text[20];
-        ARDocTypeCashSaleTxt: Label 'CS', Locked = true;
-        ARDocTypeCreditMemoTxt: Label 'CM', Locked = true;
-        ARDocTypeDebitMemoTxt: Label 'DM', Locked = true;
-        ARDocTypeFinanceChargeTxt: Label 'FI', Locked = true;
-        ARDocTypeInvoiceTxt: Label 'IN', Locked = true;
-        ARDocTypeNSFCheckChargeTxt: Label 'NC', Locked = true;
-        ARDocTypeNSFReversalTxt: Label 'NS', Locked = true;
-        ARDocTypePaymentTxt: Label 'PA', Locked = true;
-        ARDocTypePaymentPrepaymentTxt: Label 'PP', Locked = true;
-        ARDocTypeSmallBalanceTxt: Label 'SB', Locked = true;
-        ARDocTypeSmallCreditTxt: Label 'SC', Locked = true;
     begin
-        if not ChartOfAccountsMigrated then
-            exit;
-
-        if RecordIdToMigrate.TableNo() <> Database::"SL Customer" then
-            exit;
-
-        SLCompanyAdditionalSettings.Get(CompanyName);
-        if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
-            exit;
-        if not SLCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
-            exit;
-        if SLCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
-            exit;
-        if not SLCustomer.Get(RecordIdToMigrate) then
-            exit;
-        if not SLARSetup.Get(ARSetupIDTxt) then
-            exit;
-
-        Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)), '', '');
-        SLARDoc.SetRange(CpnyID, CompanyName);
-        SLARDoc.SetRange(CustId, SLCustomer.CustId);
-        SLARDoc.SetFilter(DocType, '%1|%2|%3|%4|%5', ARDocTypeInvoiceTxt, ARDocTypeCashSaleTxt, ARDocTypeDebitMemoTxt, ARDocTypeSmallCreditTxt, ARDocTypeNSFCheckChargeTxt);  //Invoices
-        SLARDoc.SetFilter(DocBal, '<>%1', 0);
-        if SLARDoc.FindSet() then
-            repeat
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
-
-                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
-                BalancingAccount := SLARSetup.ArAcct;
-
-                Sender.CreateGeneralJournalLine(
-                    CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)),
-                    GLDocNbr,
-                    SLARDoc.DocDesc,
-                    DT2Date(SLARDoc.DocDate),
-                    0D,
-                    SLARDoc.DocBal,
-                    SLARDoc.DocBal,
-                    '',
-                    BalancingAccount
-                );
-                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::Invoice);
-                DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                if (SLARDoc.SlsperId.TrimEnd() <> '') then begin
-                    Sender.CreateSalespersonPurchaserIfNeeded(SLARDoc.SlsperId, '', '', '');
-                    Sender.SetGeneralJournalLineSalesPersonCode(SLARDoc.SlsperId);
-                end;
-                if (SLARDoc.Terms.TrimEnd() <> '') then begin
-                    Evaluate(PaymentTermsFormula, '');
-                    Sender.CreatePaymentTermsIfNeeded(SLARDoc.Terms, SLARDoc.Terms, PaymentTermsFormula);
-                    Sender.SetGeneralJournalLinePaymentTerms(SLARDoc.Terms);
-                end;
-                if SLARDoc.OrdNbr.TrimEnd() <> '' then
-                    Sender.SetGeneralJournalLineExternalDocumentNo(SLARDoc.OrdNbr);
-            until SLARDoc.Next() = 0;
-
-        SLARDoc.Reset();
-        SLARDoc.SetRange(CpnyID, CompanyName);
-        SLARDoc.SetRange(CustId, SLCustomer.CustId);
-        SLARDoc.SetFilter(DocType, '%1|%2', ARDocTypePaymentTxt, ARDocTypePaymentPrepaymentTxt);  //Payments
-        SLARDoc.SetFilter(DocBal, '<>%1', 0);
-        if SLARDoc.FindSet() then
-            repeat
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
-
-                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
-                BalancingAccount := SLARSetup.ArAcct;
-
-                Sender.CreateGeneralJournalLine(
-                    CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)),
-                    GLDocNbr,
-                    SLARDoc.DocDesc,
-                    DT2Date(SLARDoc.DocDate),
-                    DT2Date(SLARDoc.DocDate),
-                    (SLARDoc.DocBal * -1),
-                    (SLARDoc.DocBal * -1),
-                    '',
-                    BalancingAccount
-                );
-                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::Payment);
-                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                if (SLARDoc.SlsperId.TrimEnd() <> '') then begin
-                    Sender.CreateSalespersonPurchaserIfNeeded(SLARDoc.SlsperId, '', '', '');
-                    Sender.SetGeneralJournalLineSalesPersonCode(SLARDoc.SlsperId);
-                end;
-                if (SLARDoc.Terms.TrimEnd() <> '') then begin
-                    Evaluate(PaymentTermsFormula, '');
-                    Sender.CreatePaymentTermsIfNeeded(SLARDoc.Terms, SLARDoc.Terms, PaymentTermsFormula);
-                    Sender.SetGeneralJournalLinePaymentTerms(SLARDoc.Terms);
-                end;
-                if SLARDoc.OrdNbr.TrimEnd() <> '' then
-                    Sender.SetGeneralJournalLineExternalDocumentNo(SLARDoc.OrdNbr);
-            until SLARDoc.Next() = 0;
-
-        SLARDoc.Reset();
-        SLARDoc.SetRange(CpnyID, CompanyName);
-        SLARDoc.SetRange(CustId, SLCustomer.CustId);
-        SLARDoc.SetFilter(DocType, '%1|%2|%3', ARDocTypeCreditMemoTxt, ARDocTypeSmallBalanceTxt, ARDocTypeNSFReversalTxt);  //Credit Memos
-        SLARDoc.SetFilter(DocBal, '<>%1', 0);
-        if SLARDoc.FindSet() then
-            repeat
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
-
-                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
-                BalancingAccount := SLARSetup.ArAcct;
-
-                Sender.CreateGeneralJournalLine(
-                    CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)),
-                    GLDocNbr,
-                    SLARDoc.DocDesc,
-                    DT2Date(SLARDoc.DocDate),
-                    DT2Date(SLARDoc.DueDate),
-                    (SLARDoc.DocBal * -1),
-                    (SLARDoc.DocBal * -1),
-                    '',
-                    BalancingAccount
-                );
-                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::"Credit Memo");
-                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                if (SLARDoc.SlsperId.TrimEnd() <> '') then begin
-                    Sender.CreateSalespersonPurchaserIfNeeded(SLARDoc.SlsperId, '', '', '');
-                    Sender.SetGeneralJournalLineSalesPersonCode(SLARDoc.SlsperId);
-                end;
-                if (SLARDoc.Terms.TrimEnd() <> '') then begin
-                    Evaluate(PaymentTermsFormula, '');
-                    Sender.CreatePaymentTermsIfNeeded(SLARDoc.Terms, SLARDoc.Terms, PaymentTermsFormula);
-                    Sender.SetGeneralJournalLinePaymentTerms(SLARDoc.Terms);
-                end;
-                if SLARDoc.OrdNbr.TrimEnd() <> '' then
-                    Sender.SetGeneralJournalLineExternalDocumentNo(SLARDoc.OrdNbr);
-            until SLARDoc.Next() = 0;
-
-        SLARDoc.Reset();
-        SLARDoc.SetRange(CpnyID, CompanyName);
-        SLARDoc.SetRange(CustId, SLCustomer.CustId);
-        SLARDoc.SetRange(DocType, ARDocTypeFinanceChargeTxt);  // Finance Charge
-        SLARDoc.SetFilter(DocBal, '<>%1', 0);
-        if SLARDoc.FindSet() then
-            repeat
-                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
-
-                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
-                BalancingAccount := SLARSetup.ArAcct;
-
-                Sender.CreateGeneralJournalLine(
-                    CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)),
-                    GLDocNbr,
-                    SLARDoc.DocDesc,
-                    DT2Date(SLARDoc.DocDate),
-                    DT2Date(SLARDoc.DocDate),
-                    SLARDoc.DocBal,
-                    SLARDoc.DocBal,
-                    '',
-                    BalancingAccount
-                );
-                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::"Finance Charge Memo");
-                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
-                if (SLARDoc.SlsperId.TrimEnd() <> '') then begin
-                    Sender.CreateSalespersonPurchaserIfNeeded(SLARDoc.SlsperId, '', '', '');
-                    Sender.SetGeneralJournalLineSalesPersonCode(SLARDoc.SlsperId);
-                end;
-                if (SLARDoc.Terms.TrimEnd() <> '') then begin
-                    Evaluate(PaymentTermsFormula, '');
-                    Sender.CreatePaymentTermsIfNeeded(SLARDoc.Terms, SLARDoc.Terms, PaymentTermsFormula);
-                    Sender.SetGeneralJournalLinePaymentTerms(SLARDoc.Terms);
-                end;
-                if SLARDoc.OrdNbr.TrimEnd() <> '' then
-                    Sender.SetGeneralJournalLineExternalDocumentNo(SLARDoc.OrdNbr);
-            until SLARDoc.Next() = 0;
+        MigrateCustomerTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
 
     internal procedure MigrateCustomerDetails(SLCustomer: Record "SL Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade"; SLARSetup: Record "SL ARSetup")
@@ -236,7 +46,6 @@ codeunit 47018 "SL Customer Migrator"
         SLSOAddress: Record "SL SOAddress";
         SLHelperFunctions: Codeunit "SL Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
-        PaymentTermsFormula: DateFormula;
         Country: Code[10];
         ShipViaID: Code[10];
         Address1: Text[50];
@@ -298,12 +107,6 @@ codeunit 47018 "SL Customer Migrator"
 
             CustomerDataMigrationFacade.CreateShipmentMethodIfNeeded(ShipViaID, '');
             CustomerDataMigrationFacade.SetShipmentMethodCode(ShipViaID);
-        end;
-
-        if (SLCustomer.Terms <> '') then begin
-            Evaluate(PaymentTermsFormula, '');
-            CustomerDataMigrationFacade.CreatePaymentTermsIfNeeded(SLCustomer.Terms, SLCustomer.Terms, PaymentTermsFormula);
-            CustomerDataMigrationFacade.SetPaymentTermsCode(SLCustomer.Terms);
         end;
 
         CustomerDataMigrationFacade.SetName2(CopyStr(SLHelperFunctions.NameFlip(SLCustomer.BillName), 1, MaxStrLen(BillName)));
@@ -399,5 +202,216 @@ codeunit 47018 "SL Customer Migrator"
         Sender.CreatePostingSetupIfNeeded(SLCustClass.ClassId, SLCustClass.Descr, SLCustClass.ARAcct);
         Sender.SetCustomerPostingGroup(SLCustClass.ClassId);
         Sender.ModifyCustomer(true);
+    end;
+
+    internal procedure MigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        SLARDoc: Record "SL ARDoc Buffer";
+        SLARSetup: Record "SL ARSetup";
+        SLCustomer: Record "SL Customer";
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        BalancingAccount: Code[20];
+        DocTypeToSet: Option " ",Payment,Invoice,"Credit Memo","Finance Charge Memo";
+        GLDocNbr: Text[20];
+        ARDocTypeCashSaleTxt: Label 'CS', Locked = true;
+        ARDocTypeCreditMemoTxt: Label 'CM', Locked = true;
+        ARDocTypeDebitMemoTxt: Label 'DM', Locked = true;
+        ARDocTypeFinanceChargeTxt: Label 'FI', Locked = true;
+        ARDocTypeInvoiceTxt: Label 'IN', Locked = true;
+        ARDocTypeNSFCheckChargeTxt: Label 'NC', Locked = true;
+        ARDocTypeNSFReversalTxt: Label 'NS', Locked = true;
+        ARDocTypePaymentTxt: Label 'PA', Locked = true;
+        ARDocTypePaymentPrepaymentTxt: Label 'PP', Locked = true;
+        ARDocTypeSmallBalanceTxt: Label 'SB', Locked = true;
+        ARDocTypeSmallCreditTxt: Label 'SC', Locked = true;
+    begin
+        if not ChartOfAccountsMigrated then
+            exit;
+
+        if RecordIdToMigrate.TableNo() <> Database::"SL Customer" then
+            exit;
+
+        SLCompanyAdditionalSettings.Get(CompanyName);
+        if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
+            exit;
+        if not SLCompanyAdditionalSettings.GetReceivablesModuleEnabled() then
+            exit;
+        if SLCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
+            exit;
+        if not SLCustomer.Get(RecordIdToMigrate) then
+            exit;
+        if not SLARSetup.Get(ARSetupIDTxt) then
+            exit;
+
+        Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)), '', '');
+        SLARDoc.SetRange(CpnyID, CompanyName);
+        SLARDoc.SetRange(CustId, SLCustomer.CustId);
+        SLARDoc.SetFilter(DocType, '%1|%2|%3|%4|%5', ARDocTypeInvoiceTxt, ARDocTypeCashSaleTxt, ARDocTypeDebitMemoTxt, ARDocTypeSmallCreditTxt, ARDocTypeNSFCheckChargeTxt);  //Invoices
+        SLARDoc.SetFilter(DocBal, '<>%1', 0);
+        if SLARDoc.FindSet() then
+            repeat
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
+                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
+                BalancingAccount := SLARSetup.ArAcct;
+
+                Sender.CreateGeneralJournalLine(
+                    CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)),
+                    GLDocNbr,
+                    SLARDoc.DocDesc,
+                    SLARDoc.DocDate,
+                    SLARDoc.DueDate,
+                    SLARDoc.DocBal,
+                    SLARDoc.DocBal,
+                    '',
+                    BalancingAccount
+                );
+                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::Invoice);
+                DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                if (SLARDoc.SlsperId.TrimEnd() <> '') then begin
+                    Sender.CreateSalespersonPurchaserIfNeeded(SLARDoc.SlsperId, '', '', '');
+                    Sender.SetGeneralJournalLineSalesPersonCode(SLARDoc.SlsperId);
+                end;
+                if SLARDoc.OrdNbr.TrimEnd() <> '' then
+                    Sender.SetGeneralJournalLineExternalDocumentNo(SLARDoc.OrdNbr);
+
+                // Temporary code to set the Due Date on Invoices until the Payment Terms migration is implemented.
+                GenJournalLine.SetRange("Journal Batch Name", CustomerBatchNameTxt);
+                GenJournalLine.SetRange("Document No.", GLDocNbr);
+                if GenJournalLine.FindLast() then begin
+                    GenJournalLine."Due Date" := SLARDoc.DueDate;
+                    GenJournalLine.Modify();
+                end;
+            until SLARDoc.Next() = 0;
+
+        SLARDoc.Reset();
+        SLARDoc.SetRange(CpnyID, CompanyName);
+        SLARDoc.SetRange(CustId, SLCustomer.CustId);
+        SLARDoc.SetFilter(DocType, '%1|%2', ARDocTypePaymentTxt, ARDocTypePaymentPrepaymentTxt);  //Payments
+        SLARDoc.SetFilter(DocBal, '<>%1', 0);
+        if SLARDoc.FindSet() then
+            repeat
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
+                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
+                BalancingAccount := SLARSetup.ArAcct;
+
+                Sender.CreateGeneralJournalLine(
+                    CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)),
+                    GLDocNbr,
+                    SLARDoc.DocDesc,
+                    SLARDoc.DocDate,
+                    SLARDoc.DocDate,
+                    (SLARDoc.DocBal * -1),
+                    (SLARDoc.DocBal * -1),
+                    '',
+                    BalancingAccount
+                );
+                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::Payment);
+                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                if (SLARDoc.SlsperId.TrimEnd() <> '') then begin
+                    Sender.CreateSalespersonPurchaserIfNeeded(SLARDoc.SlsperId, '', '', '');
+                    Sender.SetGeneralJournalLineSalesPersonCode(SLARDoc.SlsperId);
+                end;
+                if SLARDoc.OrdNbr.TrimEnd() <> '' then
+                    Sender.SetGeneralJournalLineExternalDocumentNo(SLARDoc.OrdNbr);
+            until SLARDoc.Next() = 0;
+
+        SLARDoc.Reset();
+        SLARDoc.SetRange(CpnyID, CompanyName);
+        SLARDoc.SetRange(CustId, SLCustomer.CustId);
+        SLARDoc.SetFilter(DocType, '%1|%2|%3', ARDocTypeCreditMemoTxt, ARDocTypeSmallBalanceTxt, ARDocTypeNSFReversalTxt);  //Credit Memos
+        SLARDoc.SetFilter(DocBal, '<>%1', 0);
+        if SLARDoc.FindSet() then
+            repeat
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
+                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
+                BalancingAccount := SLARSetup.ArAcct;
+
+                if SLARDoc.DocType = ARDocTypeCreditMemoTxt then
+                    Sender.CreateGeneralJournalLine(
+                        CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)),
+                        GLDocNbr,
+                        SLARDoc.DocDesc,
+                        SLARDoc.DocDate,
+                        SLARDoc.DueDate,
+                        (SLARDoc.DocBal * -1),
+                        (SLARDoc.DocBal * -1),
+                        '',
+                        BalancingAccount
+                    )
+                else
+                    Sender.CreateGeneralJournalLine(
+                        CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)),
+                        GLDocNbr,
+                        SLARDoc.DocDesc,
+                        SLARDoc.DocDate,
+                        SLARDoc.DocDate,
+                        (SLARDoc.DocBal * -1),
+                        (SLARDoc.DocBal * -1),
+                        '',
+                        BalancingAccount
+                    );
+                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::"Credit Memo");
+                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                if (SLARDoc.SlsperId.TrimEnd() <> '') then begin
+                    Sender.CreateSalespersonPurchaserIfNeeded(SLARDoc.SlsperId, '', '', '');
+                    Sender.SetGeneralJournalLineSalesPersonCode(SLARDoc.SlsperId);
+                end;
+                if SLARDoc.OrdNbr.TrimEnd() <> '' then
+                    Sender.SetGeneralJournalLineExternalDocumentNo(SLARDoc.OrdNbr);
+
+                // Temporary code to set the Due Date on Credit Memos until the Payment Terms migration is implemented.
+                if SLARDoc.DocType = ARDocTypeCreditMemoTxt then begin
+                    GenJournalLine.SetRange("Journal Batch Name", CustomerBatchNameTxt);
+                    GenJournalLine.SetRange("Document No.", GLDocNbr);
+                    if GenJournalLine.FindLast() then begin
+                        GenJournalLine."Due Date" := SLARDoc.DueDate;
+                        GenJournalLine.Modify();
+                    end;
+                end;
+            until SLARDoc.Next() = 0;
+
+        SLARDoc.Reset();
+        SLARDoc.SetRange(CpnyID, CompanyName);
+        SLARDoc.SetRange(CustId, SLCustomer.CustId);
+        SLARDoc.SetRange(DocType, ARDocTypeFinanceChargeTxt);  // Finance Charge
+        SLARDoc.SetFilter(DocBal, '<>%1', 0);
+        if SLARDoc.FindSet() then
+            repeat
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLARDoc.RecordId));
+                GLDocNbr := SLPrefixTxt + SLARDoc.RefNbr;
+                BalancingAccount := SLARSetup.ArAcct;
+
+                Sender.CreateGeneralJournalLine(
+                    CopyStr(CustomerBatchNameTxt, 1, MaxStrLen(CustomerBatchNameTxt)),
+                    GLDocNbr,
+                    SLARDoc.DocDesc,
+                    SLARDoc.DocDate,
+                    SLARDoc.DueDate,
+                    SLARDoc.DocBal,
+                    SLARDoc.DocBal,
+                    '',
+                    BalancingAccount
+                );
+                Sender.SetGeneralJournalLineDocumentType(DocTypeToSet::"Finance Charge Memo");
+                Sender.SetGeneralJournalLineSourceCode(CopyStr(SourceCodeTxt, 1, MaxStrLen(SourceCodeTxt)));
+                if (SLARDoc.SlsperId.TrimEnd() <> '') then begin
+                    Sender.CreateSalespersonPurchaserIfNeeded(SLARDoc.SlsperId, '', '', '');
+                    Sender.SetGeneralJournalLineSalesPersonCode(SLARDoc.SlsperId);
+                end;
+                if SLARDoc.OrdNbr.TrimEnd() <> '' then
+                    Sender.SetGeneralJournalLineExternalDocumentNo(SLARDoc.OrdNbr);
+
+                // Temporary code to set the Due Date on Finance Charge Memos until the Payment Terms migration is implemented.
+                GenJournalLine.SetRange("Journal Batch Name", CustomerBatchNameTxt);
+                GenJournalLine.SetRange("Document No.", GLDocNbr);
+                if GenJournalLine.FindLast() then begin
+                    GenJournalLine."Due Date" := SLARDoc.DueDate;
+                    GenJournalLine.Modify();
+                end;
+            until SLARDoc.Next() = 0;
     end;
 }

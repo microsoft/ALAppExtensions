@@ -17,6 +17,8 @@ codeunit 47025 "SL Populate Hist. Tables"
         CommitAfterXRecordCount: Integer;
         CurrentRecordCount: Integer;
         InitialDateTime: DateTime;
+        InitialHistYear: Integer;
+        InitialYearDate: Date;
 
     internal procedure GetDefaultCommitAfterXRecordCount(): Integer
     begin
@@ -59,7 +61,6 @@ codeunit 47025 "SL Populate Hist. Tables"
     internal procedure PopulateHistoricalTables()
     var
         Day: Integer;
-        InitialHistYear: Integer;
         Month: Integer;
         TheTime: Time;
     begin
@@ -72,6 +73,7 @@ codeunit 47025 "SL Populate Hist. Tables"
             Month := 01;
             TheTime := 0T;
             InitialDateTime := CreateDateTime(DMY2Date(Day, Month, InitialHistYear), TheTime);
+            InitialYearDate := DMY2Date(Day, Month, InitialHistYear);
         end;
 
         PopulateGLDetail();
@@ -89,26 +91,46 @@ codeunit 47025 "SL Populate Hist. Tables"
             exit;
 
         SLHistMigrationStatusMgmt.UpdateStepStatus("SL Hist. Migration Step Type"::"SL GL Journal Trx.", false);
+        PopulateHistoricalGLSetup();
         PopulateHistoricalGLTran();
         PopulateHistoricalBatch();
         SLHistMigrationStatusMgmt.UpdateStepStatus("SL Hist. Migration Step Type"::"SL GL Journal Trx.", true);
     end;
 
+    internal procedure PopulateHistoricalGLSetup()
+    var
+        SLGLSetup: Record "SL GLSetup";
+        SLHistGLSetup: Record "SL Hist. GLSetup";
+        SourceTableId: Integer;
+    begin
+        SourceTableId := Database::"SL GLSetup";
+        SLGLSetup.SetFilter(CpnyId, '= %1', CompanyName);
+        if not SLGLSetup.FindSet() then
+            exit;
+
+        Clear(SLHistGLSetup);
+        SLHistGLSetup.TransferFields(SLGLSetup);
+        if SLHistGLSetup.Insert() then
+            ReportLastSuccess(SourceTableId, SLGLSetup.SystemRowVersion)
+        else
+            ReportLastError(SourceTableId, SLGLSetup.SystemRowVersion, "SL Hist. Migration Step Type"::"SL GL Journal Trx.", 'GL Setup');
+        AfterProcessedNextRecord(SourceTableId, SLGLSetup.SystemRowVersion);
+        AfterProcessedSection(SourceTableId, SLGLSetup.SystemRowVersion);
+    end;
+
     internal procedure PopulateHistoricalGLTran()
     var
-        SLGLTran: Record "SL GLTran";
-        SLHistGLTran: Record "SL Hist. GLTran";
-        InitialHistYear: Integer;
+        SLGLTran: Record "SL GLTran Buffer";
+        SLHistGLTran: Record "SL Hist. GLTran Archive";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
+        PostedTxt: Label 'P', Locked = true;
     begin
-        SourceTableId := Database::"SL GLTran";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
+        SourceTableId := Database::"SL GLTran Buffer";
         if InitialHistYear > 0 then
-            SLGLTran.SetFilter(TranDate, '>= %1', InitialDateTime);
-
+            SLGLTran.SetFilter(PerPost, '>= %1', Format(InitialHistYear));
         SLGLTran.SetFilter(CpnyID, '= %1', CompanyName);
-
+        SLGLTran.SetFilter(Posted, '= %1', PostedTxt);
         if not SLGLTran.FindSet() then
             exit;
 
@@ -116,12 +138,10 @@ codeunit 47025 "SL Populate Hist. Tables"
             LastSourceRecordId := SLGLTran.SystemRowVersion;
             Clear(SLHistGLTran);
             SLHistGLTran.TransferFields(SLGLTran);
-
             if SLHistGLTran.Insert() then
                 ReportLastSuccess(SourceTableId, LastSourceRecordId)
             else
                 ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL GL Journal Trx.", SLGLTran.Module + '-' + SLGLTran.BatNbr + '-' + Format(SLGLTran.LineNbr));
-
             AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until SLGLTran.Next() = 0;
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
@@ -131,17 +151,13 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLBatch: Record "SL Batch";
         SLHistBatch: Record "SL Hist. Batch";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL Batch";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLBatch.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
-
         SLBatch.SetFilter(CpnyID, '= %1', CompanyName);
-
         if not SLBatch.FindSet() then
             exit;
 
@@ -174,19 +190,15 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalAPDoc()
     var
-        SLAPDoc: Record "SL APDoc";
-        SLHistAPDoc: Record "SL Hist. APDoc";
-        InitialHistYear: Integer;
+        SLAPDoc: Record "SL APDoc Buffer";
+        SLHistAPDoc: Record "SL Hist. APDoc Archive";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL APDoc";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
+        SourceTableId := Database::"SL APDoc Buffer";
         if InitialHistYear > 0 then
-            SLAPDoc.SetFilter(DocDate, '>= %1', InitialDateTime);
-
+            SLAPDoc.SetFilter(PerPost, '>= %1', Format(InitialHistYear));
         SLAPDoc.SetFilter(CpnyID, '= %1', CompanyName);
-
         if not SLAPDoc.FindSet() then
             exit;
 
@@ -194,12 +206,10 @@ codeunit 47025 "SL Populate Hist. Tables"
             LastSourceRecordId := SLAPDoc.SystemRowVersion;
             Clear(SLHistAPDoc);
             SLHistAPDoc.TransferFields(SLAPDoc);
-
             if SLHistAPDoc.Insert() then
                 ReportLastSuccess(SourceTableId, LastSourceRecordId)
             else
                 ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Payables Trx.", SLAPDoc.Acct + '-' + SLAPDoc.Sub + '-' + SLAPDoc.DocType + '-' + SLAPDoc.RefNbr + '-' + Format(SLAPDoc.RecordID));
-
             AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until SLAPDoc.Next() = 0;
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
@@ -207,19 +217,15 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalAPTran()
     var
-        SLAPTran: Record "SL APTran";
-        SLHistAPTran: Record "SL Hist. APTran";
-        InitialHistYear: Integer;
+        SLAPTran: Record "SL APTran Buffer";
+        SLHistAPTran: Record "SL Hist. APTran Archive";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL APTran";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
+        SourceTableId := Database::"SL APTran Buffer";
         if InitialHistYear > 0 then
-            SLAPTran.SetFilter(TranDate, '>= %1', InitialDateTime);
-
+            SLAPTran.SetFilter(PerPost, '>= %1', Format(InitialHistYear));
         SLAPTran.SetFilter(CpnyID, '= %1', CompanyName);
-
         if not SLAPTran.FindSet() then
             exit;
 
@@ -227,12 +233,10 @@ codeunit 47025 "SL Populate Hist. Tables"
             LastSourceRecordId := SLAPTran.RecordID;
             Clear(SLHistAPTran);
             SLHistAPTran.TransferFields(SLAPTran);
-
             if SLHistAPTran.Insert() then
                 ReportLastSuccess(SourceTableId, LastSourceRecordId)
             else
                 ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Payables Trx.", SLAPTran.BatNbr + '-' + SLAPTran.Acct + '-' + SLAPTran.Sub + '-' + SLAPTran.RefNbr + '-' + Format(SLAPTran.RecordID));
-
             AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until SLAPTran.Next() = 0;
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
@@ -242,15 +246,12 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLAPAdjust: Record "SL APAdjust";
         SLHistAPAdjust: Record "SL Hist. APAdjust";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL APAdjust";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
-            SLAPAdjust.SetFilter(AdjgDocDate, '>= %1', InitialDateTime);
-
+            SLAPAdjust.SetFilter(AdjgPerPost, '>= %1', Format(InitialHistYear));
         if not SLAPAdjust.FindSet() then
             exit;
 
@@ -258,12 +259,10 @@ codeunit 47025 "SL Populate Hist. Tables"
             LastSourceRecordId := SLAPAdjust.SystemRowVersion;
             Clear(SLHistAPAdjust);
             SLHistAPAdjust.TransferFields(SLAPAdjust);
-
             if SLHistAPAdjust.Insert() then
                 ReportLastSuccess(SourceTableId, LastSourceRecordId)
             else
                 ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Payables Trx.", SLAPAdjust.AdjdRefNbr + '-' + SLAPAdjust.AdjdDocType + '-' + SLAPAdjust.AdjgRefNbr + '-' + SLAPAdjust.AdjgDocType + '-' + SLAPAdjust.VendId + '-' + SLAPAdjust.AdjgAcct + '-' + SLAPAdjust.AdjgSub);
-
             AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until SLAPAdjust.Next() = 0;
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
@@ -288,19 +287,15 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalARDoc()
     var
-        SLARDoc: Record "SL ARDoc";
-        SLHistARDoc: Record "SL Hist. ARDoc";
-        InitialHistYear: Integer;
+        SLARDoc: Record "SL ARDoc Buffer";
+        SLHistARDoc: Record "SL Hist. ARDoc Archive";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL ARDoc";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
+        SourceTableId := Database::"SL ARDoc Buffer";
         if InitialHistYear > 0 then
-            SLARDoc.SetFilter(DocDate, '>= %1', InitialDateTime);
-
+            SLARDoc.SetFilter(PerPost, '>= %1', Format(InitialHistYear));
         SLARDoc.SetFilter(CpnyID, '= %1', CompanyName);
-
         if not SLARDoc.FindSet() then
             exit;
 
@@ -321,16 +316,14 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalARTran()
     var
-        SLARTran: Record "SL ARTran";
-        SLHistARTran: Record "SL Hist. ARTran";
-        InitialHistYear: Integer;
+        SLARTran: Record "SL ARTran Buffer";
+        SLHistARTran: Record "SL Hist. ARTran Archive";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL ARTran";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
+        SourceTableId := Database::"SL ARTran Buffer";
         if InitialHistYear > 0 then
-            SLARTran.SetFilter(TranDate, '>= %1', InitialDateTime);
+            SLARTran.SetFilter(TranDate, '>= %1', InitialYearDate);
 
         SLARTran.SetFilter(CpnyID, '= %1', CompanyName);
 
@@ -356,15 +349,12 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLARAdjust: Record "SL ARAdjust";
         SLHistARAdjust: Record "SL Hist. ARAdjust";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL ARAdjust";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
-            SLARAdjust.SetFilter(AdjgDocDate, '>= %1', InitialDateTime);
-
+            SLARAdjust.SetFilter(AdjgPerPost, '>= %1', Format(InitialHistYear));
         if not SLARAdjust.FindSet() then
             exit;
 
@@ -372,12 +362,10 @@ codeunit 47025 "SL Populate Hist. Tables"
             LastSourceRecordId := SLARAdjust.RecordID;
             Clear(SLHistARAdjust);
             SLHistARAdjust.TransferFields(SLARAdjust);
-
             if SLHistARAdjust.Insert() then
                 ReportLastSuccess(SourceTableId, LastSourceRecordId)
             else
                 ReportLastError(SourceTableId, LastSourceRecordId, "SL Hist. Migration Step Type"::"SL Receivables Trx.", SLARAdjust.AdjdRefNbr + '-' + Format(SLARAdjust.RecordID));
-
             AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until SLARAdjust.Next() = 0;
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
@@ -387,12 +375,10 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLSOHeader: Record "SL SOHeader";
         SLHistSOHeader: Record "SL Hist. SOHeader";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL SOHeader";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLSOHeader.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
@@ -420,12 +406,10 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLSOLine: Record "SL SOLine";
         SLHistSOLine: Record "SL Hist. SOLine";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL SOLine";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLSOLine.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
@@ -453,12 +437,10 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLSOShipHeader: Record "SL SOShipHeader";
         SLHistSOShipHeader: Record "SL Hist. SOShipHeader";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL SOShipHeader";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLSOShipHeader.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
@@ -486,12 +468,10 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLSOShipLine: Record "SL SOShipLine";
         SLHistSOShipLine: Record "SL Hist. SOShipLine";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL SOShipLine";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLSOShipLine.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
@@ -519,14 +499,12 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLSOType: Record "SL SOType";
         SLHistSOType: Record "SL Hist. SOType";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
         Inactive: Integer;
     begin
         SourceTableId := Database::"SL SOType";
         Inactive := 0;
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLSOType.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
@@ -564,14 +542,12 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalINTran()
     var
-        SLINTran: Record "SL INTran";
-        SLHistINTran: Record "SL Hist. INTran";
-        InitialHistYear: Integer;
+        SLINTran: Record "SL INTran Buffer";
+        SLHistINTran: Record "SL Hist. INTran Archive";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL INTran";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
+        SourceTableId := Database::"SL INTran Buffer";
         if InitialHistYear > 0 then
             SLINTran.SetFilter(TranDate, '>= %1', InitialDateTime);
 
@@ -597,14 +573,12 @@ codeunit 47025 "SL Populate Hist. Tables"
 
     internal procedure PopulateHistoricalLotSerT()
     var
-        SLLotSerT: Record "SL LotSerT";
-        SLHistLotSerT: Record "SL Hist. LotSerT";
-        InitialHistYear: Integer;
+        SLLotSerT: Record "SL LotSerT Buffer";
+        SLHistLotSerT: Record "SL Hist. LotSerT Archive";
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
-        SourceTableId := Database::"SL LotSerT";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
+        SourceTableId := Database::"SL LotSerT Buffer";
         if InitialHistYear > 0 then
             SLLotSerT.SetFilter(TranDate, '>= %1', InitialDateTime);
 
@@ -645,12 +619,10 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLPOTran: Record "SL POTran";
         SLHistPOTran: Record "SL Hist. POTran";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL POTran";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLPOTran.SetFilter(TranDate, '>= %1', InitialDateTime);
 
@@ -678,12 +650,10 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLPOReceipt: Record "SL POReceipt";
         SLHistPOReceipt: Record "SL Hist. POReceipt";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL POReceipt";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLPOReceipt.SetFilter(RcptDate, '>= %1', InitialDateTime);
 
@@ -711,12 +681,10 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLPurOrdDet: Record "SL PurOrdDet";
         SLHistPurOrdDet: Record "SL Hist. PurOrdDet";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL PurOrdDet";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLPurOrdDet.SetFilter(Crtd_DateTime, '>= %1', InitialDateTime);
 
@@ -744,12 +712,10 @@ codeunit 47025 "SL Populate Hist. Tables"
     var
         SLPurchOrd: Record "SL PurchOrd";
         SLHistPurchOrd: Record "SL Hist. PurchOrd";
-        InitialHistYear: Integer;
         SourceTableId: Integer;
         LastSourceRecordId: Integer;
     begin
         SourceTableId := Database::"SL PurchOrd";
-        InitialHistYear := SLCompanyAdditionalSettings.GetHistInitialYear();
         if InitialHistYear > 0 then
             SLPurchOrd.SetFilter(PODate, '>= %1', InitialDateTime);
 

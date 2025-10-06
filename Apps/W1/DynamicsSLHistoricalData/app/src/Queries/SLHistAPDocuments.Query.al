@@ -15,7 +15,7 @@ query 42803 "SL Hist. APDocuments"
     Caption = 'Dynamics SL Accounts Payable Documents';
     elements
     {
-        dataitem(SL_APDocHist; "SL Hist. APDoc")
+        dataitem(SL_APDocHist; "SL Hist. APDoc Archive")
         {
             column(CpnyID; CpnyID)
             {

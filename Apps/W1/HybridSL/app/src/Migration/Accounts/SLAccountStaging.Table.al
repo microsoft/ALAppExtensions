@@ -38,6 +38,7 @@ table 47000 "SL Account Staging"
         }
         field(7; Active; Boolean)
         {
+            Caption = 'Active';
         }
     }
 
