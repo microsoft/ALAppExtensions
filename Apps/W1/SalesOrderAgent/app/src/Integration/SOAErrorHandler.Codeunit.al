@@ -26,12 +26,12 @@ codeunit 4585 "SOA Error Handler"
     local procedure RunSOAErrorHandler(Setup: Record "SOA Setup")
     var
         SOAImpl: Codeunit "SOA Impl";
-        Telemetry: Codeunit Telemetry;
-        CustomDimensions: Dictionary of [Text, Text];
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
-        CustomDimensions.Add('ErrorCallStack', GetLastErrorCallStack());
-        CustomDimensions.Add('SOASetupId', Format(Setup.ID));
-        Telemetry.LogMessage('0000NDM', TelemetryAgentTaskFailedLbl, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+        TelemetryDimensions.Add('SOASetupId', Format(Setup.ID));
+        FeatureTelemetry.LogError('0000NDM', SOASetupCU.GetFeatureName(), 'RunSOAErrorHandler', TelemetryAgentTaskFailedLbl, GetLastErrorCallStack(), TelemetryDimensions);
 
         SOAImpl.ScheduleSOAgent(Setup);
     end;

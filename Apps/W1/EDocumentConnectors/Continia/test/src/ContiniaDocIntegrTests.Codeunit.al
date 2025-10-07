@@ -13,6 +13,7 @@ using System.Threading;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.Currency;
+
 codeunit 148203 "Continia Doc. Integr. Tests"
 {
     Subtype = Test;

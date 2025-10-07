@@ -130,7 +130,6 @@ page 31189 "Purch. Adv. Usage FactBox CZZ"
 
         PurchPost.GetPurchLines(PurchaseHeader, TempPurchaseLine, 1);
         TempPurchaseLine.CalcVATAmountLines(1, PurchaseHeader, TempPurchaseLine, TempVATAmountLine);
-        TempPurchaseLine.UpdateVATOnLines(1, PurchaseHeader, TempPurchaseLine, TempVATAmountLine);
         TotalAmountInclVAT := TempVATAmountLine.GetTotalAmountInclVAT();
 
         AdvanceCount := TempAdvanceLetterApplication.Count();

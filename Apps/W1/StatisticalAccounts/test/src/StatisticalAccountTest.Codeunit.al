@@ -398,7 +398,7 @@ codeunit 139683 "Statistical Account Test"
         FinancialReports.Filter.SetFilter(Name, AccScheduleName.Name);
         AccScheduleOverview.Trap();
         FinancialReports.Overview.Invoke();
-        AccScheduleOverview.PeriodType.SetValue("Analysis Period Type"::Year);
+        AccScheduleOverview.PeriodTypeDefault.SetValue("Analysis Period Type"::Year);
 
         // [GIVEN] Save the Date Filter.
         DateFilter := Format(AccScheduleOverview.DateFilter);
@@ -605,7 +605,7 @@ codeunit 139683 "Statistical Account Test"
         FinancialReports.Filter.SetFilter(Name, AccScheduleName.Name);
         AccScheduleOverview.Trap();
         FinancialReports.Overview.Invoke();
-        AccScheduleOverview.PeriodType.SetValue("Analysis Period Type"::Year);
+        AccScheduleOverview.PeriodTypeDefault.SetValue("Analysis Period Type"::Year);
 
         // [GIVEN] Save the Date Filter.
         DateFilter := Format(AccScheduleOverview.DateFilter);

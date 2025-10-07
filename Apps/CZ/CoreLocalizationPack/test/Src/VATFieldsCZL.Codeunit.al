@@ -11,7 +11,7 @@ codeunit 148065 "VAT Fields CZL"
 
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         VATStatementTemplate: Record "VAT Statement Template";
         LibraryERM: Codeunit "Library - ERM";
         LibraryPurchase: Codeunit "Library - Purchase";
@@ -38,7 +38,10 @@ codeunit 148065 "VAT Fields CZL"
 
         LibraryTaxCZL.SetUseVATDate(true);
 
-        LibraryTaxCZL.FindLastOpenVATPeriod(VATPeriodCZL);
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.DeleteAll();
+        LibraryTaxCZL.CreateVATReturnPeriods(CalcDate('<-CY>', WorkDate()), 12);
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
         VATStatementTemplate.FindFirst();
 
         isInitialized := true;
@@ -152,7 +155,7 @@ codeunit 148065 "VAT Fields CZL"
         Initialize();
 
         // [GIVEN] Allow Posting From has been set up in General Ledger Setup
-        GeneralLedgerSetup.Validate("Allow Posting From", VATPeriodCZL."Starting Date");
+        GeneralLedgerSetup.Validate("Allow Posting From", VATReturnPeriod."Start Date");
         GeneralLedgerSetup.Modify();
 
         // [GIVEN] New Gen. Journal Line has been created
@@ -164,8 +167,8 @@ codeunit 148065 "VAT Fields CZL"
         GenJournalLine.Validate("Bal. Account Type", GenJournalLine."Bal. Account Type"::"G/L Account");
         GenJournalLine.Validate("Bal. Account No.", LibraryERM.CreateGLAccountNoWithDirectPosting());
         GenJournalLine.Validate(Amount, 100);
-        GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
-        GenJournalLine.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
+        GenJournalLine.Validate("Posting Date", VATReturnPeriod."Start Date");
+        GenJournalLine.Validate("VAT Reporting Date", VATReturnPeriod."Start Date");
         GenJournalLine.Validate("Original Doc. VAT Date CZL", 0D);
 
         // [WHEN] Gen. Journal Line has been posted
@@ -202,8 +205,8 @@ codeunit 148065 "VAT Fields CZL"
                        GenJournalLine."Document Type"::" ", GenJournalLine."Account Type"::"G/L Account", LibraryERM.CreateGLAccountWithPurchSetup(),
                        GenJournalLine."Bal. Account Type"::"G/L Account", LibraryERM.CreateGLAccountNoWithDirectPosting(), 100);
         DocumentNo := GenJournalLine."Document No.";
-        GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
-        GenJournalLine.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
+        GenJournalLine.Validate("Posting Date", VATReturnPeriod."Start Date");
+        GenJournalLine.Validate("VAT Reporting Date", VATReturnPeriod."Start Date");
         GenJournalLine.Modify();
 
         // [WHEN] Gen. Journal Line has been posted
@@ -215,7 +218,7 @@ codeunit 148065 "VAT Fields CZL"
         PostedGenJournalLine.SetRange("Journal Batch Name", GenJournalBatch.Name);
         PostedGenJournalLine.SetRange("Document No.", DocumentNo);
         PostedGenJournalLine.FindLast();
-        Assert.AreEqual(VATPeriodCZL."Starting Date", PostedGenJournalLine."VAT Date CZL", PostedGenJournalLine.FieldCaption("VAT Date CZL"));
+        Assert.AreEqual(VATReturnPeriod."Start Date", PostedGenJournalLine."VAT Date CZL", PostedGenJournalLine.FieldCaption("VAT Date CZL"));
 #pragma warning restore AA0210
     end;
 
@@ -278,8 +281,8 @@ codeunit 148065 "VAT Fields CZL"
         VATStatement."P&review CZL".Invoke();
 
         // [WHEN] Dates has been set
-        VATStatementPreviewCZL.VATPeriodStartDate.SetValue(VATPeriodCZL."Starting Date");
-        VATStatementPreviewCZL.VATPeriodEndDate.SetValue(CalcDate('<+1M-1D>', VATPeriodCZL."Starting Date"));
+        VATStatementPreviewCZL.VATPeriodStartDate.SetValue(VATReturnPeriod."Start Date");
+        VATStatementPreviewCZL.VATPeriodEndDate.SetValue(CalcDate('<+1M-1D>', VATReturnPeriod."Start Date"));
         VATStatementPreviewCZL.PeriodSelection.SetValue("VAT Statement Report Period Selection"::"Within Period");
 
         // [THEN] Total Line value will be sum of VAT Lines values
@@ -353,8 +356,8 @@ codeunit 148065 "VAT Fields CZL"
         VATStatement."P&review CZL".Invoke();
 
         // [WHEN] Dates has been set
-        VATStatementPreviewCZL.VATPeriodStartDate.SetValue(VATPeriodCZL."Starting Date");
-        VATStatementPreviewCZL.VATPeriodEndDate.SetValue(CalcDate('<+1M-1D>', VATPeriodCZL."Starting Date"));
+        VATStatementPreviewCZL.VATPeriodStartDate.SetValue(VATReturnPeriod."Start Date");
+        VATStatementPreviewCZL.VATPeriodEndDate.SetValue(CalcDate('<+1M-1D>', VATReturnPeriod."Start Date"));
         VATStatementPreviewCZL.PeriodSelection.SetValue("VAT Statement Report Period Selection"::"Within Period");
 
         // [THEN] Total Line value will be sum of VAT Lines values
@@ -424,8 +427,8 @@ codeunit 148065 "VAT Fields CZL"
         VATStatement."P&review CZL".Invoke();
 
         // [WHEN] Dates has been set
-        VATStatementPreviewCZL.VATPeriodStartDate.SetValue(VATPeriodCZL."Starting Date");
-        VATStatementPreviewCZL.VATPeriodEndDate.SetValue(CalcDate('<+1M-1D>', VATPeriodCZL."Starting Date"));
+        VATStatementPreviewCZL.VATPeriodStartDate.SetValue(VATReturnPeriod."Start Date");
+        VATStatementPreviewCZL.VATPeriodEndDate.SetValue(CalcDate('<+1M-1D>', VATReturnPeriod."Start Date"));
         VATStatementPreviewCZL.PeriodSelection.SetValue("VAT Statement Report Period Selection"::"Within Period");
 
         // [THEN] Total Line value will be sum of VAT Lines values
@@ -452,8 +455,8 @@ codeunit 148065 "VAT Fields CZL"
         GenJournalLine.Validate("Bal. Account Type", GenJournalLine."Bal. Account Type"::"G/L Account");
         GenJournalLine.Validate("Bal. Account No.", BalAccNo);
         GenJournalLine.Validate(Amount, 100);
-        GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
-        GenJournalLine.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
+        GenJournalLine.Validate("Posting Date", VATReturnPeriod."Start Date");
+        GenJournalLine.Validate("VAT Reporting Date", VATReturnPeriod."Start Date");
         GenJournalLine.Validate("Original Doc. VAT Date CZL", 0D);
         Clear(GenJnlPostLine);
         GenJnlPostLine.Run(GenJournalLine);

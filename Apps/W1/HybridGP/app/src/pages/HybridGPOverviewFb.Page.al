@@ -7,7 +7,7 @@ page 40125 "Hybrid GP Overview Fb"
     ApplicationArea = All;
     Caption = 'GP Migration Overview';
     PageType = CardPart;
-
+#pragma warning disable AA0219
     layout
     {
         area(Content)
@@ -77,6 +77,7 @@ page 40125 "Hybrid GP Overview Fb"
             }
         }
     }
+#pragma warning restore AA0219
 
     trigger OnAfterGetRecord()
     var

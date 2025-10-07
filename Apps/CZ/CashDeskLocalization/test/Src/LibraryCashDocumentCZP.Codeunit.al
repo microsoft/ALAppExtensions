@@ -73,7 +73,7 @@ codeunit 148002 "Library - Cash Document CZP"
     local procedure CreateDepreciationBook(var DepreciationBook: Record "Depreciation Book")
     begin
         LibraryFixedAsset.CreateDepreciationBook(DepreciationBook);
-        DepreciationBook.Validate("G/L Integration - Acq. Cost", true);
+        DepreciationBook.Validate("G/L Integration - Custom 2", true);
         DepreciationBook.Modify(true);
     end;
 

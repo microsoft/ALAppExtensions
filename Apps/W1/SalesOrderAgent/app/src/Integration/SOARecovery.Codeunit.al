@@ -33,21 +33,21 @@ codeunit 4584 "SOA Recovery"
         Agent: Codeunit Agent;
         AzureOpenAI: Codeunit "Azure OpenAI";
         SOAImpl: Codeunit "SOA Impl";
-        Telemetry: Codeunit Telemetry;
-        CustomDimensions: Dictionary of [Text, Text];
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
-        CustomDimensions := SOAImpl.GetCustomDimensions();
-        CustomDimensions.Add('SOASetupId', Format(Setup.ID));
+        TelemetryDimensions.Add('SOASetupId', Format(Setup.ID));
 
         // Check if capability is enabled
         if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Order Agent", true) then begin
-            Telemetry.LogMessage('0000NF6', TelemetryAgentCapabilityNotEnabledLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000NF6', SOASetupCU.GetFeatureName(), 'Sales order agent capability check', TelemetryAgentCapabilityNotEnabledLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit;
         end;
 
         // Check if the agent is enabled
         if not Agent.IsActive(Setup."Agent User Security ID") then begin
-            Telemetry.LogMessage('0000NDW', TelemetrySalesOrderAgentIsNotEnabledLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000NDW', SOASetupCU.GetFeatureName(), 'Sales order agent enable check', TelemetrySalesOrderAgentIsNotEnabledLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit;
         end;
 

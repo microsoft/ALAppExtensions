@@ -645,14 +645,15 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Starting Date';
-                        TableRelation = "VAT Period CZL";
                         ToolTip = 'Specifies the first date in the period from which VAT entries are processed in the batch job.';
 
                         trigger OnValidate()
                         begin
-                            VATPeriodCZL.Get(EntrdStartDate);
-                            if VATPeriodCZL.Next() > 0 then
-                                EndDateReq := CalcDate('<-1D>', VATPeriodCZL."Starting Date");
+                            if EntrdStartDate <> 0D then begin
+                                VATReturnPeriod.SetRange("Start Date", EntrdStartDate);
+                                VATReturnPeriod.FindLast();
+                                EndDateReq := VATReturnPeriod."End Date";
+                            end;
                         end;
                     }
                     field(EndingDate; EndDateReq)
@@ -713,9 +714,11 @@ report 11971 "Calc. and Post VAT Settl. CZL"
     }
     trigger OnPostReport()
     begin
-        if PostSettlement and VATPeriodCZL.Get(EntrdStartDate) then begin
-            VATPeriodCZL.Closed := true;
-            VATPeriodCZL.Modify();
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.SetRange("Start Date", EntrdStartDate);
+        if PostSettlement and VATReturnPeriod.FindLast() then begin
+            VATReturnPeriod.Validate(Status, VATReturnPeriod.Status::Closed);
+            VATReturnPeriod.Modify();
         end;
         OnAfterPostReport();
     end;
@@ -758,7 +761,7 @@ report 11971 "Calc. and Post VAT Settl. CZL"
         TaxJurisdiction: Record "Tax Jurisdiction";
         GeneralLedgerSetup: Record "General Ledger Setup";
         VATPostingSetup: Record "VAT Posting Setup";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         EntrdStartDate: Date;
         EndDateReq: Date;
@@ -812,7 +815,6 @@ report 11971 "Calc. and Post VAT Settl. CZL"
         PrintVATEntries := ShowVATEntries;
         PostSettlement := Post;
         Initialized := true;
-        if VATPeriodCZL.Get(EntrdStartDate) then;
     end;
 
     procedure InitializeRequest2(NewUseAmtsInAddCurr: Boolean)

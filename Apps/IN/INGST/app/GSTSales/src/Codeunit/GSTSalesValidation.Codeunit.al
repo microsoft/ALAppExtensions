@@ -1249,7 +1249,7 @@ codeunit 18143 "GST Sales Validation"
                 "GST Customer Type"::Unregistered,
                 "GST Customer Type"::Export]
             then begin
-                if ShipToAddress."Ship-to GST Customer Type" <> "GST Customer Type"::" " then
+                if not (ShipToAddress."Ship-to GST Customer Type" in ["GST Customer Type"::" ", "GST Customer Type"::Export]) then
                     ShipToAddress.TestField(State);
 
                 if not (SalesHeader."GST Customer Type" in ["GST Customer Type"::Unregistered, "GST Customer Type"::Export]) then

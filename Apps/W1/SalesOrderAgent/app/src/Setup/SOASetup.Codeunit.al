@@ -19,6 +19,7 @@ using System.Environment.Configuration;
 using System.Globalization;
 using System.Reflection;
 using System.Security.AccessControl;
+using System.Telemetry;
 
 #pragma warning disable AS0049
 codeunit 4400 "SOA Setup"
@@ -88,9 +89,6 @@ codeunit 4400 "SOA Setup"
     var
         SOASetup: Record "SOA Setup";
     begin
-        SOASetup.Init();
-        SOASetup.SetAutoCalcFields(SOASetup.Exists);
-        SOASetup.SetRange(SOASetup.Exists, true);
         exit(SOASetup.IsEmpty());
     end;
 
@@ -101,34 +99,37 @@ codeunit 4400 "SOA Setup"
         if AzureADGraphUser.IsUserDelegatedAdmin() or AzureADGraphUser.IsUserDelegatedHelpdesk() then
             Error(DelegateAdminErr);
 
-        if IsNullGuid(TempAgent."User Security ID") then begin
-            CreateAgent(TempAgent, TempAgentAccessControl, TempSOASetup, UserSettings);
-            exit;
-        end;
-
-        if TempAgent.State = TempAgent.State::Enabled then begin
-            UpdateSOASetupActivationDT(TempSOASetup);
-            UpdateInstructions(TempSOASetup);
-        end;
-
-        Agent.SetDisplayName(TempAgent."User Security ID", TempAgent."Display Name");
-        if TempAgent.State = TempAgent.State::Enabled then begin
-            Agent.Activate(TempAgent."User Security ID");
-            EnableItemSearch();
-            if TempSOASetup."Email Monitoring" and TempSOASetup."Incoming Monitoring" and not IsNullGuid(TempSOASetup."Email Account ID") and Schedule then
-                SOAImpl.ScheduleSOAgent(TempSOASetup);
-        end
+        if IsNullGuid(TempAgent."User Security ID") then
+            CreateAgent(TempAgent, TempAgentAccessControl, TempSOASetup, UserSettings)
         else begin
-            Agent.Deactivate(TempAgent."User Security ID");
-            SOAImpl.RemoveScheduledTask(TempSOASetup);
+
+            if TempAgent.State = TempAgent.State::Enabled then begin
+                UpdateSOASetupActivationDT(TempSOASetup);
+                UpdateInstructions(TempSOASetup);
+            end;
+
+            Agent.SetDisplayName(TempAgent."User Security ID", TempAgent."Display Name");
+            if TempAgent.State = TempAgent.State::Enabled then begin
+                Agent.Activate(TempAgent."User Security ID");
+                EnableItemSearch();
+                if TempSOASetup."Email Monitoring" and TempSOASetup."Incoming Monitoring" and not IsNullGuid(TempSOASetup."Email Account ID") and Schedule then
+                    SOAImpl.ScheduleSOAgent(TempSOASetup);
+            end
+            else begin
+                Agent.Deactivate(TempAgent."User Security ID");
+                SOAImpl.RemoveScheduledTask(TempSOASetup);
+            end;
+            UpdateSOASetup(TempSOASetup);
+
+            if AccessUpdated then
+                Agent.UpdateAccess(TempAgent."User Security ID", TempAgentAccessControl);
+
+            if LocalizationSettingsUpdated then
+                Agent.UpdateLocalizationSettings(TempAgent."User Security ID", UserSettings);
         end;
-        UpdateSOASetup(TempSOASetup);
 
-        if AccessUpdated then
-            Agent.UpdateAccess(TempAgent."User Security ID", TempAgentAccessControl);
-
-        if LocalizationSettingsUpdated then
-            Agent.UpdateLocalizationSettings(TempAgent."User Security ID", UserSettings);
+        // Log SOA setup telemetry
+        LogTelemetry(TempAgent, TempSOASetup);
     end;
 
     local procedure UpdateSOASetup(var TempSOASetup: Record "SOA Setup" temporary)
@@ -171,6 +172,53 @@ codeunit 4400 "SOA Setup"
             TempSOASetup := SOASetup;
             TempSOASetup.Insert();
         end;
+    end;
+
+    local procedure LogTelemetry(var TempAgent: Record Agent temporary; var TempSOASetup: Record "SOA Setup" temporary)
+    var
+        UserSettings: Record "User Settings";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        Language: Codeunit Language;
+        TelemetryCustomDimension: Dictionary of [Text, Text];
+    begin
+        // SOA user settings
+        TelemetryCustomDimension.Add('AgentUserId', Format(TempSOASetup."Agent User Security ID"));
+        Agent.GetUserSettings(TempAgent."User Security ID", UserSettings);
+        if UserSettings."Language ID" <> 0 then
+            TelemetryCustomDimension.Add('Language', Language.GetCultureName(UserSettings."Language ID"))
+        else
+            TelemetryCustomDimension.Add('Language', '');
+        if UserSettings."Locale ID" <> 0 then
+            TelemetryCustomDimension.Add('Locale', Language.GetCultureName(UserSettings."Locale ID"))
+        else
+            TelemetryCustomDimension.Add('Locale', '');
+        TelemetryCustomDimension.Add('TimeZone', UserSettings."Time Zone");
+
+        // SOA setup config
+        TelemetryCustomDimension.Add('IncomingMonitoring', Format(TempSOASetup."Incoming Monitoring"));
+        TelemetryCustomDimension.Add('EmailMonitoring', Format(TempSOASetup."Email Monitoring"));
+        TelemetryCustomDimension.Add('AnalyzeAttachments', Format(TempSOASetup."Analyze Attachments"));
+        TelemetryCustomDimension.Add('SalesDocConfiguration', Format(TempSOASetup."Sales Doc. Configuration"));
+        TelemetryCustomDimension.Add('QuoteReview', Format(TempSOASetup."Quote Review"));
+        TelemetryCustomDimension.Add('OrderReview', Format(TempSOASetup."Order Review"));
+        TelemetryCustomDimension.Add('CreateOrderFromQuote', Format(TempSOASetup."Create Order from Quote"));
+        TelemetryCustomDimension.Add('SearchOnlyAvailableItems', Format(TempSOASetup."Search Only Available Items"));
+        TelemetryCustomDimension.Add('InclCapableToPromise', Format(TempSOASetup."Incl. Capable to Promise"));
+        TelemetryCustomDimension.Add('SendSalesQuote', Format(TempSOASetup."Send Sales Quote"));
+        TelemetryCustomDimension.Add('ConfigureEmailTemplate', Format(TempSOASetup."Configure Email Template"));
+        TelemetryCustomDimension.Add('KnownSenderInMsgReview', Format(TempSOASetup."Known Sender In. Msg. Review"));
+        TelemetryCustomDimension.Add('UnknownSenderInMsgReview', Format(TempSOASetup."Unknown Sender In. Msg. Review"));
+        TelemetryCustomDimension.Add('MessageLimit', Format(TempSOASetup."Message Limit"));
+        if not IsNullGuid(TempSOASetup."Email Account ID") then
+            TelemetryCustomDimension.Add('HasEmailAccountId', 'true')
+        else
+            TelemetryCustomDimension.Add('HasEmailAccountId', 'false');
+        TelemetryCustomDimension.Add('EmailConnector', Format(TempSOASetup."Email Connector"));
+
+        if (TempAgent.State = TempAgent.State::Enabled) then
+            FeatureTelemetry.LogUptake('0000QB5', GetFeatureName(), Enum::"Feature Uptake Status"::"Set up", TelemetryCustomDimension)
+        else
+            FeatureTelemetry.LogUptake('0000QB6', GetFeatureName(), Enum::"Feature Uptake Status"::Undiscovered, TelemetryCustomDimension);
     end;
 
     local procedure SetDefaultSalesDocConfig(var SOASetup: Record "SOA Setup"; SalesDocConfigValue: Boolean)
@@ -652,16 +700,10 @@ codeunit 4400 "SOA Setup"
 
     procedure SupportedAttachmentContentType(FileMIMEType: Text): Boolean
     begin
-        if FileMIMEType = 'application/pdf' then
-            exit(true);
-        if FileMIMEType = 'image/jpeg' then
-            exit(true);
-        if FileMIMEType = 'image/jpg' then
-            exit(true);
-        if FileMIMEType = 'image/png' then
-            exit(true);
-
-        exit(false);
+        if FileMIMEType in ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'] then
+            exit(true)
+        else
+            exit(false);
     end;
 
     internal procedure GetFeatureName(): Text

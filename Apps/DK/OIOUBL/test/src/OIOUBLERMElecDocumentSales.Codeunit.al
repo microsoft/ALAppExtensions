@@ -970,52 +970,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
     end;
 
     [Test]
-    [HandlerFunctions('ProfileSelectionMethodAndCloseEmailStrMenuHandler,StandardSalesInvoiceRequestPageHandler,EmailEditorHandler')]
-    procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmail();
-    begin
-        SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal();
-    end;
-
-    procedure SendPostedSalesInvoiceOIOUBLAndPDFWithPrintAndEmailInternal()
-    var
-        SalesLine: Record "Sales Line";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        DocumentSendingProfile: Record "Document Sending Profile";
-        ElectronicDocumentFormat: Record "Electronic Document Format";
-        PostedDocNoLst: List of [Code[20]];
-        FileNameLst: List of [Text];
-        PostedDocNoFilter: Text;
-    begin
-        // [FEATURE] [Zip]
-        // [SCENARIO 336642] Send Posted Sales Document in case Print, E-Mail - PDF & OIOUBL, Disk - PDF & OIOUBL are set in Document Sending Profile.
-        Initialize();
-        MailSetupInitialize();
-        CreateElectronicDocumentFormat(
-            OIOUBLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", Codeunit::"OIOUBL-Export Sales Invoice");
-
-        // [GIVEN] Default DocumentSendingProfile with Printer = Yes; Disk = "PDF & Electronic Document", Format = OIOUBL;
-        // [GIVEN] E-Mail = Yes, E-Mail Attachment = "PDF & Electronic Document", Format = OIOUBL. Two Posted Sales Invoices.
-        SetDefaultDocumentSendingProfile(
-            DocumentSendingProfile.Printer::"Yes (Prompt for Settings)", DocumentSendingProfile."E-Mail"::"Yes (Prompt for Settings)",
-            DocumentSendingProfile."E-Mail Attachment"::"PDF & Electronic Document", OIOUBLFormatNameTxt,
-            DocumentSendingProfile.Disk::"PDF & Electronic Document", OIOUBLFormatNameTxt);
-        CreateMultiplePostedSalesDocuments(PostedDocNoLst, PostedDocNoFilter, SalesLine."Document Type"::Invoice, 2);
-
-        // [WHEN] Run "Send" for these Posted Sales Invoices.
-        SalesInvoiceHeader.SetFilter("No.", PostedDocNoFilter);
-        SalesInvoiceHeader.SendRecords();
-
-        // [THEN] Report "Standard Sales - Invoice" for printing Posted Sales Invoice is invoked. Then Email Editor is opened.
-        // [THEN] Two ZIP files are created, each of them contains OIOUBL Electronic Document and PDF with printed copy of Posted Sales Invoice.
-        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(1), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(1), 'S.Invoice', 'PDF'));
-        VerifyFileListInZipArchive(FileNameLst);
-
-        Clear(FileNameLst);
-        FileNameLst.AddRange(GetFileName(PostedDocNoLst.Get(2), 'Invoice', 'XML'), GetFileName(PostedDocNoLst.Get(2), 'S.Invoice', 'PDF'));
-        VerifyFileListInZipArchive(FileNameLst);
-    end;
-
-    [Test]
     [HandlerFunctions('PostandSendModalPageHandler,StandardSalesCreditMemoRequestPageHandler,EmailEditorHandler,CloseEmailEditorHandler')]
     procedure PostAndSendSalesCrMemoOIOUBLWithPrintAndEmail();
     begin

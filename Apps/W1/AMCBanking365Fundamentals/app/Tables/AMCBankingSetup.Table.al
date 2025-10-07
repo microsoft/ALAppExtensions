@@ -1,16 +1,26 @@
+#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Payment;
-
+#if not CLEAN28
 using System.Integration;
 using System.Privacy;
 using System.Telemetry;
-
+#endif
 table 20101 "AMC Banking Setup"
 {
     Caption = 'AMC Banking Setup';
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+#if not CLEAN28
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '31.0';
+#endif
+
 
     fields
     {
@@ -40,7 +50,7 @@ table 20101 "AMC Banking Setup"
         {
             Caption = 'Service URL';
             DataClassification = CustomerContent;
-
+#if not CLEAN28
             trigger OnValidate()
             var
                 WebRequestHelper: Codeunit "Web Request Helper";
@@ -50,6 +60,7 @@ table 20101 "AMC Banking Setup"
                     ClearCredentials();
                 end;
             end;
+#endif            
         }
         field(20105; "Support URL"; Text[250])
         {
@@ -71,6 +82,7 @@ table 20101 "AMC Banking Setup"
         {
             Caption = 'Enabled';
             DataClassification = SystemMetadata;
+#if not CLEAN28
             trigger OnValidate()
             var
                 AuditLog: Codeunit "Audit Log";
@@ -82,6 +94,7 @@ table 20101 "AMC Banking Setup"
                 if Rec."AMC Enabled" then
                     AuditLog.LogAuditMessage(StrSubstNo(AMCBankingConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
             end;
+#endif
         }
     }
 
@@ -97,6 +110,7 @@ table 20101 "AMC Banking Setup"
     {
     }
 
+#if not CLEAN28
     trigger OnDelete()
     begin
         DeletePassword();
@@ -214,5 +228,6 @@ table 20101 "AMC Banking Setup"
     procedure OnGetUserName(var UserName: Text[50])
     begin
     end;
+#endif
 }
-
+#endif

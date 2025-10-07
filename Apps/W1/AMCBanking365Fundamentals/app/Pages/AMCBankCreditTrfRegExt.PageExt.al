@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -6,6 +7,10 @@ namespace Microsoft.Bank.Payment;
 
 pageextension 20108 "AMC Bank Credit Trf. Reg. Ext" extends "Credit Transfer Registers"
 {
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+
     layout
     {
         addlast(Group)
@@ -28,3 +33,4 @@ pageextension 20108 "AMC Bank Credit Trf. Reg. Ext" extends "Credit Transfer Reg
         IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled();
     end;
 }
+#endif

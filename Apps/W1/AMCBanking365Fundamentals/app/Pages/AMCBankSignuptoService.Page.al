@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -22,6 +23,9 @@ page 20109 "AMC Bank Signup to Service"
     SourceTable = "Company Information";
     UsageCategory = None;
     ContextSensitiveHelpPage = '403';
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     layout
     {
@@ -305,3 +309,4 @@ page 20109 "AMC Bank Signup to Service"
     end;
 
 }
+#endif

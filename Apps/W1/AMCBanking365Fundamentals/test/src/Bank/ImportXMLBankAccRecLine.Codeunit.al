@@ -1,9 +1,13 @@
+#if not CLEAN28
 codeunit 132550 "Import XML Bank Acc. Rec. Line"
 {
     Permissions = TableData "Bank Export/Import Setup" = rimd;
     Subtype = Test;
     TestType = Uncategorized;
     TestPermissions = NonRestrictive;
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     begin
@@ -1573,3 +1577,4 @@ codeunit 132550 "Import XML Bank Acc. Rec. Line"
         Reply := false;
     end;
 }
+#endif

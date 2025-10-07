@@ -11,6 +11,7 @@ using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using System.Environment;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using System.Environment.Configuration;
 using System.IO;
@@ -39,11 +40,19 @@ codeunit 13601 "DK Core Event Subscribers"
 
     [EventSubscriber(ObjectType::Table, Database::"Bank Account", 'OnGetBankAccount', '', false, false)]
     local procedure GetBankAccountNo(var Handled: Boolean; BankAccount: Record "Bank Account"; var ResultBankAccountNo: Text);
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        DomesticCurrency: Boolean;
     begin
         if not Handled then begin
             Handled := true;
 
-            GetBankAccNo(BankAccount."Bank Account No.", BankAccount."Bank Branch No.", BankAccount.IBAN, ResultBankAccountNo);
+            GeneralLedgerSetup.Get();
+
+            if (BankAccount."Currency Code" = '') or (GeneralLedgerSetup."LCY Code" = BankAccount."Currency Code") then
+                DomesticCurrency := true;
+
+            GetBankAccNo(BankAccount."Bank Account No.", BankAccount."Bank Branch No.", BankAccount.IBAN, ResultBankAccountNo, DomesticCurrency);
         end;
     end;
 
@@ -142,9 +151,9 @@ codeunit 13601 "DK Core Event Subscribers"
         end;
     end;
 
-    local procedure GetBankAccNo(BankAccountNo: Text[30]; BankBranchNo: Text[20]; IBAN: Code[50]; var ResultAccountNo: Text)
+    local procedure GetBankAccNo(BankAccountNo: Text[30]; BankBranchNo: Text[20]; IBAN: Code[50]; var ResultAccountNo: Text; DomesticCurrency: Boolean)
     begin
-        if (BankAccountNo = '') or (BankBranchNo = '') then
+        if (BankAccountNo = '') or (BankBranchNo = '') or ((IBAN <> '') and not DomesticCurrency) then
             ResultAccountNo := DelChr(IBAN, '=<>')
         else
             ResultAccountNo := BankBranchNo + BankAccountNo;

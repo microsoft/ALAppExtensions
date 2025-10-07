@@ -13,6 +13,8 @@ page 4406 "SOA Create Contact"
     PageType = StandardDialog;
     ApplicationArea = All;
     Caption = 'Create new contact';
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {

@@ -35,7 +35,6 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         VATEntry: Record "VAT Entry";
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
-        VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
         DimensionManagement: Codeunit DimensionManagement;
         GenJnlPostPreview: Codeunit "Gen. Jnl.-Post Preview";
         WindowDialog: Dialog;
@@ -44,7 +43,6 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         DialogMsg: Label 'Posting VAT correction lines #1######\', Comment = '%1 = Line Count';
         SuccessMsg: Label 'The VAT correction lines were successfully posted.';
         PostingDateOutRangeErr: Label 'is not within your range of allowed posting dates';
-        VATRangeErr: Label ' %1 is not within your range of allowed VAT dates', Comment = '%1 = VAT Date';
         PreviewMode: Boolean;
 
     procedure Post(var VATLCYCorrectionBufferCZL: Record "VAT LCY Correction Buffer CZL")
@@ -185,9 +183,7 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
             VATLCYCorrectionBufferCZL.TestField("VAT Date", VATLCYCorrectionBufferCZL."Posting Date")
         else begin
             VATLCYCorrectionBufferCZL.TestField("VAT Date");
-            if not VATDateHandlerCZL.IsVATDateInAllowedPeriod(VATLCYCorrectionBufferCZL."VAT Date") then
-                VATLCYCorrectionBufferCZL.FieldError("VAT Date", StrSubstNo(VATRangeErr, VATLCYCorrectionBufferCZL."VAT Date"));
-            VATDateHandlerCZL.VATPeriodCZLCheck(VATLCYCorrectionBufferCZL."VAT Date");
+            VATReportingDateMgt.IsValidDate(VATLCYCorrectionBufferCZL."VAT Date", 0, true);
         end;
     end;
 

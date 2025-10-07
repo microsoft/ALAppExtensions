@@ -7,6 +7,7 @@
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.Environment.Configuration;
+using System.Telemetry;
 
 codeunit 4304 "SOA Session Events"
 {
@@ -38,9 +39,9 @@ codeunit 4304 "SOA Session Events"
 
         VerifyUnpaidEntries();
         SetupKPITrackingEvents();
-        SetupItemSearchEvents();
+        SetupItemSearchEvents(AgentTaskID);
         SetupFilteringEvents(AgentTaskID);
-        SetupSOABillingEvents(AgentTaskID);
+        SetupDocumentEvents(AgentTaskID);
     end;
 
     local procedure RegisterUserSubscribers()
@@ -61,13 +62,14 @@ codeunit 4304 "SOA Session Events"
 
     internal procedure BindUserEvents()
     var
-        SOAImpl: Codeunit "SOA Impl";
+        SOASetupCU: Codeunit "SOA Setup";
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if not BindSubscription(GlobalSOAKPITrackAll) then
-            Session.LogMessage('0000O41', FailedToBindUserKPISubscriptionErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000O41', SOASetupCU.GetFeatureName(), FailedToBindUserKPISubscriptionErr, TelemetryDimensions);
 
         if not BindSubscription(GlobalSOAUserNotifications) then
-            Session.LogMessage('0000ORY', FailedToBindUserNotificationErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000ORY', SOASetupCU.GetFeatureName(), FailedToBindUserNotificationErr, TelemetryDimensions);
     end;
 
     local procedure SetupKPITrackingEvents()
@@ -76,29 +78,31 @@ codeunit 4304 "SOA Session Events"
         if BindSubscription(GlobalSOAKPITrackAgents) then;
     end;
 
-    local procedure SetupItemSearchEvents()
+    local procedure SetupItemSearchEvents(AgentTaskID: Integer)
     begin
+        GlobalSOAItemSearch.SetAgentTaskID(AgentTaskID);
         if BindSubscription(GlobalSOAItemSearch) then;
         if BindSubscription(GlobalSOAVariantSearch) then;
     end;
 
-    local procedure SetupSOABillingEvents(AgentTaskID: Integer)
+    local procedure SetupDocumentEvents(AgentTaskID: Integer)
     begin
-        GlobalSOABillingEvents.SetAgentTaskID(AgentTaskID);
-        BindSubscription(GlobalSOABillingEvents);
+        GlobalSOADocumentEvents.SetAgentTaskID(AgentTaskID);
+        BindSubscription(GlobalSOADocumentEvents);
     end;
 
     local procedure SetupFilteringEvents(AgentTaskID: Integer)
     var
-        SOAImpl: Codeunit "SOA Impl";
+        SOASetup: Codeunit "SOA Setup";
         DisableFilters: Boolean;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         GlobalSessionFilter.SetAgentTaskID(AgentTaskID);
         OnDisableContactAndCustomerFiltering(DisableFilters);
         if not DisableFilters then
             BindSubscription(GlobalSessionFilter)
         else
-            Session.LogMessage('0000O33', ContactFilteringDisabledAgentTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000O33', SOASetup.GetFeatureName(), ContactFilteringDisabledAgentTxt, TelemetryDimensions);
     end;
 
     [InternalEvent(false, false)]
@@ -115,13 +119,14 @@ codeunit 4304 "SOA Session Events"
     end;
 
     var
-        GlobalSOABillingEvents: Codeunit "SOA Billing Events";
+        GlobalSOADocumentEvents: Codeunit "SOA Document Events";
         GlobalSessionFilter: Codeunit "SOA Session Filter";
         GlobalSOAItemSearch: Codeunit "SOA Item Search";
         GlobalSOAVariantSearch: Codeunit "SOA Variant Search";
         GlobalSOAKPITrackAgents: Codeunit "SOA - KPI Track Agents";
         GlobalSOAKPITrackAll: Codeunit "SOA - KPI Track All";
         GlobalSOAUserNotifications: Codeunit "SOA User Notifications";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         ContactFilteringDisabledAgentTxt: Label 'Contact and customer filtering is disabled for this agent through an event.', Locked = true;
         FailedToBindUserKPISubscriptionErr: Label 'Failed to bind subscription for User Agent KPI changes.', Locked = true;
         FailedToBindUserNotificationErr: Label 'Failed to bind subscription for User Agent Notifications.', Locked = true;

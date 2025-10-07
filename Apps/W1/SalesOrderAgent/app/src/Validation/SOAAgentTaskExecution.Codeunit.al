@@ -10,6 +10,8 @@ using System.Agents;
 
 codeunit 4309 "SOA Agent Task Execution" implements IAgentTaskExecution
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
     Access = Internal;
 
     procedure AnalyzeAgentTaskMessage(AgentTaskMessage: Record "Agent Task Message"; var Annotations: Record "Agent Annotation")

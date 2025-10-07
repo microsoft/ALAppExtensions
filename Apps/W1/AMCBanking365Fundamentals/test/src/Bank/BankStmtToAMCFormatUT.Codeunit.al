@@ -1,8 +1,11 @@
+#if not CLEAN28
 codeunit 132562 "Bank Stmt. to AMC Format UT"
 {
     Subtype = Test;
     TestPermissions = NonRestrictive;
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
         // [FEATURE] [AMC Banking Fundamentals] [UT]
@@ -219,3 +222,4 @@ codeunit 132562 "Bank Stmt. to AMC Format UT"
         Assert.AreEqual(String, ContentProperEncoding, '');
     end;
 }
+#endif

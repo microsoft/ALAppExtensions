@@ -8,6 +8,24 @@ tableextension 11751 "Acc. Schedule Line CZL" extends "Acc. Schedule Line"
 {
     fields
     {
+        modify(Totaling)
+        {
+            trigger OnAfterValidate()
+            var
+                AccScheduleExtensionCZL: Record "Acc. Schedule Extension CZL";
+            begin
+                if "Totaling Type" <> "Totaling Type"::"Custom CZL" then
+                    exit;
+
+                AccScheduleExtensionCZL.SetFilter(Code, Totaling);
+                AccScheduleExtensionCZL.SetRange("Source Table", "Source Table CZL");
+                if AccScheduleExtensionCZL.Count = 1 then begin
+                    AccScheduleExtensionCZL.FindFirst();
+                    "Row No." := "Row No." = '' ? CopyStr(AccScheduleExtensionCZL.Code, 1, MaxStrLen("Row No.")) : "Row No.";
+                    Description := Description = '' ? CopyStr(AccScheduleExtensionCZL.Description, 1, MaxStrLen(Description)) : Description;
+                end;
+            end;
+        }
         field(31070; "Calc CZL"; Enum "Accounting Schedule Calc CZL")
         {
             Caption = 'Calc';

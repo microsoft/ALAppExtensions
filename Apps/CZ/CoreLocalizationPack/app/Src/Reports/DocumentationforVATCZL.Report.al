@@ -427,14 +427,28 @@ report 11757 "Documentation for VAT CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Starting Date';
-                        TableRelation = "VAT Period CZL";
                         ToolTip = 'Specifies the first date in the period for posted VAT entries.';
 
                         trigger OnValidate()
                         begin
-                            VATPeriodCZL.Get(StartDateReq);
-                            if VATPeriodCZL.Next() > 0 then
-                                EndDateReq := CalcDate('<-1D>', VATPeriodCZL."Starting Date");
+                            if StartDateReq <> 0D then begin
+                                VATReturnPeriod.SetRange("Start Date", StartDateReq);
+                                VATReturnPeriod.FindLast();
+                                EndDateReq := VATReturnPeriod."End Date";
+                            end;
+                        end;
+
+                        trigger OnLookup(var Text: Text): Boolean
+                        var
+                            VATReturnPeriodList: Page "VAT Return Period List";
+                        begin
+                            VATReturnPeriodList.LookupMode := true;
+                            if VATReturnPeriodList.RunModal() <> Action::LookupOK then
+                                exit(false);
+
+                            VATReturnPeriodList.GetRecord(VATReturnPeriod);
+                            StartDateReq := VATReturnPeriod."Start Date";
+                            EndDateReq := VATReturnPeriod."End Date";
                         end;
                     }
                     field(EndDateReqCZL; EndDateReq)
@@ -526,7 +540,7 @@ report 11757 "Documentation for VAT CZL"
         VATEntryFiltered: Record "VAT Entry";
         VATEntry: Record "VAT Entry";
         GeneralLedgerSetup: Record "General Ledger Setup";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         Selection: Enum "VAT Statement Report Selection";
         StartDateReq, EndDateReq : Date;
         PrintVATEntries, FindFirstEntry, UseAmtsInAddCurr, MergeByDocumentNo : Boolean;
@@ -545,7 +559,6 @@ report 11757 "Documentation for VAT CZL"
         EndDateReq := NewEndDate;
         PrintVATEntries := NewPrintVATEntries;
         UseAmtsInAddCurr := NewUseAmtsInAddCurr;
-        if VATPeriodCZL.Get(StartDateReq) then;
     end;
 
     local procedure AddTotal(VATEntry: Record "VAT Entry")

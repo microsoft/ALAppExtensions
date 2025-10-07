@@ -252,13 +252,13 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
     begin
         // this is because we are using GPT4 which has a 100K token limit
         // on top of that, we are setting aside a number of tokens for the response in MaxTokens())
-        exit(18000);
+        exit(48000);
     end;
 
     procedure LedgerEntryInputThreshold(): Integer
     begin
         // this is the max size of the part of the prompt that carries information about ledger entries
-        exit(10000);
+        exit(32000);
     end;
 
     procedure MaxTokens(): Integer

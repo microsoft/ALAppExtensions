@@ -16,7 +16,6 @@ table 4586 "SOA Billing Log"
     InherentPermissions = rimX;
     DataPerCompany = false;
     ReplicateData = false;
-    Scope = OnPrem;
 
     fields
     {

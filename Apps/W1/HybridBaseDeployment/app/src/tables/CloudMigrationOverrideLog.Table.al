@@ -4,7 +4,6 @@ table 40041 "Cloud Migration Override Log"
 {
     DataClassification = SystemMetadata;
     ReplicateData = false;
-    Scope = OnPrem;
     Access = Internal;
 
     fields

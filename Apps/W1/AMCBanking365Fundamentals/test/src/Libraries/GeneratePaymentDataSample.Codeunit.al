@@ -1,7 +1,11 @@
+#if not CLEAN28
 codeunit 135082 "Generate Payment Data Sample"
 {
     Permissions = TableData "AMC Banking Setup" = r;
     TableNo = "Data Exch.";
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     var
@@ -18,4 +22,4 @@ codeunit 135082 "Generate Payment Data Sample"
         Modify();
     end;
 }
-
+#endif

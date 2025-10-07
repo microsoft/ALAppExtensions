@@ -356,8 +356,10 @@ codeunit 148088 "Foreign Currencies CZL"
     end;
 
     local procedure GenerateDocumentNo(PostingDate: Date): Code[20]
+    var
+        PlaceholderTok: Label 'ADJSK%1%2', Locked = true;
     begin
-        exit(StrSubstNo('ADJSK%1%2', Date2DMY(PostingDate, 3), Date2DMY(PostingDate, 2)));
+        exit(StrSubstNo(PlaceholderTok, Date2DMY(PostingDate, 3), Date2DMY(PostingDate, 2)));
     end;
 
     local procedure RunAdjustExchangeRates(CurrencyCode: Code[10]; StartDate: Date; EndDate: Date; DocumentNo: Code[20]; AdjCust: Boolean; AdjVend: Boolean; AdjBank: Boolean; AdjEmpl: Boolean; Post: Boolean)

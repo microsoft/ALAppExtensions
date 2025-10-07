@@ -161,6 +161,7 @@ page 4022 "Migration User Mapping"
         User: Record User;
         User2: Record User;
         UserCodeunit: Codeunit User;
+        SkipUserRenameCommit: Boolean;
     begin
         Rec.Reset();
         Rec.SetFilter("Dest User ID", '<>%1', '');
@@ -176,6 +177,9 @@ page 4022 "Migration User Mapping"
                         User2.Modify(true);
                     end;
                     UserCodeunit.RenameUser(Rec."Dest User ID", Rec."Source User ID");
+                    OnSkipUserRenameCommit(SkipUserRenameCommit);
+                    if not SkipUserRenameCommit then
+                        Commit(); // Needed to optimize the performance. Code can get slow in some cases if many users are renamed.
                 end;
             until Rec.Next() = 0;
     end;
@@ -255,5 +259,10 @@ page 4022 "Migration User Mapping"
         HybridCompanyStatus."Last User Mapping DateTime" := CurrentDateTime;
         HybridCompanyStatus."User Mapping Completed" := true;
         HybridCompanyStatus.Modify();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSkipUserRenameCommit(var SkipUserRenameCommit: Boolean)
+    begin
     end;
 }

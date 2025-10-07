@@ -27,17 +27,31 @@ page 31135 "VAT Statement Preview CZL"
                 {
                     ApplicationArea = VAT;
                     Caption = 'VAT Period Start Date';
-                    LookupPageId = "VAT Periods CZL";
-                    TableRelation = "VAT Period CZL";
                     ToolTip = 'Specifies the starting date for the VAT period.';
 
                     trigger OnValidate()
                     begin
                         if VATPeriodStartDate <> 0D then begin
-                            VATPeriodCZL.Get(VATPeriodStartDate);
-                            if VATPeriodCZL.Next() > 0 then
-                                VATPeriodEndDate := CalcDate('<-1D>', VATPeriodCZL."Starting Date");
+                            VATReturnPeriod.SetRange("Start Date", VATPeriodStartDate);
+                            VATReturnPeriod.FindLast();
+                            VATPeriodEndDate := VATReturnPeriod."End Date";
                         end;
+                        Rec.SetRange("Date Filter", VATPeriodStartDate, VATPeriodEndDate);
+                        DateFilter := Rec.GetFilter("Date Filter");
+                        UpdateSubForm();
+                    end;
+
+                    trigger OnLookup(var Text: Text): Boolean
+                    var
+                        VATReturnPeriodList: Page "VAT Return Period List";
+                    begin
+                        VATReturnPeriodList.LookupMode := true;
+                        if VATReturnPeriodList.RunModal() <> Action::LookupOK then
+                            exit(false);
+
+                        VATReturnPeriodList.GetRecord(VATReturnPeriod);
+                        VATPeriodStartDate := VATReturnPeriod."Start Date";
+                        VATPeriodEndDate := VATReturnPeriod."End Date";
                         Rec.SetRange("Date Filter", VATPeriodStartDate, VATPeriodEndDate);
                         DateFilter := Rec.GetFilter("Date Filter");
                         UpdateSubForm();
@@ -166,10 +180,21 @@ page 31135 "VAT Statement Preview CZL"
             DateFilter := '';
         SetUseAmtsInAddCurr();
         UpdateSubForm();
+#if not CLEAN28
+#pragma warning disable AL0432
+        VATPeriodCZL.Reset();
+#pragma warning restore AL0432
+#endif
     end;
 
     protected var
+#if not CLEAN28
+#pragma warning disable AL0432
+        [Obsolete('Replaced by VATReturnPeriod variable', '28.0')]
         VATPeriodCZL: Record "VAT Period CZL";
+#pragma warning restore AL0432
+#endif
+        VATReturnPeriod: Record "VAT Return Period";
         VATStatementReportSelection: Enum "VAT Statement Report Selection";
         VATStatementReportPeriodSelection: Enum "VAT Statement Report Period Selection";
         UseAmtsInAddCurr: Boolean;

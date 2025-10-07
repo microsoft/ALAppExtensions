@@ -8,6 +8,7 @@ namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.Agents;
 using System.Environment;
+using System.Telemetry;
 
 codeunit 4532 "SOA Billing Task"
 {
@@ -25,27 +26,25 @@ codeunit 4532 "SOA Billing Task"
     begin
         if not MarkTaskAsStarted(SOABillingTaskSetup) then
             exit;
-
-        LogGeneratedEmails(SOABillingTaskSetup);
         IssueChargeCalls();
     end;
 
     local procedure MarkTaskAsStarted(var SOABillingTaskSetup: Record "SOA Billing Task Setup"): Boolean
     var
         SOABilling: Codeunit "SOA Billing";
-        SOAImpl: Codeunit "SOA Impl";
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDictionary: Dictionary of [Text, Text];
     begin
         // There is a risk of concurrent task execution, so we need to lock the record
         SOABilling.GetBillingTaskSetupSafe(SOABillingTaskSetup);
         LockBillingTaskSetup(SOABillingTaskSetup);
 
-        TelemetryDictionary := SOAImpl.GetCustomDimensions();
         // Leave some time between the tasks to avoid concurrent task execution
         if not SkipConcurrentTaskCheck then
             if SOABillingTaskSetup."Billing Task Start DateTime" <> 0DT then
                 if CurrentDateTime() < (SOABillingTaskSetup."Billing Task Start DateTime" + GetMinimumWaitingTimeForBillingTask()) then begin
-                    Session.LogMessage('0000OW4', BillingTaskRescheduledMsg, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
+                    FeatureTelemetry.LogUsage('0000OW4', SOASetupCU.GetFeatureName(), BillingTaskRescheduledMsg, TelemetryDictionary);
                     ScheduleBillingTask();
                     exit(false);
                 end;
@@ -53,48 +52,24 @@ codeunit 4532 "SOA Billing Task"
         SOABillingTaskSetup."Billing Task Start DateTime" := CurrentDateTime();
         SOABillingTaskSetup.Modify();
         Commit();
-        Session.LogMessage('0000OW5', StartingBillingTaskMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
+        FeatureTelemetry.LogUsage('0000OW5', SOASetupCU.GetFeatureName(), StartingBillingTaskMsg, TelemetryDictionary);
         exit(true);
-    end;
-
-    local procedure LogGeneratedEmails(var SOABillingTaskSetup: Record "SOA Billing Task Setup")
-    var
-        AgentTaskMessage: Record "Agent Task Message";
-        SOABilling: Codeunit "SOA Billing";
-        SOAImpl: Codeunit "SOA Impl";
-        TelemetryDictionary: Dictionary of [Text, Text];
-    begin
-        LockBillingTaskSetup(SOABillingTaskSetup);
-
-        AgentTaskMessage.SetRange(Type, AgentTaskMessage.Type::Output);
-        AgentTaskMessage.SetFilter(SystemCreatedAt, '>=%1', SOABillingTaskSetup."Last Billing Update At");
-        TelemetryDictionary := SOAImpl.GetCustomDimensions();
-        TelemetryDictionary.Add('LogMessagesFrom', Format(SOABillingTaskSetup."Last Billing Update At", 0, 9));
-        Session.LogMessage('0000OT2', StartChargeOutputMessagesMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
-        if AgentTaskMessage.FindSet() then
-            repeat
-                SOABilling.LogEmailGenerated(AgentTaskMessage.ID, AgentTaskMessage."Task ID");
-            until AgentTaskMessage.Next() = 0;
-
-        SOABillingTaskSetup."Last Billing Update At" := CurrentDateTime();
-        SOABillingTaskSetup.Modify();
-        Commit();
     end;
 
     local procedure IssueChargeCalls()
     var
         SOABillingLog: Record "SOA Billing Log";
-        SOAImpl: Codeunit "SOA Impl";
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDictionary: Dictionary of [Text, Text];
         FailedCount: Integer;
         SuccessCount: Integer;
     begin
         SOABillingLog.SetRange(Charged, false);
         SOABillingLog.ReadIsolation := IsolationLevel::ReadCommitted;
-        TelemetryDictionary := SOAImpl.GetCustomDimensions();
 
         if not SOABillingLog.FindSet() then begin
-            Session.LogMessage('0000OT3', NothingToChargeMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
+            FeatureTelemetry.LogUsage('0000OT3', SOASetupCU.GetFeatureName(), NothingToChargeMsg, TelemetryDictionary);
             exit;
         end;
 
@@ -107,7 +82,7 @@ codeunit 4532 "SOA Billing Task"
 
         TelemetryDictionary.Add('FailedCount', Format(FailedCount, 0, 9));
         TelemetryDictionary.Add('SuccessCount', Format(SuccessCount, 0, 9));
-        Session.LogMessage('0000OT4', EndingIssueChargeCallsMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
+        FeatureTelemetry.LogUsage('0000OT4', SOASetupCU.GetFeatureName(), EndingIssueChargeCallsMsg, TelemetryDictionary);
     end;
 
     procedure ScheduleBillingTask()
@@ -120,14 +95,15 @@ codeunit 4532 "SOA Billing Task"
     local procedure ScheduleBillingTask(var NextBillingTaskDateTime: DateTime): Boolean
     var
         ScheduledTask: Record "Scheduled Task";
-        SOAImpl: Codeunit "SOA Impl";
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         BlankDateTime: DateTime;
         TelemetryDimensions: Dictionary of [Text, Text];
         ScheduledTaskID: Guid;
     begin
         Clear(BlankDateTime);
         if not TaskScheduler.CanCreateTask() then begin
-            Session.LogMessage('0000OTS', CannotScheduleBillingTaskErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
+            FeatureTelemetry.LogError('0000OTS', SOASetupCU.GetFeatureName(), SchedulingBillingTaskEventLbl, CannotScheduleBillingTaskErr, GetLastErrorCallStack(), TelemetryDimensions);
             exit(false);
         end;
 
@@ -145,10 +121,9 @@ codeunit 4532 "SOA Billing Task"
 
         ScheduledTaskID := TaskScheduler.CreateTask(Codeunit::"SOA Billing Task", 0, true, CompanyName(), NextBillingTaskDateTime);
 
-        TelemetryDimensions := SOAImpl.GetCustomDimensions();
         TelemetryDimensions.Add('NextBillingTaskDateTime', Format(NextBillingTaskDateTime, 0, 9));
         TelemetryDimensions.Add('ScheduledTaskID', Format(ScheduledTaskID, 0, 9));
-        Session.LogMessage('0000OT6', ScheduledSOABillingOperationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDimensions);
+        FeatureTelemetry.LogUsage('0000OT6', SOASetupCU.GetFeatureName(), ScheduledSOABillingOperationMsg, TelemetryDimensions);
         exit(true);
     end;
 
@@ -187,7 +162,7 @@ codeunit 4532 "SOA Billing Task"
 
     local procedure GetNextTaskTime(): Duration
     begin
-        exit(1800000); // 30 minutes from now
+        exit(900000); // 15 minutes from now
     end;
 
     local procedure GetMinimumWaitingTimeForBillingTask(): Duration
@@ -218,11 +193,11 @@ codeunit 4532 "SOA Billing Task"
     end;
 
     var
-        StartChargeOutputMessagesMsg: Label 'Starting charge of output messages', Locked = true;
         EndingIssueChargeCallsMsg: Label 'Ending issue charge calls', Locked = true;
         NothingToChargeMsg: Label 'There is nothing to charge', Locked = true;
         ScheduledSOABillingOperationMsg: Label 'Scheduled SOA billing task', Locked = true;
         StartingBillingTaskMsg: Label 'Starting billing task', Locked = true;
+        SchedulingBillingTaskEventLbl: Label 'Scheduling Billing Task', Locked = true;
         BillingTaskRescheduledMsg: Label 'Billing task was rescheduled', Locked = true;
         CannotScheduleBillingTaskErr: Label 'Cannot schedule task. It is not possible to create a billing session.', Locked = true;
         SkipConcurrentTaskCheck: Boolean;

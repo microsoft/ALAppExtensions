@@ -20,9 +20,8 @@ codeunit 4587 "SOA Impl"
     InherentPermissions = X;
 
     var
-        Telemetry: Codeunit "Telemetry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         CantCreateTaskErr: Label 'User cannot create tasks.';
-        CategoryLbl: Label 'Sales Order Agent', Locked = true;
         TelemetrySOASetupRecordNotValidLbl: Label 'SOA Setup record is not valid.', Locked = true;
         TelemetryAgentScheduledTaskCancelledLbl: Label 'Agent scheduled task cancelled.', Locked = true;
         TelemetryRecoveryScheduledTaskCancelledLbl: Label 'Recovery scheduled task cancelled.', Locked = true;
@@ -30,10 +29,12 @@ codeunit 4587 "SOA Impl"
 
     internal procedure ScheduleSOAgent(var SOASetup: Record "SOA Setup")
     var
+        SOASetupCU: Codeunit "SOA Setup";
         ScheduledTaskId: Guid;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if IsNullGuid(SOASetup.SystemId) then begin
-            Telemetry.LogMessage('0000NDU', TelemetrySOASetupRecordNotValidLbl, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, GetCustomDimensions());
+            FeatureTelemetry.LogError('0000NDU', SOASetupCU.GetFeatureName(), 'Invalid SOA Setup', TelemetrySOASetupRecordNotValidLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit;
         end;
 
@@ -47,7 +48,7 @@ codeunit 4587 "SOA Impl"
         ScheduleSOARecovery(SOASetup);
 
         SOASetup.Modify();
-        Telemetry.LogMessage('0000NGM', TelemetryAgentScheduledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, GetCustomDimensions());
+        FeatureTelemetry.LogUsage('0000NGM', SOASetupCU.GetFeatureName(), TelemetryAgentScheduledLbl, TelemetryDimensions);
     end;
 
     /// <summary>
@@ -88,16 +89,18 @@ codeunit 4587 "SOA Impl"
 
     internal procedure RemoveScheduledTask(var SOASetup: Record "SOA Setup")
     var
+        SOASetupCU: Codeunit "SOA Setup";
         NullGuid: Guid;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if TaskScheduler.TaskExists(SOASetup."Agent Scheduled Task ID") then begin
             TaskScheduler.CancelTask(SOASetup."Agent Scheduled Task ID");
-            Telemetry.LogMessage('0000NGN', TelemetryAgentScheduledTaskCancelledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000NGN', SOASetupCU.GetFeatureName(), TelemetryAgentScheduledTaskCancelledLbl, TelemetryDimensions);
         end;
 
         if TaskScheduler.TaskExists(SOASetup."Recovery Scheduled Task ID") then begin
             TaskScheduler.CancelTask(SOASetup."Recovery Scheduled Task ID");
-            Telemetry.LogMessage('0000NGO', TelemetryRecoveryScheduledTaskCancelledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000NGO', SOASetupCU.GetFeatureName(), TelemetryRecoveryScheduledTaskCancelledLbl, TelemetryDimensions);
         end;
 
         SOASetup."Agent Scheduled Task ID" := NullGuid;
@@ -132,19 +135,6 @@ codeunit 4587 "SOA Impl"
 
         SOATask.DeleteAll();
         Commit();
-    end;
-
-    procedure GetCustomDimensions(): Dictionary of [Text, Text]
-    var
-        CustomDimensions: Dictionary of [Text, Text];
-    begin
-        CustomDimensions.Set('category', GetCategory());
-        exit(CustomDimensions);
-    end;
-
-    procedure GetCategory(): Text
-    begin
-        exit(CategoryLbl);
     end;
 
     procedure RegisterCapability()

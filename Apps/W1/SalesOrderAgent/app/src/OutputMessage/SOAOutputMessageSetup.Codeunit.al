@@ -12,6 +12,8 @@ using System.Telemetry;
 codeunit 4402 "SOA Output Message Setup"
 {
     Permissions = tabledata "Agent Task Message" = rM;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Verifies the entered signature for correctness by checking for harmful content, grammatical errors, and missing elements.
@@ -23,6 +25,8 @@ codeunit 4402 "SOA Output Message Setup"
         IsValid: Boolean;
         IsHarmful: Boolean;
         InvalidReason: Text;
+        ImagePlaceHolderLbl: Label '[SOA_IMAGE_', Locked = true;
+        ImagePlaceHolderErr: Label 'The signature contains unsupported text "SOA_IMAGE". Please remove them and try again.';
         UnsuccessfulSignatureCheckErr: Label 'We are having trouble using the AI service. Please try again shortly.';
         NewSignatureEmptyLbl: Label 'You did not set a signature. Are you sure you want to proceed without one?';
         TooBigImagesErr: Label 'The total size of images in the signature exceeds the allowed limit. Please reduce the size or number of images and try again.';
@@ -34,6 +38,9 @@ codeunit 4402 "SOA Output Message Setup"
                 Error('');
             exit;
         end;
+
+        if StrPos(SignatureAsTxt, ImagePlaceHolderLbl) > 0 then
+            Error(ImagePlaceHolderErr);
 
         if GetSignatureImagesTotalSize(SignatureAsTxt) > 40000 then //around 10000 tokens
             Error(TooBigImagesErr);
@@ -58,10 +65,14 @@ codeunit 4402 "SOA Output Message Setup"
     internal procedure PrepareOutputMessage(AgentTaskMessage: Record "Agent Task Message")
     var
         SOASetup: Record "SOA Setup";
+        SOABilling: Codeunit "SOA Billing";
+        SOABillingTask: Codeunit "SOA Billing Task";
     begin
         if AgentTaskMessage.Type <> AgentTaskMessage.Type::Output then
             exit;
 
+        SOABilling.LogEmailGenerated(AgentTaskMessage.ID, AgentTaskMessage."Task ID", AgentTaskMessage."Input Message ID");
+        SOABillingTask.ScheduleBillingTask();
         SOASetup.ReadIsolation(IsolationLevel::ReadCommitted);
         SOASetup.GetBasedOnAgentUserSecurityID(AgentTaskMessage."Agent User Security ID", true);
         if not SOASetup."Configure Email Template" then

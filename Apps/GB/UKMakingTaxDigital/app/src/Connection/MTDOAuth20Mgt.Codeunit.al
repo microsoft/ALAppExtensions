@@ -95,12 +95,14 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         if not IsMTDOAuthSetup(Rec) then
             exit;
 
-        with Rec do begin
-            DeleteToken("Client ID");
-            DeleteToken("Client Secret");
-            DeleteToken("Access Token");
-            DeleteToken("Refresh Token");
-        end;
+        if IsolatedStorage.Contains(Rec."Client ID", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Client ID", Rec.GetTokenDataScope());
+        if IsolatedStorage.Contains(Rec."Client Secret", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Client Secret", Rec.GetTokenDataScope());
+        if IsolatedStorage.Contains(Rec."Access Token", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Access Token", Rec.GetTokenDataScope());
+        if IsolatedStorage.Contains(Rec."Refresh Token", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Refresh Token", Rec.GetTokenDataScope());
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', true, true)]
@@ -165,14 +167,27 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         AuthorizationCode := OAuth2ControlAddIn.GetAuthCode();
         if AuthorizationCode <> '' then begin
             OAuth20Setup.Find();
-            if not OAuth20Setup.RequestAccessToken(auth_error, AuthorizationCode) then
-                Error(auth_error);
+            if not RequestAccessToken(OAuth20Setup, AuthorizationCode, auth_error) then
+                Error(auth_error)
+            else
+                if Confirm(CheckCompanyVATNoAfterSuccessAuthorizationQst) then
+                    Page.RunModal(Page::"Company Information")
         end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAccessToken', '', true, true)]
     [NonDebuggable]
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
+    begin
+        if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
+            exit;
+        Processed := true;
+
+        Result := RequestAccessToken(OAuth20Setup, AuthorizationCode, MessageText)
+    end;
+
+    [NonDebuggable]
+    local procedure RequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var MessageText: Text) Result: Boolean
     var
         MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
         RequestJSON: Text;
@@ -180,9 +195,8 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         RefreshToken: SecretText;
         TokenDataScope: DataScope;
     begin
-        if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
+        if not IsMTDOAuthSetup(OAuth20Setup) then
             exit;
-        Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
         MTDSessionFraudPrevHdr.DeleteAll();
@@ -217,15 +231,24 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRefreshAccessToken', '', true, true)]
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
+    begin
+        if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
+            exit;
+        Processed := true;
+
+        Result := RefreshAccessToken(OAuth20Setup, MessageText)
+    end;
+
+    [NonDebuggable]
+    internal procedure RefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var MessageText: Text) Result: Boolean
     var
         RequestJSON: Text;
         AccessToken: SecretText;
         RefreshToken: SecretText;
         TokenDataScope: DataScope;
     begin
-        if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
+        if not IsMTDOAuthSetup(OAuth20Setup) then
             exit;
-        Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
         AddFraudPreventionHeaders(RequestJSON);
@@ -269,6 +292,18 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
             exit;
         Processed := true;
+
+        CheckOAuthConsistencySetup(OAuth20Setup);
+        AddFraudPreventionHeaders(RequestJSON);
+
+        Result := InvokeRequest(OAuth20Setup, RequestJSON, ResponseJSON, HttpError, RetryOnCredentialsFailure);
+    end;
+
+    [NonDebuggable]
+    internal procedure InvokeRequest(var OAuth20Setup: Record "OAuth 2.0 Setup"; RequestJSON: Text; var ResponseJSON: Text; var HttpError: Text; RetryOnCredentialsFailure: Boolean) Result: Boolean
+    begin
+        if not IsMTDOAuthSetup(OAuth20Setup) then
+            exit;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
         AddFraudPreventionHeaders(RequestJSON);
@@ -327,7 +362,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             IsolatedStorage.Set(TokenKey, TokenValue, TokenDataScope);
     end;
 
-    local procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: SecretText
+    internal procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: SecretText
     begin
         if not HasToken(TokenKey, TokenDataScope) then
             exit(TokenValue);

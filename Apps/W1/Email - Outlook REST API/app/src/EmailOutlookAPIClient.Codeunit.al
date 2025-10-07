@@ -64,6 +64,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         TelemetryRetrievingAnEmailTxt: Label 'Retrieving an email.', Locked = true;
         TelemetryReplyingToEmailTxt: Label 'Replying to email.', Locked = true;
         TelemetryMarkingEmailAsReadTxt: Label 'Marking email as read.', Locked = true;
+        TelemetryFailedToDeleteDraftEmailTxt: Label 'Failed to delete draft message.', Locked = true;
         TelemetryFailedStatusCodeTxt: Label 'Failed with status code %1.', Comment = '%1 - Http status code', Locked = true;
 
 
@@ -409,6 +410,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
 
         if MailHttpResponseMessage.HttpStatusCode <> 200 then begin
             Session.LogMessage('0000NBI', FailedToUpdateDraftMessageErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            DeleteDraftMessage(AccessToken, EmailAddress, MessageId);
             Error(FailedToUpdateDraftMessageErr);
         end;
 
@@ -441,9 +443,29 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         if MailHttpResponseMessage.HttpStatusCode <> 202 then begin
             HttpErrorMessage := GetHttpErrorMessageAsText(MailHttpResponseMessage);
             Session.LogMessage('0000EA2', HttpErrorMessage, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            DeleteDraftMessage(AccessToken, EmailAddress, MessageId);
             Error(HttpErrorMessage);
         end else
             Session.LogMessage('0000EA3', EmailSentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+    end;
+
+    local procedure DeleteDraftMessage(AccessToken: SecretText; EmailAddress: Text[250]; MessageId: Text): Boolean
+    var
+        MailHttpRequestMessage: HttpRequestMessage;
+        MailHttpResponseMessage: HttpResponseMessage;
+        RequestUri: Text;
+    begin
+        RequestUri := GraphURLTxt + StrSubstNo(UpdateDraftUriTxt, EmailAddress, MessageId);
+        CreateRequest('DELETE', RequestUri, AccessToken, MailHttpRequestMessage);
+
+        SendRequest(MailHttpRequestMessage, MailHttpResponseMessage);
+
+        if MailHttpResponseMessage.HttpStatusCode <> 204 then begin
+            Session.LogMessage('0000QFI', TelemetryFailedToDeleteDraftEmailTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            exit(false);
+        end;
+
+        exit(true);
     end;
 
     [NonDebuggable]

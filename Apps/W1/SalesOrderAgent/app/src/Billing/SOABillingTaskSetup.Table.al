@@ -14,7 +14,6 @@ table 4587 "SOA Billing Task Setup"
     InherentPermissions = rimX;
     DataPerCompany = false;
     ReplicateData = false;
-    Scope = OnPrem;
 
     fields
     {

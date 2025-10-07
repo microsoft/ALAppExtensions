@@ -39,8 +39,7 @@ tableextension 18157 "GST Ship-to Address Ext" extends "Ship-to Address"
 
             trigger OnValidate()
             begin
-                if "Ship-to GST Customer Type" in ["Ship-to GST Customer Type"::Exempted,
-                                                    "Ship-to GST Customer Type"::Export] then
+                if "Ship-to GST Customer Type" = "Ship-to GST Customer Type"::Exempted then
                     Error('Ship to Gst Customer Type is not allowed for Exempted and Export Customers');
             end;
         }

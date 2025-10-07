@@ -19,6 +19,8 @@ page 4405 "SOA Email Attachments"
     DeleteAllowed = false;
     ShowFilter = false;
     SourceTableTemporary = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {
@@ -139,8 +141,19 @@ page 4405 "SOA Email Attachments"
 
         AttachmentFileName := AgentTaskFile."File Name";
         AgentTaskFile.Content.CreateInStream(InStream, GetDefaultEncoding());
-        if not File.ViewFromStream(InStream, AttachmentFileName, true) then
+        if SupportedByFileViewer(AgentTaskFile."File MIME Type") then begin
+            if not File.ViewFromStream(InStream, AttachmentFileName, true) then
+                File.DownloadFromStream(InStream, DownloadDialogTitleLbl, '', '', AttachmentFileName);
+        end
+        else
             File.DownloadFromStream(InStream, DownloadDialogTitleLbl, '', '', AttachmentFileName);
+    end;
+
+    local procedure SupportedByFileViewer(FileMIMEType: Text): Boolean
+    begin
+        if FileMIMEType <> '' then
+            exit(LowerCase(FileMIMEType).Contains('pdf'));
+        exit(false);
     end;
 
     procedure GetDefaultEncoding(): TextEncoding

@@ -20,6 +20,7 @@ codeunit 148054 "VAT Date CZL"
         GenJournalLine: Record "Gen. Journal Line";
         VATPostingSetup: Record "VAT Posting Setup";
         UserSetup: Record "User Setup";
+        VATReturnPeriod: Record "VAT Return Period";
         VATStatementTemplate: Record "VAT Statement Template";
         VATSetup: Record "VAT Setup";
         LibraryERM: Codeunit "Library - ERM";
@@ -35,6 +36,7 @@ codeunit 148054 "VAT Date CZL"
         GLAccountNo: Code[20];
         EmptyOrigDocVATDateErr: Label 'Original Document VAT Date must have a value in Gen. Journal Line';
         VATSettlementDocNoTok: Label 'VAT_SETTL';
+        VATReturnToClosedErr: Label 'VAT Return Period is closed for the selected date. Please select another date.';
 
     local procedure Initialize();
     var
@@ -71,6 +73,10 @@ codeunit 148054 "VAT Date CZL"
         ServiceMgtSetup.Modify();
         VATStatementTemplate.FindFirst();
         GLAccountNo := LibraryERM.CreateGLAccountNoWithDirectPosting();
+
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.DeleteAll();
+        LibraryTaxCZL.CreateVATReturnPeriods(CalcDate('<-CY>', WorkDate()), 12);
 
         isInitialized := true;
         Commit();
@@ -157,7 +163,7 @@ codeunit 148054 "VAT Date CZL"
     [Test]
     procedure GenJnlLinePostWithoutVATToClosedVATPeriod()
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         VATEntry: Record "VAT Entry";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         VATEntriesCount: Integer;
@@ -166,9 +172,10 @@ codeunit 148054 "VAT Date CZL"
         Initialize();
 
         // [GIVEN] VAT Period has been closed
-        VATPeriodCZL.FindFirst();
-        VATPeriodCZL.Validate(Closed, true);
-        VATPeriodCZL.Modify();
+        VATReturnPeriod.SetCurrentKey("Start Date");
+        VATReturnPeriod.FindFirst();
+        VATReturnPeriod.Validate(Status, VATReturnPeriod.Status::Closed);
+        VATReturnPeriod.Modify();
 
         // [GIVEN] New balanced Gen. Journal Line created
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
@@ -180,7 +187,7 @@ codeunit 148054 "VAT Date CZL"
             LibraryRandom.RandDec(1000, 2));
 
         // [GIVEN] Gen. Journal Line dates have been modified
-        GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
+        GenJournalLine.Validate("Posting Date", VATReturnPeriod."Start Date");
         GenJournalLine.Validate("VAT Reporting Date", 0D);
         GenJournalLine.Validate("Gen. Posting Type", Enum::"General Posting Type"::" ");
         GenJournalLine.Validate("Gen. Bus. Posting Group", '');
@@ -199,16 +206,17 @@ codeunit 148054 "VAT Date CZL"
     [Test]
     procedure GenJnlLinePostWithVATToClosedVATPeriod()
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
     begin
         // [SCENARIO] If the Gen. Journal Line is posting to closed VAT period with VAT then VAT Date check is performed
         Initialize();
 
-        // [GIVEN] Close VAT Period
-        VATPeriodCZL.FindFirst();
-        VATPeriodCZL.Validate(Closed, true);
-        VATPeriodCZL.Modify();
+        // [GIVEN] VAT Period has been closed
+        VATReturnPeriod.SetCurrentKey("Start Date");
+        VATReturnPeriod.FindFirst();
+        VATReturnPeriod.Validate(Status, VATReturnPeriod.Status::Closed);
+        VATReturnPeriod.Modify();
 
         // [GIVEN] New VAT Posting Setup has been created
         LibraryERM.CreateVATPostingSetupWithAccounts(VatPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 10);
@@ -222,13 +230,13 @@ codeunit 148054 "VAT Date CZL"
             AccountType::"G/L Account", LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(1000, 2));
 
         // [GIVEN] Posting Date has been validated
-        GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
+        GenJournalLine.Validate("Posting Date", VATReturnPeriod."Start Date");
 
         // [WHEN] Post Gen. Journal Line
         asserterror GenJnlPostLine.Run(GenJournalLine);
 
         // [THEN] Error will occurs because VAT period must be open
-        Assert.ExpectedTestFieldError(VATPeriodCZL.FieldCaption(Closed), Format(false));
+        Assert.ExpectedError(VATReturnToClosedErr);
     end;
 
     [Test]
@@ -237,7 +245,7 @@ codeunit 148054 "VAT Date CZL"
     var
         Vendor: Record Vendor;
         PurchaseLine: Record "Purchase Line";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         GLAccount: Record "G/L Account";
         VATEntry: Record "VAT Entry";
         VATStatementName: Record "VAT Statement Name";
@@ -256,14 +264,13 @@ codeunit 148054 "VAT Date CZL"
         LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
 
         // [GIVEN] Dates have been validated
-        VATPeriodCZL.SetRange(Closed, false);
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
 #pragma warning disable AA0233, AA0181
-        VATPeriodCZL.FindLast();
-        VATPeriodCZL.Next(-1);
+        VATReturnPeriod.Next(-1);
 #pragma warning restore AA0233, AA0181
-        PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
-        VATPeriodCZL.Next();
-        PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
+        PurchaseHeader.Validate("Posting Date", VATReturnPeriod."Start Date");
+        VATReturnPeriod.Next();
+        PurchaseHeader.Validate("VAT Reporting Date", VATReturnPeriod."Start Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
         PurchaseHeader.Modify();
 
@@ -310,7 +317,7 @@ codeunit 148054 "VAT Date CZL"
     var
         Vendor: Record Vendor;
         PurchaseLine: Record "Purchase Line";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         GLAccount: Record "G/L Account";
         VATEntry: Record "VAT Entry";
         VATStatementName: Record "VAT Statement Name";
@@ -329,14 +336,13 @@ codeunit 148054 "VAT Date CZL"
         LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
 
         // [GIVEN] Dates have been validated
-        VATPeriodCZL.SetRange(Closed, false);
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
 #pragma warning disable AA0233, AA0181
-        VATPeriodCZL.FindLast();
-        VATPeriodCZL.Next(-1);
+        VATReturnPeriod.Next(-1);
 #pragma warning restore AA0233, AA0181
-        PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
-        VATPeriodCZL.Next();
-        PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
+        PurchaseHeader.Validate("Posting Date", VATReturnPeriod."Start Date");
+        VATReturnPeriod.Next();
+        PurchaseHeader.Validate("VAT Reporting Date", VATReturnPeriod."Start Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
         PurchaseHeader.Modify();
 
@@ -363,6 +369,7 @@ codeunit 148054 "VAT Date CZL"
         VATStatementPreviewCZL.DateFilter.SetValue(PurchaseHeader."VAT Reporting Date");
         VATStatementPreviewCZL.Selection.SetValue("VAT Statement Report Selection"::Open);
         VATStatementPreviewCZL.PeriodSelection.SetValue("VAT Statement Report Period Selection"::"Within Period");
+        VATStatementPreviewCZL.SettlementNoFilter.SetValue('');
         VATEntries.Trap();
 
         // [WHEN] DrillDown to ColumnValue
@@ -383,7 +390,7 @@ codeunit 148054 "VAT Date CZL"
     var
         Vendor: Record Vendor;
         PurchaseLine: Record "Purchase Line";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         GLAccount: Record "G/L Account";
         VATEntry: Record "VAT Entry";
         VATStatementName: Record "VAT Statement Name";
@@ -402,10 +409,9 @@ codeunit 148054 "VAT Date CZL"
         LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
 
         // [GIVEN] Dates have been validated
-        VATPeriodCZL.SetRange(Closed, false);
-        VATPeriodCZL.FindLast();
-        PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
-        PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
+        PurchaseHeader.Validate("Posting Date", VATReturnPeriod."Start Date");
+        PurchaseHeader.Validate("VAT Reporting Date", VATReturnPeriod."Start Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
         PurchaseHeader.Modify();
 
@@ -460,7 +466,7 @@ codeunit 148054 "VAT Date CZL"
     var
         Vendor: Record Vendor;
         PurchaseLine: Record "Purchase Line";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         GLAccount: Record "G/L Account";
         VATEntry: Record "VAT Entry";
     begin
@@ -474,14 +480,13 @@ codeunit 148054 "VAT Date CZL"
         LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
 
         // [GIVEN] Dates have been validated
-        VATPeriodCZL.SetRange(Closed, false);
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
 #pragma warning disable AA0233, AA0181
-        VATPeriodCZL.FindLast();
-        VATPeriodCZL.Next(-1);
+        VATReturnPeriod.Next(-1);
 #pragma warning restore AA0233, AA0181
-        PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
-        VATPeriodCZL.Next();
-        PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
+        PurchaseHeader.Validate("Posting Date", VATReturnPeriod."Start Date");
+        VATReturnPeriod.Next();
+        PurchaseHeader.Validate("VAT Reporting Date", VATReturnPeriod."Start Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
         PurchaseHeader.Modify();
 
@@ -509,7 +514,7 @@ codeunit 148054 "VAT Date CZL"
     var
         Vendor: Record Vendor;
         PurchaseLine: Record "Purchase Line";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         GLAccount: Record "G/L Account";
         VATEntry: Record "VAT Entry";
     begin
@@ -523,14 +528,13 @@ codeunit 148054 "VAT Date CZL"
         LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
 
         // [GIVEN] Dates have been validated
-        VATPeriodCZL.SetRange(Closed, false);
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
 #pragma warning disable AA0233, AA0181
-        VATPeriodCZL.FindLast();
-        VATPeriodCZL.Next(-1);
+        VATReturnPeriod.Next(-1);
 #pragma warning restore AA0233, AA0181
-        PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
-        VATPeriodCZL.Next();
-        PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
+        PurchaseHeader.Validate("Posting Date", VATReturnPeriod."Start Date");
+        VATReturnPeriod.Next();
+        PurchaseHeader.Validate("VAT Reporting Date", VATReturnPeriod."Start Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
         PurchaseHeader.Modify();
 
@@ -558,7 +562,7 @@ codeunit 148054 "VAT Date CZL"
     var
         Vendor: Record Vendor;
         PurchaseLine: Record "Purchase Line";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         GLAccount: Record "G/L Account";
         VATEntry: Record "VAT Entry";
     begin
@@ -572,14 +576,13 @@ codeunit 148054 "VAT Date CZL"
         LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
 
         // [GIVEN] Dates have been validated
-        VATPeriodCZL.SetRange(Closed, false);
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
 #pragma warning disable AA0233, AA0181
-        VATPeriodCZL.FindLast();
-        VATPeriodCZL.Next(-1);
+        VATReturnPeriod.Next(-1);
 #pragma warning restore AA0233, AA0181
-        PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
-        VATPeriodCZL.Next();
-        PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
+        PurchaseHeader.Validate("Posting Date", VATReturnPeriod."Start Date");
+        VATReturnPeriod.Next();
+        PurchaseHeader.Validate("VAT Reporting Date", VATReturnPeriod."Start Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
         PurchaseHeader.Modify();
 
@@ -738,17 +741,16 @@ codeunit 148054 "VAT Date CZL"
     [RequestPageHandler]
     procedure CalcPostVATSettlementRequestPageHandlerPenultimatePeriod(var CalcAndPostVATSettlCZL: TestRequestPage "Calc. and Post VAT Settl. CZL")
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
     begin
-        VATPeriodCZL.SetRange(Closed, false);
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
 #pragma warning disable AA0233, AA0181
-        VATPeriodCZL.FindLast();
-        VATPeriodCZL.Next(-1);
+        VATReturnPeriod.Next(-1);
 #pragma warning restore AA0233, AA0181
 
-        CalcAndPostVATSettlCZL.StartingDate.SetValue(VATPeriodCZL."Starting Date");
-        CalcAndPostVATSettlCZL.EndingDate.SetValue(CalcDate('<CM>', VATPeriodCZL."Starting Date"));
-        CalcAndPostVATSettlCZL.PostingDt.SetValue(CalcDate('<CM>', VATPeriodCZL."Starting Date"));
+        CalcAndPostVATSettlCZL.StartingDate.SetValue(VATReturnPeriod."Start Date");
+        CalcAndPostVATSettlCZL.EndingDate.SetValue(CalcDate('<CM>', VATReturnPeriod."Start Date"));
+        CalcAndPostVATSettlCZL.PostingDt.SetValue(CalcDate('<CM>', VATReturnPeriod."Start Date"));
         CalcAndPostVATSettlCZL.SettlementAcc.SetValue(GLAccountNo);
         CalcAndPostVATSettlCZL.DocumentNo.SetValue(CopyStr(LibraryRandom.RandText(20), 1, 20));
         CalcAndPostVATSettlCZL.ShowVATEntries.SetValue(true);
@@ -759,14 +761,13 @@ codeunit 148054 "VAT Date CZL"
     [RequestPageHandler]
     procedure CalcPostVATSettlementRequestPageHandlerLastPeriod(var CalcAndPostVATSettlCZL: TestRequestPage "Calc. and Post VAT Settl. CZL")
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
     begin
-        VATPeriodCZL.SetRange(Closed, false);
-        VATPeriodCZL.FindLast();
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
 
-        CalcAndPostVATSettlCZL.StartingDate.SetValue(VATPeriodCZL."Starting Date");
-        CalcAndPostVATSettlCZL.EndingDate.SetValue(CalcDate('<CM>', VATPeriodCZL."Starting Date"));
-        CalcAndPostVATSettlCZL.PostingDt.SetValue(CalcDate('<CM>', VATPeriodCZL."Starting Date"));
+        CalcAndPostVATSettlCZL.StartingDate.SetValue(VATReturnPeriod."Start Date");
+        CalcAndPostVATSettlCZL.EndingDate.SetValue(CalcDate('<CM>', VATReturnPeriod."Start Date"));
+        CalcAndPostVATSettlCZL.PostingDt.SetValue(CalcDate('<CM>', VATReturnPeriod."Start Date"));
         CalcAndPostVATSettlCZL.SettlementAcc.SetValue(GLAccountNo);
         CalcAndPostVATSettlCZL.DocumentNo.SetValue(CopyStr(LibraryRandom.RandText(20), 1, 20));
         CalcAndPostVATSettlCZL.ShowVATEntries.SetValue(true);
@@ -777,14 +778,13 @@ codeunit 148054 "VAT Date CZL"
     [RequestPageHandler]
     procedure CalcPostVATSettlementRequestPageHandlerWithSettlement(var CalcAndPostVATSettlCZL: TestRequestPage "Calc. and Post VAT Settl. CZL")
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
     begin
-        VATPeriodCZL.SetRange(Closed, false);
-        VATPeriodCZL.FindLast();
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
 
-        CalcAndPostVATSettlCZL.StartingDate.SetValue(VATPeriodCZL."Starting Date");
-        CalcAndPostVATSettlCZL.EndingDate.SetValue(CalcDate('<CM>', VATPeriodCZL."Starting Date"));
-        CalcAndPostVATSettlCZL.PostingDt.SetValue(CalcDate('<CM>', VATPeriodCZL."Starting Date"));
+        CalcAndPostVATSettlCZL.StartingDate.SetValue(VATReturnPeriod."Start Date");
+        CalcAndPostVATSettlCZL.EndingDate.SetValue(CalcDate('<CM>', VATReturnPeriod."Start Date"));
+        CalcAndPostVATSettlCZL.PostingDt.SetValue(CalcDate('<CM>', VATReturnPeriod."Start Date"));
         CalcAndPostVATSettlCZL.SettlementAcc.SetValue(GLAccountNo);
         CalcAndPostVATSettlCZL.DocumentNo.SetValue(VATSettlementDocNoTok);
         CalcAndPostVATSettlCZL.ShowVATEntries.SetValue(false);

@@ -38,6 +38,7 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
 
     local procedure Initialize()
     var
+        VATReturnPeriod: Record "VAT Return Period";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"VAT Ctrl. Report CZL");
@@ -50,6 +51,9 @@ codeunit 148068 "VAT Ctrl. Report UT CZL"
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"VAT Ctrl. Report CZL");
 
         LibraryTaxCZL.CreateDefaultVATControlReportSections(true);
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.DeleteAll();
+        LibraryTaxCZL.CreateVATReturnPeriods(CalcDate('<-CY>', WorkDate()), 12);
 
         isInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"VAT Ctrl. Report CZL");

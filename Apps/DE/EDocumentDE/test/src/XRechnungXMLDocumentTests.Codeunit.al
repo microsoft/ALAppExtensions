@@ -16,6 +16,7 @@ using Microsoft.Finance.Currency;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.PaymentTerms;
+
 codeunit 13918 "XRechnung XML Document Tests"
 {
     Subtype = Test;
