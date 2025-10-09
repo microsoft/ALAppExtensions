@@ -1,3 +1,5 @@
+namespace Microsoft.eServices.EDocument.Formats;
+
 interface "ZUGFeRD Report Integration"
 {
     Access = Public;
