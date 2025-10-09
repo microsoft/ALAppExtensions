@@ -20,9 +20,8 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Reporting;
 
-codeunit 13922 "ZUGFeRD XML Document Tests" implements "ZUGFeRD Report Integration"
+codeunit 13922 "ZUGFeRD XML Document Tests"
 {
-    EventSubscriberInstance = Manual;
     Subtype = Test;
     TestType = Uncategorized;
 
@@ -1215,25 +1214,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests" implements "ZUGFeRD Report Integrati
     procedure FormatFourDecimal(VarDecimal: Decimal): Text
     begin
         exit(Format(VarDecimal, 0, '<Precision,4:4><Standard Format,9>'))
-    end;
-
-    var
-        ZUGFeRDXMLDocumentTests: Codeunit "ZUGFeRD XML Document Tests";
-
-    internal procedure BindSubscriptionForReportIntegration()
-    begin
-        BindSubscription(ZUGFeRDXMLDocumentTests);
-    end;
-
-    internal procedure UnbindSubscriptionForReportIntegration()
-    begin
-        UnbindSubscription(ZUGFeRDXMLDocumentTests);
-    end;
-
-    [EventSubscriber(ObjectType::Report, Report::"ZUGFeRD Custom Sales Invoice", OnPreReportOnBeforeInitializePDF, '', false, false)]
-    local procedure OnBeforeInitializePDFSalesInvoice(SalesInvHeader: Record "Sales Invoice Header"; var CreateZUGFeRDXML: Boolean)
-    begin
-        CreateZUGFeRDXML := true;
     end;
 
     local procedure Initialize();

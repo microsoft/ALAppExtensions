@@ -8,9 +8,9 @@ codeunit 13923 "ZUGFeRD Report Test"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export ZUGFeRD Document", OnGetZUGFeRDReportIntegrations, '', false, false)]
     local procedure ExportZUGFeRDDocument_OnGetZUGFeRDReportIntegrations(var ZUGFeRDReportIntegrations: List of [Interface "ZUGFeRD Report Integration"])
     var
-        ZUGFeRDXMLDocumentTests: Codeunit "ZUGFeRD XML Document Tests";
+        ZUGFeRDCustomReport: Codeunit "ZUGFeRD Custom Report";
     begin
-        ZUGFeRDReportIntegrations.Add(ZUGFeRDXMLDocumentTests);
+        ZUGFeRDReportIntegrations.Add(ZUGFeRDCustomReport);
     end;
 
 }
