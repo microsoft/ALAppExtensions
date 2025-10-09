@@ -19,7 +19,7 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using System.Reflection;
 
-codeunit 13917 "Export ZUGFeRD Document"
+codeunit 13917 "Export ZUGFeRD Document" implements "ZUGFeRD Report Integration"
 {
     TableNo = "Record Export Buffer";
     EventSubscriberInstance = Manual;
@@ -39,11 +39,21 @@ codeunit 13917 "Export ZUGFeRD Document"
         XmlNamespaceRAM: Text;
         XmlNamespaceUDT: Text;
 
-    trigger OnRun();
+    trigger OnRun()
+    var
+        ZUGFeRDReportIntegration: Interface "ZUGFeRD Report Integration";
+        ZUGFeRDReportIntegrations: List of [Interface "ZUGFeRD Report Integration"];
     begin
-        BindSubscription(ExportZUGFeRDDocument);
+        ZUGFeRDReportIntegrations.Add(ExportZUGFeRDDocument);
+        OnGetZUGFeRDReportIntegrations(ZUGFeRDReportIntegrations);
+
+        foreach ZUGFeRDReportIntegration in ZUGFeRDReportIntegrations do
+            ZUGFeRDReportIntegration.BindSubscriptionForReportIntegration();
+
         ExportSalesDocument(Rec);
-        UnbindSubscription(ExportZUGFeRDDocument);
+
+        foreach ZUGFeRDReportIntegration in ZUGFeRDReportIntegrations do
+            ZUGFeRDReportIntegration.UnbindSubscriptionForReportIntegration();
     end;
 
     procedure ExportSalesDocument(var RecordExportBuffer: Record "Record Export Buffer")
@@ -985,6 +995,11 @@ codeunit 13917 "Export ZUGFeRD Document"
     begin
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnGetZUGFeRDReportIntegrations(var ZUGFeRDReportIntegrations: List of [Interface "ZUGFeRD Report Integration"])
+    begin
+    end;
+
     [EventSubscriber(ObjectType::Report, Report::"Standard Sales - Invoice", 'OnPreReportOnBeforeInitializePDF', '', false, false)]
     local procedure OnBeforeInitializePDFSalesInvoice(SalesInvHeader: Record "Sales Invoice Header"; var CreateZUGFeRDXML: Boolean)
     begin
@@ -995,5 +1010,15 @@ codeunit 13917 "Export ZUGFeRD Document"
     local procedure OnBeforeInitializePDFSalesCrMemo(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var CreateZUGFeRDXML: Boolean)
     begin
         CreateZUGFeRDXML := true;
+    end;
+
+    internal procedure BindSubscriptionForReportIntegration()
+    begin
+        BindSubscription(ExportZUGFeRDDocument);
+    end;
+
+    internal procedure UnbindSubscriptionForReportIntegration()
+    begin
+        UnbindSubscription(ExportZUGFeRDDocument);
     end;
 }
