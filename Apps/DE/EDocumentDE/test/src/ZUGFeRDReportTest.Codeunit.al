@@ -1,3 +1,5 @@
+namespace Microsoft.eServices.EDocument.Formats;
+
 codeunit 13923 "ZUGFeRD Report Test"
 {
     Access = Internal;

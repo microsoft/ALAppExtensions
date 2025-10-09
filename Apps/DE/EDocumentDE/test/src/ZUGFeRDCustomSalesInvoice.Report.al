@@ -1,3 +1,9 @@
+namespace Microsoft.eServices.EDocument.Formats;
+
+using Microsoft.Sales.History;
+using System.IO;
+using System.Utilities;
+
 report 13918 "ZUGFeRD Custom Sales Invoice"
 {
     ApplicationArea = All;
@@ -59,7 +65,7 @@ report 13918 "ZUGFeRD Custom Sales Invoice"
             exit;
         Name := 'factur-x.xml';
         CreateXmlFile(TempBlob);
-        DataType := "PDF Attach. Data Relationship"::Alternative;
+        DataType := DataType::Alternative;
         MimeType := 'text/xml';
         Description := 'This is the e-invoicing xml document';
 
