@@ -12,6 +12,7 @@ using Microsoft.DemoTool;
 using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Bank;
 using Microsoft.DemoData.Sales;
+using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.CRM;
 
 codeunit 5692 "Create Extended Sales Document"
@@ -35,6 +36,7 @@ codeunit 5692 "Create Extended Sales Document"
         CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateItem: Codeunit "Create Item";
         CreatePaymentMethod: Codeunit "Create Payment Method";
+        CreateDeferralTemplate: Codeunit "Create Deferral Template";
         CreateSalespersonPurchaser: Codeunit "Create Salesperson/Purchaser";
         FirstDayOfTheMonth: Date;
         LastDayOfTheMonth: Date;
@@ -59,17 +61,17 @@ codeunit 5692 "Create Extended Sales Document"
         CalculateDatesForThisMonth('<-4M>', FirstDayOfTheMonth, LastDayOfTheMonth);
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), FirstDayOfTheMonth, CreatePaymentTerms.PaymentTermsDAYS15(), '', FirstDayOfTheMonth, CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MexicoSwivelChairBlack(), 5);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MexicoSwivelChairBlack(), 5, CreateDeferralTemplate.DeferralCode3M());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.TokyoGuestChairBlue(), 4);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticRelecloud(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+2D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS14(), '', CalcDate('<+2D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.BerlingGuestChairYellow(), 4);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.BerlingGuestChairYellow(), 4, CreateDeferralTemplate.Description1Y());
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.ExportSchoolofArt(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+3D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS10(), '', CalcDate('<+3D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.TokyoGuestChairBlue(), 8);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+3D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsCM(), '', CalcDate('<+3D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AntwerpConferenceTable(), 5);
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 1);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticRelecloud(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+5D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsCM(), '', CalcDate('<+5D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MunichSwivelChairYellow(), 6);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MunichSwivelChairYellow(), 6, CreateDeferralTemplate.DeferralCode3M());
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticTreyResearch(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+6D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+6D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AntwerpConferenceTable(), 6);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.EUAlpineSkiHouse(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+6D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+6D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
@@ -81,7 +83,7 @@ codeunit 5692 "Create Extended Sales Document"
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.ExportSchoolofArt(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+10D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsCM(), '', CalcDate('<+10D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 2);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+12D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsCM(), '', CalcDate('<+12D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensDesk(), 9);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensDesk(), 9, CreateDeferralTemplate.DeferralCode1Y());
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticTreyResearch(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+13D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+13D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MexicoSwivelChairBlack(), 4);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.EUAlpineSkiHouse(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+15D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+15D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
@@ -89,7 +91,7 @@ codeunit 5692 "Create Extended Sales Document"
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.ExportSchoolofArt(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+18D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS21(), '', CalcDate('<+18D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensDesk(), 9);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.EUAlpineSkiHouse(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+19D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsCM(), '', CalcDate('<+19D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MunichSwivelChairYellow(), 2);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MunichSwivelChairYellow(), 2, CreateDeferralTemplate.DeferralCode3M());
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticTreyResearch(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+20D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS14(), '', CalcDate('<+20D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.SydneySwivelChairGreen(), 9);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+20D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS14(), '', CalcDate('<+20D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
@@ -97,7 +99,7 @@ codeunit 5692 "Create Extended Sales Document"
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticRelecloud(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+21D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsCM(), '', CalcDate('<+21D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.SeoulGuestChairRed(), 4);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.EUAlpineSkiHouse(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+21D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+21D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.LondonSwivelChairBlue(), 4);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.LondonSwivelChairBlue(), 4, CreateDeferralTemplate.DeferralCode3M());
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticRelecloud(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+23D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS14(), '', CalcDate('<+23D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AmsterdamLamp(), 9);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.ExportSchoolofArt(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+24D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS21(), '', CalcDate('<+24D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
@@ -164,7 +166,7 @@ codeunit 5692 "Create Extended Sales Document"
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+7D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+7D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.LondonSwivelChairBlue(), 5);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+8D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+8D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MunichSwivelChairYellow(), 2);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MunichSwivelChairYellow(), 2, CreateDeferralTemplate.DeferralCode3M());
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.ExportSchoolofArt(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+11D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS21(), '', CalcDate('<+11D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.TokyoGuestChairBlue(), 8);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticTreyResearch(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+13D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+13D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
@@ -178,7 +180,7 @@ codeunit 5692 "Create Extended Sales Document"
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+20D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+20D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AntwerpConferenceTable(), 7);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticRelecloud(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+21D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS21(), '', CalcDate('<+21D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.GuestSection1(), 4);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.GuestSection1(), 4, CreateDeferralTemplate.DeferralCode1Y());
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticRelecloud(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+21D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS14(), '', CalcDate('<+21D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.ParisGuestChairBlack(), 12);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.EUAlpineSkiHouse(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<-4D>', LastDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS14(), '', CalcDate('<-4D>', LastDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
@@ -198,7 +200,7 @@ codeunit 5692 "Create Extended Sales Document"
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.TokyoGuestChairBlue(), 7);
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MoscowSwivelChairRed(), 3);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.ExportSchoolofArt(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+1D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS15(), '', CalcDate('<+1D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensMobilePedestal(), 4);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensMobilePedestal(), 4, CreateDeferralTemplate.DeferralCode1Y());
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+2D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalcDate('<+2D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MoscowSwivelChairRed(), 6);
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 8);
@@ -223,7 +225,7 @@ codeunit 5692 "Create Extended Sales Document"
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), CalcDate('<+25D>', FirstDayOfTheMonth), CreatePaymentTerms.PaymentTermsDAYS10(), '', CalcDate('<+25D>', FirstDayOfTheMonth), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.RomeGuestChairGreen(), 5);
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticAdatumCorporation(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), LastDayOfTheMonth, CreatePaymentTerms.PaymentTermsDAYS14(), '', LastDayOfTheMonth, CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MexicoSwivelChairBlack(), 8);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MexicoSwivelChairBlack(), 8, CreateDeferralTemplate.DeferralCode3M());
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CreateCustomer.DomesticTreyResearch(), AnalyticsReference(), ContosoUtilities.AdjustDate(19020101D), LastDayOfTheMonth, CreatePaymentTerms.PaymentTermsDAYS21(), '', LastDayOfTheMonth, CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensMobilePedestal(), 8);
 
@@ -246,6 +248,7 @@ codeunit 5692 "Create Extended Sales Document"
         CreateSalesDocument: Codeunit "Create Sales Document";
         CreateShippingData: Codeunit "Create Shipping Data";
         CreateSalespersonPurchaser: Codeunit "Create Salesperson/Purchaser";
+        CreateDeferralTemplate: Codeunit "Create Deferral Template";
     begin
         // Orders
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticAdatumCorporation(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-15W>'), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
@@ -262,7 +265,7 @@ codeunit 5692 "Create Extended Sales Document"
 
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.EUAlpineSkiHouse(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-4W>'), CreatePaymentTerms.PaymentTermsDAYS21(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.SydneySwivelChairGreen(), 9);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.SydneySwivelChairGreen(), 9, CreateDeferralTemplate.DeferralCode1Y());
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticRelecloud(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-4W>'), CreatePaymentTerms.PaymentTermsDAYS14(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.OtisFalls());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 12);
@@ -272,7 +275,7 @@ codeunit 5692 "Create Extended Sales Document"
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AntwerpConferenceTable(), 1);
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticTreyResearch(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-1W>'), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.JimOlive());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 10);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 10, CreateDeferralTemplate.DeferralCode1Y());
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.ExportSchoolofArt(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19030422D), ContosoUtilities.AdjustDate(19030422D), CreatePaymentTerms.PaymentTermsDAYS30(), '', ContosoUtilities.AdjustDate(19030422D), '', CreateShippingData.DHL(), ContosoUtilities.AdjustDate(19030423D), CreateShippingData.OverNight(), '', CreateSalespersonPurchaser.JimOlive());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AntwerpConferenceTable(), 12);
@@ -290,8 +293,8 @@ codeunit 5692 "Create Extended Sales Document"
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MunichSwivelChairYellow(), 6);
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticAdatumCorporation(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19030422D), ContosoUtilities.AdjustDate(19030422D), CreatePaymentTerms.PaymentTermsDAYS14(), '', ContosoUtilities.AdjustDate(19030422D), '', CreateShippingData.DHL(), ContosoUtilities.AdjustDate(19030423D), CreateShippingData.Standard(), '', CreateSalespersonPurchaser.JimOlive());
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MoscowSwivelChairRed(), 20);
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MexicoSwivelChairBlack(), 20);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MoscowSwivelChairRed(), 20, CreateDeferralTemplate.DeferralCode3M());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.MexicoSwivelChairBlack(), 20, CreateDeferralTemplate.DeferralCode3M());
 
         // Quotes
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Quote, CreateCustomer.DomesticAdatumCorporation(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-15W>'), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '');
@@ -304,7 +307,7 @@ codeunit 5692 "Create Extended Sales Document"
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AmsterdamLamp(), 10);
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Quote, CreateCustomer.DomesticRelecloud(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-10W>'), CreatePaymentTerms.PaymentTermsCM(), '', CalculateDate('<-10W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '');
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.RomeGuestChairGreen(), 16);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.RomeGuestChairGreen(), 16, CreateDeferralTemplate.DeferralCode3M());
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Quote, CreateCustomer.DomesticTreyResearch(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-9W>'), CreatePaymentTerms.PaymentTermsDAYS14(), '', CalculateDate('<-9W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '');
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AntwerpConferenceTable(), 10);
@@ -315,8 +318,8 @@ codeunit 5692 "Create Extended Sales Document"
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.LondonSwivelChairBlue(), 6);
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Quote, CreateCustomer.DomesticRelecloud(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-3W>'), CreatePaymentTerms.PaymentTermsDAYS14(), '', CalculateDate('<-3W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '');
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.TokyoGuestChairBlue(), 8);
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.RomeGuestChairGreen(), 8);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.TokyoGuestChairBlue(), 8, CreateDeferralTemplate.DeferralCode1Y());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.RomeGuestChairGreen(), 8, CreateDeferralTemplate.DeferralCode1Y());
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Quote, CreateCustomer.DomesticTreyResearch(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-7W>'), CreatePaymentTerms.PaymentTermsDAYS21(), '', CalculateDate('<-7W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '');
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 10);
@@ -324,9 +327,9 @@ codeunit 5692 "Create Extended Sales Document"
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.LondonSwivelChairBlue(), 6);
 
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Quote, CreateCustomer.ExportSchoolofArt(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-26W>'), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalculateDate('<-26W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '');
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensDesk(), 10);
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AmsterdamLamp(), 16);
-        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.BerlingGuestChairYellow(), 20);
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensDesk(), 10, CreateDeferralTemplate.DeferralCode1Y());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AmsterdamLamp(), 16, CreateDeferralTemplate.DeferralCode1Y());
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.BerlingGuestChairYellow(), 20, CreateDeferralTemplate.DeferralCode1Y());
 
 
         // Return Orders
