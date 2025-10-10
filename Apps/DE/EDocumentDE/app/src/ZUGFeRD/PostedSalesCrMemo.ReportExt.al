@@ -5,6 +5,8 @@
 namespace Microsoft.eServices.EDocument.Formats;
 using Microsoft.Sales.History;
 using System.IO;
+using System.Utilities;
+
 reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Memo"
 {
     trigger OnPreReport()
@@ -22,6 +24,8 @@ reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Me
     [NonDebuggable]
     local procedure OnRenderingCompleteJson(var RenderingPayload: JsonObject)
     var
+        TempBlob: Codeunit "Temp Blob";
+        XmlInStream: InStream;
         UserCode: SecretText;
         AdminCode: SecretText;
         FileName: Text;
@@ -36,29 +40,26 @@ reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Me
         if not CreateZUGFeRDXML then
             exit;
         Name := 'factur-x.xml';
-        FileName := CreateXmlFile(Name);
+        CreateXmlFile(TempBlob);
         DataType := "PDF Attach. Data Relationship"::Alternative;
         MimeType := 'text/xml';
         Description := 'This is the e-invoicing xml document';
 
-        PDFDocument.AddAttachment(Name, DataType, MimeType, FileName, Description, true);
+        TempBlob.CreateInStream(XmlInStream, TextEncoding::UTF8);
+        PDFDocument.AddAttachment(Name, DataType, MimeType, XmlInStream, Description, true);
 
         RenderingPayload := PDFDocument.ToJson(RenderingPayload);
         PDFDocument.ProtectDocument(UserCode, AdminCode);
     end;
 
-    local procedure CreateXmlFile(Filename: Text) FilePath: Text
+
+    local procedure CreateXmlFile(var TempBlob: Codeunit "Temp Blob")
     var
         ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
-        FileObject: File;
         OutStream: OutStream;
     begin
-        FilePath := System.TemporaryPath() + Filename;
-        FileObject.TextMode := true;
-        FileObject.Create(FilePath, TextEncoding::UTF8);
-        FileObject.CreateOutStream(OutStream);
+        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         ExportZUGFeRDDocument.CreateXML(Header, OutStream);
-        FileObject.Close();
     end;
 
     [IntegrationEvent(false, false)]
