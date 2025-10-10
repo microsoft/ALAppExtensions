@@ -270,49 +270,49 @@ report 10600 "OrderGB"
                     dataitem(RoundLoop; "Integer")
                     {
                         DataItemTableView = sorting(Number);
-                        column(PurchLineLineAmount; PurchLine."Line Amount")
+                        column(TempPurchLineLineAmount; TempPurchLine."Line Amount")
                         {
                             AutoFormatExpression = "Purchase Line"."Currency Code";
                             AutoFormatType = 1;
                         }
-                        column(Description_PurchLine; "Purchase Line".Description)
+                        column(Description_TempPurchLine; "Purchase Line".Description)
                         {
                         }
-                        column(PurchLineType; PurchLine.Type)
+                        column(TempPurchLineType; TempPurchLine.Type)
                         {
                         }
-                        column(No_PurchLine; "Purchase Line"."No.")
+                        column(No_TempPurchLine; "Purchase Line"."No.")
                         {
                         }
-                        column(No2_PurchLineCaption; "Purchase Line".FieldCaption("No."))
+                        column(No2_TempPurchLineCaption; "Purchase Line".FieldCaption("No."))
                         {
                         }
-                        column(Quantity_PurchLine; "Purchase Line".Quantity)
+                        column(Quantity_TempPurchLine; "Purchase Line".Quantity)
                         {
                         }
-                        column(UnitofMeasure_PurchLine; "Purchase Line"."Unit of Measure")
+                        column(UnitofMeasure_TempPurchLine; "Purchase Line"."Unit of Measure")
                         {
                         }
-                        column(DirectUnitCost_PurchLine; "Purchase Line"."Direct Unit Cost")
+                        column(DirectUnitCost_TempPurchLine; "Purchase Line"."Direct Unit Cost")
                         {
                             AutoFormatExpression = "Purchase Header"."Currency Code";
                             AutoFormatType = 2;
                         }
-                        column(LineDiscount_PurchLine; "Purchase Line"."Line Discount %")
+                        column(LineDiscount_TempPurchLine; "Purchase Line"."Line Discount %")
                         {
                         }
-                        column(LineAmount_PurchLine; "Purchase Line"."Line Amount")
+                        column(LineAmount_TempPurchLine; "Purchase Line"."Line Amount")
                         {
                             AutoFormatExpression = "Purchase Header"."Currency Code";
                             AutoFormatType = 1;
                         }
-                        column(VATIdentifier_PurchLine; "Purchase Line"."VAT Identifier")
+                        column(VATIdentifier_TempPurchLine; "Purchase Line"."VAT Identifier")
                         {
                         }
-                        column(PurchLineLineNo; PurchLine."Line No.")
+                        column(TempPurchLineLineNo; TempPurchLine."Line No.")
                         {
                         }
-                        column(InvDiscAmount_PurchLine; "Purchase Line"."Inv. Discount Amount")
+                        column(InvDiscAmount_TempPurchLine; "Purchase Line"."Inv. Discount Amount")
                         {
                         }
                         column(TotalInvoiceDiscAmount; TotalInvoiceDiscAmount)
@@ -321,7 +321,7 @@ report 10600 "OrderGB"
                         column(TotalLineAmount; TotalLineAmount)
                         {
                         }
-                        column(PurchLineInvDiscountAmt; -PurchLine."Inv. Discount Amount")
+                        column(TempPurchLineInvDiscountAmt; -TempPurchLine."Inv. Discount Amount")
                         {
                             AutoFormatExpression = "Purchase Line"."Currency Code";
                             AutoFormatType = 1;
@@ -329,7 +329,7 @@ report 10600 "OrderGB"
                         column(TotalText; TotalText)
                         {
                         }
-                        column(PurchLineLineAmtInvDiscAmt; PurchLine."Line Amount" - PurchLine."Inv. Discount Amount")
+                        column(TempPurchLineLineAmtInvDiscAmt; TempPurchLine."Line Amount" - TempPurchLine."Inv. Discount Amount")
                         {
                             AutoFormatExpression = "Purchase Header"."Currency Code";
                             AutoFormatType = 1;
@@ -337,7 +337,7 @@ report 10600 "OrderGB"
                         column(TotalInclVATText; TotalInclVATText)
                         {
                         }
-                        column(VATAmountLineVATAmtText; VATAmountLine.VATAmountText())
+                        column(TempVATAmountLineVATAmtText; TempVATAmountLine.VATAmountText())
                         {
                         }
                         column(VATAmount; VATAmount)
@@ -345,7 +345,7 @@ report 10600 "OrderGB"
                             AutoFormatExpression = "Purchase Header"."Currency Code";
                             AutoFormatType = 1;
                         }
-                        column(PurchLineLineAmtInvAmtVATAmt; PurchLine."Line Amount" - PurchLine."Inv. Discount Amount" + VATAmount)
+                        column(TempPurchLineLineAmtInvAmtVATAmt; TempPurchLine."Line Amount" - TempPurchLine."Inv. Discount Amount" + VATAmount)
                         {
                             AutoFormatExpression = "Purchase Header"."Currency Code";
                             AutoFormatType = 1;
@@ -389,16 +389,16 @@ report 10600 "OrderGB"
                         column(VATDiscountAmtCaption; VATDiscountAmtCaptionLbl)
                         {
                         }
-                        column(Description_PurchLineCaption; "Purchase Line".FieldCaption(Description))
+                        column(Description_TempPurchLineCaption; "Purchase Line".FieldCaption(Description))
                         {
                         }
-                        column(Quantity_PurchLineCaption; "Purchase Line".FieldCaption(Quantity))
+                        column(Quantity_TempPurchLineCaption; "Purchase Line".FieldCaption(Quantity))
                         {
                         }
-                        column(UnitofMeasure_PurchLineCaption; "Purchase Line".FieldCaption("Unit of Measure"))
+                        column(UnitofMeasure_TempPurchLineCaption; "Purchase Line".FieldCaption("Unit of Measure"))
                         {
                         }
-                        column(VATIdentifier_PurchLineCaption; "Purchase Line".FieldCaption("VAT Identifier"))
+                        column(VATIdentifier_TempPurchLineCaption; "Purchase Line".FieldCaption("VAT Identifier"))
                         {
                         }
                         dataitem(DimensionLoop2; "Integer")
@@ -452,40 +452,40 @@ report 10600 "OrderGB"
                         trigger OnAfterGetRecord()
                         begin
                             if Number = 1 then
-                                PurchLine.Find('-')
+                                TempPurchLine.Find('-')
                             else
-                                PurchLine.Next();
-                            "Purchase Line" := PurchLine;
+                                TempPurchLine.Next();
+                            "Purchase Line" := TempPurchLine;
 
                             if not "Purchase Header"."Prices Including VAT" and
-                               (PurchLine."VAT Calculation Type" = PurchLine."VAT Calculation Type"::"Full VAT")
+                               (TempPurchLine."VAT Calculation Type" = TempPurchLine."VAT Calculation Type"::"Full VAT")
                             then
-                                PurchLine."Line Amount" := 0;
+                                TempPurchLine."Line Amount" := 0;
 
-                            if (PurchLine.Type = PurchLine.Type::"G/L Account") and (not ShowInternalInfo) then
+                            if (TempPurchLine.Type = TempPurchLine.Type::"G/L Account") and (not ShowInternalInfo) then
                                 "Purchase Line"."No." := '';
 
-                            TotalInvoiceDiscAmount += PurchLine."Inv. Discount Amount";
-                            TotalLineAmount += PurchLine."Line Amount";
+                            TotalInvoiceDiscAmount += TempPurchLine."Inv. Discount Amount";
+                            TotalLineAmount += TempPurchLine."Line Amount";
                         end;
 
                         trigger OnPostDataItem()
                         begin
-                            PurchLine.DeleteAll();
+                            TempPurchLine.DeleteAll();
                         end;
 
                         trigger OnPreDataItem()
                         begin
-                            MoreLines := PurchLine.Find('+');
-                            while MoreLines and (PurchLine.Description = '') and (PurchLine."Description 2" = '') and
-                                  (PurchLine."No." = '') and (PurchLine.Quantity = 0) and
-                                  (PurchLine.Amount = 0)
+                            MoreLines := TempPurchLine.Find('+');
+                            while MoreLines and (TempPurchLine.Description = '') and (TempPurchLine."Description 2" = '') and
+                                  (TempPurchLine."No." = '') and (TempPurchLine.Quantity = 0) and
+                                  (TempPurchLine.Amount = 0)
                             do
-                                MoreLines := PurchLine.Next(-1) <> 0;
+                                MoreLines := TempPurchLine.Next(-1) <> 0;
                             if not MoreLines then
                                 CurrReport.Break();
-                            PurchLine.SetRange("Line No.", 0, PurchLine."Line No.");
-                            SetRange(Number, 1, PurchLine.Count);
+                            TempPurchLine.SetRange("Line No.", 0, TempPurchLine."Line No.");
+                            SetRange(Number, 1, TempPurchLine.Count);
                             TotalInvoiceDiscAmount := 0;
                             TotalLineAmount := 0;
                         end;
@@ -496,36 +496,36 @@ report 10600 "OrderGB"
                         dataitem(VATCounter; "Integer")
                         {
                             DataItemTableView = sorting(Number);
-                            column(VATAmountLineVATBase; VATAmountLine."VAT Base")
+                            column(TempVATAmountLineVATBase; TempVATAmountLine."VAT Base")
                             {
                                 AutoFormatExpression = "Purchase Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmountLineVATAmount; VATAmountLine."VAT Amount")
+                            column(TempVATAmountLineVATAmount; TempVATAmountLine."VAT Amount")
                             {
                                 AutoFormatExpression = "Purchase Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmountLineLineAmount; VATAmountLine."Line Amount")
+                            column(TempVATAmountLineLineAmount; TempVATAmountLine."Line Amount")
                             {
                                 AutoFormatExpression = "Purchase Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmtLineInvDiscBaseAmt; VATAmountLine."Inv. Disc. Base Amount")
+                            column(VATAmtLineInvDiscBaseAmt; TempVATAmountLine."Inv. Disc. Base Amount")
                             {
                                 AutoFormatExpression = "Purchase Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmtLineInvoiceDiscAmt; VATAmountLine."Invoice Discount Amount")
+                            column(VATAmtLineInvoiceDiscAmt; TempVATAmountLine."Invoice Discount Amount")
                             {
                                 AutoFormatExpression = "Purchase Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmountLineVAT; VATAmountLine."VAT %")
+                            column(TempVATAmountLineVAT; TempVATAmountLine."VAT %")
                             {
                                 DecimalPlaces = 0 : 5;
                             }
-                            column(VATAmtLineVATIdentifier; VATAmountLine."VAT Identifier")
+                            column(VATAmtLineVATIdentifier; TempVATAmountLine."VAT Identifier")
                             {
                             }
                             column(VATPercentageCaption; VATPercentageCaptionLbl)
@@ -558,18 +558,18 @@ report 10600 "OrderGB"
 
                             trigger OnAfterGetRecord()
                             begin
-                                VATAmountLine.GetLine(Number);
+                                TempVATAmountLine.GetLine(Number);
                             end;
 
                             trigger OnPreDataItem()
                             begin
-                                SetRange(Number, 1, VATAmountLine.Count);
+                                SetRange(Number, 1, TempVATAmountLine.Count);
                             end;
                         }
 
                         trigger OnPreDataItem()
                         begin
-                            if VATAmountLine.Count <= 1 then
+                            if TempVATAmountLine.Count <= 1 then
                                 CurrReport.Break();
                         end;
                     }
@@ -671,18 +671,18 @@ report 10600 "OrderGB"
 
                 trigger OnAfterGetRecord()
                 begin
-                    Clear(PurchLine);
+                    Clear(TempPurchLine);
                     Clear(PurchPost);
-                    PurchLine.DeleteAll();
-                    VATAmountLine.DeleteAll();
-                    PurchPost.GetPurchLines("Purchase Header", PurchLine, 0);
-                    PurchLine.CalcVATAmountLines(0, "Purchase Header", PurchLine, VATAmountLine);
-                    PurchLine.UpdateVATOnLines(0, "Purchase Header", PurchLine, VATAmountLine);
-                    VATAmount := VATAmountLine.GetTotalVATAmount();
-                    VATBaseAmount := VATAmountLine.GetTotalVATBase();
+                    TempPurchLine.DeleteAll();
+                    TempVATAmountLine.DeleteAll();
+                    PurchPost.GetPurchLines("Purchase Header", TempPurchLine, 0);
+                    TempPurchLine.CalcVATAmountLines(0, "Purchase Header", TempPurchLine, TempVATAmountLine);
+                    TempPurchLine.UpdateVATOnLines(0, "Purchase Header", TempPurchLine, TempVATAmountLine);
+                    VATAmount := TempVATAmountLine.GetTotalVATAmount();
+                    VATBaseAmount := TempVATAmountLine.GetTotalVATBase();
                     VATDiscountAmount :=
-                      VATAmountLine.GetTotalVATDiscount("Purchase Header"."Currency Code", "Purchase Header"."Prices Including VAT");
-                    TotalAmountInclVAT := VATAmountLine.GetTotalAmountInclVAT();
+                      TempVATAmountLine.GetTotalVATDiscount("Purchase Header"."Currency Code", "Purchase Header"."Prices Including VAT");
+                    TotalAmountInclVAT := TempVATAmountLine.GetTotalAmountInclVAT();
 
                     if Number > 1 then begin
                         CopyText := Text003Txt;
@@ -698,7 +698,7 @@ report 10600 "OrderGB"
 
                 trigger OnPreDataItem()
                 begin
-                    NoOfLoops := Abs(NoOfCopies) + 1;
+                    NoOfLoops := Abs(NumberOfCopies) + 1;
                     CopyText := '';
                     SetRange(Number, 1, NoOfLoops);
                     OutputNo := 1;
@@ -765,10 +765,10 @@ report 10600 "OrderGB"
                 FormatAddr.PurchHeaderShipTo(ShipToAddr, "Purchase Header");
 
                 if not CurrReport.Preview then begin
-                    if ArchiveDocument then
-                        ArchiveManagement.StorePurchDocument("Purchase Header", LogInteraction);
+                    if ArchiveDocumentOption then
+                        ArchiveManagement.StorePurchDocument("Purchase Header", LogInteractionOption);
 
-                    if LogInteraction then begin
+                    if LogInteractionOption then begin
                         CalcFields("No. of Archived Versions");
                         SegManagement.LogDocument(
                           13, "No.", "Doc. No. Occurrence", "No. of Archived Versions", DATABASE::Vendor, "Buy-from Vendor No.",
@@ -790,7 +790,7 @@ report 10600 "OrderGB"
                 group(Options)
                 {
                     Caption = 'Options';
-                    field(NoOfCopies; NoOfCopies)
+                    field(NoOfCopies; NumberOfCopies)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'No. of Copies';
@@ -802,7 +802,7 @@ report 10600 "OrderGB"
                         Caption = 'Show Internal Information';
                         ToolTip = 'Specifies if you want the printed document to show information that is only for internal use.';
                     }
-                    field(ArchiveDocument; ArchiveDocument)
+                    field(ArchiveDocument; ArchiveDocumentOption)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Archive Document';
@@ -811,11 +811,11 @@ report 10600 "OrderGB"
 
                         trigger OnValidate()
                         begin
-                            if not ArchiveDocument then
-                                LogInteraction := false;
+                            if not ArchiveDocumentOption then
+                                LogInteractionOption := false;
                         end;
                     }
-                    field(LogInteraction; LogInteraction)
+                    field(LogInteraction; LogInteractionOption)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Log Interaction';
@@ -824,8 +824,8 @@ report 10600 "OrderGB"
 
                         trigger OnValidate()
                         begin
-                            if LogInteraction then
-                                ArchiveDocument := ArchiveDocumentEnable;
+                            if LogInteractionOption then
+                                ArchiveDocumentOption := ArchiveDocumentEnable;
                         end;
                     }
                 }
@@ -844,11 +844,11 @@ report 10600 "OrderGB"
 
         trigger OnOpenPage()
         begin
-            ArchiveDocument := PurchSetup."Archive Orders";
-            LogInteraction := SegManagement.FindInteractionTemplateCode("Interaction Log Entry Document Type"::"Purch. Ord.") <> '';
+            ArchiveDocumentOption := PurchSetup."Archive Orders";
+            LogInteractionOption := SegManagement.FindInteractionTemplateCode("Interaction Log Entry Document Type"::"Purch. Ord.") <> '';
 
-            ArchiveDocumentEnable := ArchiveDocument;
-            LogInteractionEnable := LogInteraction;
+            ArchiveDocumentEnable := ArchiveDocumentOption;
+            LogInteractionEnable := LogInteractionOption;
         end;
     }
 
@@ -868,8 +868,14 @@ report 10600 "OrderGB"
         ShipmentMethod: Record "Shipment Method";
         PaymentTerms: Record "Payment Terms";
         SalesPurchPerson: Record "Salesperson/Purchaser";
-        VATAmountLine: Record "VAT Amount Line" temporary;
-        PurchLine: Record "Purchase Line" temporary;
+#if not CLEAN25
+#pragma warning disable AL0432
+#endif
+        TempVATAmountLine: Record "VAT Amount Line" temporary;
+#if not CLEAN25
+#pragma warning restore  AL0432
+#endif
+        TempPurchLine: Record "Purchase Line" temporary;
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
         RespCenter: Record "Responsibility Center";
@@ -890,7 +896,7 @@ report 10600 "OrderGB"
         TotalInclVATText: Text;
         TotalExclVATText: Text;
         MoreLines: Boolean;
-        NoOfCopies: Integer;
+        NumberOfCopies: Integer;
         NoOfLoops: Integer;
         OutputNo: Integer;
         CopyText: Text;
@@ -898,8 +904,8 @@ report 10600 "OrderGB"
         OldDimText: Text;
         ShowInternalInfo: Boolean;
         Continue: Boolean;
-        ArchiveDocument: Boolean;
-        LogInteraction: Boolean;
+        ArchiveDocumentOption: Boolean;
+        LogInteractionOption: Boolean;
         VATAmount: Decimal;
         VATBaseAmount: Decimal;
         VATDiscountAmount: Decimal;
@@ -944,12 +950,14 @@ report 10600 "OrderGB"
         FeatureNameTok: Label 'Order GB', Locked = true;
         EventNameTok: Label 'Order GB report has been used', Locked = true;
         Text000Txt: Label 'Purchaser';
+#pragma warning disable AA0470
         Text001Txt: Label 'Total %1';
         Text002Txt: Label 'Total %1 Incl. VAT';
         Text003Txt: Label 'COPY';
         Text004Lbl: Label 'Order %1';
         Text005Lbl: Label 'Page %1';
         Text006Txt: Label 'Total %1 Excl. VAT';
+#pragma warning restore AA0470
 
 
 }

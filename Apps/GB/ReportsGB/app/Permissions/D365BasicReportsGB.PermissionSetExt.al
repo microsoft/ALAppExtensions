@@ -6,7 +6,7 @@ namespace Microsoft.Finance.VAT.Setup;
 
 using System.Security.AccessControl;
 
-permissionsetextension 10581 "D365 BASIC - Reports GB" extends "D365 BASIC"
+permissionsetextension 10591 "D365 BASIC - Reports GB" extends "D365 BASIC"
 {
     IncludedPermissionSets = "Reports GB - Objects";
 }

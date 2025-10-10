@@ -27,6 +27,9 @@ table 4594 "SOA Task"
         field(3; "Access Token Retrieved"; Boolean)
         {
         }
+        field(4; "Send Replies Successful"; Boolean)
+        {
+        }
     }
 
     keys

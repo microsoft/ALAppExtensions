@@ -8,7 +8,6 @@ using Microsoft.Bank;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
-using Microsoft.Sales.History;
 
 codeunit 11749 "Reminder Handler CZL"
 {
@@ -58,14 +57,6 @@ codeunit 11749 "Reminder Handler CZL"
             exit;
 
         IssuedReminderHeader."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(IssuedReminderHeader."No.");
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Issued Reminder Header", 'OnBeforeDeleteEvent', '', false, false)]
-    local procedure CheckDeletionAllowOnBeforeDeleteEvent(var Rec: Record "Issued Reminder Header")
-    var
-        PostSalesDelete: Codeunit "PostSales-Delete";
-    begin
-        PostSalesDelete.IsDocumentDeletionAllowed(Rec."Posting Date");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reminder Communication", 'OnBeforeExitReportIDOnReplaceHTMLText', '', false, false)]

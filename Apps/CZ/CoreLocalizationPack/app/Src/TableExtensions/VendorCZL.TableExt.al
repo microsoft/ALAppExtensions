@@ -125,6 +125,15 @@ tableextension 11702 "Vendor CZL" extends Vendor
 #endif
     }
 
+    trigger OnDelete()
+    var
+        UnreliablePayerEntryCZL: Record "Unreliable Payer Entry CZL";
+    begin
+        UnreliablePayerEntryCZL.SetRange("Vendor No.", Rec."No.");
+        UnreliablePayerEntryCZL.DeleteAll(true);
+        RegistrationLogMgtCZL.DeleteVendorLog(Rec);
+    end;
+
     var
         UnrelPayerServiceSetupCZL: Record "Unrel. Payer Service Setup CZL";
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";

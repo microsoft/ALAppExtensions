@@ -67,9 +67,14 @@ codeunit 4582 "SOA Retrieve Emails"
         TempFilters."Unread Emails" := true;
         TempFilters."Load Attachments" := true;
         TempFilters."Max No. of Emails" := SOAMailSetup.GetMaxNoOfEmails();
-        TempFilters."Earliest Email" := SOASetup."Last Sync At";
         TempFilters."Last Message Only" := true;
+        TempFilters."Folder Id" := SOASetup."Email Folder Id";
+        if TempFilters."Folder Id" = '' then
+            TempFilters."Earliest Email" := SOASetup."Last Sync At"
+        else
+            TempFilters."Earliest Email" := SOASetup."Earliest Sync At";
         TempFilters.Insert();
+
         Email.RetrieveEmails(SOASetup."Email Account ID", SOASetup."Email Connector", EmailInbox, TempFilters);
 
         if not EmailInbox.FindSet() then begin

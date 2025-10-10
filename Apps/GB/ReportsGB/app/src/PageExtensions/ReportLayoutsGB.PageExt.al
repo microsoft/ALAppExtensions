@@ -1,3 +1,4 @@
+#pragma warning disable AS0029
 #if not CLEAN27
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -10,6 +11,9 @@ using Microsoft.Shared.Report;
 pageextension 10580 "Report Layouts GB" extends "Report Layouts"
 {
 
+    ObsoleteTag = '28.0';
+    ObsoleteReason = 'The functionality is enforced.';
+    ObsoleteState = Pending;
     trigger OnOpenPage()
     var
         ReportsGB: Codeunit "Reports GB";
@@ -19,3 +23,4 @@ pageextension 10580 "Report Layouts GB" extends "Report Layouts"
     end;
 }
 #endif
+#pragma warning restore AS0029

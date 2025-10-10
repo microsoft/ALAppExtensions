@@ -894,7 +894,13 @@ report 10582 "Sales - Credit Memo"
         SalesPurchPerson: Record "Salesperson/Purchaser";
         CompanyBankAccount: Record "Bank Account";
         CompanyInfo: Record "Company Information";
+#if not CLEAN25
+#pragma warning disable AL0432
+#endif
         TempVATAmountLine: Record "VAT Amount Line" temporary;
+#if not CLEAN25
+#pragma warning restore  AL0432
+#endif
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
         TempSalesShipmentBuffer: Record "Sales Shipment Buffer" temporary;

@@ -6,7 +6,7 @@ namespace Microsoft.Finance.VAT.Setup;
 
 using System.Security.AccessControl;
 
-permissionsetextension 10582 "D365 INTELLIGENT CLOUD - Reports GB" extends "INTELLIGENT CLOUD"
+permissionsetextension 10592 "D365 INTELLIGENT CLOUD - Reports GB" extends "INTELLIGENT CLOUD"
 {
     IncludedPermissionSets = "Reports GB - Objects";
 }

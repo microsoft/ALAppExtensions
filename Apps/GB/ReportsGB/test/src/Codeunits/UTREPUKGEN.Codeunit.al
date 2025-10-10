@@ -1,3 +1,17 @@
+namespace Microsoft.Sales.Document;
+
+using System.TestLibraries.Utilities;
+using Microsoft.Purchases.Document;
+using Microsoft.Foundation.Company;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Sales.Setup;
+using Microsoft.Purchases.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Finance.Dimension;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Customer;
+using Microsoft.Purchases.History;
+
 codeunit 144016 "UT REP UKGEN"
 {
     // // [FEATURE] [UI] [GB Reports]
@@ -24,7 +38,7 @@ codeunit 144016 "UT REP UKGEN"
 
     Subtype = Test;
     TestPermissions = Disabled;
-
+    TestType = Uncategorized;
     trigger OnRun()
     begin
     end;
@@ -35,7 +49,9 @@ codeunit 144016 "UT REP UKGEN"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         IsInitialized: Boolean;
+#pragma warning disable AA0470
         DimensionFilterCapLbl: Label '%1 %2';
+#pragma warning restore AA0470
         DimensionTextCapLbl: Label 'DimText';
 
     [Test]
@@ -154,7 +170,7 @@ codeunit 144016 "UT REP UKGEN"
     begin
         // [SCENARIO] validate the DimensionLoop1 - OnAfterGetRecord trigger of Report ID: 10579, Blanket Purchase Order GB.
         PurchaseOrderWithDimension(
-          PurchaseHeader."Document Type"::"Blanket Order", REPORT::"Blanket Purchase Order", 'DimText_DimensionLoop1', '%1 - %2');
+          PurchaseHeader."Document Type"::"Blanket Order", REPORT::"Blanket Purch. Order GB", 'DimText_DimensionLoop1', '%1 - %2');
     end;
 
     local procedure PurchaseOrderWithDimension(DocumentType: Enum "Purchase Document Type"; ReportID: Integer; ElementName: Text; ExpectedNode: Text)
@@ -586,13 +602,13 @@ codeunit 144016 "UT REP UKGEN"
 
     [RequestPageHandler]
 
-    procedure BlanketPurchaseOrderGBRequestPageHandler(var PurchaseBlanketOrderGB: TestRequestPage "Blanket Purchase Order")
+    procedure BlanketPurchaseOrderGBRequestPageHandler(var PurchaseBlanketOrderGB: TestRequestPage "Blanket Purch. Order GB")
     var
         No: Variant;
     begin
         LibraryVariableStorage.Dequeue(No);
         PurchaseBlanketOrderGB."Purchase Header".SetFilter("No.", No);
-        PurchaseBlanketOrderGB.ShowInternalInfo.SetValue(true);
+        PurchaseBlanketOrderGB.ShowInternalInformation.SetValue(true);
         PurchaseBlanketOrderGB.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
     end;
 
@@ -622,13 +638,13 @@ codeunit 144016 "UT REP UKGEN"
 
     [RequestPageHandler]
 
-    procedure PurchaseCreditMemoGBRequestPageHandler(var PurchaseCreditMemoGB: TestRequestPage "Purchase - Credit Memo")
+    procedure PurchaseCreditMemoGBRequestPageHandler(var PurchaseCreditMemoGB: TestRequestPage "Purchase Credit Memo")
     var
         No: Variant;
     begin
         LibraryVariableStorage.Dequeue(No);
         PurchaseCreditMemoGB."Purch. Cr. Memo Hdr.".SetFilter("No.", No);
-        PurchaseCreditMemoGB.ShowInternalInfo.SetValue(true);
+        PurchaseCreditMemoGB.ShowInternalInformation.SetValue(true);
         PurchaseCreditMemoGB.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
     end;
 

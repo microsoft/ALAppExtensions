@@ -42,6 +42,7 @@ codeunit 4586 "SOA Dispatcher"
         SOATask: Record "SOA Task";
         SOAEmailSetup: Codeunit "SOA Email Setup";
         CopilotQuota: Codeunit "Copilot Quota";
+        SOASendReplies: Codeunit "SOA Send Replies";
         QuotaCanConsume: Boolean;
         RetrievalSuccess: Boolean;
         ReplySuccess: Boolean;
@@ -77,7 +78,7 @@ codeunit 4586 "SOA Dispatcher"
         if not SOASetupCU.CheckSOASetupStillValid(Setup) then
             exit;
 
-        ReplySuccess := Codeunit.Run(Codeunit::"SOA Send Replies", Setup);
+        ReplySuccess := SOASendReplies.Run(Setup);
         if ReplySuccess then
             FeatureTelemetry.LogUsage('0000NIW', SOASetupCU.GetFeatureName(), TelemetrySendEmailRepliesSuccessLbl, TelemetryDimensions)
         else
@@ -92,11 +93,12 @@ codeunit 4586 "SOA Dispatcher"
         SOAImpl.ScheduleSOAgent(Setup);
         Commit();
 
-        if TaskSuccess then begin
-            if RetrievalSuccess then
-                UpdateLastSync(Setup, LastSync);
-            UpdateTaskSucceeded(SOATask);
-        end;
+
+        if RetrievalSuccess then
+            UpdateLastSync(Setup, LastSync);
+
+        if TaskSuccess then
+            UpdateTaskSucceeded(SOATask, SOASendReplies.GetAllSentSuccessfully());
 
         // Remove processed emails that are outside limit
         SOAEmailSetup.RemoveProcessedEmailsOutsideLast24hrs();
@@ -155,8 +157,9 @@ codeunit 4586 "SOA Dispatcher"
         Commit();
     end;
 
-    local procedure UpdateTaskSucceeded(var SOATask: Record "SOA Task")
+    local procedure UpdateTaskSucceeded(var SOATask: Record "SOA Task"; SendRepliesSuccessful: Boolean)
     begin
+        SOATask."Send Replies Successful" := SendRepliesSuccessful;
         SOATask.Status := SOATask.Status::Succeeded;
         SOATask.Modify();
         Commit();

@@ -94,15 +94,20 @@ codeunit 4591 "SOA Item Search"
     [EventSubscriber(ObjectType::Page, Page::"SOA Multi Items Availability", OnBeforeFindRecord, '', false, false)]
     local procedure FindRecordItemFromMultiItemsAvailability(var Rec: Record Item; Which: Text; var CrossColumnSearchFilter: Text; var Found: Boolean; RequiredQuantity: Decimal; InUOMCode: Code[10]; var IsHandled: Boolean; var MatchingItem: Boolean)
     var
-        SOABilling: Codeunit "SOA Billing";
-        SOABillingTask: Codeunit "SOA Billing Task";
         TelemetryCustomDimension: Dictionary of [Text, Text];
     begin
         FindRecordItem(Rec, Which, CrossColumnSearchFilter, Found, RequiredQuantity, InUOMCode, IsHandled, true, MatchingItem, TelemetryCustomDimension);
+        LogTelemetryForFindItems(TelemetryCustomDimension);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"SOA Multi Items Availability", OnOpenPageEvent, '', false, false)]
+    local procedure LogInventoryInquiryReplied()
+    var
+        SOABilling: Codeunit "SOA Billing";
+        SOABillingTask: Codeunit "SOA Billing Task";
+    begin
         SOABilling.LogInventoryInquiryReplied(AgentTaskID);
         SOABillingTask.ScheduleBillingTask();
-        // Log telemetry
-        LogTelemetryForFindItems(TelemetryCustomDimension);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnAfterCheckItemAvailable, '', false, false)]

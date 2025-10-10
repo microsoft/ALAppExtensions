@@ -10,16 +10,6 @@ using System.Utilities;
 
 codeunit 31325 "User Setup Handler CZL"
 {
-    [EventSubscriber(ObjectType::Table, Database::"User Setup", 'OnAfterDeleteEvent', '', false, false)]
-    local procedure UserSetupLineCZLOnAfterDeleteEvent(var Rec: Record "User Setup")
-    var
-        UserSetupLineCZL: Record "User Setup Line CZL";
-    begin
-        UserSetupLineCZL.Reset();
-        UserSetupLineCZL.SetRange("User ID", Rec."User ID");
-        UserSetupLineCZL.DeleteAll();
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Error Message", 'OnDrillDownSource', '', false, false)]
     local procedure OnErrorMessageDrillDown(ErrorMessage: Record "Error Message"; SourceFieldNo: Integer; var IsHandled: Boolean)
     var

@@ -15,7 +15,6 @@ using Microsoft.Purchases.Vendor;
 
 codeunit 13919 "Import ZUGFeRD Document"
 {
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 
