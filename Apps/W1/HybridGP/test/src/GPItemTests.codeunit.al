@@ -475,8 +475,8 @@ codeunit 139662 "GP Item Tests"
         if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Item) then
             exit;
 
-        GPItemMigrator.OnMigrateItem(ItemDataMigrationFacade, GPItem.RecordId());
-        GPItemMigrator.OnMigrateItemPostingGroups(ItemDataMigrationFacade, GPItem.RecordId(), true);
+        GPItemMigrator.MigrateItemImp(ItemDataMigrationFacade, GPItem.RecordId());
+        GPItemMigrator.MigrateItemPostingGroupsImp(ItemDataMigrationFacade, GPItem.RecordId(), true);
     end;
 
     local procedure CreateStagingTableEntries(var GPItem: Record "GP Item")

@@ -26,9 +26,8 @@ codeunit 4019 "GP Item Migrator"
         CurrentBatchNumber: Integer;
         CurrentBatchLineNo: Integer;
 
-#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
-    internal procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
@@ -37,14 +36,46 @@ codeunit 4019 "GP Item Migrator"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
-    internal procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-    var
-        GPItem: Record "GP Item";
-        ItemNo: Code[20];
+    local procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
 
+        MigrateItemPostingGroupsImp(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
+    local procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    begin
+        if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
+            exit;
+
+        MigrateInventoryTransactionsImp(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+
+    internal procedure MigrateItemImp(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    var
+        GPItem: Record "GP Item";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
+        if not GPItem.Get(RecordIdToMigrate) then
+            exit;
+
+        if not HelperFunctions.ShouldMigrateItem(GPItem.No) then begin
+            DecrementMigratedCount();
+            exit;
+        end;
+
+        MigrateItemDetailsImp(GPItem, Sender);
+    end;
+
+    internal procedure MigrateItemPostingGroupsImp(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
+    var
+        GPItem: Record "GP Item";
+        ItemNo: Code[20];
+    begin
         if not ChartOfAccountsMigrated then
             exit;
 
@@ -63,37 +94,6 @@ codeunit 4019 "GP Item Migrator"
         MigrateItemGeneralPostingGroupImp(GPItem, Sender);
 
         Sender.ModifyItem(true);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
-    internal procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-    begin
-        if not ChartOfAccountsMigrated then
-            exit;
-
-        if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
-            exit;
-
-        MigrateInventoryTransactionsImp(Sender, RecordIdToMigrate);
-    end;
-#pragma warning restore AA0207
-
-    local procedure MigrateItemImp(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
-    var
-        GPItem: Record "GP Item";
-        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
-        HelperFunctions: Codeunit "Helper Functions";
-    begin
-        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
-        if not GPItem.Get(RecordIdToMigrate) then
-            exit;
-
-        if not HelperFunctions.ShouldMigrateItem(GPItem.No) then begin
-            DecrementMigratedCount();
-            exit;
-        end;
-
-        MigrateItemDetailsImp(GPItem, Sender);
     end;
 
     local procedure DecrementMigratedCount()
@@ -130,7 +130,7 @@ codeunit 4019 "GP Item Migrator"
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
-    local procedure MigrateInventoryTransactionsImp(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
+    internal procedure MigrateInventoryTransactionsImp(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         Item: Record Item;
         ItemJnlLine: Record "Item Journal Line";
@@ -142,6 +142,9 @@ codeunit 4019 "GP Item Migrator"
         GPItemTransactionQuery: Query "GP Item Transaction";
         ErrorText: Text;
     begin
+        if not ChartOfAccountsMigrated then
+            exit;
+
         if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
 
@@ -692,32 +695,40 @@ codeunit 4019 "GP Item Migrator"
     internal procedure CreateItemCategories()
     var
         Item: Record Item;
+    begin
+        if not Item.FindSet() then
+            exit;
+
+        repeat
+            CreateItemCategoryImp(Item);
+        until Item.Next() = 0;
+    end;
+
+    internal procedure CreateItemCategoryImp(var Item: Record Item)
+    var
         ItemCategory: Record "Item Category";
         GPIV00101: Record "GP IV00101";
         GPIV40400: Record "GP IV40400";
         ItemClass: Code[20];
     begin
-        if Item.FindSet() then
-            repeat
-                if not GPIV00101.Get(Item."No.") then
-                    exit;
+        if not GPIV00101.Get(Item."No.") then
+            exit;
 
-                ItemClass := CopyStr(GPIV00101.ITMCLSCD.TrimEnd(), 1, MaxStrLen(ItemClass));
-                if ItemClass = '' then
-                    exit;
+        ItemClass := CopyStr(GPIV00101.ITMCLSCD.TrimEnd(), 1, MaxStrLen(ItemClass));
+        if ItemClass = '' then
+            exit;
 
-                if not GPIV40400.Get(ItemClass) then
-                    exit;
+        if not GPIV40400.Get(ItemClass) then
+            exit;
 
-                if not ItemCategory.Get(ItemClass) then begin
-                    ItemCategory.Validate(Code, ItemClass);
-                    ItemCategory.Validate(Description, CopyStr(GPIV40400.ITMCLSDC.TrimEnd(), 1, MaxStrLen(ItemCategory.Description)));
-                    ItemCategory.Insert(true);
-                end;
+        if not ItemCategory.Get(ItemClass) then begin
+            ItemCategory.Validate(Code, ItemClass);
+            ItemCategory.Validate(Description, CopyStr(GPIV40400.ITMCLSDC.TrimEnd(), 1, MaxStrLen(ItemCategory.Description)));
+            ItemCategory.Insert(true);
+        end;
 
-                Item.Validate("Item Category Code", ItemClass);
-                Item.Modify(true);
-            until Item.Next() = 0;
+        Item.Validate("Item Category Code", ItemClass);
+        Item.Modify(true);
     end;
 
     local procedure GetMaxBatchLineCount(): Integer

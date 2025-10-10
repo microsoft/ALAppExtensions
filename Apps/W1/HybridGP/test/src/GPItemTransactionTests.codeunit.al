@@ -276,9 +276,9 @@ codeunit 139665 "GP Item Transaction Tests"
         if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Item) then
             exit;
 
-        GPItemMigrator.OnMigrateItem(ItemDataMigrationFacade, GPItem.RecordId());
-        GPItemMigrator.OnMigrateItemPostingGroups(ItemDataMigrationFacade, GPItem.RecordId(), true);
-        GPItemMigrator.OnMigrateInventoryTransactions(ItemDataMigrationFacade, GPItem.RecordId(), true);
+        GPItemMigrator.MigrateItemImp(ItemDataMigrationFacade, GPItem.RecordId());
+        GPItemMigrator.MigrateItemPostingGroupsImp(ItemDataMigrationFacade, GPItem.RecordId(), true);
+        GPItemMigrator.MigrateInventoryTransactionsImp(ItemDataMigrationFacade, GPItem.RecordId(), true);
     end;
 
     local procedure CreateLocations()
