@@ -129,7 +129,7 @@ codeunit 4022 "GP Vendor Migrator"
                 DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
                 Sender.CreateGeneralJournalLine(
                     CopyStr(VendorBatchNameTxt, 1, 7),
-                    CopyStr(GPVendorTransactions.GLDocNo, 1, 20),
+                    CopyStr(GPVendorTransactions.VCHRNMBR, 1, 20),
                     CopyStr(GPVendor.VENDNAME, 1, 50),
                     GPVendorTransactions.DOCDATE,
                     0D,
@@ -157,7 +157,7 @@ codeunit 4022 "GP Vendor Migrator"
                 DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
                 Sender.CreateGeneralJournalLine(
                     CopyStr(VendorBatchNameTxt, 1, 7),
-                    CopyStr(GPVendorTransactions.GLDocNo, 1, 20),
+                    CopyStr(GPVendorTransactions.VCHRNMBR, 1, 20),
                     CopyStr(GPVendor.VENDNAME, 1, 50),
                     GPVendorTransactions.DOCDATE,
                     0D,
@@ -184,7 +184,7 @@ codeunit 4022 "GP Vendor Migrator"
                 DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
                 Sender.CreateGeneralJournalLine(
                     CopyStr(VendorBatchNameTxt, 1, 7),
-                    CopyStr(GPVendorTransactions.GLDocNo, 1, 20),
+                    CopyStr(GPVendorTransactions.VCHRNMBR, 1, 20),
                     CopyStr(GPVendor.VENDNAME, 1, 50),
                     GPVendorTransactions.DOCDATE,
                     0D,

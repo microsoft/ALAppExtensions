@@ -561,6 +561,13 @@ codeunit 4037 "Helper Functions"
         GPItemMigrator.MigrateKitItems();
     end;
 
+    local procedure CreateItemCategories()
+    var
+        GPItemMigrator: Codeunit "GP Item Migrator";
+    begin
+        GPItemMigrator.CreateItemCategories();
+    end;
+
     procedure CreateSetupRecordsIfNeeded()
     var
         CompanyInformation: Record "Company Information";
@@ -2112,6 +2119,8 @@ codeunit 4037 "Helper Functions"
         if GPCompanyAdditionalSettings.GetMigrateKitItems() then
             CreateKitItems();
 
+        CreateItemCategories();
+
         exit(GPConfiguration.IsAllPostMigrationDataCreated());
     end;
 
@@ -2277,9 +2286,17 @@ codeunit 4037 "Helper Functions"
     internal procedure RunPreMigrationCleanup()
     var
         Dimension: Record Dimension;
+        GeneralPostingSetup: Record "General Posting Setup";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
     begin
         if not Dimension.IsEmpty() then
             Dimension.DeleteAll(true);
+
+        if not GeneralPostingSetup.IsEmpty() then
+            GeneralPostingSetup.DeleteAll(true);
+
+        if not GenProductPostingGroup.IsEmpty() then
+            GenProductPostingGroup.DeleteAll(true);
     end;
 
     internal procedure CreateDimSet(ACTNUMBR_1: Code[20]; ACTNUMBR_2: Code[20]; ACTNUMBR_3: Code[20]; ACTNUMBR_4: Code[20]; ACTNUMBR_5: Code[20]; ACTNUMBR_6: Code[20]; ACTNUMBR_7: Code[20]; ACTNUMBR_8: Code[20]): Integer

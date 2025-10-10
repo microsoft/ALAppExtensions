@@ -424,6 +424,7 @@ codeunit 40108 "GP PO Migrator"
         ItemJournalLine.Validate("Line No.", ItemJnlBatchLineNo);
         ItemJournalLine.Validate(Description, PurchaseLine.Description);
         ItemJournalLine.Validate(Quantity, PurchaseLine."Qty. to Receive");
+        ItemJournalLine.Validate("Gen. Bus. Posting Group", GPCodeTxt);
         ItemJournalLine."Location Code" := PurchaseLine."Location Code";
         ItemJournalLine."Unit Cost" := PurchaseLine."Unit Cost";
         ItemJournalLine.Insert(true);
