@@ -99,6 +99,11 @@ tableextension 11701 "Customer CZL" extends Customer
 #endif
     }
 
+    trigger OnDelete()
+    begin
+        RegistrationLogMgtCZL.DeleteCustomerLog(Rec);
+    end;
+
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
         RegistrationNoMgtCZL: Codeunit "Registration No. Mgt. CZL";

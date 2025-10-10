@@ -29,6 +29,7 @@ codeunit 4398 "SOA Task Message"
     begin
         PreviousAgentTaskMessage.SetRange("Task ID", AgentTaskMessage."Task ID");
         PreviousAgentTaskMessage.SetFilter(SystemCreatedAt, '<%1', AgentTaskMessage.SystemCreatedAt);
+        PreviousAgentTaskMessage.SetFilter(Status, '<>%1', PreviousAgentTaskMessage.Status::Discarded);
         PreviousAgentTaskMessage.ReadIsolation := IsolationLevel::ReadUncommitted;
         PreviousAgentTaskMessage.SetCurrentKey(SystemCreatedAt);
         PreviousAgentTaskMessage.Ascending(false);

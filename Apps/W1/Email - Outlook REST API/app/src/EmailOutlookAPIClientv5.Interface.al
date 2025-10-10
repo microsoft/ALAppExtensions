@@ -1,4 +1,3 @@
-#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,13 +8,23 @@ namespace System.Email;
 /// <summary>
 /// Interface for the Email - Outlook API Client which allows retrieval of emails, replying to emails and marking emails as read.
 /// </summary>
-#pragma warning disable AL0432
-interface "Email - Outlook API Client v4" extends "Email - Outlook API Client v2"
-#pragma warning restore AL0432
+interface "Email - Outlook API Client v5"
 {
-    ObsoleteReason = 'This interface is deprecated. Please use the Email - Outlook API Client v5 interface instead.';
-    ObsoleteState = Pending;
-    ObsoleteTag = '28.0';
+    /// <summary>
+    /// Gets account information from the Outlook API.
+    /// </summary>
+    /// <param name="AccessToken">The access token used for connecting to exchange via graph.</param>
+    /// <param name="Email">The email address of the mailbox.</param>
+    /// <param name="Name">The name of the mailbox owner.</param>
+    /// <returns>True if the account information was retrieved successfully, false otherwise.</returns>
+    procedure GetAccountInformation(AccessToken: SecretText; var Email: Text[250]; var Name: Text[250]): Boolean;
+
+    /// <summary>
+    /// Sends an email via the Outlook API.
+    /// </summary>
+    /// <param name="AccessToken">The access token used for connecting to exchange via graph.</param>
+    /// <param name="MessageJson">The JSON object containing the email message to be sent.</param>
+    procedure SendEmail(AccessToken: SecretText; MessageJson: JsonObject);
 
     /// <summary>
     /// Retrieves the emails from the Outlook API.
@@ -60,5 +69,21 @@ interface "Email - Outlook API Client v4" extends "Email - Outlook API Client v2
     /// <param name="EmailAddress">The email address of the mailbox.</param>
     /// <param name="ExternalMessageId">The external message id to be marked as read.</param>
     procedure MarkEmailAsRead(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text);
+
+    /// <summary>
+    /// Gets mailbox folders from the Outlook API.
+    /// </summary>
+    /// <param name="AccessToken">The access token used for connecting to exchange via graph.</param>
+    /// <param name="OutlookAccount">The email account to retrieve mailbox folders from.</param>
+    /// <returns>The JSON array containing the information of the mailbox folders.</returns>
+    procedure GetMailboxFolders(AccessToken: SecretText; OutlookAccount: Record "Email - Outlook Account"): JsonArray;
+
+    /// <summary>
+    /// Gets child mailbox folders from the Outlook API.
+    /// </summary>
+    /// <param name="AccessToken">The access token used for connecting to exchange via graph.</param>
+    /// <param name="OutlookAccount">The email account to retrieve child mailbox folders from.</param>
+    /// <param name="ParentFolderId">The ID of the parent folder to retrieve child folders for.</param>
+    /// <returns>The JSON array containing the information of the child mailbox folders.</returns>
+    procedure GetChildMailboxFolders(AccessToken: SecretText; OutlookAccount: Record "Email - Outlook Account"; ParentFolderId: Text): JsonArray;
 }
-#endif

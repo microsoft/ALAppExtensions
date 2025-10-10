@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -15,6 +16,9 @@ codeunit 27060 "Create CA Inv. Posting Setup"
     EventSubscriberInstance = Manual;
     InherentEntitlements = X;
     InherentPermissions = X;
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+    ObsoleteReason = 'Unused codeunit';
 
     trigger OnRun()
     var
@@ -84,3 +88,4 @@ codeunit 27060 "Create CA Inv. Posting Setup"
     var
         BlankLocationLbl: Label '', MaxLength = 20;
 }
+#endif

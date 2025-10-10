@@ -268,10 +268,10 @@ report 10601 "Blanket Purch. Order GB"
                         column(Quantity_PurchaseLine; "Purchase Line".Quantity)
                         {
                         }
-                        column(UnitofMeasure_PurchLine; "Purchase Line"."Unit of Measure")
+                        column(UnitofMeasure_TempPurchLine; "Purchase Line"."Unit of Measure")
                         {
                         }
-                        column(ExpectedRcptDate_PurchLine; Format("Purchase Line"."Expected Receipt Date"))
+                        column(ExpectedRcptDate_TempPurchLine; Format("Purchase Line"."Expected Receipt Date"))
                         {
                         }
                         column(ShowInternalInfo; ShowInternalInfo)
@@ -298,7 +298,7 @@ report 10601 "Blanket Purch. Order GB"
                         column(Quantity_PurchaseLineCaption; "Purchase Line".FieldCaption(Quantity))
                         {
                         }
-                        column(UnitofMeasure_PurchLineCaption; "Purchase Line".FieldCaption("Unit of Measure"))
+                        column(UnitofMeasure_TempPurchLineCaption; "Purchase Line".FieldCaption("Unit of Measure"))
                         {
                         }
                         dataitem(DimensionLoop2; "Integer")
@@ -353,10 +353,10 @@ report 10601 "Blanket Purch. Order GB"
                         trigger OnAfterGetRecord()
                         begin
                             if Number = 1 then
-                                PurchLine.Find('-')
+                                TempPurchLine.Find('-')
                             else
-                                PurchLine.Next();
-                            "Purchase Line" := PurchLine;
+                                TempPurchLine.Next();
+                            "Purchase Line" := TempPurchLine;
 
                             DimSetEntry2.SetRange("Dimension Set ID", "Purchase Line"."Dimension Set ID");
 
@@ -365,21 +365,21 @@ report 10601 "Blanket Purch. Order GB"
 
                         trigger OnPostDataItem()
                         begin
-                            PurchLine.DeleteAll();
+                            TempPurchLine.DeleteAll();
                         end;
 
                         trigger OnPreDataItem()
                         begin
-                            MoreLines := PurchLine.Find('+');
-                            while MoreLines and (PurchLine.Description = '') and (PurchLine."Description 2" = '') and
-                                  (PurchLine."No." = '') and (PurchLine.Quantity = 0) and
-                                  (PurchLine.Amount = 0)
+                            MoreLines := TempPurchLine.Find('+');
+                            while MoreLines and (TempPurchLine.Description = '') and (TempPurchLine."Description 2" = '') and
+                                  (TempPurchLine."No." = '') and (TempPurchLine.Quantity = 0) and
+                                  (TempPurchLine.Amount = 0)
                             do
-                                MoreLines := PurchLine.Next(-1) <> 0;
+                                MoreLines := TempPurchLine.Next(-1) <> 0;
                             if not MoreLines then
                                 CurrReport.Break();
-                            PurchLine.SetRange("Line No.", 0, PurchLine."Line No.");
-                            SetRange(Number, 1, PurchLine.Count);
+                            TempPurchLine.SetRange("Line No.", 0, TempPurchLine."Line No.");
+                            SetRange(Number, 1, TempPurchLine.Count);
                         end;
                     }
                     dataitem(Total; "Integer")
@@ -447,10 +447,10 @@ report 10601 "Blanket Purch. Order GB"
 
                 trigger OnAfterGetRecord()
                 begin
-                    Clear(PurchLine);
+                    Clear(TempPurchLine);
                     Clear(PurchPost);
-                    PurchLine.DeleteAll();
-                    PurchPost.GetPurchLines("Purchase Header", PurchLine, 0);
+                    TempPurchLine.DeleteAll();
+                    PurchPost.GetPurchLines("Purchase Header", TempPurchLine, 0);
 
                     if Number > 1 then begin
                         CopyText := Text001Txt;
@@ -466,7 +466,7 @@ report 10601 "Blanket Purch. Order GB"
 
                 trigger OnPreDataItem()
                 begin
-                    NoOfLoops := Abs(NoOfCopies) + 1;
+                    NoOfLoops := Abs(NumberOfCopies) + 1;
                     CopyText := '';
                     SetRange(Number, 1, NoOfLoops);
                     OutputNo := 1;
@@ -524,7 +524,7 @@ report 10601 "Blanket Purch. Order GB"
 
                 FormatAddr.PurchHeaderShipTo(ShipToAddr, "Purchase Header");
 
-                if LogInteraction then
+                if LogInteractionOption then
                     if not CurrReport.Preview then
                         SegManagement.LogDocument(
                           12, "No.", 0, 0, DATABASE::Vendor, "Pay-to Vendor No.", "Purchaser Code", '', "Posting Description", '');
@@ -543,7 +543,7 @@ report 10601 "Blanket Purch. Order GB"
                 group(Options)
                 {
                     Caption = 'Options';
-                    field(NoOfCopies; NoOfCopies)
+                    field(NoOfCopies; NumberOfCopies)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'No. of Copies';
@@ -555,7 +555,7 @@ report 10601 "Blanket Purch. Order GB"
                         Caption = 'Show Internal Information';
                         ToolTip = 'Specifies if you want the printed report to show information that is only for internal use';
                     }
-                    field(LogInteraction; LogInteraction)
+                    field(LogInteraction; LogInteractionOption)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Log Interaction';
@@ -577,8 +577,8 @@ report 10601 "Blanket Purch. Order GB"
 
         trigger OnOpenPage()
         begin
-            LogInteraction := SegManagement.FindInteractionTemplateCode("Interaction Log Entry Document Type"::"Purch. Blnkt. Ord.") <> '';
-            LogInteractionEnable := LogInteraction;
+            LogInteractionOption := SegManagement.FindInteractionTemplateCode("Interaction Log Entry Document Type"::"Purch. Blnkt. Ord.") <> '';
+            LogInteractionEnable := LogInteractionOption;
         end;
     }
 
@@ -590,7 +590,7 @@ report 10601 "Blanket Purch. Order GB"
         ShipmentMethod: Record "Shipment Method";
         SalesPurchPerson: Record "Salesperson/Purchaser";
         CompanyInfo: Record "Company Information";
-        PurchLine: Record "Purchase Line" temporary;
+        TempPurchLine: Record "Purchase Line" temporary;
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
         RespCenter: Record "Responsibility Center";
@@ -606,19 +606,21 @@ report 10601 "Blanket Purch. Order GB"
         ReferenceText: Text;
         PaymentDiscountText: Text;
         MoreLines: Boolean;
-        NoOfCopies: Integer;
+        NumberOfCopies: Integer;
         NoOfLoops: Integer;
         CopyText: Text;
         DimText: Text;
         OldDimText: Text;
         ShowInternalInfo: Boolean;
         Continue: Boolean;
+#pragma warning disable AA0470
         Text1040002Txt: Label '%1 %, VAT discounted at %2 % ';
         Text000Txt: Label 'Purchaser';
         Text001Txt: Label ' COPY';
         Text002Lbl: Label 'Blanket Purchase Order%1';
         Text003Lbl: Label 'Page %1';
-        LogInteraction: Boolean;
+#pragma warning restore AA0470
+        LogInteractionOption: Boolean;
         OutputNo: Integer;
         TypeNo_PurchaseLine: Integer;
         LogInteractionEnable: Boolean;

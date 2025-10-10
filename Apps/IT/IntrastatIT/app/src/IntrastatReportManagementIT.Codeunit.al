@@ -384,6 +384,13 @@ codeunit 148121 "Intrastat Report Management IT"
         IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeInsertFALedgerLine', '', true, true)]
+    local procedure OnBeforeInsertFALedgerLine(var IntrastatReportLine: Record "Intrastat Report Line"; FALedgerEntry: Record "FA Ledger Entry"; var IsHandled: Boolean)
+    begin
+        if IntrastatReportLine."Source Entry No." = 0 then
+            IntrastatReportLine."Source Entry No." := FALedgerEntry."Entry No.";
+    end;
+
     local procedure CalculateTotals(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry"; StartDate: Date; EndDate: Date; AddCurrencyFactor: Decimal; var CurrReportSkip: Boolean; AmountInclItemCharges: Boolean)
     var
         PurchInvHeader: Record "Purch. Inv. Header";

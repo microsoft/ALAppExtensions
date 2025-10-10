@@ -23,11 +23,13 @@ codeunit 4399 "SOA Annotation"
         AnnotationProcessingLimitReachedCodeLbl: Label 'DAILYLIMITREACHED', Locked = true, MaxLength = 20;
         AnnotationAccessTokenCodeLbl: Label '1251', Locked = true;
         AnnotationAgentTaskFailureCodeLbl: Label '1252', Locked = true;
+        AnnotationAgentTaskSendRepliesFailureCodeLbl: Label 'SENDREPLYFAIL', MaxLength = 20, Locked = true;
         AnnotationTooManyEntriesCodeLbl: Label '1253', Locked = true;
         AnnotationIrrelevantCodeLbl: Label '1254', Locked = true;
         AnnotationAccessTokenLbl: Label 'The agent can''t currently access the selected mailbox because the mailbox access token is missing. Please reactivate the agent after signing in to Business Central again.';
         AnnotationProcessingLimitReachedLbl: Label 'You have reached today''s limit of %1 tasks. You can update this limit in the agent settings or return tomorrow to continue.', Comment = '%1 = Process Limit';
         AnnotationAgentTaskFailureLbl: Label 'The agent can''t currently access the selected mailbox.';
+        AnnotationAgentTaskSendRepliesFailureLbl: Label 'The agent can''t currently send email replies from the selected mailbox. Please ensure the mailbox has the proper ''send as'' permissions in the Exchange admin portal.';
         AnnotationIrrelevantLbl: Label 'All or parts of this message may not be relevant for %1', Comment = '%1 = Agent Name';
 
     internal procedure GetAgentAnnotations(AgentUserId: Guid; var Annotations: Record "Agent Annotation")
@@ -51,7 +53,10 @@ codeunit 4399 "SOA Annotation"
             AddAccessTokenAnnotation(Annotations)
         else
             if ShouldAddAgentTaskFailureAnnotation() then
-                AddAgentTaskFailureAnnotation(Annotations);
+                AddAgentTaskFailureAnnotation(Annotations)
+            else
+                if ShouldAddAgentTaskSendRepliesFailureAnnotation() then
+                    AddAgentTaskSendRepliesFailureAnnotation(Annotations);
 
         if SOABilling.TooManyUnpaidEntries() then
             AddUnpaidEntriesAnnotation(Annotations);
@@ -116,8 +121,8 @@ codeunit 4399 "SOA Annotation"
     local procedure ShouldAddAgentTaskFailureAnnotation(): Boolean
     var
         SOATask: Record "SOA Task";
-        Failures: Integer;
         Counter: Integer;
+        Failures: Integer;
     begin
 #pragma warning disable AA0233
         if SOATask.FindLast() then;
@@ -129,9 +134,6 @@ codeunit 4399 "SOA Annotation"
 #pragma warning disable AA0181
         until (SOATask.Next(-1) = 0) or (Counter >= GetFailedTaskLimit());
 #pragma warning restore AA0181
-
-        if Counter < GetFailedTaskLimit() then
-            exit(false);
 
         exit(Failures >= GetFailedTaskLimit());
     end;
@@ -148,6 +150,40 @@ codeunit 4399 "SOA Annotation"
             FeatureTelemetry.LogUsage('0000PQ8', SOASetupCU.GetFeatureName(), 'Agent task failure detected.', TelemetryDimensions)
         else
             FeatureTelemetry.LogError('0000PQ9', SOASetupCU.GetFeatureName(), 'Agent task failure detected.', 'Failed to insert annotation for agent task failure.', GetLastErrorCallStack(), TelemetryDimensions);
+    end;
+
+    local procedure ShouldAddAgentTaskSendRepliesFailureAnnotation(): Boolean
+    var
+        SOATask: Record "SOA Task";
+        Counter: Integer;
+        Failures: Integer;
+    begin
+#pragma warning disable AA0233
+        if SOATask.FindLast() then;
+#pragma warning restore AA0233
+        repeat
+            Counter += 1;
+            if (SOATask.Status = SOATask.Status::Succeeded) and not SOATask."Send Replies Successful" then
+                Failures += 1;
+#pragma warning disable AA0181
+        until (SOATask.Next(-1) = 0) or (Counter >= GetFailedTaskLimit());
+#pragma warning restore AA0181
+
+        exit(Failures >= GetFailedTaskLimit());
+    end;
+
+    local procedure AddAgentTaskSendRepliesFailureAnnotation(var Annotations: Record "Agent Annotation")
+    var
+        TelemetryDimensions: Dictionary of [Text, Text];
+    begin
+        Clear(Annotations);
+        Annotations.Code := AnnotationAgentTaskSendRepliesFailureCodeLbl;
+        Annotations.Message := AnnotationAgentTaskSendRepliesFailureLbl;
+        Annotations.Severity := Annotations.Severity::Warning;
+        if Annotations.Insert() then
+            FeatureTelemetry.LogUsage('0000QG5', SOASetupCU.GetFeatureName(), 'Agent send replies failure detected.', TelemetryDimensions)
+        else
+            FeatureTelemetry.LogError('0000QG4', SOASetupCU.GetFeatureName(), 'Agent send replies failure detected.', 'Failed to insert annotation for agent send replies failure.', GetLastErrorCallStack(), TelemetryDimensions);
     end;
 
     local procedure AddUnpaidEntriesAnnotation(var Annotations: Record "Agent Annotation")

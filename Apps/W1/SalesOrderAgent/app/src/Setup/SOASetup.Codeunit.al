@@ -143,6 +143,8 @@ codeunit 4400 "SOA Setup"
                 SOASetup."Email Account ID" := TempSOASetup."Email Account ID";
                 SOASetup."Email Connector" := TempSOASetup."Email Connector";
                 SOASetup."Email Address" := TempSOASetup."Email Address";
+                SOASetup."Email Folder" := TempSOASetup."Email Folder";
+                SOASetup."Email Folder Id" := TempSOASetup."Email Folder Id";
             end;
             SOASetup."Analyze Attachments" := TempSOASetup."Analyze Attachments";
             SOASetup."Activated At" := TempSOASetup."Activated At";

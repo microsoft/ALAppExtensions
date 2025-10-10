@@ -4,10 +4,19 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Journal;
 
+using Microsoft.Finance.ReceivablesPayables;
+
 pageextension 11725 "Recurring General Journal CZL" extends "Recurring General Journal"
 {
     layout
     {
+        modify("Account Type")
+        {
+            trigger OnAfterValidate()
+            begin
+                EnableApplyEntriesAction();
+            end;
+        }
         moveafter("Document No."; "External Document No.")
         addafter("Posting Date")
         {
@@ -81,5 +90,56 @@ pageextension 11725 "Recurring General Journal CZL" extends "Recurring General J
                 end;
             }
         }
+        addafter("P&osting")
+        {
+            group(Application)
+            {
+                Caption = 'Application';
+                action("Apply Entries")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Apply Entries';
+                    Ellipsis = true;
+                    Enabled = ApplyEntriesActionEnabled;
+                    Image = ApplyEntries;
+                    RunObject = Codeunit "Gen. Jnl.-Apply";
+                    ShortCutKey = 'Shift+F11';
+                    ToolTip = 'Apply the payment amount on a journal line to a sales or purchase document that was already posted for a customer or vendor. This updates the amount on the posted document, and the document can either be partially paid, or closed as paid or refunded.';
+                }
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref("Apply Entries_Promoted CZL"; "Apply Entries")
+            {
+            }
+        }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        EnableApplyEntriesAction();
+    end;
+
+    trigger OnNewRecord(BelowxRec: Boolean)
+    begin
+        EnableApplyEntriesAction();
+    end;
+
+    var
+        ApplyEntriesActionEnabled: Boolean;
+
+    local procedure EnableApplyEntriesAction()
+    begin
+        ApplyEntriesActionEnabled :=
+          (Rec."Account Type" in [Rec."Account Type"::Customer, Rec."Account Type"::Vendor, Rec."Account Type"::Employee]) or
+          (Rec."Bal. Account Type" in [Rec."Bal. Account Type"::Customer, Rec."Bal. Account Type"::Vendor, Rec."Bal. Account Type"::Employee]);
+
+        OnAfterEnableApplyEntriesAction(Rec, ApplyEntriesActionEnabled);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterEnableApplyEntriesAction(GenJournalLine: Record "Gen. Journal Line"; var ApplyEntriesActionEnabled: Boolean)
+    begin
+    end;
 }

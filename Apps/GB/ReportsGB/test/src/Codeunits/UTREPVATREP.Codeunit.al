@@ -8,6 +8,7 @@ codeunit 144017 "UT REP VATREP"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    TestType = IntegrationTest;
 
     trigger OnRun()
     begin

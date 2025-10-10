@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -15,6 +16,9 @@ codeunit 17119 "Create AU Inv Posting Setup"
     EventSubscriberInstance = Manual;
     InherentEntitlements = X;
     InherentPermissions = X;
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+    ObsoleteReason = 'This codeunit is no longer needed.';
 
     trigger OnRun()
     var
@@ -107,3 +111,4 @@ codeunit 17119 "Create AU Inv Posting Setup"
     var
         BlankLocationLbl: Label '', MaxLength = 10;
 }
+#endif
