@@ -36,10 +36,10 @@ codeunit 5425 "Create Financial Report"
         ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
         AccountScheduleName: Codeunit "Create Acc. Schedule Name";
     begin
-        ContosoAccountSchedule.InsertFinancialReport(DataForCashCycleChart(), DataForCashCycleChartLbl, AccountScheduleName.CashCycle(), ColumnLayoutName.PeriodsDefinition());
-        ContosoAccountSchedule.InsertFinancialReport(DataForCashFlowChart(), DataForCashFlowChartLbl, AccountScheduleName.CashFlow(), ColumnLayoutName.PeriodsDefinition());
-        ContosoAccountSchedule.InsertFinancialReport(DataForIncomeExpenseChart(), DataForIncomeExpenseChartLbl, AccountScheduleName.IncomeExpense(), ColumnLayoutName.PeriodsDefinition());
-        ContosoAccountSchedule.InsertFinancialReport(DataForReducedTrialBalanceInfoPart(), DataForReducedTrialBalanceInfoPartLbl, AccountScheduleName.ReducedTrialBalance(), ColumnLayoutName.PeriodsDefinition());
+        ContosoAccountSchedule.InsertFinancialReport(DataForCashCycleChart(), DataForCashCycleChartLbl, AccountScheduleName.CashCycle(), ColumnLayoutName.PeriodsDefinition(), CashCycleInternalDescriptionLbl);
+        ContosoAccountSchedule.InsertFinancialReport(DataForCashFlowChart(), DataForCashFlowChartLbl, AccountScheduleName.CashFlow(), ColumnLayoutName.PeriodsDefinition(), CashFlowInternalDescriptionLbl);
+        ContosoAccountSchedule.InsertFinancialReport(DataForIncomeExpenseChart(), DataForIncomeExpenseChartLbl, AccountScheduleName.IncomeExpense(), ColumnLayoutName.PeriodsDefinition(), IncExpInternalDescriptionLbl);
+        ContosoAccountSchedule.InsertFinancialReport(DataForReducedTrialBalanceInfoPart(), DataForReducedTrialBalanceInfoPartLbl, AccountScheduleName.ReducedTrialBalance(), ColumnLayoutName.PeriodsDefinition(), ReducedTrialBalInternalDescriptionLbl);
     end;
 
     procedure AccountCategoriesOverview(): Code[10]
@@ -134,4 +134,8 @@ codeunit 5425 "Create Financial Report"
         IncomeStatementDetailedLbl: Label 'Income Statement Detailed', MaxLength = 80;
         IncomeStatementSummarizedLbl: Label 'Income Statement Summarized', MaxLength = 80;
         TrialBalanceLbl: Label 'Trial Balance', MaxLength = 80;
+        CashCycleInternalDescriptionLbl: Label 'Internal report used for providing data for the Cash Cycle Chart.', MaxLength = 250;
+        CashFlowInternalDescriptionLbl: Label 'Internal report used for providing data for the Cash Flow Chart.', MaxLength = 250;
+        IncExpInternalDescriptionLbl: Label 'Internal report used for providing data for the Income & Expsense Chart.', MaxLength = 250;
+        ReducedTrialBalInternalDescriptionLbl: Label 'Internal report used for providing data for the Reduced Trial Balance Info Part.', MaxLength = 250;
 }
