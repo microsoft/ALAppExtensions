@@ -282,7 +282,7 @@ codeunit 5692 "Create Extended Sales Document"
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AtlantaWhiteboardBase(), 10);
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AthensMobilePedestal(), 10);
 
-        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.EUAlpineSkiHouse(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19030513D), ContosoUtilities.AdjustDate(19030513D), CreatePaymentTerms.PaymentTermsM8D(), '', ContosoUtilities.AdjustDate(19030513D), '', CreateShippingData.UPS(), ContosoUtilities.AdjustDate(19030514D), CreateShippingData.OverNight(), '', CreateSalespersonPurchaser.LinaTownsend());
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.EUAlpineSkiHouse(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19030513D), ContosoUtilities.AdjustDate(19030513D), CreatePaymentTerms.PaymentTermsM8D(), '', ContosoUtilities.AdjustDate(19030513D), '', CreateShippingData.DHL(), ContosoUtilities.AdjustDate(19030514D), CreateShippingData.Standard(), '', CreateSalespersonPurchaser.LinaTownsend());
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AmsterdamLamp(), 16);
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.BerlingGuestChairYellow(), 20);
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.TokyoGuestChairBlue(), 7);
