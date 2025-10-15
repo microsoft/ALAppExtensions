@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.Sales.Customer;
 using Microsoft.Foundation.Company;
 using Microsoft.eServices.EDocument;
+using Microsoft.Service.History;
 
 codeunit 13914 "XRechnung Format" implements "E-Document"
 {
@@ -85,6 +86,14 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
             exit;
 
         if not EDocumentService."Buyer Reference Mandatory" then
+            exit;
+
+        if not (SourceDocumentHeader.Number in
+            [Database::"Sales Invoice Header",
+            Database::"Sales Cr.Memo Header",
+            Database::"Service Invoice Header",
+            Database::"Service Cr.Memo Header"])
+        then
             exit;
 
         case EDocumentService."Buyer Reference" of
