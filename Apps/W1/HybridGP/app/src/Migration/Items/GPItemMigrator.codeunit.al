@@ -751,7 +751,7 @@ codeunit 4019 "GP Item Migrator"
     local procedure OnBeforeGetMaxItemBatchLineCount(var IsHandled: Boolean; var NewMaxLineCount: Integer)
     begin
     end;
-
+#if not CLEAN28
     [Obsolete('Should not call this procedure directly.', '28.0')]
     procedure MigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
     begin
@@ -781,4 +781,5 @@ codeunit 4019 "GP Item Migrator"
     procedure MigrateItemClassesIfNeeded(var GPItem: Record "GP Item"; var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     begin
     end;
+#endif
 }
