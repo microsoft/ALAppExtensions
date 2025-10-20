@@ -237,6 +237,12 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
         IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Validation", 'OnAfterCheckSalesDocument', '', false, false)]
+    local procedure OnAfterCheckSalesDocument(SalesHeader: Record "Sales Header")
+    begin
+        SalesHeader.TestField("Sell-to E-Mail");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", 'OnAfterGetBuyerReference', '', false, false)]
     local procedure SetReferenceOnAfterGetBuyerReference(SalesHeader: Record "Sales Header"; var BuyerReference: Text)
     begin

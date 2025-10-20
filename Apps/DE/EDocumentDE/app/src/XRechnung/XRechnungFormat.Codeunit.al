@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.Sales.Customer;
 using Microsoft.Foundation.Company;
 using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.IO.Peppol;
 
 codeunit 13914 "XRechnung Format" implements "E-Document"
 {
@@ -18,12 +19,14 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
     InherentPermissions = X;
 
     var
+        EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";
         EDocImportXRechnung: Codeunit "Import XRechnung Document";
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
         CheckCompanyInfoMandatory();
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
     end;
 
     procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
