@@ -598,12 +598,32 @@ codeunit 4019 "GP Item Migrator"
             if CanAddGenProductPostingAccount(GPPostingAccounts.SalesInvDiscAccountIdx, AccountNumber, '') then
                 GeneralPostingSetup.Validate("Sales Inv. Disc. Account", AccountNumber);
 
-            if CanAddGenProductPostingAccount(GPPostingAccounts.SalesPmtDiscDebitAccountIdx, AccountNumber, '') then
+            if CanAddGenProductPostingAccount(GPPostingAccounts.SalesPmtDiscDebitAccountIdx, AccountNumber, '') then begin
+                EnsureGLSetupAdjustforPaymentDiscTrue();
                 GeneralPostingSetup.Validate("Sales Pmt. Disc. Debit Acc.", AccountNumber);
+            end;
 
-            if CanAddGenProductPostingAccount(GPPostingAccounts.PurchPmtDiscDebitAccIdx, AccountNumber, '') then
+            if CanAddGenProductPostingAccount(GPPostingAccounts.PurchPmtDiscDebitAccIdx, AccountNumber, '') then begin
+                EnsureGLSetupAdjustforPaymentDiscTrue();
                 GeneralPostingSetup.Validate("Purch. Pmt. Disc. Debit Acc.", AccountNumber);
+            end;
         end;
+    end;
+
+    local procedure EnsureGLSetupAdjustforPaymentDiscTrue()
+    var
+        GLSetup: Record "General Ledger Setup";
+    begin
+        if not GLSetup.Get() then
+            exit;
+
+        if GLSetup."Adjust for Payment Disc." then
+            exit;
+
+        GLSetup.Validate("VAT Tolerance %", 0);
+        GLSetup.Validate("Pmt. Disc. Excl. VAT", false);
+        GLSetup.Validate("Adjust for Payment Disc.", true);
+        GLSetup.Modify(true);
     end;
 
     local procedure CanAddGenProductPostingAccount(GPAccountIdx: Integer; var AccountNumber: Code[20]; DefaultAccountNo: Code[20]): Boolean
