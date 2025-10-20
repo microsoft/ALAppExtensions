@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
+using System.Utilities;
 using Microsoft.Sales.History;
 using System.IO;
 reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
@@ -22,9 +23,10 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
     [NonDebuggable]
     local procedure OnRenderingCompleteJson(var RenderingPayload: JsonObject)
     var
+        TempBlob: Codeunit "Temp Blob";
+        XmlInStream: InStream;
         UserCode: SecretText;
         AdminCode: SecretText;
-        FileName: Text;
         Name: Text;
         MimeType: Text;
         Description: Text;
@@ -36,29 +38,25 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
         if not CreateZUGFeRDXML then
             exit;
         Name := 'factur-x.xml';
-        FileName := CreateXmlFile(Name);
+        CreateXmlFile(TempBlob);
         DataType := "PDF Attach. Data Relationship"::Alternative;
         MimeType := 'text/xml';
         Description := 'This is the e-invoicing xml document';
 
-        PDFDocument.AddAttachment(Name, DataType, MimeType, FileName, Description, true);
+        TempBlob.CreateInStream(XmlInStream, TextEncoding::UTF8);
+        PDFDocument.AddAttachment(Name, DataType, MimeType, XmlInStream, Description, true);
 
         RenderingPayload := PDFDocument.ToJson(RenderingPayload);
         PDFDocument.ProtectDocument(UserCode, AdminCode);
     end;
 
-    local procedure CreateXmlFile(Filename: Text) FilePath: Text
+    local procedure CreateXmlFile(var TempBlob: Codeunit "Temp Blob")
     var
         ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
-        FileObject: File;
         OutStream: OutStream;
     begin
-        FilePath := System.TemporaryPath() + Filename;
-        FileObject.TextMode := true;
-        FileObject.Create(FilePath, TextEncoding::UTF8);
-        FileObject.CreateOutStream(OutStream);
+        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         ExportZUGFeRDDocument.CreateXML(Header, OutStream);
-        FileObject.Close();
     end;
 
     [IntegrationEvent(false, false)]
