@@ -16,7 +16,6 @@ codeunit 4019 "GP Item Migrator"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DefaultPostingGroupCodeTxt: Label 'GP', Locked = true;
         DefaultPostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
-        GenBusPostingGroupCodeTxt: Label 'GP', Locked = true;
         InventoryAccountTok: Label 'InventoryAccount', Locked = true;
         ItemTypeOption: Option Inventory,Service;
         CostingMethodOption: Option FIFO,LIFO,Specific,Average,Standard;
@@ -532,12 +531,10 @@ codeunit 4019 "GP Item Migrator"
     local procedure CreateGenProductPostingGroup(var GPItem: Record "GP Item"; var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     var
         GenProductPostingGroup: Record "Gen. Product Posting Group";
-        GeneralPostingSetup: Record "General Posting Setup";
         GPIV00101: Record "GP IV00101";
         GPIV40400: Record "GP IV40400";
         PostingGroupCode: Code[20];
         PostingGroupDescription: Text[50];
-        AccountNumber: Code[20];
     begin
         if not GPCompanyAdditionalSettings.GetMigrateItemClasses() then
             exit;
@@ -549,15 +546,26 @@ codeunit 4019 "GP Item Migrator"
         if PostingGroupCode = '' then
             exit;
 
-        if GenProductPostingGroup.Get(PostingGroupCode) then
-            exit;
-
         if not GPIV40400.Get(PostingGroupCode) then
             exit;
 
         PostingGroupDescription := CopyStr(GPIV40400.ITMCLSDC.TrimEnd(), 1, MaxStrLen(PostingGroupDescription));
-        if ItemDataMigrationFacade.CreateGeneralProductPostingSetupIfNeeded(PostingGroupCode, PostingGroupDescription, GenBusPostingGroupCodeTxt) then
-            if GeneralPostingSetup.Get(GenBusPostingGroupCodeTxt, PostingGroupCode) then begin
+
+        if GenProductPostingGroup.Get(PostingGroupCode) then
+            exit;
+
+        // Create two versions of the General Posting Setup. One with GP as the Gen. Bus. Posting Group and the other as blank
+        CreateGeneralPostingSetup(ItemDataMigrationFacade, GPIV40400, PostingGroupCode, PostingGroupDescription, '');
+        CreateGeneralPostingSetup(ItemDataMigrationFacade, GPIV40400, PostingGroupCode, PostingGroupDescription, 'GP');
+    end;
+
+    local procedure CreateGeneralPostingSetup(var ItemDataMigrationFacade: Codeunit "Item Data Migration Facade"; var GPIV40400: Record "GP IV40400"; PostingGroupCode: Code[20]; GeneralProdPostingGroupDescription: Text[50]; GeneralBusPostingGroupCode: Code[20])
+    var
+        GeneralPostingSetup: Record "General Posting Setup";
+        AccountNumber: Code[20];
+    begin
+        if ItemDataMigrationFacade.CreateGeneralProductPostingSetupIfNeeded(PostingGroupCode, GeneralProdPostingGroupDescription, GeneralBusPostingGroupCode) then
+            if GeneralPostingSetup.Get(GeneralBusPostingGroupCode, PostingGroupCode) then begin
                 if CanAddGenProductPostingAccount(GPIV40400.IVSLSIDX, AccountNumber, '') then
                     GeneralPostingSetup.Validate("Sales Account", AccountNumber);
 
