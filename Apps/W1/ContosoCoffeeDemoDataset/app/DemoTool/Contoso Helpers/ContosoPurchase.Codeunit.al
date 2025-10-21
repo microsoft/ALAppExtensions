@@ -191,4 +191,14 @@ codeunit 4781 "Contoso Purchase"
         PurchasesPayablesSetup.Validate("Price List Nos.", PriceListNos);
         PurchasesPayablesSetup.Modify(true);
     end;
+
+    procedure InsertReturnReason(ReturnReasonCode: Code[10]; ReturnReasonDescription: Text[50])
+    var
+        ReturnReason: Record "Return Reason";
+    begin
+        ReturnReason.Init();
+        ReturnReason.Validate(Code, ReturnReasonCode);
+        ReturnReason.Validate(Description, ReturnReasonDescription);
+        ReturnReason.Insert(true);
+    end;
 }
