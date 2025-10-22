@@ -20,13 +20,16 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
 
     var
         EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";
+        EDocPEPPOLValidationDE: Codeunit "EDoc PEPPOL Validation DE";
         EDocImportXRechnung: Codeunit "Import XRechnung Document";
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
         CheckCompanyInfoMandatory();
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
+        UnbindSubscription(EDocPEPPOLValidationDE);
     end;
 
     procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
