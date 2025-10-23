@@ -199,6 +199,8 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [GIVEN] Create and Post Sales Invoice without Payment Terms.
         SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLine("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+        SalesHeader."Payment Terms Code" := '';
+        SalesHeader.Modify();
         SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
 
         // [WHEN] Export ZUGFeRD Electronic Document.
@@ -478,6 +480,8 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [GIVEN] Create and Post Credit Memo without Payment Terms.
         SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLine("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+        SalesHeader."Payment Terms Code" := '';
+        SalesHeader.Modify();
         SalesCrMemoHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
 
         // [WHEN] Export ZUGFeRD Electronic Document.
