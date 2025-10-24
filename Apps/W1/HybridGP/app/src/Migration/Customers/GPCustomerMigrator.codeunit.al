@@ -106,7 +106,7 @@ codeunit 4018 "GP Customer Migrator"
 
                 Sender.CreateGeneralJournalLine(
                     CopyStr(CustomerBatchNameTxt, 1, 7),
-                    CopyStr(MigrationGPCustTrans.GLDocNo, 1, 20),
+                    CopyStr(MigrationGPCustTrans.DOCNUMBR, 1, 20),
                     CopyStr(MigrationGPCustomer.CUSTNAME, 1, 50),
                     MigrationGPCustTrans.DOCDATE,
                     0D,
@@ -126,7 +126,6 @@ codeunit 4018 "GP Customer Migrator"
                     Sender.CreatePaymentTermsIfNeeded(Copystr(MigrationGPCustTrans.PYMTRMID, 1, 10), MigrationGPCustTrans.PYMTRMID, PaymentTermsFormula);
                 end;
                 Sender.SetGeneralJournalLinePaymentTerms(CopyStr(MigrationGPCustTrans.PYMTRMID, 1, 10));
-                Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(MigrationGPCustTrans.DOCNUMBR.Trim(), 1, 35));
             until MigrationGPCustTrans.Next() = 0;
 
         MigrationGPCustTrans.Reset();
@@ -138,7 +137,7 @@ codeunit 4018 "GP Customer Migrator"
 
                 Sender.CreateGeneralJournalLine(
                     CopyStr(CustomerBatchNameTxt, 1, 7),
-                    CopyStr(MigrationGPCustTrans.GLDocNo, 1, 20),
+                    CopyStr(MigrationGPCustTrans.DOCNUMBR, 1, 20),
                     CopyStr(MigrationGPCustomer.CUSTNAME, 1, 50),
                     MigrationGPCustTrans.DOCDATE,
                     MigrationGPCustTrans.DOCDATE,
@@ -155,7 +154,6 @@ codeunit 4018 "GP Customer Migrator"
                     Sender.CreatePaymentTermsIfNeeded(Copystr(MigrationGPCustTrans.PYMTRMID, 1, 10), MigrationGPCustTrans.PYMTRMID, PaymentTermsFormula);
                 end;
                 Sender.SetGeneralJournalLinePaymentTerms(CopyStr(MigrationGPCustTrans.PYMTRMID, 1, 10));
-                Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(MigrationGPCustTrans.DOCNUMBR.Trim(), 1, 35));
             until MigrationGPCustTrans.Next() = 0;
 
         MigrationGPCustTrans.Reset();
@@ -167,7 +165,7 @@ codeunit 4018 "GP Customer Migrator"
 
                 Sender.CreateGeneralJournalLine(
                     CopyStr(CustomerBatchNameTxt, 1, 7),
-                    CopyStr(MigrationGPCustTrans.GLDocNo, 1, 20),
+                    CopyStr(MigrationGPCustTrans.DOCNUMBR, 1, 20),
                     CopyStr(MigrationGPCustomer.CUSTNAME, 1, 50),
                     MigrationGPCustTrans.DOCDATE,
                     0D,
@@ -186,7 +184,6 @@ codeunit 4018 "GP Customer Migrator"
                     Sender.CreatePaymentTermsIfNeeded(Copystr(MigrationGPCustTrans.PYMTRMID, 1, 10), MigrationGPCustTrans.PYMTRMID, PaymentTermsFormula);
                 end;
                 Sender.SetGeneralJournalLinePaymentTerms(CopyStr(MigrationGPCustTrans.PYMTRMID, 1, 10));
-                Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(MigrationGPCustTrans.DOCNUMBR.Trim(), 1, 35));
             until MigrationGPCustTrans.Next() = 0;
     end;
 #pragma warning restore AA0207

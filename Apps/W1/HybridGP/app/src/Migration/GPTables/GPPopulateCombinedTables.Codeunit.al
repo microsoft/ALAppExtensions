@@ -612,6 +612,7 @@ codeunit 40125 "GP Populate Combined Tables"
             GPVendorTransactions.VENDORID := GPPM20000.VENDORID.Trim();
             GPVendorTransactions.DOCNUMBR := GPPM20000.DOCNUMBR.Trim();
             GPVendorTransactions.PYMTRMID := GPPM20000.PYMTRMID.Trim();
+            GPVendorTransactions.VCHRNMBR := GPPM20000.VCHRNMBR.Trim();
 #pragma warning restore AA0139
 
             GPVendorTransactions.DOCDATE := GPPM20000.DOCDATE;
