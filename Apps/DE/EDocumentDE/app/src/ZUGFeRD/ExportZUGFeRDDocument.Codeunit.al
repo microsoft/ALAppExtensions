@@ -644,14 +644,12 @@ codeunit 13917 "Export ZUGFeRD Document"
         PaymentTermsDescriptionElement: XmlElement;
         DueDateElement: XmlElement;
     begin
-        if PaymentTermsCode = '' then
-            exit;
-        if not PaymentTerms.Get(PaymentTermsCode) then
-            exit;
-
         PaymentTermsElement := XmlElement.Create('SpecifiedTradePaymentTerms', XmlNamespaceRAM);
-        PaymentTermsDescriptionElement := XmlElement.Create('Description', XmlNamespaceRAM, PaymentTerms.Description);
-        PaymentTermsElement.Add(PaymentTermsDescriptionElement);
+        if PaymentTermsCode <> '' then
+            if PaymentTerms.Get(PaymentTermsCode) then begin
+                PaymentTermsDescriptionElement := XmlElement.Create('Description', XmlNamespaceRAM, PaymentTerms.Description);
+                PaymentTermsElement.Add(PaymentTermsDescriptionElement);
+            end;
 
         DueDateElement := XmlElement.Create('DueDateDateTime', XmlNamespaceRAM);
         DueDateElement.Add(XmlElement.Create('DateTimeString', XmlNamespaceUDT, XmlAttribute.Create('format', '102'), FormatDate(DueDate)));
@@ -674,7 +672,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         end;
 
         if CompanyInformation."SWIFT Code" <> '' then begin
-            PaymentMethodBICElement := XmlElement.Create('PayeePartyCreditorFinancialAccount', XmlNamespaceRAM);
+            PaymentMethodBICElement := XmlElement.Create('PayeeSpecifiedCreditorFinancialInstitution', XmlNamespaceRAM);
             PaymentMethodBICElement.Add(XmlElement.Create('BICID', XmlNamespaceRAM, GetIBAN(CompanyInformation."SWIFT Code")));
             PaymentMethodElement.Add(PaymentMethodBICElement);
         end;

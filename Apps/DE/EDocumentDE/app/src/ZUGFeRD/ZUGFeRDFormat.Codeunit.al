@@ -11,6 +11,7 @@ using Microsoft.Sales.History;
 using Microsoft.Purchases.Document;
 using Microsoft.eServices.EDocument;
 using System.IO;
+using Microsoft.eServices.EDocument.IO.Peppol;
 
 codeunit 13920 "ZUGFeRD Format" implements "E-Document"
 {
@@ -18,12 +19,17 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
     InherentPermissions = X;
 
     var
+        EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";
+        EDocPEPPOLValidationDE: Codeunit "EDoc PEPPOL Validation DE";
         EDocImportZUGFeRD: Codeunit "Import ZUGFeRD Document";
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
         CheckCompanyInfoMandatory();
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        BindSubscription(EDocPEPPOLValidationDE);
+        EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
+        UnbindSubscription(EDocPEPPOLValidationDE);
     end;
 
     procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
