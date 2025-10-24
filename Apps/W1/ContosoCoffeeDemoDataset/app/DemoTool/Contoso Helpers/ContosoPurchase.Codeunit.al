@@ -6,6 +6,7 @@ namespace Microsoft.DemoTool.Helpers;
 
 using Microsoft.Purchases.Document;
 using Microsoft.Inventory.Item;
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Purchases.Setup;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Pricing.Calculation;
@@ -22,15 +23,20 @@ codeunit 4781 "Contoso Purchase"
 
     procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; VendorNo: Code[20]; VendorOrderNo: Code[20]; PostingDate: Date; LocationCode: Code[20]): Record "Purchase Header"
     begin
-        exit(InsertPurchaseHeader(DocumentType, VendorNo, '', PostingDate, PostingDate, 0D, '', CopyStr(LocationCode, 1, 10), VendorOrderNo, '', PostingDate, ''));
+        exit(InsertPurchaseHeader(DocumentType, VendorNo, '', PostingDate, PostingDate, 0D, '', CopyStr(LocationCode, 1, 10), VendorOrderNo, '', PostingDate, '', ''));
     end;
 
     procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; VendorNo: Code[20]; YourReference: Code[35]; VendorOrderNo: Code[20]; PostingDate: Date; LocationCode: Code[10]; VendorInvoiceNo: Code[35]; PaymentTermsCode: Code[10]; PaymentMethodCode: Code[10]): Record "Purchase Header"
     begin
-        exit(InsertPurchaseHeader(DocumentType, VendorNo, YourReference, PostingDate, PostingDate, 0D, PaymentTermsCode, CopyStr(LocationCode, 1, 10), VendorOrderNo, VendorInvoiceNo, PostingDate, PaymentMethodCode));
+        exit(InsertPurchaseHeader(DocumentType, VendorNo, YourReference, PostingDate, PostingDate, 0D, PaymentTermsCode, CopyStr(LocationCode, 1, 10), VendorOrderNo, VendorInvoiceNo, PostingDate, PaymentMethodCode, ''));
     end;
 
     procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; BuyfromVendorNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; ExpectedReceiptDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; VendorOrderNo: Code[20]; VendorInvoiceNo: Code[35]; DocumentDate: Date; PaymentMethodCode: Code[10]): Record "Purchase Header";
+    begin
+        exit(InsertPurchaseHeader(DocumentType, BuyfromVendorNo, YourReference, PostingDate, PostingDate, 0D, PaymentTermsCode, CopyStr(LocationCode, 1, 10), VendorOrderNo, VendorInvoiceNo, PostingDate, PaymentMethodCode, ''));
+    end;
+
+    procedure InsertPurchaseHeader(DocumentType: Enum "Purchase Document Type"; BuyfromVendorNo: Code[20]; YourReference: Code[35]; OrderDate: Date; PostingDate: Date; ExpectedReceiptDate: Date; PaymentTermsCode: Code[10]; LocationCode: Code[10]; VendorOrderNo: Code[20]; VendorInvoiceNo: Code[35]; DocumentDate: Date; PaymentMethodCode: Code[10]; PurchaserCode: Code[20]): Record "Purchase Header";
     var
         PurchaseHeader: Record "Purchase Header";
     begin
@@ -49,6 +55,9 @@ codeunit 4781 "Contoso Purchase"
 
         PurchaseHeader.Validate("Vendor Order No.", VendorOrderNo);
 
+        if PurchaserCode <> '' then
+            PurchaseHeader.Validate("Purchaser Code", PurchaserCode);
+
         if VendorInvoiceNo <> '' then
             PurchaseHeader.Validate("Vendor Invoice No.", VendorInvoiceNo)
         else
@@ -63,15 +72,20 @@ codeunit 4781 "Contoso Purchase"
 
     procedure InsertPurchaseLineWithItem(PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal)
     begin
-        InsertPurchaseLineWithItem(PurchaseHeader, ItemNo, Quantity, '', 0);
+        InsertPurchaseLineWithItem(PurchaseHeader, ItemNo, Quantity, '', 0, '');
     end;
 
     procedure InsertPurchaseLineWithItem(PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; UnitOfMeasureCode: Code[10]; UnitCost: Decimal)
     begin
-        InsertPurchaseLineWithItem(PurchaseHeader, ItemNo, Quantity, UnitOfMeasureCode, UnitCost, 0);
+        InsertPurchaseLineWithItem(PurchaseHeader, ItemNo, Quantity, UnitOfMeasureCode, UnitCost, 0, '');
     end;
 
-    procedure InsertPurchaseLineWithItem(PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; UnitOfMeasureCode: Code[10]; UnitCost: Decimal; LineDiscount: Decimal)
+    procedure InsertPurchaseLineWithItem(PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; UnitOfMeasureCode: Code[10]; UnitCost: Decimal; ReturnReasonCode: Code[20])
+    begin
+        InsertPurchaseLineWithItem(PurchaseHeader, ItemNo, Quantity, UnitOfMeasureCode, UnitCost, 0, ReturnReasonCode);
+    end;
+
+    procedure InsertPurchaseLineWithItem(PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; UnitOfMeasureCode: Code[10]; UnitCost: Decimal; LineDiscount: Decimal; ReturnReasonCode: Code[20])
     var
         Item: Record Item;
         PurchaseLine: Record "Purchase Line";
@@ -95,6 +109,8 @@ codeunit 4781 "Contoso Purchase"
 
         PurchaseLine.Validate(Quantity, Quantity);
         PurchaseLine.Validate("Line Discount %", LineDiscount);
+        if ReturnReasonCode <> '' then
+            PurchaseLine.Validate("Return Reason Code", ReturnReasonCode);
         PurchaseLine.Insert(true);
     end;
 
@@ -190,5 +206,15 @@ codeunit 4781 "Contoso Purchase"
         PurchasesPayablesSetup."Price Calculation Method" := PriceCalculationMethod;
         PurchasesPayablesSetup.Validate("Price List Nos.", PriceListNos);
         PurchasesPayablesSetup.Modify(true);
+    end;
+
+    procedure InsertReturnReason(ReturnReasonCode: Code[10]; ReturnReasonDescription: Text[50])
+    var
+        ReturnReason: Record "Return Reason";
+    begin
+        ReturnReason.Init();
+        ReturnReason.Validate(Code, ReturnReasonCode);
+        ReturnReason.Validate(Description, ReturnReasonDescription);
+        ReturnReason.Insert(true);
     end;
 }

@@ -17,13 +17,13 @@ codeunit 5416 "Create Salesperson/Purchaser"
         ContosoCRM: Codeunit "Contoso CRM";
         ContosoUtilities: Codeunit "Contoso Utilities";
     begin
-        ContosoCRM.InsertSalespersonPurchaser(BenjaminChiu(), BenjaminChiuLbl, 0, ContosoUtilities.EmptyPicture(), 'BC@contoso.com');
+        ContosoCRM.InsertSalespersonPurchaser(BenjaminChiu(), BenjaminChiuLbl, 3, ContosoUtilities.EmptyPicture(), 'BC@contoso.com');
         ContosoCRM.InsertSalespersonPurchaser(EsterHenderson(), EsterHendersonLbl, 0, ContosoUtilities.EmptyPicture(), 'EH@contoso.com');
         ContosoCRM.InsertSalespersonPurchaser(HelenaRay(), HelenaRayLbl, 0, ContosoUtilities.EmptyPicture(), 'HR@contoso.com');
         ContosoCRM.InsertSalespersonPurchaser(JimOlive(), JimOliveLbl, 5, ContosoUtilities.EmptyPicture(), 'JO@contoso.com');
         ContosoCRM.InsertSalespersonPurchaser(LinaTownsend(), LinaTownsendLbl, 5, ContosoUtilities.EmptyPicture(), 'LT@contoso.com');
         ContosoCRM.InsertSalespersonPurchaser(OtisFalls(), OtisFallsLbl, 5, ContosoUtilities.EmptyPicture(), 'OF@contoso.com');
-        ContosoCRM.InsertSalespersonPurchaser(RobinBettencourt(), RobinBettencourtLbl, 0, ContosoUtilities.EmptyPicture(), 'RB@contoso.com');
+        ContosoCRM.InsertSalespersonPurchaser(RobinBettencourt(), RobinBettencourtLbl, 2, ContosoUtilities.EmptyPicture(), 'RB@contoso.com');
     end;
 
     procedure BenjaminChiu(): Code[20]
