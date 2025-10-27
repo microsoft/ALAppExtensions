@@ -23,7 +23,6 @@ using Microsoft.Sales.History;
 codeunit 13916 "Export XRechnung Document"
 {
     TableNo = "Record Export Buffer";
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 
