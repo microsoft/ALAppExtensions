@@ -18,6 +18,7 @@ using Microsoft.Finance.Currency;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Reporting;
 
 codeunit 13922 "ZUGFeRD XML Document Tests"
 {
@@ -324,6 +325,29 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
         VerifyInvoiceLineWithDiscount(SalesInvoiceHeader, TempXMLBuffer);
     end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatWithCustomReportLayout();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice with Custom Report Layout creates electronic document in ZUGFeRD format
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [GIVEN] Custom Report Layout is used
+        UpdateReport(Enum::"Report Selection Usage"::"S.Invoice", Report::"ZUGFeRD Custom Sales Invoice");
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created
+        VerifyHeaderData(SalesInvoiceHeader, TempXMLBuffer);
+    end;
+
     #endregion
 
     #region SalesCreditMemo
@@ -1204,6 +1228,27 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
             Currency.TestField("Unit-Amount Rounding Precision");
             exit(DocumentCurrencyCode);
         end;
+    end;
+
+    local procedure UpdateReport(ReportUsage: Enum "Report Selection Usage"; ReportId: Integer)
+    var
+        ReportSelection: Record "Report Selections";
+    begin
+        if not ReportSelection.Get(ReportUsage, '1') then begin
+            ReportSelection.Init();
+            ReportSelection.Validate(Usage, ReportUsage);
+            ReportSelection.Validate(Sequence, '1');
+            ReportSelection.Validate("Report ID", ReportId);
+            ReportSelection.Insert(true);
+        end;
+        if ReportSelection."Report ID" <> ReportId then begin
+            ReportSelection.Validate("Report ID", ReportId);
+            ReportSelection.Modify(true);
+        end;
+        ReportSelection.SetRange(Usage, ReportUsage);
+        ReportSelection.SetFilter(Sequence, '<>1');
+        if not ReportSelection.IsEmpty() then
+            ReportSelection.DeleteAll(true);
     end;
 
     procedure FormatDate(VarDate: Date): Text[20];
