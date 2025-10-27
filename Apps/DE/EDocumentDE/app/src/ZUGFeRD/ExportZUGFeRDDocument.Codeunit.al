@@ -501,7 +501,23 @@ codeunit 13917 "Export ZUGFeRD Document"
     procedure InsertSupplyChainTradeTransaction(var RootXMLNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesInvoiceLine: Record "Sales Invoice Line"; CurrencyCode: Code[10]; Currency: Record Currency; var LineAmount: Dictionary of [Decimal, Decimal]; var LineVATAmount: Dictionary of [Decimal, Decimal]; var LineAmounts: Dictionary of [Text, Decimal]; var LineDiscAmount: Dictionary of [Decimal, Decimal])
     var
         SupplyChainTradeTransactionElement: XmlElement;
-        IncludedLineItemElement: XmlElement;
+    begin
+        SupplyChainTradeTransactionElement := XmlElement.Create('SupplyChainTradeTransaction', XmlNamespaceRSM);
+        if SalesInvoiceLine.FindSet() then
+            repeat
+                InsertInvoiceLine(SupplyChainTradeTransactionElement, SalesInvoiceLine, Currency, CurrencyCode, SalesInvoiceHeader."Prices Including VAT");
+            until SalesInvoiceLine.Next() = 0;
+        InsertApplicableHeaderTradeAgreement(SupplyChainTradeTransactionElement, SalesInvoiceHeader."Sell-to Customer No.", SalesInvoiceHeader."Your Reference");
+        InsertApplicableHeaderTradeDelivery(SupplyChainTradeTransactionElement, SalesInvoiceHeader);
+        SalesInvoiceHeader.CalcFields("Amount Including VAT", Amount);
+        InsertApplicableHeaderTradeSettlement(SupplyChainTradeTransactionElement, SalesInvoiceHeader, SalesInvoiceLine, CurrencyCode, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
+
+        RootXMLNode.Add(SupplyChainTradeTransactionElement);
+    end;
+
+    local procedure InsertInvoiceLine(var SupplyChainTradeTransactionElement: XmlElement; var SalesInvoiceLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
+    var
+        InvoiceLineElement: XmlElement;
         AssociatedDocumentLineElement: XmlElement;
         SpecifiedTradeProductElement: XmlElement;
         SpecifiedLineTradeAgreementElement: XmlElement;
@@ -512,60 +528,56 @@ codeunit 13917 "Export ZUGFeRD Document"
         SpecifiedLineTradeSettlementElement: XmlElement;
         ApplicableTradeTaxElement: XmlElement;
         SpecifiedTradeSettlementLineMonetarySummationElement: XmlElement;
+        IsHandled: Boolean;
     begin
-        SupplyChainTradeTransactionElement := XmlElement.Create('SupplyChainTradeTransaction', XmlNamespaceRSM);
-        if SalesInvoiceLine.FindSet() then
-            repeat
-                IncludedLineItemElement := XmlElement.Create('IncludedSupplyChainTradeLineItem', XmlNamespaceRAM);
-                if SalesInvoiceHeader."Prices Including VAT" then
-                    ExcludeVAT(SalesInvoiceLine, Currency."Amount Rounding Precision");
-                AssociatedDocumentLineElement := XmlElement.Create('AssociatedDocumentLineDocument', XmlNamespaceRAM);
-                AssociatedDocumentLineElement.Add(XmlElement.Create('LineID', XmlNamespaceRAM, Format(SalesInvoiceLine."Line No.")));
-                IncludedLineItemElement.Add(AssociatedDocumentLineElement);
+        IsHandled := false;
+        OnBeforeInsertInvoiceLine(SupplyChainTradeTransactionElement, SalesInvoiceLine, Currency, CurrencyCode, PricesIncVAT, IsHandled);
+        if not IsHandled then begin
+            InvoiceLineElement := XmlElement.Create('IncludedSupplyChainTradeLineItem', XmlNamespaceRAM);
+            if PricesIncVAT then
+                ExcludeVAT(SalesInvoiceLine, Currency."Amount Rounding Precision");
+            AssociatedDocumentLineElement := XmlElement.Create('AssociatedDocumentLineDocument', XmlNamespaceRAM);
+            AssociatedDocumentLineElement.Add(XmlElement.Create('LineID', XmlNamespaceRAM, Format(SalesInvoiceLine."Line No.")));
+            InvoiceLineElement.Add(AssociatedDocumentLineElement);
 
-                SpecifiedTradeProductElement := XmlElement.Create('SpecifiedTradeProduct', XmlNamespaceRAM);
-                SpecifiedTradeProductElement.Add(XmlElement.Create('Name', XmlNamespaceRAM, SalesInvoiceLine.Description));
-                IncludedLineItemElement.Add(SpecifiedTradeProductElement);
+            SpecifiedTradeProductElement := XmlElement.Create('SpecifiedTradeProduct', XmlNamespaceRAM);
+            SpecifiedTradeProductElement.Add(XmlElement.Create('Name', XmlNamespaceRAM, SalesInvoiceLine.Description));
+            InvoiceLineElement.Add(SpecifiedTradeProductElement);
 
-                SpecifiedLineTradeAgreementElement := XmlElement.Create('SpecifiedLineTradeAgreement', XmlNamespaceRAM);
-                NetPriceProductTradePriceElement := XmlElement.Create('NetPriceProductTradePrice', XmlNamespaceRAM);
-                ChargeAmountElement := XmlElement.Create('ChargeAmount', XmlNamespaceRAM, FormatFourDecimal(SalesInvoiceLine."Unit Price"));
-                NetPriceProductTradePriceElement.Add(ChargeAmountElement);
-                SpecifiedLineTradeAgreementElement.Add(NetPriceProductTradePriceElement);
-                IncludedLineItemElement.Add(SpecifiedLineTradeAgreementElement);
+            SpecifiedLineTradeAgreementElement := XmlElement.Create('SpecifiedLineTradeAgreement', XmlNamespaceRAM);
+            NetPriceProductTradePriceElement := XmlElement.Create('NetPriceProductTradePrice', XmlNamespaceRAM);
+            ChargeAmountElement := XmlElement.Create('ChargeAmount', XmlNamespaceRAM, FormatFourDecimal(SalesInvoiceLine."Unit Price"));
+            NetPriceProductTradePriceElement.Add(ChargeAmountElement);
+            SpecifiedLineTradeAgreementElement.Add(NetPriceProductTradePriceElement);
+            InvoiceLineElement.Add(SpecifiedLineTradeAgreementElement);
 
-                SpecifiedLineTradeDeliveryElement := XmlElement.Create('SpecifiedLineTradeDelivery', XmlNamespaceRAM);
-                BilledQuantityElement := XmlElement.Create('BilledQuantity', XmlNamespaceRAM, FormatFourDecimal(SalesInvoiceLine.Quantity));
-                BilledQuantityElement.SetAttribute('unitCode', GetUoMCode(SalesInvoiceLine."Unit of Measure Code"));
-                SpecifiedLineTradeDeliveryElement.Add(BilledQuantityElement);
-                IncludedLineItemElement.Add(SpecifiedLineTradeDeliveryElement);
+            SpecifiedLineTradeDeliveryElement := XmlElement.Create('SpecifiedLineTradeDelivery', XmlNamespaceRAM);
+            BilledQuantityElement := XmlElement.Create('BilledQuantity', XmlNamespaceRAM, FormatFourDecimal(SalesInvoiceLine.Quantity));
+            BilledQuantityElement.SetAttribute('unitCode', GetUoMCode(SalesInvoiceLine."Unit of Measure Code"));
+            SpecifiedLineTradeDeliveryElement.Add(BilledQuantityElement);
+            InvoiceLineElement.Add(SpecifiedLineTradeDeliveryElement);
 
-                // Trade Settlement - VAT
-                SpecifiedLineTradeSettlementElement := XmlElement.Create('SpecifiedLineTradeSettlement', XmlNamespaceRAM);
+            // Trade Settlement - VAT
+            SpecifiedLineTradeSettlementElement := XmlElement.Create('SpecifiedLineTradeSettlement', XmlNamespaceRAM);
 
-                ApplicableTradeTaxElement := XmlElement.Create('ApplicableTradeTax', XmlNamespaceRAM);
-                ApplicableTradeTaxElement.Add(XmlElement.Create('TypeCode', XmlNamespaceRAM, 'VAT'));
-                ApplicableTradeTaxElement.Add(XmlElement.Create('CategoryCode', XmlNamespaceRAM, GetTaxCategoryID(SalesInvoiceLine."Tax Category", SalesInvoiceLine."VAT Bus. Posting Group", SalesInvoiceLine."VAT Prod. Posting Group")));
-                ApplicableTradeTaxElement.Add(XmlElement.Create('RateApplicablePercent', XmlNamespaceRAM, FormatFourDecimal(SalesInvoiceLine."VAT %")));
-                SpecifiedLineTradeSettlementElement.Add(ApplicableTradeTaxElement);
+            ApplicableTradeTaxElement := XmlElement.Create('ApplicableTradeTax', XmlNamespaceRAM);
+            ApplicableTradeTaxElement.Add(XmlElement.Create('TypeCode', XmlNamespaceRAM, 'VAT'));
+            ApplicableTradeTaxElement.Add(XmlElement.Create('CategoryCode', XmlNamespaceRAM, GetTaxCategoryID(SalesInvoiceLine."Tax Category", SalesInvoiceLine."VAT Bus. Posting Group", SalesInvoiceLine."VAT Prod. Posting Group")));
+            ApplicableTradeTaxElement.Add(XmlElement.Create('RateApplicablePercent', XmlNamespaceRAM, FormatFourDecimal(SalesInvoiceLine."VAT %")));
+            SpecifiedLineTradeSettlementElement.Add(ApplicableTradeTaxElement);
 
-                if SalesInvoiceLine."Line Discount Amount" <> 0 then
-                    InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesInvoiceLine."Tax Category", SalesInvoiceLine."VAT Bus. Posting Group",
-                        SalesInvoiceLine."VAT Prod. Posting Group"), SalesInvoiceLine."Line Discount Amount", SalesInvoiceLine."VAT %", false);
+            if SalesInvoiceLine."Line Discount Amount" <> 0 then
+                InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesInvoiceLine."Tax Category", SalesInvoiceLine."VAT Bus. Posting Group",
+                    SalesInvoiceLine."VAT Prod. Posting Group"), SalesInvoiceLine."Line Discount Amount", SalesInvoiceLine."VAT %", false);
 
-                SpecifiedTradeSettlementLineMonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementLineMonetarySummation', XmlNamespaceRAM);
-                SpecifiedTradeSettlementLineMonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvoiceLine.Amount + SalesInvoiceLine."Inv. Discount Amount")));
-                SpecifiedLineTradeSettlementElement.Add(SpecifiedTradeSettlementLineMonetarySummationElement);
+            SpecifiedTradeSettlementLineMonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementLineMonetarySummation', XmlNamespaceRAM);
+            SpecifiedTradeSettlementLineMonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesInvoiceLine.Amount + SalesInvoiceLine."Inv. Discount Amount")));
+            SpecifiedLineTradeSettlementElement.Add(SpecifiedTradeSettlementLineMonetarySummationElement);
 
-                IncludedLineItemElement.Add(SpecifiedLineTradeSettlementElement);
-                SupplyChainTradeTransactionElement.Add(IncludedLineItemElement);
-            until SalesInvoiceLine.Next() = 0;
-        InsertApplicableHeaderTradeAgreement(SupplyChainTradeTransactionElement, SalesInvoiceHeader."Sell-to Customer No.", SalesInvoiceHeader."Your Reference");
-        InsertApplicableHeaderTradeDelivery(SupplyChainTradeTransactionElement, SalesInvoiceHeader);
-        SalesInvoiceHeader.CalcFields("Amount Including VAT", Amount);
-        InsertApplicableHeaderTradeSettlement(SupplyChainTradeTransactionElement, SalesInvoiceHeader, SalesInvoiceLine, CurrencyCode, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
-
-        RootXMLNode.Add(SupplyChainTradeTransactionElement);
+            InvoiceLineElement.Add(SpecifiedLineTradeSettlementElement);
+            OnBeforeAddInvoiceLineElement(InvoiceLineElement, SalesInvoiceLine, Currency, CurrencyCode, PricesIncVAT);
+            SupplyChainTradeTransactionElement.Add(InvoiceLineElement);
+        end;
     end;
 
     procedure InsertSupplyChainTradeTransaction(var RootXMLNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; CurrencyCode: Code[10]; Currency: Record Currency; var LineAmount: Dictionary of [Decimal, Decimal]; var LineVATAmount: Dictionary of [Decimal, Decimal]; var LineAmounts: Dictionary of [Text, Decimal]; var LineDiscAmount: Dictionary of [Decimal, Decimal])
@@ -586,48 +598,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         SupplyChainTradeTransactionElement := XmlElement.Create('SupplyChainTradeTransaction', XmlNamespaceRSM);
         if SalesCrMemoLine.FindSet() then
             repeat
-                IncludedLineItemElement := XmlElement.Create('IncludedSupplyChainTradeLineItem', XmlNamespaceRAM);
-                if SalesCrMemoHeader."Prices Including VAT" then
-                    ExcludeVAT(SalesCrMemoLine, Currency."Amount Rounding Precision");
-                AssociatedDocumentLineElement := XmlElement.Create('AssociatedDocumentLineDocument', XmlNamespaceRAM);
-                AssociatedDocumentLineElement.Add(XmlElement.Create('LineID', XmlNamespaceRAM, Format(SalesCrMemoLine."Line No.")));
-                IncludedLineItemElement.Add(AssociatedDocumentLineElement);
-
-                SpecifiedTradeProductElement := XmlElement.Create('SpecifiedTradeProduct', XmlNamespaceRAM);
-                SpecifiedTradeProductElement.Add(XmlElement.Create('Name', XmlNamespaceRAM, SalesCrMemoLine.Description));
-                IncludedLineItemElement.Add(SpecifiedTradeProductElement);
-
-                SpecifiedLineTradeAgreementElement := XmlElement.Create('SpecifiedLineTradeAgreement', XmlNamespaceRAM);
-                NetPriceProductTradePriceElement := XmlElement.Create('NetPriceProductTradePrice', XmlNamespaceRAM);
-                ChargeAmountElement := XmlElement.Create('ChargeAmount', XmlNamespaceRAM, FormatFourDecimal(SalesCrMemoLine."Unit Price"));
-                NetPriceProductTradePriceElement.Add(ChargeAmountElement);
-                SpecifiedLineTradeAgreementElement.Add(NetPriceProductTradePriceElement);
-                IncludedLineItemElement.Add(SpecifiedLineTradeAgreementElement);
-
-                SpecifiedLineTradeDeliveryElement := XmlElement.Create('SpecifiedLineTradeDelivery', XmlNamespaceRAM);
-                BilledQuantityElement := XmlElement.Create('BilledQuantity', XmlNamespaceRAM, FormatFourDecimal(SalesCrMemoLine.Quantity));
-                BilledQuantityElement.SetAttribute('unitCode', GetUoMCode(SalesCrMemoLine."Unit of Measure Code"));
-                SpecifiedLineTradeDeliveryElement.Add(BilledQuantityElement);
-                IncludedLineItemElement.Add(SpecifiedLineTradeDeliveryElement);
-
-                // Trade Settlement - VAT
-                SpecifiedLineTradeSettlementElement := XmlElement.Create('SpecifiedLineTradeSettlement', XmlNamespaceRAM);
-
-                ApplicableTradeTaxElement := XmlElement.Create('ApplicableTradeTax', XmlNamespaceRAM);
-                ApplicableTradeTaxElement.Add(XmlElement.Create('TypeCode', XmlNamespaceRAM, 'VAT'));
-                ApplicableTradeTaxElement.Add(XmlElement.Create('CategoryCode', XmlNamespaceRAM, GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group")));
-                ApplicableTradeTaxElement.Add(XmlElement.Create('RateApplicablePercent', XmlNamespaceRAM, FormatFourDecimal(SalesCrMemoLine."VAT %")));
-                SpecifiedLineTradeSettlementElement.Add(ApplicableTradeTaxElement);
-
-                if SalesCrMemoLine."Line Discount Amount" <> 0 then
-                    InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group",
-                        SalesCrMemoLine."VAT Prod. Posting Group"), SalesCrMemoLine."Line Discount Amount", SalesCrMemoLine."VAT %", false);
-                SpecifiedTradeSettlementLineMonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementLineMonetarySummation', XmlNamespaceRAM);
-                SpecifiedTradeSettlementLineMonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount")));
-                SpecifiedLineTradeSettlementElement.Add(SpecifiedTradeSettlementLineMonetarySummationElement);
-
-                IncludedLineItemElement.Add(SpecifiedLineTradeSettlementElement);
-                SupplyChainTradeTransactionElement.Add(IncludedLineItemElement);
+                InsertCrMemoLine(SupplyChainTradeTransactionElement, SalesCrMemoLine, Currency, CurrencyCode, SalesCrMemoHeader."Prices Including VAT");
             until SalesCrMemoLine.Next() = 0;
         InsertApplicableHeaderTradeAgreement(SupplyChainTradeTransactionElement, SalesCrMemoHeader."Sell-to Customer No.", SalesCrMemoHeader."Your Reference");
         InsertApplicableHeaderTradeDelivery(SupplyChainTradeTransactionElement, SalesCrMemoHeader);
@@ -635,6 +606,70 @@ codeunit 13917 "Export ZUGFeRD Document"
         InsertApplicableHeaderTradeSettlement(SupplyChainTradeTransactionElement, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
 
         RootXMLNode.Add(SupplyChainTradeTransactionElement);
+    end;
+
+    local procedure InsertCrMemoLine(var SupplyChainTradeTransactionElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
+    var
+        CrMemoLineElement: XmlElement;
+        AssociatedDocumentLineElement: XmlElement;
+        SpecifiedTradeProductElement: XmlElement;
+        SpecifiedLineTradeAgreementElement: XmlElement;
+        NetPriceProductTradePriceElement: XmlElement;
+        ChargeAmountElement: XmlElement;
+        SpecifiedLineTradeDeliveryElement: XmlElement;
+        BilledQuantityElement: XmlElement;
+        SpecifiedLineTradeSettlementElement: XmlElement;
+        ApplicableTradeTaxElement: XmlElement;
+        SpecifiedTradeSettlementLineMonetarySummationElement: XmlElement;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeInsertCrMemoLine(SupplyChainTradeTransactionElement, SalesCrMemoLine, Currency, CurrencyCode, PricesIncVAT, IsHandled);
+        if not IsHandled then begin
+            CrMemoLineElement := XmlElement.Create('IncludedSupplyChainTradeLineItem', XmlNamespaceRAM);
+            if PricesIncVAT then
+                ExcludeVAT(SalesCrMemoLine, Currency."Amount Rounding Precision");
+            AssociatedDocumentLineElement := XmlElement.Create('AssociatedDocumentLineDocument', XmlNamespaceRAM);
+            AssociatedDocumentLineElement.Add(XmlElement.Create('LineID', XmlNamespaceRAM, Format(SalesCrMemoLine."Line No.")));
+            CrMemoLineElement.Add(AssociatedDocumentLineElement);
+
+            SpecifiedTradeProductElement := XmlElement.Create('SpecifiedTradeProduct', XmlNamespaceRAM);
+            SpecifiedTradeProductElement.Add(XmlElement.Create('Name', XmlNamespaceRAM, SalesCrMemoLine.Description));
+            CrMemoLineElement.Add(SpecifiedTradeProductElement);
+
+            SpecifiedLineTradeAgreementElement := XmlElement.Create('SpecifiedLineTradeAgreement', XmlNamespaceRAM);
+            NetPriceProductTradePriceElement := XmlElement.Create('NetPriceProductTradePrice', XmlNamespaceRAM);
+            ChargeAmountElement := XmlElement.Create('ChargeAmount', XmlNamespaceRAM, FormatFourDecimal(SalesCrMemoLine."Unit Price"));
+            NetPriceProductTradePriceElement.Add(ChargeAmountElement);
+            SpecifiedLineTradeAgreementElement.Add(NetPriceProductTradePriceElement);
+            CrMemoLineElement.Add(SpecifiedLineTradeAgreementElement);
+
+            SpecifiedLineTradeDeliveryElement := XmlElement.Create('SpecifiedLineTradeDelivery', XmlNamespaceRAM);
+            BilledQuantityElement := XmlElement.Create('BilledQuantity', XmlNamespaceRAM, FormatFourDecimal(SalesCrMemoLine.Quantity));
+            BilledQuantityElement.SetAttribute('unitCode', GetUoMCode(SalesCrMemoLine."Unit of Measure Code"));
+            SpecifiedLineTradeDeliveryElement.Add(BilledQuantityElement);
+            CrMemoLineElement.Add(SpecifiedLineTradeDeliveryElement);
+
+            // Trade Settlement - VAT
+            SpecifiedLineTradeSettlementElement := XmlElement.Create('SpecifiedLineTradeSettlement', XmlNamespaceRAM);
+
+            ApplicableTradeTaxElement := XmlElement.Create('ApplicableTradeTax', XmlNamespaceRAM);
+            ApplicableTradeTaxElement.Add(XmlElement.Create('TypeCode', XmlNamespaceRAM, 'VAT'));
+            ApplicableTradeTaxElement.Add(XmlElement.Create('CategoryCode', XmlNamespaceRAM, GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group")));
+            ApplicableTradeTaxElement.Add(XmlElement.Create('RateApplicablePercent', XmlNamespaceRAM, FormatFourDecimal(SalesCrMemoLine."VAT %")));
+            SpecifiedLineTradeSettlementElement.Add(ApplicableTradeTaxElement);
+
+            if SalesCrMemoLine."Line Discount Amount" <> 0 then
+                InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group",
+                    SalesCrMemoLine."VAT Prod. Posting Group"), SalesCrMemoLine."Line Discount Amount", SalesCrMemoLine."VAT %", false);
+            SpecifiedTradeSettlementLineMonetarySummationElement := XmlElement.Create('SpecifiedTradeSettlementLineMonetarySummation', XmlNamespaceRAM);
+            SpecifiedTradeSettlementLineMonetarySummationElement.Add(XmlElement.Create('LineTotalAmount', XmlNamespaceRAM, FormatDecimal(SalesCrMemoLine.Amount + SalesCrMemoLine."Inv. Discount Amount")));
+            SpecifiedLineTradeSettlementElement.Add(SpecifiedTradeSettlementLineMonetarySummationElement);
+
+            CrMemoLineElement.Add(SpecifiedLineTradeSettlementElement);
+            OnBeforeAddCrMemoLineElement(CrMemoLineElement, SalesCrMemoLine, Currency, CurrencyCode, PricesIncVAT);
+            SupplyChainTradeTransactionElement.Add(CrMemoLineElement);
+        end;
     end;
 
     local procedure InsertPaymentTerms(var RootXMLNode: XmlElement; PaymentTermsCode: Code[10]; DueDate: Date)
@@ -980,6 +1015,26 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGenerateSalesCrMemoPDFAttachment(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertInvoiceLine(var SupplyChainTradeTransactionElement: XmlElement; var SalesInvoiceLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAddInvoiceLineElement(var InvoiceLineElement: XmlElement; var SalesInvoiceLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertCrMemoLine(var SupplyChainTradeTransactionElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAddCrMemoLineElement(var CrMemoLineElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
     begin
     end;
 
