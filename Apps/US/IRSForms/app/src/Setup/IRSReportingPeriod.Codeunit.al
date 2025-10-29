@@ -15,6 +15,30 @@ codeunit 10042 "IRS Reporting Period"
         CopiedSetupWithDetailsMsg: Label 'The setup has been copied from %1 to %2. Details:', Comment = '%1 = From Period, %2 = To Period';
         NothingToCopyMsg: Label 'Nothing to copy';
 
+    procedure ShowIRSFormsGuideNotificationIfRequired()
+    var
+        IRSReportingPeriod: Record "IRS Reporting Period";
+        Notification: Notification;
+        RunIRSFormsGuideQst: Label 'Do you want to run IRS Forms Guide to complete the setup?';
+        OpenIRSFormsGuidePageLbl: Label 'Open IRS Forms Guide';
+    begin
+        if not IRSReportingPeriod.IsEmpty() then
+            exit;
+        Notification.Id := GetShowIRSFormsGuideIfRequiredNotificatioId();
+        if Notification.Recall() then;
+        Notification.Message := RunIRSFormsGuideQst;
+        Notification.Scope(NotificationScope::LocalScope);
+        Notification.AddAction(OpenIRSFormsGuidePageLbl, Codeunit::"IRS Reporting Period", 'OpenIRSFormsGuidePageFromNotification');
+        Notification.Send();
+    end;
+
+    procedure OpenIRSFormsGuidePageFromNotification(Notification: Notification)
+    var
+        IRSFormsGuide: Page "IRS Forms Guide";
+    begin
+        IRSFormsGuide.Run();
+    end;
+
     procedure GetReportingPeriod(PostingDate: Date): Code[20]
     begin
         exit(GetReportingPeriod(PostingDate, PostingDate));
@@ -116,5 +140,10 @@ codeunit 10042 "IRS Reporting Period"
             Message(SetupCompletedMessage, FromPeriodNo, ToPeriodNo)
         else
             Message(NothingToCopyMsg);
+    end;
+
+    local procedure GetShowIRSFormsGuideIfRequiredNotificatioId(): Guid
+    begin
+        exit('c704edeb-3655-4841-85e2-b1a025cc7b49');
     end;
 }

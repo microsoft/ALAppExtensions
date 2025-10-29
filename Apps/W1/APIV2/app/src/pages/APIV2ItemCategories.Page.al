@@ -15,6 +15,7 @@ page 30025 "APIV2 - Item Categories"
     PageType = API;
     SourceTable = "Item Category";
     Extensible = false;
+    AboutText = 'Manages item category records including codes, descriptions, parent-child relationships, and hierarchy structure, supporting GET, POST, PATCH, and DELETE operations. Enables external systems to organize, classify, and synchronize product categories for catalog management, inventory reporting, and integration with e-commerce or product information management platforms.';
 
     layout
     {

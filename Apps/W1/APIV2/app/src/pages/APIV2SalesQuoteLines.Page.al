@@ -20,6 +20,7 @@ page 30045 "APIV2 - Sales Quote Lines"
     SourceTable = "Sales Invoice Line Aggregate";
     SourceTableTemporary = true;
     Extensible = false;
+    AboutText = 'Manages sales quote line details including items, services, quantities, unit pricing, discounts, taxes, and dimensions. Supports GET, POST, PATCH, and DELETE operations for external CPQ and CRM systems to create, update, and synchronize quote line content during negotiations and approval workflows, enabling seamless quote-to-order conversion and integration with product configuration and pricing engines.';
 
     layout
     {

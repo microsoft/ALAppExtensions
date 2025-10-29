@@ -4,6 +4,7 @@ using Microsoft.Inventory.Item;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.EPR;
 using Microsoft.Sustainability.Setup;
+using Microsoft.Sustainability.Codes;
 
 tableextension 6220 "Sust. Item" extends Item
 {
@@ -232,6 +233,36 @@ tableextension 6220 "Sust. Item" extends Item
             DataClassification = CustomerContent;
             ToolTip = 'Specifies instructions about disposal methods, recycling facilities, return schemes, or environmental impact.';
         }
+#pragma warning disable PTE0002
+        field(6234; "Product Classification Enabled"; Boolean)
+        {
+            Caption = 'Product Classification Enabled';
+            ToolTip = 'Specifies whether external product classification codes are enabled for this item.';
+            DataClassification = SystemMetadata;
+        }
+        field(6235; "Product Classification Type"; Enum "Product Classification Type")
+        {
+            Caption = 'Product Classification Type';
+            ToolTip = 'Specifies the classification system, such as HS, CPV, or UNSPSC.';
+            DataClassification = SystemMetadata;
+        }
+        field(6236; "Product Classification Code"; Code[50])
+        {
+            Caption = 'Product Classification Code';
+            ToolTip = 'Specifies the external classification code for this item.';
+            DataClassification = CustomerContent;
+            TableRelation = "Product Classification Code".Code where(Type = field("Product Classification Type"));
+        }
+        field(6237; "Product Classification Name"; Text[250])
+        {
+            Caption = 'Product Classification Name';
+            ToolTip = 'Specifies the descriptive name of the classification code.';
+            FieldClass = FlowField;
+            Editable = false;
+            CalcFormula = lookup("Product Classification Code".Name where("Code" = field("Product Classification Code"),
+                                                                          "Type" = field("Product Classification Type")));
+        }
+#pragma warning restore PTE0002
     }
 
     var

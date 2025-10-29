@@ -22,6 +22,7 @@ page 30009 "APIV2 - Customers"
     PageType = API;
     SourceTable = Customer;
     Extensible = false;
+    AboutText = 'Manages customer master data including contact details, addresses, payment terms, credit limits, tax information, and financial balances. Supports full CRUD operations (GET, POST, PATCH, DELETE) for integrating external CRM systems, automating customer onboarding, and synchronizing customer records across business platforms. Enables seamless sharing and maintenance of customer information between Business Central and external applications.';
 
     layout
     {

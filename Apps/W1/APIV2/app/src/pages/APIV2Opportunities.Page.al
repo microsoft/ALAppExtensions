@@ -15,6 +15,7 @@ page 30070 "APIV2 - Opportunities"
     SourceTable = Opportunity;
     Extensible = false;
     ODataKeyFields = SystemId;
+    AboutText = 'Manages sales opportunity records including stages, estimated values, probability, related contacts, and status, supporting full CRUD operations for pipeline tracking and deal management. Enables integration with external CRM and sales automation platforms to synchronize opportunities, align sales processes, and improve pipeline visibility.';
 
     layout
     {

@@ -15,6 +15,7 @@ page 30036 "APIV2 - Tax Areas"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = Id;
+    AboutText = 'Manages tax area definitions including code, description, tax type (Sales Tax or VAT), and last modified date, supporting full CRUD operations for synchronizing tax area data with external tax engines, e-commerce platforms, and compliance automation systems to ensure accurate tax calculation for sales and purchasing transactions.';
 
     layout
     {

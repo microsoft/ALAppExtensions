@@ -18,35 +18,9 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         CompletionTaskTxt: SecretText;
         CompletionTaskPartTxt: SecretText;
         CompletionTaskBuildingFromKeyVaultFailed: Boolean;
-        ConcatSubstrTok: Label '%1%2', Locked = true;
     begin
         if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching1') then
             CompletionTaskTxt := CompletionTaskPartTxt
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching2') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching3') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching4') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching5') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching6') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
         else
             CompletionTaskBuildingFromKeyVaultFailed := true;
 

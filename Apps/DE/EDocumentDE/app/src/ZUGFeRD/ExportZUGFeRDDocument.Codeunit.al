@@ -846,6 +846,7 @@ codeunit 13917 "Export ZUGFeRD Document"
     begin
         CompanyInformation.Get();
         GeneralLedgerSetup.Get();
+        OnAfterGetSetups(CompanyInformation, GeneralLedgerSetup);
     end;
 
     procedure FormatDate(VarDate: Date): Text[20];
@@ -980,6 +981,11 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGenerateSalesCrMemoPDFAttachment(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempBlob: Codeunit "Temp Blob"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetSetups(var CompanyInformation: Record "Company Information"; var GeneralLedgerSetup: Record "General Ledger Setup")
     begin
     end;
 

@@ -34,11 +34,6 @@ codeunit 148019 "IRS 1099 Liable Tests"
         IRSReportingPeriod: Record "IRS Reporting Period";
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
@@ -47,9 +42,6 @@ codeunit 148019 "IRS 1099 Liable Tests"
         // [SCENARIO 561321] Purchase line has "1099 Liable" option enabled by default if "IRS 1099 Form Box No." is specified in the purchase header
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         // [GIVEN] MISC-01 code is specified for vendor "X"
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
@@ -74,18 +66,10 @@ codeunit 148019 "IRS 1099 Liable Tests"
     var
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [SCENARIO 561321] Purchase line do not have "1099 Liable" option enabled by default if "IRS 1099 Form Box No." is not specified in the purchase header
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         // [GIVEN] Purchase header without 1099 code
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
         // [WHEN] Create purchase line

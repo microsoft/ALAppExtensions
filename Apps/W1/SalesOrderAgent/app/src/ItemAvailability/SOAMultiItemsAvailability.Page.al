@@ -91,7 +91,6 @@ page 4410 "SOA Multi Items Availability"
                     Caption = 'Customer No.';
                     TableRelation = Customer;
                     ToolTip = 'Specifies the customer number that will be used to calculate prices and discounts.';
-                    Visible = not IsAgentSession;
 
                     trigger OnValidate()
                     var
@@ -118,7 +117,6 @@ page 4410 "SOA Multi Items Availability"
                     Caption = 'Contact No.';
                     TableRelation = Contact;
                     ToolTip = 'Specifies the contact number that will be used to calculate prices and discounts.';
-                    Visible = not IsAgentSession;
 
                     trigger OnValidate()
                     var
@@ -150,7 +148,6 @@ page 4410 "SOA Multi Items Availability"
                 {
                     Caption = 'Location Filter';
                     ToolTip = 'Specifies the location(-s) that will be used to filter the amounts in the window.';
-                    Visible = not IsAgentSession;
 
                     trigger OnLookup(var Text: Text): Boolean
                     var
@@ -721,6 +718,8 @@ page 4410 "SOA Multi Items Availability"
             Rec.FilterGroup(-1);
             Rec.SetRange("No.", '<>*');
             Rec.FilterGroup(OriginalFilterGroup);
+            if LocationFilter = '' then
+                LocationFilter := '''''';
         end;
 
         FindPeriod('');
@@ -762,6 +761,12 @@ page 4410 "SOA Multi Items Availability"
             SOAShipmentDateMgt.SetParamenters(Rec."No.", '', LocationCode, InUOMCode, WorkDate(), QuantityFilter);
             if SOAShipmentDateMgt.Run() then
                 EarliestShipmentDate := SOAShipmentDateMgt.GetEarliestShipmentDate();
+
+            if (EarliestShipmentDate <> 0D) and (EarliestShipmentDate <= Rec.GetRangeMax("Date Filter")) then begin
+                Available := true;
+                AvailabilityLevel := AvailabilityLevel::Available;
+                EarliestShipmentDate := 0D;
+            end;
         end;
 
         TranslatedDescription := Rec.Description;

@@ -22,6 +22,7 @@ page 30037 "APIV2 - Sales Quotes"
     PageType = API;
     SourceTable = "Sales Quote Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages sales quote documents including customer details, quote status, pricing, addresses, and validity dates. Supports full lifecycle operations (GET, POST, PATCH, DELETE) for creating, retrieving, updating, and deleting sales quotes, enabling integration with lead management, e-commerce platforms, and automated quoting workflows. Ideal for external systems needing to automate or synchronize sales quoting processes with Business Central.';
 
     layout
     {

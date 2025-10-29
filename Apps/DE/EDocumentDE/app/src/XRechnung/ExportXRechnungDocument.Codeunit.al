@@ -23,7 +23,6 @@ using Microsoft.Sales.History;
 codeunit 13916 "Export XRechnung Document"
 {
     TableNo = "Record Export Buffer";
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 
@@ -1126,6 +1125,7 @@ codeunit 13916 "Export XRechnung Document"
     begin
         CompanyInformation.Get();
         GeneralLedgerSetup.Get();
+        OnAfterGetSetups(CompanyInformation, GeneralLedgerSetup);
     end;
     #endregion
 
@@ -1181,6 +1181,11 @@ codeunit 13916 "Export XRechnung Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCalculateCrMemoLineAmounts(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetSetups(var CompanyInformation: Record "Company Information"; var GeneralLedgerSetup: Record "General Ledger Setup")
     begin
     end;
 }

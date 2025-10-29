@@ -250,6 +250,11 @@ codeunit 5239 "Contoso Account Schedule"
     end;
 
     procedure InsertFinancialReport(Name: Code[10]; Description: Text[80]; FinancialReportRowGrp: Code[10]; FinancialReportColumnGrp: Code[10])
+    begin
+        InsertFinancialReport(Name, Description, FinancialReportRowGrp, FinancialReportColumnGrp, '');
+    end;
+
+    procedure InsertFinancialReport(Name: Code[10]; Description: Text[80]; FinancialReportRowGrp: Code[10]; FinancialReportColumnGrp: Code[10]; InternalDescription: Text[250])
     var
         FinancialReport: Record "Financial Report";
         Exists: Boolean;
@@ -265,6 +270,8 @@ codeunit 5239 "Contoso Account Schedule"
         FinancialReport.Validate(Description, Description);
         FinancialReport.Validate("Financial Report Row Group", FinancialReportRowGrp);
         FinancialReport.Validate("Financial Report Column Group", FinancialReportColumnGrp);
+        if InternalDescription <> '' then
+            FinancialReport.Validate("Internal Description", InternalDescription);
 
         if Exists then
             FinancialReport.Modify(true)

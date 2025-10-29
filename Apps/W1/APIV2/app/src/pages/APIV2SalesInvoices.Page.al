@@ -26,6 +26,7 @@ page 30012 "APIV2 - Sales Invoices"
     PageType = API;
     SourceTable = "Sales Invoice Entity Aggregate";
     Extensible = false;
+    AboutText = 'Manages sales invoice documents, exposing invoice headers, customer details, billing and shipping addresses, amounts, tax information, due dates, and status. Supports full CRUD operations for automating billing processes, synchronizing invoicing data with external accounting or e-commerce platforms, and enabling accounts receivable integration and financial reporting.';
 
     layout
     {

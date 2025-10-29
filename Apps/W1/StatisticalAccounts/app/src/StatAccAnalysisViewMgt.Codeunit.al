@@ -2,6 +2,7 @@ namespace Microsoft.Finance.Analysis.StatisticalAccount;
 
 using Microsoft.Finance.Analysis;
 using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.Period;
 using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 2621 "Stat. Acc. Analysis View Mgt."
@@ -181,6 +182,29 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
         DimCodeBuf.Name := StatisticalAccount.Name;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Analysis View Entry", 'OnBeforeDrilldown', '', false, false)]
+    local procedure HandleOnBeforeDrilldown(var AnalysisViewEntry: Record "Analysis View Entry"; var IsHandled: Boolean)
+    var
+        TempStatisticalLedgerEntry: Record "Statistical Ledger Entry" temporary;
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
+    begin
+        if IsHandled then
+            exit;
+
+        StatAccTelemetry.LogAnalysisViewsUsage();
+        if not (AnalysisViewEntry."Account Source" = AnalysisViewEntry."Account Source"::"Statistical Account") then
+            exit;
+
+        if AnalysisViewEntry."Account Source" = AnalysisViewEntry."Account Source"::"Statistical Account" then begin
+            TempStatisticalLedgerEntry.Reset();
+            TempStatisticalLedgerEntry.DeleteAll();
+            GetStatisticalLedgerEntry(AnalysisViewEntry, TempStatisticalLedgerEntry);
+            Page.RunModal(Page::"Statistical Ledger Entry List", TempStatisticalLedgerEntry);
+        end;
+
+        IsHandled := true;
+    end;
+
     local procedure GetEntriesForUpdate(var AnalysisView: Record "Analysis View"; var UpdAnalysisViewEntryBuffer: Record "Upd Analysis View Entry Buffer")
     var
         AnalysisViewEntry: Record "Analysis View Entry";
@@ -240,5 +264,97 @@ codeunit 2621 "Stat. Acc. Analysis View Mgt."
     local procedure VerifyCanHandle(var AnalysisView: Record "Analysis View"): Boolean
     begin
         exit((AnalysisView."Account Source" = AnalysisView."Account Source"::"Statistical Account") or (AnalysisView."Statistical Account Filter" <> ''));
+    end;
+
+    local procedure GetStatisticalLedgerEntry(var AnalysisViewEntry: Record "Analysis View Entry"; var StatisticalLedgerEntry: Record "Statistical Ledger Entry")
+    var
+        AnalysisView: Record "Analysis View";
+        AnalysisViewFilter: Record "Analysis View Filter";
+        GLSetup: Record "General Ledger Setup";
+        StatisticalLedgerEntry2: Record "Statistical Ledger Entry";
+        AnalysisViewEntryToGLEntries: Codeunit AnalysisViewEntryToGLEntries;
+        UpdateAnalysisView: Codeunit "Update Analysis View";
+        StartDate: Date;
+        EndDate: Date;
+        GlobalDimValue: Code[20];
+    begin
+        AnalysisView.Get(AnalysisViewEntry."Analysis View Code");
+
+        if AnalysisView."Date Compression" = AnalysisView."Date Compression"::None then begin
+            if StatisticalLedgerEntry2.Get(AnalysisViewEntry."Entry No.") then begin
+                StatisticalLedgerEntry := StatisticalLedgerEntry2;
+                StatisticalLedgerEntry.Insert();
+            end;
+            exit;
+        end;
+
+        GLSetup.Get();
+
+        StartDate := AnalysisViewEntry."Posting Date";
+        EndDate := StartDate;
+
+        if StartDate < AnalysisView."Starting Date" then
+            StartDate := 0D
+        else
+            if (AnalysisViewEntry."Posting Date" = NormalDate(AnalysisViewEntry."Posting Date")) and
+               not (AnalysisView."Date Compression" in [AnalysisView."Date Compression"::None, AnalysisView."Date Compression"::Day])
+            then
+                EndDate := CalculateEndDate(AnalysisView."Date Compression", AnalysisViewEntry);
+
+        StatisticalLedgerEntry2.SetCurrentKey("Statistical Account No.", "Posting Date");
+        StatisticalLedgerEntry2.SetRange("Statistical Account No.", AnalysisViewEntry."Account No.");
+        StatisticalLedgerEntry2.SetRange("Posting Date", StartDate, EndDate);
+
+        if AnalysisViewEntryToGLEntries.GetGlobalDimValue(GLSetup."Global Dimension 1 Code", AnalysisViewEntry, GlobalDimValue) then
+            StatisticalLedgerEntry2.SetRange("Global Dimension 1 Code", GlobalDimValue)
+        else
+            if AnalysisViewFilter.Get(AnalysisViewEntry."Analysis View Code", GLSetup."Global Dimension 1 Code")
+            then
+                StatisticalLedgerEntry2.SetFilter("Global Dimension 1 Code", AnalysisViewFilter."Dimension Value Filter");
+
+        if AnalysisViewEntryToGLEntries.GetGlobalDimValue(GLSetup."Global Dimension 2 Code", AnalysisViewEntry, GlobalDimValue) then
+            StatisticalLedgerEntry2.SetRange("Global Dimension 2 Code", GlobalDimValue)
+        else
+            if AnalysisViewFilter.Get(AnalysisViewEntry."Analysis View Code", GLSetup."Global Dimension 2 Code")
+            then
+                StatisticalLedgerEntry2.SetFilter("Global Dimension 2 Code", AnalysisViewFilter."Dimension Value Filter");
+
+        if StatisticalLedgerEntry2.Find('-') then
+            repeat
+                if AnalysisViewEntryToGLEntries.DimEntryOK(StatisticalLedgerEntry2."Dimension Set ID", AnalysisView."Dimension 1 Code", AnalysisViewEntry."Dimension 1 Value Code") and
+                   AnalysisViewEntryToGLEntries.DimEntryOK(StatisticalLedgerEntry2."Dimension Set ID", AnalysisView."Dimension 2 Code", AnalysisViewEntry."Dimension 2 Value Code") and
+                   AnalysisViewEntryToGLEntries.DimEntryOK(StatisticalLedgerEntry2."Dimension Set ID", AnalysisView."Dimension 3 Code", AnalysisViewEntry."Dimension 3 Value Code") and
+                   AnalysisViewEntryToGLEntries.DimEntryOK(StatisticalLedgerEntry2."Dimension Set ID", AnalysisView."Dimension 4 Code", AnalysisViewEntry."Dimension 4 Value Code") and
+                   UpdateAnalysisView.DimSetIDInFilter(StatisticalLedgerEntry2."Dimension Set ID", AnalysisView)
+                then begin
+                    StatisticalLedgerEntry := StatisticalLedgerEntry2;
+                    StatisticalLedgerEntry.Insert();
+                end;
+            until StatisticalLedgerEntry2.Next() = 0;
+    end;
+
+    local procedure CalculateEndDate(DateCompression: Integer; AnalysisViewEntry: Record "Analysis View Entry"): Date
+    var
+        AnalysisView2: Record "Analysis View";
+        AccountingPeriod: Record "Accounting Period";
+    begin
+        case DateCompression of
+            AnalysisView2."Date Compression"::Week:
+                exit(CalcDate('<+6D>', AnalysisViewEntry."Posting Date"));
+            AnalysisView2."Date Compression"::Month:
+                exit(CalcDate('<+1M-1D>', AnalysisViewEntry."Posting Date"));
+            AnalysisView2."Date Compression"::Quarter:
+                exit(CalcDate('<+3M-1D>', AnalysisViewEntry."Posting Date"));
+            AnalysisView2."Date Compression"::Year:
+                exit(CalcDate('<+1Y-1D>', AnalysisViewEntry."Posting Date"));
+            AnalysisView2."Date Compression"::Period:
+                begin
+                    AccountingPeriod."Starting Date" := AnalysisViewEntry."Posting Date";
+                    if AccountingPeriod.Next() <> 0 then
+                        exit(CalcDate('<-1D>', AccountingPeriod."Starting Date"));
+
+                    exit(DMY2Date(31, 12, 9999));
+                end;
+        end;
     end;
 }

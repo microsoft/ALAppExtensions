@@ -20,6 +20,7 @@ page 30035 "APIV2 - Income Statement"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = Id;
+    AboutText = 'Provides read-only access to income statement data, including revenues, expenses, net change, and account breakdowns over specified periods. Supports GET operations for financial analysis, automated reporting, and integration with external business intelligence or management dashboards to deliver timely profitability insights.';
 
     layout
     {

@@ -45,7 +45,7 @@ pageextension 6229 "Sust. Item Charges" extends "Item Charges"
     var
         SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Item Charge Emissions";
     end;

@@ -19,6 +19,7 @@ page 30014 "APIV2 - Accounts"
     PageType = API;
     SourceTable = "G/L Account";
     Extensible = false;
+    AboutText = 'Provides read-only access to chart of accounts data from the G/L Account table, including account numbers, names, categories, balances, posting settings, and consolidation attributes. Supports GET operations for retrieving account structures and financial statistics to enable integration with external reporting, consolidation, and accounting platforms. Ideal for synchronizing account master data and balances to maintain consistency across financial systems and support automated financial workflows; creation or modification of account records is not permitted.';
 
     layout
     {
