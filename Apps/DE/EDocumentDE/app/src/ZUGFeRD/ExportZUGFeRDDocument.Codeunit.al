@@ -583,17 +583,6 @@ codeunit 13917 "Export ZUGFeRD Document"
     procedure InsertSupplyChainTradeTransaction(var RootXMLNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; CurrencyCode: Code[10]; Currency: Record Currency; var LineAmount: Dictionary of [Decimal, Decimal]; var LineVATAmount: Dictionary of [Decimal, Decimal]; var LineAmounts: Dictionary of [Text, Decimal]; var LineDiscAmount: Dictionary of [Decimal, Decimal])
     var
         SupplyChainTradeTransactionElement: XmlElement;
-        IncludedLineItemElement: XmlElement;
-        AssociatedDocumentLineElement: XmlElement;
-        SpecifiedTradeProductElement: XmlElement;
-        SpecifiedLineTradeAgreementElement: XmlElement;
-        NetPriceProductTradePriceElement: XmlElement;
-        ChargeAmountElement: XmlElement;
-        SpecifiedLineTradeDeliveryElement: XmlElement;
-        BilledQuantityElement: XmlElement;
-        SpecifiedLineTradeSettlementElement: XmlElement;
-        ApplicableTradeTaxElement: XmlElement;
-        SpecifiedTradeSettlementLineMonetarySummationElement: XmlElement;
     begin
         SupplyChainTradeTransactionElement := XmlElement.Create('SupplyChainTradeTransaction', XmlNamespaceRSM);
         if SalesCrMemoLine.FindSet() then
