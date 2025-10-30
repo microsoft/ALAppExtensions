@@ -125,17 +125,10 @@ codeunit 11465 "US Contoso Localization"
     end;
 
     local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateInventoryPostingSetupUS: Codeunit "Create InventoryPostingSetupUS";
     begin
         case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Setup Data":
-                Codeunit.Run(Codeunit::"Create InventoryPostingSetupUS");
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Location US");
-                    CreateInventoryPostingSetupUS.UpdateInventoryPosting();
-                end;
+                Codeunit.Run(Codeunit::"Create Location US");
         end;
     end;
 

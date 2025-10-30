@@ -15,6 +15,7 @@ page 30090 "APIV2 - Job Queue Log Entries"
     SourceTable = "Job Queue Log Entry";
     Extensible = false;
     DelayedInsert = true;
+    AboutText = 'Provides access to job queue log entries detailing the execution history, status, error messages, and timestamps of scheduled background tasks. Supports GET operations for monitoring, troubleshooting, and integrating Business Central automation results with external monitoring or alerting systems. Enables visibility into the operational health and outcomes of automated processes for reliable background task management.';
 
     layout
     {

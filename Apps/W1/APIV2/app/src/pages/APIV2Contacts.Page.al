@@ -16,6 +16,7 @@ page 30071 "APIV2 - Contacts"
     PageType = API;
     SourceTable = Contact;
     Extensible = false;
+    AboutText = 'Manages contact records for individuals and organizations, exposing data such as names, addresses, phone numbers, email addresses, job titles, and business relationships. Supports full CRUD operations to enable integration with external CRM, marketing automation, and customer service systems, ensuring accurate and synchronized contact information across business platforms.';
 
     layout
     {

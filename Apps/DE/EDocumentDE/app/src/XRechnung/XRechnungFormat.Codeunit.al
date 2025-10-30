@@ -11,8 +11,8 @@ using System.IO;
 using Microsoft.Sales.Customer;
 using Microsoft.Foundation.Company;
 using Microsoft.eServices.EDocument;
-using Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.Service.History;
+using Microsoft.eServices.EDocument.IO.Peppol;
 
 codeunit 13914 "XRechnung Format" implements "E-Document"
 {

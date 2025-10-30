@@ -14,6 +14,7 @@ page 30054 "APIV2 - Default Dimensions"
     SourceTable = "Default Dimension";
     Extensible = false;
     ODataKeyFields = SystemId;
+    AboutText = 'Manages default dimension assignments for master records such as customers, vendors, items, and projects, enabling retrieval, creation, update, and deletion of dimension values and posting requirements. Supports automation and synchronization of financial categorization, ensuring consistent analytical tagging for accurate reporting and integration with external financial, ERP, or analytics systems.';
 
     layout
     {

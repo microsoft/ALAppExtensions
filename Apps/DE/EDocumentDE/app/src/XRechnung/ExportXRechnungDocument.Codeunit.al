@@ -1147,6 +1147,7 @@ codeunit 13916 "Export XRechnung Document"
     begin
         CompanyInformation.Get();
         GeneralLedgerSetup.Get();
+        OnAfterGetSetups(CompanyInformation, GeneralLedgerSetup);
     end;
     #endregion
 
@@ -1206,6 +1207,11 @@ codeunit 13916 "Export XRechnung Document"
     end;
 
     [IntegrationEvent(false, false)]
+    local procedure OnAfterGetSetups(var CompanyInformation: Record "Company Information"; var GeneralLedgerSetup: Record "General Ledger Setup")
+    begin
+    end;
+    
+    [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertInvoiceLine(var InvoiceElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean; var IsHandled: Boolean)
     begin
     end;
@@ -1224,5 +1230,4 @@ codeunit 13916 "Export XRechnung Document"
     local procedure OnBeforeAddCrMemoLineElement(var CrMemoLineElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
     begin
     end;
-
 }

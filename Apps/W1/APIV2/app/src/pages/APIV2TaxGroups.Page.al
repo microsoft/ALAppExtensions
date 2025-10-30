@@ -15,6 +15,7 @@ page 30015 "APIV2 - Tax Groups"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = Id;
+    AboutText = 'Manages tax group definitions including codes, descriptions, and tax types (Sales Tax, VAT) for categorizing items and services in Business Central. Supports full CRUD operations to enable external systems to synchronize tax groups for accurate tax calculation, compliance, and automated e-commerce or sales integrations.';
 
     layout
     {

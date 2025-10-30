@@ -25,6 +25,7 @@ page 30066 "APIV2 - Purchase Orders"
     PageType = API;
     SourceTable = "Purchase Order Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages purchase order documents, exposing vendor details, order status, delivery and payment information, addresses, currency, totals, and discounts. Supports full CRUD operations (GET, POST, PATCH, DELETE) for procurement automation, supplier integration, and inventory replenishment workflows with external platforms. Enables seamless synchronization and lifecycle management of purchase orders between Business Central and third-party systems.';
 
     layout
     {

@@ -15,6 +15,7 @@ page 30023 "APIV2 - Payment Terms"
     PageType = API;
     SourceTable = "Payment Terms";
     Extensible = false;
+    AboutText = 'Manages payment term definitions including codes, descriptions, due date and discount calculations, and discount percentages. Supports full CRUD operations to synchronize payment terms with external CRM or ERP systems, enabling consistent payment schedules for accurate invoicing and cash flow automation. Ideal for integrating and automating sales and purchasing processes across platforms.';
 
     layout
     {

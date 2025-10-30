@@ -328,6 +328,31 @@ codeunit 31392 "Default Dimension Handler CZA"
             until AutoDefaultDimension.Next() = 0;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Item", 'OnCopyItemOnBeforeTargetItemInsert', '', false, false)]
+    local procedure ItemCopyOnCopyItemOnBeforeTargetItemInsert(var CopyItemBuffer: Record "Copy Item Buffer")
+    var
+        AutoDefaultDimension: Record "Default Dimension";
+    begin
+        if not CopyItemBuffer.Dimensions then
+            exit;
+
+        AutoDefaultDimension.SetRange("Table ID", Database::Item);
+        AutoDefaultDimension.SetRange("No.", '');
+        AutoDefaultDimension.SetRange("Automatic Create CZA", true);
+        if AutoDefaultDimension.IsEmpty() then
+            exit;
+
+        CopyItemBuffer.Dimensions := false;
+        CopyItemBuffer."Auto Create Dimension CZA" := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Item", 'OnAfterCopyItem', '', false, false)]
+    local procedure ItemCopyOnAfterCopyItem(var CopyItemBuffer: Record "Copy Item Buffer"; SourceItem: Record Item; var TargetItem: Record Item)
+    begin
+        if CopyItemBuffer."Auto Create Dimension CZA" then
+            CopyItemDimensions(SourceItem, TargetItem."No.");
+    end;
+
     local procedure SetRequestRunFalse(TableID: Integer)
     begin
         case TableID of
@@ -376,6 +401,23 @@ codeunit 31392 "Default Dimension Handler CZA"
             Database::"Item Charge":
                 DimensionAutoUpdateMgtCZA.SetRequestRunItemChargeOnAfterInsertEvent(false);
         end;
+    end;
+
+    local procedure CopyItemDimensions(FromItem: Record Item; ToItemNo: Code[20])
+    var
+        DefaultDimension: Record "Default Dimension";
+        NewDefaultDimension: Record "Default Dimension";
+    begin
+        DefaultDimension.SetRange("Table ID", Database::Item);
+        DefaultDimension.SetRange("No.", FromItem."No.");
+        if DefaultDimension.FindSet() then
+            repeat
+                if not NewDefaultDimension.Get(Database::Item, ToItemNo, DefaultDimension."Dimension Code") then begin
+                    NewDefaultDimension.TransferFields(DefaultDimension);
+                    NewDefaultDimension."No." := ToItemNo;
+                    NewDefaultDimension.Insert();
+                end;
+            until DefaultDimension.Next() = 0;
     end;
 
     var

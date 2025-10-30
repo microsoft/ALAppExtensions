@@ -16,6 +16,7 @@ codeunit 10050 "IRS 1099 Vendor Email"
     var
         EmailNotSpecifiedErr: Label 'Either E-Mail For IRS or E-mail must be specified to receive 1099 forms electronically.';
         PropagateFieldToOpenedFormDocumentsQst: Label 'Do you want to propagate the %1 to all opened 1099 form documents by this vendor?', Comment = '%1 = field name';
+        PropagateFieldToReleasedFormDocumentsQst: Label 'Do you want to propagate the %1 to all released 1099 form documents by this vendor?', Comment = '%1 = field name';
         PropagateFieldToSubmittedFormDocumentsQst: Label 'Do you want to propagate the %1 to all submitted 1099 form documents by this vendor?', Comment = '%1 = field name';
         CannotRemoveEmailWhenOpenedFormDocsExistErr: Label 'Cannot remove the e-mail when opened 1099 form documents exist for this vendor.';
 
@@ -51,6 +52,11 @@ codeunit 10050 "IRS 1099 Vendor Email"
             if ConfirmManagement.GetResponse(StrSubstNo(PropagateFieldToOpenedFormDocumentsQst, Vendor.FieldCaption("E-Mail")), false) then
                 IRS1099FormDocHeader.ModifyAll("Vendor E-Mail", GetEmailForIRSReporting(Vendor));
 
+        IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Released);
+        if not IRS1099FormDocHeader.IsEmpty() then
+            if ConfirmManagement.GetResponse(StrSubstNo(PropagateFieldToReleasedFormDocumentsQst, Vendor.FieldCaption("E-Mail")), false) then
+                IRS1099FormDocHeader.ModifyAll("Vendor E-Mail", GetEmailForIRSReporting(Vendor));
+
         IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Submitted);
         if not IRS1099FormDocHeader.IsEmpty() then
             if ConfirmManagement.GetResponse(StrSubstNo(PropagateFieldToSubmittedFormDocumentsQst, Vendor.FieldCaption("E-Mail")), false) then
@@ -67,6 +73,13 @@ codeunit 10050 "IRS 1099 Vendor Email"
         if not IRS1099FormDocHeader.IsEmpty() then
             if ConfirmManagement.GetResponse(
                 StrSubstNo(PropagateFieldToOpenedFormDocumentsQst, Vendor.FieldCaption("Receiving 1099 E-Form Consent")), false)
+            then
+                IRS1099FormDocHeader.ModifyAll("Receiving 1099 E-Form Consent", Vendor."Receiving 1099 E-Form Consent");
+
+        IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Released);
+        if not IRS1099FormDocHeader.IsEmpty() then
+            if ConfirmManagement.GetResponse(
+                StrSubstNo(PropagateFieldToReleasedFormDocumentsQst, Vendor.FieldCaption("Receiving 1099 E-Form Consent")), false)
             then
                 IRS1099FormDocHeader.ModifyAll("Receiving 1099 E-Form Consent", Vendor."Receiving 1099 E-Form Consent");
 

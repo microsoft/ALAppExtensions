@@ -12,6 +12,7 @@ using System.Email;
 using System.Environment.Configuration;
 using System.Globalization;
 using System.Security.AccessControl;
+using System.Telemetry;
 
 page 4400 "SOA Setup"
 {
@@ -132,33 +133,8 @@ page 4400 "SOA Setup"
                         ShowMandatory = true;
 
                         trigger OnAssistEdit()
-                        var
-                            EmailAccounts: Page "Email Accounts";
                         begin
-                            if not CheckMailboxExists() then
-                                Page.RunModal(Page::"Email Account Wizard");
-
-                            if not CheckMailboxExists() then
-                                exit;
-
-                            EmailAccounts.EnableLookupMode();
-                            EmailAccounts.FilterConnectorV4Accounts(true);
-                            if EmailAccounts.RunModal() = Action::LookupOK then begin
-                                EmailAccounts.GetAccount(TempEmailAccount);
-                                TempSOASetup."Email Account ID" := TempEmailAccount."Account Id";
-                                TempSOASetup."Email Connector" := TempEmailAccount.Connector;
-                                TempSOASetup."Email Address" := TempEmailAccount."Email Address";
-                            end;
-
-                            if MailboxName <> TempSOASetup."Email Address" then begin
-                                MailboxChanged := true;
-                                MailboxName := TempSOASetup."Email Address";
-                                ConfigUpdated();
-
-                                MailboxFolder := OptionalMailboxLbl;
-                                Clear(TempSOASetup."Email Folder");
-                                Clear(TempSOASetup."Email Folder Id");
-                            end;
+                            OnAssistEditMailbox();
                         end;
 
                         trigger OnValidate()
@@ -382,33 +358,8 @@ page 4400 "SOA Setup"
                     ShowMandatory = true;
 
                     trigger OnAssistEdit()
-                    var
-                        EmailAccounts: Page "Email Accounts";
                     begin
-                        if not CheckMailboxExists() then
-                            Page.RunModal(Page::"Email Account Wizard");
-
-                        if not CheckMailboxExists() then
-                            exit;
-
-                        EmailAccounts.EnableLookupMode();
-                        EmailAccounts.FilterConnectorV4Accounts(true);
-                        if EmailAccounts.RunModal() = Action::LookupOK then begin
-                            EmailAccounts.GetAccount(TempEmailAccount);
-                            TempSOASetup."Email Account ID" := TempEmailAccount."Account Id";
-                            TempSOASetup."Email Connector" := TempEmailAccount.Connector;
-                            TempSOASetup."Email Address" := TempEmailAccount."Email Address";
-                        end;
-
-                        if MailboxName <> TempSOASetup."Email Address" then begin
-                            MailboxChanged := true;
-                            MailboxName := TempSOASetup."Email Address";
-                            ConfigUpdated();
-
-                            MailboxFolder := OptionalMailboxLbl;
-                            Clear(TempSOASetup."Email Folder");
-                            Clear(TempSOASetup."Email Folder Id");
-                        end;
+                        OnAssistEditMailbox();
                     end;
 
                     trigger OnValidate()
@@ -548,6 +499,9 @@ page 4400 "SOA Setup"
     }
 
     trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SOASetupCU: Codeunit "SOA Setup";
     begin
         if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Order Agent") then
             Error('');
@@ -555,6 +509,7 @@ page 4400 "SOA Setup"
         IsConfigUpdated := false;
         FirstConfig := IsFirstConfig();
         UpdateControls();
+        FeatureTelemetry.LogUptake('0000QIK', SOASetupCU.GetFeatureName(), Enum::"Feature Uptake Status"::Discovered);
     end;
 
     trigger OnAfterGetRecord()
@@ -565,12 +520,10 @@ page 4400 "SOA Setup"
         UpdateControls();
         Agent.GetUserSettings(Rec."User Security ID", UserSettings);
         SelectedLanguageTxt := Language.GetWindowsLanguageName(UserSettings."Language ID");
-        FirstConfig := IsFirstConfig();
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
-        User: Record User;
         SOASetupCU: Codeunit "SOA Setup";
         SOASessionEvents: Codeunit "SOA Session Events";
         ReadyToActivateLbl: Label 'Ready to activate the sales order agent?\\The Copilot agent will run now and until you deactivate it.';
@@ -608,11 +561,9 @@ page 4400 "SOA Setup"
         if (TempSOASetup."Message Limit" <= 0) then
             Error(DailyEmailLimitErr);
 
-        if ShowDeactivateAgentEmailPermissionsWarning() then begin
-            if User.Get(Rec.SystemModifiedBy) then;
-            if not Confirm(StrSubstNo(DeactivateWarningLbl, User."User Name")) then
+        if ShowDeactivateAgentEmailPermissionsWarning() then
+            if not Confirm(StrSubstNo(DeactivateWarningLbl, ConfiguredBy)) then
                 exit(false);
-        end;
 
         if StateChanged() then
             SOASetupCU.UpdateSOASetupActivationDT(TempSOASetup);
@@ -642,6 +593,7 @@ page 4400 "SOA Setup"
 
     local procedure UpdateControls()
     var
+        User: Record User;
         SOASetupCU: Codeunit "SOA Setup";
     begin
         BadgeTxt := SOASetupCU.GetInitials();
@@ -679,6 +631,9 @@ page 4400 "SOA Setup"
         DailyEmailLimit := TempSOASetup."Message Limit";
         if DailyEmailLimit = 0 then
             DailyEmailLimit := TempSOASetup.GetDefaultMessageLimit();
+
+        if User.Get(Rec.SystemModifiedBy) then
+            ConfiguredBy := User."Full Name";
 
         CheckIsValidConfig();
     end;
@@ -732,6 +687,37 @@ page 4400 "SOA Setup"
         until EmailAccounts.Next() = 0;
     end;
 
+    local procedure OnAssistEditMailbox()
+    var
+        EmailAccounts: Page "Email Accounts";
+    begin
+        if not CheckMailboxExists() then
+            Page.RunModal(Page::"Email Account Wizard");
+
+        if not CheckMailboxExists() then
+            exit;
+
+        EmailAccounts.EnableLookupMode();
+        EmailAccounts.SetShowCreateAccount(true);
+        EmailAccounts.FilterConnectorV4Accounts(true);
+        if EmailAccounts.RunModal() = Action::LookupOK then begin
+            EmailAccounts.GetAccount(TempEmailAccount);
+            TempSOASetup."Email Account ID" := TempEmailAccount."Account Id";
+            TempSOASetup."Email Connector" := TempEmailAccount.Connector;
+            TempSOASetup."Email Address" := TempEmailAccount."Email Address";
+        end;
+
+        if MailboxName <> TempSOASetup."Email Address" then begin
+            MailboxChanged := true;
+            MailboxName := TempSOASetup."Email Address";
+            ConfigUpdated();
+
+            MailboxFolder := OptionalMailboxLbl;
+            Clear(TempSOASetup."Email Folder");
+            Clear(TempSOASetup."Email Folder Id");
+        end;
+    end;
+
     local procedure CopyTempAgentAccessControl(var SourceTempAgentAccessControl: Record "Agent Access Control" temporary; var TargetTempAgentAccessControl: Record "Agent Access Control" temporary)
     begin
         TargetTempAgentAccessControl.Reset();
@@ -781,6 +767,7 @@ page 4400 "SOA Setup"
         OnlyAvailableItemsActive: Boolean;
         MailboxChanged: Boolean;
         DailyEmailLimit: Integer;
+        ConfiguredBy: Text;
         InitialState: Option Enabled,Disabled;
         LearnMoreTxt: Label 'Learn more';
         LearnMoreBillingDocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2333517';

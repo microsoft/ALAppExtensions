@@ -165,12 +165,7 @@ codeunit 148011 "IRS 1099 Vendor Tests"
     procedure ChangeIRSDataInVendorLedgerEntry()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
+VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
         NewPeriodNo, FormNo, NewFormNo, FormBoxNo, NewFormBoxNo : Code[20];
         IRSAmount: Decimal;
         NewDate: Date;
@@ -178,10 +173,7 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         // [SCENARIO 495389] Stan can change the IRS data in the posted vendor ledger entry
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
         IRSAmount := LibraryRandom.RandDec(100, 2);
@@ -211,31 +203,20 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         VendorLedgerEntry.TestField("IRS 1099 Form Box No.", NewFormBoxNo);
         VendorLedgerEntry.TestField("IRS 1099 Reporting Amount", IRSAmount);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure SetIRSAmountMoreThanAmountInVendLedgEntry()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
+VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
         FormNo, FormBoxNo : Code[20];
         IRSAmount: Decimal;
     begin
         // [SCENARIO 495389] Stan cannot set the IRS Reporting Amount more than amount in Vendor Ledger Entry
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
         IRSAmount := -LibraryRandom.RandDec(100, 2);
@@ -251,31 +232,20 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         // [THEN] An error message "IRS Reporting Amount cannot be more than -300" is thrown
         Assert.ExpectedError(IRSReportingAmountCannotBeMoreThanAmountErr);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure SetPositiveIRSAmountInInvVendLedgEntry()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
+VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
         FormNo, FormBoxNo : Code[20];
         IRSAmount: Decimal;
     begin
         // [SCENARIO 495389] Stan cannot set the positive IRS Reporting Amount in the invoice Vendor Ledger Entry
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
         IRSAmount := -LibraryRandom.RandDec(100, 2);
@@ -290,31 +260,20 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         asserterror VendorLedgerEntriesPage."IRS 1099 Reporting Amount".SetValue(IRSAmount);
         // [THEN] An error message "IRS Reporting Amount must be negative" is thrown
         Assert.ExpectedError(IRSReportingAmountNegativeErr);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure SetNegativeIRSAmountInInvVendLedgEntry()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
+VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
         FormNo, FormBoxNo : Code[20];
         IRSAmount: Decimal;
     begin
         // [SCENARIO 495389] Stan cannot set the negative IRS Reporting Amount in the credit memo Vendor Ledger Entry
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
         IRSAmount := LibraryRandom.RandDec(100, 2);
@@ -329,10 +288,7 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         asserterror VendorLedgerEntriesPage."IRS 1099 Reporting Amount".SetValue(IRSAmount);
         // [THEN] An error message "IRS Reporting Amount must be positive" is thrown
         Assert.ExpectedError(IRSReportingAmountPositiveErr);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     [HandlerFunctions('IRS1099PropagateVendSetupRequestPageHandler')]

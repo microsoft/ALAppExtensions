@@ -19,6 +19,7 @@ page 30048 "APIV2 - Cust Financial Details"
     DelayedInsert = true;
     Extensible = false;
 
+    AboutText = 'Provides read-only access to consolidated customer financial data, including outstanding balances, overdue amounts, payment history, and credit limits. Supports GET operations for credit management, collections, and customer risk assessment, enabling integration with CRM, credit control, and risk monitoring systems to automate credit checks and track payment behavior.';
 
     layout
     {

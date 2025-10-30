@@ -274,7 +274,8 @@ table 6217 "Sustainability Setup"
     begin
         if RecordHasBeenRead then
             exit;
-        Get();
+        if not Get() then
+            exit;
         RecordHasBeenRead := true;
     end;
 
@@ -372,7 +373,9 @@ table 6217 "Sustainability Setup"
     local procedure GetSustainabilitySetup()
     begin
         if not SustainabilitySetupRetrieved then begin
-            SustainabilitySetup.Get();
+            if not SustainabilitySetup.Get() then
+                exit;
+
             SustainabilitySetupRetrieved := true;
         end;
     end;

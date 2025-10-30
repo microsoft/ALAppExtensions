@@ -126,7 +126,7 @@ pageextension 6214 "Sust. Purch. Inv. Subform" extends "Purch. Invoice Subform"
     var
         SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Use Emissions In Purch. Doc.";
         SustainabilityFormulasFieldVisible := SustainabilitySetup."Use Formulas In Purch. Docs";
