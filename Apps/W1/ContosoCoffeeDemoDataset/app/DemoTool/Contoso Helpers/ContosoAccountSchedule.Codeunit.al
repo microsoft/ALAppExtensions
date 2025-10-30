@@ -129,6 +129,11 @@ codeunit 5239 "Contoso Account Schedule"
             AccScheduleName.Insert(true);
     end;
 
+    procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80])
+    begin
+        InsertColumnLayoutName(Name, Description, '');
+    end;
+
     procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80]; InternalDescription: Text[250])
     var
         ColumnLayoutName: Record "Column Layout Name";
