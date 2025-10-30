@@ -129,7 +129,7 @@ codeunit 5239 "Contoso Account Schedule"
             AccScheduleName.Insert(true);
     end;
 
-    procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80])
+    procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80]; InternalDescription: Text[500])
     var
         ColumnLayoutName: Record "Column Layout Name";
         Exists: Boolean;
@@ -143,6 +143,7 @@ codeunit 5239 "Contoso Account Schedule"
 
         ColumnLayoutName.Validate(Name, Name);
         ColumnLayoutName.Validate(Description, Description);
+        ColumnLayoutName.Validate("Internal Description", InternalDescription);
 
         if Exists then
             ColumnLayoutName.Modify(true)
