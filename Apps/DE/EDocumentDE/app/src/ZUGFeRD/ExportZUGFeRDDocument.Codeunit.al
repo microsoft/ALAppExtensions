@@ -1010,6 +1010,8 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterGetSetups(var CompanyInformation: Record "Company Information"; var GeneralLedgerSetup: Record "General Ledger Setup")
+    begin
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertInvoiceLine(var SupplyChainTradeTransactionElement: XmlElement; var SalesInvoiceLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean; var IsHandled: Boolean)
