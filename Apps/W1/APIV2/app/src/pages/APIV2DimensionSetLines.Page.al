@@ -23,6 +23,7 @@ page 30022 "APIV2 - Dimension Set Lines"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = "Dimension Id";
+    AboutText = 'Provides full CRUD access to individual dimension set line records, enabling external systems to manage dimension assignments for transactions such as journal entries, sales, and purchases. Supports retrieval and modification of dimension codes, values, and parent relationships to ensure precise financial tracking and categorization for reporting and cost allocation integrations.';
 
     layout
     {

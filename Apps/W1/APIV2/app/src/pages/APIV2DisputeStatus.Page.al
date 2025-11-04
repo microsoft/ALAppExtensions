@@ -14,6 +14,7 @@ page 30088 "APIV2 - Dispute Status"
     EntitySetName = 'disputeStatus';
     SourceTable = "Dispute Status";
     Extensible = false;
+    AboutText = 'Manages dispute status definitions including code, description, and on-hold update settings, supporting full CRUD operations for tracking and resolving payment or delivery disputes. Enables integration with external CRM, case management, and support systems to standardize dispute workflows and ensure transparent resolution processes.';
 
     layout
     {

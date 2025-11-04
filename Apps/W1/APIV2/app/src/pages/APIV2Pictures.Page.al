@@ -17,6 +17,7 @@ page 30053 "APIV2 - Pictures"
     Extensible = false;
     ODataKeyFields = Id;
 
+    AboutText = 'Exposes image metadata and binary content for pictures linked to items, customers, vendors, employees, and contacts in Business Central. Supports retrieving, updating, and deleting images to enable synchronization of product photos, employee portraits, and other visual assets across e-commerce platforms, CRM systems, and internal applications. Insert (upload) operations are not supported, making this API ideal for managing and maintaining consistency of existing image assets in external integrations.';
 
     layout
     {

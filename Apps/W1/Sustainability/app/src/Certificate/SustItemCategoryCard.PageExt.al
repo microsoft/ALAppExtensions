@@ -32,7 +32,7 @@ pageextension 6228 "Sust. Item Category Card" extends "Item Category Card"
     var
         SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Item Emissions";
     end;

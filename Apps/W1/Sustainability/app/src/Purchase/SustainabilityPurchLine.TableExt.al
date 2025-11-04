@@ -476,6 +476,18 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                     SustainabilityCalcMgt.CalculationEmissions(Rec);
             end;
         }
+        #pragma warning disable PTE0002
+        field(6240; "Received Sust. Cert. Type Code"; Code[50])
+        {
+            Caption = 'Received Sustainability Certificate Type Code';
+            DataClassification = CustomerContent;
+        }
+        field(6241; "Received Sust. Prod. CL. Code"; Code[50])
+        {
+            Caption = 'Received Sustainability Product Classification Code';
+            DataClassification = CustomerContent;
+        }
+        #pragma warning restore PTE0002
     }
 
     procedure UpdateSustainabilityEmission(var PurchLine: Record "Purchase Line")

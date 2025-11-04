@@ -20,6 +20,7 @@ page 30047 "APIV2 - Purchase Invoice Lines"
     SourceTable = "Purch. Inv. Line Aggregate";
     SourceTableTemporary = true;
     Extensible = false;
+    AboutText = 'Exposes detailed line-level data for purchase invoices, including item or account references, quantities, unit costs, discounts, tax amounts, dimensions, and expected receipt dates. Supports full CRUD operations to enable AP automation, OCR/EDI invoice line import, cost adjustments, and three-way matching with purchase orders and receipts for accurate accounts payable processing and cost allocation.';
 
     layout
     {

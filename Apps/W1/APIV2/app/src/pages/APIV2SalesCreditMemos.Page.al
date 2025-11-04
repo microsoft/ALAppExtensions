@@ -26,6 +26,7 @@ page 30038 "APIV2 - Sales Credit Memos"
     PageType = API;
     SourceTable = "Sales Cr. Memo Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages sales credit memo documents, exposing customer details, billing and shipping addresses, financial amounts, tax information, status, and related invoice references. Supports full lifecycle operations (GET, POST, PATCH, DELETE) for automating returns, customer refunds, and integration with external financial or ERP systems to ensure accurate accounts receivable and credit processing.';
 
     layout
     {

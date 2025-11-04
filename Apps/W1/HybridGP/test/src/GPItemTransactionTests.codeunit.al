@@ -30,6 +30,7 @@ codeunit 139665 "GP Item Transaction Tests"
         Item: Record "Item";
         ItemLedgerEntry: Record "Item Ledger Entry";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPMigrationWarning: Record "GP Migration Warnings";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items are migrated from GP
@@ -51,6 +52,7 @@ codeunit 139665 "GP Item Transaction Tests"
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Only Inventory Master", false);
         GPCompanyAdditionalSettings.Modify();
 
@@ -64,6 +66,8 @@ codeunit 139665 "GP Item Transaction Tests"
         until GPItem.Next() = 0;
 
         HelperFunctions.PostGLTransactions();
+
+        Assert.RecordCount(GPMigrationWarning, 0);
 
         // [THEN] A Item is created for all staging table entries
         Assert.RecordCount(Item, GPItem.Count());
@@ -235,6 +239,7 @@ codeunit 139665 "GP Item Transaction Tests"
         ItemJournalBatch: Record "Item Journal Batch";
         ItemJournalLine: Record "Item Journal Line";
         InventorySetup: Record "Inventory Setup";
+        GPMigrationWarning: Record "GP Migration Warnings";
     begin
         GPItem.DeleteAll();
         GPItemTransaction.DeleteAll();
@@ -253,6 +258,7 @@ codeunit 139665 "GP Item Transaction Tests"
         GeneralPostingSetup.DeleteAll();
         ItemJournalLine.DeleteAll();
         ItemJournalBatch.DeleteAll();
+        GPMigrationWarning.DeleteAll();
 
         if not InventorySetup.Get() then
             InventorySetup.Insert(true);
@@ -270,9 +276,9 @@ codeunit 139665 "GP Item Transaction Tests"
         if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Item) then
             exit;
 
-        GPItemMigrator.MigrateItem(ItemDataMigrationFacade, GPItem.RecordId());
-        GPItemMigrator.MigrateItemPostingGroups(ItemDataMigrationFacade, GPItem.RecordId(), true);
-        GPItemMigrator.MigrateInventoryTransactions(ItemDataMigrationFacade, GPItem.RecordId(), true);
+        GPItemMigrator.MigrateItemImp(ItemDataMigrationFacade, GPItem.RecordId());
+        GPItemMigrator.MigrateItemPostingGroupsImp(ItemDataMigrationFacade, GPItem.RecordId(), true);
+        GPItemMigrator.MigrateInventoryTransactionsImp(ItemDataMigrationFacade, GPItem.RecordId(), true);
     end;
 
     local procedure CreateLocations()

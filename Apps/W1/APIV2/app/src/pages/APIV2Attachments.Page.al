@@ -18,6 +18,7 @@ page 30039 "APIV2 - Attachments"
     SourceTable = "Attachment Entity Buffer";
     SourceTableTemporary = true;
     Extensible = false;
+    AboutText = 'Manages file attachments linked to Business Central records such as invoices, orders, and journal entries, supporting upload, retrieval, update, and deletion operations. Enables integration scenarios for document management, compliance, and synchronization with external storage or workflow systems by exposing metadata and content for various attachment types and document categories.';
 
     layout
     {

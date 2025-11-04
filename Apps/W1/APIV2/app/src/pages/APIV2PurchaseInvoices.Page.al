@@ -23,6 +23,7 @@ page 30042 "APIV2 - Purchase Invoices"
     PageType = API;
     SourceTable = "Purch. Inv. Entity Aggregate";
     Extensible = false;
+    AboutText = 'Manages purchase invoice documents including vendor details, invoice amounts, due dates, payment terms, addresses, and status. Supports full CRUD operations for automating accounts payable, integrating procurement workflows, and enabling financial reporting between Business Central and external systems. Ideal for synchronizing invoice lifecycle data with ERP, procurement, and financial platforms.';
 
     layout
     {

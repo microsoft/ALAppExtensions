@@ -164,4 +164,11 @@ page 10031 "IRS Reporting Periods"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        IRSReportingPeriod: Codeunit "IRS Reporting Period";
+    begin
+        IRSReportingPeriod.ShowIRSFormsGuideNotificationIfRequired();
+    end;
 }

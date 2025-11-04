@@ -19,6 +19,7 @@ page 30010 "APIV2 - Vendors"
     PageType = API;
     SourceTable = Vendor;
     Extensible = false;
+    AboutText = 'Exposes vendor master data including company details, addresses, contact information, payment terms, tax registration, currency, and financial balances. Supports full CRUD operations for supplier onboarding, procurement automation, and synchronizing vendor records with external ERP or procurement systems. Enables seamless integration and lifecycle management of supplier information for purchasing and financial processes.';
 
     layout
     {

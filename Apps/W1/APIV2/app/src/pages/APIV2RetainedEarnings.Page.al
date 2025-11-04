@@ -20,6 +20,7 @@ page 30029 "APIV2 - Retained Earnings"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = Id;
+    AboutText = 'Provides read-only access to retained earnings statement data, including net changes, descriptions, fiscal period breakdowns, and company-level summaries. Supports GET operations for automating financial reporting, enabling integration with external accounting, consolidation, compliance, and audit systems requiring up-to-date retained earnings insights.';
 
     layout
     {

@@ -18,6 +18,7 @@ page 30021 "APIV2 - Dimensions"
     PageType = API;
     SourceTable = Dimension;
     Extensible = false;
+    AboutText = 'Exposes dimension master data including codes, names, consolidation codes, status, and last modified timestamps for categorizing and analyzing financial transactions in Business Central. Supports read-only (GET) operations, enabling external systems and business intelligence platforms to retrieve and synchronize dimension definitions for advanced financial reporting, analytics, and segment-based analysis. Ideal for integrations requiring up-to-date dimension structures without direct modification from external sources.';
 
     layout
     {

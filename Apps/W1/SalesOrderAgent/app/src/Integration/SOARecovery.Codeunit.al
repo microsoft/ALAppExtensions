@@ -54,6 +54,7 @@ codeunit 4584 "SOA Recovery"
         // Check if task exists
         ScheduledTask.SetRange("Run Codeunit", Codeunit::"SOA Dispatcher");
         ScheduledTask.SetRange(Company, CompanyName());
+        ScheduledTask.SetRange(Record, Setup.RecordId);
         if not ScheduledTask.IsEmpty() then
             exit; // Task already exists
 

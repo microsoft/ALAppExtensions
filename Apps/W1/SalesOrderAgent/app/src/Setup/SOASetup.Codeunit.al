@@ -17,6 +17,7 @@ using System.Email;
 using System.Environment;
 using System.Environment.Configuration;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Security.AccessControl;
 using System.Telemetry;
@@ -706,6 +707,27 @@ codeunit 4400 "SOA Setup"
             exit(true)
         else
             exit(false);
+    end;
+
+    internal procedure IsPdfAttachmentContentType(FileMIMEType: Text): Boolean
+    begin
+        if FileMIMEType = 'application/pdf' then
+            exit(true);
+
+        exit(false);
+    end;
+
+    [TryFunction]
+    internal procedure DocumentExceedsPageCountThreshold(DocInStream: Instream; var Exceeds: Boolean)
+    var
+        PdfDocument: Codeunit "PDF Document";
+    begin
+        Exceeds := PdfDocument.GetPdfPageCount(DocInStream) > PageCountThreshold();
+    end;
+
+    internal procedure PageCountThreshold(): Integer
+    begin
+        exit(10)
     end;
 
     internal procedure GetFeatureName(): Text

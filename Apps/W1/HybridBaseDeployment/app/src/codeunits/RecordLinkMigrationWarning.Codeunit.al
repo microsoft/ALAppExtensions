@@ -11,7 +11,11 @@ codeunit 40023 "Record Link Migration Warning" implements "Cloud Migration Warni
         ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
         HybridCompanyStatus: Record "Hybrid Company Status";
         HybridReplicationSummary: Record "Hybrid Replication Summary";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
+        if HybridCloudManagement.RecordLinkBufferBlocked() then
+            exit(false);
+
         if ReplicationRecordLinkBuffer.IsEmpty() then
             exit(false);
 

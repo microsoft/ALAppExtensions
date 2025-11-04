@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument.Formats;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Purchases.Document;
 using System.Utilities;
 using Microsoft.Bank.BankAccount;
 using System.Reflection;
@@ -34,6 +36,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         GeneralLedgerSetup: Record "General Ledger Setup";
         EDocumentService: Record "E-Document Service";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySales: Codeunit "Library - Sales";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryRandom: Codeunit "Library - Random";
@@ -587,6 +590,47 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader, TempXMLBuffer);
     end;
     #endregion
+
+    #region PurchaseInvoice
+    [Test]
+    procedure ReleasePurchaseInvoiceInZUGFeRDFormat();
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        // [SCENARIO] Release purchase invoice regardless if ZUGFeRD format is setup with customer reference
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = customer reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+
+        // [WHEN] Create and release Purchase Invoice
+        CreatePurchDocument(PurchaseHeader, "Purchase Document Type"::Invoice);
+        LibraryPurchase.ReleasePurchaseDocument(PurchaseHeader);
+
+        // [THEN] No error occurs
+    end;
+    #endregion
+
+    #region PurchaseCreditMemo
+    [Test]
+    procedure ReleasePurchaseCreditMemoInZUGFeRDFormat();
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        // [SCENARIO] Release purchase credit memo regardless if ZUGFeRD format is setup with customer reference
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = customer reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+
+        // [WHEN] Create and release Purchase credit Memo
+        CreatePurchDocument(PurchaseHeader, "Purchase Document Type"::"Credit Memo");
+        LibraryPurchase.ReleasePurchaseDocument(PurchaseHeader);
+
+        // [THEN] No error occurs
+    end;
+    #endregion
+
     local procedure CreateAndPostSalesDocument(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
@@ -609,6 +653,27 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     begin
         SalesHeader.Get(DocumentType, CreateSalesDocumentWithTwoLineLineDiscount(DocumentType, LineType, InvoiceDiscount));
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreatePurchDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        CreatePurchHeader(PurchaseHeader, DocumentType);
+        LibraryPurchase.CreatePurchaseLine(
+          PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDec(50, 2));
+        PurchaseLine.Modify(true);
+    end;
+
+    local procedure CreatePurchHeader(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
+    var
+        Vendor: Record Vendor;
+    begin
+        LibraryPurchase.CreateVendor(Vendor);
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, Vendor."No.");
+        PurchaseHeader.Validate("Vendor Invoice No.", PurchaseHeader."No.");
+        PurchaseHeader.Modify(true);
     end;
 
     local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
@@ -1241,4 +1306,3 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"ZUGFeRD XML Document Tests");
     end;
 }
-

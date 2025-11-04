@@ -20,6 +20,7 @@ page 30044 "APIV2 - Sales Order Lines"
     SourceTable = "Sales Invoice Line Aggregate";
     SourceTableTemporary = true;
     Extensible = false;
+    AboutText = 'Exposes detailed sales order line data including item, variant, location, quantity, pricing, discounts, tax amounts, and shipment dates. Supports full CRUD operations to create, update, and delete individual order lines, enabling seamless integration with external web shops, marketplaces, and CRM systems for dynamic order capture and synchronization. Integrates with related entities such as sales orders, items, units of measure, and inventory to ensure accurate pricing and availability during order processing.';
 
     layout
     {

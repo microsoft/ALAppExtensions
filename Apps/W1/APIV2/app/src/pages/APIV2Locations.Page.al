@@ -14,6 +14,7 @@ page 30076 "APIV2 - Locations"
     EntitySetName = 'locations';
     SourceTable = Location;
     Extensible = false;
+    AboutText = 'Exposes warehouse and inventory location master data including codes, addresses, contact details, and operational settings. Supports full CRUD operations to synchronize fulfillment nodes, manage routing rules, and integrate external WMS or e-commerce platforms with Business Central, ensuring all inventory movements and documents reference valid locations.';
 
     layout
     {

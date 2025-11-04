@@ -59,8 +59,13 @@ codeunit 6385 "Outlook Processing"
         DocumentsArray: JsonArray;
     begin
         CheckSetupEnabled(OutlookSetup);
-        if DailyLimitReached(EDocumentService) then begin
+        if DailyEmailLimitReached(EDocumentService) then begin
             Session.LogMessage('0000PKF', 'Daily limit for e-mails received has been reached.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
+            exit;
+        end;
+
+        if DailyAttachmentLimitReached(EDocumentService) then begin
+            Session.LogMessage('0000QJ1', 'Daily limit for e-mail attachments received has been reached.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
             exit;
         end;
 
@@ -93,7 +98,7 @@ codeunit 6385 "Outlook Processing"
         BuildDocumentsList(Documents, DocumentsArray);
     end;
 
-    local procedure DailyLimitReached(var EDocumentService: Record "E-Document Service"): Boolean
+    local procedure DailyEmailLimitReached(var EDocumentService: Record "E-Document Service"): Boolean
     var
         EDocument: Record "E-Document";
         EmailsPer24HLimit: Integer;
@@ -111,6 +116,23 @@ codeunit 6385 "Outlook Processing"
         exit(ExternalMailMessageIds.Count() >= EmailsPer24HLimit)
     end;
 
+    local procedure DailyAttachmentLimitReached(var EDocumentService: Record "E-Document Service"): Boolean
+    var
+        EDocument: Record "E-Document";
+        AttachmentsPer24HLimit: Integer;
+    begin
+        AttachmentsPer24HLimit := GetAttachmentsPer24HLimit();
+        EDocument.ReadIsolation := IsolationLevel::ReadCommitted;
+        EDocument.SetRange(Service, EDocumentService.Code);
+        EDocument.SetRange(SystemCreatedAt, CurrentDateTime() - (24 * 3600 * 1000), CurrentDateTime());
+        exit(EDocument.Count() >= AttachmentsPer24HLimit)
+    end;
+
+    local procedure GetAttachmentsPer24HLimit(): Integer
+    begin
+        exit(500);
+    end;
+
     local procedure GetEmailsPer24HLimit(): Integer
     begin
         exit(100);
@@ -119,6 +141,11 @@ codeunit 6385 "Outlook Processing"
     local procedure GetMaxNoOfEmails(): Integer
     begin
         exit(50);
+    end;
+
+    local procedure GetMaxNoOfAttachmentsPerEmail(): Integer
+    begin
+        exit(10);
     end;
 
     local procedure CheckSetupEnabled(var OutlookSetup: Record "Outlook Setup")
@@ -141,6 +168,7 @@ codeunit 6385 "Outlook Processing"
         Attachment: JsonObject;
         TelemetryCustomDimensions: Dictionary of [Text, Text];
         AttachmentsAdded, IgnoredBecauseExisting, AttachmentsLoaded : Integer;
+        EDocWithNoAttachmentName: Text;
     begin
         if not EmailInbox.FindSet() then
             exit;
@@ -171,22 +199,29 @@ codeunit 6385 "Outlook Processing"
                     end;
                     AttachmentsLoaded += 1;
                 until EmailMessage.Attachments_Next() = 0;
+            EDocWithNoAttachmentName := NoSupportedAttachmentTxt;
+            if AttachmentsAdded > GetMaxNoOfAttachmentsPerEmail() then begin
+                Clear(DocumentsArray);
+                AttachmentsAdded := 0;
+                EDocWithNoAttachmentName := StrSubstNo(TooManyAttachmentsTxt, GetMaxNoOfAttachmentsPerEmail());
+            end;
             // if an e-mail message has no attachments of supported type, add it as well
             // it must be represented as an e-document with no attachment
-            if (AttachmentsAdded = 0) and (IgnoredBecauseExisting = 0) then begin
-                Clear(Attachment);
-                Clear(TempBlob);
-                Attachment.Add('emailInboxId', EmailInbox.Id);
-                Attachment.Add('messageid', EmailInbox."Message Id");
-                Attachment.Add('externalmessageid', EmailInbox."External Message Id");
-                Attachment.Add('receiveddatetime', EmailInbox."Received DateTime");
-                Attachment.Add('id', 0);
-                Attachment.Add('size', 0);
-                Attachment.Add('contentType', 'none');
-                Attachment.Add('contentId', 'none');
-                Attachment.Add('name', NoSupportedAttachmentTxt);
-                DocumentsArray.Add(Attachment);
-            end;
+            if (AttachmentsAdded = 0) and (IgnoredBecauseExisting = 0) then
+                if not IgnoreMailMessage(EmailMessage) then begin
+                    Clear(Attachment);
+                    Clear(TempBlob);
+                    Attachment.Add('emailInboxId', EmailInbox.Id);
+                    Attachment.Add('messageid', EmailInbox."Message Id");
+                    Attachment.Add('externalmessageid', EmailInbox."External Message Id");
+                    Attachment.Add('receiveddatetime', EmailInbox."Received DateTime");
+                    Attachment.Add('id', 0);
+                    Attachment.Add('size', 0);
+                    Attachment.Add('contentType', 'none');
+                    Attachment.Add('contentId', 'none');
+                    Attachment.Add('name', EDocWithNoAttachmentName);
+                    DocumentsArray.Add(Attachment);
+                end;
             Clear(TelemetryCustomDimensions);
             TelemetryCustomDimensions.Add('Category', FeatureName());
             TelemetryCustomDimensions.Add('ReceivedDateTime', Format(EmailInbox."Received DateTime"));
@@ -240,6 +275,20 @@ codeunit 6385 "Outlook Processing"
         if not EDocument.IsEmpty() then begin
             IgnoredBecauseExisting += 1;
             Session.LogMessage('0000PKK', 'Ignoring attachment because it is already imported.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
+            exit(true);
+        end;
+
+        exit(false)
+    end;
+
+    local procedure IgnoreMailMessage(EmailMessage: Codeunit "Email Message"): Boolean
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.ReadIsolation := IsolationLevel::ReadCommitted;
+        EDocument.SetRange("Outlook Mail Message Id", EmailMessage.GetExternalId());
+        if not EDocument.IsEmpty() then begin
+            Session.LogMessage('0000QIM', 'Ignoring mail message because it is already imported.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
             exit(true);
         end;
 
@@ -408,6 +457,7 @@ codeunit 6385 "Outlook Processing"
         InvalidAttachmentIdErr: Label 'Failed to determine id for attachment %1.', Comment = '%1 - a file name';
         InvalidAttachmentReceivedDateTimeErr: Label 'Failed to determine received date time for attachment %1.', Comment = '%1 - a file name';
         NoSupportedAttachmentTxt: Label 'E-mail with no attachment of supported type.';
+        TooManyAttachmentsTxt: Label 'E-mail with more than %1 attachments is ignored.', Comment = '%1 - an integer (10)';
         RetrieveEmailsErr: Label 'Failed to retrieve emails from the email connector.';
         ProcessingEmailTxt: label 'Processing email.', Locked = true;
         PageCountExceededTxt: Label 'Attachment %1 was ignored because it exceeds the feature limit of %2 pages.', Comment = '%1 - file name, %2 - an integer';

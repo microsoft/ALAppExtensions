@@ -416,9 +416,9 @@ codeunit 31370 "G/L Entry Post Application CZA"
     local procedure IsAppliedEntry(GLEntry: Record "G/L Entry"; ApplyingGLEntry: Record "G/L Entry") IsOk: Boolean
     begin
         IsOk :=
+            (GLEntry."Entry No." <> ApplyingGLEntry."Entry No.") and
             (GLEntry."G/L Account No." = ApplyingGLEntry."G/L Account No.") and
-            ((GLEntry.Amount <> 0) and ((GLEntry.Amount * ApplyingGLEntry.Amount) < 0)) or
-            (GLEntry.Amount = 0);
+            ((GLEntry.Amount * ApplyingGLEntry.Amount) <= 0);
         OnAfterIsAppliedEntry(GLEntry, ApplyingGLEntry, IsOk);
     end;
 

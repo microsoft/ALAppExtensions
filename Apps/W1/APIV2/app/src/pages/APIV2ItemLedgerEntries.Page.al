@@ -18,6 +18,7 @@ page 30069 "APIV2 - Item Ledger Entries"
     SourceTable = "Item Ledger Entry";
     Extensible = false;
     ODataKeyFields = SystemId;
+    AboutText = 'Provides read-only access to detailed item ledger entries, including inventory transactions such as receipts, shipments, adjustments, and transfers. Supports GET operations to retrieve item numbers, quantities, locations, posting dates, and financial amounts for inventory analysis, audit, and integration with external warehouse management or analytics systems. Enables tracking of inventory movements and reconciliation of stock levels for compliance and reporting purposes.';
 
     layout
     {

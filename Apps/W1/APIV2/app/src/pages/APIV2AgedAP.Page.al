@@ -20,6 +20,7 @@ page 30032 "APIV2 - Aged AP"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = AccountId;
+    AboutText = 'Provides read-only access to aged accounts payable data, including vendor details, outstanding balances, and amounts overdue by aging period. Supports GET operations for retrieving payables aging reports, enabling integration with treasury management systems and automation of cash flow analysis and financial reporting.';
 
     layout
     {

@@ -31,4 +31,12 @@ tableextension 6386 "E-Document Extension" extends "E-Document"
             DataClassification = CustomerContent;
         }
     }
+
+    keys
+    {
+        key(Key6381; "Outlook Mail Message Id", "Outlook Message Attachment Id")
+        {
+        }
+    }
+
 }

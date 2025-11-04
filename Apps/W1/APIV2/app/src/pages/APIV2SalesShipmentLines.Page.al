@@ -19,6 +19,7 @@ page 30063 "APIV2 - Sales Shipment Lines"
     EntitySetName = 'salesShipmentLines';
     SourceTable = "Sales Shipment Line";
     Extensible = false;
+    AboutText = 'Provides read-only access to detailed sales shipment line data, including shipped items, quantities, unit pricing, discounts, tax information, shipment dates, locations, and links to related sales and purchase documents. Enables external systems to retrieve and synchronize granular shipment information for warehouse management, packing list automation, customer service, and inventory reconciliation. Ideal for integrations requiring accurate tracking and reporting of shipped goods within Business Central, with support for GET operations only.';
 
     layout
     {
