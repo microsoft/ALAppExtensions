@@ -44,6 +44,16 @@ page 47017 "SL Company Add. Settings List"
                 field("Migrate Payables Module"; Rec."Migrate Payables Module")
                 {
                 }
+                field("Migrate Current 1099 Year"; Rec."Migrate Current 1099 Year")
+                {
+                    Caption = 'Migrate Current 1099 Year';
+                    ToolTip = 'Specifies whether to migrate current 1099 year information from Dynamics SL to Business Central. This option is only available if the Payables module is selected for migration.';
+                }
+                field("Migrate Next 1099 Year"; Rec."Migrate Next 1099 Year")
+                {
+                    Caption = 'Migrate Next 1099 Year';
+                    ToolTip = 'Specifies whether to migrate next 1099 year information from Dynamics SL to Business Central. This option is only available if the Payables module is selected for migration.';
+                }
                 field("Migrate Open POs"; Rec."Migrate Open POs")
                 {
                     Enabled = false;

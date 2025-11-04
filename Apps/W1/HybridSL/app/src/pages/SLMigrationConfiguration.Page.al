@@ -499,6 +499,44 @@ page 47018 "SL Migration Configuration"
                 }
             }
 
+            group(Vendor1099)
+            {
+                Caption = 'Vendor 1099';
+                InstructionalText = 'Choose whether to migrate vendor 1099 information from Dynamics SL to Business Central. This option is only available if the Payables module is selected for migration.';
+
+                field("Migrate Current 1099 Year"; Rec."Migrate Current 1099 Year")
+                {
+                    Caption = 'Migrate Current 1099 Year';
+                    ToolTip = 'Specifies whether to migrate current 1099 year information.';
+                    Enabled = Rec."Migrate Payables Module";
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                SLCompanyAdditionalSettings.Validate("Migrate Current 1099 Year", Rec."Migrate Current 1099 Year");
+                                SLCompanyAdditionalSettings.Modify();
+                            until SLCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Next 1099 Year"; Rec."Migrate Next 1099 Year")
+                {
+                    Caption = 'Migrate Next 1099 Year';
+                    ToolTip = 'Specifies whether to migrate next 1099 year information.';
+                    Enabled = Rec."Migrate Payables Module";
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                SLCompanyAdditionalSettings.Validate("Migrate Next 1099 Year", Rec."Migrate Next 1099 Year");
+                                SLCompanyAdditionalSettings.Modify();
+                            until SLCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+
+            }
+
             group(HistoricalData)
             {
                 Caption = 'Historical Snapshot';
