@@ -51,6 +51,7 @@ codeunit 4774 "FA Module" implements "Contoso Demo Data Module"
     procedure CreateTransactionalData()
     begin
         Codeunit.Run(Codeunit::"Create FA Maint. Registration");
+        Codeunit.Run(Codeunit::"Create FA Jnl. Lines");
     end;
 
     procedure CreateHistoricalData()
