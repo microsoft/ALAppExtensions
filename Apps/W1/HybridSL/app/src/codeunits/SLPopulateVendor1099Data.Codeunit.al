@@ -29,6 +29,7 @@ codeunit 47007 "SL Populate Vendor 1099 Data"
         SLNext1099Yr: Integer;
         Current1099YearOpen: Boolean;
         Next1099YearOpen: Boolean;
+        GenJournalBatchDescriptionTxt: Label 'SL Vendor 1099 Tax Journal for ', Locked = true;
         MessageCodeAbortedTxt: Label 'ABORTED', Locked = true;
         MessageCodeCompletedTxt: Label 'COMPLETED', Locked = true;
         MessageCodeSkippedTxt: Label 'SKIPPED', Locked = true;
@@ -582,7 +583,7 @@ codeunit 47007 "SL Populate Vendor 1099 Data"
             GenJournalTemplate.Validate(Name, GenJournalBatchCode);
             GenJournalTemplate.Validate(Type, GenJournalTemplate.Type::General);
             GenJournalTemplate.Validate(Recurring, false);
-            GenJournalTemplate.Validate(Description, GenJournalBatchCode + '-' + 'SL Vendor 1099 Tax Journal for ' + Format(TaxYear));
+            GenJournalTemplate.Validate(Description, GenJournalBatchDescriptionTxt + Format(TaxYear));
             GenJournalTemplate.Insert(true);
         end;
         exit(GenJournalTemplate.Name);
@@ -633,7 +634,7 @@ codeunit 47007 "SL Populate Vendor 1099 Data"
     var
         GenJournalBatch: Record "Gen. Journal Batch";
         TemplateName: Code[10];
-        GenJournalBatchDescriptionTxt: Label 'SL Vendor 1099 Tax Journal for ', Locked = true;
+
     begin
         TemplateName := CreateGenJournalTemplateIfNeeded(GeneralJournalBatchCode, TaxYear);
         GenJournalBatch.SetRange("Journal Template Name", TemplateName);
