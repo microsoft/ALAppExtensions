@@ -232,9 +232,9 @@ codeunit 47023 "SL Helper Functions"
         IncomeBalanceType: Option "Income Statement","Balance Sheet";
     begin
         if SLAccountStaging.IncomeBalance then
-            exit(IncomeBalanceType::"Balance Sheet");
+            exit(IncomeBalanceType::"Income Statement");
 
-        exit(IncomeBalanceType::"Income Statement");
+        exit(IncomeBalanceType::"Balance Sheet");
     end;
 
     internal procedure ResetAdjustforPaymentInGLSetup(var Flag: Boolean);
@@ -575,7 +575,7 @@ codeunit 47023 "SL Helper Functions"
         if (GlobalDim1 <> '') or (GlobalDim2 <> '') then
             GeneralLedgerSetup.Modify();
 
-        SetShorcutDimenions();
+        SetShortcutDimenions();
     end;
 
     internal procedure CheckPluralization(var GlobalDim: Code[20])
@@ -588,7 +588,7 @@ codeunit 47023 "SL Helper Functions"
         end;
     end;
 
-    internal procedure SetShorcutDimenions()
+    internal procedure SetShortcutDimenions()
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         SLSegments: Record "SL Segments";
@@ -1082,6 +1082,20 @@ codeunit 47023 "SL Helper Functions"
         SLConfiguration.GetSingleInstance();
         SLConfiguration."Last Error Message" := CopyStr(GetLastErrorText(), 1, 250);
         SLConfiguration.Modify();
+    end;
+
+    internal procedure RunPreMigrationCleanup()
+    var
+        Dimension: Record "Dimension";
+        GeneralPostingSetup: Record "General Posting Setup";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
+    begin
+        if not Dimension.IsEmpty() then
+            Dimension.DeleteAll(true);
+        if not GeneralPostingSetup.IsEmpty() then
+            GeneralPostingSetup.DeleteAll(true);
+        if not GenProductPostingGroup.IsEmpty() then
+            GenProductPostingGroup.DeleteAll(true);
     end;
 
     internal procedure CreatePreMigrationData(): Boolean
