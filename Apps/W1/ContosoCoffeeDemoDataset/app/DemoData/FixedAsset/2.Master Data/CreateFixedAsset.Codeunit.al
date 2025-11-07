@@ -26,24 +26,25 @@ codeunit 5118 "Create Fixed Asset"
         FAClass: Codeunit "Create FA Class";
         ContosoFixedAsset: Codeunit "Contoso Fixed Asset";
         FALocation: Codeunit "Create FA Location";
+        FAPostingGroup: Codeunit "Create FA Posting Group";
         CommonCustomerVendor: Codeunit "Create Common Customer/Vendor";
         ContosoUtilities: Codeunit "Contoso Utilities";
         DomesticVendor1, DomesticVendor2, DomesticVendor3 : Code[20];
     begin
         DomesticVendor1 := CommonCustomerVendor.DomesticVendor1();
-        ContosoFixedAsset.InsertFixedAsset(FA000010(), Vehicle1Lbl, FAClass.TangibleClass(), FAClass.VehiclesSubClass(), FALocation.Administration(), Enum::"FA Component Type"::" ", SerialNoEA12394QLbl, ContosoUtilities.AdjustDate(19030412D), DomesticVendor1, DomesticVendor1);
-        ContosoFixedAsset.InsertFixedAsset(FA000020(), Vehicle2Lbl, FAClass.TangibleClass(), FAClass.VehiclesSubClass(), FALocation.Sales(), Enum::"FA Component Type"::" ", SerialNoEA12395QLbl, ContosoUtilities.AdjustDate(19030718D), DomesticVendor1, DomesticVendor1);
-        ContosoFixedAsset.InsertFixedAsset(FA000030(), Truck1Lbl, FAClass.TangibleClass(), FAClass.VehiclesSubClass(), FALocation.Production(), Enum::"FA Component Type"::" ", SerialNoEA15397QLbl, ContosoUtilities.AdjustDate(19030821D), DomesticVendor1, DomesticVendor1);
+        ContosoFixedAsset.InsertFixedAsset(FA000010(), Vehicle1Lbl, FAClass.TangibleClass(), FAClass.VehiclesSubClass(), FALocation.Administration(), Enum::"FA Component Type"::" ", SerialNoEA12394QLbl, ContosoUtilities.AdjustDate(19030412D), DomesticVendor1, DomesticVendor1, FAPostingGroup.Vehicles());
+        ContosoFixedAsset.InsertFixedAsset(FA000020(), Vehicle2Lbl, FAClass.TangibleClass(), FAClass.VehiclesSubClass(), FALocation.Sales(), Enum::"FA Component Type"::" ", SerialNoEA12395QLbl, ContosoUtilities.AdjustDate(19030718D), DomesticVendor1, DomesticVendor1, FAPostingGroup.Vehicles());
+        ContosoFixedAsset.InsertFixedAsset(FA000030(), Truck1Lbl, FAClass.TangibleClass(), FAClass.VehiclesSubClass(), FALocation.Production(), Enum::"FA Component Type"::" ", SerialNoEA15397QLbl, ContosoUtilities.AdjustDate(19030821D), DomesticVendor1, DomesticVendor1, FAPostingGroup.Vehicles());
 
         DomesticVendor2 := CommonCustomerVendor.DomesticVendor2();
-        ContosoFixedAsset.InsertFixedAsset(FA000040(), ConveyorMainAssetLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::"Main Asset", SerialNoX23111SW0Lbl, ContosoUtilities.AdjustDate(19030815D), DomesticVendor2, DomesticVendor2);
-        ContosoFixedAsset.InsertFixedAsset(FA000050(), ConveyorBeltLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::Component, SerialNoX23111SW1Lbl, ContosoUtilities.AdjustDate(19030815D), DomesticVendor2, DomesticVendor2);
-        ContosoFixedAsset.InsertFixedAsset(FA000060(), ConveyorComputerLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::Component, SerialNoX23111SW3Lbl, ContosoUtilities.AdjustDate(19030815D), DomesticVendor2, DomesticVendor2);
+        ContosoFixedAsset.InsertFixedAsset(FA000040(), ConveyorMainAssetLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::"Main Asset", SerialNoX23111SW0Lbl, ContosoUtilities.AdjustDate(19030815D), DomesticVendor2, DomesticVendor2, FAPostingGroup.Equipment());
+        ContosoFixedAsset.InsertFixedAsset(FA000050(), ConveyorBeltLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::Component, SerialNoX23111SW1Lbl, ContosoUtilities.AdjustDate(19030815D), DomesticVendor2, DomesticVendor2, FAPostingGroup.Equipment());
+        ContosoFixedAsset.InsertFixedAsset(FA000060(), ConveyorComputerLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::Component, SerialNoX23111SW3Lbl, ContosoUtilities.AdjustDate(19030815D), DomesticVendor2, DomesticVendor2, FAPostingGroup.Equipment());
 
         DomesticVendor3 := CommonCustomerVendor.DomesticVendor3();
-        ContosoFixedAsset.InsertFixedAsset(FA000070(), ConveyorLiftLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::Component, SerialNoX23111SW2Lbl, ContosoUtilities.AdjustDate(19030815D), DomesticVendor3, DomesticVendor3);
-        ContosoFixedAsset.InsertFixedAsset(FA000080(), CargoLiftLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::" ", SerialNoAKW2476111Lbl, ContosoUtilities.AdjustDate(19030421D), DomesticVendor3, DomesticVendor3);
-        ContosoFixedAsset.InsertFixedAsset(FA000090(), SwitchboardLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Administration(), Enum::"FA Component Type"::" ", SerialNoTELE4476ZLbl, ContosoUtilities.AdjustDate(19031212D), DomesticVendor3, DomesticVendor3);
+        ContosoFixedAsset.InsertFixedAsset(FA000070(), ConveyorLiftLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::Component, SerialNoX23111SW2Lbl, ContosoUtilities.AdjustDate(19030815D), DomesticVendor3, DomesticVendor3, FAPostingGroup.Equipment());
+        ContosoFixedAsset.InsertFixedAsset(FA000080(), CargoLiftLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Production(), Enum::"FA Component Type"::" ", SerialNoAKW2476111Lbl, ContosoUtilities.AdjustDate(19030421D), DomesticVendor3, DomesticVendor3, FAPostingGroup.Equipment());
+        ContosoFixedAsset.InsertFixedAsset(FA000090(), SwitchboardLbl, FAClass.TangibleClass(), FAClass.EquipmentSubClass(), FALocation.Administration(), Enum::"FA Component Type"::" ", SerialNoTELE4476ZLbl, ContosoUtilities.AdjustDate(19031212D), DomesticVendor3, DomesticVendor3, FAPostingGroup.Equipment());
     end;
 
     local procedure CreateMainAssetComponents()
@@ -59,17 +60,18 @@ codeunit 5118 "Create Fixed Asset"
     var
         ContosoFixedAsset: Codeunit "Contoso Fixed Asset";
         CreateFADepreciationBook: Codeunit "Create FA Depreciation Book";
+        CreateFAPostingGroup: Codeunit "Create FA Posting Group";
         ContosoUtilities: Codeunit "Contoso Utilities";
     begin
-        ContosoFixedAsset.InsertFADepreciationBook(FA000010(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020101D), 5);
-        ContosoFixedAsset.InsertFADepreciationBook(FA000020(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020501D), 5);
-        ContosoFixedAsset.InsertFADepreciationBook(FA000030(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020601D), 5);
-        ContosoFixedAsset.InsertFADepreciationBook(FA000040(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020101D), 0);
-        ContosoFixedAsset.InsertFADepreciationBook(FA000050(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020101D), 10);
-        ContosoFixedAsset.InsertFADepreciationBook(FA000060(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020201D), 8);
-        ContosoFixedAsset.InsertFADepreciationBook(FA000070(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020301D), 4);
-        ContosoFixedAsset.InsertFADepreciationBook(FA000080(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020401D), 8);
-        ContosoFixedAsset.InsertFADepreciationBook(FA000090(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020201D), 7);
+        ContosoFixedAsset.InsertFADepreciationBook(FA000010(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010101D), 5, CreateFAPostingGroup.Vehicles());
+        ContosoFixedAsset.InsertFADepreciationBook(FA000020(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010501D), 5, CreateFAPostingGroup.Vehicles());
+        ContosoFixedAsset.InsertFADepreciationBook(FA000030(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010601D), 5, CreateFAPostingGroup.Vehicles());
+        ContosoFixedAsset.InsertFADepreciationBook(FA000040(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010101D), 0, CreateFAPostingGroup.Equipment());
+        ContosoFixedAsset.InsertFADepreciationBook(FA000050(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010101D), 10, CreateFAPostingGroup.Equipment());
+        ContosoFixedAsset.InsertFADepreciationBook(FA000060(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010201D), 8, CreateFAPostingGroup.Equipment());
+        ContosoFixedAsset.InsertFADepreciationBook(FA000070(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010301D), 4, CreateFAPostingGroup.Equipment());
+        ContosoFixedAsset.InsertFADepreciationBook(FA000080(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010401D), 8, CreateFAPostingGroup.Equipment());
+        ContosoFixedAsset.InsertFADepreciationBook(FA000090(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010201D), 7, CreateFAPostingGroup.Equipment());
     end;
 
     procedure FA000010(): Text[20]
