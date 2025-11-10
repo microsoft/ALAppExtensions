@@ -17,6 +17,7 @@ page 30040 "APIV2 Dimension Values Entity"
     PageType = API;
     EntityName = 'dimensionValue';
     EntitySetName = 'dimensionValues';
+    AboutText = 'Exposes read-only access to dimension value records, including codes, names, types, consolidation mappings, and status indicators for analytical structures such as departments, cost centers, and projects. Enables external systems and reporting tools to retrieve and synchronize dimension values for financial analysis, transaction categorization, and business intelligence integration. Supports GET operations only, ensuring secure and consistent access to the latest dimension configurations in Business Central.';
 
     layout
     {

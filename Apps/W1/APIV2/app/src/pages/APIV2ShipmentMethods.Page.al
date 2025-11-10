@@ -15,6 +15,7 @@ page 30024 "APIV2 - Shipment Methods"
     PageType = API;
     SourceTable = "Shipment Method";
     Extensible = false;
+    AboutText = 'Manages shipment method definitions including codes, descriptions, and CRM coupling status, supporting full CRUD operations to synchronize shipping options across Business Central and external logistics or e-commerce platforms for consistent order fulfillment and customer service.';
 
     layout
     {

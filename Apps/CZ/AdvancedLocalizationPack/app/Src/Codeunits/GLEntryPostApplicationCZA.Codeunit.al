@@ -42,7 +42,13 @@ codeunit 31370 "G/L Entry Post Application CZA"
         PostingDate: Date;
         ApplicationDate: Date;
         TransactionNo: Integer;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforePostApplyGLEntry(ApplyingGLEntry, IsHandled);
+        if IsHandled then
+            exit;
+
         Clear(PostingDate);
         GLEntry.ReadIsolation(IsolationLevel::ReadCommitted);
         GLEntry.SetCurrentKey("Applies-to ID CZA");
@@ -410,9 +416,9 @@ codeunit 31370 "G/L Entry Post Application CZA"
     local procedure IsAppliedEntry(GLEntry: Record "G/L Entry"; ApplyingGLEntry: Record "G/L Entry") IsOk: Boolean
     begin
         IsOk :=
+            (GLEntry."Entry No." <> ApplyingGLEntry."Entry No.") and
             (GLEntry."G/L Account No." = ApplyingGLEntry."G/L Account No.") and
-            ((GLEntry.Amount <> 0) and ((GLEntry.Amount * ApplyingGLEntry.Amount) < 0)) or
-            (GLEntry.Amount = 0);
+            ((GLEntry.Amount * ApplyingGLEntry.Amount) <= 0);
         OnAfterIsAppliedEntry(GLEntry, ApplyingGLEntry, IsOk);
     end;
 
@@ -456,6 +462,134 @@ codeunit 31370 "G/L Entry Post Application CZA"
         ModifiedGLEntry.Modify();
     end;
 
+    internal procedure IsApplyGLEntryEnabled(GenJnlLine: Record "Gen. Journal Line") IsEnabled: Boolean
+    begin
+        IsEnabled := GetAppliedAccountType(GenJnlLine) = GenJnlLine."Account Type"::"G/L Account";
+        OnIsApplyGLEntryEnabled(GenJnlLine, IsEnabled);
+    end;
+
+    internal procedure GetAppliedAccountType(GenJnlLine: Record "Gen. Journal Line"): Enum "Gen. Journal Account Type"
+    var
+        AccountType: Enum "Gen. Journal Account Type";
+        AccountNo: Code[20];
+        AccountBalance: Boolean;
+    begin
+        GetAppliedAccount(GenJnlLine, AccountType, AccountNo, AccountBalance);
+        exit(AccountType);
+    end;
+
+    internal procedure GetAppliedAccount(GenJnlLine: Record "Gen. Journal Line"; var AccountType: Enum "Gen. Journal Account Type"; var AccountNo: Code[20]; var AccountBalance: Boolean): Code[20]
+    begin
+        if GenJnlLine."Bal. Account Type" in
+               [GenJnlLine."Bal. Account Type"::Customer, GenJnlLine."Bal. Account Type"::Vendor, GenJnlLine."Bal. Account Type"::Employee]
+        then begin
+            AccountType := GenJnlLine."Bal. Account Type";
+            AccountNo := GenJnlLine."Bal. Account No.";
+            AccountBalance := true;
+        end else begin
+            AccountType := GenJnlLine."Account Type";
+            AccountNo := GenJnlLine."Account No.";
+            AccountBalance := false;
+        end;
+
+        if AccountType in [GenJnlLine."Account Type"::Customer, GenJnlLine."Account Type"::Vendor, GenJnlLine."Account Type"::Employee] then
+            exit;
+
+        if (GenJnlLine."Account Type" = GenJnlLine."Account Type"::"G/L Account") and (GenJnlLine."Account No." <> '') then begin
+            AccountType := GenJnlLine."Account Type";
+            AccountNo := GenJnlLine."Account No.";
+            AccountBalance := false;
+        end else begin
+            AccountType := GenJnlLine."Bal. Account Type";
+            AccountNo := GenJnlLine."Bal. Account No.";
+            AccountBalance := true;
+        end;
+    end;
+
+    internal procedure ApplyGLEntry(var GenJnlLine: Record "Gen. Journal Line")
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+        AccountType: Enum "Gen. Journal Account Type";
+        AccountNo: Code[20];
+        AccountBalance: Boolean;
+    begin
+        GetAppliedAccount(GenJnlLine, AccountType, AccountNo, AccountBalance);
+
+        if AccountType <> AccountType::"G/L Account" then
+            exit;
+
+        ApplyGLEntry(GenJnlLine, AccountNo, AccountBalance);
+        CrossApplicationMgtCZL.SetAppliesToID(GenJnlLine."Applies-to ID");
+    end;
+
+    local procedure ApplyGLEntry(var GenJournalLine: Record "Gen. Journal Line"; AccountNo: Code[20]; AccountBalance: Boolean)
+    var
+        GLEntry: Record "G/L Entry";
+        TempGLEntry: Record "G/L Entry" temporary;
+        ApplyGenLedgerEntriesCZA: Page "Apply Gen. Ledger Entries CZA";
+        PreviousAppliesToID: Code[50];
+        EntrySelected: Boolean;
+        MustSpecifyErr: Label 'You must specify %1 or %2.', Comment = '%1 = FieldCaption Document No., %2 = FieldCaption Applies-to ID';
+    begin
+        GLEntry.SetRange("G/L Account No.", AccountNo);
+        if GenJournalLine.Amount > 0 then
+            if AccountBalance then
+                GLEntry.SetFilter(Amount, '>0')
+            else
+                GLEntry.SetFilter(Amount, '<0');
+        if GenJournalLine.Amount < 0 then
+            if AccountBalance then
+                GLEntry.SetFilter(Amount, '<0')
+            else
+                GLEntry.SetFilter(Amount, '>0');
+        PreviousAppliesToID := GenJournalLine."Applies-to ID";
+        if GenJournalLine."Applies-to ID" = '' then
+            GenJournalLine."Applies-to ID" := GenJournalLine."Document No.";
+        if GenJournalLine."Applies-to ID" = '' then
+            Error(
+              MustSpecifyErr,
+              GenJournalLine.FieldCaption("Document No."), GenJournalLine.FieldCaption("Applies-to ID"));
+
+        if GLEntry.IsEmpty() then
+            exit;
+
+        GLEntry.SetAutoCalcFields("Applied Amount CZA");
+        GLEntry.SetLoadFields("Applies-to ID CZA", "Posting Date", "Document Type", "Document No.", "G/L Account No.", Description, Amount, "Amount to Apply CZA", "Applying Entry CZA", "Applied Amount CZA",
+            "Gen. Bus. Posting Group", "Gen. Prod. Posting Group", "VAT Bus. Posting Group", "VAT Prod. Posting Group");
+
+        ApplyGenLedgerEntriesCZA.InsertEntry(GLEntry);
+        ApplyGenLedgerEntriesCZA.SetGenJournalLine(GenJournalLine);
+        ApplyGenLedgerEntriesCZA.LookupMode(true);
+        EntrySelected := ApplyGenLedgerEntriesCZA.RunModal() = Action::LookupOK;
+        if not EntrySelected then begin
+            GenJournalLine."Applies-to ID" := PreviousAppliesToID;
+            exit;
+        end;
+        ApplyGenLedgerEntriesCZA.CopyEntry(TempGLEntry);
+
+        TempGLEntry.Reset();
+        TempGLEntry.SetRange("Closed CZA", false);
+        TempGLEntry.SetRange("Applies-to ID CZA", GenJournalLine."Applies-to ID");
+        if TempGLEntry.FindSet() then begin
+            if GenJournalLine.Amount = 0 then begin
+                repeat
+                    if Abs(TempGLEntry."Amount to Apply CZA") >= Abs(TempGLEntry.RemainingAmountCZA()) then
+                        GenJournalLine.Amount := GenJournalLine.Amount - TempGLEntry.RemainingAmountCZA()
+                    else
+                        GenJournalLine.Amount := GenJournalLine.Amount - TempGLEntry."Amount to Apply CZA";
+                until TempGLEntry.Next() = 0;
+                if GenJournalLine."Account Type" <> GenJournalLine."Bal. Account Type"::"G/L Account" then
+                    GenJournalLine.Amount := -GenJournalLine.Amount;
+                GenJournalLine.Validate(Amount);
+            end;
+            GenJournalLine."Applies-to Doc. Type" := GenJournalLine."Applies-to Doc. Type"::" ";
+            GenJournalLine."Applies-to Doc. No." := '';
+        end else
+            GenJournalLine."Applies-to ID" := '';
+        if GenJournalLine."Line No." <> 0 then
+            GenJournalLine.Modify();
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeAtomatedGLEntryApplication(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry"; var IsHandled: Boolean)
     begin
@@ -473,6 +607,16 @@ codeunit 31370 "G/L Entry Post Application CZA"
 
     [IntegrationEvent(true, false)]
     local procedure OnAfterIsAppliedEntry(GLEntry: Record "G/L Entry"; ApplyingGLEntry: Record "G/L Entry"; var IsOk: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostApplyGLEntry(var ApplyingGLEntry: Record "G/L Entry"; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnIsApplyGLEntryEnabled(GenJnlLine: Record "Gen. Journal Line"; var IsEnabled: Boolean)
     begin
     end;
 }

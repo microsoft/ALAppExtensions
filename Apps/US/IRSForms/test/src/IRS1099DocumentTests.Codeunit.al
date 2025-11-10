@@ -49,11 +49,6 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure IRS1099CodeSetsInPurchaseHeaderFromVendor()
     var
         PurchaseHeader: Record "Purchase Header";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
@@ -61,9 +56,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [SCENARIO 495389] IRS 1099 code is taken from the vendor when creating a purchase header
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
             LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate(), WorkDate());
@@ -72,20 +64,12 @@ codeunit 148010 "IRS 1099 Document Tests"
         VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), WorkDate(), FormNo, FormBoxNo);
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
         LibraryIRS1099Document.VerifyIRS1099CodeInPurchaseHeader(PurchaseHeader, FormNo, FormBoxNo);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
     procedure IRS1099CodeInPurchaseHeaderWhenChangePostingDate()
     var
         PurchaseHeader: Record "Purchase Header";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
@@ -94,9 +78,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [SCENARIO 495389] IRS 1099 code changes when change the posting date of the purchase header
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         ReportingDate := CalcDate('<1Y>', WorkDate());
         LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(ReportingDate);
         FormNo :=
@@ -109,9 +90,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         PurchaseHeader.Validate("Posting Date", ReportingDate);
         // [THEN]
         LibraryIRS1099Document.VerifyIRS1099CodeInPurchaseHeader(PurchaseHeader, FormNo, FormBoxNo);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -121,20 +99,12 @@ codeunit 148010 "IRS 1099 Document Tests"
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         VendorLedgEntry: Record "Vendor Ledger Entry";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendNo, FormNo, FormBoxNo, InvNo : Code[20];
         ReportingDate: Date;
     begin
         // [SCENARIO 597572] IRS 1099 code in vendor ledger entry is taken from the purchase invoice when change the posting date of the purchase header after adding a line
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         // [GIVEN] IRS Reporting Period is in 2026
         // [GIVEN] Vendor "X" with form box for the period
         ReportingDate := CalcDate('<1Y>', WorkDate());
@@ -162,9 +132,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         VendorLedgEntry.TestField("IRS 1099 Reporting Amount", -PurchaseLine."Amount Including VAT");
         LibraryVariableStorage.AssertEmpty();
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -174,19 +141,11 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
         IRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         EntryNo: Integer;
     begin
         // [SCENARIO 495389] Create a single form document with the same period, vendor and form
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         // [GIVEN] Vendor form box buffer with "Period No." = "X", "Vendor No." = "Y", "Form No." = "MISC", "Form Box No." = "MISC-01"
         LibraryIRS1099Document.MockVendorFormBoxBuffer(
                 TempIRS1099VendFormBoxBuffer, EntryNo, LibraryUtility.GenerateGUID(), LibraryPurchase.CreateVendorNo(),
@@ -210,9 +169,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099FormDocLine.TestField("Include In 1099", TempIRS1099VendFormBoxBuffer."Include In 1099");
         IRS1099FormDocLineDetail.Get(IRS1099FormDocLine."Document ID", IRS1099FormDocLine."Line No.", EntryNo);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -269,18 +225,10 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure CreateFormDocumentSamePeriodVendorAndFormMultipleConnectedEntries()
     var
         TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [SCENARIO 495389] Create a single form document with the same period, vendor and form and multiple connected entries
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         TempIRS1099VendFormBoxBuffer."Period No." := LibraryUtility.GenerateGUID();
         TempIRS1099VendFormBoxBuffer."Vendor No." := LibraryUtility.GenerateGUID();
         TempIRS1099VendFormBoxBuffer."Form No." := LibraryUtility.GenerateGUID();
@@ -289,30 +237,18 @@ codeunit 148010 "IRS 1099 Document Tests"
         TempIRS1099VendFormBoxBuffer."Reporting Amount" := LibraryRandom.RandDec(100, 2);
         TempIRS1099VendFormBoxBuffer."Include In 1099" := true;
         TempIRS1099VendFormBoxBuffer.Insert(true);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
     procedure ChangeFormBoxInLineWithNonZeroCalculatedAmount()
     var
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         PeriodNo, FormNo : Code[20];
         FormBoxNo: array[2] of Code[20];
     begin
         // [SCENARIO 495389] Stan cannot change the Form Box No. in the form document line with non-zero calculated amount
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
             LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate(), WorkDate());
@@ -332,30 +268,18 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN]
         Assert.ExpectedError(CannotChangeFormBoxWithCalculatedAmountErr);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
     procedure ChangeFormBoxInLineWithZeroCalculatedAmount()
     var
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         PeriodNo, FormNo : Code[20];
         FormBoxNo: array[2] of Code[20];
     begin
         // [SCENARIO 495389] Stan can change the Form Box No. in the form document line with non-zero calculated amount
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
             LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate(), WorkDate());
@@ -376,9 +300,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN]
         IRS1099FormDocLine.TestField(Amount, 0);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -388,20 +309,11 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
         IRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
     begin
         // [SCENARIO 495389] Stan cannot change the IRS data in the vendor ledger entry connected to the form document
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
             LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
@@ -432,9 +344,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // Tear down
         IRS1099FormDocHeader.Delete(true);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -445,20 +354,12 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
         DocId, EntryNo : Integer;
     begin
         // [SCENARIO 534640] Stan can replace an existing form document when running a form documents creation for a vendor that already has a form document
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         // [GIVEN] Period = WorkDate(), Form No. = MISC, Form Box No. = MISC-01, Vendor No. = "X"
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
@@ -490,9 +391,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] There is only one form document line for MISC-01 and "X"
         Assert.RecordCount(IRS1099FormDocLine, 1);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -503,20 +401,12 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         OriginalIRS1099FormDocLine, IRS1099FormDocLine : Record "IRS 1099 Form Doc. Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
         DocId, EntryNo : Integer;
     begin
         // [SCENARIO 534640] Stan cannot replace an existing form document when running a form documents creation for a vendor that already has a form document in submitted status
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         // [GIVEN] Period = WorkDate(), Form No. = MISC, Form Box No. = MISC-01, Vendor No. = "X"
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
@@ -548,9 +438,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] There is only one form document line for MISC-01 and "X"
         Assert.RecordCount(IRS1099FormDocLine, 1);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -561,20 +448,12 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
         DocId, EntryNo : Integer;
     begin
         // [SCENARIO 534640] Stan can replace an existing form document when running a form documents creation for a vendor that already has a form document in released status
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         // [GIVEN] Period = WorkDate(), Form No. = MISC, Form Box No. = MISC-01, Vendor No. = "X"
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
@@ -606,9 +485,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] There is only one form document line for MISC-01 and "X"
         Assert.RecordCount(IRS1099FormDocLine, 1);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -616,21 +492,12 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure ValidateNotInsertedGenJnlLinePostingDateWithLineNo()
     var
         GenJnlLine: Record "Gen. Journal Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         PeriodNo: Code[20];
     begin
         // [FEATURE] [UT]
         // [SCENARIO 536496] It is possible to validate the posting date in the not inserted general journal line with line no. already specified
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         // [GIVEN] "IRS Reporting Period" = "X" with "Starting Date" = work date
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         // [GIVEN] "Gen. Journal Line" with "Document Type" = Invoice and "Line No." = 1
@@ -641,9 +508,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] The IRS 1099 Reporting Period is "X"
         GenJnlLine.TestField("IRS 1099 Reporting Period", PeriodNo);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -651,20 +515,11 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure ValidateNotInsertedInvGenJnlLineAmountWithLineNo()
     var
         GenJnlLine: Record "Gen. Journal Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [FEATURE] [UT]
         // [SCENARIO 536496] It is possible to validate the amount in the not inserted invoice general journal line with line no. already specified
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         // [GIVEN] "Gen. Journal Line" with "Document Type" = "Invoice" "Line No." = 1
         GenJnlLine."Line No." := 1;
         GenJnlLine."Document Type" := GenJnlLine."Document Type"::Invoice;
@@ -673,9 +528,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] The IRS 1099 Reporting Amount is 100
         GenJnlLine.TestField("IRS 1099 Reporting Amount", 100);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -683,20 +535,11 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure ValidateNotInsertedCrMemoGenJnlLineAmountWithLineNo()
     var
         GenJnlLine: Record "Gen. Journal Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [FEATURE] [UT]
         // [SCENARIO 536496] It is possible to validate the amount in the not inserted credit memo general journal line with line no. already specified
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         // [GIVEN] "Gen. Journal Line" with "Document Type" = "Credit Memo" "Line No." = 1
         GenJnlLine."Line No." := 1;
         GenJnlLine."Document Type" := GenJnlLine."Document Type"::"Credit Memo";
@@ -705,9 +548,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] The IRS 1099 Reporting Amount is 100
         GenJnlLine.TestField("IRS 1099 Reporting Amount", 100);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -715,20 +555,11 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure ValidateAmountInTempGenJnlLine()
     var
         TempGenJnlLine: Record "Gen. Journal Line" temporary;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [FEATURE] [UT]
         // [SCENARIO 539449] The amount validation of the temporary general journal line does not affect the IRS amount
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         // [GIVEN] "Gen. Journal Line" with "Line No." = 1
         TempGenJnlLine."Line No." := 1;
         // [WHEN] Validate Amount field with 100
@@ -736,9 +567,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] The IRS 1099 Reporting Amount is 0
         TempGenJnlLine.TestField("IRS 1099 Reporting Amount", 0);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -746,20 +574,11 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure ValidatePostingDateInTempGenJnlLine()
     var
         TempGenJnlLine: Record "Gen. Journal Line" temporary;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [FEATURE] [UT]
         // [SCENARIO 539449] The posting date validation of the temporary general journal line does not affect the IRS period
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         // [GIVEN] "IRS Reporting Period" = "X" with "Starting Date" = work date
         LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         // [GIVEN] "Gen. Journal Line" with "Document Type" = Invoice and "Line No." = 1
@@ -770,9 +589,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] The IRS 1099 Reporting Period is blank
         TempGenJnlLine.TestField("IRS 1099 Reporting Period", '');
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -780,20 +596,11 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure ValidateAmountInPaymentGenJnlLine()
     var
         GenJnlLine: Record "Gen. Journal Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [FEATURE] [UT]
         // [SCENARIO 539449] The amount validation of the payment general journal line does not affect the IRS amount
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         // [GIVEN] "Gen. Journal Line" with "Document Type" = Payment and "Line No." = 1
         GenJnlLine."Line No." := 1;
         GenJnlLine."Document Type" := GenJnlLine."Document Type"::Payment;
@@ -802,9 +609,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] The IRS 1099 Reporting Amount is 0
         GenJnlLine.TestField("IRS 1099 Reporting Amount", 0);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -812,20 +616,11 @@ codeunit 148010 "IRS 1099 Document Tests"
     procedure ValidatePostingDateInPaymentGenJnlLine()
     var
         GenJnlLine: Record "Gen. Journal Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [FEATURE] [UT]
         // [SCENARIO 539449] The posting date validation of the payment general journal line does not affect the IRS period
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         // [GIVEN] "IRS Reporting Period" = "X" with "Starting Date" = work date
         LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         // [GIVEN] "Gen. Journal Line" with "Document Type" = Payment and "Line No." = 1
@@ -836,9 +631,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] The IRS 1099 Reporting Period is blank
         GenJnlLine.TestField("IRS 1099 Reporting Period", '');
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -849,20 +641,12 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         OriginalIRS1099FormDocLine, IRS1099FormDocLine : Record "IRS 1099 Form Doc. Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
         DocId, EntryNo : Integer;
     begin
         // [SCENARIO 543741] Stan cannot create form documents when there is an existing form document with ID = 1
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         // [GIVEN] Period = WorkDate(), Form No. = MISC, Form Box No. = MISC-01, Vendor No. = "X"
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo :=
@@ -896,20 +680,12 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] There is only one form document line for MISC-01 and "Y"
         Assert.RecordCount(IRS1099FormDocLine, 1);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
     procedure ValidatePostingDateWhenPurchHeaderNotInitiazed()
     var
         PurchaseHeader: Record "Purchase Header";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [FEATURE] [UT]
         // [SCENARIO 560148] It is possible to validate the posting date in the not initialized purchase header
@@ -917,18 +693,11 @@ codeunit 148010 "IRS 1099 Document Tests"
         Initialize();
 
         // [GIVEN] IRS Forms app is enabled
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         // [WHEN] Validate Posting Date field of the purchase header with current date
         PurchaseHeader.Validate("Posting Date", WorkDate());
         // [THEN] Posting date is equal current date in the purchase header
         PurchaseHeader.TestField("Posting Date", WorkDate());
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -976,11 +745,6 @@ codeunit 148010 "IRS 1099 Document Tests"
     var
         PurchaseHeader: Record "Purchase Header";
         PurchPayablesSetup: Record "Purchases & Payables Setup";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
     begin
         // [FEATURE] [UT]
         // [SCENARIO 561813] It is possible to insert purchase invoice with manual series and 1099 information from vendor
@@ -988,10 +752,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         Initialize();
 
         // [GIVEN] IRS Forms app is enabled
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
         PurchPayablesSetup.Get();
         PurchPayablesSetup.Validate("Invoice Nos.", LibraryERM.CreateNoSeriesCode());
         PurchPayablesSetup.Modify(true);
@@ -1004,9 +764,6 @@ codeunit 148010 "IRS 1099 Document Tests"
         // [THEN] Posting date is equal current date in the purchase header
         PurchaseHeader.TestField("No.");
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]

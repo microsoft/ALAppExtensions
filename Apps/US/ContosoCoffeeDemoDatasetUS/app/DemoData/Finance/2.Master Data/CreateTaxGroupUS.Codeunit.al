@@ -45,7 +45,7 @@ codeunit 11463 "Create Tax Group US"
         UpdateTaxGroupOnGLAccount(CreateGLAccount.RawMaterials(), NonTaxable());
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.ProductsinProgress(), NonTaxable());
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.FinishedGoods(), NonTaxable());
-        UpdateTaxGroupOnGLAccount(CreateUSGLAccount.GoodsforResale(), NonTaxable());
+        UpdateTaxGroupOnGLAccount(CreateGLAccount.ResaleItems(), NonTaxable());
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.AdvancedPaymentsforGoodsandServices(), NonTaxable());
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.OtherInventoryItems(), NonTaxable());
         UpdateTaxGroupOnGLAccount(CreateUSGLAccount.WorkinProgressFinishedGoods(), NonTaxable());

@@ -6,7 +6,7 @@ namespace Microsoft.Finance.VAT.Setup;
 
 using System.Security.AccessControl;
 
-permissionsetextension 10583 "D365 READ - Reports GB" extends "D365 READ"
+permissionsetextension 10593 "D365 READ - Reports GB" extends "D365 READ"
 {
     IncludedPermissionSets = "Reports GB - Objects";
 }

@@ -20,6 +20,7 @@ page 30026 "APIV2 - Cash Flow Statement"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = Id;
+    AboutText = 'Exposes read-only cash flow statement data, including line-level details such as net change, activity type, description, and date filters, segmented by operating, investing, and financing activities. Supports GET operations for retrieving up-to-date cash inflow and outflow summaries, enabling automated financial analysis, liquidity monitoring, and integration with external reporting or consolidation systems. Ideal for developers building solutions that require accurate cash flow visibility for planning and multi-entity financial management.';
 
     layout
     {

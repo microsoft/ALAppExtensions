@@ -186,6 +186,9 @@ codeunit 11742 "VAT Date Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"General Ledger Setup", 'OnAfterInsertEvent', '', false, false)]
     local procedure InitVATReportingDateUsageOnAfteInsertEvent(var Rec: Record "General Ledger Setup")
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         Rec."VAT Reporting Date Usage" := Rec."VAT Reporting Date Usage"::"Enabled (Prevent modification)";
     end;
 }

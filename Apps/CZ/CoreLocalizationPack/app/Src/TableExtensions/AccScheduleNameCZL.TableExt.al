@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.FinancialReports;
 
+using System.Utilities;
+
 tableextension 11750 "Acc. Schedule Name CZL" extends "Acc. Schedule Name"
 {
     fields
@@ -14,6 +16,19 @@ tableextension 11750 "Acc. Schedule Name CZL" extends "Acc. Schedule Name"
             DataClassification = CustomerContent;
         }
     }
+
+    trigger OnBeforeDelete()
+    var
+        AccScheduleResultHeader: Record "Acc. Schedule Result Hdr. CZL";
+        ConfirmManagement: Codeunit "Confirm Management";
+        DeleteQst: Label '%1 has results. Do you want to delete it anyway?', Comment = '%1 = Description';
+    begin
+        if Rec.IsResultsExistCZL(Rec.Name) then
+            if ConfirmManagement.GetResponseOrDefault(StrSubStNo(DeleteQst, Rec.GetRecordDescriptionCZL(Rec.Name)), true) then begin
+                AccScheduleResultHeader.SetRange("Acc. Schedule Name", Rec.Name);
+                AccScheduleResultHeader.DeleteAll(true);
+            end;
+    end;
 
     procedure IsResultsExistCZL(AccSchedName: Code[10]): Boolean
     var

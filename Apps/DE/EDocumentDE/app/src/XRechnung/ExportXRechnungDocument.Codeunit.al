@@ -23,7 +23,6 @@ using Microsoft.Sales.History;
 codeunit 13916 "Export XRechnung Document"
 {
     TableNo = "Record Export Buffer";
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 
@@ -119,7 +118,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertInvDiscountAllowanceCharge(LineAmounts, SalesInvLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
         InsertTaxTotal(RootXMLNode, SalesInvLine, CurrencyCode, LineAmount, LineVATAmount);
         InsertLegalMonetaryTotal(RootXMLNode, SalesInvLine, LineAmounts, CurrencyCode);
-        InsertInvoiceLine(RootXMLNode, SalesInvLine, Currency, CurrencyCode, SalesInvoiceHeader."Prices Including VAT");
+        InsertInvoiceLines(RootXMLNode, SalesInvLine, Currency, CurrencyCode, SalesInvoiceHeader."Prices Including VAT");
         OnCreateXMLOnBeforeSalesInvXmlDocumentWriteToFile(XMLDoc, SalesInvoiceHeader);
         XMLDoc.WriteTo(XMLDocText);
         FileOutstream.WriteText(XMLDocText);
@@ -163,7 +162,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertInvDiscountAllowanceCharge(LineAmounts, SalesCrMemoLine, CurrencyCode, RootXMLNode, LineDiscAmount, LineAmount, Currency."Amount Rounding Precision");
         InsertTaxTotal(RootXMLNode, SalesCrMemoLine, CurrencyCode, LineAmount, LineVATAmount);
         InsertLegalMonetaryTotal(RootXMLNode, SalesCrMemoLine, LineAmounts, CurrencyCode);
-        InsertCrMemoLine(RootXMLNode, SalesCrMemoLine, Currency, CurrencyCode, SalesCrMemoHeader."Prices Including VAT");
+        InsertCrMemoLines(RootXMLNode, SalesCrMemoLine, Currency, CurrencyCode, SalesCrMemoHeader."Prices Including VAT");
         OnCreateXMLOnBeforeSalesCrMemoXmlDocumentWriteToFile(XMLDoc, SalesCrMemoHeader);
         XMLDoc.WriteTo(XMLDocText);
         FileOutstream.WriteText(XMLDocText);
@@ -644,7 +643,7 @@ codeunit 13916 "Export XRechnung Document"
         AllowanceChargeElement := XmlElement.Create('AllowanceCharge', XmlNamespaceCAC);
         AllowanceChargeElement.Add(XmlElement.Create('ChargeIndicator', XmlNamespaceCBC, 'false'));
         AllowanceChargeElement.Add(XmlElement.Create('AllowanceChargeReason', XmlNamespaceCBC, AllowanceChargeReason));
-        AllowanceChargeElement.Add(XmlElement.Create('MultiplierFactorNumeric', XmlNamespaceCBC, FormatDecimal(MultiplierFactorNumeric)));
+        AllowanceChargeElement.Add(XmlElement.Create('MultiplierFactorNumeric', XmlNamespaceCBC, FormatFiveDecimal(MultiplierFactorNumeric)));
         AllowanceChargeElement.Add(XmlElement.Create('Amount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(Amount)));
         AllowanceChargeElement.Add(XmlElement.Create('BaseAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(BaseAmount)));
         if InsertTaxCat then
@@ -799,12 +798,22 @@ codeunit 13916 "Export XRechnung Document"
         RootElement.Add(OrderReferenceElement);
     end;
 
-    local procedure InsertInvoiceLine(var InvoiceElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
-    var
-        InvoiceLineElement: XmlElement;
+    local procedure InsertInvoiceLines(var InvoiceElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
     begin
         SalesInvLine.FindSet();
         repeat
+            InsertInvoiceLine(InvoiceElement, SalesInvLine, Currency, CurrencyCode, PricesIncVAT);
+        until SalesInvLine.Next() = 0;
+    end;
+
+    local procedure InsertInvoiceLine(var InvoiceElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
+    var
+        InvoiceLineElement: XmlElement;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeInsertInvoiceLine(InvoiceElement, SalesInvLine, Currency, CurrencyCode, PricesIncVAT, IsHandled);
+        if not IsHandled then begin
             InvoiceLineElement := XmlElement.Create('InvoiceLine', XmlNamespaceCAC);
 
             if PricesIncVAT then
@@ -821,16 +830,27 @@ codeunit 13916 "Export XRechnung Document"
 
             InsertItem(InvoiceLineElement, SalesInvLine);
             InsertPrice(InvoiceLineElement, SalesInvLine."Unit Price", CurrencyCode);
+            OnBeforeAddInvoiceLineElement(InvoiceLineElement, SalesInvLine, Currency, CurrencyCode, PricesIncVAT);
             InvoiceElement.Add(InvoiceLineElement);
-        until SalesInvLine.Next() = 0;
+        end;
+    end;
+
+    local procedure InsertCrMemoLines(var CrMemoElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
+    begin
+        SalesCrMemoLine.FindSet();
+        repeat
+            InsertCrMemoLine(CrMemoElement, SalesCrMemoLine, Currency, CurrencyCode, PricesIncVAT);
+        until SalesCrMemoLine.Next() = 0;
     end;
 
     local procedure InsertCrMemoLine(var CrMemoElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
     var
         CrMemoLineElement: XmlElement;
+        IsHandled: Boolean;
     begin
-        SalesCrMemoLine.FindSet();
-        repeat
+        IsHandled := false;
+        OnBeforeInsertCrMemoLine(CrMemoElement, SalesCrMemoLine, Currency, CurrencyCode, PricesIncVAT, IsHandled);
+        if not IsHandled then begin
             CrMemoLineElement := XmlElement.Create('CreditNoteLine', XmlNamespaceCAC);
 
             if PricesIncVAT then
@@ -847,8 +867,9 @@ codeunit 13916 "Export XRechnung Document"
 
             InsertItem(CrMemoLineElement, SalesCrMemoLine);
             InsertPrice(CrMemoLineElement, SalesCrMemoLine."Unit Price", CurrencyCode);
+            OnBeforeAddCrMemoLineElement(CrMemoLineElement, SalesCrMemoLine, Currency, CurrencyCode, PricesIncVAT);
             CrMemoElement.Add(CrMemoLineElement);
-        until SalesCrMemoLine.Next() = 0;
+        end;
     end;
 
     procedure InsertAttachment(var RootElement: XmlElement; TableNo: Integer; DocumentNo: Code[20]);
@@ -1027,6 +1048,11 @@ codeunit 13916 "Export XRechnung Document"
         exit(Format(Round(VarDecimal, 0.0001), 0, 9));
     end;
 
+    procedure FormatFiveDecimal(VarDecimal: Decimal): Text[30];
+    begin
+        exit(Format(Round(VarDecimal, 0.00001), 0, 9));
+    end;
+
     procedure GetUoMCode(UoMCode: Code[10]): Text;
     var
         UnitofMeasure: Record "Unit of Measure";
@@ -1121,6 +1147,7 @@ codeunit 13916 "Export XRechnung Document"
     begin
         CompanyInformation.Get();
         GeneralLedgerSetup.Get();
+        OnAfterGetSetups(CompanyInformation, GeneralLedgerSetup);
     end;
     #endregion
 
@@ -1176,6 +1203,31 @@ codeunit 13916 "Export XRechnung Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCalculateCrMemoLineAmounts(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; var LineAmounts: Dictionary of [Text, Decimal])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetSetups(var CompanyInformation: Record "Company Information"; var GeneralLedgerSetup: Record "General Ledger Setup")
+    begin
+    end;
+    
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertInvoiceLine(var InvoiceElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAddInvoiceLineElement(var InvoiceLineElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertCrMemoLine(var CrMemoElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAddCrMemoLineElement(var CrMemoLineElement: XmlElement; var SalesCrMemoLine: Record "Sales Cr.Memo Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
     begin
     end;
 }

@@ -84,20 +84,35 @@ page 4405 "SOA Email Attachments"
     local procedure GetReviewStatus(): Enum "SOA Email Attachment Status"
     var
         AgentTaskMessageAttachment: Record "Agent Task Message Attachment";
+        AgentTaskFile: Record "Agent Task File";
         SOASetup: Codeunit "SOA Setup";
+        InStream: InStream;
+        ExceedsPageCountThreshold: Boolean;
     begin
         AgentTaskMessageAttachment.ReadIsolation(IsolationLevel::ReadCommitted);
         AgentTaskMessageAttachment.SetLoadFields(Ignored);
         AgentTaskMessageAttachment.SetRange("Task ID", Rec."Task ID");
         AgentTaskMessageAttachment.SetRange("File ID", Rec.ID);
-        if AgentTaskMessageAttachment.FindFirst() then
-            if AgentTaskMessageAttachment.Ignored then
-                if not SOASetup.SupportedAttachmentContentType(Rec."File MIME Type") then
-                    exit(AttachmentStatus::UnsupportedFormat)
-                else
-                    exit(AttachmentStatus::NoRelevantContent);
+        if not AgentTaskMessageAttachment.FindFirst() then
+            exit(AttachmentStatus::Reviewed);
 
-        exit(AttachmentStatus::Reviewed);
+        if not AgentTaskMessageAttachment.Ignored then
+            exit(AttachmentStatus::Reviewed);
+
+        if not SOASetup.SupportedAttachmentContentType(Rec."File MIME Type") then
+            exit(AttachmentStatus::UnsupportedFormat);
+
+        if not SOASetup.IsPdfAttachmentContentType(Rec."File MIME Type") then
+            exit(AttachmentStatus::NoRelevantContent);
+
+        if AgentTaskFile.Get(AgentTaskMessageAttachment."Task ID", AgentTaskMessageAttachment."File ID") then begin
+            AgentTaskFile.CalcFields(Content);
+            AgentTaskFile.Content.CreateInStream(InStream, GetDefaultEncoding());
+            if SOASetup.DocumentExceedsPageCountThreshold(InStream, ExceedsPageCountThreshold) then
+                if ExceedsPageCountThreshold then
+                    exit(AttachmentStatus::ExceedsPageCount);
+        end;
+        exit(AttachmentStatus::NoRelevantContent);
     end;
 
     internal procedure LoadRecords(var AgentTaskMessage: Record "Agent Task Message")

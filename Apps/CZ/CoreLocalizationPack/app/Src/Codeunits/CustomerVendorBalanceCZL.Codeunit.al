@@ -89,10 +89,74 @@ codeunit 31058 "Customer Vendor Balance CZL"
             until VendorLedgerEntry.Next() = 0;
     end;
 
-    procedure CalcCustomerVendorBalance(CustomerNo: Code[20]; VendorNo: Code[20]; CurrencyCode: Code[10]; Date: Date; InLCY: Boolean) BalanceAmount: Decimal
+    internal procedure FillCustomerBuffer(CustomerNo: Code[20]; AtDate: Date; var TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary)
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        NextEntryNo: Integer;
+    begin
+        TempCVLedgerEntryBuffer.Reset();
+        TempCVLedgerEntryBuffer.DeleteAll();
+
+        CustLedgerEntry.SetCurrentKey("Customer No.", "Posting Date", "Currency Code");
+        CustLedgerEntry.SetRange("Customer No.", CustomerNo);
+        CustLedgerEntry.SetFilter("Posting Date", '..%1', AtDate);
+        if CustLedgerEntry.FindSet() then
+            repeat
+                CustLedgerEntry.SetFilter("Date Filter", '..%1', AtDate);
+                CustLedgerEntry.CalcFields(Amount, "Remaining Amount", "Remaining Amt. (LCY)");
+                if CustLedgerEntry."Remaining Amount" <> 0 then begin
+                    NextEntryNo += 1;
+                    TempCVLedgerEntryBuffer."Entry No." := NextEntryNo;
+                    TempCVLedgerEntryBuffer.CopyFromCustLedgEntry(CustLedgerEntry);
+                    OnFillCustomerVendorBufferOnBeforeInsertCustLedgerEntry(TempCVLedgerEntryBuffer, CustLedgerEntry);
+                    TempCVLedgerEntryBuffer.Insert();
+                end;
+            until CustLedgerEntry.Next() = 0;
+    end;
+
+    internal procedure FillVendorBuffer(VendorNo: Code[20]; AtDate: Date; var TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary)
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        NextEntryNo: Integer;
+    begin
+        TempCVLedgerEntryBuffer.Reset();
+        TempCVLedgerEntryBuffer.DeleteAll();
+
+        VendorLedgerEntry.SetCurrentKey("Vendor No.", "Posting Date", "Currency Code");
+        VendorLedgerEntry.SetRange("Vendor No.", VendorNo);
+        VendorLedgerEntry.SetFilter("Posting Date", '..%1', AtDate);
+        if VendorLedgerEntry.FindSet() then
+            repeat
+                VendorLedgerEntry.SetFilter("Date Filter", '..%1', AtDate);
+                VendorLedgerEntry.CalcFields(Amount, "Remaining Amount", "Remaining Amt. (LCY)");
+                if VendorLedgerEntry."Remaining Amount" <> 0 then begin
+                    NextEntryNo += 1;
+                    TempCVLedgerEntryBuffer."Entry No." := NextEntryNo;
+                    TempCVLedgerEntryBuffer.CopyFromVendLedgEntry(VendorLedgerEntry);
+                    OnFillCustomerVendorBufferOnBeforeInsertVendorLedgerEntry(TempCVLedgerEntryBuffer, VendorLedgerEntry);
+                    TempCVLedgerEntryBuffer.Insert();
+                end;
+            until VendorLedgerEntry.Next() = 0;
+    end;
+
+    internal procedure FillCurrencyBuffer(var CVLedgerEntryBuffer: Record "CV Ledger Entry Buffer"; var TempCurrency: Record Currency temporary)
+    begin
+        TempCurrency.Reset();
+        TempCurrency.DeleteAll();
+
+        CVLedgerEntryBuffer.Reset();
+        if CVLedgerEntryBuffer.FindSet() then
+            repeat
+                if not TempCurrency.Get(CVLedgerEntryBuffer."Currency Code") then begin
+                    TempCurrency.Code := CVLedgerEntryBuffer."Currency Code";
+                    TempCurrency.Insert();
+                end;
+            until CVLedgerEntryBuffer.Next() = 0;
+    end;
+
+    internal procedure CalcCustomerBalance(CustomerNo: Code[20]; CurrencyCode: Code[10]; Date: Date; InLCY: Boolean) BalanceAmount: Decimal
     var
         Customer: Record Customer;
-        Vendor: Record Vendor;
     begin
         if CustomerNo <> '' then begin
             Customer.Get(CustomerNo);
@@ -104,6 +168,13 @@ codeunit 31058 "Customer Vendor Balance CZL"
                 Customer.CalcFields("Net Change");
             end;
         end;
+        BalanceAmount := InLCY ? Customer."Net Change (LCY)" : Customer."Net Change";
+    end;
+
+    internal procedure CalcVendorBalance(VendorNo: Code[20]; CurrencyCode: Code[10]; Date: Date; InLCY: Boolean) BalanceAmount: Decimal
+    var
+        Vendor: Record Vendor;
+    begin
         if VendorNo <> '' then begin
             Vendor.Get(VendorNo);
             Vendor.SetFilter("Date Filter", '..%1', Date);
@@ -114,10 +185,12 @@ codeunit 31058 "Customer Vendor Balance CZL"
                 Vendor.CalcFields("Net Change");
             end;
         end;
-        if InLCY then
-            BalanceAmount := Customer."Net Change (LCY)" - Vendor."Net Change (LCY)"
-        else
-            BalanceAmount := Customer."Net Change" - Vendor."Net Change";
+        BalanceAmount := InLCY ? Vendor."Net Change (LCY)" : Vendor."Net Change";
+    end;
+
+    procedure CalcCustomerVendorBalance(CustomerNo: Code[20]; VendorNo: Code[20]; CurrencyCode: Code[10]; Date: Date; InLCY: Boolean) BalanceAmount: Decimal
+    begin
+        BalanceAmount := CalcCustomerBalance(CustomerNo, CurrencyCode, Date, InLCY) - CalcVendorBalance(VendorNo, CurrencyCode, Date, InLCY);
     end;
 
     [IntegrationEvent(false, false)]

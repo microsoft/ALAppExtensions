@@ -42,12 +42,7 @@ codeunit 148015 "IRS 1099 E2E Tests"
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
         IRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail";
         IRS1099CreateFormDocsReport: Report "IRS 1099 Create Form Docs";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        PeriodNo: Code[20];
+PeriodNo: Code[20];
         FormNo: array[2] of Code[20];
         FormBoxNo: array[2, 2, 2] of Code[20];
         VendNo: array[2] of Code[20];
@@ -58,10 +53,7 @@ codeunit 148015 "IRS 1099 E2E Tests"
         // [SCENARIO 495389] Stan can report a single form for a single vendor
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         // [GIVEN] Forms MISC and NEC with two boxes each (MISC-01, MISC-02, NEC-01, NEC-02)
         for i := 1 to ArrayLen(FormNo) do
             FormNo[i] := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
@@ -126,10 +118,7 @@ codeunit 148015 "IRS 1099 E2E Tests"
                 end;
             end;
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     local procedure Initialize()
     begin

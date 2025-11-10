@@ -67,17 +67,10 @@ codeunit 17131 "AU Contoso Localization"
     end;
 
     local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateAUInvPostingSetup: Codeunit "Create AU Inv Posting Setup";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create AU Inv Posting Group");
-                    Codeunit.Run(Codeunit::"Create AU Inv Posting Setup");
-                end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                CreateAUInvPostingSetup.UpdateInventoryPosting();
+                Codeunit.Run(Codeunit::"Create AU Inv Posting Group");
         end;
     end;
 
@@ -181,7 +174,6 @@ codeunit 17131 "AU Contoso Localization"
     local procedure OnBeforeGeneratingDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
         FinanceModuleSetup: Record "Finance Module Setup";
-        CreateAUInvPostingSetup: Codeunit "Create AU Inv Posting Setup";
         CreateAUBankAccPostingGrp: Codeunit "Create AU Bank Acc Posting Grp";
         CreateAUPaymentMethod: Codeunit "Create AU Payment Method";
         CreateAUBankAccount: Codeunit "Create AU Bank Account";
@@ -226,7 +218,6 @@ codeunit 17131 "AU Contoso Localization"
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
                     BindSubscription(CreateAULocation);
-                    BindSubscription(CreateAUInvPostingSetup);
                     BindSubscription(CreateAUItem);
                 end;
             Enum::"Contoso Demo Data Module"::Bank:
@@ -260,7 +251,6 @@ codeunit 17131 "AU Contoso Localization"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnAfterGeneratingDemoData', '', false, false)]
     local procedure OnAfterGeneratingDemoData(ContosoDemoDataLevel: Enum "Contoso Demo Data Level"; Module: Enum "Contoso Demo Data Module")
     var
-        CreateAUInvPostingSetup: Codeunit "Create AU Inv Posting Setup";
         CreateAUBankAccPostingGrp: Codeunit "Create AU Bank Acc Posting Grp";
         CreateAUPaymentMethod: Codeunit "Create AU Payment Method";
         CreateAUBankAccount: Codeunit "Create AU Bank Account";
@@ -299,7 +289,6 @@ codeunit 17131 "AU Contoso Localization"
                 end;
             Enum::"Contoso Demo Data Module"::Inventory:
                 begin
-                    UnbindSubscription(CreateAUInvPostingSetup);
                     UnbindSubscription(CreateAUItem);
                     UnbindSubscription(CreateAULocation);
                 end;

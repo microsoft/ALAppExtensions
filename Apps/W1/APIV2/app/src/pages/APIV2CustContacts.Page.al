@@ -22,6 +22,7 @@ page 30089 "APIV2 - CustContacts"
     SourceTable = Contact;
     Extensible = false;
     InsertAllowed = false;
+    AboutText = 'Exposes customer contact person records, including names, job titles, email addresses, phone numbers, and links to associated customer accounts. Supports retrieval, update, and deletion operations (GET, PATCH, DELETE) to maintain and synchronize contact information with external CRM, sales automation, and customer service platforms. Ideal for integrations requiring up-to-date customer contact details and streamlined communication management, but creation of new contact records is not supported via this API.';
 
     layout
     {

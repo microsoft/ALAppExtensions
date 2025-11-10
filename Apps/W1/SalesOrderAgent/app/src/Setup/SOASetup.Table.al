@@ -177,6 +177,18 @@ table 4325 "SOA Setup"
             Caption = 'Configure Email Signature';
             ToolTip = 'Specifies whether the email signature is configured for the sales order agent.';
         }
+
+        field(29; "Email Folder"; Text[2048])
+        {
+            Caption = 'Email Folder';
+            ToolTip = 'Specifies the email folder that the agent monitors.';
+            DataClassification = SystemMetadata;
+        }
+        field(30; "Email Folder Id"; Text[2048])
+        {
+            Caption = 'Email Folder Id';
+            ToolTip = 'Specifies the unique identifier of the email folder that the agent monitors.';
+        }
     }
 
     keys

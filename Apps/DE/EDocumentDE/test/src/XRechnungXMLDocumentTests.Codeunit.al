@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument.Formats;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Purchases.Document;
 using System.Utilities;
 using System.IO;
 using Microsoft.Foundation.UOM;
@@ -32,6 +34,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         GeneralLedgerSetup: Record "General Ledger Setup";
         EDocumentService: Record "E-Document Service";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySales: Codeunit "Library - Sales";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryRandom: Codeunit "Library - Random";
@@ -539,6 +542,47 @@ codeunit 13918 "XRechnung XML Document Tests"
         VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader, TempXMLBuffer);
     end;
     #endregion
+
+    #region PurchaseInvoice
+    [Test]
+    procedure ReleasePurchaseInvoiceInXRechnungFormat();
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        // [SCENARIO] Release purchase invoice regardless if XRechnung format is setup with customer reference
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = customer reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+
+        // [WHEN] Create and release Purchase Invoice
+        CreatePurchDocument(PurchaseHeader, "Purchase Document Type"::Invoice);
+        LibraryPurchase.ReleasePurchaseDocument(PurchaseHeader);
+
+        // [THEN] No error occurs
+    end;
+    #endregion
+
+    #region PurchaseCreditMemo
+    [Test]
+    procedure ReleasePurchaseCreditMemoInXRechnungFormat();
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        // [SCENARIO] Release purchase credit memo regardless if XRechnung format is setup with customer reference
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = customer reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+
+        // [WHEN] Create and release Purchase credit Memo
+        CreatePurchDocument(PurchaseHeader, "Purchase Document Type"::"Credit Memo");
+        LibraryPurchase.ReleasePurchaseDocument(PurchaseHeader);
+
+        // [THEN] No error occurs
+    end;
+    #endregion
+
     local procedure CreateAndPostSalesDocument(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
@@ -561,6 +605,27 @@ codeunit 13918 "XRechnung XML Document Tests"
     begin
         SalesHeader.Get(DocumentType, CreateSalesDocumentWithTwoLineLineDiscount(DocumentType, LineType, InvoiceDiscount));
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreatePurchDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        CreatePurchHeader(PurchaseHeader, DocumentType);
+        LibraryPurchase.CreatePurchaseLine(
+          PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDec(50, 2));
+        PurchaseLine.Modify(true);
+    end;
+
+    local procedure CreatePurchHeader(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
+    var
+        Vendor: Record Vendor;
+    begin
+        LibraryPurchase.CreateVendor(Vendor);
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, Vendor."No.");
+        PurchaseHeader.Validate("Vendor Invoice No.", PurchaseHeader."No.");
+        PurchaseHeader.Modify(true);
     end;
 
     local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
@@ -607,7 +672,7 @@ codeunit 13918 "XRechnung XML Document Tests"
     begin
         LibrarySales.SetCalcInvDiscount(true);
         SalesHeader.CalcFields(Amount);
-        SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(SalesHeader.Amount / 2, SalesHeader);
+        SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(SalesHeader.Amount * LibraryRandom.RandDecInRange(40, 60, 5) / 100, SalesHeader);
     end;
 
     local procedure CreateSalesHeader(var SalesHeader: Record "Sales Header"; DocumentType: Enum "Sales Document Type");
@@ -657,7 +722,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         SalesLine.Validate("Unit of Measure", UnitOfMeasure.Code);
         SalesLine.Validate("Tax Category", LibraryRandom.RandText(2));
         if LineDiscount then
-            SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
+            SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 5));
         SalesLine.Modify(true);
     end;
 
@@ -905,7 +970,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path := DocumentTok + '/cbc:AllowanceChargeReason';
         Assert.AreEqual('LineDiscount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
-        Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(FormatFiveDecimal(SalesInvoiceLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:Amount';
         Assert.AreEqual(FormatDecimal(SalesInvoiceLine."Line Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:BaseAmount';
@@ -921,7 +986,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path := DocumentTok + '/cbc:AllowanceChargeReason';
         Assert.AreEqual('Document discount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
-        Assert.AreEqual(FormatDecimal(100 * SalesInvoiceHeader."Invoice Discount Amount" / (SalesInvoiceHeader."Invoice Discount Amount" + SalesInvoiceHeader.Amount)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(FormatFiveDecimal(100 * SalesInvoiceHeader."Invoice Discount Amount" / (SalesInvoiceHeader."Invoice Discount Amount" + SalesInvoiceHeader.Amount)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:Amount';
         Assert.AreEqual(FormatDecimal(SalesInvoiceHeader."Invoice Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:BaseAmount';
@@ -991,7 +1056,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path := DocumentTok + '/cbc:AllowanceChargeReason';
         Assert.AreEqual('LineDiscount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
-        Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(FormatFiveDecimal(SalesCrMemoLine."Line Discount %"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:Amount';
         Assert.AreEqual(FormatDecimal(SalesCrMemoLine."Line Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:BaseAmount';
@@ -1007,7 +1072,7 @@ codeunit 13918 "XRechnung XML Document Tests"
         Path := DocumentTok + '/cbc:AllowanceChargeReason';
         Assert.AreEqual('Document discount', GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:MultiplierFactorNumeric';
-        Assert.AreEqual(FormatDecimal(100 * SalesCrMemoHeader."Invoice Discount Amount" / (SalesCrMemoHeader."Invoice Discount Amount" + SalesCrMemoHeader.Amount)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Assert.AreEqual(FormatFiveDecimal(100 * SalesCrMemoHeader."Invoice Discount Amount" / (SalesCrMemoHeader."Invoice Discount Amount" + SalesCrMemoHeader.Amount)), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:Amount';
         Assert.AreEqual(FormatDecimal(SalesCrMemoHeader."Invoice Discount Amount"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
         Path := DocumentTok + '/cbc:BaseAmount';
@@ -1165,6 +1230,11 @@ codeunit 13918 "XRechnung XML Document Tests"
     procedure FormatFourDecimal(VarDecimal: Decimal): Text[30];
     begin
         exit(Format(Round(VarDecimal, 0.0001), 0, 9));
+    end;
+
+    procedure FormatFiveDecimal(VarDecimal: Decimal): Text[30];
+    begin
+        exit(Format(Round(VarDecimal, 0.00001), 0, 9));
     end;
 
     local procedure Initialize();

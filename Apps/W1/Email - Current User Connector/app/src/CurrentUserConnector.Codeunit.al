@@ -8,7 +8,7 @@ namespace System.Email;
 using System.Security.AccessControl;
 using System.Environment;
 
-codeunit 4500 "Current User Connector" implements "Email Connector v3", "Default Email Rate Limit"
+codeunit 4500 "Current User Connector" implements "Default Email Rate Limit", "Email Connector v4"
 {
     Access = Internal;
     Permissions = tabledata "Email - Outlook Account" = rimd;
@@ -19,6 +19,11 @@ codeunit 4500 "Current User Connector" implements "Email Connector v3", "Default
         CurrentUserConnectorBase64LogoTxt: Label 'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAARQSURBVHgBzVm9UhtBDJZJk9LwAjnzAnG6dDm6dJAngFSZVNhPYFNlUgFdOswTAFUmVS4dXUyZBpYnwHRJA/lk62zdcsba+/H4m9m52zO7q2+l1UqiQRUhiqImHm207UajEfMntKb8PEIbPj4+OjwvnHPnVBEaVBIs+NraWgfC7dNM4EVwIHn68PAwABlHJfCCSmBzc7ODxxnae7SXAUOZaAwSO81mcwRcUUEU1kCr1Rrgset9HkETR3gmEM7d3Nzc8kcxr9doOyw0TcxrCh4DRXSpAAoRyBHeQYg9CPHLMh6E9kCkR4oI+oPr6+uPFIhgE4LZ8A5/0gtD+A8Q/o91DpjMEKZzgbOTHnxGe2NjI7q7u7ugAAQR4J3D40vah+B9mEkXAv2lQLDhs7AgQuK1GG307/HTpXUeswlB+AgL/SRRO4RnDxKs8jx4JsnnqIW5R5axa2QE1L1HM5t1aAdUESBwR+ZksFntW8eaCWCRXfXeL+u/NXi3MedUm9B0RzzXQpgIYDLt+lj2U6oYmDOhyY3N0If7WZgIwHy203fsVGVhgA+5Q1JsW8aYCGDiSHVrIwDoeyS2DLCeAa3Owte+AS59wTmILAOsBKYHyureisBzDNUd4lWGlcB013HpvKKa4LnOSi8yl77wLUn1oa3WGVoGWL1QorrvqD5o1+ksA6wamEaIfEtSTZBcIYXJXZsI+LckbDWmiiGRbjRb0pnC6pBYaHpLYqdOrLGKBRLp9tRaA+vYEDd6TDMtRAgvDqkiYC6dnTk0c6xlTmg4aUHG9I8mCTyDM6gGkpKESgAZXl/C6TH43ZqaMoIyMgh7iYypCXW/lU8xuhHaFWdYIXOxCa6vr38jFftLcv+VAhCcE0POH1iY74KxzwaZdmh5hJ0AxnwnFbBxbo309DMFonBZBUIc5rhUJ+E2e5BhGjfxIaXJuYnzCmBLL6ukyCuPBGIk2d0xFUTZYM6R8cacAw4XbqkECmlAbJh3PqZq4EQTwalqEAEp5PbFjjOQ4CtBG4Jcgv69OgNs8xEaR7IxTeqi7Zw5BngchBQMQupC7G3OKGvvI1n0PMR3y3x8qHsYH3tzsja61hK8iYAcVr55p95DBO+WzdDEQ+37Hk1IHC0av5CACH+iPvGu74TuuGGdTOWPYSHRMEz6m2Y7z+rdqrKolbMem6lObLYkGs5FY8FkekdqFV6t25R1UxKs8Tfz1p17D/gR4jKEHy80KTNukaqVeiacQS4B9vP8D4u0X3UtdBH8WikQz0uicgn4yUUdtdBFYLv3kqhe3t89ISBMY/WpsjJ6AfDaqZvO1cITArB9XUYfLNN0fIgpPauFJwTYx6tu4SixQmgZ2n4uniEgKhr/Acc22AFTcalOyE2fSJdly9SlfA3owlJCKwKvShfr3zIEvAgxodWBDlsi/YOvAW1fpRKNijHVgB+G+wQi9e5odaAj3vmHmJb0j4xQeLJkCPwHeCccZ4D9OOkAAAAASUVORK5CYII=', Locked = true;
         CurrentUsersEmailAddressTok: Label 'Current User''s Email Address', MaxLength = 250;
         CurrentUserTok: Label 'Current User', MaxLength = 250;
+
+    procedure GetEmailFolders(AccountId: Guid; var EmailFolders: Record "Email Folders" temporary)
+    begin
+        EmailOutlookAPIHelper.GetEmailFolders(AccountId, EmailFolders);
+    end;
 
     procedure RetrieveEmails(AccountId: Guid; var EmailInbox: Record "Email Inbox"; var Filters: Record "Email Retrieval Filters" temporary)
     begin
@@ -80,7 +85,7 @@ codeunit 4500 "Current User Connector" implements "Email Connector v3", "Default
     var
         User: Record User;
         EnvironmentInformation: Codeunit "Environment Information";
-        APIClient: interface "Email - Outlook API Client v2";
+        APIClient: interface "Email - Outlook API Client v5";
         OAuthClient: interface "Email - OAuth Client v2";
         CurrentUserName: Text[250];
         CurrentUserEmail: Text[250];

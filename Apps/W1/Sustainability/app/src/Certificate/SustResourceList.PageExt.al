@@ -55,7 +55,7 @@ pageextension 6277 "Sust. Resource List" extends "Resource List"
     var
         SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Resource Emissions";
         SustainabilityAllGasesAsCO2eVisible := SustainabilitySetup."Use All Gases As CO2e";

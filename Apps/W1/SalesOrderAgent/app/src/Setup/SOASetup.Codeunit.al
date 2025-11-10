@@ -17,6 +17,7 @@ using System.Email;
 using System.Environment;
 using System.Environment.Configuration;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Security.AccessControl;
 using System.Telemetry;
@@ -143,6 +144,8 @@ codeunit 4400 "SOA Setup"
                 SOASetup."Email Account ID" := TempSOASetup."Email Account ID";
                 SOASetup."Email Connector" := TempSOASetup."Email Connector";
                 SOASetup."Email Address" := TempSOASetup."Email Address";
+                SOASetup."Email Folder" := TempSOASetup."Email Folder";
+                SOASetup."Email Folder Id" := TempSOASetup."Email Folder Id";
             end;
             SOASetup."Analyze Attachments" := TempSOASetup."Analyze Attachments";
             SOASetup."Activated At" := TempSOASetup."Activated At";
@@ -704,6 +707,27 @@ codeunit 4400 "SOA Setup"
             exit(true)
         else
             exit(false);
+    end;
+
+    internal procedure IsPdfAttachmentContentType(FileMIMEType: Text): Boolean
+    begin
+        if FileMIMEType = 'application/pdf' then
+            exit(true);
+
+        exit(false);
+    end;
+
+    [TryFunction]
+    internal procedure DocumentExceedsPageCountThreshold(DocInStream: Instream; var Exceeds: Boolean)
+    var
+        PdfDocument: Codeunit "PDF Document";
+    begin
+        Exceeds := PdfDocument.GetPdfPageCount(DocInStream) > PageCountThreshold();
+    end;
+
+    internal procedure PageCountThreshold(): Integer
+    begin
+        exit(10)
     end;
 
     internal procedure GetFeatureName(): Text

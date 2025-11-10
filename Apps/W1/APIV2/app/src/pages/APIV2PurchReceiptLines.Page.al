@@ -19,6 +19,7 @@ page 30065 "APIV2 - Purch Receipt Lines"
     EntitySetName = 'purchaseReceiptLines';
     SourceTable = "Purch. Rcpt. Line";
     Extensible = false;
+    AboutText = 'Provides read-only access to detailed purchase receipt line data, including received items, quantities, unit costs, discounts, tax amounts, locations, and links to related purchase and sales orders. Supports GET operations for retrieving receipt line information to enable integration with warehouse management, automate inventory reconciliation, and facilitate three-way matching and supplier performance analysis. Ideal for external systems and reporting solutions that require accurate, up-to-date receipt line details for procurement and inventory workflows.';
 
     layout
     {

@@ -19,6 +19,7 @@ page 30056 "APIV2 - PDF Document"
     PageType = API;
     SourceTable = "Attachment Entity Buffer";
     SourceTableTemporary = true;
+    AboutText = 'Provides access to PDF versions of business documents such as invoices, orders, and quotes for retrieval and sharing. Supports GET operations to fetch PDF files for integration with document management systems, electronic invoicing solutions, and automated distribution workflows. Enables external systems to streamline digital document handling and ensure compliance with electronic document standards.';
 
     layout
     {

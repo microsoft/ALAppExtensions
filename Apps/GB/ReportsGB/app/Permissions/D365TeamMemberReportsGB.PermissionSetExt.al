@@ -6,7 +6,7 @@ namespace Microsoft.Finance.VAT.Setup;
 
 using System.Security.AccessControl;
 
-permissionsetextension 10584 "D365 TEAM MEMBER - Reports GB" extends "D365 TEAM MEMBER"
+permissionsetextension 10594 "D365 TEAM MEMBER - Reports GB" extends "D365 TEAM MEMBER"
 {
     IncludedPermissionSets = "Reports GB - Objects";
 }

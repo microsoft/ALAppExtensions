@@ -151,8 +151,11 @@ page 10030 "IRS Forms Setup"
 #endif
 
     trigger OnOpenPage()
+    var
+        IRSReportingPeriod: Codeunit "IRS Reporting Period";
     begin
         Rec.InitSetup();
         Rec.InitIRISAPIClientID();
+        IRSReportingPeriod.ShowIRSFormsGuideNotificationIfRequired();
     end;
 }

@@ -6,6 +6,7 @@ namespace Microsoft.Sales.FinanceCharge;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
+using Microsoft.Sales.History;
 
 tableextension 11743 "Issued Fin.Ch. Memo Header CZL" extends "Issued Fin. Charge Memo Header"
 {
@@ -90,4 +91,11 @@ tableextension 11743 "Issued Fin.Ch. Memo Header CZL" extends "Issued Fin. Charg
             DataClassification = CustomerContent;
         }
     }
+
+    trigger OnBeforeDelete()
+    var
+        PostSalesDelete: Codeunit "PostSales-Delete";
+    begin
+        PostSalesDelete.IsDocumentDeletionAllowed(Rec."Posting Date");
+    end;
 }

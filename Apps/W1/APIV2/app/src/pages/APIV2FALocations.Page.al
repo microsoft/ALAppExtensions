@@ -11,6 +11,7 @@ page 30097 "APIV2 - FA Locations"
     EntitySetName = 'fixedAssetLocations';
     SourceTable = "FA Location";
     Extensible = false;
+    AboutText = 'Manages fixed asset location records, including codes, names, and last modified dates, enabling full CRUD operations for tracking, auditing, and integrating asset location data with external asset management and accounting systems. Supports scenarios such as monitoring asset whereabouts and maintaining accurate asset records across buildings, departments, or sites.';
 
     layout
     {

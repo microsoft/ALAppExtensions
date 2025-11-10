@@ -24,6 +24,7 @@ codeunit 17121 "Create AU VAT Posting Groups"
         FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingSetup: codeunit "Contoso Posting Setup";
         CreatePostingGroups: Codeunit "Create Posting Groups";
+        CreateGLAccount: Codeunit "Create G/L Account";
         CreateAUGLAccounts: Codeunit "Create AU GL Accounts";
     begin
         FinanceModuleSetup.Get();
@@ -31,13 +32,13 @@ codeunit 17121 "Create AU VAT Posting Groups"
         ContosoPostingSetup.SetOverwriteData(true);
         ContosoPostingSetup.InsertVATPostingSetup('', '', '', '', '', 0, Enum::"Tax Calculation Type"::"Normal VAT", '', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", '', '', FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT");
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.DomesticPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateAUGLAccounts.GstPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 10, Enum::"Tax Calculation Type"::"Normal VAT");
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.DomesticPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateAUGLAccounts.GstPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT");
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.ExportPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateAUGLAccounts.GstPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 10, Enum::"Tax Calculation Type"::"Normal VAT");
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.ExportPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateAUGLAccounts.GstPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT");
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.MiscPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateAUGLAccounts.GstPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 10, Enum::"Tax Calculation Type"::"Normal VAT");
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.MiscPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateAUGLAccounts.GstPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT");
-        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.ExportPostingGroup(), '', CreateAUGLAccounts.GstPayable(), CreateAUGLAccounts.GstReceivable(), '', 0, Enum::"Tax Calculation Type"::"Normal VAT");
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.DomesticPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateGLAccount.VATPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 10, Enum::"Tax Calculation Type"::"Normal VAT");
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.DomesticPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateGLAccount.VATPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT");
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.ExportPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateGLAccount.VATPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 10, Enum::"Tax Calculation Type"::"Normal VAT");
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.ExportPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateGLAccount.VATPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT");
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.MiscPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateGLAccount.VATPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 10, Enum::"Tax Calculation Type"::"Normal VAT");
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.MiscPostingGroup(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateGLAccount.VATPayable(), CreateAUGLAccounts.GstReceivable(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT");
+        ContosoPostingSetup.InsertVATPostingSetup(CreatePostingGroups.ExportPostingGroup(), '', CreateGLAccount.VATPayable(), CreateAUGLAccounts.GstReceivable(), '', 0, Enum::"Tax Calculation Type"::"Normal VAT");
         ContosoPostingSetup.SetOverwriteData(false);
     end;
 

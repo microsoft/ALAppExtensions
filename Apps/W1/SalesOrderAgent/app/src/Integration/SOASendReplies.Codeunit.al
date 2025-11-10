@@ -25,6 +25,7 @@ codeunit 4581 "SOA Send Replies"
     var
         SOASetupCU: Codeunit "SOA Setup";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        AllSentSuccessfully: Boolean;
         TelemetryEmailReplySentLbl: Label 'Email reply sent.', Locked = true;
         TelemetryEmailReplyFailedToSendLbl: Label 'Email reply failed to send.', Locked = true;
         TelemetryEmailReplyExternalIdEmptyLbl: Label 'Email reply failed to be sent due to input agent task message containing empty External Id.', Locked = true;
@@ -41,6 +42,8 @@ codeunit 4581 "SOA Send Replies"
         AgentMessage: Codeunit "Agent Message";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
+        AllSentSuccessfully := true;
+
         OutputAgentTaskMessage.ReadIsolation(IsolationLevel::ReadCommitted);
         OutputAgentTaskMessage.SetRange(Status, OutputAgentTaskMessage.Status::Reviewed);
         OutputAgentTaskMessage.SetRange(Type, OutputAgentTaskMessage.Type::Output);
@@ -67,10 +70,16 @@ codeunit 4581 "SOA Send Replies"
                 AgentMessage.SetStatusToSent(OutputAgentTaskMessage);
                 FeatureTelemetry.LogUsage('0000NDS', SOASetupCU.GetFeatureName(), TelemetryEmailReplySentLbl, TelemetryDimensions);
             end else begin
+                AllSentSuccessfully := false;
                 TelemetryDimensions.Set('Error', GetLastErrorText());
                 FeatureTelemetry.LogError('0000OAB', SOASetupCU.GetFeatureName(), 'Send Email Reply', TelemetryEmailReplyFailedToSendLbl, GetLastErrorCallStack(), TelemetryDimensions);
             end;
         until OutputAgentTaskMessage.Next() = 0;
+    end;
+
+    procedure GetAllSentSuccessfully(): Boolean
+    begin
+        exit(AllSentSuccessfully);
     end;
 
     local procedure TryReply(InputAgentTaskMessage: Record "Agent Task Message"; OutputAgentTaskMessage: Record "Agent Task Message"; SOASetup: Record "SOA Setup"): Boolean

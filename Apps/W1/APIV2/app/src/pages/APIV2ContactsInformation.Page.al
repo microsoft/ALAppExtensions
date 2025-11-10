@@ -18,6 +18,7 @@ page 30072 "APIV2 - Contacts Information"
     InsertAllowed = false;
     ModifyAllowed = false;
     DeleteAllowed = false;
+    AboutText = 'Exposes a read-only list of contact records, including contact identifiers, names, contact type (company or person), and their association to related entities such as customers, vendors, bank accounts, and employees. Supports GET operations for querying and filtering contact data, enabling external CRM, marketing, or service applications to reference and synchronize contact-to-entity relationships while maintaining Business Central as the authoritative source. Ideal for integrations that require up-to-date contact context without access to personal details like address, phone, or email information.';
 
     layout
     {

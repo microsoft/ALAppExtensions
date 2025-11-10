@@ -243,7 +243,7 @@ page 40063 "Cloud Migration Management"
             }
             action(MigrateRecordLinks)
             {
-                Enabled = IsSuper and IsSetupComplete and not RecordLinkBufferEmpty;
+                Enabled = IsSuper and IsSetupComplete and RecordLinkBufferNotEmpty;
                 Visible = not IsOnPrem;
                 ApplicationArea = All;
                 Caption = 'Migrate record links and notes';
@@ -775,7 +775,8 @@ page 40063 "Cloud Migration Management"
         WarningsVisible := TotalTablesWithWarningsCount > 0;
         TablesFailedVisible := TotalTablesFailedCount > 0;
 
-        RecordLinkBufferEmpty := ReplicationRecordLinkBuffer.IsEmpty();
+        if not HybridCloudManagement.RecordLinkBufferBlocked() then
+            RecordLinkBufferNotEmpty := not ReplicationRecordLinkBuffer.IsEmpty();
     end;
 
     procedure SendRepairDataNotification()
@@ -985,5 +986,5 @@ page 40063 "Cloud Migration Management"
         UpdateReplicationCompaniesEnabled: Boolean;
         CustomTablesEnabled: Boolean;
         LastRefresh: DateTime;
-        RecordLinkBufferEmpty: Boolean;
+        RecordLinkBufferNotEmpty: Boolean;
 }

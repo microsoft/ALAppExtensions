@@ -15,6 +15,7 @@ page 30030 "APIV2 - Units of Measure"
     PageType = API;
     SourceTable = "Unit of Measure";
     Extensible = false;
+    AboutText = 'Manages unit of measure definitions including code, description, international standard code, and symbol, supporting full CRUD operations for synchronizing measurement units across product catalogs and inventory systems. Enables external integrations to maintain consistent units for accurate inventory tracking, sales processing, and cross-system data alignment.';
 
     layout
     {

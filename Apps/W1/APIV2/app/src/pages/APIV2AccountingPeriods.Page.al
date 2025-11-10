@@ -18,6 +18,7 @@ page 30086 "APIV2 - Accounting Periods"
     Extensible = false;
     Editable = false;
     DataAccessIntent = ReadOnly;
+    AboutText = 'Exposes read-only accounting period data including starting dates, period names, fiscal year status, closure indicators, date locks, and average cost calculation settings. Enables external systems to retrieve and synchronize fiscal calendar definitions for reporting automation, consolidation, and period-end processing. Supports GET operations only, ensuring accurate alignment of financial periods across integrated platforms without permitting direct creation, modification, or deletion of records.';
 
     layout
     {

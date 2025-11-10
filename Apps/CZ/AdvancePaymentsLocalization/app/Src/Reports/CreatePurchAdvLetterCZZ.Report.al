@@ -220,6 +220,9 @@ report 31029 "Create Purch. Adv. Letter CZZ"
         PurchAdvLetterLineCZZ."VAT Bus. Posting Group" := VATBusPostingGroup;
         PurchAdvLetterLineCZZ.Validate("VAT Prod. Posting Group", VATProdPostingGroup);
         PurchAdvLetterLineCZZ.Validate("Amount Including VAT", Round(AmountIncludingVAT * Coef, Currency."Amount Rounding Precision"));
+
+        OnCreateAdvanceLetterLineOnBeforeInsert(PurchAdvLetterLineCZZ, PurchAdvLetterHeaderCZZ);
+
         if PurchAdvLetterLineCZZ."Amount Including VAT" <> 0 then
             PurchAdvLetterLineCZZ.Insert(true);
     end;
@@ -265,6 +268,11 @@ report 31029 "Create Purch. Adv. Letter CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnCreateAdvanceLetterHeaderOnBeforeModifyPurchAdvLetterHeaderCZZ(PurchaseHeader: Record "Purchase Header"; AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ"; var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateAdvanceLetterLineOnBeforeInsert(var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
     begin
     end;
 }

@@ -20,6 +20,7 @@ page 30031 "APIV2 - Aged AR"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = AccountId;
+    AboutText = 'Provides real-time aged accounts receivable data, including customer details, outstanding balances, and amounts due by aging period. Supports GET operations for retrieving aging reports to enable credit management, collections automation, and financial analysis in external systems. Ideal for integrations requiring up-to-date visibility into customer payment performance and overdue receivables.';
 
     layout
     {

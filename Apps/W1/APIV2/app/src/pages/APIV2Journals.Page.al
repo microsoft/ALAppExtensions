@@ -17,6 +17,7 @@ page 30016 "APIV2 - Journals"
     PageType = API;
     SourceTable = "Gen. Journal Batch";
     Extensible = false;
+    AboutText = 'Exposes general journal batch data including template type, balancing account details, approval status, and VAT settings, supporting full CRUD operations for automating financial postings, accruals, and adjustments. Enables integration with payroll, expense management, and external accounting systems to streamline financial data entry and ensure accurate bookkeeping.';
 
     layout
     {

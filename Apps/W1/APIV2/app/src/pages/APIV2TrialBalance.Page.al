@@ -20,6 +20,7 @@ page 30034 "APIV2 - Trial Balance"
     SourceTableTemporary = true;
     Extensible = false;
     ODataKeyFields = "Account Id";
+    AboutText = 'Exposes trial balance data for all general ledger accounts, including account numbers, names, types, debit and credit balances, and period-based filters. Supports GET operations for financial reconciliation, auditing, and integration with external reporting or financial statement automation tools. Enables accurate retrieval of account balances to ensure completeness and integrity of financial records in external systems.';
 
     layout
     {

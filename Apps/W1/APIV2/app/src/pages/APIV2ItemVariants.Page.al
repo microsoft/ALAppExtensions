@@ -14,6 +14,7 @@ page 30052 "APIV2 - Item Variants"
     PageType = API;
     SourceTable = "Item Variant";
     Extensible = false;
+    AboutText = 'Exposes item variant data including codes, descriptions, and status flags for managing different product configurations such as size or color. Supports full CRUD operations to synchronize and maintain variant records across e-commerce catalogs, inventory systems, and external sales channels, enabling accurate stock management and product catalog integration.';
 
     layout
     {

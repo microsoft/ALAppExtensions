@@ -16,6 +16,7 @@ page 30051 "APIV2 - Bank Accounts"
     PageType = API;
     SourceTable = "Bank Account";
     Extensible = false;
+    AboutText = 'Manages bank account records including account numbers, bank names, balances, currency details, and identifiers such as IBAN and SWIFT codes. Supports full CRUD operations for synchronizing bank account data with external banking platforms, treasury management systems, and payment automation solutions, enabling accurate cash management and reconciliation.';
 
     layout
     {

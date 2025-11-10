@@ -152,17 +152,10 @@ codeunit 27054 "CA Contoso Localization"
     end;
 
     local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateCAInvPostingSetup: Codeunit "Create CA Inv. Posting Setup";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                begin
                     Codeunit.Run(Codeunit::"Create CA Inv. Posting Group");
-                    Codeunit.Run(Codeunit::"Create CA Inv. Posting Setup");
-                end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                CreateCAInvPostingSetup.UpdateInventoryPosting();
         end;
     end;
 
@@ -193,7 +186,6 @@ codeunit 27054 "CA Contoso Localization"
         CreateCABankAccount: Codeunit "Create CA Bank Account";
         CreateCAItemJnlTemplate: Codeunit "Create CA Item Jnl. Template";
         CreateCAItem: Codeunit "Create CA Item";
-        CreateCAInvPostingSetup: Codeunit "Create CA Inv. Posting Setup";
         CreateCAItemCharge: Codeunit "Create CA Item Charge";
         CreateCALocation: Codeunit "Create CA Location";
         CreateCAPurchDimValue: Codeunit "Create CA Purch. Dim. Value";
@@ -234,7 +226,6 @@ codeunit 27054 "CA Contoso Localization"
                     BindSubscription(CreateCAItem);
                     BindSubscription(CreateCAItemCharge);
                     BindSubscription(CreateCALocation);
-                    BindSubscription(CreateCAInvPostingSetup);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
                 begin
@@ -261,7 +252,6 @@ codeunit 27054 "CA Contoso Localization"
         CreateCAItemJnlTemplate: Codeunit "Create CA Item Jnl. Template";
         CreateCAItem: Codeunit "Create CA Item";
         CreateCAItemCharge: Codeunit "Create CA Item Charge";
-        CreateCAInvPostingSetup: Codeunit "Create CA Inv. Posting Setup";
         CreateCALocation: Codeunit "Create CA Location";
         CreateCAPurchDimValue: Codeunit "Create CA Purch. Dim. Value";
         CreateCAVendor: Codeunit "Create CA Vendor";
@@ -301,7 +291,6 @@ codeunit 27054 "CA Contoso Localization"
                     UnBindSubscription(CreateCAItem);
                     UnBindSubscription(CreateCAItemCharge);
                     UnBindSubscription(CreateCALocation);
-                    UnbindSubscription(CreateCAInvPostingSetup);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
                 begin
