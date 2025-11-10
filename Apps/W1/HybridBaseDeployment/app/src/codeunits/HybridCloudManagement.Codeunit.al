@@ -2223,6 +2223,23 @@ codeunit 4001 "Hybrid Cloud Management"
         RecordLink.SetRange("To User ID", OldUserName);
         RecordLink.ModifyAll("To User ID", NewUserName);
     end;
+    
+    local procedure ClearCompanyMigrationValidation(MigrationType: Text[250])
+    var
+        MigrationValidationError: Record "Migration Validation Error";
+        CompanyValidationProgress: Record "Company Validation Progress";
+    begin
+        if MigrationType <> '' then
+            MigrationValidationError.SetRange("Migration Type", MigrationType);
+
+        MigrationValidationError.SetRange("Company Name", CompanyName());
+        if not MigrationValidationError.IsEmpty() then
+            MigrationValidationError.DeleteAll();
+
+        CompanyValidationProgress.SetRange("Company Name", CompanyName());
+        if not CompanyValidationProgress.IsEmpty() then
+            CompanyValidationProgress.DeleteAll();
+    end;
 
     [EventSubscriber(ObjectType::Page, Page::Companies, 'OnOpenPageEvent', '', false, false)]
     local procedure WarnNotToManageCompaniesManually(var Rec: Record Company)
@@ -2244,6 +2261,39 @@ codeunit 4001 "Hybrid Cloud Management"
         SendSetupWebhooksNotification.AddAction(LearnMoreMsg, Codeunit::"Hybrid Cloud Management", 'CompaniesWarningNotificationLearnMore');
         SendSetupWebhooksNotification.AddAction(DontShowAgainMsg, Codeunit::"Hybrid Cloud Management", 'DontShowCompaniesWarningNotification');
         SendSetupWebhooksNotification.Send();
+    end;
+    
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnBeforeMigrationStarted, '', false, false)]
+    local procedure BeforeMigrationStarted(var DataMigrationStatus: Record "Data Migration Status"; Retry: Boolean)
+    begin
+        ClearCompanyMigrationValidation(DataMigrationStatus."Migration Type");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnValidateMigration, '', false, false)]
+    local procedure StartMigrationValidation(var DataMigrationStatus: Record "Data Migration Status"; var DataCreationFailed: Boolean)
+    var
+        MigrationValidationError: Record "Migration Validation Error";
+        MigrationValidationMgmt: Codeunit "Migration Validation Mgmt.";
+    begin
+        if DataCreationFailed then
+            exit;
+
+        MigrationValidationMgmt.StartValidation(DataMigrationStatus."Migration Type", false);
+
+        MigrationValidationError.SetRange("Migration Type", DataMigrationStatus."Migration Type");
+        MigrationValidationError.SetRange("Company Name", CompanyName());
+        MigrationValidationError.SetRange("Is Warning", false);
+        if not MigrationValidationError.IsEmpty() then
+            DataCreationFailed := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Company", OnAfterDeleteEvent, '', false, false)]
+    local procedure CleanupAfterCompanyDelete(var Rec: Record Company; RunTrigger: Boolean)
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        ClearCompanyMigrationValidation('');
     end;
 
     [IntegrationEvent(false, false)]

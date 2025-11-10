@@ -1,0 +1,40 @@
+namespace Microsoft.DataMigration;
+
+table 40042 "Migration Validator Registry"
+{
+    Caption = 'Migration Validator Registry';
+    DataClassification = SystemMetadata;
+    DataPerCompany = false;
+
+    fields
+    {
+        field(1; "Validator Code"; Code[20])
+        {
+            Caption = 'Validator Code';
+        }
+        field(2; "Migration Type"; Text[250])
+        {
+            Caption = 'Migration Type';
+        }
+        field(3; "Codeunit Id"; Integer)
+        {
+            Caption = 'Codeunit Id';
+        }
+        field(5; Description; Text[2048])
+        {
+            Caption = 'Description';
+        }
+        field(6; Enabled; Boolean)
+        {
+            Caption = 'Enabled';
+            InitValue = true;
+        }
+    }
+    keys
+    {
+        key(PK; "Validator Code")
+        {
+            Clustered = true;
+        }
+    }
+}

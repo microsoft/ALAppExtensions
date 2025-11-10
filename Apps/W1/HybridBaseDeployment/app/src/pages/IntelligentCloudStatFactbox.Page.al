@@ -1,6 +1,7 @@
 namespace Microsoft.DataMigration;
 
 using System.Reflection;
+using System.Integration;
 
 page 4008 "Intelligent Cloud Stat Factbox"
 {
@@ -180,6 +181,37 @@ page 4008 "Intelligent Cloud Stat Factbox"
                             Page.Run(Page::"Hybrid Companies List");
                         end;
                     }
+
+                    field("Validation Errors"; ValidationErrors)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Validation Errors';
+                        Style = Unfavorable;
+                        StyleExpr = (ValidationErrors > 0);
+                        ToolTip = 'Indicates the total number of failed post migration validation tests, for all migrated companies.';
+
+                        trigger OnDrillDown()
+                        var
+                            MigrationValidationRegistery: Record "Migration Validator Registry";
+                            MigrationValidationTest: Record "Migration Validation Test";
+                            MigrationValidationResults: Page "Migration Validation Results";
+                            ValidatorFilter: Text;
+                            SeparatorChar: Text;
+                        begin
+                            MigrationValidationRegistery.SetRange("Migration Type", MigrationType);
+                            if MigrationValidationRegistery.FindSet() then
+                                repeat
+                                    if ValidatorFilter <> '' then
+                                        SeparatorChar := '|';
+
+                                    ValidatorFilter := SeparatorChar + ValidatorFilter;
+                                until MigrationValidationRegistery.Next() = 0;
+
+                            MigrationValidationTest.SetFilter("Validator Code", ValidatorFilter);
+                            MigrationValidationResults.SetTableView(MigrationValidationTest);
+                            MigrationValidationResults.Run();
+                        end;
+                    }
                 }
 
                 field(Spacer3; '')
@@ -195,16 +227,24 @@ page 4008 "Intelligent Cloud Stat Factbox"
     }
 
     trigger OnOpenPage()
+    begin
+        RefreshStats();
+    end;
+
+    procedure RefreshStats()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        MigrationValidationError: Record "Migration Validation Error";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
     begin
         CanShowTablesNotMigrated(TablesNotMigratedEnabled);
         if TablesNotMigratedEnabled then
             TotalTablesNotMigrated := HybridCloudManagement.GetTotalTablesNotMigrated();
 
-        if IntelligentCloudSetup.Get() then
+        if IntelligentCloudSetup.Get() then begin
             NextScheduledRun := IntelligentCloudSetup.GetNextScheduledRunDateTime(CurrentDateTime());
+            MigrationType := IntelligentCloudSetup."Product ID";
+        end;
 
         ShowNextScheduled := NextScheduledRun <> 0DT;
 
@@ -213,6 +253,9 @@ page 4008 "Intelligent Cloud Stat Factbox"
             TotalTablesNotMigrated := HybridCloudManagement.GetTotalTablesNotMigrated();
             SourceProduct := HybridCloudManagement.GetChosenProductName();
         end;
+
+        MigrationValidationError.SetRange("Migration Type", MigrationType);
+        ValidationErrors := MigrationValidationError.Count();
     end;
 
     local procedure ShowTablesNotMigrated()
@@ -274,5 +317,7 @@ page 4008 "Intelligent Cloud Stat Factbox"
         TotalTablesNotMigrated: Integer;
         ShowNextScheduled: Boolean;
         TablesNotMigratedEnabled: Boolean;
+        MigrationType: Text;
+        ValidationErrors: Integer;
 }
 

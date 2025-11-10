@@ -706,6 +706,183 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Assert.IsTrue(HybridCompanyStatus."Record Link Move Completed", 'Record links migration status not updated');
     end;
 
+    [Test]
+    procedure TestMigrationValidationMgmt()
+    var
+        DataMigrationStatus: Record "Data Migration Status";
+        MigrationValidationError: Record "Migration Validation Error";
+        Customer: Record Customer;
+        HybridCompany: Record "Hybrid Company";
+        MigrationValidationMgmt: Codeunit "Migration Validation Mgmt.";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        DataCreationFailed: Boolean;
+    begin
+        // [GIVEN] A company migration is being validated
+        InitMigrationValidationTests();
+
+        DataCreationFailed := false;
+        DataMigrationStatus.SetRange("Migration Type", GetTestMigrationType());
+        DataMigrationStatus.FindFirst();
+
+        // [WHEN] No customers were migrated, but were expected
+        HybridCloudManagement.StartMigrationValidationImp(DataMigrationStatus, DataCreationFailed);
+
+        // [THEN] The migration will fail, and there will be corresponding validation error entries
+        HybridCompany.Get(CompanyName());
+        Assert.IsTrue(HybridCompany.Validated, 'The company should have been validated.');
+        Assert.RecordCount(MigrationValidationError, 1);
+        MigrationValidationError.FindFirst();
+        Assert.AreEqual('Missing TEST-1', MigrationValidationError."Test Description", 'Incorrect test description');
+        Assert.AreEqual(false, MigrationValidationError."Is Warning", 'Incorrect value for Is Warning');
+        Assert.IsTrue(DataCreationFailed, 'The migration should be in a failed state.');
+
+        // Reset
+        DataCreationFailed := false;
+        MigrationValidationMgmt.DeleteMigrationValidationErrorsForCurrentCompany();
+
+        // [WHEN] Some of the customers were created
+        // Create Customer TEST-1
+        InitMigrationValidationTest_CustomerTest1();
+        HybridCloudManagement.StartMigrationValidationImp(DataMigrationStatus, DataCreationFailed);
+
+        // [THEN] The migration will fail, and there will be corresponding validation error entries
+        Assert.IsTrue(DataCreationFailed, 'The migration should be in a failed state.');
+        Assert.RecordCount(MigrationValidationError, 1);
+        MigrationValidationError.FindFirst();
+        Assert.AreEqual('Missing TEST-2', MigrationValidationError."Test Description", 'Incorrect test description');
+        Assert.AreEqual(false, MigrationValidationError."Is Warning", 'Incorrect value for Is Warning');
+
+        // Reset
+        DataCreationFailed := false;
+        MigrationValidationMgmt.DeleteMigrationValidationErrorsForCurrentCompany();
+
+        // [WHEN] All the customers were created and correct
+        InitMigrationValidationTest_CustomerTest1();
+        InitMigrationValidationTest_CustomerTest2();
+        HybridCloudManagement.StartMigrationValidationImp(DataMigrationStatus, DataCreationFailed);
+
+        // [THEN] The migration will be successful, and there won't be any validation error entries
+        Assert.IsFalse(DataCreationFailed, 'The migration should be in a failed state.');
+        Assert.RecordCount(MigrationValidationError, 0);
+
+        // Reset
+        DataCreationFailed := false;
+        MigrationValidationMgmt.DeleteMigrationValidationErrorsForCurrentCompany();
+
+        // [WHEN] Some values are unexpected
+        Customer.GET('TEST-1');
+        Customer.Name := 'Wrong name';
+        Customer."Name 2" := 'Wrong name 2';
+        Customer.Modify();
+
+        HybridCloudManagement.StartMigrationValidationImp(DataMigrationStatus, DataCreationFailed);
+
+        // [TEST] The correct validation error records will be added
+        // The migration will be in a failed state because there is an entry that isn't a warning
+        Assert.RecordCount(MigrationValidationError, 2);
+        Assert.IsTrue(DataCreationFailed, 'The migration should be in a failed state.');
+
+        MigrationValidationError.FindSet();
+        Assert.AreEqual('Name', MigrationValidationError."Test Description", 'Incorrect test description');
+        Assert.AreEqual('Test 1', MigrationValidationError.Expected, 'Incorrect Expected value');
+        Assert.AreEqual('Wrong name', MigrationValidationError.Actual, 'Incorrect Actual value');
+        Assert.AreEqual(false, MigrationValidationError."Is Warning", 'Incorrect value for Is Warning');
+
+        MigrationValidationError.Next();
+        Assert.AreEqual('Name 2', MigrationValidationError."Test Description", 'Incorrect test description');
+        Assert.AreEqual('Test name 2', MigrationValidationError.Expected, 'Incorrect Expected value');
+        Assert.AreEqual('Wrong name 2', MigrationValidationError.Actual, 'Incorrect Actual value');
+        Assert.AreEqual(true, MigrationValidationError."Is Warning", 'Incorrect value for Is Warning');
+
+        // Reset
+        DataCreationFailed := false;
+        MigrationValidationMgmt.DeleteMigrationValidationErrorsForCurrentCompany();
+
+        // [WHEN] Some values are unexpected, but nothing considered major
+        Customer.GET('TEST-1');
+        Customer.Name := 'Test 1'; // Back to expected value
+        Customer."Name 2" := 'Wrong name 2';
+        Customer.Modify();
+
+        HybridCloudManagement.StartMigrationValidationImp(DataMigrationStatus, DataCreationFailed);
+        Assert.RecordCount(MigrationValidationError, 1);
+        Assert.IsFalse(DataCreationFailed, 'The migration should NOT be in a failed state.');
+    end;
+
+    local procedure InitMigrationValidationTests()
+    var
+        MigrationValidatorRegistry: Record "Migration Validator Registry";
+        MigrationValidationError: Record "Migration Validation Error";
+        DataMigrationStatus: Record "Data Migration Status";
+        HybridCompany: Record "Hybrid Company";
+        DummyMigrationValidator: Codeunit "Dummy Migration Validator";
+        ValidatorCode: Code[20];
+        MigrationType: Text[250];
+        ValidatorCodeunitId: Integer;
+    begin
+        ValidatorCode := DummyMigrationValidator.GetValidatorCode();
+        MigrationType := GetTestMigrationType();
+        ValidatorCodeunitId := Codeunit::"Dummy Migration Validator";
+
+        if not DataMigrationStatus.IsEmpty() then
+            DataMigrationStatus.DeleteAll();
+
+        if not MigrationValidationError.IsEmpty() then
+            MigrationValidationError.DeleteAll();
+
+        if not MigrationValidatorRegistry.IsEmpty() then
+            MigrationValidatorRegistry.DeleteAll();
+
+        if not MigrationValidatorRegistry.Get(ValidatorCode) then begin
+            MigrationValidatorRegistry.Validate("Validator Code", ValidatorCode);
+            MigrationValidatorRegistry.Validate("Migration Type", MigrationType);
+            MigrationValidatorRegistry.Validate("Codeunit Id", ValidatorCodeunitId);
+            MigrationValidatorRegistry.Insert();
+        end;
+
+        if not HybridCompany.Get(CompanyName()) then begin
+            HybridCompany.Name := CopyStr(CompanyName(), 1, MaxStrLen(HybridCompany.Name));
+            HybridCompany.Insert();
+        end;
+
+        HybridCompany.Validated := false;
+        HybridCompany.Modify();
+
+        Clear(DataMigrationStatus);
+        DataMigrationStatus."Migration Type" := GetTestMigrationType();
+        DataMigrationStatus.Status := DataMigrationStatus.Status::"In Progress";
+        DataMigrationStatus.Insert(true);
+    end;
+
+    local procedure InitMigrationValidationTest_CustomerTest1()
+    var
+        Customer: Record Customer;
+    begin
+        if not Customer.Get('TEST-1') then begin
+            Customer."No." := 'TEST-1';
+            Customer.Name := 'Test 1';
+            Customer."Name 2" := 'Test name 2';
+            Customer.Insert();
+        end;
+    end;
+
+    local procedure InitMigrationValidationTest_CustomerTest2()
+    var
+        Customer: Record Customer;
+    begin
+        if not Customer.Get('TEST-2') then begin
+            Customer."No." := 'TEST-2';
+            Customer.Name := 'Test 2';
+            Customer."Name 2" := 'Test name 2';
+            Customer.Insert();
+        end;
+    end;
+
+    local procedure GetTestMigrationType(): Code[20]
+    begin
+        exit('TEST');
+    end;
+
     local procedure OpenCloudMigSelectTablesPage(var CloudMigSelectTables: TestPage "Cloud Mig - Select Tables")
     var
         IntelligentCloudStatus: Record "Intelligent Cloud Status";

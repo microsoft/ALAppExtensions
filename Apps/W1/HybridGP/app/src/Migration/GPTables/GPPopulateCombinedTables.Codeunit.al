@@ -329,8 +329,6 @@ codeunit 40125 "GP Populate Combined Tables"
     var
         GPCustomer: Record "GP Customer";
         GPRM00101: Record "GP RM00101";
-        GPRM00103: Record "GP RM00103";
-        GPSY01200: Record "GP SY01200";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         GPRM00101.SetRange(INACTIVE, false);
@@ -342,53 +340,58 @@ codeunit 40125 "GP Populate Combined Tables"
 
         repeat
             Clear(GPCustomer);
-#pragma warning disable AA0139
-            GPCustomer.CUSTNMBR := GPRM00101.CUSTNMBR.Trim();
-            GPCustomer.CUSTNAME := GPRM00101.CUSTNAME.Trim();
-            GPCustomer.STMTNAME := GPRM00101.STMTNAME.Trim();
-            GPCustomer.ADDRESS1 := GPRM00101.ADDRESS1.Trim();
-            GPCustomer.ADDRESS2 := GPRM00101.ADDRESS2.Trim();
-            GPCustomer.CITY := GPRM00101.CITY.Trim();
-            GPCustomer.CNTCPRSN := GPRM00101.CNTCPRSN.Trim();
-            GPCustomer.SALSTERR := GPRM00101.SALSTERR.Trim();
-            GPCustomer.CRLMTAMT := GPRM00101.CRLMTAMT;
-            GPCustomer.PYMTRMID := GPRM00101.PYMTRMID.Trim();
-            GPCustomer.SLPRSNID := GPRM00101.SLPRSNID.Trim();
-            GPCustomer.SHIPMTHD := GPRM00101.SHIPMTHD.Trim();
-            GPCustomer.COUNTRY := GPRM00101.COUNTRY.Trim();
-            GPCustomer.STMTCYCL := GPRM00101.STMTCYCL <> 0;
-            GPCustomer.ZIPCODE := GPRM00101.ZIP.Trim();
-            GPCustomer.STATE := GPRM00101.STATE.Trim();
-            GPCustomer.TAXSCHID := GPRM00101.TAXSCHID.Trim();
-            GPCustomer.UPSZONE := GPRM00101.UPSZONE.Trim();
-            GPCustomer.TAXEXMT1 := GPRM00101.TAXEXMT1.Trim();
-            GPCustomer.CUSTCLAS := GPRM00101.CUSTCLAS.Trim();
-            GPCustomer.RMSLSACC := GPRM00101.RMSLSACC;
-#pragma warning restore AA0139   
-
-            if GPRM00101.PHONE1.Contains('E+') then
-                GPCustomer.PHONE1 := '00000000000000'
-            else
-                GPCustomer.PHONE1 := CopyStr(GPRM00101.PHONE1.Trim(), 1, MaxStrLen(GPCustomer.PHONE1));
-
-            if GPRM00101.FAX.Contains('E+') then
-                GPCustomer.FAX := '00000000000000'
-            else
-                GPCustomer.FAX := CopyStr(GPRM00101.FAX.Trim(), 1, MaxStrLen(GPCustomer.FAX));
-
-            if GPRM00103.Get(GPRM00101.CUSTNMBR) then
-                GPCustomer.AMOUNT := GPRM00103.CUSTBLNC;
-
-            if GPSY01200.Get('CUS', GPRM00101.CUSTNMBR, GPRM00101.ADRSCODE) then begin
-                if ((GPSY01200.INET1 <> '') and (GPSY01200.INET1.Contains('@'))) then
-                    GPCustomer.INET1 := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(GPCustomer.INET1));
-
-                if ((GPSY01200.INET2 <> '') and (GPSY01200.INET2.Contains('@'))) then
-                    GPCustomer.INET2 := CopyStr(GPSY01200.INET2.Trim(), 1, MaxStrLen(GPCustomer.INET2));
-            end;
-
+            SetGPCustomerFields(GPCustomer, GPRM00101);
             GPCustomer.Insert();
         until GPRM00101.Next() = 0;
+    end;
+
+    internal procedure SetGPCustomerFields(var GPCustomer: Record "GP Customer"; var GPRM00101: Record "GP RM00101")
+    var
+        GPRM00103: Record "GP RM00103";
+        GPSY01200: Record "GP SY01200";
+    begin
+#pragma warning disable AA0139
+        GPCustomer.CUSTNMBR := GPRM00101.CUSTNMBR.Trim();
+        GPCustomer.CUSTNAME := GPRM00101.CUSTNAME.Trim();
+        GPCustomer.STMTNAME := GPRM00101.STMTNAME.Trim();
+        GPCustomer.ADDRESS1 := GPRM00101.ADDRESS1.Trim();
+        GPCustomer.ADDRESS2 := GPRM00101.ADDRESS2.Trim();
+        GPCustomer.CITY := GPRM00101.CITY.Trim();
+        GPCustomer.CNTCPRSN := GPRM00101.CNTCPRSN.Trim();
+        GPCustomer.SALSTERR := GPRM00101.SALSTERR.Trim();
+        GPCustomer.CRLMTAMT := GPRM00101.CRLMTAMT;
+        GPCustomer.PYMTRMID := GPRM00101.PYMTRMID.Trim();
+        GPCustomer.SLPRSNID := GPRM00101.SLPRSNID.Trim();
+        GPCustomer.SHIPMTHD := GPRM00101.SHIPMTHD.Trim();
+        GPCustomer.COUNTRY := GPRM00101.COUNTRY.Trim();
+        GPCustomer.STMTCYCL := GPRM00101.STMTCYCL <> 0;
+        GPCustomer.ZIPCODE := GPRM00101.ZIP.Trim();
+        GPCustomer.STATE := GPRM00101.STATE.Trim();
+        GPCustomer.TAXSCHID := GPRM00101.TAXSCHID.Trim();
+        GPCustomer.UPSZONE := GPRM00101.UPSZONE.Trim();
+        GPCustomer.TAXEXMT1 := GPRM00101.TAXEXMT1.Trim();
+#pragma warning restore AA0139   
+
+        if GPRM00101.PHONE1.Contains('E+') then
+            GPCustomer.PHONE1 := '00000000000000'
+        else
+            GPCustomer.PHONE1 := CopyStr(GPRM00101.PHONE1.Trim(), 1, MaxStrLen(GPCustomer.PHONE1));
+
+        if GPRM00101.FAX.Contains('E+') then
+            GPCustomer.FAX := '00000000000000'
+        else
+            GPCustomer.FAX := CopyStr(GPRM00101.FAX.Trim(), 1, MaxStrLen(GPCustomer.FAX));
+
+        if GPRM00103.Get(GPRM00101.CUSTNMBR) then
+            GPCustomer.AMOUNT := GPRM00103.CUSTBLNC;
+
+        if GPSY01200.Get('CUS', GPRM00101.CUSTNMBR, GPRM00101.ADRSCODE) then begin
+            if ((GPSY01200.INET1 <> '') and (GPSY01200.INET1.Contains('@'))) then
+                GPCustomer.INET1 := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(GPCustomer.INET1));
+
+            if ((GPSY01200.INET2 <> '') and (GPSY01200.INET2.Contains('@'))) then
+                GPCustomer.INET2 := CopyStr(GPSY01200.INET2.Trim(), 1, MaxStrLen(GPCustomer.INET2));
+        end;
     end;
 
     internal procedure PopulateGPCustomerTransactions()
@@ -527,66 +530,69 @@ codeunit 40125 "GP Populate Combined Tables"
     internal procedure PopulateGPVendors()
     var
         GPPM00200Vendor: Record "GP PM00200";
-        GPPM00201VendorSum: Record "GP PM00201";
-        GPSY01200NetAddresses: Record "GP SY01200";
         GPVendor: Record "GP Vendor";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
     begin
         GPPM00200Vendor.SetFilter(VENDSTTS, '1|3');
-        if GPCompanyAdditionalSettings.GetMigrateInactiveVendors() then
-            GPPM00200Vendor.SetRange(VENDSTTS);
+        if GPCompanyMigrationSettings.Get(CompanyName()) then
+            if GPCompanyMigrationSettings."Migrate Inactive Vendors" then
+                GPPM00200Vendor.SetRange(VENDSTTS);
 
         if not GPPM00200Vendor.FindSet() then
             exit;
 
         repeat
             Clear(GPVendor);
-#pragma warning disable AA0139            
-            GPVendor.VENDORID := GPPM00200Vendor.VENDORID.TrimEnd();
-            GPVendor.VENDNAME := GPPM00200Vendor.VENDNAME.TrimEnd();
-            GPVendor.SEARCHNAME := GPPM00200Vendor.VENDNAME.TrimEnd();
-            GPVendor.VNDCHKNM := GPPM00200Vendor.VNDCHKNM.TrimEnd();
-            GPVendor.ADDRESS1 := GPPM00200Vendor.ADDRESS1.TrimEnd();
-            GPVendor.ADDRESS2 := GPPM00200Vendor.ADDRESS2.TrimEnd();
-            GPVendor.CITY := GPPM00200Vendor.CITY.TrimEnd();
-            GPVendor.VNDCNTCT := GPPM00200Vendor.VNDCNTCT.TrimEnd();
-            GPVendor.PYMTRMID := GPPM00200Vendor.PYMTRMID.TrimEnd();
-            GPVendor.SHIPMTHD := GPPM00200Vendor.SHIPMTHD.TrimEnd();
-            GPVendor.COUNTRY := GPPM00200Vendor.COUNTRY.TrimEnd();
-            GPVendor.PYMNTPRI := GPPM00200Vendor.PYMNTPRI.TrimEnd();
-            GPVendor.ZIPCODE := GPPM00200Vendor.ZIPCODE.TrimEnd();
-            GPVendor.STATE := GPPM00200Vendor.STATE.TrimEnd();
-            GPVendor.TAXSCHID := GPPM00200Vendor.TAXSCHID.TrimEnd();
-            GPVendor.UPSZONE := GPPM00200Vendor.UPSZONE.TrimEnd();
-            GPVendor.TXIDNMBR := GPPM00200Vendor.TXIDNMBR.TrimEnd();
-            GPVendor.VNDCLSID := GPPM00200Vendor.VNDCLSID.TrimEnd();
-#pragma warning restore AA0139    
-
-            GPVendor.PMPRCHIX := GPPM00200Vendor.PMPRCHIX;
-
-            if GPPM00200Vendor.PHNUMBR1.Contains('E+') then
-                GPVendor.PHNUMBR1 := '00000000000000'
-            else
-                GPVendor.PHNUMBR1 := CopyStr(GPPM00200Vendor.PHNUMBR1.Trim(), 1, MaxStrLen(GPVendor.PHNUMBR1));
-
-            if GPPM00200Vendor.FAXNUMBR.Contains('E+') then
-                GPVendor.FAXNUMBR := '00000000000000'
-            else
-                GPVendor.FAXNUMBR := CopyStr(GPPM00200Vendor.FAXNUMBR.Trim(), 1, MaxStrLen(GPVendor.FAXNUMBR));
-
-            if GPPM00201VendorSum.Get(GPPM00200Vendor.VENDORID) then
-                GPVendor.AMOUNT := GPPM00201VendorSum.CURRBLNC;
-
-            if GPSY01200NetAddresses.Get('VEN', GPPM00200Vendor.VENDORID, GPPM00200Vendor.VADDCDPR) then begin
-                if ((GPSY01200NetAddresses.INET1 <> '') and (GPSY01200NetAddresses.INET1.Contains('@'))) then
-                    GPVendor.INET1 := CopyStr(GPSY01200NetAddresses.INET1.Trim(), 1, MaxStrLen(GPVendor.INET1));
-
-                if ((GPSY01200NetAddresses.INET2 <> '') and (GPSY01200NetAddresses.INET2.Contains('@'))) then
-                    GPVendor.INET2 := CopyStr(GPSY01200NetAddresses.INET2.Trim(), 1, MaxStrLen(GPVendor.INET2));
-            end;
-
+            SetGPVendorFields(GPVendor, GPPM00200Vendor);
             GPVendor.Insert();
         until GPPM00200Vendor.Next() = 0;
+    end;
+
+    internal procedure SetGPVendorFields(var GPVendor: Record "GP Vendor"; GPPM00200Vendor: Record "GP PM00200")
+    var
+        GPPM00201VendorSum: Record "GP PM00201";
+        GPSY01200NetAddresses: Record "GP SY01200";
+    begin
+#pragma warning disable AA0139            
+        GPVendor.VENDORID := GPPM00200Vendor.VENDORID.TrimEnd();
+        GPVendor.VENDNAME := GPPM00200Vendor.VENDNAME.TrimEnd();
+        GPVendor.SEARCHNAME := GPPM00200Vendor.VENDNAME.TrimEnd();
+        GPVendor.VNDCHKNM := GPPM00200Vendor.VNDCHKNM.TrimEnd();
+        GPVendor.ADDRESS1 := GPPM00200Vendor.ADDRESS1.TrimEnd();
+        GPVendor.ADDRESS2 := GPPM00200Vendor.ADDRESS2.TrimEnd();
+        GPVendor.CITY := GPPM00200Vendor.CITY.TrimEnd();
+        GPVendor.VNDCNTCT := GPPM00200Vendor.VNDCNTCT.TrimEnd();
+        GPVendor.PYMTRMID := GPPM00200Vendor.PYMTRMID.TrimEnd();
+        GPVendor.SHIPMTHD := GPPM00200Vendor.SHIPMTHD.TrimEnd();
+        GPVendor.COUNTRY := GPPM00200Vendor.COUNTRY.TrimEnd();
+        GPVendor.PYMNTPRI := GPPM00200Vendor.PYMNTPRI.TrimEnd();
+        GPVendor.ZIPCODE := GPPM00200Vendor.ZIPCODE.TrimEnd();
+        GPVendor.STATE := GPPM00200Vendor.STATE.TrimEnd();
+        GPVendor.TAXSCHID := GPPM00200Vendor.TAXSCHID.TrimEnd();
+        GPVendor.UPSZONE := GPPM00200Vendor.UPSZONE.TrimEnd();
+        GPVendor.TXIDNMBR := GPPM00200Vendor.TXIDNMBR.TrimEnd();
+#pragma warning restore AA0139    
+
+        if GPPM00200Vendor.PHNUMBR1.Contains('E+') then
+            GPVendor.PHNUMBR1 := '00000000000000'
+        else
+            GPVendor.PHNUMBR1 := CopyStr(GPPM00200Vendor.PHNUMBR1.Trim(), 1, MaxStrLen(GPVendor.PHNUMBR1));
+
+        if GPPM00200Vendor.FAXNUMBR.Contains('E+') then
+            GPVendor.FAXNUMBR := '00000000000000'
+        else
+            GPVendor.FAXNUMBR := CopyStr(GPPM00200Vendor.FAXNUMBR.Trim(), 1, MaxStrLen(GPVendor.FAXNUMBR));
+
+        if GPPM00201VendorSum.Get(GPPM00200Vendor.VENDORID) then
+            GPVendor.AMOUNT := GPPM00201VendorSum.CURRBLNC;
+
+        if GPSY01200NetAddresses.Get('VEN', GPPM00200Vendor.VENDORID, GPPM00200Vendor.VADDCDPR) then begin
+            if ((GPSY01200NetAddresses.INET1 <> '') and (GPSY01200NetAddresses.INET1.Contains('@'))) then
+                GPVendor.INET1 := CopyStr(GPSY01200NetAddresses.INET1.Trim(), 1, MaxStrLen(GPVendor.INET1));
+
+            if ((GPSY01200NetAddresses.INET2 <> '') and (GPSY01200NetAddresses.INET2.Contains('@'))) then
+                GPVendor.INET2 := CopyStr(GPSY01200NetAddresses.INET2.Trim(), 1, MaxStrLen(GPVendor.INET2));
+        end;
     end;
 
     internal procedure PopulateGPVendorTransactions()
@@ -667,12 +673,6 @@ codeunit 40125 "GP Populate Combined Tables"
     var
         GPItem: Record "GP Item";
         GPIV00101Inventory: Record "GP IV00101";
-        GPIV00102InventoryQty: Record "GP IV00102";
-        GPIV00105inventoryCurr: Record "GP IV00105";
-        GPIV40201InventoryUom: Record "GP IV40201";
-        DummyItem: Record Item;
-        GPMC40000: Record "GP MC40000";
-        FoundCurrency: Boolean;
     begin
         UpdateGLSetupUnitRoundingPrecisionIfNeeded();
 
@@ -682,79 +682,90 @@ codeunit 40125 "GP Populate Combined Tables"
         repeat
             Clear(GPItem);
             if ShouldAddItemToStagingTable(GPIV00101Inventory) then begin
-                GPItem.No := CopyStr(GPIV00101Inventory.ITEMNMBR.TrimEnd(), 1, MaxStrLen(DummyItem."No."));
-                GPItem.Description := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.Description));
-                GPItem.SearchDescription := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.SearchDescription));
-#pragma warning disable AA0139
-                GPItem.ShortName := GPIV00101Inventory.ITEMNMBR.TrimEnd();
-#pragma warning restore AA0139
-                case GPIV00101Inventory.ITEMTYPE of
-                    1, 2:
-                        GPItem.ItemType := 0;
-                    4, 5, 6:
-                        GPItem.ItemType := 1;
-                    3:
-                        GPItem.ItemType := 2;
-                end;
-
-                case GPIV00101Inventory.VCTNMTHD of
-                    1:
-                        GPItem.CostingMethod := Format(0);
-                    2:
-                        GPItem.CostingMethod := Format(1);
-                    3:
-                        GPItem.CostingMethod := Format(3);
-                    4, 5:
-                        GPItem.CostingMethod := Format(4);
-                    else
-                        GPItem.CostingMethod := Format(0);
-                end;
-
-                GPItem.CurrentCost := GPIV00101Inventory.CURRCOST;
-                GPItem.StandardCost := GPIV00101Inventory.STNDCOST;
-#pragma warning disable AA0139
-                GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
-                GPItem.PurchUnitOfMeasure := GPIV00101Inventory.PRCHSUOM.Trim();
-                GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
-                GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
-#pragma warning restore AA0139
-                case GPIV00101Inventory.ITMTRKOP of
-                    2:
-                        GPItem.ItemTrackingCode := ItemTrackingCodeSERIALLbl;
-                    3:
-                        GPItem.ItemTrackingCode := ItemTrackingCodeLOTLbl;
-                end;
-
-                GPItem.ShipWeight := GPIV00101Inventory.ITEMSHWT / 100;
-                if GPIV00101Inventory.ITEMTYPE = 2 then
-                    GPItem.InActive := true
-                else
-                    GPItem.InActive := GPIV00101Inventory.INACTIVE;
-
-                GPIV40201InventoryUom.SetRange(UOMSCHDL, GPIV00101Inventory.UOMSCHDL);
-                if GPIV40201InventoryUom.FindFirst() then
-#pragma warning disable AA0139
-                    GPItem.BaseUnitOfMeasure := GPIV40201InventoryUom.BASEUOFM.Trim();
-#pragma warning restore AA0139
-
-                GPIV00102InventoryQty.SetRange(ITEMNMBR, GPIV00101Inventory.ITEMNMBR);
-                GPIV00102InventoryQty.SetRange(LOCNCODE, '');
-                GPIV00102InventoryQty.SetRange(RCRDTYPE, 1);
-                if GPIV00102InventoryQty.FindFirst() then
-                    GPItem.QuantityOnHand := GPIV00102InventoryQty.QTYONHND;
-
-                GPIV00105inventoryCurr.SetRange(ITEMNMBR, GPIV00101Inventory.ITEMNMBR);
-                if GPIV00105inventoryCurr.FindSet() then
-                    repeat
-                        FoundCurrency := GPMC40000.Get(GPIV00105inventoryCurr.CURNCYID);
-                    until (GPIV00105inventoryCurr.Next() = 0) or FoundCurrency;
-
-                if FoundCurrency then
-                    GPItem.UnitListPrice := GPIV00105inventoryCurr.LISTPRCE;
-
+                SetGPItemFields(GPItem, GPIV00101Inventory);
                 GPItem.Insert();
             end;
         until GPIV00101Inventory.Next() = 0;
+    end;
+
+    internal procedure SetGPItemFields(var GPItem: Record "GP Item"; var GPIV00101Inventory: Record "GP IV00101")
+    var
+        GPIV00102InventoryQty: Record "GP IV00102";
+        GPIV00105inventoryCurr: Record "GP IV00105";
+        GPIV40201InventoryUom: Record "GP IV40201";
+        DummyItem: Record Item;
+        GPMC40000: Record "GP MC40000";
+        FoundCurrency: Boolean;
+    begin
+        GPItem.No := CopyStr(GPIV00101Inventory.ITEMNMBR.TrimEnd(), 1, MaxStrLen(DummyItem."No."));
+        GPItem.Description := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.Description));
+        GPItem.SearchDescription := CopyStr(GPIV00101Inventory.ITEMDESC.TrimEnd(), 1, MaxStrLen(GPItem.SearchDescription));
+#pragma warning disable AA0139
+        GPItem.ShortName := GPIV00101Inventory.ITEMNMBR.TrimEnd();
+#pragma warning restore AA0139
+        case GPIV00101Inventory.ITEMTYPE of
+            1, 2:
+                GPItem.ItemType := 0;
+            4, 5, 6:
+                GPItem.ItemType := 1;
+            3:
+                GPItem.ItemType := 2;
+        end;
+
+        case GPIV00101Inventory.VCTNMTHD of
+            1:
+                GPItem.CostingMethod := Format(0);
+            2:
+                GPItem.CostingMethod := Format(1);
+            3:
+                GPItem.CostingMethod := Format(3);
+            4, 5:
+                GPItem.CostingMethod := Format(4);
+            else
+                GPItem.CostingMethod := Format(0);
+        end;
+
+        GPItem.CurrentCost := GPIV00101Inventory.CURRCOST;
+        GPItem.StandardCost := GPIV00101Inventory.STNDCOST;
+#pragma warning disable AA0139
+        GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
+        GPItem.PurchUnitOfMeasure := GPIV00101Inventory.PRCHSUOM.Trim();
+        GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
+        GPItem.SalesUnitOfMeasure := GPIV00101Inventory.SELNGUOM.Trim();
+#pragma warning restore AA0139
+        case GPIV00101Inventory.ITMTRKOP of
+            2:
+                GPItem.ItemTrackingCode := ItemTrackingCodeSERIALLbl;
+            3:
+                GPItem.ItemTrackingCode := ItemTrackingCodeLOTLbl;
+        end;
+
+        GPItem.ShipWeight := GPIV00101Inventory.ITEMSHWT / 100;
+        if GPIV00101Inventory.ITEMTYPE = 2 then
+            GPItem.InActive := true
+        else
+            GPItem.InActive := GPIV00101Inventory.INACTIVE;
+
+        GPIV40201InventoryUom.SetRange(UOMSCHDL, GPIV00101Inventory.UOMSCHDL);
+        if GPIV40201InventoryUom.FindFirst() then
+#pragma warning disable AA0139
+            GPItem.BaseUnitOfMeasure := GPIV40201InventoryUom.BASEUOFM.Trim();
+#pragma warning restore AA0139
+
+        GPIV00102InventoryQty.SetRange(ITEMNMBR, GPIV00101Inventory.ITEMNMBR);
+        GPIV00102InventoryQty.SetRange(LOCNCODE, '');
+        GPIV00102InventoryQty.SetRange(RCRDTYPE, 1);
+        if GPIV00102InventoryQty.FindFirst() then
+            GPItem.QuantityOnHand := GPIV00102InventoryQty.QTYONHND;
+
+        GPIV00105inventoryCurr.SetRange(ITEMNMBR, GPIV00101Inventory.ITEMNMBR);
+        if GPIV00105inventoryCurr.FindSet() then
+            repeat
+                FoundCurrency := GPMC40000.Get(GPIV00105inventoryCurr.CURNCYID);
+            until (GPIV00105inventoryCurr.Next() = 0) or FoundCurrency;
+
+        if FoundCurrency then
+            GPItem.UnitListPrice := GPIV00105inventoryCurr.LISTPRCE;
     end;
 
     local procedure UpdateGLSetupUnitRoundingPrecisionIfNeeded()

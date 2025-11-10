@@ -1,4 +1,5 @@
 namespace Microsoft.DataMigration.GP;
+using Microsoft.DataMigration;
 
 page 40043 "GP Upgrade Settings"
 {
@@ -12,6 +13,29 @@ page 40043 "GP Upgrade Settings"
     {
         area(Content)
         {
+            group(AutomaticValidation)
+            {
+                Caption = 'Automatic Validation';
+
+                field(GPAutomaticValidation; GPAutoValidation)
+                {
+                    ApplicationArea = All;
+                    Caption = 'GP';
+                    ToolTip = 'Specifies whether automatic validation is enabled for the primary GP migration.';
+
+                    trigger OnValidate()
+                    var
+                        MigrationValidationRegistry: Record "Migration Validator Registry";
+                        GPMigrtionValidator: Codeunit "GP Migration Validator";
+                    begin
+                        if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then begin
+                            MigrationValidationRegistry.Validate(Enabled, GPAutoValidation);
+                            MigrationValidationRegistry.Modify(true);
+                        end;
+                    end;
+                }
+            }
+
             group(ErrorHandling)
             {
                 Caption = 'Error Handling';
@@ -49,7 +73,18 @@ page 40043 "GP Upgrade Settings"
     }
 
     trigger OnOpenPage()
+    var
+        MigrationValidationRegistry: Record "Migration Validator Registry";
+        GPMigrtionValidator: Codeunit "GP Migration Validator";
     begin
+        GPAutoValidation := true;
+
+        if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then
+            GPAutoValidation := MigrationValidationRegistry.Enabled;
+
         Rec.GetonInsertGPUpgradeSettings(Rec);
     end;
+
+    var
+        GPAutoValidation: Boolean;
 }
