@@ -65,7 +65,7 @@ reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Me
     end;
 
 #if not CLEAN28
-    [Obsolete('Event not used anymore.', '28.0')]
+    [Obsolete('Event not used anymore. If you need to know whether the report is being called for ZUGFeRD Export then use IsZUGFeRDPrintProcess in Codeunit "Export ZUGFeRD Document"', '27.2')]
     [IntegrationEvent(false, false)]
     local procedure OnPreReportOnBeforeInitializePDF(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var CreateZUGFeRDXML: Boolean)
     begin
