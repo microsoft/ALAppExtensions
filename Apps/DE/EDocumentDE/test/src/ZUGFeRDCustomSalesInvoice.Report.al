@@ -38,8 +38,10 @@ report 13918 "ZUGFeRD Custom Sales Invoice"
         }
     }
     trigger OnPreReport()
+    var
+        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
     begin
-        OnPreReportOnBeforeInitializePDF(Header, CreateZUGFeRDXML);
+        CreateZUGFeRDXML := ExportZUGFeRDDocument.IsZUGFeRDPrintProcess();
         Clear(PDFDocument);
         PDFDocument.Initialize();
     end;
@@ -82,11 +84,6 @@ report 13918 "ZUGFeRD Custom Sales Invoice"
     begin
         TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
         ExportZUGFeRDDocument.CreateXML(Header, OutStream);
-    end;
-
-    [InternalEvent(false)]
-    local procedure OnPreReportOnBeforeInitializePDF(SalesInvHeader: Record "Sales Invoice Header"; var CreateZUGFeRDXML: Boolean)
-    begin
     end;
 
     var

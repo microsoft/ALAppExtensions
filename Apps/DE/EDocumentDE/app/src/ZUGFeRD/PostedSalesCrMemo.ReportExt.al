@@ -10,8 +10,10 @@ using System.Utilities;
 reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Memo"
 {
     trigger OnPreReport()
+    var
+        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
     begin
-        OnPreReportOnBeforeInitializePDF(Header, CreateZUGFeRDXML);
+        CreateZUGFeRDXML := ExportZUGFeRDDocument.IsZUGFeRDPrintProcess();
         Clear(PDFDocument);
         PDFDocument.Initialize();
     end;
@@ -62,10 +64,13 @@ reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Me
         ExportZUGFeRDDocument.CreateXML(Header, OutStream);
     end;
 
+#if not CLEAN28
+    [Obsolete('Event not used anymore.', '28.0')]
     [IntegrationEvent(false, false)]
     local procedure OnPreReportOnBeforeInitializePDF(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var CreateZUGFeRDXML: Boolean)
     begin
     end;
+#endif
 
     var
         PDFDocument: Codeunit "PDF Document";

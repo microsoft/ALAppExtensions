@@ -9,8 +9,10 @@ using System.IO;
 reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
 {
     trigger OnPreReport()
+    var
+        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
     begin
-        OnPreReportOnBeforeInitializePDF(Header, CreateZUGFeRDXML);
+        CreateZUGFeRDXML := ExportZUGFeRDDocument.IsZUGFeRDPrintProcess();
         Clear(PDFDocument);
         PDFDocument.Initialize();
     end;
@@ -59,10 +61,14 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
         ExportZUGFeRDDocument.CreateXML(Header, OutStream);
     end;
 
+#if not CLEAN28
+    [Obsolete('Event not used anymore.', '28.0')]
+
     [IntegrationEvent(false, false)]
     local procedure OnPreReportOnBeforeInitializePDF(SalesInvHeader: Record "Sales Invoice Header"; var CreateZUGFeRDXML: Boolean)
     begin
     end;
+#endif
 
     var
         PDFDocument: Codeunit "PDF Document";

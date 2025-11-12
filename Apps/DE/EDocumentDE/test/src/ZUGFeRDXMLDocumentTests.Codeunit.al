@@ -351,6 +351,34 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         VerifyHeaderData(SalesInvoiceHeader, TempXMLBuffer);
     end;
 
+    [Test]
+    procedure PrintPostedSalesInvoiceWithCustomReportLayout();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
+        PDFDocument: Codeunit "PDF Document";
+        PDFTempBlob: Codeunit "Temp Blob";
+        TempBlob: Codeunit "Temp Blob";
+        PDFInStream: InStream;
+    begin
+        // [SCENARIO] Print a posted sales invoice with Custom Report Layout. Ensure that no xml is embedded
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [GIVEN] Custom Report Layout is used
+        UpdateReport(Enum::"Report Selection Usage"::"S.Invoice", Report::"ZUGFeRD Custom Sales Invoice");
+
+        // [WHEN] Create PDF Attachment
+        ExportZUGFeRDDocument.GenerateSalesInvoicePDFAttachment(SalesInvoiceHeader, PDFTempBlob);
+
+        // [THEN] No XML should be embedded
+        PDFTempBlob.CreateInStream(PDFInStream);
+        Assert.IsFalse(PDFDocument.GetDocumentAttachmentStream(PDFInStream, TempBlob), 'No Document Attachment should be found.');
+    end;
+
     #endregion
 
     #region SalesCreditMemo

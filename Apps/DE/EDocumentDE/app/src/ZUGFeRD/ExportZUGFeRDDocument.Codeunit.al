@@ -19,7 +19,7 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using System.Reflection;
 
-codeunit 13917 "Export ZUGFeRD Document" implements "ZUGFeRD Report Integration"
+codeunit 13917 "Export ZUGFeRD Document"
 {
     TableNo = "Record Export Buffer";
     EventSubscriberInstance = Manual;
@@ -40,20 +40,34 @@ codeunit 13917 "Export ZUGFeRD Document" implements "ZUGFeRD Report Integration"
         XmlNamespaceUDT: Text;
 
     trigger OnRun()
-    var
-        ZUGFeRDReportIntegration: Interface "ZUGFeRD Report Integration";
-        ZUGFeRDReportIntegrations: List of [Interface "ZUGFeRD Report Integration"];
     begin
-        ZUGFeRDReportIntegrations.Add(ExportZUGFeRDDocument);
-        OnGetZUGFeRDReportIntegrations(ZUGFeRDReportIntegrations);
-
-        foreach ZUGFeRDReportIntegration in ZUGFeRDReportIntegrations do
-            ZUGFeRDReportIntegration.BindSubscriptionForReportIntegration();
+        BindSubscription(ExportZUGFeRDDocument);
 
         ExportSalesDocument(Rec);
 
-        foreach ZUGFeRDReportIntegration in ZUGFeRDReportIntegrations do
-            ZUGFeRDReportIntegration.UnbindSubscriptionForReportIntegration();
+        UnbindSubscription(ExportZUGFeRDDocument);
+    end;
+
+
+    /// <summary>
+    /// Use this procedure to check if the current report print is for the ZUGFeRD export.
+    /// </summary>
+    /// <returns>true when the XML should be embedded</returns>
+    procedure IsZUGFeRDPrintProcess() Result: Boolean
+    begin
+        Result := false;
+        OnIsZUGFeRDPrintProcess(Result);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export ZUGFeRD Document", OnIsZUGFeRDPrintProcess, '', false, false)]
+    local procedure EnableOnIsZUGFeRDPrintProcess(var Result: Boolean)
+    begin
+        Result := true;
+    end;
+
+    [InternalEvent(false)]
+    local procedure OnIsZUGFeRDPrintProcess(var Result: Boolean)
+    begin
     end;
 
     procedure ExportSalesDocument(var RecordExportBuffer: Record "Record Export Buffer")
@@ -1019,11 +1033,6 @@ codeunit 13917 "Export ZUGFeRD Document" implements "ZUGFeRD Report Integration"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnGetZUGFeRDReportIntegrations(var ZUGFeRDReportIntegrations: List of [Interface "ZUGFeRD Report Integration"])
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
     local procedure OnAfterGetSetups(var CompanyInformation: Record "Company Information"; var GeneralLedgerSetup: Record "General Ledger Setup")
     begin
     end;
@@ -1048,25 +1057,4 @@ codeunit 13917 "Export ZUGFeRD Document" implements "ZUGFeRD Report Integration"
     begin
     end;
 
-    [EventSubscriber(ObjectType::Report, Report::"Standard Sales - Invoice", 'OnPreReportOnBeforeInitializePDF', '', false, false)]
-    local procedure OnBeforeInitializePDFSalesInvoice(SalesInvHeader: Record "Sales Invoice Header"; var CreateZUGFeRDXML: Boolean)
-    begin
-        CreateZUGFeRDXML := true;
-    end;
-
-    [EventSubscriber(ObjectType::Report, Report::"Standard Sales - Credit Memo", 'OnPreReportOnBeforeInitializePDF', '', false, false)]
-    local procedure OnBeforeInitializePDFSalesCrMemo(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var CreateZUGFeRDXML: Boolean)
-    begin
-        CreateZUGFeRDXML := true;
-    end;
-
-    internal procedure BindSubscriptionForReportIntegration()
-    begin
-        BindSubscription(ExportZUGFeRDDocument);
-    end;
-
-    internal procedure UnbindSubscriptionForReportIntegration()
-    begin
-        UnbindSubscription(ExportZUGFeRDDocument);
-    end;
 }
