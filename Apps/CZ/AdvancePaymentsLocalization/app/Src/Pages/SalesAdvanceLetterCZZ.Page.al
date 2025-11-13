@@ -148,6 +148,11 @@ page 31171 "Sales Advance Letter CZZ"
                     Editable = "Bill-to Customer No." <> '';
                     ToolTip = 'Specifies the name of the person to contact at the customer.';
                 }
+                field("Your Reference"; Rec."Your Reference")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                }
                 field("Posting Description"; Rec."Posting Description")
                 {
                     ApplicationArea = Basic, Suite;

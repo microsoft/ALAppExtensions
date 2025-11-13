@@ -350,6 +350,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   table "VAT Period CZL" = X,
 #pragma warning restore AL0432
 #endif
+                  table "VAT Report Entry Link CZL" = X,
                   table "VAT Stmt. Report Line Data CZL" = X,
                   table "VAT Statement Attachment CZL" = X,
                   table "VAT Statement Comment Line CZL" = X,

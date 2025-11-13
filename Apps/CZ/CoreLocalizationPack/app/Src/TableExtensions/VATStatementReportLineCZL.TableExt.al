@@ -6,6 +6,9 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 tableextension 31061 "VAT Statement Report Line CZL" extends "VAT Statement Report Line"
 {
+    var
+        VATReportHeader: Record "VAT Report Header";
+
     trigger OnAfterDelete()
     var
         VATStmtReportLineDataCZL: Record "VAT Stmt. Report Line Data CZL";
@@ -62,5 +65,47 @@ tableextension 31061 "VAT Statement Report Line CZL" extends "VAT Statement Repo
         VATStmtReportLineDataCZL.SetRange("VAT Report Amount Type", VATReportAmountTypeCZL);
         VATStmtReportLineDataCZL.CalcSums("Additional-Currency Amount");
         exit(VATStmtReportLineDataCZL."Additional-Currency Amount");
+    end;
+
+    internal procedure DrillDown(VATReportAmountTypeCZL: Enum "VAT Report Amount Type CZL")
+    var
+        SummaryVATStatementLine: Record "VAT Statement Line";
+    begin
+        GetSummaryVATStatementLine(VATReportAmountTypeCZL, SummaryVATStatementLine);
+        SummaryVATStatementLine.DrillDown(GetVATReportHeader().GetVATStmtCalcParameters());
+    end;
+
+    internal procedure GetSummaryVATStatementLine(VATReportAmountTypeCZL: Enum "VAT Report Amount Type CZL"; var SummaryVATStatementLine: Record "VAT Statement Line"): Boolean
+    var
+        VATStatementLine: Record "VAT Statement Line";
+        VATStmtReportLineDataCZL: Record "VAT Stmt. Report Line Data CZL";
+        RowTotaling: Text;
+    begin
+        VATStmtReportLineDataCZL.SetFilterTo(Rec);
+        VATStmtReportLineDataCZL.SetRange("VAT Report Amount Type", VATReportAmountTypeCZL);
+        if VATStmtReportLineDataCZL.FindSet() then
+            repeat
+                VATStatementLine := VATStmtReportLineDataCZL.GetVATStatementLine();
+                if RowTotaling = '' then
+                    RowTotaling := StrSubstNo('"%1"', VATStatementLine."Row No.")
+                else
+                    RowTotaling := RowTotaling + '+' + StrSubstNo('"%1"', VATStatementLine."Row No.");
+            until VATStmtReportLineDataCZL.Next() = 0;
+
+        SummaryVATStatementLine.Init();
+        SummaryVATStatementLine."Statement Template Name" := VATStatementLine."Statement Template Name";
+        SummaryVATStatementLine."Statement Name" := VATStatementLine."Statement Name";
+        SummaryVATStatementLine."Row Totaling" := CopyStr(RowTotaling, 1, MaxStrLen(SummaryVATStatementLine."Row Totaling"));
+        SummaryVATStatementLine.Type := SummaryVATStatementLine.Type::"Formula CZL";
+        exit(RowTotaling <> '');
+    end;
+
+    local procedure GetVATReportHeader(): Record "VAT Report Header"
+    begin
+        if (VATReportHeader."VAT Report Config. Code" <> "VAT Report Config. Code") or
+           (VATReportHeader."No." <> "VAT Report No.")
+        then
+            VATReportHeader.Get("VAT Report Config. Code", "VAT Report No.");
+        exit(VATReportHeader);
     end;
 }

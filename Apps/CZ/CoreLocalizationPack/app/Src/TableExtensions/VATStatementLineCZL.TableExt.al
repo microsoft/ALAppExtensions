@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
 
 tableextension 11739 "VAT Statement Line CZL" extends "VAT Statement Line"
 {
@@ -73,4 +74,53 @@ tableextension 11739 "VAT Statement Line CZL" extends "VAT Statement Line"
             DataClassification = CustomerContent;
         }
     }
+
+    var
+        VATStatementCalculationCZL: Codeunit "VAT Statement Calculation CZL";
+
+    procedure CalcTotal(VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL"; var TotalAmount: Decimal)
+    begin
+        VATStatementCalculationCZL.CalcLineTotal(Rec, VATStmtCalcParametersCZL, TotalAmount);
+    end;
+
+    procedure CalcTotal(VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL"; var TotalAmount: Decimal; var TotalBase: Decimal)
+    begin
+        VATStatementCalculationCZL.CalcLineTotal(Rec, VATStmtCalcParametersCZL, TotalAmount, TotalBase);
+    end;
+
+    internal procedure DrillDown(VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL")
+    begin
+        VATStatementCalculationCZL.DrillDownLineTotal(Rec, VATStmtCalcParametersCZL);
+    end;
+
+    internal procedure GetVATEntries(VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL"; var OutTempVATEntry: Record "VAT Entry" temporary)
+    begin
+        VATStatementCalculationCZL.GetVATEntries(Rec, VATStmtCalcParametersCZL, OutTempVATEntry);
+    end;
+
+    internal procedure ShowAmountAsZero(Amount: Decimal): Boolean
+    begin
+        case "Show CZL" of
+            "Show CZL"::"Zero If Negative":
+                exit(Amount < 0 ? true : false);
+            "Show CZL"::"Zero If Positive":
+                exit(Amount > 0 ? true : false);
+        end;
+    end;
+
+    internal procedure PrepareAmountToShow(var Amount: Decimal)
+    begin
+        if ShowAmountAsZero(Amount) then
+            Amount := 0;
+    end;
+
+    internal procedure GetCalculateSign(): Integer
+    begin
+        exit("Calculate with" = "Calculate with"::"Opposite Sign" ? -1 : 1);
+    end;
+
+    internal procedure GetPrintSign(): Integer
+    begin
+        exit("Print with" = "Print with"::"Opposite Sign" ? -1 : 1);
+    end;
 }

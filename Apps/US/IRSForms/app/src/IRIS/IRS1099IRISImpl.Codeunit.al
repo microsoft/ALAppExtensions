@@ -19,7 +19,7 @@ codeunit 10045 "IRS 1099 IRIS Impl." implements "IRS 1099 IRIS Transmission", "I
         ShowIRS1099FormDocumentsTxt: Label 'Show IRS 1099 Form Documents';
         NoDocumentToReportErr: Label 'There are no 1099 forms to report for the period %1. Make sure that IRS 1099 form documents for the given period are released and have lines to report.', Comment = '%1 - period year, e.g. 2024';
 
-    procedure CreateTransmission(var Transmission: Record "Transmission IRIS"; PeriodNo: Text[4])
+    procedure CreateTransmission(Transmission: Record "Transmission IRIS"; PeriodNo: Text[4])
     var
         DocsCount: Integer;
         ErrorInfo: ErrorInfo;

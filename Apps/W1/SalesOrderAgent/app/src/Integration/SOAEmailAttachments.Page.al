@@ -102,16 +102,20 @@ page 4405 "SOA Email Attachments"
         if not SOASetup.SupportedAttachmentContentType(Rec."File MIME Type") then
             exit(AttachmentStatus::UnsupportedFormat);
 
-        if not SOASetup.IsPdfAttachmentContentType(Rec."File MIME Type") then
-            exit(AttachmentStatus::NoRelevantContent);
+        if SOASetup.IsPdfAttachmentContentType(Rec."File MIME Type") then
+            if AgentTaskFile.Get(AgentTaskMessageAttachment."Task ID", AgentTaskMessageAttachment."File ID") then begin
+                AgentTaskFile.CalcFields(Content);
+                AgentTaskFile.Content.CreateInStream(InStream, GetDefaultEncoding());
+                if SOASetup.DocumentExceedsPageCountThreshold(InStream, ExceedsPageCountThreshold) then
+                    if ExceedsPageCountThreshold then
+                        exit(AttachmentStatus::ExceedsPageCount);
+            end;
 
-        if AgentTaskFile.Get(AgentTaskMessageAttachment."Task ID", AgentTaskMessageAttachment."File ID") then begin
-            AgentTaskFile.CalcFields(Content);
-            AgentTaskFile.Content.CreateInStream(InStream, GetDefaultEncoding());
-            if SOASetup.DocumentExceedsPageCountThreshold(InStream, ExceedsPageCountThreshold) then
-                if ExceedsPageCountThreshold then
-                    exit(AttachmentStatus::ExceedsPageCount);
-        end;
+        AgentTaskMessageAttachment.Reset();
+        AgentTaskMessageAttachment.SetRange("Task ID", Rec."Task ID");
+        if AgentTaskMessageAttachment.Count() > SOASetup.GetMaxNoOfAttachmentsPerEmail() then
+            exit(AttachmentStatus::ExceedsNumberOfAttachments);
+
         exit(AttachmentStatus::NoRelevantContent);
     end;
 

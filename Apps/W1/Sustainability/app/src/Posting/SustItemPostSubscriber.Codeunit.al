@@ -40,8 +40,8 @@ codeunit 6256 "Sust. Item Post Subscriber"
 
     local procedure CanCreateSustValueEntry(ItemJournalLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry"): Boolean
     begin
-        if ValueEntry."Order Type" = ValueEntry."Order Type"::Transfer then
-            if (ValueEntry."Document Type" = ValueEntry."Document Type"::"Transfer Shipment") and (ValueEntry."Valued Quantity" > 0) then
+        if (ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Transfer) then
+            if (ValueEntry."Document Type" in [ValueEntry."Document Type"::"Transfer Shipment", ValueEntry."Document Type"::" "]) and (ValueEntry."Valued Quantity" > 0) then
                 exit(false);
 
         exit((ItemJournalLine."Sust. Account No." <> '') and (ValueEntry."Entry Type" = ValueEntry."Entry Type"::"Direct Cost"));
@@ -54,7 +54,7 @@ codeunit 6256 "Sust. Item Post Subscriber"
         GHGCredit: Boolean;
         Sign: Integer;
     begin
-        if ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then begin
+        if ItemJournalLine.ShouldUpdateJournalLineWithPostingSign() then begin
             CheckSustainabilityItemJnlLine(ItemJournalLine."Sust. Account No.", ItemJournalLine."Sust. Account Category", ItemJournalLine."Sust. Account Subcategory", ItemJournalLine."Total CO2e");
             GHGCredit := ItemJournalLine.IsGHGCreditLine();
             Sign := ItemJournalLine.GetPostingSign(GHGCredit);
@@ -70,7 +70,7 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine."Shortcut Dimension 1 Code" := ItemJournalLine."Shortcut Dimension 1 Code";
         SustainabilityJnlLine."Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
 
-        if ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then
+        if ItemJournalLine.ShouldUpdateJournalLineWithPostingSign() then
             SustainabilityJnlLine.Validate("CO2e Emission", Sign * ItemJournalLine."Total CO2e")
         else
             SustainabilityJnlLine.Validate("CO2e Emission", ItemJournalLine."Total CO2e");

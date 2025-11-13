@@ -152,7 +152,7 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
 
         if SMTPAccount."Authentication Type" <> SMTPAccount."Authentication Type"::Anonymous then begin
             ClearLastError();
-            SMTPAuthentication.SetBasicAuthInfo(Account."User Name", Account.GetPassword(Account."Password Key"));
+            SMTPAuthentication.SetBasicAuthInfo(Account."User Name", Account.GetPassword(Account."Password Key"), AccountId);
             SMTPAuthentication.SetServer(Account.Server);
             Result := SMTPClient.Authenticate(Account."Authentication Type", SMTPAuthentication);
 
@@ -452,6 +452,18 @@ codeunit 4513 "SMTP Connector Impl." implements "Email Connector"
     internal procedure GetO365SmtpServer(): Text
     begin
         exit('smtp.office365.com');
+    end;
+
+    internal procedure CheckIfCustomizedSMTPOAuth(AccoutId: Guid; var SMTPAccounts: Record "SMTP Account"): Boolean
+    var
+        EmptyGuid: Guid;
+    begin
+        SMTPAccounts.SetRange(Id, AccoutId);
+        SMTPAccounts.SetRange("Authentication Type", Enum::"SMTP Authentication Types"::"OAuth 2.0");
+        SMTPAccounts.SetFilter("Client Id Storage Id", '<>%1', EmptyGuid);
+        SMTPAccounts.SetFilter("Client Secret Storage Id", '<>%1', EmptyGuid);
+        SMTPAccounts.SetFilter("Authority URL", '<>%1', EmptyGuid);
+        exit(SMTPAccounts.FindFirst());
     end;
 
     internal procedure ObsfuscateEmailAddress(Email: Text) ObfuscatedEmail: Text

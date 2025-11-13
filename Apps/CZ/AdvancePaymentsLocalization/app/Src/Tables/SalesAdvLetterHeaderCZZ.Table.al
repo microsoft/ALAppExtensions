@@ -317,6 +317,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 UpdateBillToCust("Bill-to Contact No.");
             end;
         }
+        field(22; "Your Reference"; Text[35])
+        {
+            Caption = 'Your Reference';
+            ToolTip = 'Specifies the customer''s reference. The contents will be printed on the Sales Advance Invoice report.';
+        }
         field(23; "Salesperson Code"; Code[20])
         {
             Caption = 'Salesperson Code';

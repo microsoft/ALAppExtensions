@@ -37,7 +37,6 @@ codeunit 4304 "SOA Session Events"
         if not GlobalSOAKPITrackAll.IsOrderTakerAgentSession(AgentTaskID) then
             exit;
 
-        VerifyUnpaidEntries();
         SetupKPITrackingEvents();
         SetupItemSearchEvents(AgentTaskID);
         SetupFilteringEvents(AgentTaskID);
@@ -108,14 +107,6 @@ codeunit 4304 "SOA Session Events"
     [InternalEvent(false, false)]
     local procedure OnDisableContactAndCustomerFiltering(var DisableFilters: Boolean)
     begin
-    end;
-
-    local procedure VerifyUnpaidEntries()
-    var
-        SOABilling: Codeunit "SOA Billing";
-    begin
-        if SOABilling.TooManyUnpaidEntries() then
-            Error(SOABilling.GetTooManyUnpaidEntriesMessage());
     end;
 
     var

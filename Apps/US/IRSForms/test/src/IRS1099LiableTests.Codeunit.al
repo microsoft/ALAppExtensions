@@ -21,6 +21,7 @@ codeunit 148019 "IRS 1099 Liable Tests"
         LibraryERM: Codeunit "Library - ERM";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryRandom: Codeunit "Library - Random";
+        Assert: Codeunit Assert;
         IsInitialized: Boolean;
 
     trigger OnRun()
@@ -76,6 +77,64 @@ codeunit 148019 "IRS 1099 Liable Tests"
         LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::"G/L Account", LibraryERM.CreateGLAccountWithPurchSetup(), 1);
         // [THEN] Purchase line have "1099 Liable" option disabled
         PurchaseLine.TestField("1099 Liable", false);
+    end;
+
+    [Test]
+    procedure Cannot1099LiableWithoutFormBoxNoInHeader()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+    begin
+        // [SCENARIO 562547] Error is thrown when setting "1099 Liable" to true on purchase line when header "IRS 1099 Form Box No." is blank
+        Initialize();
+
+        // [GIVEN] Purchase header for vendor "V" without "IRS 1099 Form Box No."
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
+        // [GIVEN] Purchase line for item "I"
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 1);
+
+        // [WHEN] Set "1099 Liable" to true on purchase line
+        asserterror PurchaseLine.Validate("1099 Liable", true);
+
+        // [THEN] Error is thrown: "You cannot set the "1099 Liable" field because the "IRS 1099 Form Box No." field on the purchase header is blank."
+        Assert.ExpectedError('You cannot set the "1099 Liable" field because the "IRS 1099 Form Box No." field on the purchase header is blank.');
+    end;
+
+    [Test]
+    procedure Can1099LiableWithFormBoxNoInHeader()
+    var
+        IRSReportingPeriod: Record "IRS Reporting Period";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VendNo: Code[20];
+        FormNo: Code[20];
+        FormBoxNo: Code[20];
+        PeriodNo: Code[20];
+    begin
+        // [SCENARIO 562547] "1099 Liable" can be set to true on purchase line when header has "IRS 1099 Form Box No."
+        Initialize();
+
+        // [GIVEN] Vendor "V" with "IRS 1099 Form Box No." = "MISC-01"
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate(), WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), WorkDate(), FormNo);
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), WorkDate(), FormNo, FormBoxNo);
+        // [GIVEN] Purchase header for vendor "V" with "IRS 1099 Form Box No." = "MISC-01"
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, VendNo);
+        // [GIVEN] Purchase line for item "I" with "1099 Liable" = false
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 1);
+        PurchaseLine.Validate("1099 Liable", false);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Set "1099 Liable" to true on purchase line
+        PurchaseLine.Validate("1099 Liable", true);
+
+        // [THEN] "1099 Liable" is set to true without error
+        PurchaseLine.TestField("1099 Liable", true);
+
+        // Tear Down
+        IRSReportingPeriod.SetRange("No.", PeriodNo);
+        IRSReportingPeriod.DeleteAll(true);
     end;
 
     [Test]

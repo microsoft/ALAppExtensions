@@ -54,6 +54,7 @@ permissionset 11730 "CZ Core Pack - Read CZL"
                   tabledata "VAT Period CZL" = R,
 #pragma warning restore AL0432
 #endif
+                  tabledata "VAT Report Entry Link CZL" = R,
                   tabledata "VAT Stmt. Report Line Data CZL" = R,
                   tabledata "VAT Statement Attachment CZL" = R,
                   tabledata "VAT Statement Comment Line CZL" = R,

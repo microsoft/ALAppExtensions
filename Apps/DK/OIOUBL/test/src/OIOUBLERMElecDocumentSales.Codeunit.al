@@ -24,7 +24,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         LibraryXPathXMLReader: Codeunit "Library - XPath XML Reader";
         LibraryUtility: Codeunit "Library - Utility";
         OIOUBLNewFileMock: Codeunit "OIOUBL-File Events Mock";
-        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         AmountErr: Label '%1 must be %2 in %3.', Comment = '%1 = Amount Field Caption; %2 = Amount Value; %3 = GL Entry Table Caption';
         GLNNoTxt: Label '3974567891234';
@@ -795,33 +794,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesInvoiceHeader.TESTFIELD("OIOUBL-Electronic Invoice Created", false);
         Assert.ExpectedError(StrSubstNo(NonExistingDocumentFormatErr, Format(ElectronicDocumentFormat.Usage::"Sales Invoice")));
         Assert.ExpectedErrorCode('Dialog');
-    end;
-
-    [Test]
-    [HandlerFunctions('PostandSendModalPageHandler,ShipInvoiceQstStrMenuHandler,ErrorMessagesPageHandler')]
-    procedure ShipAndSendSalesOrderOIOUBL();
-    var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-        DocumentSendingProfile: Record "Document Sending Profile";
-    begin
-        // [SCENARIO 327540] Post (Ship only) And Send Sales Order to OIOUBL.
-        Initialize();
-
-        // [GIVEN] DefaultDocumentSendingProfile Disk::"Electronic Document"; Sales Order;
-        CreateSalesDocumentWithItem(SalesLine, SalesHeader."Document Type"::Order);
-        SalesHeader.GET(SalesLine."Document Type", SalesLine."Document No.");
-        SetDefaultDocumentSendingProfile(DocumentSendingProfile.Disk::"Electronic Document", OIOUBLFormatNameTxt);
-
-        // [WHEN] Run "Post and Send" for Sales Order. Select "Ship" option for posting.
-        LibraryVariableStorage.Enqueue(SalesHeader.RecordId());
-        SalesHeader.SendToPosting(Codeunit::"Sales-Post and Send");
-
-        // [THEN] OIOUBL Electronic Document is not created. An error "The Sales Shipment Header table is not supported." is thrown.
-        Assert.AreEqual('The Sales Shipment Header table is not supported.', LibraryVariableStorage.DequeueText(), '');
-        Assert.AreEqual('Error', LibraryVariableStorage.DequeueText(), '');
-
-        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
@@ -2001,9 +1973,9 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
 
     local procedure MailSetupInitialize()
     var
-        LibraryWorkflow: Codeunit "Library - Workflow";
+        LibraryEmail: Codeunit "Library - Email";
     begin
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
     end;
 
     local procedure UpdateOIOUBLCountryRegionCode();
@@ -2333,21 +2305,6 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
             Choice := 1 // Close email
         else
             Choice := 3; // Use the default profile for all selected documents without confimation.
-    end;
-
-    [StrMenuHandler]
-    procedure ShipInvoiceQstStrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
-    begin
-        Choice := 1; // Ship
-    end;
-
-    [PageHandler]
-    procedure ErrorMessagesPageHandler(var ErrorMessages: TestPage "Error Messages");
-    begin
-        ErrorMessages.Filter.SetFilter("Context Record ID", LibraryVariableStorage.DequeueText());
-        LibraryVariableStorage.Enqueue(ErrorMessages.Description.Value());
-        LibraryVariableStorage.Enqueue(ErrorMessages."Message Type".Value());
-        ErrorMessages.Close();
     end;
 
     [ModalPageHandler]

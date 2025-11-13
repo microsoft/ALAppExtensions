@@ -54,6 +54,7 @@ permissionset 11731 "CZ Core Pack - Edit CZL"
                   tabledata "VAT Period CZL" = IMD,
 #pragma warning restore AL0432
 #endif
+                  tabledata "VAT Report Entry Link CZL" = IMD,
                   tabledata "VAT Stmt. Report Line Data CZL" = IMD,
                   tabledata "VAT Statement Attachment CZL" = IMD,
                   tabledata "VAT Statement Comment Line CZL" = IMD,

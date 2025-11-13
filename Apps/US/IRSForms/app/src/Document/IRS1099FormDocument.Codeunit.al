@@ -21,7 +21,7 @@ codeunit 10031 "IRS 1099 Form Document"
 
     procedure Reopen(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header")
     begin
-        if IRS1099FormDocHeader.Status = IRS1099FormDocHeader.Status::Submitted then
+        if IRS1099FormDocHeader.Status in [IRS1099FormDocHeader.Status::Submitted, IRS1099FormDocHeader.Status::"In Progress"] then
             if not IRS1099FormDocHeader."Allow Correction" then
                 Error(CannotReopenSubmittedFormDocumentErr);
 

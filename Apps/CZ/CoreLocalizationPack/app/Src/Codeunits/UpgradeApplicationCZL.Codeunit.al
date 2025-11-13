@@ -183,7 +183,9 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeVATReport();
         UpgradeSetEnableNonDeductibleVATCZ();
         UpgradeUseW1RegistrationNumberFromSalesDoc();
+#if CLEAN28        
         UpgradeUseVATReturnPeriodInsteadOfVATPeriod();
+#endif
     end;
 
     local procedure UpgradeReplaceVATDateCZL()
@@ -762,6 +764,7 @@ codeunit 31017 "Upgrade Application CZL"
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberFromSalesDocUpgradeTag());
     end;
+#if CLEAN28
 
     local procedure UpgradeUseVATReturnPeriodInsteadOfVATPeriod()
     var
@@ -821,6 +824,7 @@ codeunit 31017 "Upgrade Application CZL"
             exit(0D);
         exit(CalcDate('<+25D>', EndDate));
     end;
+#endif
 
     local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10];
                                                         ReportID: Integer)

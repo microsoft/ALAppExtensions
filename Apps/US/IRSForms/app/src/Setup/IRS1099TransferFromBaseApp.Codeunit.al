@@ -27,7 +27,6 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
     var
         Telemetry: Codeunit Telemetry;
         UpgradeDataDict: Dictionary of [Integer, Integer];
-        StatementLineFilterExpressionTxt: Label 'Form Box No.: %1', Comment = '%1 = Form Box No.';
         CreatedDuringDataTransferMsg: Label 'Created during data transfer';
 
     trigger OnRun()
@@ -53,9 +52,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
         IRSFormsData: Codeunit "IRS Forms Data";
     begin
         Telemetry.LogMessage('0000PZA', 'IRS 1099 setup transfer started', Verbosity::Normal, DataClassification::SystemMetadata);
-        TransferFormBoxes(IRSReportingPeriod."No.");
         TransferVendorSetup(IRSReportingPeriod."No.");
-        TransferAdjustments(IRSReportingPeriod."No.", ReportingYear);
         IRSFormsData.AddFormInstructionLines(IRSReportingPeriod."No.");
         Telemetry.LogMessage('0000PZB', 'IRS 1099 setup transfer completed', Verbosity::Normal, DataClassification::SystemMetadata);
     end;
@@ -93,44 +90,7 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
         Telemetry.LogMessage('0000PZF', StrSubstNo(NewIRSReportingPeriodCreatedLbl, ReportingYear), Verbosity::Normal, DataClassification::SystemMetadata);
     end;
 
-    local procedure TransferFormBoxes(PeriodNo: Code[20])
-    var
-#pragma warning disable AL0432
-        IRS1099FormBoxOld: Record "IRS 1099 Form-Box";
-#pragma warning restore AL0432
-        IRS1099Form: Record "IRS 1099 Form";
-        IRS1099FormBoxNew: Record "IRS 1099 Form Box";
-        LastFormNo, CurrFormNo : Code[20];
-        StatementLineNo: Integer;
-    begin
-        if not IRS1099FormBoxOld.FindSet() then
-            exit;
-        LastFormNo := '';
-        repeat
-            if IsOld1099FormBoxTransferable(IRS1099FormBoxOld.Code) then begin
-                CurrFormNo := GetFormNoFromOldFormBox(IRS1099FormBoxOld.Code);
-                if CurrFormNo <> LastFormNo then begin
-                    IRS1099Form.Init();
-                    IRS1099Form."Period No." := PeriodNo;
-                    IRS1099Form."No." := CurrFormNo;
-                    IRS1099Form.Insert();
-                    StatementLineNo := 0;
-                end;
-                IRS1099FormBoxNew.Init();
-                IRS1099FormBoxNew."Period No." := PeriodNo;
-                IRS1099FormBoxNew."Form No." := IRS1099Form."No.";
-                IRS1099FormBoxNew."No." := IRS1099FormBoxOld.Code;
-                IRS1099FormBoxNew.Description := IRS1099FormBoxOld.Description;
-                IRS1099FormBoxNew."Minimum Reportable Amount" := IRS1099FormBoxOld."Minimum Reportable";
-                IRS1099FormBoxNew.Insert();
-                StatementLineNo += 10000;
-                AddFormStatementLine(PeriodNo, IRS1099Form."No.", IRS1099FormBoxNew."No.", StatementLineNo, IRS1099FormBoxNew.Description);
-                LastFormNo := CurrFormNo;
-            end;
-        until IRS1099FormBoxOld.Next() = 0;
-    end;
-
-    local procedure TransferVendorSetup(PeriodNo: Code[20])
+    procedure TransferVendorSetup(PeriodNo: Code[20])
     var
         Vendor: Record Vendor;
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
@@ -152,29 +112,6 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
             Vendor.Modify();
             IncValueInUpgradedDataDict(Database::Vendor);
         until Vendor.Next() = 0;
-#pragma warning restore AL0432
-    end;
-
-    local procedure TransferAdjustments(PeriodNo: Code[20]; ReportingYear: Integer)
-    var
-#pragma warning disable AL0432
-        IRS1099Adjustment: Record "IRS 1099 Adjustment";
-        IRS1099VendorFormBoxAdj: Record "IRS 1099 Vendor Form Box Adj.";
-    begin
-        IRS1099Adjustment.SetRange(Year, ReportingYear);
-        if not IRS1099Adjustment.FindSet() then
-            exit;
-        repeat
-            if IsOld1099FormBoxTransferable(IRS1099Adjustment."IRS 1099 Code") then begin
-                IRS1099VendorFormBoxAdj.Init();
-                IRS1099VendorFormBoxAdj."Period No." := PeriodNo;
-                IRS1099VendorFormBoxAdj."Vendor No." := IRS1099Adjustment."Vendor No.";
-                IRS1099VendorFormBoxAdj."Form No." := GetFormNoFromOldFormBox(IRS1099Adjustment."IRS 1099 Code");
-                IRS1099VendorFormBoxAdj."Form Box No." := IRS1099Adjustment."IRS 1099 Code";
-                IRS1099VendorFormBoxAdj.Amount := IRS1099Adjustment.Amount;
-                IRS1099VendorFormBoxAdj.Insert();
-            end;
-        until IRS1099Adjustment.Next() = 0;
 #pragma warning restore AL0432
     end;
 
@@ -308,21 +245,6 @@ codeunit 10040 "IRS 1099 Transfer From BaseApp"
 #pragma warning disable AA0139
         exit(CopyStr(OldFormBox, 1, DashPosition - 1));
 #pragma warning restore AA0139
-    end;
-
-    local procedure AddFormStatementLine(PeriodNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20]; StatementLineNo: Integer; Description: Text)
-    var
-        IRS1099FormStatementLine: Record "IRS 1099 Form Statement Line";
-    begin
-        IRS1099FormStatementLine.Validate("Period No.", PeriodNo);
-        IRS1099FormStatementLine.Validate("Form No.", FormNo);
-        IRS1099FormStatementLine.Validate("Line No.", StatementLineNo);
-        IRS1099FormStatementLine.Validate("Row No.", FormBoxNo);
-        IRS1099FormStatementLine.Validate("Description", Description);
-        if IRS1099FormStatementLine."Row No." = 'MISC-07' then
-            IRS1099FormStatementLine."Print Value Type" := Enum::"IRS 1099 Print Value Type"::"Yes/No";
-        IRS1099FormStatementLine.Validate("Filter Expression", StrSubstNo(StatementLineFilterExpressionTxt, FormBoxNo));
-        IRS1099FormStatementLine.Insert(true);
     end;
 
     local procedure IncValueInUpgradedDataDict(TableId: Integer)

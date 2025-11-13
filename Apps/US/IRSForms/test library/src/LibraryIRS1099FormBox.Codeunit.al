@@ -232,4 +232,9 @@ codeunit 148004 "Library IRS 1099 Form Box"
         TempVendFormBoxBuffer.TestField("Vendor Ledger Entry No.", ExpectedEntryNo);
         TempVendFormBoxBuffer.Reset();
     end;
+
+    procedure ShowNotificationIfVendorHas1099CodePrevPeriodButNotCurr(VendNo: Code[20]; PostingDate: Date)
+    begin
+        IRS1099VendorFormBox.ShowNotificationIfVendorHas1099CodePrevPeriodButNotCurr(VendNo, PostingDate);
+    end;
 }

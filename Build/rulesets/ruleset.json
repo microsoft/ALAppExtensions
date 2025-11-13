@@ -35,6 +35,11 @@
       "justification": "Tables are moved from BaseApp to BCApps."
     },
     {
+      "id": "AL0897",
+      "action": "None",
+      "justification": "TODO(#611991) - Temporarily downgraded to unblock compiler uptake."
+    },
+    {
       "id": "AS0116",
       "action": "None",
       "justification": "Cannot be an error. Validates table moves."

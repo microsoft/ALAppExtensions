@@ -182,7 +182,7 @@ codeunit 6385 "Outlook Processing"
             IgnoredBecauseExisting := 0;
             if EmailMessage.Attachments_First() then
                 repeat
-                    if not IgnoreMailAttachment(EmailMessage, IgnoredBecauseExisting) then begin
+                    if not IgnoreMailAttachment(EmailMessage, EmailInbox."External Message Id", IgnoredBecauseExisting) then begin
                         Clear(Attachment);
                         Clear(TempBlob);
                         Attachment.Add('emailInboxId', EmailInbox.Id);
@@ -208,7 +208,7 @@ codeunit 6385 "Outlook Processing"
             // if an e-mail message has no attachments of supported type, add it as well
             // it must be represented as an e-document with no attachment
             if (AttachmentsAdded = 0) and (IgnoredBecauseExisting = 0) then
-                if not IgnoreMailMessage(EmailMessage) then begin
+                if not IgnoreMailMessage(EmailInbox."External Message Id") then begin
                     Clear(Attachment);
                     Clear(TempBlob);
                     Attachment.Add('emailInboxId', EmailInbox.Id);
@@ -262,7 +262,7 @@ codeunit 6385 "Outlook Processing"
         exit(false);
     end;
 
-    local procedure IgnoreMailAttachment(EmailMessage: Codeunit "Email Message"; var IgnoredBecauseExisting: Integer): Boolean
+    local procedure IgnoreMailAttachment(EmailMessage: Codeunit "Email Message"; ExternalMessageId: Text[2048]; var IgnoredBecauseExisting: Integer): Boolean
     var
         EDocument: Record "E-Document";
     begin
@@ -270,7 +270,7 @@ codeunit 6385 "Outlook Processing"
             exit(true);
 
         EDocument.ReadIsolation := IsolationLevel::ReadCommitted;
-        EDocument.SetRange("Outlook Mail Message Id", EmailMessage.GetExternalId());
+        EDocument.SetRange("Outlook Mail Message Id", ExternalMessageId);
         EDocument.SetRange("Outlook Message Attachment Id", Format(EmailMessage.Attachments_GetContentId()));
         if not EDocument.IsEmpty() then begin
             IgnoredBecauseExisting += 1;
@@ -281,12 +281,12 @@ codeunit 6385 "Outlook Processing"
         exit(false)
     end;
 
-    local procedure IgnoreMailMessage(EmailMessage: Codeunit "Email Message"): Boolean
+    local procedure IgnoreMailMessage(ExternalMessageId: Text[2048]): Boolean
     var
         EDocument: Record "E-Document";
     begin
         EDocument.ReadIsolation := IsolationLevel::ReadCommitted;
-        EDocument.SetRange("Outlook Mail Message Id", EmailMessage.GetExternalId());
+        EDocument.SetRange("Outlook Mail Message Id", ExternalMessageId);
         if not EDocument.IsEmpty() then begin
             Session.LogMessage('0000QIM', 'Ignoring mail message because it is already imported.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
             exit(true);

@@ -880,7 +880,6 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = page "VAT Periods CZL";
                     Image = Period;
                     ToolTip = 'View and set VAT periods.';
-                    Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'The VAT Periods CZL page is obsolete. Use the VAT Return Periods action instead.';
                     ObsoleteTag = '28.0';

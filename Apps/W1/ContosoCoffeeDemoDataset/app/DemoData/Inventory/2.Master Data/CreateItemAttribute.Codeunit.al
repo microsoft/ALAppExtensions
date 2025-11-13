@@ -22,8 +22,12 @@ codeunit 5393 "Create Item Attribute"
         ContosoItem: Codeunit "Contoso Item";
         CreateItem: Codeunit "Create Item";
         CreateUnitOfMeasure: Codeunit "Create Unit of Measure";
+        CreateItemCategory: Codeunit "Create Item Category";
     begin
         ItemAttribute := ContosoItem.InsertItemAttribute(ColorLbl, false, 0, '');
+        ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, '', 0);
+        ContosoItem.InsertItemAttributeValueMapping(DATABASE::"Item Category", CreateItemCategory.Furniture(), ItemAttribute.ID, ItemAttributeValue.ID);
+
         ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, RedLbl, 0);
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.AmsterdamLamp(), ItemAttribute.ID, ItemAttributeValue.ID);
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.MoscowSwivelChairRed(), ItemAttribute.ID, ItemAttributeValue.ID);
@@ -54,6 +58,8 @@ codeunit 5393 "Create Item Attribute"
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.AtlantaWhiteboardBase(), ItemAttribute.ID, ItemAttributeValue.ID);
 
         ItemAttribute := ContosoItem.InsertItemAttribute(DepthLbl, false, 3, CreateUnitOfMeasure.CM());
+        ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, '', 0);
+        ContosoItem.InsertItemAttributeValueMapping(DATABASE::"Item Category", CreateItemCategory.Furniture(), ItemAttribute.ID, ItemAttributeValue.ID);
         ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, AV100Lbl, 100);
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.AthensDesk(), ItemAttribute.ID, ItemAttributeValue.ID);
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.BerlingGuestChairYellow(), ItemAttribute.ID, ItemAttributeValue.ID);
@@ -78,6 +84,8 @@ codeunit 5393 "Create Item Attribute"
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.MoscowSwivelChairRed(), ItemAttribute.ID, ItemAttributeValue.ID);
 
         ItemAttribute := ContosoItem.InsertItemAttribute(WidthLbl, false, 3, CreateUnitOfMeasure.CM());
+        ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, '', 0);
+        ContosoItem.InsertItemAttributeValueMapping(DATABASE::"Item Category", CreateItemCategory.Chair(), ItemAttribute.ID, ItemAttributeValue.ID);
         ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, AV200Lbl, 200);
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.AthensDesk(), ItemAttribute.ID, ItemAttributeValue.ID);
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.AtlantaWhiteboardBase(), ItemAttribute.ID, ItemAttributeValue.ID);
@@ -100,6 +108,8 @@ codeunit 5393 "Create Item Attribute"
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.MexicoSwivelChairBlack(), ItemAttribute.ID, ItemAttributeValue.ID);
 
         ItemAttribute := ContosoItem.InsertItemAttribute(HeightLbl, false, 3, CreateUnitOfMeasure.CM());
+        ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, '', 0);
+        ContosoItem.InsertItemAttributeValueMapping(DATABASE::"Item Category", CreateItemCategory.Furniture(), ItemAttribute.ID, ItemAttributeValue.ID);
         ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, AV95Lbl, 95);
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.AthensDesk(), ItemAttribute.ID, ItemAttributeValue.ID);
         ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, AV100Lbl, 100);
@@ -129,6 +139,8 @@ codeunit 5393 "Create Item Attribute"
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.AtlantaWhiteboardBase(), ItemAttribute.ID, ItemAttributeValue.ID);
 
         ItemAttribute := ContosoItem.InsertItemAttribute(MaterialDescriptionLbl, false, 1, '');
+        ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, '', 0);
+        ContosoItem.InsertItemAttributeValueMapping(DATABASE::"Item Category", CreateItemCategory.Table(), ItemAttribute.ID, ItemAttributeValue.ID);
         ItemAttributeValue := ContosoItem.InsertItemAttributeValue(ItemAttribute, WoodLbl, 0);
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.AthensDesk(), ItemAttribute.ID, ItemAttributeValue.ID);
         ContosoItem.InsertItemAttributeValueMapping(Database::Item, CreateItem.AthensMobilePedestal(), ItemAttribute.ID, ItemAttributeValue.ID);
