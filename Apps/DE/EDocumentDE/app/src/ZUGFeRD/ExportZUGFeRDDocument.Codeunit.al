@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
+using Microsoft.eServices.EDocument.Formats;
 using System.Telemetry;
 using Microsoft.eServices.EDocument;
 using Microsoft.Foundation.PaymentTerms;
@@ -22,7 +23,6 @@ using System.Reflection;
 codeunit 13917 "Export ZUGFeRD Document"
 {
     TableNo = "Record Export Buffer";
-    EventSubscriberInstance = Manual;
     InherentEntitlements = X;
     InherentPermissions = X;
 
@@ -31,7 +31,6 @@ codeunit 13917 "Export ZUGFeRD Document"
         GeneralLedgerSetup: Record "General Ledger Setup";
         EDocumentService: Record "E-Document Service";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
         FeatureNameTok: Label 'E-document ZUGFeRD Format', Locked = true;
         StartEventNameTok: Label 'E-document ZUGFeRD export started', Locked = true;
         EndEventNameTok: Label 'E-document ZUGFeRD export completed', Locked = true;
@@ -40,12 +39,14 @@ codeunit 13917 "Export ZUGFeRD Document"
         XmlNamespaceUDT: Text;
 
     trigger OnRun()
+    var
+        ZUGFeRDReportIntegration: Codeunit "ZUGFeRD Report Integration";
     begin
-        BindSubscription(ExportZUGFeRDDocument);
+        BindSubscription(ZUGFeRDReportIntegration);
 
         ExportSalesDocument(Rec);
 
-        UnbindSubscription(ExportZUGFeRDDocument);
+        UnbindSubscription(ZUGFeRDReportIntegration);
     end;
 
 
@@ -57,12 +58,6 @@ codeunit 13917 "Export ZUGFeRD Document"
     begin
         Result := false;
         OnIsZUGFeRDPrintProcess(Result);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export ZUGFeRD Document", OnIsZUGFeRDPrintProcess, '', false, false)]
-    local procedure EnableOnIsZUGFeRDPrintProcess(var Result: Boolean)
-    begin
-        Result := true;
     end;
 
     [InternalEvent(false)]
