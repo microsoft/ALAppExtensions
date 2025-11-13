@@ -120,9 +120,12 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL SOShipLine" = IMD,
                   tabledata "SL SOShipLot" = IMD,
                   tabledata "SL SOType" = IMD,
+                  tabledata "SL Supported Tax Year" = IMD,
                   tabledata "SL Terms" = IMD,
                   tabledata "SL Upgrade Settings" = IMD,
                   tabledata "SL VendClass" = IMD,
                   tabledata "SL Vendor" = IMD,
+                  tabledata "SL 1099 Box Mapping" = IMD,
+                  tabledata "SL 1099 Migration Log" = IMD,
                   tabledata SLGLAcctBalByPeriod = IMD;
 }

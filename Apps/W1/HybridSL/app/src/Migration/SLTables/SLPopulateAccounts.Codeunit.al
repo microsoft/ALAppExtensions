@@ -55,13 +55,13 @@ codeunit 47019 "SL Populate Accounts"
     begin
         case (SLAccountType.Trim().Substring(2, 1)) of
             'A':
-                exit(true);
+                exit(false);
             'L':
-                exit(true);
+                exit(false);
             'I':
-                exit(false);
+                exit(true);
             'E':
-                exit(false);
+                exit(true);
         end;
     end;
 }
