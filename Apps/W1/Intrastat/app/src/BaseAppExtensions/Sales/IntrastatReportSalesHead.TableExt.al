@@ -129,7 +129,7 @@ tableextension 4815 "Intrastat Report Sales Head." extends "Sales Header"
             Validate("Transaction Type", '');
         end;
 
-        OnAfterUpdateIntrastatFields(Rec, Customer, IntrastatReportSetup, FieldNo);
+        OnAfterUpdateIntrastatFields(Rec, Customer, IntrastatReportSetup, FieldNo, xRec);
     end;
 
     [IntegrationEvent(false, false)]
@@ -138,7 +138,7 @@ tableextension 4815 "Intrastat Report Sales Head." extends "Sales Header"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterUpdateIntrastatFields(var SalesHeader: Record "Sales Header"; var Customer: Record Customer; var IntrastatReportSetup: Record "Intrastat Report Setup"; FieldNo: Integer);
+    local procedure OnAfterUpdateIntrastatFields(var SalesHeader: Record "Sales Header"; var Customer: Record Customer; var IntrastatReportSetup: Record "Intrastat Report Setup"; FieldNo: Integer; xSalesHeader: Record "Sales Header");
     begin
     end;
 

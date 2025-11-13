@@ -32,10 +32,10 @@ codeunit 5223 "Create Acc. Schedule Name"
     var
         ContosoAccountSchedule: Codeunit "Contoso Account Schedule";
     begin
-        ContosoAccountSchedule.InsertAccScheduleName(CashCycle(), CashCycleDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(CashFlow(), CashFlowDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(IncomeExpense(), IncomeExpenseDataLbl, '');
-        ContosoAccountSchedule.InsertAccScheduleName(ReducedTrialBalance(), ReducedTrialBalanceDataLbl, '');
+        ContosoAccountSchedule.InsertAccScheduleName(CashCycle(), CashCycleDataLbl, '', CashCycleDataInternalDescriptionLbl);
+        ContosoAccountSchedule.InsertAccScheduleName(CashFlow(), CashFlowDataLbl, '', CashFlowDataInternalDescriptionLbl);
+        ContosoAccountSchedule.InsertAccScheduleName(IncomeExpense(), IncomeExpenseDataLbl, '', IncomeExpenseDataInternalDescriptionLbl);
+        ContosoAccountSchedule.InsertAccScheduleName(ReducedTrialBalance(), ReducedTrialBalanceDataLbl, '', ReducedTrialBalanceDataInternalDescriptionLbl);
     end;
 
     procedure AccountCategoriesOverview(): Code[10]
@@ -129,5 +129,9 @@ codeunit 5223 "Create Acc. Schedule Name"
         CashFlowDataLbl: Label 'Data for Cash Flow Chart', MaxLength = 80;
         IncomeExpenseDataLbl: Label 'Data for Income & Expense Chart', MaxLength = 80;
         ReducedTrialBalanceDataLbl: Label 'Data for Reduced Trial Balance Info Part', MaxLength = 80;
+        CashCycleDataInternalDescriptionLbl: Label 'Internal row definition used for providing data for the Cash Cycle Chart', MaxLength = 250;
+        CashFlowDataInternalDescriptionLbl: Label 'Internal row definition used for providing data for the Cash Flow Chart', MaxLength = 250;
+        IncomeExpenseDataInternalDescriptionLbl: Label 'Internal row definition used for providing data for the Income & Expense Chart', MaxLength = 250;
+        ReducedTrialBalanceDataInternalDescriptionLbl: Label 'Internal row definition used for providing data for the Reduced Trial Balance Info Part', MaxLength = 250;
         RevenuesLbl: Label 'Revenues', MaxLength = 80;
 }

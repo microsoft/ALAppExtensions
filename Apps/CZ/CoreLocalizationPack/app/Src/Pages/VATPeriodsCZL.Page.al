@@ -14,6 +14,7 @@ page 11769 "VAT Periods CZL"
     PageType = List;
     RefreshOnActivate = true;
     SourceTable = "VAT Period CZL";
+    UsageCategory = Administration;
     ObsoleteState = Pending;
     ObsoleteTag = '28.0';
     ObsoleteReason = 'Replaced by standard VAT Return Period table.';
@@ -147,11 +148,13 @@ page 11769 "VAT Periods CZL"
 
     trigger OnOpenPage()
     begin
+        ReplaceVATPeriodMgt.TestIsNotEnabled();
         NonDeductibleVATVisible := NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
     end;
 
     var
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+        ReplaceVATPeriodMgt: Codeunit "Replace VAT Period Mgt. CZL";
         NonDeductibleVATVisible: Boolean;
 }
 

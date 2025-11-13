@@ -19,7 +19,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         LibraryIRSReportingPeriod: Codeunit "Library IRS Reporting Period";
         LibraryIRS1099FormBox: Codeunit "Library IRS 1099 Form Box";
         LibraryIRS1099Document: Codeunit "Library IRS 1099 Document";
-        LibraryWorkflow: Codeunit "Library - Workflow";
+        LibraryEmail: Codeunit "Library - Email";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit "Assert";
@@ -66,7 +66,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         Initialize();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document without email consent and without email.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -105,7 +105,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         SentEmail.DeleteAll();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document with email consent and email.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -157,7 +157,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         Initialize();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document without email and without consent.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -183,7 +183,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         Initialize();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document without email and with consent.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);
@@ -212,7 +212,7 @@ codeunit 148012 "IRS 1099 Emailing Tests"
         SentEmail.DeleteAll();
 
         // [GIVEN] Email account.
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
 
         // [GIVEN] 1099 form document with email and consent.
         MockFormDocument(IRS1099FormDocHeader, "IRS 1099 Form Doc. Status"::Released);

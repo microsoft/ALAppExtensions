@@ -1754,7 +1754,11 @@ codeunit 139501 "Test UK Postcode Pages"
     local procedure Initialize()
     var
         PostcodeServiceConfig: Record "Postcode Service Config";
+#if not CLEAN28
         PostcodeNotificationMemory: Record "Postcode Notification Memory";
+#else
+        PostcodeNotificationMemory: Record "Postcode Notif. Memory";
+#endif
     begin
         BindSubscription(PostcodeDummyService);
 
@@ -1811,7 +1815,11 @@ codeunit 139501 "Test UK Postcode Pages"
 
     [ModalPageHandler]
     [Scope('OnPrem')]
+#if not CLEAN28
     procedure PostcodeSearchScenarioModalPageHandler(var PostcodeSearch: TestPage "Postcode Search")
+#else
+    procedure PostcodeSearchScenarioModalPageHandler(var PostcodeSearch: TestPage "Postcode Search GB")
+#endif
     begin
         PostcodeSearch.PostcodeField.Value('POSTCODE');
         PostcodeSearch.OK().Invoke();
@@ -1819,7 +1827,11 @@ codeunit 139501 "Test UK Postcode Pages"
 
     [ModalPageHandler]
     [Scope('OnPrem')]
+#if not CLEAN28
     procedure PostcodeSearchCancelModalPageHandler(var PostcodeSearch: TestPage "Postcode Search")
+#else
+    procedure PostcodeSearchCancelModalPageHandler(var PostcodeSearch: TestPage "Postcode Search GB")
+#endif
     begin
         PostcodeSearch.Cancel().Invoke();
     end;

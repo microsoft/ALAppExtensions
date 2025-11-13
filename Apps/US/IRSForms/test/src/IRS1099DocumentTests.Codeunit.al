@@ -37,7 +37,7 @@ codeunit 148010 "IRS 1099 Document Tests"
         CannotChangeIRSDataInEntryConnectedToFormDocumentErr: Label 'You cannot change the IRS data in the vendor ledger entry connected to the form document. Period = %1, Vendor No. = %2, Form No. = %3', Comment = '%1 = Period No., %2 = Vendor No., %3 = Form No.';
         PeriodNoFieldVisibleErr: Label 'Field Period No. should be visible.';
         PeriodNoNotVisibleErr: Label 'Field Period No. should not be visible.';
-        ChangingPostingDateInPurchHeaderWhileHavingLineMsg: Label 'You have changed the Posting Date on the purchase order, which might affect the prices and discounts on the purchase order lines.\You should review the lines and manually update prices and discounts if needed';
+        ChangingPostingDateInPurchHeaderWhileHavingLineMsg: Label 'You have changed the Posting Date on the purchase header, which might affect the prices and discounts on the purchase lines.\You should review the lines and manually update prices and discounts if needed';
 
 
     trigger OnRun()

@@ -517,35 +517,32 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                             "VAT Posting Setup"."VAT Calculation Type"::"Reverse Charge VAT",
                             "VAT Posting Setup"."VAT Calculation Type"::"Full VAT":
                                 begin
-                                    VATEntry.SetCurrentKey(
-                                      Type, Closed, "VAT Bus. Posting Group", "VAT Prod. Posting Group",
-                                      "Gen. Bus. Posting Group", "Gen. Prod. Posting Group",
-                                      "EU 3-Party Trade");
+                                    VATEntry.SetCurrentKey(Type, Closed, "VAT Bus. Posting Group", "VAT Prod. Posting Group", "VAT Reporting Date");
                                     if FindFirstEntry then begin
-                                        if VATEntry.IsEmpty() then
+                                        if not VATEntry.Find('-') then
                                             repeat
                                                 VATType := IncrementGenPostingType(VATType);
                                                 VATEntry.SetRange(Type, VATType);
-                                            until (VATType = VATEntry.Type::Settlement) or not VATEntry.IsEmpty();
+                                            until (VATType = VATEntry.Type::Settlement) or VATEntry.Find('-');
                                         FindFirstEntry := false;
                                     end else
                                         if VATEntry.Next() = 0 then
                                             repeat
                                                 VATType := IncrementGenPostingType(VATType);
                                                 VATEntry.SetRange(Type, VATType);
-                                            until (VATType = VATEntry.Type::Settlement) or not VATEntry.IsEmpty();
+                                            until (VATType = VATEntry.Type::Settlement) or VATEntry.Find('-');
                                     if IsNotSettlement(VATType) then
-                                        VATEntry.FindLast();
+                                        VATEntry.Find('+');
                                 end;
                             "VAT Posting Setup"."VAT Calculation Type"::"Sales Tax":
                                 begin
                                     VATEntry.SetCurrentKey(Type, Closed, "Tax Jurisdiction Code", "Use Tax", "VAT Reporting Date");
                                     if FindFirstEntry then begin
-                                        if VATEntry.IsEmpty() then
+                                        if not VATEntry.Find('-') then
                                             repeat
                                                 VATType := IncrementGenPostingType(VATType);
                                                 VATEntry.SetRange(Type, VATType);
-                                            until (VATType = VATEntry.Type::Settlement) or not VATEntry.IsEmpty();
+                                            until (VATType = VATEntry.Type::Settlement) or VATEntry.Find('-');
                                         FindFirstEntry := false;
                                     end else begin
                                         VATEntry.SetRange("Tax Jurisdiction Code");
@@ -554,12 +551,12 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                                             repeat
                                                 VATType := IncrementGenPostingType(VATType);
                                                 VATEntry.SetRange(Type, VATType);
-                                            until (VATType = VATEntry.Type::Settlement) or not VATEntry.IsEmpty();
+                                            until (VATType = VATEntry.Type::Settlement) or VATEntry.Find('-');
                                     end;
                                     if IsNotSettlement(VATType) then begin
                                         VATEntry.SetRange("Tax Jurisdiction Code", VATEntry."Tax Jurisdiction Code");
                                         VATEntry.SetRange("Use Tax", VATEntry."Use Tax");
-                                        VATEntry.FindLast();
+                                        VATEntry.Find('+');
                                     end;
                                 end;
                         end;
@@ -649,11 +646,31 @@ report 11971 "Calc. and Post VAT Settl. CZL"
 
                         trigger OnValidate()
                         begin
-                            if EntrdStartDate <> 0D then begin
-                                VATReturnPeriod.SetRange("Start Date", EntrdStartDate);
-                                VATReturnPeriod.FindLast();
-                                EndDateReq := VATReturnPeriod."End Date";
+                            if EntrdStartDate <> 0D then
+                                EndDateReq := GetVATPeriodEndDate();
+                        end;
+
+                        trigger OnLookup(var Text: Text): Boolean
+#if not CLEAN28
+                        var
+                            ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
+                        begin
+#if not CLEAN28
+#pragma warning disable AL0432
+                            if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+                                if not RunVATPeriods(VATPeriodCZL) then
+                                    exit(false);
+                                EntrdStartDate := VATPeriodCZL."Starting Date";
+                                EndDateReq := GetVATPeriodEndDate();
+                                exit;
                             end;
+#pragma warning restore AL0432
+#endif
+                            if not RunVATReturnPeriodList(VATReturnPeriod) then
+                                exit(false);
+                            EntrdStartDate := VATReturnPeriod."Start Date";
+                            EndDateReq := VATReturnPeriod."End Date";
                         end;
                     }
                     field(EndingDate; EndDateReq)
@@ -713,7 +730,21 @@ report 11971 "Calc. and Post VAT Settl. CZL"
         }
     }
     trigger OnPostReport()
+#if not CLEAN28
+    var
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
     begin
+#if not CLEAN28
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+            if PostSettlement and VATPeriodCZL.Get(EntrdStartDate) then begin
+                VATPeriodCZL.Closed := true;
+                VATPeriodCZL.Modify();
+            end;
+            OnAfterPostReport();
+            exit;
+        end;
+#endif
         VATReturnPeriod.Reset();
         VATReturnPeriod.SetRange("Start Date", EntrdStartDate);
         if PostSettlement and VATReturnPeriod.FindLast() then begin
@@ -761,6 +792,11 @@ report 11971 "Calc. and Post VAT Settl. CZL"
         TaxJurisdiction: Record "Tax Jurisdiction";
         GeneralLedgerSetup: Record "General Ledger Setup";
         VATPostingSetup: Record "VAT Posting Setup";
+#if not CLEAN28
+#pragma warning disable AL0432
+        VATPeriodCZL: Record "VAT Period CZL";
+#pragma warning restore AL0432
+#endif
         VATReturnPeriod: Record "VAT Return Period";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         EntrdStartDate: Date;
@@ -971,6 +1007,54 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                 else
                     exit(TaxJurisdiction."Tax Account (Sales)");
         end;
+    end;
+
+    local procedure GetVATPeriodEndDate(): Date
+#if not CLEAN28
+    var
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
+    begin
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+            VATPeriodCZL.Get(EntrdStartDate);
+            if VATPeriodCZL.Next() > 0 then
+                exit(CalcDate('<-1D>', VATPeriodCZL."Starting Date"));
+            exit(0D);
+        end;
+#pragma warning restore AL0432
+#endif
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.SetRange("Start Date", EntrdStartDate);
+        VATReturnPeriod.FindLast();
+        exit(VATReturnPeriod."End Date");
+    end;
+#if not CLEAN28
+#pragma warning disable AL0432
+
+    local procedure RunVATPeriods(var OutVATPeriodCZL: Record "VAT Period CZL"): Boolean
+    var
+        VATPeriodsCZL: Page "VAT Periods CZL";
+    begin
+        VATPeriodsCZL.LookupMode := true;
+        if VATPeriodsCZL.RunModal() <> Action::LookupOK then
+            exit(false);
+        VATPeriodsCZL.GetRecord(OutVATPeriodCZL);
+        exit(true);
+    end;
+#pragma warning restore AL0432
+#endif
+
+    local procedure RunVATReturnPeriodList(var OutVATReturnPeriod: Record "VAT Return Period"): Boolean
+    var
+        VATReturnPeriodList: Page "VAT Return Period List";
+    begin
+        VATReturnPeriodList.LookupMode := true;
+        if VATReturnPeriodList.RunModal() <> Action::LookupOK then
+            exit(false);
+        VATReturnPeriodList.GetRecord(OutVATReturnPeriod);
+        exit(true);
     end;
 
     [IntegrationEvent(false, false)]

@@ -1966,9 +1966,9 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
 
     local procedure MailSetupInitialize()
     var
-        LibraryWorkflow: Codeunit "Library - Workflow";
+        LibraryEmail: Codeunit "Library - Email";
     begin
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
     end;
 
     local procedure UpdateVATPostingSetupPct(var VATPostingSetup: Record "VAT Posting Setup"; NewVATPct: Decimal) OldVATPct: Decimal;

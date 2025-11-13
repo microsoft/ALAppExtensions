@@ -66,13 +66,11 @@ codeunit 4402 "SOA Output Message Setup"
     var
         SOASetup: Record "SOA Setup";
         SOABilling: Codeunit "SOA Billing";
-        SOABillingTask: Codeunit "SOA Billing Task";
     begin
         if AgentTaskMessage.Type <> AgentTaskMessage.Type::Output then
             exit;
 
         SOABilling.LogEmailGenerated(AgentTaskMessage.ID, AgentTaskMessage."Task ID", AgentTaskMessage."Input Message ID");
-        SOABillingTask.ScheduleBillingTask();
         SOASetup.ReadIsolation(IsolationLevel::ReadCommitted);
         SOASetup.GetBasedOnAgentUserSecurityID(AgentTaskMessage."Agent User Security ID", true);
         if not SOASetup."Configure Email Template" then

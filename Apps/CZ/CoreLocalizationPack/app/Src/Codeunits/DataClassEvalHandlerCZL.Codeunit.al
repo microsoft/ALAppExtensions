@@ -201,6 +201,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Period CZL");
 #pragma warning restore AL0432
 #endif        
+        DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Report Entry Link CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Statement Attachment CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Statement Comment Line CZL");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"VAT Stmt. Report Line Data CZL");

@@ -51,7 +51,7 @@ codeunit 139515 "Digital Vouchers Tests"
         LibraryRandom: Codeunit "Library - Random";
         LibraryLowerPermissions: Codeunit "Library - Lower Permissions";
         Assert: Codeunit Assert;
-        LibraryWorkflow: Codeunit "Library - Workflow";
+        LibraryEmail: Codeunit "Library - Email";
         ActiveDirectoryMockEvents: Codeunit "Active Directory Mock Events";
         LibrarySmallBusiness: Codeunit "Library - Small Business";
         LibraryService: Codeunit "Library - Service";
@@ -501,7 +501,7 @@ codeunit 139515 "Digital Vouchers Tests"
 
         BindSubscription(DigVouchersDisableEnforce);
         // [GIVEN] Email account is set up
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
         BindActiveDirectoryMockEvents();
         // [GIVEN] Sales shipment report selections without attachment
         PrepareSalesShipmentReportSelectionsForEmailBodyWithoutAttachment();

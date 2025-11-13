@@ -21,7 +21,6 @@ codeunit 4600 "SOA Document Events"
     local procedure OnChangeSalesHeader(var Rec: Record "Sales Header")
     var
         SOABilling: Codeunit "SOA Billing";
-        SOABillingTask: Codeunit "SOA Billing Task";
     begin
         if Rec.IsTemporary() then
             exit;
@@ -33,8 +32,6 @@ codeunit 4600 "SOA Document Events"
             SOABilling.LogQuoteModified(Rec.SystemId, AgentTaskID);
             AddAttachmentsToDocument(Rec);
         end;
-
-        SOABillingTask.ScheduleBillingTask();
     end;
 
     local procedure AddAttachmentsToDocument(var Rec: Record "Sales Header")

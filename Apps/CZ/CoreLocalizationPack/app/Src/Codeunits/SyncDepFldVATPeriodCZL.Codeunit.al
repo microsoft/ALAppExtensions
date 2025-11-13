@@ -29,8 +29,11 @@ codeunit 11719 "Sync.Dep.Fld-VATPeriod CZL"
     local procedure SyncVATReturnPeriod(var VATPeriodCZL: Record "VAT Period CZL")
     var
         VATReturnPeriod: Record "VAT Return Period";
+        ReplaceVATPeriodMgt: Codeunit "Replace VAT Period Mgt. CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if not ReplaceVATPeriodMgt.IsEnabled() then
+            exit;
         if IsFieldSynchronizationDisabled() then
             exit;
         if VATPeriodCZL.IsTemporary() then
@@ -57,8 +60,11 @@ codeunit 11719 "Sync.Dep.Fld-VATPeriod CZL"
     local procedure SyncOnBeforeDeleteVATPeriodCZL(var Rec: Record "VAT Period CZL")
     var
         VATReturnPeriod: Record "VAT Return Period";
+        ReplaceVATPeriodMgt: Codeunit "Replace VAT Period Mgt. CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if not ReplaceVATPeriodMgt.IsEnabled() then
+            exit;
         if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then
@@ -89,8 +95,11 @@ codeunit 11719 "Sync.Dep.Fld-VATPeriod CZL"
     local procedure SyncVATReturnPeriod(var VATReturnPeriod: Record "VAT Return Period")
     var
         VATPeriodCZL: Record "VAT Period CZL";
+        ReplaceVATPeriodMgt: Codeunit "Replace VAT Period Mgt. CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if not ReplaceVATPeriodMgt.IsEnabled() then
+            exit;
         if IsFieldSynchronizationDisabled() then
             exit;
         if VATReturnPeriod.IsTemporary() then
@@ -113,8 +122,11 @@ codeunit 11719 "Sync.Dep.Fld-VATPeriod CZL"
     local procedure SyncOnBeforeDeleteVATReturnPeriod(var Rec: Record "VAT Return Period")
     var
         VATPeriodCZL: Record "VAT Period CZL";
+        ReplaceVATPeriodMgt: Codeunit "Replace VAT Period Mgt. CZL";
         SyncLoopingHelper: Codeunit "Sync. Looping Helper";
     begin
+        if not ReplaceVATPeriodMgt.IsEnabled() then
+            exit;
         if IsFieldSynchronizationDisabled() then
             exit;
         if Rec.IsTemporary() then

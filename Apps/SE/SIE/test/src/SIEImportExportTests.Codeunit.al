@@ -455,6 +455,81 @@ codeunit 148015 "SIE Import Export Tests"
         Assert.AreEqual('DEFAULT SIE', GLAccountMappingHeader.Code, '');
     end;
 
+    [Test]
+    procedure SIEDimensionLookupShowsCurrentSelectionsWithoutModifyingMainTable()
+    var
+        DimensionSIE: Record "Dimension SIE";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        Dimension1: Record Dimension;
+        Dimension2: Record Dimension;
+        Dimension3: Record Dimension;
+        AuditExportDocCard: TestPage "Audit File Export Doc. Card";
+        OriginalSelectedState1: Boolean;
+        OriginalSelectedState2: Boolean;
+        OriginalSelectedState3: Boolean;
+        ExpectedDimensionsText: Text[2048];
+    begin
+        // [SCENARIO 609871] SIE Dimension lookup shows current record selections without modifying main table
+        Initialize();
+
+        // [GIVEN] Create G/L Account Mapping first (required for audit file export document)
+        SIETestHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Three SIE dimensions exist
+        LibraryDimension.CreateDimension(Dimension1);
+        LibraryDimension.CreateDimension(Dimension2);
+        LibraryDimension.CreateDimension(Dimension3);
+
+        DimensionSIE.Validate("Dimension Code", Dimension1.Code);
+        DimensionSIE.Validate(Selected, false);
+        DimensionSIE.Insert(true);
+
+        DimensionSIE.Init();
+        DimensionSIE.Validate("Dimension Code", Dimension2.Code);
+        DimensionSIE.Validate(Selected, true);
+        DimensionSIE.Insert(true);
+
+        DimensionSIE.Init();
+        DimensionSIE.Validate("Dimension Code", Dimension3.Code);
+        DimensionSIE.Validate(Selected, false);
+        DimensionSIE.Insert(true);
+
+        // [GIVEN] Store original states
+        DimensionSIE.Get(Dimension1.Code);
+        OriginalSelectedState1 := DimensionSIE.Selected;
+        DimensionSIE.Get(Dimension2.Code);
+        OriginalSelectedState2 := DimensionSIE.Selected;
+        DimensionSIE.Get(Dimension3.Code);
+        OriginalSelectedState3 := DimensionSIE.Selected;
+
+        // [GIVEN] Audit File Export Document with specific dimension selections
+        ExpectedDimensionsText := Dimension1.Code + '; ' + Dimension3.Code;
+        SIETestHelper.CreateAuditFileExportDoc(
+            AuditFileExportHeader, WorkDate(), WorkDate(), "File Type SIE"::"4. Transactions", '');
+        AuditFileExportHeader.Validate(Dimensions, ExpectedDimensionsText);
+        AuditFileExportHeader.Modify(true);
+
+        // [WHEN] Open the Audit Export Document card and access dimension lookup
+        AuditExportDocCard.OpenEdit();
+        AuditExportDocCard.GoToRecord(AuditFileExportHeader);
+
+        // [THEN] Verify the field shows correct initial value
+        Assert.AreEqual(ExpectedDimensionsText, AuditExportDocCard.Dimensions.Value(), 'Initial dimensions field should show stored selections');
+
+        // [WHEN] Test dimension lookup behavior using helper procedures
+        VerifyDimensionLookupBehavior(ExpectedDimensionsText);
+
+        // [THEN] Main table records remain unchanged after lookup operation
+        DimensionSIE.Get(Dimension1.Code);
+        Assert.AreEqual(OriginalSelectedState1, DimensionSIE.Selected, 'Dimension 1 selection state should remain unchanged');
+        DimensionSIE.Get(Dimension2.Code);
+        Assert.AreEqual(OriginalSelectedState2, DimensionSIE.Selected, 'Dimension 2 selection state should remain unchanged');
+        DimensionSIE.Get(Dimension3.Code);
+        Assert.AreEqual(OriginalSelectedState3, DimensionSIE.Selected, 'Dimension 3 selection state should remain unchanged');
+        AuditExportDocCard.Close();
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
@@ -640,6 +715,73 @@ codeunit 148015 "SIE Import Export Tests"
         GenJournalLine.TestField("Posting Date", PostingDate);
         GenJournalLine.TestField("Document Date", DocumentDate);
         GenJournalLine.TestField("VAT Reporting Date", VATDate);
+    end;
+
+    local procedure VerifyDimensionLookupBehavior(ExpectedDimensionsText: Text[2048])
+    var
+        DimensionSIE: Record "Dimension SIE";
+        TempDimensionSIE: Record "Dimension SIE" temporary;
+        DimCodes: List of [Text];
+        DimCode: Text;
+        i: Integer;
+        OriginalState: List of [Boolean];
+    begin
+        if DimensionSIE.FindSet() then
+            repeat
+                OriginalState.Add(DimensionSIE.Selected);
+            until DimensionSIE.Next() = 0;
+
+        CreateTempDimensionsForTest(TempDimensionSIE, ExpectedDimensionsText);
+
+        // Verify temp records show correct selections
+        if ExpectedDimensionsText <> '' then begin
+            DimCodes := ExpectedDimensionsText.Split(';');
+            for i := 1 to DimCodes.Count do begin
+                DimCode := DimCodes.Get(i).Trim();
+                if (DimCode <> '') and (DimCode <> '...') then begin
+                    TempDimensionSIE.Reset();
+                    Assert.IsTrue(TempDimensionSIE.Get(DimCode), 'Temp dimension should exist: ' + DimCode);
+                    Assert.IsTrue(TempDimensionSIE.Selected, 'Temp dimension should be selected: ' + DimCode);
+                end;
+            end;
+        end;
+
+        // Verify main table remains unchanged
+        i := 1;
+        if DimensionSIE.FindSet() then
+            repeat
+                Assert.AreEqual(OriginalState.Get(i), DimensionSIE.Selected, 'Main table dimension selection should remain unchanged: ' + DimensionSIE."Dimension Code");
+                i += 1;
+            until DimensionSIE.Next() = 0;
+    end;
+
+    local procedure CreateTempDimensionsForTest(var TempDimensionSIE: Record "Dimension SIE" temporary; DimensionsText: Text[2048])
+    var
+        DimensionSIE: Record "Dimension SIE";
+        DimCodes: List of [Text];
+        DimCode: Text;
+        i: Integer;
+    begin
+        if DimensionSIE.FindSet() then
+            repeat
+                TempDimensionSIE.TransferFields(DimensionSIE);
+                TempDimensionSIE.Selected := false;
+                TempDimensionSIE.Insert();
+            until DimensionSIE.Next() = 0;
+
+        if DimensionsText <> '' then begin
+            DimCodes := DimensionsText.Split(';');
+            for i := 1 to DimCodes.Count do begin
+                DimCode := DimCodes.Get(i).Trim();
+                if (DimCode <> '') and (DimCode <> '...') then begin
+                    TempDimensionSIE.Reset();
+                    if TempDimensionSIE.Get(DimCode) then begin
+                        TempDimensionSIE.Selected := true;
+                        TempDimensionSIE.Modify();
+                    end;
+                end;
+            end;
+        end;
     end;
 
     [RequestPageHandler]

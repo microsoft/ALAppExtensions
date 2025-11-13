@@ -132,7 +132,7 @@ page 10036 "IRS 1099 Form Documents"
                 begin
                     IRS1099FormDocHeader := Rec;
                     CurrPage.SetSelectionFilter(IRS1099FormDocHeader);
-                    IRS1099FormDocHeader.SetFilter(Status, '%1|%2', IRS1099FormDocHeader.Status::Released, IRS1099FormDocHeader.Status::Submitted);
+                    IRS1099FormDocHeader.SetFilter(Status, '%1|%2|%3', IRS1099FormDocHeader.Status::Released, IRS1099FormDocHeader.Status::Submitted, IRS1099FormDocHeader.Status::"In Progress");
 
                     if IRS1099FormDocHeader.FindSet() then
                         repeat
@@ -153,7 +153,7 @@ page 10036 "IRS 1099 Form Documents"
                 begin
                     IRS1099FormDocHeader := Rec;
                     CurrPage.SetSelectionFilter(IRS1099FormDocHeader);
-                    IRS1099FormDocHeader.SetRange(Status, IRS1099FormDocHeader.Status::Submitted);
+                    IRS1099FormDocHeader.SetFilter(Status, '%1|%2', IRS1099FormDocHeader.Status::Submitted, IRS1099FormDocHeader.Status::"In Progress");
 
                     if IRS1099FormDocHeader.FindSet() then
                         repeat

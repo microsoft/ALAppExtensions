@@ -9,7 +9,7 @@ page 10061 "Transmissions IRIS"
     PageType = List;
     CardPageId = "Transmission IRIS";
     Caption = 'IRIS Transmissions';
-    AdditionalSearchTerms = 'IRS, 1099';
+    AdditionalSearchTerms = 'IRS, 1099, IRS Transmissions';
     RefreshOnActivate = true;
     AnalysisModeEnabled = false;
     InsertAllowed = false;
