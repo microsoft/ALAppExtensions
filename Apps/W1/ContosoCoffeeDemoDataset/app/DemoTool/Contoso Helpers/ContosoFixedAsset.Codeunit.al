@@ -225,9 +225,18 @@ codeunit 4776 "Contoso Fixed Asset"
     end;
 
     procedure InsertFixedAsset(FANo: Code[20]; Description: Text[100]; FAClassCode: Code[10]; FASubclassCode: Code[20]; FALocationCode: Code[10]; MainAssetComponent: Enum "FA Component Type"; SerialNo: Text[30];
+                                                                                                                                                                      NextServiceDate: Date;
+                                                                                                                                                                      VendorNo: Code[20];
+                                                                                                                                                                      MaintenanceVendorNo: Code[20])
+    begin
+        InsertFixedAsset(FANo, Description, FAClassCode, FASubclassCode, FALocationCode, MainAssetComponent, SerialNo, NextServiceDate, VendorNo, MaintenanceVendorNo, '');
+    end;
+
+    procedure InsertFixedAsset(FANo: Code[20]; Description: Text[100]; FAClassCode: Code[10]; FASubclassCode: Code[20]; FALocationCode: Code[10]; MainAssetComponent: Enum "FA Component Type"; SerialNo: Text[30];
                                                                                                                                                                           NextServiceDate: Date;
                                                                                                                                                                           VendorNo: Code[20];
-                                                                                                                                                                          MaintenanceVendorNo: Code[20])
+                                                                                                                                                                          MaintenanceVendorNo: Code[20];
+                                                                                                                                                                          FAPostingGroupCode: Code[20])
     var
         FixedAsset: Record "Fixed Asset";
         Exists: Boolean;
@@ -250,6 +259,7 @@ codeunit 4776 "Contoso Fixed Asset"
             FixedAsset.Validate("Next Service Date", NextServiceDate);
         FixedAsset.Validate("Vendor No.", VendorNo);
         FixedAsset.Validate("Maintenance Vendor No.", MaintenanceVendorNo);
+        FixedAsset.Validate("FA Posting Group", FAPostingGroupCode);
 
         if Exists then
             FixedAsset.Modify(true)
