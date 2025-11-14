@@ -16,7 +16,6 @@ using Microsoft.Purchases.Vendor;
 
 codeunit 13915 "Import XRechnung Document"
 {
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 

@@ -615,13 +615,12 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         exit(true);
     end;
 
-
-    [NonDebuggable]
     procedure RegisterConsumer(var Username: Text[250]; var Password: SecretText; var ErrorText: Text; CobrandToken: Text): Boolean;
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         GeneralLedgerSetup: Record "General Ledger Setup";
         PasswordHelper: Codeunit "Password Helper";
+        Body: SecretText;
         Response: Text;
         LcyCode: Text;
         Email: Text;
@@ -645,14 +644,13 @@ codeunit 1450 "MS - Yodlee Service Mgt."
             false:
                 begin
                     AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, '');
-                    Password := COPYSTR(PasswordHelper.GenerateSecretPassword(50).Unwrap(), 1, 50);
+                    Password := PasswordHelper.GenerateSecretPassword(50);
                 end;
         end;
 
         Session.LogMessage('0000DL9', StrSubstNo(StartingToRegisterUserTxt, UserName, LcyCode), Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetRegisterConsumerURL(), 'POST',
-            YodleeAPIStrings.GetRegisterConsumerBody(CobrandToken, UserName, Password, Email, LcyCode), AuthorizationHeaderValue,
-            ErrorText, '');
+        Body := YodleeAPIStrings.GetRegisterConsumerBodySecret(CobrandToken, Username, Password, LcyCode, Email);
+        ExecuteWebServiceRequest(YodleeAPIStrings.GetRegisterConsumerURL(), 'POST', Body, AuthorizationHeaderValue, ErrorText, '');
 
         if not GetResponseValue('/', Response, ErrorText) then begin
             ErrorText := GetAdjustedErrorText(ErrorText, FailedRegisterConsumerTxt);
@@ -673,7 +671,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         LogActivitySucceed(RegisterConsumerTxt, SuccessRegisterConsumerTxt, StrSubstNo(TelemetryActivitySuccessTxt, RegisterConsumerTxt, SuccessRegisterConsumerTxt));
 
         MSYodleeBankServiceSetup.VALIDATE("Consumer Name", COPYSTR(Username, 1, MAXSTRLEN(MSYodleeBankServiceSetup."Consumer Name")));
-        MSYodleeBankServiceSetup.SaveConsumerPassword(MSYodleeBankServiceSetup."Consumer Password", Password.Unwrap());
+        MSYodleeBankServiceSetup.SaveConsumerPassword(MSYodleeBankServiceSetup."Consumer Password", Password);
         MSYodleeBankServiceSetup.MODIFY(true);
         StoreConsumerName(MSYodleeBankServiceSetup."Consumer Name");
         exit(true);
@@ -785,6 +783,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         ErrorText: Text;
         AuthorizationHeaderValue: Text;
         LoginName: Text;
+        EmptyText: Text;
     begin
         CheckServiceEnabled();
         Authenticate(CobrandToken, ConsumerToken);
@@ -798,7 +797,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
                 AuthorizationHeaderValue := YodleeAPIStrings.GetAuthorizationHeaderValue(CobrandToken, ConsumerToken);
         end;
 
-        ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedBankAccountURL(AccountId), 'GET', '', AuthorizationHeaderValue, ErrorText, LoginName);
+        ExecuteWebServiceRequest(YodleeAPIStrings.GetLinkedBankAccountURL(AccountId), 'GET', EmptyText, AuthorizationHeaderValue, ErrorText, LoginName);
 
         if ErrorText <> '' then begin
             LogActivityFailed(
@@ -1594,8 +1593,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         exit(URL.ToLower().Contains('transactions'));
     end;
 
-    [NonDebuggable]
-    local procedure ExecuteWebServiceRequest(URL: Text; Method: Text[6]; BodyText: Text; AuthorizationHeaderValue: Text; var ErrorText: Text; LoginName: Text) PaginationLink: Text
+    local procedure ExecuteWebServiceRequest(URL: Text; Method: Text[6]; BodyText: SecretText; AuthorizationHeaderValue: Text; var ErrorText: Text; LoginName: Text) PaginationLink: Text
     var
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         ActivityLog: Record "Activity Log";
@@ -1639,7 +1637,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
             RequestHeaders.TryAddWithoutValidation('Authorization', AuthorizationHeaderValue);
         HttpRequestMessage.SetRequestUri(URL);
         HttpRequestMessage.Method(Method);
-        if BodyText <> '' then begin
+        if BodyText.IsEmpty() then begin
             ReqHttpContent.GetHeaders(ContentHeaders);
             ReqHttpContent.WriteFrom(BodyText);
             ContentHeaders.Remove('Content-Type');

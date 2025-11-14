@@ -874,8 +874,7 @@ report 10039 "IRS 1099 FIRE"
             StrSubstNo('#1##########', Helper.FormatMoneyAmount(0, 12)) +
             StrSubstNo('#1##########', Helper.FormatMoneyAmount(
                 Helper.GetAmt(GetFullMiscCode(9), FormTypeIndex, LastNo), 12)) +
-            StrSubstNo('#1##########', Helper.FormatMoneyAmount(
-                Helper.GetAmt(GetFullMiscCode(14), FormTypeIndex, LastNo), 12)) +
+            StrSubstNo(GetHashTagStringWithLength(12), Helper.FormatMoneyAmount(0, 12)) +
             StrSubstNo('#1##########', Helper.FormatMoneyAmount(
                 Helper.GetAmt(GetFullMiscCode(10), FormTypeIndex, LastNo), 12)) +
             StrSubstNo(GetHashTagStringWithLength(12), Helper.FormatMoneyAmount(
@@ -1201,8 +1200,7 @@ report 10039 "IRS 1099 FIRE"
           StrSubstNo(GetHashTagStringWithLength(18), Helper.FormatMoneyAmount(0, 18)) +
           StrSubstNo('#1################', Helper.FormatMoneyAmount(
               Helper.GetTotal(GetFullMiscCode(9), FormTypeIndex, LastNo), 18)) +
-          StrSubstNo('#1################', Helper.FormatMoneyAmount(
-              Helper.GetTotal(GetFullMiscCode(14), FormTypeIndex, LastNo), 18)) +
+          StrSubstNo(GetHashTagStringWithLength(18), Helper.FormatMoneyAmount(0, 18)) +
           StrSubstNo('#1################', Helper.FormatMoneyAmount(
               Helper.GetTotal(GetFullMiscCode(10), FormTypeIndex, LastNo), 18)) +
           StrSubstNo(GetHashTagStringWithLength(18), Helper.FormatMoneyAmount(

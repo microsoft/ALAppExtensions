@@ -21,7 +21,8 @@ codeunit 4591 "SOA Item Search"
 
     var
         AgentTaskID: BigInteger;
-        NotificationMsg: Label 'The available inventory for item %1 is lower than the entered quantity at this location.', Comment = '%1=Item Description';
+        NotificationMsg: Label 'The available inventory for item %1 is lower than the entered quantity at this location at the requested shipment date.', Comment = '%1=Item Description';
+        NotificationCTPDateMsg: Label 'Earliest possible shipping date for the new quantity is %1.', Comment = '%1=Earliest Shipment Date';
 
     procedure SetAgentTaskID(NewAgentTaskID: BigInteger)
     begin
@@ -104,10 +105,8 @@ codeunit 4591 "SOA Item Search"
     local procedure LogInventoryInquiryReplied()
     var
         SOABilling: Codeunit "SOA Billing";
-        SOABillingTask: Codeunit "SOA Billing Task";
     begin
         SOABilling.LogInventoryInquiryReplied(AgentTaskID);
-        SOABillingTask.ScheduleBillingTask();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnAfterCheckItemAvailable, '', false, false)]
@@ -116,26 +115,42 @@ codeunit 4591 "SOA Item Search"
         Item: Record Item;
         SOASetup: Record "SOA Setup";
         NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
+        SOAShipmentDateMgt: Codeunit "SOA Shipment Date Mgt.";
         QuoteAvailabilityCheckNotification: Notification;
+        Msg: Text;
     begin
-        if SalesLine.IsTemporary() then
+        if SalesLine.IsTemporary() or (SalesLine."Document Type" <> SalesLine."Document Type"::Quote) or
+           (SalesLine.Type <> SalesLine.Type::Item) or (SalesLine."No." = '') or (SalesLine.Quantity = 0)
+        then
             exit;
 
-        if (SalesLine."Document Type" = SalesLine."Document Type"::Quote) and (SalesLine.Type = SalesLine.Type::Item) and (SalesLine."No." <> '') then
-            if SOASetup.FindFirst() and (SOASetup."Search Only Available Items" and not SOASetup."Incl. Capable to Promise") and Item.Get(SalesLine."No.") then begin
-                Item.SetRange("Drop Shipment Filter", false);
-                Item.SetRange("Variant Filter", '');
-                Item.SetFilter("Date Filter", '..%1', SalesLine."Shipment Date");
-                Item.SetFilter("Location Filter", '%1', SalesLine."Location Code");
+        if not SOASetup.FindFirst() or not SOASetup."Search Only Available Items" then
+            exit;
 
-                NotificationLifecycleMgt.RecallNotificationsForRecordWithAdditionalContext(SalesLine.RecordId, GetQuoteItemAvailabilityNotificationId(), true);
-                if (SalesLine.Quantity > 0) and (not IsRequiredQuantityAvailable(Item, SalesLine.Quantity, SalesLine."Unit of Measure Code")) then begin
-                    QuoteAvailabilityCheckNotification.Id(CreateGuid());
-                    QuoteAvailabilityCheckNotification.Message(StrSubstNo(NotificationMsg, Item.Description));
-                    QuoteAvailabilityCheckNotification.Scope(NotificationScope::LocalScope);
-                    NotificationLifecycleMgt.SendNotificationWithAdditionalContext(QuoteAvailabilityCheckNotification, SalesLine.RecordId, GetQuoteItemAvailabilityNotificationId());
-                end;
-            end;
+        Item.Get(SalesLine."No.");
+        Item.SetRange("Drop Shipment Filter", false);
+        Item.SetRange("Variant Filter", '');
+        Item.SetFilter("Date Filter", '..%1', SalesLine."Shipment Date");
+        Item.SetFilter("Location Filter", '%1', SalesLine."Location Code");
+
+        if IsRequiredQuantityAvailable(Item, SalesLine.Quantity, SalesLine."Unit of Measure Code") then
+            exit;
+
+        Msg := StrSubstNo(NotificationMsg, Item.Description);
+
+        if SOASetup."Incl. Capable to Promise" then begin
+            SOAShipmentDateMgt.SetParamenters(Item."No.", '', SalesLine."Location Code", SalesLine."Unit of Measure Code", SalesLine."Shipment Date", SalesLine.Quantity);
+            SOAShipmentDateMgt.Run();
+            if SOAShipmentDateMgt.GetEarliestShipmentDate() <= SalesLine."Shipment Date" then
+                exit;
+            Msg += StrSubstNo(NotificationCTPDateMsg, SOAShipmentDateMgt.GetEarliestShipmentDate());
+        end;
+
+        NotificationLifecycleMgt.RecallNotificationsForRecordWithAdditionalContext(SalesLine.RecordId, GetQuoteItemAvailabilityNotificationId(), true);
+        QuoteAvailabilityCheckNotification.Id(CreateGuid());
+        QuoteAvailabilityCheckNotification.Message(Msg);
+        QuoteAvailabilityCheckNotification.Scope(NotificationScope::LocalScope);
+        NotificationLifecycleMgt.SendNotificationWithAdditionalContext(QuoteAvailabilityCheckNotification, SalesLine.RecordId, GetQuoteItemAvailabilityNotificationId());
     end;
 
     local procedure GetQuoteItemAvailabilityNotificationId(): Guid

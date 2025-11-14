@@ -19,7 +19,6 @@ page 4400 "SOA Setup"
     PageType = ConfigurationDialog;
     Extensible = false;
     ApplicationArea = All;
-    IsPreview = true;
     Caption = 'Configure Sales Order Agent';
     InstructionalText = 'Choose how the agent helps with inquiries, quotes, and orders.';
     AdditionalSearchTerms = 'Sales order agent, Copilot agent, Agent, SOA';

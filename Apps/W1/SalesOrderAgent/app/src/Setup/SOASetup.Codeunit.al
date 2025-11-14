@@ -730,6 +730,11 @@ codeunit 4400 "SOA Setup"
         exit(10)
     end;
 
+    internal procedure GetMaxNoOfAttachmentsPerEmail(): Integer
+    begin
+        exit(10)
+    end;
+
     internal procedure GetFeatureName(): Text
     begin
         exit('Sales Order Agent');

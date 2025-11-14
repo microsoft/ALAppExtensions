@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Ledger;
 
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Reporting;
 
 tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
@@ -111,6 +112,17 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
         VATStmtPeriodSelectionNotSupportedErr: Label 'VAT statement report period selection %1 is not supported.', Comment = '%1 = VAT Statement Report Period Selection';
         VATStmtReportSelectionNotSupportedErr: Label 'VAT statement report selection %1 is not supported.', Comment = '%1 = VAT Statement Report Selection';
 
+    internal procedure SetVATStmtCalcFilters(VATStatementLine: Record "VAT Statement Line"; VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL")
+    var
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+    begin
+        SetVATStatementLineFiltersCZL(VATStatementLine);
+        SetPeriodFilterCZL(VATStmtCalcParametersCZL."Period Selection", VATStmtCalcParametersCZL."Start Date", VATStmtCalcParametersCZL."End Date", VATReportingDateMgt.IsVATDateEnabled());
+        SetClosedFilterCZL(VATStmtCalcParametersCZL.Selection);
+        if VATStmtCalcParametersCZL."VAT Settlement No. Filter" <> '' then
+            SetFilter("VAT Settlement No. CZL", VATStmtCalcParametersCZL."VAT Settlement No. Filter");
+    end;
+
     procedure SetVATStatementLineFiltersCZL(VATStatementLine: Record "VAT Statement Line")
     begin
         SetRange(Type, VATStatementLine."Gen. Posting Type");
@@ -122,14 +134,14 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
             SetRange("Gen. Bus. Posting Group", VATStatementLine."Gen. Bus. Posting Group CZL");
         if VATStatementLine."Gen. Prod. Posting Group CZL" <> '' then
             SetRange("Gen. Prod. Posting Group", VATStatementLine."Gen. Prod. Posting Group CZL");
-            case VATStatementLine."EU 3 Party Trade" of
-                VATStatementLine."EU 3 Party Trade"::EU3:
-                    SetRange("EU 3-Party Trade", true);
-                VATStatementLine."EU 3 Party Trade"::"non-EU3":
-                    SetRange("EU 3-Party Trade", false);
-                VATStatementLine."EU 3 Party Trade"::All:
-                    SetRange("EU 3-Party Trade");
-            end;
+        case VATStatementLine."EU 3 Party Trade" of
+            VATStatementLine."EU 3 Party Trade"::EU3:
+                SetRange("EU 3-Party Trade", true);
+            VATStatementLine."EU 3 Party Trade"::"non-EU3":
+                SetRange("EU 3-Party Trade", false);
+            VATStatementLine."EU 3 Party Trade"::All:
+                SetRange("EU 3-Party Trade");
+        end;
         SetRange("EU 3-Party Intermed. Role CZL");
         case VATStatementLine."EU 3-Party Intermed. Role CZL" of
             VATStatementLine."EU 3-Party Intermed. Role CZL"::Yes:

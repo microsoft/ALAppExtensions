@@ -1210,7 +1210,7 @@ codeunit 13916 "Export XRechnung Document"
     local procedure OnAfterGetSetups(var CompanyInformation: Record "Company Information"; var GeneralLedgerSetup: Record "General Ledger Setup")
     begin
     end;
-    
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertInvoiceLine(var InvoiceElement: XmlElement; var SalesInvLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean; var IsHandled: Boolean)
     begin

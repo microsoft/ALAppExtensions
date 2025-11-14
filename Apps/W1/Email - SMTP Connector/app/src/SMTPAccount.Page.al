@@ -139,6 +139,41 @@ page 4512 "SMTP Account"
                 Caption = 'Secure Connection';
                 ToolTip = 'Specifies whether your SMTP mail server setup requires a secure connection that uses a cryptography or security protocol, such as secure socket layers (SSL).';
             }
+
+            field(ClientId; ClientId)
+            {
+                ApplicationArea = All;
+                Caption = 'Client ID';
+                ToolTip = 'Specifies the client ID of the third-party application registered in Microsoft Entra (Azure AD).';
+                trigger OnValidate()
+                begin
+                    Rec.SetClientId(ClientId);
+                end;
+            }
+
+            field(ClientSecret; ClientSecret)
+            {
+                ApplicationArea = All;
+                Caption = 'Client Secret';
+                ToolTip = 'Specifies the client secret associated with the client ID for authenticating the SMTP connection.';
+                trigger OnValidate()
+                begin
+                    Rec.SetClientSecret(ClientSecret);
+                end;
+            }
+
+            field(AuthorityURL; AuthorityUrl)
+            {
+                ApplicationArea = All;
+
+                Caption = 'Authority URL';
+                ToolTip = 'Specifies the authority URL (token endpoint) used for OAuth 2.0 authentication. The format: https://login.microsoftonline.com/{Your tenant ID}/oauth2/v2.0/token';
+                trigger OnValidate()
+                begin
+                    Rec."Authority URL" := AuthorityUrl;
+                    Rec.Modify();
+                end;
+            }
         }
     }
 
@@ -208,16 +243,16 @@ page 4512 "SMTP Account"
 
     var
         SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
-        [InDataSet]
         UserIDEditable: Boolean;
-        [InDataSet]
         PasswordEditable: Boolean;
         [NonDebuggable]
-        [InDataSet]
         Password: Text;
-        [InDataSet]
+        [NonDebuggable]
+        ClientId: Text;
+        [NonDebuggable]
+        ClientSecret: Text;
+        AuthorityUrl: Text;
         AuthActionsVisible: Boolean;
-        [InDataSet]
         SenderFieldsEditable: Boolean;
         ConfirmApplyO365Qst: Label 'Do you want to override the current data?';
         EveryUserShouldPressAuthenticateMsg: Label 'Before people can send email they must authenticate their email account. They can do that by choosing the Authenticate action on the SMTP Account page.';
@@ -228,6 +263,12 @@ page 4512 "SMTP Account"
 
         if not IsNullGuid(Rec."Password Key") then
             Password := '***';
+        if not IsNullGuid(Rec."Client Id Storage Id") then
+            ClientId := '***';
+        if not IsNullGuid(Rec."Client Secret Storage Id") then
+            ClientSecret := '***';
+        if Rec."Authority URL" <> '' then
+            AuthorityUrl := '***';
 
         SetProperties();
     end;

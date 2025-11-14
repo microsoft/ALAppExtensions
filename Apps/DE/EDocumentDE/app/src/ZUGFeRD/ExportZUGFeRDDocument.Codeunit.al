@@ -1052,4 +1052,15 @@ codeunit 13917 "Export ZUGFeRD Document"
     begin
     end;
 
+    [EventSubscriber(ObjectType::Report, Report::"Standard Sales - Invoice", 'OnPreReportOnBeforeInitializePDF', '', false, false)]
+    local procedure OnBeforeInitializePDFSalesInvoice(SalesInvHeader: Record "Sales Invoice Header"; var CreateZUGFeRDXML: Boolean)
+    begin
+        CreateZUGFeRDXML := true;
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Standard Sales - Credit Memo", 'OnPreReportOnBeforeInitializePDF', '', false, false)]
+    local procedure OnBeforeInitializePDFSalesCrMemo(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var CreateZUGFeRDXML: Boolean)
+    begin
+        CreateZUGFeRDXML := true;
+    end;
 }

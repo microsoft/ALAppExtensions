@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace System.Email;
+using System.Utilities;
 
 /// <summary>
 /// Holds the information for all e-mail accounts that are registered via the SMTP connector
@@ -108,6 +109,25 @@ table 4511 "SMTP Account"
         {
             DataClassification = CustomerContent;
         }
+        field(14; "Client Id Storage Id"; guid)
+        {
+            Caption = 'Client Id Storage Id';
+            DataClassification = CustomerContent;
+        }
+        field(15; "Client Secret Storage Id"; guid)
+        {
+            Caption = 'Client Secret Storage Id';
+            DataClassification = CustomerContent;
+        }
+        field(16; "Authority URL"; Text[1024])
+        {
+            Caption = 'Authority URL';
+            DataClassification = CustomerContent;
+            trigger OnValidate()
+            begin
+                ValidateUri(Rec."Authority URL");
+            end;
+        }
     }
 
     keys
@@ -121,6 +141,11 @@ table 4511 "SMTP Account"
     var
         UnableToGetPasswordMsg: Label 'Unable to get SMTP Account password';
         UnableToSetPasswordMsg: Label 'Unable to set SMTP Account password';
+        UnableToGetClientIdMsg: Label 'Unable to get SMTP Account Client Id';
+        UnableToSetClientIdMsg: Label 'Unable to set SMTP Account Client Id';
+        UnableToGetClientSecretMsg: Label 'Unable to get SMTP Account Client Secret';
+        UnableToSetClientSecretMsg: Label 'Unable to set SMTP Account Client Secret';
+        UriIsNotValidErr: Label '%1 is not a valid URI.', Comment = '%1 = a string';
 
     trigger OnDelete()
     begin
@@ -143,5 +168,50 @@ table 4511 "SMTP Account"
     begin
         if not IsolatedStorage.Get(Format(PasswordKey), DataScope::Company, Password) then
             Error(UnableToGetPasswordMsg);
+    end;
+
+    [NonDebuggable]
+    internal procedure SetClientId(ClientId: SecretText)
+    begin
+        if IsNullGuid(Rec."Client Id Storage Id") then
+            Rec."Client Id Storage Id" := CreateGuid();
+
+        if not IsolatedStorage.Set(Format(Rec."Client Id Storage Id"), ClientId, DataScope::Company) then
+            Error(UnableToSetClientIdMsg);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetClientId(CliendIdKey: Guid) ClientId: SecretText
+    begin
+        if not IsolatedStorage.Get(Format(CliendIdKey), DataScope::Company, ClientId) then
+            Error(UnableToGetClientIdMsg);
+    end;
+
+    [NonDebuggable]
+    internal procedure SetClientSecret(ClientSecret: SecretText)
+    begin
+        if IsNullGuid(Rec."Client Secret Storage Id") then
+            Rec."Client Secret Storage Id" := CreateGuid();
+
+        if not IsolatedStorage.Set(Format(Rec."Client Secret Storage Id"), ClientSecret, DataScope::Company) then
+            Error(UnableToSetClientSecretMsg);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetClientSecret(ClientSecretKey: Guid) ClientSecret: SecretText
+    begin
+        if not IsolatedStorage.Get(Format(ClientSecretKey), DataScope::Company, ClientSecret) then
+            Error(UnableToGetClientSecretMsg);
+    end;
+
+    local procedure ValidateUri(UriString: Text)
+    var
+        Uri: Codeunit Uri;
+    begin
+        if UriString = '' then
+            exit;
+
+        if not Uri.IsValidUri(UriString) then
+            Error(UriIsNotValidErr, UriString);
     end;
 }

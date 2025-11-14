@@ -13,6 +13,7 @@ permissionset 5316 "SIE - Objects"
                   table "Import Buffer SIE" = X,
                   page "Dimensions SIE" = X,
                   page "SIE Setup Wizard" = X,
+                  page "Temp Dimension Selection SIE" = X,
                   report "Import SIE" = X,
                   codeunit "Data Check SIE" = X,
                   codeunit "Data Handling SIE" = X,

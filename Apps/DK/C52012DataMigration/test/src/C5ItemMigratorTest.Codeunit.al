@@ -239,12 +239,9 @@ codeunit 148005 "C5 Item Migrator Test"
         DefaultDimension: Record "Default Dimension";
         DimensionValue: Record "Dimension Value";
         CustomerDiscountGroup: Record "Customer Discount Group";
-#if not CLEAN25
         SalesLineDiscount: Record "Sales Line Discount";
         SalesPrice: Record "Sales Price";
-#else
         PriceListLine: Record "Price List Line";
-#endif
         CustomerPriceGroup: Record "Customer Price Group";
         GenJournalLine: Record "Gen. Journal Line";
         C5InvenBom: Record "C5 InvenBOM";
@@ -258,17 +255,12 @@ codeunit 148005 "C5 Item Migrator Test"
         CustomerDiscountGroup.DeleteAll();
         Vendor.DeleteAll();
         TariffNumber.DeleteAll();
-#if not CLEAN25
         SalesLineDiscount.DeleteAll();
-#endif
         ItemTrackingCode.DeleteAll();
         DefaultDimension.DeleteAll();
         DimensionValue.DeleteAll();
-#if not CLEAN25
         SalesPrice.DeleteAll();
-#else
         PriceListLine.DeleteAll();
-#endif
         CustomerPriceGroup.DeleteAll();
         GenJournalLine.DeleteAll();
         C5InvenBom.DeleteAll();

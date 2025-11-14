@@ -218,7 +218,7 @@ page 10058 "Transmission IRIS"
                 {
                     Caption = 'Step 2: Send Corrected';
                     Image = SendElectronicDocument;
-                    ToolTip = 'Send the transmission with the corrected form types to the IRS. *All* lines, except opened and abandoned, will be sent.';
+                    ToolTip = 'Send the transmission with the corrected form types to the IRS as an original transmission. *All* lines, except opened and abandoned, will be sent.';
                     Visible = SendCorrectionActionVisible;
 
                     trigger OnAction()

@@ -23,6 +23,11 @@
       "id": "51493bda-1ba4-46dc-a72e-65eadc0e63b1",
       "name": "Email - SMTP API Test Library",
       "publisher": "Microsoft"
+    },
+    {
+      "id": "68e13fa3-217a-4be0-9141-99e5bf0ca818",
+      "name": "Email - SMTP Connector",
+      "publisher": "Microsoft"
     }
   ],
   "screenshots": [],

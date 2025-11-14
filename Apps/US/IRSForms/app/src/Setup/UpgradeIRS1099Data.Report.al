@@ -10,8 +10,6 @@ using System.Telemetry;
 report 10063 "Upgrade IRS 1099 Data"
 {
     Caption = 'Upgrade IRS 1099 Data';
-    UsageCategory = Administration;
-    ApplicationArea = BasicUS;
     ProcessingOnly = true;
     ObsoleteState = Pending;
     ObsoleteReason = 'This report will be removed in a future release as the IRS 1099 data upgrade is no longer needed.';

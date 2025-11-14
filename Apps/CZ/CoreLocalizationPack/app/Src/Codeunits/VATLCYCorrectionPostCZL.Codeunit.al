@@ -4,6 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Calculation;
 
+#if not CLEAN28
+using Microsoft.Finance.VAT.Reporting;
+#endif
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
@@ -35,6 +38,9 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         VATEntry: Record "VAT Entry";
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
+#if not CLEAN28
+        VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
+#endif
         DimensionManagement: Codeunit DimensionManagement;
         GenJnlPostPreview: Codeunit "Gen. Jnl.-Post Preview";
         WindowDialog: Dialog;
@@ -43,6 +49,9 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         DialogMsg: Label 'Posting VAT correction lines #1######\', Comment = '%1 = Line Count';
         SuccessMsg: Label 'The VAT correction lines were successfully posted.';
         PostingDateOutRangeErr: Label 'is not within your range of allowed posting dates';
+#if not CLEAN28
+        VATRangeErr: Label ' %1 is not within your range of allowed VAT dates', Comment = '%1 = VAT Date';
+#endif
         PreviewMode: Boolean;
 
     procedure Post(var VATLCYCorrectionBufferCZL: Record "VAT LCY Correction Buffer CZL")
@@ -177,12 +186,22 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
 
     local procedure CheckVATDateCZL(VATLCYCorrectionBufferCZL: Record "VAT LCY Correction Buffer CZL")
     var
+#if not CLEAN28
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
     begin
         if not VATReportingDateMgt.IsVATDateEnabled() then
             VATLCYCorrectionBufferCZL.TestField("VAT Date", VATLCYCorrectionBufferCZL."Posting Date")
         else begin
             VATLCYCorrectionBufferCZL.TestField("VAT Date");
+#if not CLEAN28
+            if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+                if not VATDateHandlerCZL.IsVATDateInAllowedPeriod(VATLCYCorrectionBufferCZL."VAT Date") then
+                    VATLCYCorrectionBufferCZL.FieldError("VAT Date", StrSubstNo(VATRangeErr, VATLCYCorrectionBufferCZL."VAT Date"));
+                VATDateHandlerCZL.VATPeriodCZLCheck(VATLCYCorrectionBufferCZL."VAT Date");
+            end else
+#endif
             VATReportingDateMgt.IsValidDate(VATLCYCorrectionBufferCZL."VAT Date", 0, true);
         end;
     end;

@@ -36,6 +36,11 @@ pageextension 31237 "VAT Report Stmt. Subform CZL" extends "VAT Report Statement
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the amount that the VAT amount in the amount is calculated from.';
                 Editable = false;
+
+                trigger OnDrillDown()
+                begin
+                    Rec.DrillDown(Enum::"VAT Report Amount Type CZL"::Base);
+                end;
             }
             field("Amount CZL"; Rec.CalcAmount())
             {
@@ -43,6 +48,11 @@ pageextension 31237 "VAT Report Stmt. Subform CZL" extends "VAT Report Statement
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the amount of the entry in the report statement.';
                 Editable = false;
+
+                trigger OnDrillDown()
+                begin
+                    Rec.DrillDown(Enum::"VAT Report Amount Type CZL"::Amount);
+                end;
             }
             field("Reduced Amount CZL"; Rec.CalcReducedAmount())
             {
@@ -50,6 +60,11 @@ pageextension 31237 "VAT Report Stmt. Subform CZL" extends "VAT Report Statement
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the reduced amount of the entry in the report statement.';
                 Editable = false;
+
+                trigger OnDrillDown()
+                begin
+                    Rec.DrillDown(Enum::"VAT Report Amount Type CZL"::"Reduced Amount");
+                end;
             }
             field("Additional-Currency Base CZL"; Rec.CalcBaseAdditionalCurrency())
             {
