@@ -118,9 +118,12 @@ permissionset 47006 "SL Migration - Read"
                   tabledata "SL SOShipLine" = R,
                   tabledata "SL SOShipLot" = R,
                   tabledata "SL SOType" = R,
+                  tabledata "SL Supported Tax Year" = R,
                   tabledata "SL Terms" = R,
                   tabledata "SL Upgrade Settings" = R,
                   tabledata "SL VendClass" = R,
                   tabledata "SL Vendor" = R,
+                  tabledata "SL 1099 Box Mapping" = R,
+                  tabledata "SL 1099 Migration Log" = R,
                   tabledata SLGLAcctBalByPeriod = R;
 }

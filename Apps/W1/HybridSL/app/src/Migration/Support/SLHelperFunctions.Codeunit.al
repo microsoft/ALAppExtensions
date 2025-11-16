@@ -1108,7 +1108,15 @@ codeunit 47023 "SL Helper Functions"
     internal procedure CreatePostMigrationData(): Boolean
     var
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        SLPopulateVendor1099Data: Codeunit "SL Populate Vendor 1099 Data";
     begin
+        if (SLCompanyAdditionalSettings.GetMigrateCurrent1099YearEnabled()) or (SLCompanyAdditionalSettings.GetMigrateNext1099YearEnabled()) then begin
+            SetupIRSFormsFeatureIfNeeded();
+            BindSubscription(SLPopulateVendor1099Data);
+            SLPopulateVendor1099Data.Run();
+            UnbindSubscription(SLPopulateVendor1099Data);
+        end;
+
         if SLCompanyAdditionalSettings.GetProjectModuleEnabled() then
             if not ProjectDataCreated() then
                 CreateProjectData();
@@ -1174,6 +1182,31 @@ codeunit 47023 "SL Helper Functions"
         SLConfiguration.GetSingleInstance();
         SLConfiguration."Project Data Created" := true;
         SLConfiguration.Modify();
+    end;
+
+    internal procedure SetupIRSFormsFeatureIfNeeded()
+    var
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        SLIRSFormData: Codeunit "SL IRS Form Data";
+        SLVendor1099MappingHelpers: Codeunit "SL Vendor 1099 Mapping Helpers";
+        ReportingYear: Integer;
+        Open1099Year: Boolean;
+    begin
+        SLCompanyAdditionalSettings.GetSingleInstance();
+        if SLCompanyAdditionalSettings.GetMigrateCurrent1099YearEnabled() then begin
+            ReportingYear := SLVendor1099MappingHelpers.GetCurrent1099YearFromSLAPSetup();
+            Open1099Year := SLVendor1099MappingHelpers.GetCurrent1099YearOpenStatus();
+            if ReportingYear <> 0 then
+                if Open1099Year then
+                    SLIRSFormData.CreateIRSFormsReportingPeriodIfNeeded(ReportingYear);
+        end;
+        if SLCompanyAdditionalSettings.GetMigrateNext1099YearEnabled() then begin
+            ReportingYear := SLVendor1099MappingHelpers.GetNext1099YearFromSLAPSetup();
+            Open1099Year := SLVendor1099MappingHelpers.GetNext1099YearOpenStatus();
+            if ReportingYear <> 0 then
+                if Open1099Year then
+                    SLIRSFormData.CreateIRSFormsReportingPeriodIfNeeded(ReportingYear);
+        end;
     end;
 
     [IntegrationEvent(false, false)]

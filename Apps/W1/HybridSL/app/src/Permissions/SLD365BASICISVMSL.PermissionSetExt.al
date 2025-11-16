@@ -118,10 +118,13 @@ permissionsetextension 47002 "SLD365 BASIC ISV - MSL" extends "D365 BASIC ISV"
                   tabledata "SL SOShipLine" = RIMD,
                   tabledata "SL SOShipLot" = RIMD,
                   tabledata "SL SOType" = RIMD,
+                  tabledata "SL Supported Tax Year" = RIMD,
                   tabledata "SL Terms" = RIMD,
                   tabledata "SL Upgrade Settings" = RIMD,
                   tabledata "SL VendClass" = RIMD,
                   tabledata "SL Vendor" = RIMD,
+                  tabledata "SL 1099 Box Mapping" = RIMD,
+                  tabledata "SL 1099 Migration Log" = RIMD,
                   tabledata SLGLAcctBalByPeriod = RIMD,
                   tabledata "SL Period List Work Table" = RIMD;
 }
