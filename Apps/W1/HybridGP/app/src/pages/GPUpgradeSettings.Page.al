@@ -29,7 +29,7 @@ page 40043 "GP Upgrade Settings"
                         GPMigrtionValidator: Codeunit "GP Migration Validator";
                     begin
                         if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then begin
-                            MigrationValidationRegistry.Validate(Enabled, GPAutoValidation);
+                            MigrationValidationRegistry.Validate(Automatic, GPAutoValidation);
                             MigrationValidationRegistry.Modify(true);
                         end;
                     end;
@@ -77,10 +77,8 @@ page 40043 "GP Upgrade Settings"
         MigrationValidationRegistry: Record "Migration Validator Registry";
         GPMigrtionValidator: Codeunit "GP Migration Validator";
     begin
-        GPAutoValidation := true;
-
         if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then
-            GPAutoValidation := MigrationValidationRegistry.Enabled;
+            GPAutoValidation := MigrationValidationRegistry.Automatic;
 
         Rec.GetonInsertGPUpgradeSettings(Rec);
     end;

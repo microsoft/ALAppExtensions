@@ -23,9 +23,7 @@ codeunit 40030 "Migration Validation Mgmt."
     /// <param name="Force">Force the validation. This would be done if conducting a manual validation.</param>
     procedure StartValidationSession(MigrationType: Text; Company: Text; UseSession: Boolean; Force: Boolean)
     var
-        HybridCompanyStatus: Record "Hybrid Company Status";
         MigrationValidatorRegistry: Record "Migration Validator Registry";
-        CompanyValidated: Boolean;
         SessionId: Integer;
     begin
         MigrationValidatorRegistry.SetRange("Migration Type", MigrationType);
@@ -33,7 +31,7 @@ codeunit 40030 "Migration Validation Mgmt."
         if Force then
             DeleteMigrationValidationEntriesForCompany(Company)
         else
-            MigrationValidatorRegistry.SetRange(Enabled, true);
+            MigrationValidatorRegistry.SetRange(Automatic, true);
 
         if not MigrationValidatorRegistry.FindSet() then
             exit;
@@ -42,18 +40,23 @@ codeunit 40030 "Migration Validation Mgmt."
         repeat
             if UseSession then
                 Session.StartSession(SessionId, MigrationValidatorRegistry."Codeunit Id", Company)
-            else begin
+            else
                 Codeunit.Run(MigrationValidatorRegistry."Codeunit Id");
-                CompanyValidated := true;
-            end;
         until MigrationValidatorRegistry.Next() = 0;
+    end;
 
-        if not UseSession then
-            if HybridCompanyStatus.Get(CompanyName()) then
-                if CompanyValidated and (not HybridCompanyStatus.Validated) then begin
-                    HybridCompanyStatus.Validate(Validated, true);
-                    HybridCompanyStatus.Modify(true);
-                end;
+    /// <summary>
+    /// Report that the Company has had validation tests run.
+    /// </summary>
+    procedure ReportCompanyValidated()
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        if HybridCompanyStatus.Get(CompanyName()) then
+            if not HybridCompanyStatus.Validated then begin
+                HybridCompanyStatus.Validate(Validated, true);
+                HybridCompanyStatus.Modify(true);
+            end;
     end;
 
     /// <summary>

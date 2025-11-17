@@ -24,8 +24,8 @@ pageextension 41101 "Intelligent Cloud Ext." extends "Intelligent Cloud Manageme
             action(RunAllVal)
             {
                 ApplicationArea = All;
-                Caption = 'Run All Validation';
-                ToolTip = 'Re-run all migration validation';
+                Caption = 'Run Validation';
+                ToolTip = 'Re-run migration validation';
                 Image = Process;
 
                 trigger OnAction()
@@ -42,48 +42,6 @@ pageextension 41101 "Intelligent Cloud Ext." extends "Intelligent Cloud Manageme
                     CurrPage."Replication Statistics".Page.RefreshStats();
                 end;
             }
-
-            action(RunMainVal)
-            {
-                ApplicationArea = All;
-                Caption = 'Run Main Validation';
-                ToolTip = 'Re-run migration validation';
-                Image = Process;
-
-                trigger OnAction()
-                var
-                    MigrationValidationError: Record "Migration Validation Error";
-                begin
-                    MigrationValidationError.SetRange("Company Name", CompanyName());
-                    MigrationValidationError.SetRange("Validator Code", 'GP');
-                    if not MigrationValidationError.IsEmpty() then
-                        MigrationValidationError.DeleteAll();
-
-                    Codeunit.Run(Codeunit::"GP Migration Validator");
-                    CurrPage."Replication Statistics".Page.RefreshStats();
-                end;
-            }
-
-            action(Run1099Val)
-            {
-                ApplicationArea = All;
-                Caption = 'Run 1099 Validation';
-                ToolTip = 'Re-run 1099 migration validation';
-                Image = Process;
-
-                trigger OnAction()
-                var
-                    MigrationValidationError: Record "Migration Validation Error";
-                begin
-                    MigrationValidationError.SetRange("Company Name", CompanyName());
-                    MigrationValidationError.SetRange("Validator Code", 'GP-US');
-                    if not MigrationValidationError.IsEmpty() then
-                        MigrationValidationError.DeleteAll();
-
-                    Codeunit.Run(Codeunit::"GP US Migration Validator");
-                    CurrPage."Replication Statistics".Page.RefreshStats();
-                end;
-            }
         }
 
         addlast(Promoted)
@@ -95,12 +53,6 @@ pageextension 41101 "Intelligent Cloud Ext." extends "Intelligent Cloud Manageme
                 Image = TestFile;
 
                 actionref(RunAllal_Promoted; RunAllVal)
-                {
-                }
-                actionref(RunMainVal_Promoted; RunMainVal)
-                {
-                }
-                actionref(Run1099Val_Promoted; Run1099Val)
                 {
                 }
             }

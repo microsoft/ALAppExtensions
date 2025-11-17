@@ -16,5 +16,6 @@ permissionset 4006 "HBD - Objects"
                   page "Company Migration Status" = X,
                   table "Migration Validation Test" = X,
                   page "Migration Validation Results" = X,
-                  table "Company Validation Progress" = X;
+                  table "Company Validation Progress" = X,
+                  table "Migration Validation Buffer" = X;
 }

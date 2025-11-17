@@ -24,9 +24,9 @@ table 40042 "Migration Validator Registry"
         {
             Caption = 'Description';
         }
-        field(6; Enabled; Boolean)
+        field(6; Automatic; Boolean)
         {
-            Caption = 'Enabled';
+            Caption = 'Automatic';
             InitValue = true;
         }
     }

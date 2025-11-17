@@ -18,6 +18,5 @@ permissionset 4713 "HybridGPUS - Objects"
         codeunit "GP IRS Form Data" = X,
         page "GP 1099 Migration Log" = X,
         page "GP 1099 Migration Log Factbox" = X,
-        codeunit "GP US Migration Validator" = X,
-        codeunit "Hybrid GP US Install" = X;
+        codeunit "GP IRS1099 Migration Validator" = X;
 }

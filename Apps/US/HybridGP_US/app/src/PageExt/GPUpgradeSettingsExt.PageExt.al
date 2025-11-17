@@ -8,7 +8,7 @@ pageextension 41105 "GP Upgrade Settings Ext" extends "GP Upgrade Settings"
     {
         addafter(GPAutomaticValidation)
         {
-            field(GPUSAutomaticValidation; GPUSAutoValidation)
+            field(GPUSAutomaticValidation; GPIRS1099AutoValidation)
             {
                 ApplicationArea = All;
                 Caption = 'GP-US (1099)';
@@ -17,10 +17,10 @@ pageextension 41105 "GP Upgrade Settings Ext" extends "GP Upgrade Settings"
                 trigger OnValidate()
                 var
                     MigrationValidationRegistry: Record "Migration Validator Registry";
-                    GPUSMigrtionValidator: Codeunit "GP US Migration Validator";
+                    GPIRS1099MigrtionValidator: Codeunit "GP IRS1099 Migration Validator";
                 begin
-                    if MigrationValidationRegistry.Get(GPUSMigrtionValidator.GetValidatorCode()) then begin
-                        MigrationValidationRegistry.Validate(Enabled, GPUSAutoValidation);
+                    if MigrationValidationRegistry.Get(GPIRS1099MigrtionValidator.GetValidatorCode()) then begin
+                        MigrationValidationRegistry.Validate(Automatic, GPIRS1099AutoValidation);
                         MigrationValidationRegistry.Modify(true);
                     end;
                 end;
@@ -31,15 +31,13 @@ pageextension 41105 "GP Upgrade Settings Ext" extends "GP Upgrade Settings"
     trigger OnOpenPage()
     var
         MigrationValidationRegistry: Record "Migration Validator Registry";
-        GPUSMigrtionValidator: Codeunit "GP US Migration Validator";
+        GPIRS1099MigrtionValidator: Codeunit "GP IRS1099 Migration Validator";
     begin
-        GPUSAutoValidation := true;
-
-        if MigrationValidationRegistry.Get(GPUSMigrtionValidator.GetValidatorCode()) then
-            GPUSAutoValidation := MigrationValidationRegistry.Enabled;
+        if MigrationValidationRegistry.Get(GPIRS1099MigrtionValidator.GetValidatorCode()) then
+            GPIRS1099AutoValidation := MigrationValidationRegistry.Automatic;
 
     end;
 
     var
-        GPUSAutoValidation: Boolean;
+        GPIRS1099AutoValidation: Boolean;
 }

@@ -649,6 +649,7 @@ codeunit 4001 "Hybrid Cloud Management"
         IntelligentCloudSetup.Validate("Replication User", UserId());
         IntelligentCloudSetup.Modify();
         RestoreDefaultMigrationTableMappings(false);
+        PrepareMigrationValidation();
         RefreshIntelligentCloudStatusTable();
         CreateCompanies();
 
@@ -939,6 +940,14 @@ codeunit 4001 "Hybrid Cloud Management"
         if IntelligentCloudSetup.Get() then;
 
         OnInsertDefaultTableMappings(IntelligentCloudSetup."Product ID", DeleteExisting);
+    end;
+
+    procedure PrepareMigrationValidation()
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if IntelligentCloudSetup.Get() then;
+
+        OnPrepareMigrationValidation(IntelligentCloudSetup."Product ID");
     end;
 
     procedure CompleteCloudMigration()
@@ -2318,6 +2327,11 @@ codeunit 4001 "Hybrid Cloud Management"
 
     [IntegrationEvent(false, false)]
     local procedure OnInsertDefaultTableMappings(ProductID: Text[250]; DeleteExisting: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnPrepareMigrationValidation(ProductID: Text[250])
     begin
     end;
 
