@@ -9,8 +9,10 @@ using Microsoft.Sales.History;
 using Microsoft.Purchases.Document;
 using System.IO;
 using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 using Microsoft.Foundation.Company;
 using Microsoft.eServices.EDocument;
+using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using Microsoft.eServices.EDocument.IO.Peppol;
 
@@ -95,8 +97,10 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
             exit;
 
         if not (SourceDocumentHeader.Number in
-            [Database::"Sales Invoice Header",
+            [Database::"Sales Header",
+            Database::"Sales Invoice Header",
             Database::"Sales Cr.Memo Header",
+            Database::"Service Header",
             Database::"Service Invoice Header",
             Database::"Service Cr.Memo Header"])
         then
