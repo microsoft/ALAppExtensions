@@ -649,6 +649,7 @@ codeunit 4001 "Hybrid Cloud Management"
         IntelligentCloudSetup.Validate("Replication User", UserId());
         IntelligentCloudSetup.Modify();
         RestoreDefaultMigrationTableMappings(false);
+        PrepareMigrationValidation();
         RefreshIntelligentCloudStatusTable();
         CreateCompanies();
 
@@ -939,6 +940,14 @@ codeunit 4001 "Hybrid Cloud Management"
         if IntelligentCloudSetup.Get() then;
 
         OnInsertDefaultTableMappings(IntelligentCloudSetup."Product ID", DeleteExisting);
+    end;
+
+    procedure PrepareMigrationValidation()
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if IntelligentCloudSetup.Get() then;
+
+        OnPrepareMigrationValidation(IntelligentCloudSetup."Product ID");
     end;
 
     procedure CompleteCloudMigration()
@@ -2223,6 +2232,23 @@ codeunit 4001 "Hybrid Cloud Management"
         RecordLink.SetRange("To User ID", OldUserName);
         RecordLink.ModifyAll("To User ID", NewUserName);
     end;
+    
+    local procedure ClearCompanyMigrationValidation(MigrationType: Text[250])
+    var
+        MigrationValidationError: Record "Migration Validation Error";
+        CompanyValidationProgress: Record "Company Validation Progress";
+    begin
+        if MigrationType <> '' then
+            MigrationValidationError.SetRange("Migration Type", MigrationType);
+
+        MigrationValidationError.SetRange("Company Name", CompanyName());
+        if not MigrationValidationError.IsEmpty() then
+            MigrationValidationError.DeleteAll();
+
+        CompanyValidationProgress.SetRange("Company Name", CompanyName());
+        if not CompanyValidationProgress.IsEmpty() then
+            CompanyValidationProgress.DeleteAll();
+    end;
 
     [EventSubscriber(ObjectType::Page, Page::Companies, 'OnOpenPageEvent', '', false, false)]
     local procedure WarnNotToManageCompaniesManually(var Rec: Record Company)
@@ -2244,6 +2270,39 @@ codeunit 4001 "Hybrid Cloud Management"
         SendSetupWebhooksNotification.AddAction(LearnMoreMsg, Codeunit::"Hybrid Cloud Management", 'CompaniesWarningNotificationLearnMore');
         SendSetupWebhooksNotification.AddAction(DontShowAgainMsg, Codeunit::"Hybrid Cloud Management", 'DontShowCompaniesWarningNotification');
         SendSetupWebhooksNotification.Send();
+    end;
+    
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnBeforeMigrationStarted, '', false, false)]
+    local procedure BeforeMigrationStarted(var DataMigrationStatus: Record "Data Migration Status"; Retry: Boolean)
+    begin
+        ClearCompanyMigrationValidation(DataMigrationStatus."Migration Type");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnValidateMigration, '', false, false)]
+    local procedure StartMigrationValidation(var DataMigrationStatus: Record "Data Migration Status"; var DataCreationFailed: Boolean)
+    var
+        MigrationValidationError: Record "Migration Validation Error";
+        MigrationValidation: Codeunit "Migration Validation";
+    begin
+        if DataCreationFailed then
+            exit;
+
+        MigrationValidation.StartValidation(DataMigrationStatus."Migration Type", false);
+
+        MigrationValidationError.SetRange("Migration Type", DataMigrationStatus."Migration Type");
+        MigrationValidationError.SetRange("Company Name", CompanyName());
+        MigrationValidationError.SetRange("Is Warning", false);
+        if not MigrationValidationError.IsEmpty() then
+            DataCreationFailed := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Company", OnAfterDeleteEvent, '', false, false)]
+    local procedure CleanupAfterCompanyDelete(var Rec: Record Company; RunTrigger: Boolean)
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        ClearCompanyMigrationValidation('');
     end;
 
     [IntegrationEvent(false, false)]
@@ -2268,6 +2327,11 @@ codeunit 4001 "Hybrid Cloud Management"
 
     [IntegrationEvent(false, false)]
     local procedure OnInsertDefaultTableMappings(ProductID: Text[250]; DeleteExisting: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnPrepareMigrationValidation(ProductID: Text[250])
     begin
     end;
 
