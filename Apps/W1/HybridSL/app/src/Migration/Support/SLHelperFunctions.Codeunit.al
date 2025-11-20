@@ -28,7 +28,6 @@ using Microsoft.Inventory.Posting;
 
 codeunit 47023 "SL Helper Functions"
 {
-    Access = Internal;
     Permissions = tabledata "Dimension Set Entry" = rimd,
                     tabledata "G/L Account" = rimd,
                     tabledata "G/L Entry" = rimd,
@@ -65,7 +64,7 @@ codeunit 47023 "SL Helper Functions"
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
         MigrationLogAreaBatchPostingTxt: Label 'Batch Posting', Locked = true;
 
-    internal procedure GetPostingAccountNumber(AccountToGet: Text): Code[20]
+    procedure GetPostingAccountNumber(AccountToGet: Text): Code[20]
     var
         SLAccountStagingSetup: Record "SL Account Staging Setup";
     begin
@@ -114,7 +113,7 @@ codeunit 47023 "SL Helper Functions"
         end;
     end;
 
-    internal procedure GetMigrationTypeTxt(): Text[250]
+    procedure GetMigrationTypeTxt(): Text[250]
     begin
         exit(CopyStr(MigrationTypeTxt, 1, MaxStrLen(MigrationTypeTxt)));
     end;
