@@ -17,48 +17,6 @@ pageextension 41101 "Intelligent Cloud Ext." extends "Intelligent Cloud Manageme
         }
     }
 
-    actions
-    {
-        addlast(Processing)
-        {
-            action(RunAllVal)
-            {
-                ApplicationArea = All;
-                Caption = 'Run Validation';
-                ToolTip = 'Re-run migration validation';
-                Image = Process;
-
-                trigger OnAction()
-                var
-                    MigrationValidationError: Record "Migration Validation Error";
-                    MigrationValidationMgmt: Codeunit "Migration Validation Mgmt.";
-                    HybridGPWizard: Codeunit "Hybrid GP Wizard";
-                begin
-                    MigrationValidationError.SetRange("Company Name", CompanyName());
-                    if not MigrationValidationError.IsEmpty() then
-                        MigrationValidationError.DeleteAll();
-
-                    MigrationValidationMgmt.StartValidation(HybridGPWizard.ProductId(), true);
-                    CurrPage."Replication Statistics".Page.RefreshStats();
-                end;
-            }
-        }
-
-        addlast(Promoted)
-        {
-            group(Processing_Testing)
-            {
-                Caption = 'Testing';
-                ShowAs = Standard;
-                Image = TestFile;
-
-                actionref(RunAllal_Promoted; RunAllVal)
-                {
-                }
-            }
-        }
-    }
-
     trigger OnOpenPage()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";

@@ -2282,12 +2282,12 @@ codeunit 4001 "Hybrid Cloud Management"
     local procedure StartMigrationValidation(var DataMigrationStatus: Record "Data Migration Status"; var DataCreationFailed: Boolean)
     var
         MigrationValidationError: Record "Migration Validation Error";
-        MigrationValidationMgmt: Codeunit "Migration Validation Mgmt.";
+        MigrationValidation: Codeunit "Migration Validation";
     begin
         if DataCreationFailed then
             exit;
 
-        MigrationValidationMgmt.StartValidation(DataMigrationStatus."Migration Type", false);
+        MigrationValidation.StartValidation(DataMigrationStatus."Migration Type", false);
 
         MigrationValidationError.SetRange("Migration Type", DataMigrationStatus."Migration Type");
         MigrationValidationError.SetRange("Company Name", CompanyName());

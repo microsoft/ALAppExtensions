@@ -2,7 +2,7 @@ namespace Microsoft.DataMigration;
 
 using System.Reflection;
 
-codeunit 40030 "Migration Validation Mgmt."
+codeunit 40030 "Migration Validation"
 {
     /// <summary>
     /// Start migration validation for the current company
@@ -10,26 +10,14 @@ codeunit 40030 "Migration Validation Mgmt."
     /// <param name="MigrationType">The type of migration</param>
     /// <param name="Force">Force the validation. This would be done if conducting a manual validation.</param>
     procedure StartValidation(MigrationType: Text; Force: Boolean)
-    begin
-        StartValidationSession(MigrationType, CompanyName(), false, Force);
-    end;
-
-    /// <summary>
-    /// Start migration validation for a specific company
-    /// </summary>
-    /// <param name="MigrationType">The type of migration</param>
-    /// <param name="Company">The company to be validated</param>
-    /// <param name="UseSession">Use a new session or not</param>
-    /// <param name="Force">Force the validation. This would be done if conducting a manual validation.</param>
-    procedure StartValidationSession(MigrationType: Text; Company: Text; UseSession: Boolean; Force: Boolean)
     var
         MigrationValidatorRegistry: Record "Migration Validator Registry";
-        SessionId: Integer;
+        CloudMigrationWarning: Record "Cloud Migration Warning";
     begin
         MigrationValidatorRegistry.SetRange("Migration Type", MigrationType);
 
         if Force then
-            DeleteMigrationValidationEntriesForCompany(Company)
+            DeleteMigrationValidationEntriesForCompany()
         else
             MigrationValidatorRegistry.SetRange(Automatic, true);
 
@@ -38,10 +26,13 @@ codeunit 40030 "Migration Validation Mgmt."
 
         Commit();
         repeat
-            if UseSession then
-                Session.StartSession(SessionId, MigrationValidatorRegistry."Codeunit Id", Company)
-            else
-                Codeunit.Run(MigrationValidatorRegistry."Codeunit Id");
+            if not Codeunit.Run(MigrationValidatorRegistry."Codeunit Id") then begin
+                Clear(CloudMigrationWarning);
+                CloudMigrationWarning."Entry No." := 0;
+                CloudMigrationWarning."Warning Type" := CloudMigrationWarning."Warning Type"::"Migration Validator";
+                CloudMigrationWarning.Message := CopyStr(GetLastErrorText(), 1, MaxStrLen(CloudMigrationWarning.Message));
+                CloudMigrationWarning.Insert();
+            end;
         until MigrationValidatorRegistry.Next() = 0;
     end;
 
