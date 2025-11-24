@@ -115,7 +115,18 @@ codeunit 13920 "ZUGFeRD Format" implements "E-Document"
             exit;
 
         FileName := StrSubstNo(EDOCLogFileTxt, EDocumentLog."E-Doc. Entry No");
-        FileName += '.pdf';
+        FileName += EDocumentService.GetDefaultFileExtension();
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"E-Document Service", OnAfterGetDefaultFileExtension, '', false, false)]
+    local procedure HandleOnAfterGetDefaultFileExtension(EDocumentService: Record "E-Document Service"; var FileExtension: Text)
+    var
+        PDFFileTypeTok: Label '.pdf', Locked = true;
+    begin
+        if EDocumentService."Document Format" <> EDocumentService."Document Format"::ZUGFeRD then
+            exit;
+
+        FileExtension := PDFFileTypeTok;
     end;
 
     local procedure CheckCompanyInfoMandatory()
