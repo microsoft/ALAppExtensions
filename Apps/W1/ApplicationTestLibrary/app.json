@@ -1,0 +1,41 @@
+{
+  "id": "d852d5d2-a39d-4179-baeb-f99a19e32510",
+  "name": "Application Test Library",
+  "publisher": "Microsoft",
+  "version": "$(app_currentVersion)",
+  "platform": "$(app_platformVersion)",
+  "dependencies": [
+    {
+      "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+      "publisher": "Microsoft",
+      "name": "Any",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "name": "Library Assert",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "$(app_minimumVersion)"
+    },
+    {
+      "id": "bee8cf2f-494a-42f4-aabd-650e87934d39",
+      "name": "Business Foundation Test Libraries",
+      "publisher": "Microsoft",
+      "version": "$(app_minimumVersion)"
+    }
+  ],
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "propagateDependencies": true,
+  "application": "$(app_minimumVersion)"
+}
