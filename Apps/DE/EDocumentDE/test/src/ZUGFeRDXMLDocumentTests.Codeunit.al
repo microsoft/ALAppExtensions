@@ -116,6 +116,28 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales invoice for ZUGFeRD format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLine("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
+    end;
+
+    [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifySellerDataApplicableHeaderTradeAgreement();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -445,6 +467,28 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [THEN] ZUGFeRD Electronic Document is created with buyer reference XX
         VerifyBuyerReference(SalesCrMemoHeader."Your Reference", TempXMLBuffer, '/rsm:CrossIndustryInvoice');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales credit memo for ZUGFeRD format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLine("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
     end;
 
     [Test]
@@ -828,6 +872,14 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         if LineDiscount then
             SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
         SalesLine.Modify(true);
+    end;
+
+    local procedure CheckSalesHeader(SalesHeader: Record "Sales Header")
+    var
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(SalesHeader);
+        ZUGFeRDFormat.Check(SourceDocumentHeader, EDocumentService, "E-Document Processing Phase"::Release);
     end;
 
     local procedure ExportInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
