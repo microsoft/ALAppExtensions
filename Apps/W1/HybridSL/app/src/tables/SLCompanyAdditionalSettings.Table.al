@@ -140,6 +140,8 @@ table 47061 "SL Company Additional Settings"
                     Rec.Validate("Migrate Vendor Classes", false);
                     Rec.Validate("Migrate Only Payables Master", false);
                     Rec.Validate("Migrate Hist. AP Trx.", false);
+                    Rec.Validate("Migrate Current 1099 Year", false);
+                    Rec.Validate("Migrate Next 1099 Year", false);
                 end;
             end;
         }
@@ -408,6 +410,8 @@ table 47061 "SL Company Additional Settings"
                     Rec.Validate("Migrate Item Classes", false);
                     Rec.Validate("Migrate Vendor Classes", false);
                     Rec.Validate("Migrate Only GL Master", false);
+                    Rec.Validate("Migrate Current 1099 Year", false);
+                    Rec.Validate("Migrate Next 1099 Year", false);
 
                     if Rec."Migrate Inventory Module" then
                         Rec.Validate("Migrate Only Inventory Master", true);
@@ -476,6 +480,38 @@ table 47061 "SL Company Additional Settings"
             Caption = 'Include Hold Status Resources';
             InitValue = false;
             ToolTip = 'Specify whether to include Resources with a Status of Hold.';
+        }
+        field(39; "Migrate Current 1099 Year"; Boolean)
+        {
+            Caption = 'Migrate Current 1099 Year';
+            InitValue = false;
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Current 1099 Year" then begin
+                    Rec.Validate("Migrate Payables Module", true);
+
+                    if not Rec."Migrate GL Module" then
+                        Rec.Validate("Migrate GL Module", true);
+                end;
+            end;
+        }
+        field(40; "Migrate Next 1099 Year"; Boolean)
+        {
+            Caption = 'Migrate Next 1099 Year';
+            InitValue = false;
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Next 1099 Year" then begin
+                    Rec.Validate("Migrate Payables Module", true);
+
+                    if not Rec."Migrate GL Module" then
+                        Rec.Validate("Migrate GL Module", true);
+                end;
+            end;
         }
     }
 
@@ -736,6 +772,18 @@ table 47061 "SL Company Additional Settings"
             exit(true);
 
         exit(false);
+    end;
+
+    internal procedure GetMigrateCurrent1099YearEnabled(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Current 1099 Year");
+    end;
+
+    internal procedure GetMigrateNext1099YearEnabled(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Next 1099 Year");
     end;
 
     internal procedure AreAllModulesDisabled(): Boolean
