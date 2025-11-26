@@ -1,7 +1,6 @@
 namespace Microsoft.DataMigration;
 
 using System.Reflection;
-using System.Integration;
 
 page 4008 "Intelligent Cloud Stat Factbox"
 {

@@ -2279,17 +2279,21 @@ codeunit 4001 "Hybrid Cloud Management"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnValidateMigration, '', false, false)]
-    local procedure StartMigrationValidation(var DataMigrationStatus: Record "Data Migration Status"; var DataCreationFailed: Boolean)
+    local procedure StartMigrationValidation(var DataCreationFailed: Boolean)
     var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         MigrationValidationError: Record "Migration Validation Error";
         MigrationValidation: Codeunit "Migration Validation";
     begin
         if DataCreationFailed then
             exit;
 
-        MigrationValidation.StartValidation(DataMigrationStatus."Migration Type", false);
+        if not IntelligentCloudSetup.Get() then
+            exit;
 
-        MigrationValidationError.SetRange("Migration Type", DataMigrationStatus."Migration Type");
+        MigrationValidation.StartValidation(IntelligentCloudSetup."Product ID", false);
+
+        MigrationValidationError.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
         MigrationValidationError.SetRange("Company Name", CompanyName());
         MigrationValidationError.SetRange("Is Warning", false);
         if not MigrationValidationError.IsEmpty() then

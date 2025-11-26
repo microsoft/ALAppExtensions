@@ -2,7 +2,7 @@ namespace Microsoft.DataMigration;
 
 using System.Reflection;
 
-codeunit 40030 "Migration Validation"
+codeunit 40032 "Migration Validation"
 {
     /// <summary>
     /// Start migration validation for the current company

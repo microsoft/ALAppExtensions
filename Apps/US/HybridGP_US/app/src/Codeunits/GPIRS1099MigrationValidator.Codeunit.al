@@ -1,6 +1,5 @@
 namespace Microsoft.DataMigration.GP;
 
-using Microsoft.DataMigration;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Payables;
 using Microsoft.Finance.VAT.Reporting;
