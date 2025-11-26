@@ -70,6 +70,7 @@ codeunit 40903 "GP Migration Validator"
         AccountFilter: Text;
         EntityType: Text[50];
         GPAccountDescription: Text[100];
+        ValidatedAccountNos: List of [Text];
     begin
         if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepGLAccountLbl) then
             exit;
@@ -85,6 +86,10 @@ codeunit 40903 "GP Migration Validator"
                 repeat
                     GPAccountBeginningBalance := 0;
                     GPAccountNo := CopyStr(GPGL00100.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPAccountNo));
+                    if ValidatedAccountNos.Contains(GPAccountNo) then
+                        continue;
+
+                    ValidatedAccountNos.Add(GPAccountNo);
                     MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, GPAccountNo);
 
                     GPSY00300.SetRange(MNSEGIND, true);
@@ -187,6 +192,7 @@ codeunit 40903 "GP Migration Validator"
         AccountFilter: Text;
         EntityType: Text[50];
         GPAccountDescription: Text[100];
+        ValidatedAccountNos: List of [Text];
     begin
         if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepStatAccountLbl) then
             exit;
@@ -206,6 +212,10 @@ codeunit 40903 "GP Migration Validator"
                 repeat
                     GPAccountBeginningBalance := 0;
                     GPAccountNo := CopyStr(GPGL00100.MNACSGMT.TrimEnd(), 1, MaxStrLen(GPAccountNo));
+                    if ValidatedAccountNos.Contains(GPAccountNo) then
+                        continue;
+
+                    ValidatedAccountNos.Add(GPAccountNo);
                     MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, GPAccountNo);
 
                     GPSY00300.SetRange(MNSEGIND, true);
