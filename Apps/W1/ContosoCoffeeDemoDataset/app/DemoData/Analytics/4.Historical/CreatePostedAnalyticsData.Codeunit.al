@@ -13,6 +13,12 @@ using Microsoft.Purchases.Posting;
 codeunit 5698 "Create Posted Analytics Data"
 {
     trigger OnRun()
+    begin
+        PostSalesInvoicesForAnalytics();
+        PostPurchaseOrdersForAnalytics();
+    end;
+
+    procedure PostSalesInvoicesForAnalytics()
     var
         SalesHeader: Record "Sales Header";
         CreateExtendedSalesDocument: Codeunit "Create Extended Sales Document";
