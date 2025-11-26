@@ -1293,8 +1293,6 @@ codeunit 40903 "GP Migration Validator"
         AddTest(Test_ITEMSEARCHDESC_Tok, 'Item', 'Search Description');
         AddTest(Test_ITEMPOSTINGGROUP_Tok, 'Item', 'Inventory Posting Group');
         AddTest(Test_ITEMUNITLISTPRICE_Tok, 'Item', 'Unit List Price');
-        AddTest(Test_ITEMUNITCOST_Tok, 'Item', 'Unit Cost');
-        AddTest(Test_ITEMSTANDARDCOST_Tok, 'Item', 'Standard Cost');
         AddTest(Test_ITEMCOSTMETHOD_Tok, 'Item', 'Costing Method');
         AddTest(Test_ITEMBASEUOFM_Tok, 'Item', 'Base Unit of Measure');
         AddTest(Test_ITEMPURCHUOFM_Tok, 'Item', 'Purch. Unit of Measure');
@@ -1320,7 +1318,6 @@ codeunit 40903 "GP Migration Validator"
         AddTest(Test_VENDORCONTACT_Tok, 'Vendor', 'Contact');
         AddTest(Test_VENDORSHIPMETHOD_Tok, 'Vendor', 'Shipment Method');
         AddTest(Test_VENDORPMTTERMS_Tok, 'Vendor', 'Payment Terms');
-        AddTest(Test_VENDORTERRITORY_Tok, 'Vendor', 'Territory');
         AddTest(Test_VENDORTAXAREA_Tok, 'Vendor', 'Tax Area');
         AddTest(Test_VENDORTAXLIABLE_Tok, 'Vendor', 'Tax Liable');
         AddTest(Test_VENDORBALANCE_Tok, 'Vendor', 'Balance');
@@ -1524,8 +1521,6 @@ codeunit 40903 "GP Migration Validator"
         Test_ITEMSEARCHDESC_Tok: Label 'ITEMSEARCHDESC', Locked = true;
         Test_ITEMPOSTINGGROUP_Tok: Label 'ITEMPOSTINGGROUP', Locked = true;
         Test_ITEMUNITLISTPRICE_Tok: Label 'ITEMUNITLISTPRICE', Locked = true;
-        Test_ITEMUNITCOST_Tok: Label 'ITEMUNITCOST', Locked = true;
-        Test_ITEMSTANDARDCOST_Tok: Label 'ITEMSTANDARDCOST', Locked = true;
         Test_ITEMCOSTMETHOD_Tok: Label 'ITEMCOSTMETHOD', Locked = true;
         Test_ITEMBASEUOFM_Tok: Label 'ITEMBASEUOFM', Locked = true;
         Test_ITEMPURCHUOFM_Tok: Label 'ITEMPURCHUOFM', Locked = true;
@@ -1551,7 +1546,6 @@ codeunit 40903 "GP Migration Validator"
         Test_VENDORCONTACT_Tok: Label 'VENDORCONTACT', Locked = true;
         Test_VENDORSHIPMETHOD_Tok: Label 'VENDORSHIPMETHOD', Locked = true;
         Test_VENDORPMTTERMS_Tok: Label 'VENDORPMTTERMS', Locked = true;
-        Test_VENDORTERRITORY_Tok: Label 'VENDORTERRITORY', Locked = true;
         Test_VENDORTAXAREA_Tok: Label 'VENDORTAXAREA', Locked = true;
         Test_VENDORTAXLIABLE_Tok: Label 'VENDORTAXLIABLE', Locked = true;
         Test_VENDORBALANCE_Tok: Label 'VENDORBALANCE', Locked = true;
