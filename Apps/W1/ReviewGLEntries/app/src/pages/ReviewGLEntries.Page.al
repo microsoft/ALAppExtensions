@@ -342,7 +342,8 @@ page 22207 "Review G/L Entries"
     begin
         Rec.CalcFields("Reviewed Amount");
         RemainingAmount := Rec.Amount - Rec."Reviewed Amount";
-        Rec."Amount to Review" := RemainingAmount;
+        if Rec."Amount to Review" = 0 then
+            Rec."Amount to Review" := RemainingAmount;
     end;
 
     trigger OnAfterGetCurrRecord()
