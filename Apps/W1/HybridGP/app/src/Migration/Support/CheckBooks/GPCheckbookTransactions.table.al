@@ -220,4 +220,9 @@ table 40101 "GP Checkbook Transactions"
             Clustered = true;
         }
     }
+
+    internal procedure ShouldFlipSign(): Boolean
+    begin
+        exit((Rec.CMTrxType = 3) or (Rec.CMTrxType = 4) or (Rec.CMTrxType = 6));
+    end;
 }

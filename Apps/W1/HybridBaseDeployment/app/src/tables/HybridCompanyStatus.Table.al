@@ -60,6 +60,10 @@ table 40027 "Hybrid Company Status"
             Description = 'Tenant Media Count';
             DataClassification = SystemMetadata;
         }
+        field(10; Validated; Boolean)
+        {
+            Description = 'Indicates if the company has been validated.';
+        }
     }
 
     keys
