@@ -32,6 +32,7 @@ codeunit 5394 "Purchase Module" implements "Contoso Demo Data Module"
     begin
         Codeunit.Run(codeunit::"Create Purchase Payable Setup");
         Codeunit.Run(codeunit::"Create Vendor Posting Group");
+        Codeunit.Run(Codeunit::"Create Return Reason");
     end;
 
     procedure CreateMasterData()
