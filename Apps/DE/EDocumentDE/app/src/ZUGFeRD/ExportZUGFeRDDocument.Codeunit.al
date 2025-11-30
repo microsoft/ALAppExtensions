@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
+using Microsoft.eServices.EDocument.Formats;
 using System.Telemetry;
 using Microsoft.eServices.EDocument;
 using Microsoft.Foundation.PaymentTerms;
@@ -22,7 +23,6 @@ using System.Reflection;
 codeunit 13917 "Export ZUGFeRD Document"
 {
     TableNo = "Record Export Buffer";
-    EventSubscriberInstance = Manual;
     InherentEntitlements = X;
     InherentPermissions = X;
 
@@ -31,7 +31,6 @@ codeunit 13917 "Export ZUGFeRD Document"
         GeneralLedgerSetup: Record "General Ledger Setup";
         EDocumentService: Record "E-Document Service";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
         FeatureNameTok: Label 'E-document ZUGFeRD Format', Locked = true;
         StartEventNameTok: Label 'E-document ZUGFeRD export started', Locked = true;
         EndEventNameTok: Label 'E-document ZUGFeRD export completed', Locked = true;
@@ -39,11 +38,31 @@ codeunit 13917 "Export ZUGFeRD Document"
         XmlNamespaceRAM: Text;
         XmlNamespaceUDT: Text;
 
-    trigger OnRun();
+    trigger OnRun()
+    var
+        ZUGFeRDReportIntegration: Codeunit "ZUGFeRD Report Integration";
     begin
-        BindSubscription(ExportZUGFeRDDocument);
+        BindSubscription(ZUGFeRDReportIntegration);
+
         ExportSalesDocument(Rec);
-        UnbindSubscription(ExportZUGFeRDDocument);
+
+        UnbindSubscription(ZUGFeRDReportIntegration);
+    end;
+
+
+    /// <summary>
+    /// Use this procedure to check if the current report print is for the ZUGFeRD export.
+    /// </summary>
+    /// <returns>true when the XML should be embedded</returns>
+    procedure IsZUGFeRDPrintProcess() Result: Boolean
+    begin
+        Result := false;
+        OnIsZUGFeRDPrintProcess(Result);
+    end;
+
+    [InternalEvent(false)]
+    local procedure OnIsZUGFeRDPrintProcess(var Result: Boolean)
+    begin
     end;
 
     procedure ExportSalesDocument(var RecordExportBuffer: Record "Record Export Buffer")

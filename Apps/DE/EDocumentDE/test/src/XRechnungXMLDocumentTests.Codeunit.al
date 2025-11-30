@@ -113,6 +113,28 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales invoice for XRechnung format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLine("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
+    end;
+
+    [Test]
     procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyAccountingSupplierParty();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -368,6 +390,28 @@ codeunit 13918 "XRechnung XML Document Tests"
 
         // [THEN] XRechnung Electronic Document is created with buyer reference XX
         VerifyBuyerReference(SalesCrMemoHeader."Your Reference", TempXMLBuffer, '/ns0:CreditNote');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales credit memo for XRechnung format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLine("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
     end;
 
     [Test]
@@ -724,6 +768,14 @@ codeunit 13918 "XRechnung XML Document Tests"
         if LineDiscount then
             SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 5));
         SalesLine.Modify(true);
+    end;
+
+    local procedure CheckSalesHeader(SalesHeader: Record "Sales Header")
+    var
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(SalesHeader);
+        ExportXRechnungFormat.Check(SourceDocumentHeader, EDocumentService, "E-Document Processing Phase"::Release);
     end;
 
     local procedure ExportInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
