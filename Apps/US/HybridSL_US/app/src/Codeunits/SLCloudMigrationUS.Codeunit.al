@@ -4,7 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace Microsoft.DataMigration.SL;
+
 using System.Integration;
+using Microsoft.Finance.VAT.Reporting;
 
 codeunit 47203 "SL Cloud Migration US"
 {
@@ -35,7 +37,7 @@ codeunit 47203 "SL Cloud Migration US"
     local procedure SetupIRSFormsFeatureIfNeeded()
     var
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
-        SLIRSFormData: Codeunit "SL IRS Form Data";
+        IRSFormsData: Codeunit "IRS Forms Data";
         SLVendor1099MappingHelpers: Codeunit "SL Vendor 1099 Mapping Helpers";
         ReportingYear: Integer;
         Open1099Year: Boolean;
@@ -46,14 +48,14 @@ codeunit 47203 "SL Cloud Migration US"
             Open1099Year := SLVendor1099MappingHelpers.GetCurrent1099YearOpenStatus();
             if ReportingYear <> 0 then
                 if Open1099Year then
-                    SLIRSFormData.CreateIRSFormsReportingPeriodIfNeeded(ReportingYear);
+                    IRSFormsData.AddReportingPeriodsWithForms(ReportingYear);
         end;
         if SLCompanyAdditionalSettings.GetMigrateNext1099YearEnabled() then begin
             ReportingYear := SLVendor1099MappingHelpers.GetNext1099YearFromSLAPSetup();
             Open1099Year := SLVendor1099MappingHelpers.GetNext1099YearOpenStatus();
             if ReportingYear <> 0 then
                 if Open1099Year then
-                    SLIRSFormData.CreateIRSFormsReportingPeriodIfNeeded(ReportingYear);
+                    IRSFormsData.AddReportingPeriodsWithForms(ReportingYear);
         end;
     end;
 }

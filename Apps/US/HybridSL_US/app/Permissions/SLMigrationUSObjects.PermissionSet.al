@@ -18,6 +18,5 @@ permissionset 47202 "SL Migration US - Objects"
         codeunit "SL Cloud Migration US" = X,
         codeunit "SL Populate Vendor 1099 Data" = X,
         codeunit "SL Vendor 1099 Mapping Helpers" = X,
-        codeunit "SL IRS Form Data" = X,
-        page "SL 1099 Migration Log" = X;
+        page "SL 1099 Migration Log List" = X;
 }

@@ -7,8 +7,6 @@ namespace Microsoft.DataMigration.SL;
 
 table 47201 "SL 1099 Box Mapping"
 {
-    Access = Internal;
-    DataPerCompany = false;
     Caption = 'SL 1099 Box Mapping';
     DataClassification = SystemMetadata;
 

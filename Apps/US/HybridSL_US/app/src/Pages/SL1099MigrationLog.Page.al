@@ -5,10 +5,10 @@
 
 namespace Microsoft.DataMigration.SL;
 
-page 47200 "SL 1099 Migration Log"
+page 47200 "SL 1099 Migration Log List"
 {
     ApplicationArea = All;
-    Caption = 'SL 1099 Migration Log';
+    Caption = 'SL 1099 Migration Log List';
     PageType = List;
     SourceTable = "SL 1099 Migration Log";
     UsageCategory = Administration;

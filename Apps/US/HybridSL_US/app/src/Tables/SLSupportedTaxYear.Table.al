@@ -7,7 +7,6 @@ namespace Microsoft.DataMigration.SL;
 
 table 47200 "SL Supported Tax Year"
 {
-    DataPerCompany = false;
     Caption = 'Supported Tax Year';
     DataClassification = SystemMetadata;
 
