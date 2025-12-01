@@ -295,6 +295,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         CustomerNo: Code[20];
         CustomerName: Text[100];
         Address: Text[100];
+        Address2: Text[100];
         PostCode: Text[20];
         City: Text[50];
         CountryCode: Code[10];
@@ -312,6 +313,7 @@ codeunit 13917 "Export ZUGFeRD Document"
                     CustomerNo := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Customer No.")).Value;
                     CustomerName := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Name")).Value;
                     Address := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Address")).Value;
+                    Address2 := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Address 2")).Value;
                     PostCode := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Post Code")).Value;
                     City := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to City")).Value;
                     CountryCode := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("VAT Country/Region Code")).Value;
@@ -326,6 +328,7 @@ codeunit 13917 "Export ZUGFeRD Document"
                     CustomerNo := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Customer No.")).Value;
                     CustomerName := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Name")).Value;
                     Address := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Address")).Value;
+                    Address2 := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Address 2")).Value;
                     PostCode := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Post Code")).Value;
                     City := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to City")).Value;
                     CountryCode := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("VAT Country/Region Code")).Value;
@@ -365,6 +368,8 @@ codeunit 13917 "Export ZUGFeRD Document"
         PostalTradeAddressElement := XmlElement.Create('PostalTradeAddress', XmlNamespaceRAM);
         PostalTradeAddressElement.Add(XmlElement.Create('PostcodeCode', XmlNamespaceRAM, CompanyInformation."Post Code"));
         PostalTradeAddressElement.Add(XmlElement.Create('LineOne', XmlNamespaceRAM, CompanyInformation.Address));
+        if CompanyInformation."Address 2" <> '' then
+            PostalTradeAddressElement.Add(XmlElement.Create('LineTwo', XmlNamespaceRAM, CompanyInformation."Address 2"));
         PostalTradeAddressElement.Add(XmlElement.Create('CityName', XmlNamespaceRAM, CompanyInformation.City));
         PostalTradeAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryRegionCode(CompanyInformation."Country/Region Code")));
         SellerTradePartyElement.Add(PostalTradeAddressElement);
@@ -404,6 +409,8 @@ codeunit 13917 "Export ZUGFeRD Document"
         PostalTradeAddressElement := XmlElement.Create('PostalTradeAddress', XmlNamespaceRAM);
         PostalTradeAddressElement.Add(XmlElement.Create('PostcodeCode', XmlNamespaceRAM, PostCode));
         PostalTradeAddressElement.Add(XmlElement.Create('LineOne', XmlNamespaceRAM, Address));
+        if Address2 <> '' then
+            PostalTradeAddressElement.Add(XmlElement.Create('LineTwo', XmlNamespaceRAM, Address2));
         PostalTradeAddressElement.Add(XmlElement.Create('CityName', XmlNamespaceRAM, City));
         PostalTradeAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryRegionCode(CountryCode)));
         BuyerTradePartyElement.Add(PostalTradeAddressElement);
