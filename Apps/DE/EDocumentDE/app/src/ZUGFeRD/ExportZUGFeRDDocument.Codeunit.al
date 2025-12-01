@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
-using Microsoft.eServices.EDocument.Formats;
 using System.Telemetry;
 using Microsoft.eServices.EDocument;
 using Microsoft.Foundation.PaymentTerms;
@@ -285,9 +284,11 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     local procedure InsertApplicableHeaderTradeAgreement(var RootXMLNode: XmlElement; RecordVariant: Variant)
     var
-        DataTypeManagement: Codeunit "Data Type Management";
         SalesInvoiceHeader: Record "Sales Invoice Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempBodyReportSelections: Record "Report Selections" temporary;
+        ReportSelections: Record "Report Selections";
+        DataTypeManagement: Codeunit "Data Type Management";
         HeaderRecordRef: RecordRef;
         HeaderTradeAgreementElement, SellerTradePartyElement, BuyerTradePartyElement, SpecifiedTaxRegistrationElement, IDElement : XmlElement;
         PostalTradeAddressElement, ContactElement : XmlElement;
@@ -320,7 +321,8 @@ codeunit 13917 "Export ZUGFeRD Document"
                     VATRegistrationNo := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("VAT Registration No.")).Value;
                     YourReference := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Your Reference")).Value;
                     Contact := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Sell-to Contact")).Value;
-                    CustomerEmail := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Sell-to E-Mail")).Value;
+                    ReportSelections.FindEmailBodyUsageForCust("Report Selection Usage"::"S.Invoice", CustomerNo, TempBodyReportSelections);
+                    CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Invoice".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
                     PhoneNumber := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Sell-to Phone No.")).Value;
                 end;
             Database::"Sales Cr.Memo Header":
@@ -335,7 +337,8 @@ codeunit 13917 "Export ZUGFeRD Document"
                     VATRegistrationNo := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("VAT Registration No.")).Value;
                     YourReference := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Your Reference")).Value;
                     Contact := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Sell-to Contact")).Value;
-                    CustomerEmail := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Sell-to E-Mail")).Value;
+                    ReportSelections.FindEmailBodyUsageForCust("Report Selection Usage"::"S.Cr.Memo", CustomerNo, TempBodyReportSelections);
+                    CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Cr.Memo".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
                     PhoneNumber := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Sell-to Phone No.")).Value;
                 end;
         end;
