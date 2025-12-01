@@ -1,0 +1,11 @@
+﻿No.,Name,Search Name,Name 2,Address,Address 2,City,Contact,Phone No.,Vendor Posting Group,Payment Terms Code,Country/Region Code,Blocked,Fax No.,Gen. Bus. Posting Group,ZIP Code,State,Email,Tax Area Code,Tax Liable
+VEN1099-1,Test 1099 Vendor 1,TEST 1099 VENDOR 1,Test 1099 Vendor 1,1234 Elmwood Drive,,Centerville,,5551234567,CONTRACT,,US,,,SL,43001,OH ,Payables@Test1099Vendor1.com,,false
+VEN1099-2,Test 1099 Vendor 2,TEST 1099 VENDOR 2,Test 1099 Vendor 2,1234 Maplewood Lane,,Centerville,,6145550198,CONTRACT,,US,,,SL,43001,OH ,JamesDoe@Test1099Vendor2.com,,false
+VT0100,International,INTERNATIONAL,International,400 West Madison St.,Suite 400,Chicago,,5555550190,TRADE,,US,,5555550191,SL,222222,IL ,someone@example.com,COOK-G,true
+VT0110,America,AMERICA,America,100 N. State St.,Suite 1200,Madison,,5555550196,TRADE,,US,,5555550197,SL,45454,WI ,,,false
+VT0120,Circle,CIRCLE,Circle,258 N. Johnson Ave.,,Sioux City,,5555550105,TRADE,,US,,5555550106,SL,09000,IA ,,,false
+VT0121,Square,SQUARE,Square,10 S. Ricker Ave.,,Sioux City,,5555550107,TRADE,,US,,5555550108,SL,08777,IA ,,,false
+VT0122,Alphabet,ALPHABET,Alphabet,125 N. Main Ave.,,Sioux City,,5555550109,TRADE,,US,,5555550110,SL,10100,IA ,,,false
+VT0123,Consolidated Messenger,CONSOLIDATED MESSENGER,Consolidated Messenger,139 N. Akron Ave.,,Sioux City,,5555550111,TRADE,,US,,5555550112,SL,22111,IA ,,,false
+VT0124,Fourth Coffee,FOURTH COFFEE,Fourth Coffee,420 S. State St.,,Sioux City,,5555550112,TRADE,,US,,5555550113,SL,01000,IA ,,,false
+VT0125,Trey Research,TREY RESEARCH,Trey Research,520 N. Laurence Ave.,,Sioux City,,5555550113,TRADE,,US,,5555550114,SL,01000,IA ,,,false
