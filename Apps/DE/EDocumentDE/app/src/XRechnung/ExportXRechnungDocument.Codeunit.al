@@ -613,7 +613,7 @@ codeunit 13916 "Export XRechnung Document"
         RootXMLNode.Add(AccountingCustomerParty);
     end;
 
-    local procedure InsertCustomerParty(var AccountingCustomerParty: XmlElement; VATRegNo: Text[20]; CustomerGLN: Code[13]; PartyName: Text[100]; PostalAddress: Record "Standard Address"; CustomerName: Text[100]; ContactName: Text[100]; ContactEMail: Text[80]);
+    local procedure InsertCustomerParty(var AccountingCustomerParty: XmlElement; VATRegNo: Text[20]; CustomerGLN: Code[13]; PartyName: Text[100]; PostalAddress: Record "Standard Address"; CustomerName: Text[100]; ContactName: Text[100]; ContactEMail: Text[250]);
     var
         PartyElement: XmlElement;
     begin
