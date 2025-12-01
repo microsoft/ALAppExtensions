@@ -122,6 +122,7 @@ codeunit 47001 "SL Cloud Migration"
 
         SelectLatestVersion();
         SLHelperFunctions.SetProcessesRunning(true);
+        SLHelperFunctions.RunPreMigrationCleanup();
 
         SLPopulateFiscalPeriods.CreateSLFiscalPeriodsFromGLSetup();
         SLFiscalPeriods.MoveStagingData();
