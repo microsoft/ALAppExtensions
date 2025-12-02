@@ -311,35 +311,37 @@ codeunit 13917 "Export ZUGFeRD Document"
         case HeaderRecordRef.Number of
             Database::"Sales Invoice Header":
                 begin
-                    CustomerNo := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Customer No.")).Value;
-                    CustomerName := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Name")).Value;
-                    Address := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Address")).Value;
-                    Address2 := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Address 2")).Value;
-                    PostCode := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to Post Code")).Value;
-                    City := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Bill-to City")).Value;
-                    CountryCode := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("VAT Country/Region Code")).Value;
-                    VATRegistrationNo := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("VAT Registration No.")).Value;
-                    YourReference := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Your Reference")).Value;
-                    Contact := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Sell-to Contact")).Value;
+                    HeaderRecordRef.SetTable(SalesInvoiceHeader);
+                    CustomerNo := SalesInvoiceHeader."Bill-to Customer No.";
+                    CustomerName := SalesInvoiceHeader."Bill-to Name";
+                    Address := SalesInvoiceHeader."Bill-to Address";
+                    Address2 := SalesInvoiceHeader."Bill-to Address 2";
+                    PostCode := SalesInvoiceHeader."Bill-to Post Code";
+                    City := SalesInvoiceHeader."Bill-to City";
+                    CountryCode := SalesInvoiceHeader."VAT Country/Region Code";
+                    VATRegistrationNo := SalesInvoiceHeader."VAT Registration No.";
+                    YourReference := SalesInvoiceHeader."Your Reference";
+                    Contact := SalesInvoiceHeader."Sell-to Contact";
                     ReportSelections.FindEmailBodyUsageForCust("Report Selection Usage"::"S.Invoice", CustomerNo, TempBodyReportSelections);
                     CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Invoice".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
-                    PhoneNumber := HeaderRecordRef.Field(SalesInvoiceHeader.FieldNo("Sell-to Phone No.")).Value;
+                    PhoneNumber := SalesInvoiceHeader."Sell-to Phone No.";
                 end;
             Database::"Sales Cr.Memo Header":
                 begin
-                    CustomerNo := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Customer No.")).Value;
-                    CustomerName := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Name")).Value;
-                    Address := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Address")).Value;
-                    Address2 := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Address 2")).Value;
-                    PostCode := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to Post Code")).Value;
-                    City := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Bill-to City")).Value;
-                    CountryCode := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("VAT Country/Region Code")).Value;
-                    VATRegistrationNo := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("VAT Registration No.")).Value;
-                    YourReference := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Your Reference")).Value;
-                    Contact := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Sell-to Contact")).Value;
+                    HeaderRecordRef.SetTable(SalesCrMemoHeader);
+                    CustomerNo := SalesCrMemoHeader."Bill-to Customer No.";
+                    CustomerName := SalesCrMemoHeader."Bill-to Name";
+                    Address := SalesCrMemoHeader."Bill-to Address";
+                    Address2 := SalesCrMemoHeader."Bill-to Address 2";
+                    PostCode := SalesCrMemoHeader."Bill-to Post Code";
+                    City := SalesCrMemoHeader."Bill-to City";
+                    CountryCode := SalesCrMemoHeader."VAT Country/Region Code";
+                    VATRegistrationNo := SalesCrMemoHeader."VAT Registration No.";
+                    YourReference := SalesCrMemoHeader."Your Reference";
+                    Contact := SalesCrMemoHeader."Sell-to Contact";
                     ReportSelections.FindEmailBodyUsageForCust("Report Selection Usage"::"S.Cr.Memo", CustomerNo, TempBodyReportSelections);
                     CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Cr.Memo".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
-                    PhoneNumber := HeaderRecordRef.Field(SalesCrMemoHeader.FieldNo("Sell-to Phone No.")).Value;
+                    PhoneNumber := SalesCrMemoHeader."Sell-to Phone No.";
                 end;
         end;
 
