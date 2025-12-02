@@ -324,6 +324,28 @@ codeunit 13918 "XRechnung XML Document Tests"
         VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
         VerifyInvoiceLineWithDiscount(SalesInvoiceHeader, TempXMLBuffer);
     end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInXRechnungFormatVerifyPDFEmbeddedToXML()
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice creates electronic document in XRechnung format with embedded PDF
+        Initialize();
+
+        // [GIVEN] Enable Embedding of PDF in export
+        SetEdocumentServiceEmbedPDFInExport(true);
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] PDF is embedded in the XML
+        VerifyInvoicePDFEmbeddedToXML(TempXMLBuffer);
+    end;
     #endregion
 
     #region SalesCreditMemo
@@ -584,6 +606,28 @@ codeunit 13918 "XRechnung XML Document Tests"
         // [THEN] XRechnung Electronic Document is created with 2 lines with line discount and invoice discount
         VerifyCrMemoWithInvDiscount(SalesCrMemoHeader, TempXMLBuffer);
         VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInXRechnungFormatVerifyPDFEmbeddedToXML()
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales cr. memo creates electronic document in XRechnung format with embedded PDF
+        Initialize();
+
+        // [GIVEN] Enable Embedding of PDF in export
+        SetEdocumentServiceEmbedPDFInExport(true);
+
+        // [GIVEN] Create and Post Sales Cr. Memo.
+        SalesCrMemoHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Export XRechnung Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] PDF is embedded in the XML
+        VerifyCrMemoPDFEmbeddedToXML(TempXMLBuffer);
     end;
     #endregion
 
@@ -1131,12 +1175,30 @@ codeunit 13918 "XRechnung XML Document Tests"
         Assert.AreEqual(FormatDecimal(SalesCrMemoHeader."Invoice Discount Amount" + SalesCrMemoHeader.Amount), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
 
+    local procedure VerifyInvoicePDFEmbeddedToXML(var TempXMLBuffer: Record "XML Buffer" temporary)
+    begin
+        TempXMLBuffer.SetRange(Path, '/ubl:Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject');
+        Assert.RecordIsNotEmpty(TempXMLBuffer, '');
+    end;
+
+    local procedure VerifyCrMemoPDFEmbeddedToXML(var TempXMLBuffer: Record "XML Buffer" temporary)
+    begin
+        TempXMLBuffer.SetRange(Path, '/ns0:CreditNote/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject');
+        Assert.RecordIsNotEmpty(TempXMLBuffer, '');
+    end;
+
     local procedure GetCurrencyCode(CurrencyCode: Code[10]): Code[10];
     begin
         if CurrencyCode <> '' then
             exit(CurrencyCode);
 
         exit(GeneralLedgerSetup."LCY Code");
+    end;
+
+    local procedure SetEdocumentServiceEmbedPDFInExport(NewEmbedPDFInExport: Boolean);
+    begin
+        EDocumentService."Embed PDF in export" := NewEmbedPDFInExport;
+        EDocumentService.Modify();
     end;
 
     local procedure SetEdocumentServiceBuyerReference(EInvoiceBuyerReference: Enum "E-Document Buyer Reference");
