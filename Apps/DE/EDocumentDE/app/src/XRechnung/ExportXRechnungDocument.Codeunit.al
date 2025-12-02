@@ -514,7 +514,7 @@ codeunit 13916 "Export XRechnung Document"
         PartyElement.Add(PartyLegalEntityElement);
     end;
 
-    local procedure InsertContact(var RootElement: XmlElement; ContactName: Text[100]; Email: Text[80]);
+    local procedure InsertContact(var RootElement: XmlElement; ContactName: Text[100]; Email: Text[250]);
     var
         ContactElement: XmlElement;
     begin
