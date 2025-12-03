@@ -5,15 +5,15 @@
 
 namespace Microsoft.DemoData.Analytics;
 
-using Microsoft.Sales.Document;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoTool;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Bank;
-using Microsoft.DemoData.Sales;
-using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.CRM;
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Sales.Document;
 
 codeunit 5692 "Create Extended Sales Document"
 {
@@ -31,12 +31,12 @@ codeunit 5692 "Create Extended Sales Document"
     var
         SalesHeader: Record "Sales Header";
         ContosoSales: Codeunit "Contoso Sales";
-        CreateCustomer: Codeunit "Create Customer";
         ContosoUtilities: Codeunit "Contoso Utilities";
-        CreatePaymentTerms: Codeunit "Create Payment Terms";
+        CreateCustomer: Codeunit "Create Customer";
+        CreateDeferralTemplate: Codeunit "Create Deferral Template";
         CreateItem: Codeunit "Create Item";
         CreatePaymentMethod: Codeunit "Create Payment Method";
-        CreateDeferralTemplate: Codeunit "Create Deferral Template";
+        CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateSalespersonPurchaser: Codeunit "Create Salesperson/Purchaser";
         FirstDayOfTheMonth: Date;
         LastDayOfTheMonth: Date;
@@ -241,14 +241,14 @@ codeunit 5692 "Create Extended Sales Document"
     var
         SalesHeader: Record "Sales Header";
         ContosoSales: Codeunit "Contoso Sales";
-        CreateCustomer: Codeunit "Create Customer";
         ContosoUtilities: Codeunit "Contoso Utilities";
-        CreatePaymentTerms: Codeunit "Create Payment Terms";
-        CreateItem: Codeunit "Create Item";
-        CreateSalesDocument: Codeunit "Create Sales Document";
-        CreateShippingData: Codeunit "Create Shipping Data";
-        CreateSalespersonPurchaser: Codeunit "Create Salesperson/Purchaser";
+        CreateCustomer: Codeunit "Create Customer";
         CreateDeferralTemplate: Codeunit "Create Deferral Template";
+        CreateItem: Codeunit "Create Item";
+        CreatePaymentTerms: Codeunit "Create Payment Terms";
+        CreateSalesDocument: Codeunit "Create Sales Document";
+        CreateSalespersonPurchaser: Codeunit "Create Salesperson/Purchaser";
+        CreateShippingData: Codeunit "Create Shipping Data";
     begin
         // Orders
         SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Order, CreateCustomer.DomesticAdatumCorporation(), CreateSalesDocument.OpenYourReference(), ContosoUtilities.AdjustDate(19020101D), CalculateDate('<-15W>'), CreatePaymentTerms.PaymentTermsDAYS30(), '', CalculateDate('<-15W>'), '', '', ContosoUtilities.AdjustDate(0D), '', '', CreateSalespersonPurchaser.LinaTownsend());
@@ -444,6 +444,6 @@ codeunit 5692 "Create Extended Sales Document"
     end;
 
     var
-        AnalyticsReferenceTok: Label 'ANALYTICS', MaxLength = 35;
         StartingDate: Date;
+        AnalyticsReferenceTok: Label 'ANALYTICS', MaxLength = 35;
 }
