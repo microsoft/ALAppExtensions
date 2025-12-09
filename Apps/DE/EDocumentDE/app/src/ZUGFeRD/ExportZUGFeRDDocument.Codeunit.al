@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
-using Microsoft.eServices.EDocument.Formats;
 using System.Telemetry;
 using Microsoft.eServices.EDocument;
 using Microsoft.Foundation.PaymentTerms;
@@ -283,13 +282,69 @@ codeunit 13917 "Export ZUGFeRD Document"
         OnAfterInsertSalesCrMemoHeaderData(RootXMLNode, SalesCrMemoHeader);
     end;
 
-    local procedure InsertApplicableHeaderTradeAgreement(var RootXMLNode: XmlElement; CustomerNo: Code[20]; YourReference: Text[35])
+    local procedure InsertApplicableHeaderTradeAgreement(var RootXMLNode: XmlElement; RecordVariant: Variant)
     var
-        Customer: Record Customer;
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempBodyReportSelections: Record "Report Selections" temporary;
+        ReportSelections: Record "Report Selections";
+        DataTypeManagement: Codeunit "Data Type Management";
+        HeaderRecordRef: RecordRef;
         HeaderTradeAgreementElement, SellerTradePartyElement, BuyerTradePartyElement, SpecifiedTaxRegistrationElement, IDElement : XmlElement;
         PostalTradeAddressElement, ContactElement : XmlElement;
         SellerIDAttr, BuyerIDAttr : XmlAttribute;
+        CustomerNo: Code[20];
+        CustomerName: Text[100];
+        Address: Text[100];
+        Address2: Text[100];
+        PostCode: Text[20];
+        City: Text[50];
+        CountryCode: Code[10];
+        VATRegistrationNo: Text[20];
+        YourReference: Text[35];
+        Contact: Text[100];
+        CustomerEmail: Text[250];
+        PhoneNumber: Text[30];
     begin
+        if not DataTypeManagement.GetRecordRef(RecordVariant, HeaderRecordRef) then
+            exit;
+        case HeaderRecordRef.Number of
+            Database::"Sales Invoice Header":
+                begin
+                    HeaderRecordRef.SetTable(SalesInvoiceHeader);
+                    CustomerNo := SalesInvoiceHeader."Bill-to Customer No.";
+                    CustomerName := SalesInvoiceHeader."Bill-to Name";
+                    Address := SalesInvoiceHeader."Bill-to Address";
+                    Address2 := SalesInvoiceHeader."Bill-to Address 2";
+                    PostCode := SalesInvoiceHeader."Bill-to Post Code";
+                    City := SalesInvoiceHeader."Bill-to City";
+                    CountryCode := SalesInvoiceHeader."VAT Country/Region Code";
+                    VATRegistrationNo := SalesInvoiceHeader."VAT Registration No.";
+                    YourReference := SalesInvoiceHeader."Your Reference";
+                    Contact := SalesInvoiceHeader."Sell-to Contact";
+                    ReportSelections.FindEmailBodyUsageForCust("Report Selection Usage"::"S.Invoice", CustomerNo, TempBodyReportSelections);
+                    CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Invoice".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
+                    PhoneNumber := SalesInvoiceHeader."Sell-to Phone No.";
+                end;
+            Database::"Sales Cr.Memo Header":
+                begin
+                    HeaderRecordRef.SetTable(SalesCrMemoHeader);
+                    CustomerNo := SalesCrMemoHeader."Bill-to Customer No.";
+                    CustomerName := SalesCrMemoHeader."Bill-to Name";
+                    Address := SalesCrMemoHeader."Bill-to Address";
+                    Address2 := SalesCrMemoHeader."Bill-to Address 2";
+                    PostCode := SalesCrMemoHeader."Bill-to Post Code";
+                    City := SalesCrMemoHeader."Bill-to City";
+                    CountryCode := SalesCrMemoHeader."VAT Country/Region Code";
+                    VATRegistrationNo := SalesCrMemoHeader."VAT Registration No.";
+                    YourReference := SalesCrMemoHeader."Your Reference";
+                    Contact := SalesCrMemoHeader."Sell-to Contact";
+                    ReportSelections.FindEmailBodyUsageForCust("Report Selection Usage"::"S.Cr.Memo", CustomerNo, TempBodyReportSelections);
+                    CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Cr.Memo".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
+                    PhoneNumber := SalesCrMemoHeader."Sell-to Phone No.";
+                end;
+        end;
+
         HeaderTradeAgreementElement := XmlElement.Create('ApplicableHeaderTradeAgreement', XmlNamespaceRAM);
         HeaderTradeAgreementElement.Add(XmlElement.Create('BuyerReference', XmlNamespaceRAM, GetBuyerReference(YourReference, CustomerNo)));
 
@@ -313,13 +368,21 @@ codeunit 13917 "Export ZUGFeRD Document"
             SellerTradePartyElement.Add(ContactElement);
         end;
 
+
         // Seller Address
         PostalTradeAddressElement := XmlElement.Create('PostalTradeAddress', XmlNamespaceRAM);
         PostalTradeAddressElement.Add(XmlElement.Create('PostcodeCode', XmlNamespaceRAM, CompanyInformation."Post Code"));
         PostalTradeAddressElement.Add(XmlElement.Create('LineOne', XmlNamespaceRAM, CompanyInformation.Address));
+        if CompanyInformation."Address 2" <> '' then
+            PostalTradeAddressElement.Add(XmlElement.Create('LineTwo', XmlNamespaceRAM, CompanyInformation."Address 2"));
         PostalTradeAddressElement.Add(XmlElement.Create('CityName', XmlNamespaceRAM, CompanyInformation.City));
         PostalTradeAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryRegionCode(CompanyInformation."Country/Region Code")));
         SellerTradePartyElement.Add(PostalTradeAddressElement);
+
+        //Seller E-Mail
+        if CompanyInformation."E-Mail" <> '' then
+            SellerTradePartyElement.Add(XmlElement.Create('URIUniversalCommunication', XmlNamespaceRAM,
+                XmlElement.Create('URIID', XmlNamespaceRAM, XmlAttribute.Create('schemeID', 'EM'), CompanyInformation."E-Mail")));
 
         if CompanyInformation."VAT Registration No." <> '' then begin
             SellerIDAttr := XmlAttribute.Create('schemeID', 'VA');
@@ -331,33 +394,40 @@ codeunit 13917 "Export ZUGFeRD Document"
         HeaderTradeAgreementElement.Add(SellerTradePartyElement);
 
         // Buyer
-        Customer.Get(CustomerNo);
         BuyerTradePartyElement := XmlElement.Create('BuyerTradeParty', XmlNamespaceRAM);
-        BuyerTradePartyElement.Add(XmlElement.Create('Name', XmlNamespaceRAM, Customer.Name));
+        BuyerTradePartyElement.Add(XmlElement.Create('Name', XmlNamespaceRAM, CustomerName));
 
         // Buyer Contact
-        if Customer."Phone No." <> '' then begin
+        if PhoneNumber <> '' then begin
             ContactElement := XmlElement.Create('DefinedTradeContact', XmlNamespaceRAM);
-            ContactElement.Add(XmlElement.Create('PersonName', XmlNamespaceRAM, Customer.Contact));
+            ContactElement.Add(XmlElement.Create('PersonName', XmlNamespaceRAM, Contact));
             ContactElement.Add(XmlElement.Create('TelephoneUniversalCommunication', XmlNamespaceRAM,
-                XmlElement.Create('CompleteNumber', XmlNamespaceRAM, Customer."Phone No.")));
-            if Customer."E-Mail" <> '' then
+                XmlElement.Create('CompleteNumber', XmlNamespaceRAM, PhoneNumber)));
+            if CustomerEmail <> '' then
                 ContactElement.Add(XmlElement.Create('EmailURIUniversalCommunication', XmlNamespaceRAM,
-                    XmlElement.Create('URIID', XmlNamespaceRAM, Customer."E-Mail")));
+                    XmlElement.Create('URIID', XmlNamespaceRAM, CustomerEmail)));
             BuyerTradePartyElement.Add(ContactElement);
         end;
 
+
         // Buyer Address
         PostalTradeAddressElement := XmlElement.Create('PostalTradeAddress', XmlNamespaceRAM);
-        PostalTradeAddressElement.Add(XmlElement.Create('PostcodeCode', XmlNamespaceRAM, Customer."Post Code"));
-        PostalTradeAddressElement.Add(XmlElement.Create('LineOne', XmlNamespaceRAM, Customer.Address));
-        PostalTradeAddressElement.Add(XmlElement.Create('CityName', XmlNamespaceRAM, Customer.City));
-        PostalTradeAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryRegionCode(Customer."Country/Region Code")));
+        PostalTradeAddressElement.Add(XmlElement.Create('PostcodeCode', XmlNamespaceRAM, PostCode));
+        PostalTradeAddressElement.Add(XmlElement.Create('LineOne', XmlNamespaceRAM, Address));
+        if Address2 <> '' then
+            PostalTradeAddressElement.Add(XmlElement.Create('LineTwo', XmlNamespaceRAM, Address2));
+        PostalTradeAddressElement.Add(XmlElement.Create('CityName', XmlNamespaceRAM, City));
+        PostalTradeAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryRegionCode(CountryCode)));
         BuyerTradePartyElement.Add(PostalTradeAddressElement);
 
-        if Customer."VAT Registration No." <> '' then begin
+        // Buyer E-Mail
+        if CustomerEmail <> '' then
+            BuyerTradePartyElement.Add(XmlElement.Create('URIUniversalCommunication', XmlNamespaceRAM,
+                XmlElement.Create('URIID', XmlNamespaceRAM, XmlAttribute.Create('schemeID', 'EM'), CustomerEmail)));
+
+        if VATRegistrationNo <> '' then begin
             BuyerIDAttr := XmlAttribute.Create('schemeID', 'VA');
-            IDElement := XmlElement.Create('ID', XmlNamespaceRAM, BuyerIDAttr, GetVATRegistrationNo(Customer."VAT Registration No.", Customer."Country/Region Code"));
+            IDElement := XmlElement.Create('ID', XmlNamespaceRAM, BuyerIDAttr, GetVATRegistrationNo(VATRegistrationNo, CountryCode));
             SpecifiedTaxRegistrationElement := XmlElement.Create('SpecifiedTaxRegistration', XmlNamespaceRAM);
             SpecifiedTaxRegistrationElement.Add(IDElement);
             BuyerTradePartyElement.Add(SpecifiedTaxRegistrationElement);
@@ -526,7 +596,7 @@ codeunit 13917 "Export ZUGFeRD Document"
             repeat
                 InsertInvoiceLine(SupplyChainTradeTransactionElement, SalesInvoiceLine, Currency, CurrencyCode, SalesInvoiceHeader."Prices Including VAT");
             until SalesInvoiceLine.Next() = 0;
-        InsertApplicableHeaderTradeAgreement(SupplyChainTradeTransactionElement, SalesInvoiceHeader."Sell-to Customer No.", SalesInvoiceHeader."Your Reference");
+        InsertApplicableHeaderTradeAgreement(SupplyChainTradeTransactionElement, SalesInvoiceHeader);
         InsertApplicableHeaderTradeDelivery(SupplyChainTradeTransactionElement, SalesInvoiceHeader);
         SalesInvoiceHeader.CalcFields("Amount Including VAT", Amount);
         InsertApplicableHeaderTradeSettlement(SupplyChainTradeTransactionElement, SalesInvoiceHeader, SalesInvoiceLine, CurrencyCode, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
@@ -608,7 +678,7 @@ codeunit 13917 "Export ZUGFeRD Document"
             repeat
                 InsertCrMemoLine(SupplyChainTradeTransactionElement, SalesCrMemoLine, Currency, CurrencyCode, SalesCrMemoHeader."Prices Including VAT");
             until SalesCrMemoLine.Next() = 0;
-        InsertApplicableHeaderTradeAgreement(SupplyChainTradeTransactionElement, SalesCrMemoHeader."Sell-to Customer No.", SalesCrMemoHeader."Your Reference");
+        InsertApplicableHeaderTradeAgreement(SupplyChainTradeTransactionElement, SalesCrMemoHeader);
         InsertApplicableHeaderTradeDelivery(SupplyChainTradeTransactionElement, SalesCrMemoHeader);
         SalesCrMemoHeader.CalcFields("Amount Including VAT", Amount);
         InsertApplicableHeaderTradeSettlement(SupplyChainTradeTransactionElement, SalesCrMemoHeader, SalesCrMemoLine, CurrencyCode, LineAmount, LineVATAmount, LineAmounts, LineDiscAmount);
