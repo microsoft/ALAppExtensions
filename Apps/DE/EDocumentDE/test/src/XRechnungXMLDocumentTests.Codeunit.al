@@ -1203,6 +1203,7 @@ codeunit 13918 "XRechnung XML Document Tests"
 
     local procedure SetEdocumentServiceBuyerReference(EInvoiceBuyerReference: Enum "E-Document Buyer Reference");
     begin
+        EDocumentService."Buyer Reference Mandatory" := true;
         EDocumentService."Buyer Reference" := EInvoiceBuyerReference;
         EDocumentService.Modify();
     end;
