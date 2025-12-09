@@ -3,6 +3,7 @@ namespace Microsoft.DataMigration.GP;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Payables;
 using Microsoft.Finance.VAT.Reporting;
+using Microsoft.DataMigration;
 
 codeunit 42006 "GP IRS1099 Migration Validator"
 {
