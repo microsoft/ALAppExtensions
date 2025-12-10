@@ -30,7 +30,7 @@ codeunit 40032 "Migration Validation"
                 Clear(CloudMigrationWarning);
                 CloudMigrationWarning."Entry No." := 0;
                 CloudMigrationWarning."Warning Type" := CloudMigrationWarning."Warning Type"::"Migration Validator";
-                CloudMigrationWarning.Message := CopyStr(GetLastErrorText(), 1, MaxStrLen(CloudMigrationWarning.Message));
+                CloudMigrationWarning.Message := CopyStr(StrSubstNo(CloudMigrationWarningErr, MigrationValidatorRegistry."Validator Code", GetLastErrorText()), 1, MaxStrLen(CloudMigrationWarning.Message));
                 CloudMigrationWarning.Insert();
             end;
         until MigrationValidatorRegistry.Next() = 0;
@@ -326,6 +326,7 @@ codeunit 40032 "Migration Validation"
         ContextIsSet: Boolean;
         SetContextErr: Label 'Context must be set before calling this procedure.';
         UnsupportedTypeErr: Label 'Equality assertions only support Boolean, Option, Integer, BigInteger, Decimal, Code, Text, Date, DateFormula, Time, Duration, and DateTime values. Current value:%1.', Comment = '%1 = The unsupported variant type.';
+        CloudMigrationWarningErr: Label '%1 - %2', Comment = '%1 = Validator Code, %2 = Error message';
 
     [IntegrationEvent(false, false)]
     local procedure OnTestOverrideWarning(Validator: Code[20]; Test: Code[30]; TestContext: Text[250]; EntryIsWarning: Boolean; var OverrideIsWarning: Boolean)
