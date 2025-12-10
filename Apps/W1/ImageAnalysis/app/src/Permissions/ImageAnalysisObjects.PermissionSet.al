@@ -8,9 +8,6 @@ permissionset 4211 "ImageAnalysis - Objects"
     Caption = 'Image Analyzer - Objects';
 
     Permissions = codeunit "Image Analyzer Ext. Mgt." = X,
-#if not CLEAN25
-                    codeunit "Contact Picture Analyze" = X,
-#endif
                     codeunit "Image Analysis Install" = X,
                     codeunit "Item Attr Populate" = X,
                     page "Image Analysis Blacklist" = X,

@@ -43,37 +43,6 @@ pageextension 7279 "Sales Quote Sub Form Ext" extends "Sales Quote Subform"
                 end;
             }
         }
-#if not CLEAN25
-        addlast(processing)
-        {
-            group("Copilot")
-            {
-                Image = SparkleFilled;
-                ShowAs = SplitButton;
-                Visible = false;
-                ObsoleteReason = 'Replaced by Suggest Sales Line Prompting';
-                ObsoleteState = Pending;
-                ObsoleteTag = '25.0';
-
-                action("Suggest Sales Lines")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Suggest sales lines';
-                    Image = SparkleFilled;
-                    ToolTip = 'Get sales lines suggestions from Copilot';
-                    Visible = false;
-                    ObsoleteReason = 'Replaced by Suggest Sales Line Prompting';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '25.0';
-
-                    trigger OnAction()
-                    begin
-                        SalesLineAISuggestionImp.GetLinesSuggestions(Rec);
-                    end;
-                }
-            }
-        }
-#endif
     }
 
     var

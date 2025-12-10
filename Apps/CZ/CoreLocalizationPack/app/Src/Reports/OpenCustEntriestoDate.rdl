@@ -43,10 +43,10 @@
                                     <Width>1.93167cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>4.5387cm</Width>
+                                    <Width>4.25cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>1.21333cm</Width>
+                                    <Width>1.502cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>1.67663cm</Width>
@@ -1483,7 +1483,7 @@
                               <DataSetName>DataSet_Result</DataSetName>
                               <Top>0.00529cm</Top>
                               <Height>2.11505cm</Height>
-                              <Width>18.00003cm</Width>
+                              <Width>18cm</Width>
                               <Visibility>
                                 <Hidden>=(Fields!gboSkipDetail.Value AND Fields!gboSkipTotal.Value)</Hidden>
                               </Visibility>

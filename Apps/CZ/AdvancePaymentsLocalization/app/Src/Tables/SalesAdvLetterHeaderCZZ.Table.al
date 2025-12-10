@@ -89,9 +89,10 @@ table 31004 "Sales Adv. Letter Header CZZ"
                             Confirmed := true
                         else
                             Confirmed := Confirm(ConfirmChangeQst, false, FieldCaption("Bill-to Customer No."));
-                        if Confirmed then
-                            OnValidateBillToCustomerNoOnAfterConfirmed(Rec)
-                        else
+                        if Confirmed then begin
+                            OnValidateBillToCustomerNoOnAfterConfirmed(Rec);
+                            AltCustVATRegFacadeCZZ.Init(Rec, xRec);
+                        end else
                             "Bill-to Customer No." := xRec."Bill-to Customer No.";
                     end;
 
@@ -510,7 +511,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 ApplicableCountryCode := Rec."VAT Country/Region Code";
                 if ApplicableCountryCode = '' then
                     ApplicableCountryCode := Customer."Country/Region Code";
-                if not VATRegistrationNoFormat.Test("VAT Registration No.", Customer."Country/Region Code", Customer."No.", Database::Customer) then
+                if not VATRegistrationNoFormat.Test("VAT Registration No.", ApplicableCountryCode, Customer."No.", Database::Customer) then
                     exit;
 
                 ApplicableCountryCode := Customer."Country/Region Code";
@@ -729,6 +730,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
             Caption = 'VAT Country/Region Code';
             DataClassification = CustomerContent;
             TableRelation = "Country/Region";
+
+            trigger OnValidate()
+            begin
+                AltCustVATRegFacadeCZZ.UpdateSetupOnVATCountryChangeInSalesAdvLetterHeader(Rec, xRec);
+            end;
         }
         field(80; Status; Enum "Advance Letter Doc. Status CZZ")
         {
@@ -746,6 +752,16 @@ table 31004 "Sales Adv. Letter Header CZZ"
             Caption = 'Format Region';
             TableRelation = "Language Selection"."Language Tag";
             DataClassification = CustomerContent;
+        }
+        field(100; "Alt. VAT Registration No."; Boolean)
+        {
+            Caption = 'Alternative VAT Registration No.';
+            Editable = false;
+        }
+        field(101; "Alt. VAT Bus Posting Group"; Boolean)
+        {
+            Caption = 'Alternative VAT Bus. Posting Group';
+            Editable = false;
         }
 #pragma warning disable AA0232
         field(200; "Amount Including VAT"; Decimal)
@@ -901,6 +917,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         Customer: Record Customer;
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         ResponsibilityCenter: Record "Responsibility Center";
+        AltCustVATRegFacadeCZZ: Codeunit "Alt. Cust. VAT Reg. Facade CZZ";
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
@@ -964,6 +981,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";
         "Responsibility Center" := UserSetupManagement.GetRespCenter(0, "Responsibility Center");
+
+        AltCustVATRegFacadeCZZ.Init(Rec, xRec);
 
         OnAfterInitRecord(Rec);
     end;
@@ -1095,6 +1114,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
     procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)
     begin
         HideValidationDialog := NewHideValidationDialog;
+    end;
+
+    procedure GetHideValidationDialog(): Boolean
+    begin
+        exit(HideValidationDialog);
     end;
 
     local procedure UpdateBankInfo(BankAccountCode: Code[20]; BankAccountNo: Text[30]; BankBranchNo: Text[20]; BankName: Text[100]; TransitNo: Text[20]; IBANCode: Code[50]; SWIFTCode: Code[20])
@@ -1843,9 +1867,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         IsHandled: Boolean;
     begin
         OnBeforeUpdateVATRegNoInCust(Rec, Customer, ShouldUpdate, IsHandled);
-        if IsHandled then
-            exit(ShouldUpdate);
-        exit(Customer."VAT Registration No." = '');
+        exit(AltCustVATRegFacadeCZZ.UpdateVATRegNoInCustFromSalesAdvLetterHeader(Rec, Customer));
     end;
 
     [IntegrationEvent(false, false)]

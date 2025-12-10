@@ -2230,11 +2230,6 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 GenJournalLine."Source Currency Code" := DetailedVendorLedgEntry1."Currency Code";
                 GenJournalLine."System-Created Entry" := true;
                 OnUnapplyVendLedgEntryOnBeforeUnapplyVendLedgEntry(VendorLedgerEntry, DetailedVendorLedgEntry1, GenJournalLine);
-#if not CLEAN25
-#pragma warning disable AL0432
-                OnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry(VendorLedgerEntry, DetailedVendorLedgEntry1, GenJournalLine);
-#pragma warning restore AL0432
-#endif
                 GenJnlPostLine.UnapplyVendLedgEntry(GenJournalLine, DetailedVendorLedgEntry1);
             end else
                 Succes := true;
@@ -2857,13 +2852,6 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
     local procedure OnAfterInitGenJournalLineFromVendorLedgerEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
-#if not CLEAN25
-    [Obsolete('Replaced by OnUnapplyVendLedgEntryOnBeforeUnapplyVendLedgEntry event.', '25.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; DetailedVendorLedgEntry1: Record "Detailed Vendor Ledg. Entry"; GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnUnapplyVendLedgEntryOnBeforeUnapplyVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry"; var GenJournalLine: Record "Gen. Journal Line")

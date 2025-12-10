@@ -51,6 +51,9 @@ codeunit 4304 "SOA Session Events"
         if GlobalSOAKPITrackAll.IsOrderTakerAgentSession(AgentTaskID) then
             exit;
 
+        if GlobalSOAAwarenessNotifications.IsBindingNeeded() then
+            if BindSubscription(GlobalSOAAwarenessNotifications) then;
+
         // Cover a case when a regular session is updating the work Agent did, if there is any work to track
         TrackChanges := GlobalSOAKPITrackAll.TrackChanges();
         if not TrackChanges then
@@ -117,6 +120,7 @@ codeunit 4304 "SOA Session Events"
         GlobalSOAKPITrackAgents: Codeunit "SOA - KPI Track Agents";
         GlobalSOAKPITrackAll: Codeunit "SOA - KPI Track All";
         GlobalSOAUserNotifications: Codeunit "SOA User Notifications";
+        GlobalSOAAwarenessNotifications: Codeunit "SOA Awareness Notifications";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ContactFilteringDisabledAgentTxt: Label 'Contact and customer filtering is disabled for this agent through an event.', Locked = true;
         FailedToBindUserKPISubscriptionErr: Label 'Failed to bind subscription for User Agent KPI changes.', Locked = true;

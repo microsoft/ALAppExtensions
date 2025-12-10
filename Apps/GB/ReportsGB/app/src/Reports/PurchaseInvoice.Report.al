@@ -846,13 +846,7 @@ report 10581 "Purchase Invoice"
         ShipmentMethod: Record "Shipment Method";
         PaymentTerms: Record "Payment Terms";
         SalesPurchPerson: Record "Salesperson/Purchaser";
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
         RespCenter: Record "Responsibility Center";
@@ -935,4 +929,3 @@ report 10581 "Purchase Invoice"
         FeatureNameTok: Label 'Purchase Invoice GB', Locked = true;
         EventNameTok: Label 'Purchase Invoice GB report has been used', Locked = true;
 }
-

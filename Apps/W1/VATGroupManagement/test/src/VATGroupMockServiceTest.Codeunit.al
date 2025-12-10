@@ -9,7 +9,7 @@ codeunit 139526 "VAT Group Mock Service Test"
         LibraryVATGroup: Codeunit "Library - VAT Group";
         IsInitialized: Boolean;
         BCVersion: Enum "VAT Group BC Version";
-        URLTxt: Label 'https://localhost:8080/vatgroup-mockservice', Locked = true;
+        URLTxt: Label 'https://vatgroup-mockservice', Locked = true;
         GuidBCTxt: Label 'A98C93EE-BC95-4C34-A34A-E6D289F768AA', Locked = true;
         Guid2018Txt: Label '4F35940F-FEB9-4370-897E-0A86B8270B95', Locked = true;
         Guid2017Txt: Label '417EB2A7-D8B3-4CA2-A285-57262BD64A65', Locked = true;
@@ -17,6 +17,7 @@ codeunit 139526 "VAT Group Mock Service Test"
         VATReturn2Txt: Label 'VAT-RETURN-2', Locked = true;
 
     [Test]
+    [HandlerFunctions('VATGroupHttpClientHandler')]
     procedure SingleStatus_BC()
     begin
         // [SCENARIO 374187] Update single VAT Return Group Status (Business Central representer mode)
@@ -32,6 +33,7 @@ codeunit 139526 "VAT Group Mock Service Test"
     end;
 
     [Test]
+    [HandlerFunctions('VATGroupHttpClientHandler')]
     procedure SingleStatus_2018()
     begin
         // [SCENARIO 374187] Update single VAT Return Group Status (NAV2018 representer mode)
@@ -47,6 +49,7 @@ codeunit 139526 "VAT Group Mock Service Test"
     end;
 
     [Test]
+    [HandlerFunctions('VATGroupHttpClientHandler')]
     procedure SingleStatus_2017()
     begin
         // [SCENARIO 374187] Update single VAT Return Group Status (NAV2017 representer mode)
@@ -62,6 +65,7 @@ codeunit 139526 "VAT Group Mock Service Test"
     end;
 
     [Test]
+    [HandlerFunctions('VATGroupHttpClientHandler')]
     procedure BatchStatus_BC()
     begin
         // [SCENARIO 374187] Update several VAT Returns Group Status via batch URL request (Business Central representer mode)
@@ -78,6 +82,7 @@ codeunit 139526 "VAT Group Mock Service Test"
     end;
 
     [Test]
+    [HandlerFunctions('VATGroupHttpClientHandler')]
     procedure BatchStatus_2018()
     begin
         // [SCENARIO 374187] Update several VAT Returns Group Status via batch URL request (NAV2018 representer mode)
@@ -94,6 +99,7 @@ codeunit 139526 "VAT Group Mock Service Test"
     end;
 
     [Test]
+    [HandlerFunctions('VATGroupHttpClientHandler')]
     procedure BatchStatus_2017()
     begin
         // [SCENARIO 374187] Update several VAT Returns Group Status via batch URL request (NAV2017 representer mode)
@@ -110,6 +116,7 @@ codeunit 139526 "VAT Group Mock Service Test"
     end;
 
     [Test]
+    [HandlerFunctions('VATGroupHttpClientHandler')]
     procedure Submit_BC()
     var
         VATReportHeader: Record "VAT Report Header";
@@ -127,6 +134,7 @@ codeunit 139526 "VAT Group Mock Service Test"
     end;
 
     [Test]
+    [HandlerFunctions('VATGroupHttpClientHandler')]
     procedure Submit_2018()
     var
         VATReportHeader: Record "VAT Report Header";
@@ -144,6 +152,7 @@ codeunit 139526 "VAT Group Mock Service Test"
     end;
 
     [Test]
+    [HandlerFunctions('VATGroupHttpClientHandler')]
     procedure Submit_2017()
     var
         VATReportHeader: Record "VAT Report Header";
@@ -204,5 +213,37 @@ codeunit 139526 "VAT Group Mock Service Test"
         REPEAT
             VATReportHeader.TestField("VAT Group Status", ExpectedStatus);
         UNTIL VATReportHeader.Next() = 0;
+    end;
+
+
+    [HttpClientHandler]
+    procedure VATGroupHttpClientHandler(Request: TestHttpRequestMessage; var Response: TestHttpResponseMessage): Boolean
+    var
+        InStream: InStream;
+        ResourceName: Text;
+    begin
+        case Request.Path of
+            URLTxt + '/api/microsoft/vatgroup/v1.0/companies(name=''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissionStatus',
+            URLTxt + '/api/v1.0/companies(name=''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissionStatus',
+            URLTxt + '/OData/Company(''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissionStatus':
+                if Request.RequestType = HttpRequestType::Get then
+                    ResourceName := 'status_single_released.json';
+
+            URLTxt + '/api/v1.0/$batch',
+            URLTxt + '/api/microsoft/vatgroup/v1.0/$batch',
+            URLTxt + '/OData/$batch':
+                if Request.RequestType = HttpRequestType::Post then
+                    ResourceName := 'status_batch_released.json';
+            URLTxt + '/api/microsoft/vatgroup/v1.0/companies(name=''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissions',
+            URLTxt + '/api/v1.0/companies(name=''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissions',
+            URLTxt + '/OData/Company(''VAT%20Group%20Repr%20Test%20Company'')/vatGroupSubmissions':
+                if Request.RequestType = HttpRequestType::Post then
+                    ResourceName := '200_blanked.json';
+        end;
+
+        NavApp.GetResource(ResourceName, InStream);
+        Response.Content.WriteFrom(InStream);
+        Response.HttpStatusCode := 200;
+        exit(false);
     end;
 }

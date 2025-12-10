@@ -35,7 +35,7 @@ codeunit 4399 "SOA Annotation"
     var
         SOASetup: Record "SOA Setup";
     begin
-        SOASetup.SetRange("Agent User Security ID", AgentUserId);
+        SOASetup.SetRange("User Security ID", AgentUserId);
         if not SOASetup.FindFirst() then
             exit;
 

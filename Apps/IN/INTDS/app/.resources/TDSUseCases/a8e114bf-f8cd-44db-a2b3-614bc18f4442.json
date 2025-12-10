@@ -2,7 +2,7 @@
     {
         "CaseID": "{A8E114BF-F8CD-44DB-A2B3-614BC18F4442}",
         "Description": "Calculation of Tax Deduction at Source on Vendor Invoice where  PAN No. is specified without Concessional Codes.\n",
-        "Version": 29,
+        "Version": 30,
         "MinorVersion": 0,
         "TaxType": "TDS",
         "ChangedBy": "Microsoft",
@@ -5420,6 +5420,72 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "ActivityType": "IFSTATEMENT",
+                            "Activity": {
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Not Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Table",
+                                                    "TableName": "Purchase Header",
+                                                    "TableFieldName": "Applies-to Doc. No.",
+                                                    "Method": "First",
+                                                    "TableFilters": [
+                                                        {
+                                                            "FiterFieldName": "Document Type",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Purchase Line",
+                                                                    "FieldName": "Document Type"
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "FiterFieldName": "No.",
+                                                            "FilterType": "Equals",
+                                                            "FilterValue": {
+                                                                "Type": "Lookup",
+                                                                "Lookup": {
+                                                                    "SourceType": "Current Record",
+                                                                    "TableName": "Purchase Line",
+                                                                    "FieldName": "Document No."
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Constant",
+                                                "Value": ""
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "SETVARIABLE",
+                                        "Activity": {
+                                            "OutputVariableName": "TDSTaxableAmount",
+                                            "OutputValue": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Variable",
+                                                    "VariableName": "TaxableAmountExclApplied"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -7761,7 +7827,50 @@
                                 ],
                                 "ElseIf": {
                                     "Condition": {
-                                        "Body": []
+                                        "Body": [
+                                            {
+                                                "Operator": " ",
+                                                "ConditionType": "Equals",
+                                                "LHS": {
+                                                    "Lookup": {
+                                                        "SourceType": "Table",
+                                                        "TableName": "Purchase Header",
+                                                        "TableFieldName": "Applies-to Doc. No.",
+                                                        "Method": "First",
+                                                        "TableFilters": [
+                                                            {
+                                                                "FiterFieldName": "Document Type",
+                                                                "FilterType": "Equals",
+                                                                "FilterValue": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Purchase Line",
+                                                                        "FieldName": "Document Type"
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "FiterFieldName": "No.",
+                                                                "FilterType": "Equals",
+                                                                "FilterValue": {
+                                                                    "Type": "Lookup",
+                                                                    "Lookup": {
+                                                                        "SourceType": "Current Record",
+                                                                        "TableName": "Purchase Line",
+                                                                        "FieldName": "Document No."
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "RHS": {
+                                                    "Type": "Constant",
+                                                    "Value": ""
+                                                }
+                                            }
+                                        ]
                                     },
                                     "Body": [
                                         {
@@ -8786,13 +8895,41 @@
                                 "ConditionType": "Equals",
                                 "LHS": {
                                     "Lookup": {
-                                        "SourceType": "Column",
-                                        "RateColumnName": "Per Contract Value"
+                                        "SourceType": "Table",
+                                        "TableName": "Allowed Sections",
+                                        "TableFieldName": "Threshold Overlook",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Vendor No",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Purchase Line",
+                                                        "FieldName": "Pay-to Vendor No."
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "FiterFieldName": "TDS Section",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Purchase Line",
+                                                        "FieldName": "TDS Section Code"
+                                                    }
+                                                }
+                                            }
+                                        ]
                                     }
                                 },
                                 "RHS": {
                                     "Type": "Constant",
-                                    "Value": ""
+                                    "Value": "false"
                                 }
                             }
                         ]
@@ -8808,78 +8945,8 @@
                                             "ConditionType": "Equals",
                                             "LHS": {
                                                 "Lookup": {
-                                                    "SourceType": "Table",
-                                                    "TableName": "Purchase Header",
-                                                    "TableFieldName": "Applies-to Doc. Type",
-                                                    "Method": "First",
-                                                    "TableFilters": [
-                                                        {
-                                                            "FiterFieldName": "Document Type",
-                                                            "FilterType": "Equals",
-                                                            "FilterValue": {
-                                                                "Type": "Lookup",
-                                                                "Lookup": {
-                                                                    "SourceType": "Current Record",
-                                                                    "TableName": "Purchase Line",
-                                                                    "FieldName": "Document Type"
-                                                                }
-                                                            }
-                                                        },
-                                                        {
-                                                            "FiterFieldName": "No.",
-                                                            "FilterType": "Equals",
-                                                            "FilterValue": {
-                                                                "Type": "Lookup",
-                                                                "Lookup": {
-                                                                    "SourceType": "Current Record",
-                                                                    "TableName": "Purchase Line",
-                                                                    "FieldName": "Document No."
-                                                                }
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            },
-                                            "RHS": {
-                                                "Type": "Constant",
-                                                "Value": "Payment"
-                                            }
-                                        },
-                                        {
-                                            "Operator": "and",
-                                            "ConditionType": "Not Equals",
-                                            "LHS": {
-                                                "Lookup": {
-                                                    "SourceType": "Table",
-                                                    "TableName": "Purchase Header",
-                                                    "TableFieldName": "Applies-to Doc. No.",
-                                                    "Method": "First",
-                                                    "TableFilters": [
-                                                        {
-                                                            "FiterFieldName": "Document Type",
-                                                            "FilterType": "Equals",
-                                                            "FilterValue": {
-                                                                "Type": "Lookup",
-                                                                "Lookup": {
-                                                                    "SourceType": "Current Record",
-                                                                    "TableName": "Purchase Line",
-                                                                    "FieldName": "Document Type"
-                                                                }
-                                                            }
-                                                        },
-                                                        {
-                                                            "FiterFieldName": "No.",
-                                                            "FilterType": "Equals",
-                                                            "FilterValue": {
-                                                                "Type": "Lookup",
-                                                                "Lookup": {
-                                                                    "SourceType": "Current Record",
-                                                                    "TableName": "Purchase Line",
-                                                                    "FieldName": "Document No."
-                                                                }
-                                                            }
-                                                        }
-                                                    ]
+                                                    "SourceType": "Column",
+                                                    "RateColumnName": "Per Contract Value"
                                                 }
                                             },
                                             "RHS": {
@@ -8897,339 +8964,128 @@
                                                 "Body": [
                                                     {
                                                         "Operator": " ",
-                                                        "ConditionType": "Is Less Than Or Equals To",
+                                                        "ConditionType": "Equals",
                                                         "LHS": {
                                                             "Lookup": {
-                                                                "SourceType": "Variable",
-                                                                "VariableName": "PositiveAmountTillThisLine"
+                                                                "SourceType": "Table",
+                                                                "TableName": "Purchase Header",
+                                                                "TableFieldName": "Applies-to Doc. Type",
+                                                                "Method": "First",
+                                                                "TableFilters": [
+                                                                    {
+                                                                        "FiterFieldName": "Document Type",
+                                                                        "FilterType": "Equals",
+                                                                        "FilterValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Current Record",
+                                                                                "TableName": "Purchase Line",
+                                                                                "FieldName": "Document Type"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "FiterFieldName": "No.",
+                                                                        "FilterType": "Equals",
+                                                                        "FilterValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Current Record",
+                                                                                "TableName": "Purchase Line",
+                                                                                "FieldName": "Document No."
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ]
                                                             }
                                                         },
                                                         "RHS": {
-                                                            "Type": "Lookup",
+                                                            "Type": "Constant",
+                                                            "Value": "Payment"
+                                                        }
+                                                    },
+                                                    {
+                                                        "Operator": "and",
+                                                        "ConditionType": "Not Equals",
+                                                        "LHS": {
                                                             "Lookup": {
-                                                                "SourceType": "Variable",
-                                                                "VariableName": "AppliedAmount"
+                                                                "SourceType": "Table",
+                                                                "TableName": "Purchase Header",
+                                                                "TableFieldName": "Applies-to Doc. No.",
+                                                                "Method": "First",
+                                                                "TableFilters": [
+                                                                    {
+                                                                        "FiterFieldName": "Document Type",
+                                                                        "FilterType": "Equals",
+                                                                        "FilterValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Current Record",
+                                                                                "TableName": "Purchase Line",
+                                                                                "FieldName": "Document Type"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "FiterFieldName": "No.",
+                                                                        "FilterType": "Equals",
+                                                                        "FilterValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Current Record",
+                                                                                "TableName": "Purchase Line",
+                                                                                "FieldName": "Document No."
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ]
                                                             }
+                                                        },
+                                                        "RHS": {
+                                                            "Type": "Constant",
+                                                            "Value": ""
                                                         }
                                                     }
                                                 ]
                                             },
                                             "Body": [
                                                 {
-                                                    "ActivityType": "SETVARIABLE",
+                                                    "ActivityType": "IFSTATEMENT",
                                                     "Activity": {
-                                                        "OutputVariableName": "TDSBaseAmt",
-                                                        "OutputValue": {
-                                                            "Type": "Constant",
-                                                            "Value": ""
-                                                        }
-                                                    }
-                                                }
-                                            ],
-                                            "ElseIf": {
-                                                "Condition": {
-                                                    "Body": [
-                                                        {
-                                                            "Operator": " ",
-                                                            "ConditionType": "Is Greater Than",
-                                                            "LHS": {
-                                                                "Lookup": {
-                                                                    "SourceType": "Variable",
-                                                                    "VariableName": "PositiveAmountTillThisLine"
-                                                                }
-                                                            },
-                                                            "RHS": {
-                                                                "Type": "Lookup",
-                                                                "Lookup": {
-                                                                    "SourceType": "Variable",
-                                                                    "VariableName": "AppliedAmount"
-                                                                }
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                "Body": [
-                                                    {
-                                                        "ActivityType": "NUMERICEXPRESSION",
-                                                        "Activity": {
-                                                            "VariableName": "TDSBaseAmt",
-                                                            "Expression": "CurrentLineAmt-AppliedAmount",
-                                                            "Tokens": [
+                                                        "Condition": {
+                                                            "Body": [
                                                                 {
-                                                                    "TokenName": "AppliedAmount",
-                                                                    "TokenValue": {
+                                                                    "Operator": " ",
+                                                                    "ConditionType": "Is Less Than Or Equals To",
+                                                                    "LHS": {
+                                                                        "Lookup": {
+                                                                            "SourceType": "Variable",
+                                                                            "VariableName": "PositiveAmountTillThisLine"
+                                                                        }
+                                                                    },
+                                                                    "RHS": {
                                                                         "Type": "Lookup",
                                                                         "Lookup": {
                                                                             "SourceType": "Variable",
                                                                             "VariableName": "AppliedAmount"
                                                                         }
                                                                     }
-                                                                },
-                                                                {
-                                                                    "TokenName": "CurrentLineAmt",
-                                                                    "TokenValue": {
-                                                                        "Type": "Lookup",
-                                                                        "Lookup": {
-                                                                            "SourceType": "Variable",
-                                                                            "VariableName": "PositiveAmountTillThisLine"
-                                                                        }
-                                                                    }
                                                                 }
                                                             ]
-                                                        }
-                                                    },
-                                                    {
-                                                        "ActivityType": "IFSTATEMENT",
-                                                        "Activity": {
-                                                            "Condition": {
-                                                                "Body": [
-                                                                    {
-                                                                        "Operator": " ",
-                                                                        "ConditionType": "Is Less Than",
-                                                                        "LHS": {
-                                                                            "Lookup": {
-                                                                                "SourceType": "Variable",
-                                                                                "VariableName": "PrevInvAmountLCY"
-                                                                            }
-                                                                        },
-                                                                        "RHS": {
-                                                                            "Type": "Lookup",
-                                                                            "Lookup": {
-                                                                                "SourceType": "Column",
-                                                                                "RateColumnName": "TDS Threshold Amount"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "Body": [
-                                                                {
-                                                                    "ActivityType": "SETVARIABLE",
-                                                                    "Activity": {
-                                                                        "OutputVariableName": "TDSTaxableAmount",
-                                                                        "OutputValue": {
-                                                                            "Type": "Constant",
-                                                                            "Value": ""
-                                                                        }
+                                                        },
+                                                        "Body": [
+                                                            {
+                                                                "ActivityType": "SETVARIABLE",
+                                                                "Activity": {
+                                                                    "OutputVariableName": "TDSBaseAmt",
+                                                                    "OutputValue": {
+                                                                        "Type": "Constant",
+                                                                        "Value": ""
                                                                     }
                                                                 }
-                                                            ],
-                                                            "ElseIf": {
-                                                                "Condition": {
-                                                                    "Body": [
-                                                                        {
-                                                                            "Operator": " ",
-                                                                            "ConditionType": "Is Greater Than",
-                                                                            "LHS": {
-                                                                                "Lookup": {
-                                                                                    "SourceType": "Variable",
-                                                                                    "VariableName": "PrevInvAmountLCY"
-                                                                                }
-                                                                            },
-                                                                            "RHS": {
-                                                                                "Type": "Lookup",
-                                                                                "Lookup": {
-                                                                                    "SourceType": "Column",
-                                                                                    "RateColumnName": "TDS Threshold Amount"
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    ]
-                                                                },
-                                                                "Body": [
-                                                                    {
-                                                                        "ActivityType": "SETVARIABLE",
-                                                                        "Activity": {
-                                                                            "OutputVariableName": "TDSTaxableAmount",
-                                                                            "OutputValue": {
-                                                                                "Type": "Lookup",
-                                                                                "Lookup": {
-                                                                                    "SourceType": "Variable",
-                                                                                    "VariableName": "TDSBaseAmt"
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    },
-                                                                    {
-                                                                        "ActivityType": "IFSTATEMENT",
-                                                                        "Activity": {
-                                                                            "Condition": {
-                                                                                "Body": [
-                                                                                    {
-                                                                                        "Operator": " ",
-                                                                                        "ConditionType": "Equals",
-                                                                                        "LHS": {
-                                                                                            "Lookup": {
-                                                                                                "SourceType": "Column",
-                                                                                                "RateColumnName": "Calc. Over & Above Threshold"
-                                                                                            }
-                                                                                        },
-                                                                                        "RHS": {
-                                                                                            "Type": "Constant",
-                                                                                            "Value": "1"
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            },
-                                                                            "Body": [
-                                                                                {
-                                                                                    "ActivityType": "NUMERICEXPRESSION",
-                                                                                    "Activity": {
-                                                                                        "VariableName": "TDSTaxableAmount",
-                                                                                        "Expression": "(PrevInvAmtLcy+TdsBaseAmt) - ThresholdAmount",
-                                                                                        "Tokens": [
-                                                                                            {
-                                                                                                "TokenName": "PrevInvAmtLcy",
-                                                                                                "TokenValue": {
-                                                                                                    "Type": "Lookup",
-                                                                                                    "Lookup": {
-                                                                                                        "SourceType": "Variable",
-                                                                                                        "VariableName": "PrevInvAmountLCY"
-                                                                                                    }
-                                                                                                }
-                                                                                            },
-                                                                                            {
-                                                                                                "TokenName": "TdsBaseAmt",
-                                                                                                "TokenValue": {
-                                                                                                    "Type": "Lookup",
-                                                                                                    "Lookup": {
-                                                                                                        "SourceType": "Variable",
-                                                                                                        "VariableName": "TDSBaseAmt"
-                                                                                                    }
-                                                                                                }
-                                                                                            },
-                                                                                            {
-                                                                                                "TokenName": "ThresholdAmount",
-                                                                                                "TokenValue": {
-                                                                                                    "Type": "Lookup",
-                                                                                                    "Lookup": {
-                                                                                                        "SourceType": "Column",
-                                                                                                        "RateColumnName": "TDS Threshold Amount"
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        ]
-                                                                                    }
-                                                                                }
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
                                                             }
-                                                        }
-                                                    },
-                                                    {
-                                                        "ActivityType": "IFSTATEMENT",
-                                                        "Activity": {
-                                                            "Condition": {
-                                                                "Body": [
-                                                                    {
-                                                                        "Operator": " ",
-                                                                        "ConditionType": "Is Greater Than",
-                                                                        "LHS": {
-                                                                            "Lookup": {
-                                                                                "SourceType": "Variable",
-                                                                                "VariableName": "PositiveAmountTillThisLine"
-                                                                            }
-                                                                        },
-                                                                        "RHS": {
-                                                                            "Type": "Lookup",
-                                                                            "Lookup": {
-                                                                                "SourceType": "Column",
-                                                                                "RateColumnName": "TDS Threshold Amount"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "Body": [
-                                                                {
-                                                                    "ActivityType": "IFSTATEMENT",
-                                                                    "Activity": {
-                                                                        "Condition": {
-                                                                            "Body": [
-                                                                                {
-                                                                                    "Operator": " ",
-                                                                                    "ConditionType": "Equals",
-                                                                                    "LHS": {
-                                                                                        "Lookup": {
-                                                                                            "SourceType": "Column",
-                                                                                            "RateColumnName": "Calc. Over & Above Threshold"
-                                                                                        }
-                                                                                    },
-                                                                                    "RHS": {
-                                                                                        "Type": "Constant",
-                                                                                        "Value": "1"
-                                                                                    }
-                                                                                }
-                                                                            ]
-                                                                        },
-                                                                        "Body": [
-                                                                            {
-                                                                                "ActivityType": "NUMBERCALCULATION",
-                                                                                "Activity": {
-                                                                                    "OutputVariableName": "TDSTaxableAmount",
-                                                                                    "Operator": "Minus",
-                                                                                    "LHS": {
-                                                                                        "Type": "Lookup",
-                                                                                        "Lookup": {
-                                                                                            "SourceType": "Variable",
-                                                                                            "VariableName": "PositiveAmountTillThisLine"
-                                                                                        }
-                                                                                    },
-                                                                                    "RHS": {
-                                                                                        "Type": "Lookup",
-                                                                                        "Lookup": {
-                                                                                            "SourceType": "Column",
-                                                                                            "RateColumnName": "TDS Threshold Amount"
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        ],
-                                                                        "ElseIf": {
-                                                                            "Condition": {
-                                                                                "Body": [
-                                                                                    {
-                                                                                        "Operator": " ",
-                                                                                        "ConditionType": "Equals",
-                                                                                        "LHS": {
-                                                                                            "Lookup": {
-                                                                                                "SourceType": "Column",
-                                                                                                "RateColumnName": "Calc. Over & Above Threshold"
-                                                                                            }
-                                                                                        },
-                                                                                        "RHS": {
-                                                                                            "Type": "Constant",
-                                                                                            "Value": ""
-                                                                                        }
-                                                                                    }
-                                                                                ]
-                                                                            },
-                                                                            "Body": [
-                                                                                {
-                                                                                    "ActivityType": "SETVARIABLE",
-                                                                                    "Activity": {
-                                                                                        "OutputVariableName": "TDSTaxableAmount",
-                                                                                        "OutputValue": {
-                                                                                            "Type": "Lookup",
-                                                                                            "Lookup": {
-                                                                                                "SourceType": "Variable",
-                                                                                                "VariableName": "PositiveAmountTillThisLine"
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                }
-                                                            ]
-                                                        }
-                                                    },
-                                                    {
-                                                        "ActivityType": "IFSTATEMENT",
-                                                        "Activity": {
+                                                        ],
+                                                        "ElseIf": {
                                                             "Condition": {
                                                                 "Body": [
                                                                     {
@@ -9253,16 +9109,32 @@
                                                             },
                                                             "Body": [
                                                                 {
-                                                                    "ActivityType": "SETVARIABLE",
+                                                                    "ActivityType": "NUMERICEXPRESSION",
                                                                     "Activity": {
-                                                                        "OutputVariableName": "TDSTaxableAmount",
-                                                                        "OutputValue": {
-                                                                            "Type": "Lookup",
-                                                                            "Lookup": {
-                                                                                "SourceType": "Variable",
-                                                                                "VariableName": "TDSBaseAmt"
+                                                                        "VariableName": "TDSBaseAmt",
+                                                                        "Expression": "CurrentLineAmt-AppliedAmount",
+                                                                        "Tokens": [
+                                                                            {
+                                                                                "TokenName": "AppliedAmount",
+                                                                                "TokenValue": {
+                                                                                    "Type": "Lookup",
+                                                                                    "Lookup": {
+                                                                                        "SourceType": "Variable",
+                                                                                        "VariableName": "AppliedAmount"
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "TokenName": "CurrentLineAmt",
+                                                                                "TokenValue": {
+                                                                                    "Type": "Lookup",
+                                                                                    "Lookup": {
+                                                                                        "SourceType": "Variable",
+                                                                                        "VariableName": "PositiveAmountTillThisLine"
+                                                                                    }
+                                                                                }
                                                                             }
-                                                                        }
+                                                                        ]
                                                                     }
                                                                 },
                                                                 {
@@ -9276,7 +9148,7 @@
                                                                                     "LHS": {
                                                                                         "Lookup": {
                                                                                             "SourceType": "Variable",
-                                                                                            "VariableName": "TotalPrevAndCurrentInvAmt"
+                                                                                            "VariableName": "PrevInvAmountLCY"
                                                                                         }
                                                                                     },
                                                                                     "RHS": {
@@ -9299,15 +9171,305 @@
                                                                                         "Value": ""
                                                                                     }
                                                                                 }
+                                                                            }
+                                                                        ],
+                                                                        "ElseIf": {
+                                                                            "Condition": {
+                                                                                "Body": [
+                                                                                    {
+                                                                                        "Operator": " ",
+                                                                                        "ConditionType": "Is Greater Than",
+                                                                                        "LHS": {
+                                                                                            "Lookup": {
+                                                                                                "SourceType": "Variable",
+                                                                                                "VariableName": "PrevInvAmountLCY"
+                                                                                            }
+                                                                                        },
+                                                                                        "RHS": {
+                                                                                            "Type": "Lookup",
+                                                                                            "Lookup": {
+                                                                                                "SourceType": "Column",
+                                                                                                "RateColumnName": "TDS Threshold Amount"
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                ]
                                                                             },
+                                                                            "Body": [
+                                                                                {
+                                                                                    "ActivityType": "SETVARIABLE",
+                                                                                    "Activity": {
+                                                                                        "OutputVariableName": "TDSTaxableAmount",
+                                                                                        "OutputValue": {
+                                                                                            "Type": "Lookup",
+                                                                                            "Lookup": {
+                                                                                                "SourceType": "Variable",
+                                                                                                "VariableName": "TDSBaseAmt"
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "ActivityType": "IFSTATEMENT",
+                                                                                    "Activity": {
+                                                                                        "Condition": {
+                                                                                            "Body": [
+                                                                                                {
+                                                                                                    "Operator": " ",
+                                                                                                    "ConditionType": "Equals",
+                                                                                                    "LHS": {
+                                                                                                        "Lookup": {
+                                                                                                            "SourceType": "Column",
+                                                                                                            "RateColumnName": "Calc. Over & Above Threshold"
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "RHS": {
+                                                                                                        "Type": "Constant",
+                                                                                                        "Value": "1"
+                                                                                                    }
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        "Body": [
+                                                                                            {
+                                                                                                "ActivityType": "NUMERICEXPRESSION",
+                                                                                                "Activity": {
+                                                                                                    "VariableName": "TDSTaxableAmount",
+                                                                                                    "Expression": "(PrevInvAmtLcy+TdsBaseAmt) - ThresholdAmount",
+                                                                                                    "Tokens": [
+                                                                                                        {
+                                                                                                            "TokenName": "PrevInvAmtLcy",
+                                                                                                            "TokenValue": {
+                                                                                                                "Type": "Lookup",
+                                                                                                                "Lookup": {
+                                                                                                                    "SourceType": "Variable",
+                                                                                                                    "VariableName": "PrevInvAmountLCY"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "TokenName": "TdsBaseAmt",
+                                                                                                            "TokenValue": {
+                                                                                                                "Type": "Lookup",
+                                                                                                                "Lookup": {
+                                                                                                                    "SourceType": "Variable",
+                                                                                                                    "VariableName": "TDSBaseAmt"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "TokenName": "ThresholdAmount",
+                                                                                                            "TokenValue": {
+                                                                                                                "Type": "Lookup",
+                                                                                                                "Lookup": {
+                                                                                                                    "SourceType": "Column",
+                                                                                                                    "RateColumnName": "TDS Threshold Amount"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    ]
+                                                                                                }
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ActivityType": "IFSTATEMENT",
+                                                                    "Activity": {
+                                                                        "Condition": {
+                                                                            "Body": [
+                                                                                {
+                                                                                    "Operator": " ",
+                                                                                    "ConditionType": "Is Greater Than",
+                                                                                    "LHS": {
+                                                                                        "Lookup": {
+                                                                                            "SourceType": "Variable",
+                                                                                            "VariableName": "PositiveAmountTillThisLine"
+                                                                                        }
+                                                                                    },
+                                                                                    "RHS": {
+                                                                                        "Type": "Lookup",
+                                                                                        "Lookup": {
+                                                                                            "SourceType": "Column",
+                                                                                            "RateColumnName": "TDS Threshold Amount"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "Body": [
+                                                                            {
+                                                                                "ActivityType": "IFSTATEMENT",
+                                                                                "Activity": {
+                                                                                    "Condition": {
+                                                                                        "Body": [
+                                                                                            {
+                                                                                                "Operator": " ",
+                                                                                                "ConditionType": "Equals",
+                                                                                                "LHS": {
+                                                                                                    "Lookup": {
+                                                                                                        "SourceType": "Column",
+                                                                                                        "RateColumnName": "Calc. Over & Above Threshold"
+                                                                                                    }
+                                                                                                },
+                                                                                                "RHS": {
+                                                                                                    "Type": "Constant",
+                                                                                                    "Value": "1"
+                                                                                                }
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "Body": [
+                                                                                        {
+                                                                                            "ActivityType": "NUMBERCALCULATION",
+                                                                                            "Activity": {
+                                                                                                "OutputVariableName": "TDSTaxableAmount",
+                                                                                                "Operator": "Minus",
+                                                                                                "LHS": {
+                                                                                                    "Type": "Lookup",
+                                                                                                    "Lookup": {
+                                                                                                        "SourceType": "Variable",
+                                                                                                        "VariableName": "PositiveAmountTillThisLine"
+                                                                                                    }
+                                                                                                },
+                                                                                                "RHS": {
+                                                                                                    "Type": "Lookup",
+                                                                                                    "Lookup": {
+                                                                                                        "SourceType": "Column",
+                                                                                                        "RateColumnName": "TDS Threshold Amount"
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    ],
+                                                                                    "ElseIf": {
+                                                                                        "Condition": {
+                                                                                            "Body": [
+                                                                                                {
+                                                                                                    "Operator": " ",
+                                                                                                    "ConditionType": "Equals",
+                                                                                                    "LHS": {
+                                                                                                        "Lookup": {
+                                                                                                            "SourceType": "Column",
+                                                                                                            "RateColumnName": "Calc. Over & Above Threshold"
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "RHS": {
+                                                                                                        "Type": "Constant",
+                                                                                                        "Value": ""
+                                                                                                    }
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        "Body": [
+                                                                                            {
+                                                                                                "ActivityType": "SETVARIABLE",
+                                                                                                "Activity": {
+                                                                                                    "OutputVariableName": "TDSTaxableAmount",
+                                                                                                    "OutputValue": {
+                                                                                                        "Type": "Lookup",
+                                                                                                        "Lookup": {
+                                                                                                            "SourceType": "Variable",
+                                                                                                            "VariableName": "PositiveAmountTillThisLine"
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ActivityType": "IFSTATEMENT",
+                                                                    "Activity": {
+                                                                        "Condition": {
+                                                                            "Body": [
+                                                                                {
+                                                                                    "Operator": " ",
+                                                                                    "ConditionType": "Is Greater Than",
+                                                                                    "LHS": {
+                                                                                        "Lookup": {
+                                                                                            "SourceType": "Variable",
+                                                                                            "VariableName": "PositiveAmountTillThisLine"
+                                                                                        }
+                                                                                    },
+                                                                                    "RHS": {
+                                                                                        "Type": "Lookup",
+                                                                                        "Lookup": {
+                                                                                            "SourceType": "Variable",
+                                                                                            "VariableName": "AppliedAmount"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "Body": [
                                                                             {
                                                                                 "ActivityType": "SETVARIABLE",
                                                                                 "Activity": {
-                                                                                    "OutputVariableName": "TDSBaseAmt",
+                                                                                    "OutputVariableName": "TDSTaxableAmount",
                                                                                     "OutputValue": {
-                                                                                        "Type": "Constant",
-                                                                                        "Value": ""
+                                                                                        "Type": "Lookup",
+                                                                                        "Lookup": {
+                                                                                            "SourceType": "Variable",
+                                                                                            "VariableName": "TDSBaseAmt"
+                                                                                        }
                                                                                     }
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "ActivityType": "IFSTATEMENT",
+                                                                                "Activity": {
+                                                                                    "Condition": {
+                                                                                        "Body": [
+                                                                                            {
+                                                                                                "Operator": " ",
+                                                                                                "ConditionType": "Is Less Than",
+                                                                                                "LHS": {
+                                                                                                    "Lookup": {
+                                                                                                        "SourceType": "Variable",
+                                                                                                        "VariableName": "TotalPrevAndCurrentInvAmt"
+                                                                                                    }
+                                                                                                },
+                                                                                                "RHS": {
+                                                                                                    "Type": "Lookup",
+                                                                                                    "Lookup": {
+                                                                                                        "SourceType": "Column",
+                                                                                                        "RateColumnName": "TDS Threshold Amount"
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "Body": [
+                                                                                        {
+                                                                                            "ActivityType": "SETVARIABLE",
+                                                                                            "Activity": {
+                                                                                                "OutputVariableName": "TDSTaxableAmount",
+                                                                                                "OutputValue": {
+                                                                                                    "Type": "Constant",
+                                                                                                    "Value": ""
+                                                                                                }
+                                                                                            }
+                                                                                        },
+                                                                                        {
+                                                                                            "ActivityType": "SETVARIABLE",
+                                                                                            "Activity": {
+                                                                                                "OutputVariableName": "TDSBaseAmt",
+                                                                                                "OutputValue": {
+                                                                                                    "Type": "Constant",
+                                                                                                    "Value": ""
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    ]
                                                                                 }
                                                                             }
                                                                         ]
@@ -9316,38 +9478,10 @@
                                                             ]
                                                         }
                                                     }
-                                                ]
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "ActivityType": "IFSTATEMENT",
-                            "Activity": {
-                                "Condition": {
-                                    "Body": [
-                                        {
-                                            "Operator": " ",
-                                            "ConditionType": "Is Greater Than Or Equals To",
-                                            "LHS": {
-                                                "Lookup": {
-                                                    "SourceType": "Variable",
-                                                    "VariableName": "TotalPrevAndCurrentInvAmt"
                                                 }
-                                            },
-                                            "RHS": {
-                                                "Type": "Lookup",
-                                                "Lookup": {
-                                                    "SourceType": "Column",
-                                                    "RateColumnName": "TDS Threshold Amount"
-                                                }
-                                            }
+                                            ]
                                         }
-                                    ]
-                                },
-                                "Body": [
+                                    },
                                     {
                                         "ActivityType": "IFSTATEMENT",
                                         "Activity": {
@@ -9355,28 +9489,8 @@
                                                 "Body": [
                                                     {
                                                         "Operator": " ",
-                                                        "ConditionType": "Equals",
+                                                        "ConditionType": "Is Greater Than Or Equals To",
                                                         "LHS": {
-                                                            "Lookup": {
-                                                                "SourceType": "Column",
-                                                                "RateColumnName": "Calc. Over & Above Threshold"
-                                                            }
-                                                        },
-                                                        "RHS": {
-                                                            "Type": "Constant",
-                                                            "Value": "1"
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            "Body": [
-                                                {
-                                                    "ActivityType": "NUMBERCALCULATION",
-                                                    "Activity": {
-                                                        "OutputVariableName": "TDSBaseAmt",
-                                                        "Operator": "Minus",
-                                                        "LHS": {
-                                                            "Type": "Lookup",
                                                             "Lookup": {
                                                                 "SourceType": "Variable",
                                                                 "VariableName": "TotalPrevAndCurrentInvAmt"
@@ -9390,76 +9504,124 @@
                                                             }
                                                         }
                                                     }
+                                                ]
+                                            },
+                                            "Body": [
+                                                {
+                                                    "ActivityType": "IFSTATEMENT",
+                                                    "Activity": {
+                                                        "Condition": {
+                                                            "Body": [
+                                                                {
+                                                                    "Operator": " ",
+                                                                    "ConditionType": "Equals",
+                                                                    "LHS": {
+                                                                        "Lookup": {
+                                                                            "SourceType": "Column",
+                                                                            "RateColumnName": "Calc. Over & Above Threshold"
+                                                                        }
+                                                                    },
+                                                                    "RHS": {
+                                                                        "Type": "Constant",
+                                                                        "Value": "1"
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        "Body": [
+                                                            {
+                                                                "ActivityType": "NUMBERCALCULATION",
+                                                                "Activity": {
+                                                                    "OutputVariableName": "TDSBaseAmt",
+                                                                    "Operator": "Minus",
+                                                                    "LHS": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Variable",
+                                                                            "VariableName": "TotalPrevAndCurrentInvAmt"
+                                                                        }
+                                                                    },
+                                                                    "RHS": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Column",
+                                                                            "RateColumnName": "TDS Threshold Amount"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "ActivityType": "SETVARIABLE",
+                                                                "Activity": {
+                                                                    "OutputVariableName": "TDSTaxableAmount",
+                                                                    "OutputValue": {
+                                                                        "Type": "Lookup",
+                                                                        "Lookup": {
+                                                                            "SourceType": "Variable",
+                                                                            "VariableName": "TDSBaseAmt"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ],
+                                                        "ElseIf": {
+                                                            "Condition": {
+                                                                "Body": []
+                                                            },
+                                                            "Body": [
+                                                                {
+                                                                    "ActivityType": "SETVARIABLE",
+                                                                    "Activity": {
+                                                                        "OutputVariableName": "TDSBaseAmt",
+                                                                        "OutputValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Variable",
+                                                                                "VariableName": "TotalPrevAndCurrentInvAmt"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ActivityType": "SETVARIABLE",
+                                                                    "Activity": {
+                                                                        "OutputVariableName": "TDSTaxableAmount",
+                                                                        "OutputValue": {
+                                                                            "Type": "Lookup",
+                                                                            "Lookup": {
+                                                                                "SourceType": "Variable",
+                                                                                "VariableName": "TDSBaseAmt"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
                                                 },
                                                 {
-                                                    "ActivityType": "SETVARIABLE",
+                                                    "ActivityType": "NUMBERCALCULATION",
                                                     "Activity": {
-                                                        "OutputVariableName": "TDSTaxableAmount",
-                                                        "OutputValue": {
+                                                        "OutputVariableName": "TotalPrevAndCurrentInvAmt",
+                                                        "Operator": "Minus",
+                                                        "LHS": {
                                                             "Type": "Lookup",
                                                             "Lookup": {
                                                                 "SourceType": "Variable",
-                                                                "VariableName": "TDSBaseAmt"
+                                                                "VariableName": "TotalPrevAndCurrentInvAmt"
+                                                            }
+                                                        },
+                                                        "RHS": {
+                                                            "Type": "Lookup",
+                                                            "Lookup": {
+                                                                "SourceType": "Current Record",
+                                                                "TableName": "Purchase Line",
+                                                                "FieldName": "Amount"
                                                             }
                                                         }
                                                     }
                                                 }
-                                            ],
-                                            "ElseIf": {
-                                                "Condition": {
-                                                    "Body": []
-                                                },
-                                                "Body": [
-                                                    {
-                                                        "ActivityType": "SETVARIABLE",
-                                                        "Activity": {
-                                                            "OutputVariableName": "TDSBaseAmt",
-                                                            "OutputValue": {
-                                                                "Type": "Lookup",
-                                                                "Lookup": {
-                                                                    "SourceType": "Variable",
-                                                                    "VariableName": "TotalPrevAndCurrentInvAmt"
-                                                                }
-                                                            }
-                                                        }
-                                                    },
-                                                    {
-                                                        "ActivityType": "SETVARIABLE",
-                                                        "Activity": {
-                                                            "OutputVariableName": "TDSTaxableAmount",
-                                                            "OutputValue": {
-                                                                "Type": "Lookup",
-                                                                "Lookup": {
-                                                                    "SourceType": "Variable",
-                                                                    "VariableName": "TDSBaseAmt"
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "ActivityType": "NUMBERCALCULATION",
-                                        "Activity": {
-                                            "OutputVariableName": "TotalPrevAndCurrentInvAmt",
-                                            "Operator": "Minus",
-                                            "LHS": {
-                                                "Type": "Lookup",
-                                                "Lookup": {
-                                                    "SourceType": "Variable",
-                                                    "VariableName": "TotalPrevAndCurrentInvAmt"
-                                                }
-                                            },
-                                            "RHS": {
-                                                "Type": "Lookup",
-                                                "Lookup": {
-                                                    "SourceType": "Current Record",
-                                                    "TableName": "Purchase Line",
-                                                    "FieldName": "Amount"
-                                                }
-                                            }
+                                            ]
                                         }
                                     }
                                 ]
@@ -9580,63 +9742,116 @@
                         "Body": [
                             {
                                 "Operator": " ",
-                                "ConditionType": "Is Greater Than Or Equals To",
-                                "LHS": {
-                                    "Lookup": {
-                                        "SourceType": "Variable",
-                                        "VariableName": "TotalPrevAndCurrentInvAmt"
-                                    }
-                                },
-                                "RHS": {
-                                    "Type": "Lookup",
-                                    "Lookup": {
-                                        "SourceType": "Column",
-                                        "RateColumnName": "TDS Threshold Amount"
-                                    }
-                                }
-                            },
-                            {
-                                "Operator": "and",
                                 "ConditionType": "Equals",
                                 "LHS": {
                                     "Lookup": {
-                                        "SourceType": "Column",
-                                        "RateColumnName": "Per Contract Value"
+                                        "SourceType": "Table",
+                                        "TableName": "Allowed Sections",
+                                        "TableFieldName": "Threshold Overlook",
+                                        "Method": "First",
+                                        "TableFilters": [
+                                            {
+                                                "FiterFieldName": "Vendor No",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Purchase Line",
+                                                        "FieldName": "Pay-to Vendor No."
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "FiterFieldName": "TDS Section",
+                                                "FilterType": "Equals",
+                                                "FilterValue": {
+                                                    "Type": "Lookup",
+                                                    "Lookup": {
+                                                        "SourceType": "Current Record",
+                                                        "TableName": "Purchase Line",
+                                                        "FieldName": "TDS Section Code"
+                                                    }
+                                                }
+                                            }
+                                        ]
                                     }
                                 },
                                 "RHS": {
                                     "Type": "Constant",
-                                    "Value": ""
+                                    "Value": "false"
                                 }
                             }
                         ]
                     },
                     "Body": [
                         {
-                            "ActivityType": "SETVARIABLE",
+                            "ActivityType": "IFSTATEMENT",
                             "Activity": {
-                                "OutputVariableName": "TDSBaseAmt",
-                                "OutputValue": {
-                                    "Type": "Lookup",
-                                    "Lookup": {
-                                        "SourceType": "Current Record",
-                                        "TableName": "Purchase Line",
-                                        "FieldName": "Amount"
+                                "Condition": {
+                                    "Body": [
+                                        {
+                                            "Operator": " ",
+                                            "ConditionType": "Is Greater Than Or Equals To",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Variable",
+                                                    "VariableName": "TotalPrevAndCurrentInvAmt"
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Column",
+                                                    "RateColumnName": "TDS Threshold Amount"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "Operator": "and",
+                                            "ConditionType": "Equals",
+                                            "LHS": {
+                                                "Lookup": {
+                                                    "SourceType": "Column",
+                                                    "RateColumnName": "Per Contract Value"
+                                                }
+                                            },
+                                            "RHS": {
+                                                "Type": "Constant",
+                                                "Value": ""
+                                            }
+                                        }
+                                    ]
+                                },
+                                "Body": [
+                                    {
+                                        "ActivityType": "SETVARIABLE",
+                                        "Activity": {
+                                            "OutputVariableName": "TDSBaseAmt",
+                                            "OutputValue": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Current Record",
+                                                    "TableName": "Purchase Line",
+                                                    "FieldName": "Amount"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "ActivityType": "SETVARIABLE",
+                                        "Activity": {
+                                            "OutputVariableName": "TDSTaxableAmount",
+                                            "OutputValue": {
+                                                "Type": "Lookup",
+                                                "Lookup": {
+                                                    "SourceType": "Variable",
+                                                    "VariableName": "TDSBaseAmt"
+                                                }
+                                            }
+                                        }
                                     }
-                                }
-                            }
-                        },
-                        {
-                            "ActivityType": "SETVARIABLE",
-                            "Activity": {
-                                "OutputVariableName": "TDSTaxableAmount",
-                                "OutputValue": {
-                                    "Type": "Lookup",
-                                    "Lookup": {
-                                        "SourceType": "Variable",
-                                        "VariableName": "TDSBaseAmt"
-                                    }
-                                }
+                                ]
                             }
                         }
                     ]
@@ -12467,19 +12682,19 @@
         ],
         "Components": [
             {
-                "ComponentName": "SHE Cess ",
-                "Sequence": 4,
+                "ComponentName": "eCESS",
+                "Sequence": 3,
                 "Formula": {
-                    "VariableName": "SHE Cess ",
-                    "Expression": "(TDSAmount+SurchargeAmount)*SHECessPercent/100",
+                    "VariableName": "eCESS",
+                    "Expression": "(TDSAmount+SurchargeAmount)*EcessPercent/100",
                     "Tokens": [
                         {
-                            "TokenName": "SHECessPercent",
+                            "TokenName": "EcessPercent",
                             "TokenValue": {
                                 "Type": "Lookup",
                                 "Lookup": {
                                     "SourceType": "Component Percent",
-                                    "ComponentName": "SHE Cess "
+                                    "ComponentName": "eCESS"
                                 }
                             }
                         },
@@ -12507,39 +12722,19 @@
                 }
             },
             {
-                "ComponentName": "TDS Base Amount",
-                "Sequence": 6,
+                "ComponentName": "SHE Cess ",
+                "Sequence": 4,
                 "Formula": {
-                    "VariableName": "TDS Base Amount",
-                    "Expression": "TDSBaseAmount",
+                    "VariableName": "SHE Cess ",
+                    "Expression": "(TDSAmount+SurchargeAmount)*SHECessPercent/100",
                     "Tokens": [
                         {
-                            "TokenName": "TDSBaseAmount",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Variable",
-                                    "VariableName": "TDSBaseAmt"
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "ComponentName": "eCESS",
-                "Sequence": 3,
-                "Formula": {
-                    "VariableName": "eCESS",
-                    "Expression": "(TDSAmount+SurchargeAmount)*EcessPercent/100",
-                    "Tokens": [
-                        {
-                            "TokenName": "EcessPercent",
+                            "TokenName": "SHECessPercent",
                             "TokenValue": {
                                 "Type": "Lookup",
                                 "Lookup": {
                                     "SourceType": "Component Percent",
-                                    "ComponentName": "eCESS"
+                                    "ComponentName": "SHE Cess "
                                 }
                             }
                         },
@@ -12590,6 +12785,26 @@
                                 "Lookup": {
                                     "SourceType": "Variable",
                                     "VariableName": "TDSTaxableAmount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "TDS Base Amount",
+                "Sequence": 6,
+                "Formula": {
+                    "VariableName": "TDS Base Amount",
+                    "Expression": "TDSBaseAmount",
+                    "Tokens": [
+                        {
+                            "TokenName": "TDSBaseAmount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Variable",
+                                    "VariableName": "TDSBaseAmt"
                                 }
                             }
                         }

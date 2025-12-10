@@ -868,13 +868,7 @@ report 10600 "OrderGB"
         ShipmentMethod: Record "Shipment Method";
         PaymentTerms: Record "Payment Terms";
         SalesPurchPerson: Record "Salesperson/Purchaser";
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
         TempPurchLine: Record "Purchase Line" temporary;
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
@@ -961,4 +955,3 @@ report 10600 "OrderGB"
 
 
 }
-

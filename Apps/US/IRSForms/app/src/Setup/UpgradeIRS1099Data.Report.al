@@ -5,8 +5,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Telemetry;
-
 report 10063 "Upgrade IRS 1099 Data"
 {
     Caption = 'Upgrade IRS 1099 Data';
@@ -42,26 +40,5 @@ report 10063 "Upgrade IRS 1099 Data"
 
     var
         IRSReportingPeriodCode: Code[20];
-
-    trigger OnPostReport()
-    var
-        IRSReportingPeriod: Record "IRS Reporting Period";
-        IRS1099FormBox: Record "IRS 1099 Form Box";
-        IRS1099TransferFromBaseApp: Codeunit "IRS 1099 Transfer From BaseApp";
-        Telemetry: Codeunit Telemetry;
-        IRSReportingPeriodCodeNotSpecifiedErr: Label 'Reporting Period Code must be specified.';
-        SetupTransferLbl: Label 'Setting up data transfer for IRS Reporting Period: %1. Starting Date = %2, Ending Date = %3', Comment = '%1 = code, %2 = starting date, %3 = ending date';
-        TransferingDataLbl: Label 'Starting data transfer for IRS Reporting Period: %1. Starting Date = %2, Ending Date = %3', Comment = '%1 = code, %2 = starting date, %3 = ending date';
-    begin
-        if IRSReportingPeriodCode = '' then
-            error(IRSReportingPeriodCodeNotSpecifiedErr);
-        IRSReportingPeriod.Get(IRSReportingPeriodCode);
-        if IRS1099FormBox.IsEmpty() then begin
-            Telemetry.LogMessage('0000Q1X', StrSubstNo(SetupTransferLbl, IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date"), Verbosity::Normal, DataClassification::SystemMetadata);
-            IRS1099TransferFromBaseApp.TransferIRS1099Setup(IRSReportingPeriod, Date2DMY(IRSReportingPeriod."Starting Date", 3));
-        end;
-        Telemetry.LogMessage('0000PZP', StrSubstNo(TransferingDataLbl, IRSReportingPeriod."No.", IRSReportingPeriod."Starting Date", IRSReportingPeriod."Ending Date"), Verbosity::Normal, DataClassification::SystemMetadata);
-        IRS1099TransferFromBaseApp.TransferIRS1099Data(IRSReportingPeriod);
-    end;
 }
 #endif

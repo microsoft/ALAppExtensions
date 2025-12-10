@@ -906,13 +906,7 @@ report 10604 "Sales Quote GB"
         CompanyInfo2: Record "Company Information";
         CompanyInfo3: Record "Company Information";
         SalesSetup: Record "Sales & Receivables Setup";
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
         TempVATAmountLine: Record "VAT Amount Line" temporary;
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
         TempSalesLine: Record "Sales Line" temporary;
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
@@ -998,4 +992,3 @@ report 10604 "Sales Quote GB"
         FeatureNameTok: Label 'Sales Quote GB', Locked = true;
         EventNameTok: Label 'Sales Quote GB report has been used', Locked = true;
 }
-

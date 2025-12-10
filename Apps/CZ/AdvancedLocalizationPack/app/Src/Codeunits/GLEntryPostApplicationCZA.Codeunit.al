@@ -104,8 +104,8 @@ codeunit 31370 "G/L Entry Post Application CZA"
             TempAppliedGLEntry.Ascending(false);
             if TempAppliedGLEntry.FindSet(true) then
                 repeat
-                    if (ApplyingGLEntry.Amount > 0) and (TempAppliedGLEntry.Amount < 0) or
-                       (ApplyingGLEntry.Amount < 0) and (TempAppliedGLEntry.Amount > 0)
+                    if (ApplyingGLEntry.Amount >= 0) and (TempAppliedGLEntry.Amount < 0) or
+                       (ApplyingGLEntry.Amount <= 0) and (TempAppliedGLEntry.Amount > 0)
                     then begin
                         TempAppliedGLEntry.CalcFields("Applied Amount CZA");
                         if (ApplyingAmount <> 0) and
@@ -121,8 +121,8 @@ codeunit 31370 "G/L Entry Post Application CZA"
                 TempAppliedGLEntry.SetFilter("Amount to Apply CZA", '<>0');
                 if TempAppliedGLEntry.FindSet(true) then
                     repeat
-                        if (ApplyingGLEntry.Amount > 0) and (TempAppliedGLEntry.Amount < 0) or
-                           (ApplyingGLEntry.Amount < 0) and (TempAppliedGLEntry.Amount > 0)
+                        if (ApplyingGLEntry.Amount >= 0) and (TempAppliedGLEntry.Amount < 0) or
+                           (ApplyingGLEntry.Amount <= 0) and (TempAppliedGLEntry.Amount > 0)
                         then begin
                             SetAmountToApply(TempAppliedGLEntry, ApplyingAmount);
                             TempAppliedGLEntry.Modify();

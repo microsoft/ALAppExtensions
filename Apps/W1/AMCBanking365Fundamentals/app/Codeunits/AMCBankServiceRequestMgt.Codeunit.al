@@ -1,4 +1,4 @@
-﻿#if not CLEAN28
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -41,16 +41,6 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         FeatureConsentErr: Label 'The AMC Banking 365 Fundamentals feature is not enabled. You can enable the feature on the AMC Banking Setup page by turning on the Enabled toggle, or by using the assisted setup guide.';
         FeatureConsentQst: Label '%1\\Do you want us to open the AMC Banking Setup page for you?', Comment = '%1 = FeatureConsentErr';
 
-#if not CLEAN25
-    [Obsolete('Use the procedure that receives Password as a SecretText instead.', '25.0')]
-    procedure CreateEnvelope(var requestDocXML: XmlDocument; var EnvXmlElement: XmlElement; Username: Text; Password: Text; UsernameTokenValue: Text);
-    var
-        SecretPassword: SecretText;
-    begin
-        SecretPassword := Password;
-        CreateEnvelope(requestDocXML, EnvXmlElement, Username, SecretPassword, UsernameTokenValue);
-    end;
-#endif
 
     [NonDebuggable]
     procedure CreateEnvelope(VAR requestDocXML: XmlDocument; VAR EnvXmlElement: XmlElement; Username: Text; Password: SecretText; UsernameTokenValue: Text);

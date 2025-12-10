@@ -84,6 +84,8 @@ table 10050 "Transmission IRIS"
         if Rec.FindLast() then
             DocID := Rec."Document ID";
         DocID += 1;
+
+        Rec.Init();
         Rec."Document ID" := DocID;
     end;
 }

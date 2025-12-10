@@ -28,7 +28,7 @@ page 10503 "Postcode Configuration Page GB"
                     ShowCaption = false;
                     field(SelectedService; ServiceKeyText)
                     {
-                        ApplicationArea = Invoicing, Basic, Suite;
+                        ApplicationArea = Basic, Suite;
                         Caption = 'Address Provider';
                         Editable = false;
 
@@ -106,4 +106,3 @@ page 10503 "Postcode Configuration Page GB"
         DisabledTok: Label 'Disabled';
         ServiceKeyText: Text;
 }
-

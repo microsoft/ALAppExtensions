@@ -131,35 +131,6 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
                 end;
             }
         }
-#if not CLEAN25
-        addbefore("Transfer to General Journal_Promoted")
-        {
-            actionref("Match With Copilot_Promoted"; "Match With Copilot")
-            {
-                Visible = false;
-                ObsoleteReason = 'Actions no longer promoted, but shown in the Prompting area';
-                ObsoleteState = Pending;
-                ObsoleteTag = '25.0';
-            }
-            actionref("Transfer to G/L Account_Promoted"; "Transfer to G/L Account")
-            {
-                Visible = false;
-                ObsoleteReason = 'Actions no longer promoted, but shown in the Prompting area';
-                ObsoleteState = Pending;
-                ObsoleteTag = '25.0';
-            }
-        }
-        addbefore(MatchAutomatically_Promoted)
-        {
-            actionref("Match With Copilot_Promoted2"; "Match With Copilot")
-            {
-                Visible = false;
-                ObsoleteReason = 'Actions no longer promoted, but shown in the Prompting area';
-                ObsoleteState = Pending;
-                ObsoleteTag = '25.0';
-            }
-        }
-#endif
     }
 
     trigger OnOpenPage()

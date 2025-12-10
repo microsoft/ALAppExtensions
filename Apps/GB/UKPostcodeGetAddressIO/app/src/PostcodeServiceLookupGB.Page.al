@@ -26,7 +26,7 @@ page 10506 "Postcode Service Lookup GB"
             {
                 field(Name; Rec.Name)
                 {
-                    ApplicationArea = Invoicing, Basic, Suite;
+                    ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the name of the service to automatically insert post codes, such as GetAdress.io.';
                 }
             }
@@ -70,4 +70,3 @@ page 10506 "Postcode Service Lookup GB"
         PostcodeServiceManager: Codeunit "Postcode Service Manager";
         DisabledLbl: Label 'Disabled';
 }
-

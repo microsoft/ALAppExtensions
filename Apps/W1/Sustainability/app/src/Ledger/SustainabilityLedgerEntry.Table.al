@@ -328,6 +328,10 @@ table 6216 "Sustainability Ledger Entry"
             DataClassification = EndUserIdentifiableInformation;
             ValidateTableRelation = false;
         }
+        field(5817; Correction; Boolean)
+        {
+            Caption = 'Correction';
+        }
     }
 
     keys

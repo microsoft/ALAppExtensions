@@ -17,33 +17,14 @@ codeunit 4810 IntrastatReportManagement
         ReceptFileNameLbl: Label 'Receipt-%1.txt', Comment = '%1 - Statistics Period';
         ShipmentFileNameLbl: Label 'Shipment-%1.txt', Comment = '%1 - Statistics Period';
         ZipFileNameLbl: Label 'Intrastat-%1.zip', Comment = '%1 - Statistics Period';
-#if not CLEAN25
-        FeatureNotEnabledMessageTxt: Label 'The %1 page is part of the new Intrastat Report feature, which is not yet enabled in your Business Central. An administrator can enable the feature on the Feature Management page.', Comment = '%1 - page caption';
-        NewFeatureEnabledMessageTxt: Label 'The Intrastat Report extension is enabled, which means you can''t use the %1 page. You''ve been redirected to the %2 page for the extension.', Comment = '%1 - old page caption, %2 - new page caption';
-#endif
         DisableNotificationTxt: Label 'Disable this notification';
-#if not CLEAN25
-        LearnMoreTxt: Label 'Learn more';
-        IntrastatAwarenessNotificationNameTxt: Label 'Notify the user about the Intrastat Report extension.';
-        IntrastatAwarenessNotificationDescriptionTxt: Label 'Alert users about the capabilities of the Intrastat Report extension.';
-        IntrastatAwarenessNotificationTxt: Label 'This version of Intrastat will be deprecated. We recommend that you enable the Intrastat Report extension.';
-#endif
         SupplementaryUnitUpdateNotificationNameTxt: Label 'Notify the user about the %1 update.', Comment = '%1 - Supplementary Unit of Measure caption';
         SupplementaryUnitUpdateNotificationDescriptionTxt: Label 'Alert users about the update of %1 during %2 change.', Comment = '%1 - Supplementary Unit of Measure caption, %2 - Tariff Number caption';
         SupplementaryUnitUpdateNotificationTxt: Label '%1 was updated, due to change of %2.', Comment = '%1 - Supplementary Unit of Measure caption, %2 - Tariff Number caption';
         ImportDefaultIntrastatDataExchDefConfirmQst: Label 'This will create the default Intrastat %1 . \\All existing default Intrastat %1 will be overwritten.\\Do you want to continue?', Comment = '%1 - Data Exchange Definition caption';
         AssistedSetupTxt: Label 'Set up Intrastat reporting';
         AssistedSetupDescriptionTxt: Label 'The Intrastat reporting makes it easy to export the Intrastat report in the format that the authorities in your country require.';
-#if not CLEAN25
-        UserDisabledNotificationTxt: Label 'The user disabled notification %1.', Locked = true;
-        IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
-        IntrastatFeatureAwarenessNotificationIdTok: Label 'dcd4e71a-8c6a-44fc-9642-54f931e5e7d9', Locked = true;
-#endif        
         SupplementaryUnitUpdateNotificationIdTok: Label '52f2c034-1857-4922-99cb-448c09e01474', Locked = true;
-#if not CLEAN25
-        IntrastatCoreAppIdTok: Label '70912191-3c4c-49fc-a1de-bc6ea1ac9da6', Locked = true;
-        IntrastatTelemetryCategoryTok: Label 'AL Intrastat', Locked = true;
-#endif
         LearnMoreLinkTok: Label 'https://go.microsoft.com/fwlink/?linkid=2283605', Locked = true;
         RangeCrossingErr: Label 'There is a conflict in checklist rules for ''%1'' in ''%2'' (field must be both blank and not blank). Please review filters in %3.', Comment = '%1=caption of a field, %2=key of record, %3=caption of report checklist page';
         MaximumLinesErr: Label 'Split files functionality can only be used when the source record is using default sorting and fields are not grouped. Please contact the %1 administrator to adjust the settings in the related %2.', Comment = '%1=Data Exchange caption, %2=Data Exch Mapping Card caption';
@@ -1023,55 +1004,6 @@ codeunit 4810 IntrastatReportManagement
         ItemUOM.Modify(true);
     end;
 
-#if not CLEAN25
-    [Obsolete('Pending removal.', '25.0')]
-    procedure IsFeatureEnabled() IsEnabled: Boolean
-    begin
-        IsEnabled := true;
-#pragma warning disable AL0432
-        OnAfterCheckFeatureEnabled(IsEnabled);
-#pragma warning restore AL0432
-    end;
-
-    [Obsolete('Pending removal.', '25.0')]
-    procedure NotifyUserAboutIntrastatFeature()
-    var
-        MyNotifications: Record "My Notifications";
-        IntrastatFeatureAwarenessNotification: Notification;
-    begin
-#pragma warning disable AL0432
-        if IsInstalledByAppId(GetAppId()) then
-            if MyNotifications.IsEnabled(GetIntrastatFeatureAwarenessNotificationId()) then begin
-                IntrastatFeatureAwarenessNotification.Id(GetIntrastatFeatureAwarenessNotificationId());
-                IntrastatFeatureAwarenessNotification.SetData('NotificationId', GetIntrastatFeatureAwarenessNotificationId());
-                IntrastatFeatureAwarenessNotification.Message(IntrastatAwarenessNotificationTxt);
-#pragma warning restore AL0432
-                IntrastatFeatureAwarenessNotification.AddAction(LearnMoreTxt, Codeunit::IntrastatReportManagement, 'LearnMore');
-                IntrastatFeatureAwarenessNotification.AddAction(DisableNotificationTxt, Codeunit::IntrastatReportManagement, 'DisableNotification');
-                IntrastatFeatureAwarenessNotification.Send();
-            end;
-    end;
-
-    [Obsolete('Pending removal.', '25.0')]
-    procedure LearnMore(HostNotification: Notification)
-    begin
-        Hyperlink(LearnMoreLinkTok);
-    end;
-
-    [Obsolete('Pending removal.', '25.0')]
-    procedure DisableNotification(HostNotification: Notification)
-    var
-        MyNotifications: Record "My Notifications";
-        NotificationId: Text;
-    begin
-        NotificationId := HostNotification.GetData('NotificationId');
-        if MyNotifications.Get(UserId(), NotificationId) then
-            MyNotifications.Disable(NotificationId)
-        else
-            MyNotifications.InsertDefault(NotificationId, IntrastatAwarenessNotificationNameTxt, IntrastatAwarenessNotificationDescriptionTxt, false);
-        Session.LogMessage('0000I9Q', StrSubstNo(UserDisabledNotificationTxt, HostNotification.GetData('NotificationId')), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', IntrastatTelemetryCategoryTok);
-    end;
-#endif
     internal procedure NotifyUserAboutSupplementaryUnitUpdate()
     var
         Item: Record Item;
@@ -1102,19 +1034,6 @@ codeunit 4810 IntrastatReportManagement
                 StrSubstNo(SupplementaryUnitUpdateNotificationDescriptionTxt, Item.FieldCaption("Supplementary Unit of Measure"), Item.FieldCaption("Tariff No.")), false);
     end;
 
-#if not CLEAN25
-    [Obsolete('Pending removal.', '25.0')]
-    procedure ShowNotEnabledMessage(PageCaption: Text)
-    begin
-        Message(FeatureNotEnabledMessageTxt, PageCaption);
-    end;
-
-    [Obsolete('Pending removal.', '25.0')]
-    procedure ShowFeatureEnabledMessage(OldPageCaption: Text; NewPageCaption: Text)
-    begin
-        Message(NewFeatureEnabledMessageTxt, OldPageCaption, NewPageCaption);
-    end;
-#endif
     procedure IsCustomerPrivatePerson(Customer: Record Customer): Boolean;
     begin
         if Customer."Intrastat Partner Type" <> "Partner Type"::" " then
@@ -1131,39 +1050,11 @@ codeunit 4810 IntrastatReportManagement
             exit(Vendor."Partner Type" = "Partner Type"::Person);
     end;
 
-#if not CLEAN25
-    [Obsolete('Pending removal.', '25.0')]
-    local procedure GetIntrastatFeatureKeyId(): Text[50]
-    begin
-        exit(IntrastatFeatureKeyIdTok);
-    end;
-
-    [Obsolete('Pending removal.', '25.0')]
-    local procedure GetIntrastatFeatureAwarenessNotificationId(): Guid;
-    begin
-        exit(IntrastatFeatureAwarenessNotificationIdTok);
-    end;
-#endif
     local procedure GetSupplementaryUnitUpdateNotificationId(): Guid;
     begin
         exit(SupplementaryUnitUpdateNotificationIdTok);
     end;
 
-#if not CLEAN25
-    [Obsolete('Pending removal.', '25.0')]
-    local procedure GetAppId(): Guid;
-    begin
-        exit(IntrastatCoreAppIdTok);
-    end;
-
-    [Obsolete('Pending removal.', '25.0')]
-    local procedure IsInstalledByAppId(AppID: Guid): Boolean
-    var
-        NAVAppInstalledApp: Record "NAV App Installed App";
-    begin
-        exit(NAVAppInstalledApp.Get(AppID));
-    end;
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', true, true)]
     local procedure InsertIntoAssistedSetup()
     var
@@ -1225,13 +1116,6 @@ codeunit 4810 IntrastatReportManagement
     begin
     end;
 
-#if not CLEAN25
-    [Obsolete('Pending removal.', '25.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnAfterCheckFeatureEnabled(var IsEnabled: Boolean)
-    begin
-    end;
-#endif
     [IntegrationEvent(true, false)]
     local procedure OnBeforeDefineFileNames(var IntrastatReportHeader: Record "Intrastat Report Header"; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean)
     begin

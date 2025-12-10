@@ -45,15 +45,8 @@ codeunit 11722 "Feature Replace VAT Period CZL" implements "Feature Data Update"
     end;
 
     procedure AfterUpdate(FeatureDataUpdateStatus: Record "Feature Data Update Status")
-    var
-        UpdateFeatureDataUpdateStatus: Record "Feature Data Update Status";
-        UpgradeTag: Codeunit "Upgrade Tag";
-        UpgradeTagDefinitionsCZL: Codeunit "Upgrade Tag Definitions CZL";
     begin
-        UpdateFeatureDataUpdateStatus.SetRange("Feature Key", FeatureDataUpdateStatus."Feature Key");
-        UpdateFeatureDataUpdateStatus.SetFilter("Company Name", '<>%1', FeatureDataUpdateStatus."Company Name");
-        UpdateFeatureDataUpdateStatus.ModifyAll("Feature Status", FeatureDataUpdateStatus."Feature Status");  // Data is not per company
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseVATReturnPeriodInsteadOfVATPeriodUpgradeTag());
+        SetUpgradeTag();
     end;
 
     procedure GetTaskDescription() TaskDescription: Text;
@@ -135,6 +128,19 @@ codeunit 11722 "Feature Replace VAT Period CZL" implements "Feature Data Update"
         TempDocumentEntry."Table Name" := CopyStr(TableName, 1, MaxStrLen(TempDocumentEntry."Table Name"));
         TempDocumentEntry."No. of Records" := RecordCount;
         TempDocumentEntry.Insert();
+    end;
+
+    local procedure SetUpgradeTag()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitionsCZL: Codeunit "Upgrade Tag Definitions CZL";
+    begin
+        // Set the upgrade tag to indicate that the data update is executed/skipped and the feature is enabled.
+        // This is needed when the feature is enabled by default in a future version, to skip the data upgrade.
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetUseVATReturnPeriodInsteadOfVATPeriodUpgradeTag()) then
+            exit;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseVATReturnPeriodInsteadOfVATPeriodUpgradeTag());
     end;
 }
 #endif

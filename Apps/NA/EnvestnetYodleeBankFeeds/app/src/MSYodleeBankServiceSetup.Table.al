@@ -569,12 +569,9 @@ table 1450 "MS - Yodlee Bank Service Setup"
 
     [NonDebuggable]
     [Scope('OnPrem')]
-    procedure SaveConsumerPassword(var ConsumerPasswordKey: Guid; ConsumerPassword: SecretText);
+    procedure SaveConsumerPassword(var ConsumerPasswordKey: Guid; ConsumerPasswordValue: Text);
     var
-        ConsumerPasswordValue: Text;
     begin
-        ConsumerPasswordValue := ConsumerPassword.Unwrap();
-
         ConsumerPasswordValue := DELCHR(ConsumerPasswordValue, '=', ' ');
 
         if ISNULLGUID(ConsumerPasswordKey) or not IsolatedStorage.Contains(ConsumerPasswordKey, DataScope::Company) then

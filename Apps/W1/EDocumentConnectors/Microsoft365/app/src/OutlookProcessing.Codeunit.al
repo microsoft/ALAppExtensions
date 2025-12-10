@@ -205,23 +205,6 @@ codeunit 6385 "Outlook Processing"
                 AttachmentsAdded := 0;
                 EDocWithNoAttachmentName := StrSubstNo(TooManyAttachmentsTxt, GetMaxNoOfAttachmentsPerEmail());
             end;
-            // if an e-mail message has no attachments of supported type, add it as well
-            // it must be represented as an e-document with no attachment
-            if (AttachmentsAdded = 0) and (IgnoredBecauseExisting = 0) then
-                if not IgnoreMailMessage(EmailInbox."External Message Id") then begin
-                    Clear(Attachment);
-                    Clear(TempBlob);
-                    Attachment.Add('emailInboxId', EmailInbox.Id);
-                    Attachment.Add('messageid', EmailInbox."Message Id");
-                    Attachment.Add('externalmessageid', EmailInbox."External Message Id");
-                    Attachment.Add('receiveddatetime', EmailInbox."Received DateTime");
-                    Attachment.Add('id', 0);
-                    Attachment.Add('size', 0);
-                    Attachment.Add('contentType', 'none');
-                    Attachment.Add('contentId', 'none');
-                    Attachment.Add('name', EDocWithNoAttachmentName);
-                    DocumentsArray.Add(Attachment);
-                end;
             Clear(TelemetryCustomDimensions);
             TelemetryCustomDimensions.Add('Category', FeatureName());
             TelemetryCustomDimensions.Add('ReceivedDateTime', Format(EmailInbox."Received DateTime"));
@@ -248,25 +231,36 @@ codeunit 6385 "Outlook Processing"
         end;
     end;
 
-    internal procedure IgnoreMailAttachment(AttachmentLength: Integer; AttachmentContentType: Text): Boolean // this procedure is internal to be called by tests
+    internal procedure IgnoreMailAttachment(AttachmentLength: Integer; AttachmentContentType: Text; FileName: Text): Boolean // this procedure is internal to be called by tests
+    var
+        FileManagement: Codeunit "File Management";
+        Extension: Text;
     begin
         if AttachmentLength > SizeThreshold() then begin
             Session.LogMessage('0000PKI', 'Ignoring attachment because it exceeds size threshold.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
             exit(true);
         end;
 
-        if LowerCase(AttachmentContentType) <> 'application/pdf' then begin
-            Session.LogMessage('0000PKJ', 'Ignoring attachment because it the attachment is not of a supported type.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
-            exit(true);
+        AttachmentContentType := LowerCase(AttachmentContentType);
+
+        if AttachmentContentType = 'application/pdf' then
+            exit(false);
+
+        if AttachmentContentType = 'application/octet-stream' then begin
+            Extension := FileManagement.GetExtension(FileName);
+            if LowerCase(Extension) = 'pdf' then
+                exit(false);
         end;
-        exit(false);
+
+        Session.LogMessage('0000PKJ', 'Ignoring attachment because it the attachment is not of a supported type.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
+        exit(true);
     end;
 
     local procedure IgnoreMailAttachment(EmailMessage: Codeunit "Email Message"; ExternalMessageId: Text[2048]; var IgnoredBecauseExisting: Integer): Boolean
     var
         EDocument: Record "E-Document";
     begin
-        if IgnoreMailAttachment(EmailMessage.Attachments_GetLength(), EmailMessage.Attachments_GetContentType()) then
+        if IgnoreMailAttachment(EmailMessage.Attachments_GetLength(), EmailMessage.Attachments_GetContentType(), EmailMessage.Attachments_GetName()) then
             exit(true);
 
         EDocument.ReadIsolation := IsolationLevel::ReadCommitted;
@@ -275,20 +269,6 @@ codeunit 6385 "Outlook Processing"
         if not EDocument.IsEmpty() then begin
             IgnoredBecauseExisting += 1;
             Session.LogMessage('0000PKK', 'Ignoring attachment because it is already imported.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
-            exit(true);
-        end;
-
-        exit(false)
-    end;
-
-    local procedure IgnoreMailMessage(ExternalMessageId: Text[2048]): Boolean
-    var
-        EDocument: Record "E-Document";
-    begin
-        EDocument.ReadIsolation := IsolationLevel::ReadCommitted;
-        EDocument.SetRange("Outlook Mail Message Id", ExternalMessageId);
-        if not EDocument.IsEmpty() then begin
-            Session.LogMessage('0000QIM', 'Ignoring mail message because it is already imported.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
             exit(true);
         end;
 
@@ -351,18 +331,6 @@ codeunit 6385 "Outlook Processing"
             EDocument."Outlook Mail Message Id" := ExternalMessageIdGuid;
         if Evaluate(MessageIdGuid, MessageId) then
             EDocument."Mail Message Id" := MessageIdGuid;
-
-        // this is the representation of email without supported attachment. register it in E-Document table.
-        if (AttachmentId = 0) and (ContentType = 'none') then
-            if EmailMessage.Get(MessageId) then begin
-                EDocument."Structure Data Impl." := "Structure Received E-Doc."::"Already Structured";
-                EDocument."Read into Draft Impl." := "E-Doc. Read Into Draft"::"Blank Draft";
-                ReceiveContext.GetTempBlob().CreateOutStream(DocumentOutStream, TextEncoding::UTF8);
-                if EmailMessage.Get(MessageId) then;
-                DocumentOutStream.WriteText(EmailMessage.GetBody());
-                EDocument.Modify();
-                exit;
-            end;
 
         if EmailMessage.Get(MessageId) then
             if EmailMessage.Attachments_First() then

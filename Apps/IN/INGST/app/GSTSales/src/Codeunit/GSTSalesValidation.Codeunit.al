@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -20,9 +20,6 @@ using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
-#if not CLEAN25
-using Microsoft.Sales.Pricing;
-#endif
 using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Setup;
 using Microsoft.Utilities;
@@ -148,26 +145,6 @@ codeunit 18143 "GST Sales Validation"
         SalesLine."Total UPIT Amount" := SalesLine."Unit Price Incl. of Tax" * SalesLine.Quantity - SalesLine."Line Discount Amount";
     end;
 
-#if not CLEAN25
-    //AssignPrice Inclusice of Tax
-#pragma warning disable AS0072
-    [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
-#pragma warning restore AS0072
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Price Calc. Mgt.", 'OnAfterFindSalesLineItemPrice', '', false, false)]
-    local procedure AssignPriceInclusiveTax(var SalesLine: Record "Sales Line"; var TempSalesPrice: Record "Sales Price")
-    begin
-        if TempSalesPrice.IsEmpty() then
-            exit;
-
-        SalesLine."Price Inclusive of Tax" := TempSalesPrice."Price Inclusive of Tax";
-        SalesLine."Unit Price Incl. of Tax" := 0;
-        SalesLine."Total UPIT Amount" := 0;
-        if SalesLine."Price Inclusive of Tax" then begin
-            SalesLine."Unit Price Incl. of Tax" := TempSalesPrice."Unit Price";
-            SalesLine."Total UPIT Amount" := SalesLine."Unit Price Incl. of Tax" * SalesLine.Quantity - SalesLine."Line Discount Amount";
-        end;
-    end;
-#endif
 
     //Check Accounting Period
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post (Yes/No)", 'OnAfterConfirmPost', '', false, false)]

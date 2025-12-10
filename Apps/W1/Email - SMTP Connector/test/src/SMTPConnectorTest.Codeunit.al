@@ -206,6 +206,8 @@ codeunit 139760 "SMTP Connector Test"
         SMTPAccountWizard.Password.SetValue(SMTPAccountMock.Password());
         SMTPAccountWizard.SecureConnection.SetValue(SMTPAccountMock.SecureConnection());
 
+        // Need to clike two Next to complete the wizard
+        SMTPAccountWizard.Next.Invoke();
         SMTPAccountWizard.Next.Invoke();
     end;
 

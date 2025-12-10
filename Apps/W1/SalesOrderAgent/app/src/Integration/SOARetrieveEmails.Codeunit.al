@@ -145,7 +145,7 @@ codeunit 4582 "SOA Retrieve Emails"
             exit;
         end;
 
-        if AgentTaskBuilder.TaskExists(SOASetup."Agent User Security ID", EmailInbox."Conversation Id") then
+        if AgentTaskBuilder.TaskExists(SOASetup."User Security ID", EmailInbox."Conversation Id") then
             AddEmailToExistingAgentTask(SOASetup, EmailInbox, SOAEmail)
         else
             AddEmailToNewAgentTask(SOASetup, EmailInbox, SOAEmail);
@@ -202,7 +202,7 @@ codeunit 4582 "SOA Retrieve Emails"
             .SetRequiresReview(SOATaskMessage.MessageRequiresReview(SOASetup, EmailInbox, true))
             .SetIgnoreAttachment(not SOASetup."Analyze Attachments");
 
-        AgentTaskBuilder.Initialize(SOASetup."Agent User Security ID", AgentTaskTitle)
+        AgentTaskBuilder.Initialize(SOASetup."User Security ID", AgentTaskTitle)
             .SetExternalId(EmailInbox."Conversation Id")
             .AddTaskMessage(AgentMessageBuilder);
 

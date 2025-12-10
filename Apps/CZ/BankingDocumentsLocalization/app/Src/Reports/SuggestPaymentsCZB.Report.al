@@ -267,7 +267,7 @@ report 31280 "Suggest Payments CZB"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Currency Type';
-                        OptionCaption = ' ,Payment Order,Bank Account';
+                        OptionCaption = ' ,Payment Order,Bank Account,All';
                         ToolTip = 'Specifies used currency code.';
                     }
                     field(KeepBankCZB; KeepBank)
@@ -448,7 +448,7 @@ report 31280 "Suggest Payments CZB"
         KeepBank, SkipNonWork, UsePaymentDisc, StopPayments, SkipBlocked, IsSkippedBlocked, DialogOpen : Boolean;
         LineNo: Integer;
         CustomerNoFilter, VendorNoFilter, EmployeeNoFilter : Text;
-        CurrencyType: Option " ","Payment Order","Bank Account";
+        CurrencyType: Option " ","Payment Order","Bank Account",All;
 
     procedure SetPaymentOrder(NewPaymentOrderHeaderCZB: Record "Payment Order Header CZB")
     begin
@@ -458,22 +458,22 @@ report 31280 "Suggest Payments CZB"
     procedure AddCustLedgEntry(CustLedgerEntry: Record "Cust. Ledger Entry")
     begin
         PaymentOrderLineCZB.Init();
-        PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order No.", PaymentOrderHeaderCZB."No.");
+        PaymentOrderLineCZB.Validate("Payment Order No.", PaymentOrderHeaderCZB."No.");
         PaymentOrderLineCZB."Line No." := LineNo;
         LineNo += 10000;
         PaymentOrderLineCZB.Type := PaymentOrderLineCZB.Type::Customer;
         case CurrencyType of
             CurrencyType::" ":
                 if PaymentOrderLineCZB."Payment Order Currency Code" <> CustLedgerEntry."Currency Code" then
-                    PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", CustLedgerEntry."Currency Code");
+                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", CustLedgerEntry."Currency Code");
             CurrencyType::"Payment Order":
                 if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Payment Order Currency Code" then
-                    PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", PaymentOrderHeaderCZB."Payment Order Currency Code");
+                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Payment Order Currency Code");
             CurrencyType::"Bank Account":
                 if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Currency Code" then
-                    PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
+                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
         end;
-        PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Applies-to C/V/E Entry No.", CustLedgerEntry."Entry No.");
+        PaymentOrderLineCZB.Validate("Applies-to C/V/E Entry No.", CustLedgerEntry."Entry No.");
         if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" and
            (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry."Pmt. Discount Date")
         then begin
@@ -481,7 +481,7 @@ report 31280 "Suggest Payments CZB"
             PaymentOrderLineCZB."Pmt. Discount Date" := 0D;
             PaymentOrderLineCZB."Amount (Paym. Order Currency)" += PaymentOrderLineCZB."Remaining Pmt. Disc. Possible";
             PaymentOrderLineCZB."Remaining Pmt. Disc. Possible" := 0;
-            PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Amount (Paym. Order Currency)");
+            PaymentOrderLineCZB.Validate("Amount (Paym. Order Currency)");
             PaymentOrderLineCZB."Original Amount" := PaymentOrderLineCZB.Amount;
             PaymentOrderLineCZB."Original Amount (LCY)" := PaymentOrderLineCZB."Amount (LCY)";
             PaymentOrderLineCZB."Orig. Amount(Pay.Order Curr.)" := PaymentOrderLineCZB."Amount (Paym. Order Currency)";
@@ -492,22 +492,22 @@ report 31280 "Suggest Payments CZB"
     procedure AddVendLedgEntry(VendorLedgerEntry: Record "Vendor Ledger Entry")
     begin
         PaymentOrderLineCZB.Init();
-        PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order No.", PaymentOrderHeaderCZB."No.");
+        PaymentOrderLineCZB.Validate("Payment Order No.", PaymentOrderHeaderCZB."No.");
         PaymentOrderLineCZB."Line No." := LineNo;
         LineNo += 10000;
         PaymentOrderLineCZB.Type := PaymentOrderLineCZB.Type::Vendor;
         case CurrencyType of
             CurrencyType::" ":
                 if PaymentOrderLineCZB."Payment Order Currency Code" <> VendorLedgerEntry."Currency Code" then
-                    PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", VendorLedgerEntry."Currency Code");
+                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", VendorLedgerEntry."Currency Code");
             CurrencyType::"Payment Order":
                 if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Payment Order Currency Code" then
-                    PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", PaymentOrderHeaderCZB."Payment Order Currency Code");
+                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Payment Order Currency Code");
             CurrencyType::"Bank Account":
                 if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Currency Code" then
-                    PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
+                    PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
         end;
-        PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Applies-to C/V/E Entry No.", VendorLedgerEntry."Entry No.");
+        PaymentOrderLineCZB.Validate("Applies-to C/V/E Entry No.", VendorLedgerEntry."Entry No.");
         if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" and
            (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry."Pmt. Discount Date")
         then begin
@@ -515,7 +515,7 @@ report 31280 "Suggest Payments CZB"
             PaymentOrderLineCZB."Pmt. Discount Date" := 0D;
             PaymentOrderLineCZB."Amount (Paym. Order Currency)" -= PaymentOrderLineCZB."Remaining Pmt. Disc. Possible";
             PaymentOrderLineCZB."Remaining Pmt. Disc. Possible" := 0;
-            PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Amount (Paym. Order Currency)");
+            PaymentOrderLineCZB.Validate("Amount (Paym. Order Currency)");
             PaymentOrderLineCZB."Original Amount" := PaymentOrderLineCZB.Amount;
             PaymentOrderLineCZB."Original Amount (LCY)" := PaymentOrderLineCZB."Amount (LCY)";
             PaymentOrderLineCZB."Orig. Amount(Pay.Order Curr.)" := PaymentOrderLineCZB."Amount (Paym. Order Currency)";
@@ -527,13 +527,13 @@ report 31280 "Suggest Payments CZB"
     procedure AddEmplLedgEntry(EmployeeLedgerEntry: Record "Employee Ledger Entry")
     begin
         PaymentOrderLineCZB.Init();
-        PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order No.", PaymentOrderHeaderCZB."No.");
+        PaymentOrderLineCZB.Validate("Payment Order No.", PaymentOrderHeaderCZB."No.");
         PaymentOrderLineCZB."Line No." := LineNo;
         LineNo += 10000;
         PaymentOrderLineCZB.Type := PaymentOrderLineCZB.Type::Employee;
         if PaymentOrderLineCZB."Payment Order Currency Code" <> EmployeeLedgerEntry."Currency Code" then
-            PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Payment Order Currency Code", EmployeeLedgerEntry."Currency Code");
-        PaymentOrderLineCZB.Validate(PaymentOrderLineCZB."Applies-to C/V/E Entry No.", EmployeeLedgerEntry."Entry No.");
+            PaymentOrderLineCZB.Validate("Payment Order Currency Code", EmployeeLedgerEntry."Currency Code");
+        PaymentOrderLineCZB.Validate("Applies-to C/V/E Entry No.", EmployeeLedgerEntry."Entry No.");
         AddPaymentLine();
     end;
 

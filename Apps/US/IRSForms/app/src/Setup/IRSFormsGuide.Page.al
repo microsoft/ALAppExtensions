@@ -395,7 +395,6 @@ page 10032 "IRS Forms Guide"
     begin
         SetupCompleted := true;
         Commit();
-        IRSFormsData.AddReportingPeriodsWithForms(Rec."Init Reporting Year");
         GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"IRS Forms Guide");
         CurrPage.Close();
     end;

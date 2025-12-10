@@ -1368,4 +1368,3 @@ codeunit 13918 "XRechnung XML Document Tests"
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"XRechnung XML Document Tests");
     end;
 }
-

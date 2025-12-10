@@ -92,13 +92,13 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                               <TablixBody>
                                 <TablixColumns>
                                   <TablixColumn>
-                                    <Width>1.44165cm</Width>
+                                    <Width>1.5cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>1.55641cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>2.5cm</Width>
+                                    <Width>2.28102cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>1.89146cm</Width>
@@ -107,7 +107,7 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                                     <Width>1.12415cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>1.30937cm</Width>
+                                    <Width>1.5cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>2.02374cm</Width>
@@ -879,7 +879,7 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                               </Filters>
                               <Top>0.69533cm</Top>
                               <Height>1.39311cm</Height>
-                              <Width>17.97cm</Width>
+                              <Width>18cm</Width>
                               <ZIndex>1</ZIndex>
                               <Style>
                                 <Border>
@@ -891,13 +891,13 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                               <TablixBody>
                                 <TablixColumns>
                                   <TablixColumn>
-                                    <Width>1.44165cm</Width>
+                                    <Width>1.5cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>1.55641cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>2.5cm</Width>
+                                    <Width>2.28102cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>1.89146cm</Width>
@@ -906,7 +906,7 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                                     <Width>1.12415cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>1.30937cm</Width>
+                                    <Width>1.5cm</Width>
                                   </TablixColumn>
                                   <TablixColumn>
                                     <Width>2.02374cm</Width>
@@ -1048,6 +1048,12 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
                                                   </TextRun>
+                                                  <TextRun>
+                                                    <Value>3333333333333333333333333333333333333</Value>
+                                                    <Style>
+                                                      <FontSize>7pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
                                                 </TextRuns>
                                                 <Style />
                                               </Paragraph>
@@ -1076,6 +1082,12 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                                                 <TextRuns>
                                                   <TextRun>
                                                     <Value>=Fields!VariableSymbolLbl.Value</Value>
+                                                    <Style>
+                                                      <FontSize>7pt</FontSize>
+                                                    </Style>
+                                                  </TextRun>
+                                                  <TextRun>
+                                                    <Value>3</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -1676,7 +1688,7 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                               </Filters>
                               <Top>2.52945cm</Top>
                               <Height>1.39311cm</Height>
-                              <Width>17.97cm</Width>
+                              <Width>18cm</Width>
                               <ZIndex>2</ZIndex>
                               <Style>
                                 <Border>
@@ -2341,6 +2353,7 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DataSet_Result</DataSetName>
+            <Top>0in</Top>
             <Left>0.03cm</Left>
             <Height>14.30505cm</Height>
             <Width>18cm</Width>
