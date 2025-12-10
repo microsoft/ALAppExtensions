@@ -24,8 +24,8 @@ codeunit 40032 "Migration Validation"
         if not MigrationValidatorRegistry.FindSet() then
             exit;
 
-        Commit();
         repeat
+            Commit();
             if not Codeunit.Run(MigrationValidatorRegistry."Codeunit Id") then begin
                 Clear(CloudMigrationWarning);
                 CloudMigrationWarning."Entry No." := 0;

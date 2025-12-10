@@ -1071,7 +1071,7 @@ codeunit 4037 "Helper Functions"
         if GPVendor.FindSet() then
             repeat
                 if GPVendorMigrator.ShouldMigrateVendor(GPVendor.VENDORID, IsTemporaryVendor, HasOpenPurchaseOrders, HasOpenTransactions) then
-                    VendorCount := VendorCount + 1;
+                    VendorCount += 1;
 
             until GPVendor.Next() = 0;
 
@@ -1154,7 +1154,7 @@ codeunit 4037 "Helper Functions"
                 GenJournalLine.SetRange("Journal Template Name", GenJournalBatch."Journal Template Name");
                 GenJournalLine.SetRange("Journal Batch Name", GenJournalBatch.Name);
                 if not GenJournalLine.IsEmpty() then
-                    UnpostedBatchCount := UnpostedBatchCount + 1;
+                    UnpostedBatchCount += 1;
             until GenJournalBatch.Next() = 0;
 
         exit(UnpostedBatchCount);
@@ -1177,7 +1177,7 @@ codeunit 4037 "Helper Functions"
             repeat
                 ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatch.Name);
                 if not ItemJournalLine.IsEmpty() then
-                    UnpostedBatchCount += UnpostedBatchCount + 1;
+                    UnpostedBatchCount += 1;
             until ItemJournalBatch.Next() = 0;
 
         exit(UnpostedBatchCount);
@@ -1200,7 +1200,7 @@ codeunit 4037 "Helper Functions"
             repeat
                 StatisticalAccJournalLine.SetRange("Journal Batch Name", StatisticalAccJournalBatch.Name);
                 if not StatisticalAccJournalLine.IsEmpty() then
-                    UnpostedBatchCount += UnpostedBatchCount + 1;
+                    UnpostedBatchCount += 1;
             until StatisticalAccJournalBatch.Next() = 0;
 
         exit(UnpostedBatchCount);
