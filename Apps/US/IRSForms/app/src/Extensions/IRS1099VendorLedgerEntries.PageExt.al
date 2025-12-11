@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -10,18 +10,6 @@ pageextension 10048 "IRS 1099 Vendor Ledger Entries" extends "Vendor Ledger Entr
 {
     layout
     {
-#if not CLEAN25
-#pragma warning disable AL0432
-        modify("IRS 1099 Code")
-        {
-            Visible = false;
-        }
-        modify("IRS 1099 Amount")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addafter("Exported to Payment File")
         {
             field("IRS 1099 Reporting Period"; Rec."IRS 1099 Reporting Period")

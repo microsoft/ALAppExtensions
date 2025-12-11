@@ -22,6 +22,11 @@ page 10036 "IRS 1099 Form Documents"
         {
             repeater(Group)
             {
+                field(ID; Rec.ID)
+                {
+                    Tooltip = 'Specifies the unique identifier of the document.';
+                    Visible = false;
+                }
                 field("Period No."; Rec."Period No.")
                 {
                     Tooltip = 'Specifies the period of the document.';
@@ -178,6 +183,23 @@ page 10036 "IRS 1099 Form Documents"
                     RunObject = Page "Transmission Logs IRIS";
                 }
             }
+            action(Print)
+            {
+                Caption = 'Print';
+                Image = Print;
+                ToolTip = 'Print selected forms. You can adjust the filter on the report request page.';
+
+                trigger OnAction()
+                var
+                    IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+                    IRS1099PrintingImpl: Codeunit "IRS 1099 Printing Impl.";
+                begin
+                    IRS1099FormDocHeader := Rec;
+                    CurrPage.SetSelectionFilter(IRS1099FormDocHeader);
+
+                    IRS1099PrintingImpl.PrintMultipleDocumentContent(IRS1099FormDocHeader);
+                end;
+            }
             action(SendEmail)
             {
                 Caption = 'Send Email';
@@ -222,6 +244,9 @@ page 10036 "IRS 1099 Form Documents"
             {
                 Caption = 'Process';
                 actionref(CreateForms_Promoted; CreateForms)
+                {
+                }
+                actionref(Print_Promoted; Print)
                 {
                 }
                 actionref(SendEmails_Promoted; SendEmail)

@@ -836,6 +836,7 @@ codeunit 18433 "GST Application Library"
     var
         GSTApplicationBuffer: Record "GST Application Buffer";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+        DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
         ChargeAmount: Decimal;
         TDSTCSAmount: Decimal;
         TotalInvoiceAmount: Decimal;
@@ -936,8 +937,12 @@ codeunit 18433 "GST Application Library"
                 VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Payment);
                 VendorLedgerEntry.SetRange("Document No.", GSTApplicationBuffer."Original Document No.");
                 if VendorLedgerEntry.FindFirst() then begin
+                    DetailedVendorLedgEntry.SetCurrentKey("Vendor Ledger Entry No.", "Entry Type");
+                    DetailedVendorLedgEntry.SetRange("Vendor Ledger Entry No.", VendorLedgerEntry."Entry No.");
+                    DetailedVendorLedgEntry.SetRange("Entry Type", DetailedVendorLedgEntry."Entry Type"::Application);
+                    DetailedVendorLedgEntry.CalcSums(Amount);
                     VendorLedgerEntry.CalcFields("Remaining Amount");
-                    if VendorLedgerEntry."Remaining Amount" <> Round(GSTApplicationBuffer."GST Base Amount", 0.01) then
+                    if (VendorLedgerEntry."Remaining Amount" + Abs(DetailedVendorLedgEntry.Amount)) <> Round(GSTApplicationBuffer."GST Base Amount", 0.01) then
                         GSTApplicationBuffer."Applied Base Amount" := VendorLedgerEntry."Remaining Amount";
                 end;
 

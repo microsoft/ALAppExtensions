@@ -23,7 +23,8 @@
     },
     {
       "id": "AW0006",
-      "action": "Error"
+      "action": "None",
+      "justification": "Pages and reports should use the UsageCategory and ApplicationArea properties to be searchable."
     },
     {
       "id": "AW0007",
@@ -31,7 +32,8 @@
     },
     {
       "id": "AW0008",
-      "action": "Error"
+      "action": "None",
+      "justification": "The Web client only supports displaying Repeater controls in pages of type List, ListPart, and Worksheet."
     },
     {
       "id": "AW0009",

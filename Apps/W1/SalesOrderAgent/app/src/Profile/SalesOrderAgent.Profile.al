@@ -10,6 +10,7 @@ profile "Sales Order Agent"
 {
     Caption = 'Sales Order Agent (Copilot)';
     Description = 'Page customizations for Sales Order Agent';
+    ProfileDescription = 'Functionality for the Sales Order Agent to efficiently process sales orders and quotes.';
     RoleCenter = "SOA Role Center";
     Customizations = "SOA Customer Card",
                      "SOA Customer List",

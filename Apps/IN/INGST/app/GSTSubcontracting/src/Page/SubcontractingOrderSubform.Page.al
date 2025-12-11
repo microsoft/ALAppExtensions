@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -10,9 +10,6 @@ using Microsoft.Foundation.ExtendedText;
 using Microsoft.Foundation.Navigate;
 using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Purchases.Document;
-#if not CLEAN25
-using Microsoft.Purchases.Pricing;
-#endif
 using Microsoft.Sales.Document;
 
 page 18493 "Subcontracting Order Subform"
@@ -870,10 +867,6 @@ page 18493 "Subcontracting Order Subform"
     end;
 
     var
-#if not CLEAN25
-        PurchHeader: Record "Purchase Header";
-        PurchPriceCalcMgt: Codeunit "Purch. Price Calc. Mgt.";
-#endif
         TransferExtendedText: Codeunit "Transfer Extended Text";
         ShortcutDimCode: array[8] of Code[20];
         UpdateAllowedVar: Boolean;
@@ -984,27 +977,6 @@ page 18493 "Subcontracting Order Subform"
         exit(true);
     end;
 
-#if not CLEAN25
-#pragma warning disable AS0072
-    [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
-#pragma warning restore AS0072
-    procedure ShowPrices()
-    begin
-        PurchHeader.Get(Rec."Document Type", Rec."Document No.");
-        Clear(PurchPriceCalcMgt);
-        PurchPriceCalcMgt.GetPurchLinePrice(PurchHeader, Rec);
-    end;
-
-#pragma warning disable AS0072
-    [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
-#pragma warning restore AS0072
-    procedure ShowLineDisc()
-    begin
-        PurchHeader.Get(Rec."Document Type", Rec."Document No.");
-        Clear(PurchPriceCalcMgt);
-        PurchPriceCalcMgt.GetPurchLineLineDisc(PurchHeader, Rec);
-    end;
-#endif
 
     procedure ShowLineComment()
     begin

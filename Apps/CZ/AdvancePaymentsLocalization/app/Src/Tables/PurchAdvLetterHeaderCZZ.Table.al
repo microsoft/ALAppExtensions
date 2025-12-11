@@ -5,9 +5,6 @@
 namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Bank.BankAccount;
-#if not CLEAN25
-using Microsoft.Bank.Documents;
-#endif
 using Microsoft.Bank.Setup;
 using Microsoft.CRM.BusinessRelation;
 using Microsoft.CRM.Contact;
@@ -837,18 +834,6 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                     IncomingDocument.SetPurchaseAdvanceCZZ(Rec);
             end;
         }
-#if not CLEAN25
-        field(31040; "Amount on Iss. Payment Order"; Decimal)
-        {
-            Caption = 'Amount on Issued Payment Order';
-            FieldClass = FlowField;
-            CalcFormula = sum("Iss. Payment Order Line CZB".Amount where("Purch. Advance Letter No. CZZ" = field("No.")));
-            Editable = false;
-            ObsoleteState = Pending;
-            ObsoleteReason = 'This field is obsolete and will be removed in a future release. The CalcSuggestedAmountToApply function should be used instead.';
-            ObsoleteTag = '25.0';
-        }
-#endif
         field(31112; "Original Document VAT Date"; Date)
         {
             Caption = 'Original Document VAT Date';

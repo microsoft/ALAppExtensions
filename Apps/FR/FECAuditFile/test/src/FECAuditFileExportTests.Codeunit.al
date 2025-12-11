@@ -2279,6 +2279,48 @@ codeunit 148017 "FEC Audit File Export Tests"
         VerifyExportGLEntriesReport(GLRegister, AuditFile, '', Customer."No.", Customer.Name);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure DateletFieldShowsLetteringDateForVendor()
+    var
+        AuditFile: Record "Audit File";
+        GenJournalLine: Record "Gen. Journal Line";
+        GLRegister: Record "G/L Register";
+        Vendor: Record Vendor;
+        VendorPostingGroup: Record "Vendor Posting Group";
+        InvoiceDate: Date;
+        PaymentDate: Date;
+        InvoiceDocNo: Code[20];
+    begin
+        // [SCENARIO 603700] Datelet field in FEC export should show the lettering date (SystemCreatedAt) instead of posting date for vendor entries.
+        Initialize();
+
+        // [GIVEN] Create Vendor with posting group.
+        LibraryPurchase.CreateVendor(Vendor);
+        VendorPostingGroup.Get(Vendor."Vendor Posting Group");
+        InvoiceDate := GetStartingDate();
+        PaymentDate := InvoiceDate + 14; // Payment 14 days after invoice
+
+        // [GIVEN] Invoice posted on InvoiceDate.
+        LibraryJournals.CreateGenJournalLineWithBatch(
+            GenJournalLine, "Gen. Journal Document Type"::Invoice,
+            "Gen. Journal Account Type"::Vendor, Vendor."No.", -LibraryRandom.RandDecInRange(1000, 2000, 2));
+        GenJournalLine.Validate("Posting Date", InvoiceDate);
+        GenJournalLine.Modify(true);
+        InvoiceDocNo := GenJournalLine."Document No.";
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+
+        // [GIVEN] Payment posted on PaymentDate and applied to Invoice.
+        CreateApplyVendorPayment(Vendor."No.", PaymentDate, 1);
+
+        // [WHEN] Export FEC file
+        RunFECExport(AuditFile, VendorPostingGroup."Payables Account", InvoiceDate, PaymentDate, false);
+
+        // [THEN] Datelet field (field 15) for payment entry shows the application date (Today), not the payment posting date.
+        GLRegister.FindLast();
+        VerifyDateLetFieldReport(GLRegister, AuditFile, VendorPostingGroup."Payables Account", InvoiceDocNo, "Gen. Journal Document Type"::Payment, Today);
+    end;
+
     local procedure Initialize()
     begin
         LibrarySetupStorage.Restore();
@@ -3570,6 +3612,28 @@ codeunit 148017 "FEC Audit File Export Tests"
                         until AltCustPostGroup.Next() = 0;
                 end;
         exit(false);
+    end;
+
+    local procedure VerifyDateLetFieldReport(GLRegister: Record "G/L Register"; AuditFile: Record "Audit File"; GLAccountNo: Code[250]; AppliedEntries: Text; DocumentType: Enum "Gen. Journal Document Type"; AppliedDate: Date)
+    var
+        GLEntry: Record "G/L Entry";
+        IStream: InStream;
+        LineToRead: Text;
+        FieldsValueArray: array[18] of Text[50];
+    begin
+        CreateReadStream(IStream, AuditFile);
+        IStream.ReadText(LineToRead); // headers
+        IStream.ReadText(LineToRead);
+
+        GLEntry.SetFilter("Entry No.", '%1..%2', GLRegister."From Entry No.", GLRegister."To Entry No.");
+        GLEntry.SetRange("G/L Account No.", GLAccountNo);
+        GLEntry.SetRange("Document Type", DocumentType);
+        if GLEntry.FindSet() then
+            repeat
+                PopulateFieldsArray(iStream, FieldsValueArray);
+                Assert.AreEqual(AppliedEntries, FieldsValueArray[14], GetErrorTextForAssertStmnt(14));
+                Assert.AreEqual(GetFormattedDate(AppliedDate), FieldsValueArray[15], GetErrorTextForAssertStmnt(15));
+            until GLEntry.Next() = 0;
     end;
 
     [ConfirmHandler]

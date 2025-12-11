@@ -377,7 +377,6 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     procedure PrintPostedSalesInvoiceWithCustomReportLayout();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        TempXMLBuffer: Record "XML Buffer" temporary;
         ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
         PDFDocument: Codeunit "PDF Document";
         PDFTempBlob: Codeunit "Temp Blob";

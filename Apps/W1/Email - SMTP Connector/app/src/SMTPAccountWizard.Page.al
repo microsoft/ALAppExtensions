@@ -13,7 +13,7 @@ using System.Utilities;
 /// </summary>
 page 4511 "SMTP Account Wizard"
 {
-    Caption = 'Setup SMTP Account';
+    Caption = 'Set up SMTP Account';
     SourceTable = "SMTP Account";
     SourceTableTemporary = true;
     Permissions = tabledata "SMTP Account" = rimd;
@@ -25,6 +25,9 @@ page 4511 "SMTP Account Wizard"
     {
         area(Content)
         {
+            // -------------------------
+            // STEP 1 : Basic Setup
+            // -------------------------
             group(Setup)
             {
                 Visible = Step1Visible;
@@ -94,7 +97,6 @@ page 4511 "SMTP Account Wizard"
                     begin
                         if Rec."User Name" = '' then
                             Rec."User Name" := Rec."Email Address";
-
                         IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
                     end;
                 }
@@ -137,14 +139,32 @@ page 4511 "SMTP Account Wizard"
                             Message(EveryUserShouldPressAuthenticateMsg);
                     end;
                 }
-                field(Custom; CustomB)
+            }
+
+            // -------------------------
+            // STEP 2 : Ask Custom OAuth?
+            // Only visible when auth = OAuth2
+            // -------------------------
+            group(CheckIfCustomOAuth)
+            {
+                Visible = Step2Visible and CustomOAuthVisible;
+                ShowCaption = false;
+                InstructionalText = 'Do you want to use your own app registration with OAuth 2.0 authentication? (This requires an app registration in Microsoft Entra ID.)';
+                field(Custom; CustomOAuth)
                 {
                     ApplicationArea = All;
-                    Caption = 'Custom App Registration';
-                    ToolTip = 'Specifies if you want to set up a custom SMTP server.';
-                    Enabled = CustomBVisible;
+                    Caption = 'Use custom app registration';
+                    ToolTip = 'Specifies if you want to set up a custom app registration for OAuth 2.0 authentication.';
                 }
+            }
 
+            // -------------------------
+            // STEP 3 : Standard Credentials + Optional Custom OAuth Fields
+            // -------------------------
+            group(Step3Basic)
+            {
+                Visible = Step3Visible;
+                ShowCaption = false;
                 field(UserName; Rec."User Name")
                 {
                     ApplicationArea = All;
@@ -158,28 +178,100 @@ page 4511 "SMTP Account Wizard"
                     end;
                 }
 
-                field(Password; Password)
-                {
-                    ApplicationArea = All;
-                    Caption = 'Password';
-                    Editable = PasswordEditable;
-                    ExtendedDatatype = Masked;
-                    ToolTip = 'Specifies the password of the SMTP server.';
-                }
-
                 field(SecureConnection; Rec."Secure Connection")
                 {
                     ApplicationArea = All;
                     Caption = 'Secure Connection';
                     ToolTip = 'Specifies if your SMTP mail server setup requires a secure connection that uses a cryptography or security protocol, such as secure socket layers (SSL). Clear the check box if you do not want to enable this security setting.';
                 }
-            }
-            group(OAuth)
-            {
-                InstructionalText = 'You must already have registered your application in Microsoft Entra and granted certain permissions. Use the client ID and secret from that registration to authenticate the email account.';
-                ShowCaption = false;
-                Visible = Step2Visible;
+                group(PasswordGroup)
+                {
+                    ShowCaption = false;
+                    Visible = PasswordEditable;
 
+                    field(Password; Password)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Password';
+                        Editable = PasswordEditable;
+                        ExtendedDatatype = Masked;
+                        ToolTip = 'Specifies the password of the SMTP server.';
+                    }
+                }
+
+                // OAuth fields only shown when: Step3Visible + OAuth2 + CustomOAuth = TRUE
+                group(OAuth)
+                {
+                    Visible = Step3Visible and CustomOAuth;
+                    ShowCaption = false;
+                    group(Secrets)
+                    {
+                        Caption = 'Azure Application registration';
+                        ShowCaption = false;
+                        InstructionalText = 'Enter client ID and secret from your Microsoft Entra application registration.';
+                        field(ClientId; ClienStorageIdText)
+                        {
+                            ApplicationArea = All;
+                            ToolTip = 'Specifies the Client Id.';
+                            Caption = 'Client Id';
+                            NotBlank = true;
+                            ShowMandatory = true;
+                            trigger OnValidate()
+                            begin
+                                SetClientIdInStorage(Rec);
+                                UpdateVisibility();
+                                if AllOAuthFieldsValid() then
+                                    IsNextEnabled := true;
+                            end;
+                        }
+
+                        field(ClientSecret; ClientSecretStorageIdText)
+                        {
+                            ApplicationArea = All;
+                            ToolTip = 'Specifies the Client Secret.';
+                            Caption = 'Client Secret';
+                            NotBlank = true;
+                            ShowMandatory = true;
+                            trigger OnValidate()
+                            begin
+                                SetClientSecretInStorage(Rec);
+                                if AllOAuthFieldsValid() then
+                                    IsNextEnabled := true;
+                            end;
+                        }
+                        field("Tenant Id"; TenantId)
+                        {
+                            ApplicationArea = All;
+                            ToolTip = 'Specifies the Tenant ID.';
+                            Caption = 'Tenant ID';
+                            NotBlank = true;
+                            ShowMandatory = true;
+                            trigger OnValidate()
+                            begin
+                                Rec.Validate("Tenant Id", TenantId);
+                                TenantId := HiddenValueTxt;
+                                if AllOAuthFieldsValid() then
+                                    IsNextEnabled := true;
+                            end;
+                        }
+                    }
+                }
+                group(RedirectUriGroup)
+                {
+                    Visible = Step3Visible and CustomOAuth and IsOnPrem;
+                    ShowCaption = false;
+                    field("Redirect Uri"; Rec."Redirect Uri")
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Redirect URI';
+                        ToolTip = 'Specifies the redirect URI configured in the app registration in Microsoft Entra (Azure AD). This is required for OnPrem deployments.';
+                    }
+                }
+            }
+            group(HyperLinks)
+            {
+                ShowCaption = false;
+                Visible = Step3Visible and CustomOAuth;
                 field(Doc; AppRegistrationsLbl)
                 {
                     ApplicationArea = All;
@@ -204,40 +296,8 @@ page 4511 "SMTP Account Wizard"
                     end;
                 }
 
-                group(Secrets)
-                {
-                    Caption = 'Azure Application registration';
-                    field(ClientId; ClienStorageIdText)
-                    {
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the Client Id.';
-                        Caption = 'Client Id';
-
-                        trigger OnValidate()
-                        begin
-                            SetClientIdInStorage(Rec);
-                        end;
-                    }
-
-                    field(ClientSecret; ClientSecretStorageIdText)
-                    {
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the Client Secret.';
-                        Caption = 'Client Secret';
-
-                        trigger OnValidate()
-                        begin
-                            SetClientSecretInStorage(Rec);
-                        end;
-                    }
-                    field(RedirectURL; Rec."Authority URL")
-                    {
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the Authority URL.';
-                        Caption = 'Authority URL';
-                    }
-                }
             }
+
         }
     }
 
@@ -245,6 +305,7 @@ page 4511 "SMTP Account Wizard"
     {
         area(processing)
         {
+#if not CLEAN28
             action(OAuthAuthenticate)
             {
                 ApplicationArea = All;
@@ -252,18 +313,23 @@ page 4511 "SMTP Account Wizard"
                 Image = Setup;
                 InFooterBar = true;
                 ToolTip = 'Setup OAuth 2.0 authentication. The user will be prompted to sign in to their account and grant admin permissions to the application.';
-                Visible = (Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0") and Step2Visible;
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '28.0';
+                ObsoleteReason = 'Use the Next action to finalize the setup.';
 
                 trigger OnAction()
                 var
                     OAuth2SMTPAuthentication: Codeunit "OAuth2 SMTP Authentication";
                 begin
                     if IsNullGuid(Rec."Client Id Storage Id") or IsNullGuid(Rec."Client Secret Storage Id") then
-                        Error('Client Id and Client Secret must be provided before authentication.');
+                        Error(ClientIdAndSecretRequiredErr);
 
                     OAuth2SMTPAuthentication.AuthenticateWithOAuth2CustomAppReg(Rec);
+                    IsNextEnabled := true;
                 end;
             }
+#endif
             action(ApplyOffice365)
             {
                 ApplicationArea = All;
@@ -300,6 +366,29 @@ page 4511 "SMTP Account Wizard"
 
                 trigger OnAction()
                 begin
+                    if Step3Visible then
+                        if IsOAuthAuth() then begin
+                            Step3Visible := false;
+                            Step2Visible := true;
+                            IsNextEnabled := true;
+                            CurrPage.Update();
+                            exit;
+                        end else begin
+                            Step3Visible := false;
+                            Step1Visible := true;
+                            IsNextEnabled := true;
+                            CurrPage.Update();
+                            exit;
+                        end;
+
+                    if Step2Visible then begin
+                        Step2Visible := false;
+                        Step1Visible := true;
+                        IsNextEnabled := SMTPConnectorImpl.IsAccountValid(Rec);
+                        CurrPage.Update();
+                        exit;
+                    end;
+
                     CurrPage.Close();
                 end;
             }
@@ -315,22 +404,47 @@ page 4511 "SMTP Account Wizard"
 
                 trigger OnAction()
                 begin
-                    if Step2Visible then begin
-                        if IsNullGuid(SMTPEmailAccount."Account Id") then
-                            SMTPConnectorImpl.CreateAccount(Rec, Password, SMTPEmailAccount);
-                        UpdateVisibility(); // DO UPDATE (Rec)
+                    // STEP 3 -> FINALIZE
+                    if Step3Visible then begin
+                        if IsOAuthAuth() then
+                            AuthenticateWithOAuth2CustomAppReg();
+
+                        EnsureAccountCreated();
                         Rec.Modify();
                         CurrPage.Close();
-                    end else
-                        if Step1Visible then
-                            if CustomB then begin
-                                Step1Visible := false;
-                                Step2Visible := true;
-                            end else begin
-                                if IsNullGuid(SMTPEmailAccount."Account Id") then
-                                    SMTPConnectorImpl.CreateAccount(Rec, Password, SMTPEmailAccount);
-                                CurrPage.Close();
-                            end;
+                        exit;
+                    end;
+
+                    // STEP 2 -> go to STEP 3
+                    if Step2Visible then begin
+                        Step2Visible := false;
+                        Step3Visible := true;
+
+                        if IsOAuthAuth() and CustomOAuth then
+                            IsNextEnabled := false  // must fill ClientId/Secret/Tenant
+                        else
+                            IsNextEnabled := true;
+
+                        CurrPage.Update();
+                        exit;
+                    end;
+
+                    // STEP 1 -> determine next step
+                    if Step1Visible then
+                        if IsOAuthAuth() then begin
+                            Step1Visible := false;
+                            Step2Visible := true;
+                            CustomOAuth := false;
+                            IsNextEnabled := true;
+                            CurrPage.Update();
+                            exit;
+                        end else begin
+                            Step1Visible := false;
+                            Step3Visible := true;
+                            IsNextEnabled := true;
+                            CurrPage.Update();
+                            exit;
+                        end;
                 end;
             }
         }
@@ -340,6 +454,7 @@ page 4511 "SMTP Account Wizard"
         SMTPEmailAccount: Record "Email Account";
         MediaResources: Record "Media Resources";
         SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
+        EnvironmentInformation: Codeunit "Environment Information";
         UserIDEditable: Boolean;
         PasswordEditable: Boolean;
         [NonDebuggable]
@@ -349,17 +464,21 @@ page 4511 "SMTP Account Wizard"
         SenderFieldsEnabled: Boolean;
         TopBannerVisible: Boolean;
         ShowMessageAboutSigningIn: Boolean;
-        Step1Visible, Step2Visible, SetupAppRegVisible, CustomB, CustomBVisible : Boolean;
-        EveryUserShouldPressAuthenticateMsg: Label 'Before people can send email they must authenticate their email account. They can do that by choosing the Authenticate action on the SMTP Account page.';
+        IsOnPrem: Boolean;
+        Step1Visible, Step2Visible, Step3Visible, CustomOAuth, CustomOAuthVisible : Boolean;
         [NonDebuggable]
         ClienStorageIdText: Text;
         [NonDebuggable]
         ClientSecretStorageIdText: Text;
+        [NonDebuggable]
+        TenantId: Text;
         DocumentationAzureUlrTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134620', Locked = true;
         DocumentationBCUlrTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2134520', Locked = true;
         AppRegistrationsLbl: Label 'Learn more about app registration';
         AppPermissionsLbl: Label 'Learn more about the permissions';
         HiddenValueTxt: Label '******', Locked = true;
+        EveryUserShouldPressAuthenticateMsg: Label 'Before people can send email they must authenticate their account.';
+        ClientIdAndSecretRequiredErr: Label 'Client Id and Client Secret must be provided before authentication.';
 
     trigger OnOpenPage()
     begin
@@ -372,24 +491,64 @@ page 4511 "SMTP Account Wizard"
 
         Step1Visible := true;
         Step2Visible := false;
+        Step3Visible := false;
+
+        IsOnPrem := EnvironmentInformation.IsOnPrem();
+        IsNextEnabled := false;
+    end;
+
+    local procedure IsOAuthAuth(): Boolean
+    begin
+        exit(Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0");
+    end;
+
+    local procedure AllOAuthFieldsValid(): Boolean
+    begin
+        exit(
+            not IsNullGuid(Rec."Client Id Storage Id") and
+            not IsNullGuid(Rec."Client Secret Storage Id") and
+            not IsNullGuid(Rec."Tenant Id")
+        );
     end;
 
     local procedure UpdateVisibility()
     begin
-        if Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0" then begin
-            SetupAppRegVisible := true;
-            CustomBVisible := true;
-        end;
+        CustomOAuthVisible := IsOAuthAuth();
+        if not CustomOAuthVisible then
+            CustomOAuth := false;
     end;
 
     local procedure SetProperties()
-    var
-        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        UserIDEditable := (Rec."Authentication Type" = Rec."Authentication Type"::Basic) or (Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0") or (Rec."Authentication Type" = Rec."Authentication Type"::NTLM);
-        PasswordEditable := (Rec."Authentication Type" = Rec."Authentication Type"::Basic) or (Rec."Authentication Type" = Rec."Authentication Type"::NTLM);
-        ShowMessageAboutSigningIn := (not EnvironmentInformation.IsSaaSInfrastructure()) and (Rec."Authentication Type" = Rec."Authentication Type"::"OAuth 2.0") and (Rec.Server = SMTPConnectorImpl.GetO365SmtpServer());
-        SenderFieldsEnabled := Rec."Sender Type" = Rec."Sender Type"::"Specific User";
+        UserIDEditable :=
+            (Rec."Authentication Type" in [Rec."Authentication Type"::Basic, Rec."Authentication Type"::"OAuth 2.0", Rec."Authentication Type"::NTLM]);
+
+        PasswordEditable :=
+            (Rec."Authentication Type" in [Rec."Authentication Type"::Basic, Rec."Authentication Type"::NTLM]);
+
+        ShowMessageAboutSigningIn :=
+            (not EnvironmentInformation.IsSaaSInfrastructure()) and
+            IsOAuthAuth() and
+            (Rec.Server = SMTPConnectorImpl.GetO365SmtpServer());
+
+        SenderFieldsEnabled :=
+            Rec."Sender Type" = Rec."Sender Type"::"Specific User";
+    end;
+
+    local procedure EnsureAccountCreated()
+    begin
+        if IsNullGuid(SMTPEmailAccount."Account Id") then
+            SMTPConnectorImpl.CreateAccount(Rec, Password, SMTPEmailAccount);
+    end;
+
+    local procedure AuthenticateWithOAuth2CustomAppReg()
+    var
+        OAuth2SMTPAuthentication: Codeunit "OAuth2 SMTP Authentication";
+    begin
+        if IsNullGuid(Rec."Client Id Storage Id") or IsNullGuid(Rec."Client Secret Storage Id") then
+            Error(ClientIdAndSecretRequiredErr);
+
+        OAuth2SMTPAuthentication.AuthenticateWithOAuth2CustomAppReg(Rec);
     end;
 
     local procedure SetClientSecretInStorage(var SMTPAccount: Record "SMTP Account")
@@ -412,9 +571,7 @@ page 4511 "SMTP Account Wizard"
     begin
         if IsNullGuid(SMTPEmailAccount."Account Id") then
             exit(false);
-
         EmailAccount := SMTPEmailAccount;
-
         exit(true);
     end;
 }

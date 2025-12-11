@@ -74,7 +74,7 @@ codeunit 4587 "SOA Impl"
             exit(true);
 
         repeat
-            if User.Get(SOASetup."Agent User Security ID") then
+            if User.Get(SOASetup."User Security ID") then
                 if User.State = User.State::Enabled then
                     exit(true);
         until SOASetup.Next() = 0;

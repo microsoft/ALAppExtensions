@@ -2,14 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-#pragma warning disable AA0247
+namespace Microsoft.Finance.AdvancePayments;
 
-permissionset 2271 "SMTP-SETUP"
+enum 11703 "Alt. Cust. VAT Reg. Adv. CZZ" implements "Alt. Cust. VAT Reg. Adv. CZZ"
 {
-    Access = Public;
-    Assignable = true;
-    Caption = 'SMTP Mail Setup';
-    ObsoleteTag = '20.0';
-    ObsoleteState =  Pending;
-    ObsoleteReason = '"SMTP Mail - Admin" has been removed.';
+    Extensible = true;
+    DefaultImplementation = "Alt. Cust. VAT Reg. Adv. CZZ" = "Alt. Cust. VAT Reg. Impl. CZZ";
+
+    value(0; Default)
+    {
+    }
 }

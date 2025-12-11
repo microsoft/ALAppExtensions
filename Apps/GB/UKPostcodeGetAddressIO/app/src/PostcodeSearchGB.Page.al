@@ -18,14 +18,14 @@ page 10505 "Postcode Search GB"
         {
             field(PostcodeField; Rec.Postcode)
             {
-                ApplicationArea = Invoicing, Basic, Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Postcode';
                 Lookup = true;
                 ShowMandatory = true;
             }
             field(DeliveryPoint; Rec.Address)
             {
-                ApplicationArea = Invoicing, Basic, Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Delivery Point';
             }
         }
@@ -71,4 +71,3 @@ page 10505 "Postcode Search GB"
         ResultDeliveryPoint := Rec.Address;
     end;
 }
-

@@ -166,21 +166,9 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnInsertVATAmountOnBeforeInsert, '', false, false)]
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
     local procedure OnInsertVATAmountOnBeforeInsert(var SalesLine: Record "Sales Line"; var VATAmountLine: Record "VAT Amount Line")
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
     begin
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
         VATAmountLine."Reverse Charge GB" := SalesLine."Reverse Charge GB";
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
     end;
 
     local procedure DomesticCustomerWarning(SalesLine: Record "Sales Line"; CurrFieldNo: Integer)
@@ -229,13 +217,7 @@ codeunit 10552 "Reverse Charge VAT Subscribers"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnRunOnBeforeCalcVATAmountLines, '', false, false)]
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
     local procedure OnRunOnBeforeCalcVATAmountLines(var TempSalesLineGlobal: Record "Sales Line" temporary; var SalesHeader: Record "Sales Header"; var TempVATAmountLine: Record "VAT Amount Line" temporary; var IsHandled: Boolean)
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
     begin
         if SalesHeader.GetReverseChargeApplies() then
             TempSalesLineGlobal.SetReverseChargeAppliesGB();

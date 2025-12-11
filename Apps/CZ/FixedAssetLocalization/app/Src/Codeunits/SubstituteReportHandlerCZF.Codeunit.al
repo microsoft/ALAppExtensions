@@ -33,16 +33,20 @@ codeunit 31245 "Substitute Report Handler CZF"
             case ReportId of
                 Report::"Calculate Depreciation CZF":
                     NewReportId := Report::"Calculate Depreciation";
+#if not CLEAN28
                 Report::"Fixed Asset - Analysis CZF":
                     NewReportId := Report::"Fixed Asset - Analysis";
+#endif
                 Report::"Fixed Asset - Book Value 1 CZF":
                     NewReportId := Report::"Fixed Asset - Book Value 01";
                 Report::"Fixed Asset - Book Value 2 CZF":
                     NewReportId := Report::"Fixed Asset - Book Value 02";
                 Report::"Fixed Asset Card CZF":
                     NewReportId := Report::"Fixed Asset - G/L Analysis";
+#if not CLEAN28
                 Report::"Fixed Asset - Proj. Value CZF":
                     NewReportId := Report::"Fixed Asset - Projected Value";
+#endif
                 Report::"Maintenance - Analysis CZF":
                     NewReportId := Report::"Maintenance - Analysis";
             end;
@@ -53,16 +57,20 @@ codeunit 31245 "Substitute Report Handler CZF"
             case ReportId of
                 Report::"Calculate Depreciation":
                     NewReportId := Report::"Calculate Depreciation CZF";
+#if not CLEAN28
                 Report::"Fixed Asset - Analysis":
                     NewReportId := Report::"Fixed Asset - Analysis CZF";
+#endif
                 Report::"Fixed Asset - Book Value 01":
                     NewReportId := Report::"Fixed Asset - Book Value 1 CZF";
                 Report::"Fixed Asset - Book Value 02":
                     NewReportId := Report::"Fixed Asset - Book Value 2 CZF";
                 Report::"Fixed Asset - G/L Analysis":
                     NewReportId := Report::"Fixed Asset - G/L Analysis CZF";
+#if not CLEAN28
                 Report::"Fixed Asset - Projected Value":
                     NewReportId := Report::"Fixed Asset - Proj. Value CZF";
+#endif
                 Report::"Maintenance - Analysis":
                     NewReportId := Report::"Maintenance - Analysis CZF";
             end;

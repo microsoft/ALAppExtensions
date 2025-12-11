@@ -121,7 +121,7 @@ codeunit 31072 "User Setup Adv. Management CZL"
                             if not CheckLocQuantityDecrease(ItemJournalLine."Location Code") then
                                 Error(ErrorInfo.Create(StrSubstNo(LocationQtyDecreaseErr, ItemJournalLine."Location Code"), true));
                         if not CheckLocQuantityIncrease(ItemJournalLine."New Location Code") then
-                            Error(ErrorInfo.Create(StrSubstNo(LocationQtyIncreaseErr, ItemJournalLine."Location Code"), true));
+                            Error(ErrorInfo.Create(StrSubstNo(LocationQtyIncreaseErr, ItemJournalLine."New Location Code"), true));
                     end else
                         if ItemJournalLine.Quantity > 0 then begin
                             if not CheckLocQuantityDecrease(ItemJournalLine."Location Code") then

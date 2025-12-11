@@ -10,18 +10,6 @@ pageextension 10053 "IRS 1099 Vendor Card" extends "Vendor Card"
 {
     layout
     {
-#if not CLEAN25
-#pragma warning disable AL0432
-        modify("IRS 1099 Code")
-        {
-            Visible = false;
-        }
-        modify("FATCA filing requirement")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addafter("Exclude from Pmt. Practices")
         {
 #if not CLEAN28
@@ -103,30 +91,6 @@ pageextension 10053 "IRS 1099 Vendor Card" extends "Vendor Card"
 
     actions
     {
-#if not CLEAN25
-#pragma warning disable AL0432
-        modify("1099 Statistics")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Div")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Information")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Int")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Misc")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast("&Purchases")
         {
             action(IRS1099Setup)

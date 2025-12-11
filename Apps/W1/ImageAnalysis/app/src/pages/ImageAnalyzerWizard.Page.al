@@ -4,9 +4,6 @@ using System.Utilities;
 using System.Environment;
 using Microsoft.Inventory.Item;
 using System.Telemetry;
-#if not CLEAN25
-using Microsoft.CRM.Contact;
-#endif
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved. 
 // Licensed under the MIT License. See License.txt in the project root for license information. 
@@ -306,19 +303,12 @@ page 2029 "Image Analyzer Wizard"
         if IsSetItemToFill then
             HasPicture := ItemToFill.Picture.Count() = 1;
 
-#if not CLEAN25
-        if IsSetContactToFill then
-            HasPicture := (ContactToFill.Type = ContactToFill.Type::Person) and (ContactToFill.Image.HasValue());
-#endif
     end;
 
     var
         MediaRepositoryStandard: Record "Media Repository";
         MediaResourcesStandard: Record "Media Resources";
         ItemToFill: Record Item;
-#if not CLEAN25
-        ContactToFill: Record Contact;
-#endif
         Step: Option Start,Second,Finish;
         TopBannerVisible: Boolean;
         FirstStepVisible: Boolean;
@@ -343,9 +333,6 @@ page 2029 "Image Analyzer Wizard"
         CognitiveServicesLinkLinkTxt: Label 'http://go.microsoft.com/fwlink/?LinkID=829046', Locked = true;
         CognitiveServicesLinkTxt: Label 'Microsoft Cognitive Services';
         WantToAnalyzeTheCurrentPictureQst: Label 'An image has been added to the chosen item or contact. Want to analyze the image, right after you enable Image Analyzer?';
-#if not CLEAN25
-        IsSetContactToFill: Boolean;
-#endif
         IsSetItemToFill: Boolean;
         AnalyzePictureOnFinishSwitch: Boolean;
         HasPicture: Boolean;
@@ -382,9 +369,6 @@ page 2029 "Image Analyzer Wizard"
     var
         AuditLog: Codeunit "Audit Log";
         ItemAttrPopulate: Codeunit "Item Attr Populate";
-#if not CLEAN25
-        ContactPictureAnalyze: Codeunit "Contact Picture Analyze";
-#endif
         ItemAttrPopManagement: Codeunit "Image Analyzer Ext. Mgt.";
         ImageAnalyzerConsentProvidedLbl: Label 'Image Analyzer - consent provided by UserSecurityId %1.', Locked = true;
     begin
@@ -398,11 +382,6 @@ page 2029 "Image Analyzer Wizard"
         if IsSetItemToFill then
             if ItemAttrPopulate.AnalyzePicture(ItemToFill) then
                 CurrPage.Close();
-#if not CLEAN25
-        if IsSetContactToFill then
-            if ContactPictureAnalyze.AnalyzePicture(ContactToFill) then
-                CurrPage.Close();
-#endif
         AuditLog.LogAuditMessage(StrSubstNo(ImageAnalyzerConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
     end;
 
@@ -451,13 +430,4 @@ page 2029 "Image Analyzer Wizard"
         IsSetItemToFill := true;
     end;
 
-#if not CLEAN25
-    [Obsolete('Image analyzer for contacts is being removed.', '25.0')]
-    procedure SetContact(Contact: Record Contact)
-    begin
-        ContactToFill := Contact;
-        IsSetContactToFill := true;
-    end;
-#endif
 }
-
