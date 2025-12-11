@@ -24,6 +24,13 @@ codeunit 6256 "Sust. Item Post Subscriber"
             PostSustainabilityValueEntry(ItemJnlLine, ValueEntry, ItemLedgerEntry);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInsertCorrValueEntry', '', false, false)]
+    local procedure OnAfterInsertCorrValueEntry(ItemJournalLine: Record "Item Journal Line"; var NewValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry")
+    begin
+        if CanCreateSustValueEntry(ItemJournalLine, NewValueEntry) then
+            PostSustainabilityValueEntry(ItemJournalLine, NewValueEntry, ItemLedgerEntry);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeInsertItemLedgEntry', '', false, false)]
     local procedure OnBeforeInsertItemLedgEntry(ItemJournalLine: Record "Item Journal Line"; var ItemLedgerEntry: Record "Item Ledger Entry")
     begin
@@ -78,6 +85,7 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine.Validate("Emission CO2", ItemJournalLine."Emission CO2");
         SustainabilityJnlLine.Validate("Emission CH4", ItemJournalLine."Emission CH4");
         SustainabilityJnlLine.Validate("Emission N2O", ItemJournalLine."Emission N2O");
+        SustainabilityJnlLine.Validate(Correction, ItemJournalLine.Correction);
         SustainabilityJnlLine.Validate("Country/Region Code", ItemJournalLine."Country/Region Code");
         SustainabilityPostMgt.InsertValueEntry(SustainabilityJnlLine, ValueEntry, ItemLedgerEntry);
     end;

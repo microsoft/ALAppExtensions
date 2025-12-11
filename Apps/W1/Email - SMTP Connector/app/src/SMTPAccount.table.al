@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace System.Email;
-using System.Utilities;
-
 /// <summary>
 /// Holds the information for all e-mail accounts that are registered via the SMTP connector
 /// </summary>
@@ -119,14 +117,15 @@ table 4511 "SMTP Account"
             Caption = 'Client Secret Storage Id';
             DataClassification = CustomerContent;
         }
-        field(16; "Authority URL"; Text[1024])
+        field(16; "Tenant Id"; guid)
         {
-            Caption = 'Authority URL';
+            Caption = 'Tenant Id';
             DataClassification = CustomerContent;
-            trigger OnValidate()
-            begin
-                ValidateUri(Rec."Authority URL");
-            end;
+        }
+        field(17; "Redirect Uri"; Text[1024])
+        {
+            Caption = 'Redirect Uri';
+            DataClassification = CustomerContent;
         }
     }
 
@@ -145,7 +144,6 @@ table 4511 "SMTP Account"
         UnableToSetClientIdMsg: Label 'Unable to set SMTP Account Client Id';
         UnableToGetClientSecretMsg: Label 'Unable to get SMTP Account Client Secret';
         UnableToSetClientSecretMsg: Label 'Unable to set SMTP Account Client Secret';
-        UriIsNotValidErr: Label '%1 is not a valid URI.', Comment = '%1 = a string';
 
     trigger OnDelete()
     begin
@@ -173,6 +171,12 @@ table 4511 "SMTP Account"
     [NonDebuggable]
     internal procedure SetClientId(ClientId: SecretText)
     begin
+        if ClientId.IsEmpty() then begin
+            if not IsNullGuid(Rec."Client Id Storage Id") then
+                if IsolatedStorage.Delete(Format(Rec."Client Id Storage Id"), DataScope::Company) then;
+            exit;
+        end;
+
         if IsNullGuid(Rec."Client Id Storage Id") then
             Rec."Client Id Storage Id" := CreateGuid();
 
@@ -190,6 +194,12 @@ table 4511 "SMTP Account"
     [NonDebuggable]
     internal procedure SetClientSecret(ClientSecret: SecretText)
     begin
+        if ClientSecret.IsEmpty() then begin
+            if not IsNullGuid(Rec."Client Secret Storage Id") then
+                if IsolatedStorage.Delete(Format(Rec."Client Secret Storage Id"), DataScope::Company) then;
+            exit;
+        end;
+
         if IsNullGuid(Rec."Client Secret Storage Id") then
             Rec."Client Secret Storage Id" := CreateGuid();
 
@@ -202,16 +212,5 @@ table 4511 "SMTP Account"
     begin
         if not IsolatedStorage.Get(Format(ClientSecretKey), DataScope::Company, ClientSecret) then
             Error(UnableToGetClientSecretMsg);
-    end;
-
-    local procedure ValidateUri(UriString: Text)
-    var
-        Uri: Codeunit Uri;
-    begin
-        if UriString = '' then
-            exit;
-
-        if not Uri.IsValidUri(UriString) then
-            Error(UriIsNotValidErr, UriString);
     end;
 }

@@ -21,12 +21,11 @@ codeunit 139762 "SMTP Account Auth Tests"
 #pragma warning restore AA0240
         AuthenticationSuccessfulMsg: Label '%1 was authenticated.', Comment = '%1 = username';
         AuthenticationFailedMsg: Label 'Could not authenticate.';
-        EveryUserShouldPressAuthenticateMsg: Label 'Before people can send email they must authenticate their email account. They can do that by choosing the Authenticate action on the SMTP Account page.';
         TokenFromCache: Text;
-
+        NotificationIsSent: Boolean;
 
     [Test]
-    [HandlerFunctions('OAuth2AuthenticationMessageHandler')]
+    [HandlerFunctions('OAuth2AuthenticationMessageHandler1')]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure SwitchingToOAuth2Authentication()
     var
@@ -64,6 +63,65 @@ codeunit 139762 "SMTP Account Auth Tests"
         Assert.IsTrue(SMTPAccountPage."Authenticate with OAuth 2.0".Visible(), 'OAuth 2.0 actions should be visible if the authentication is OAuth 2.0 in SMTP setup');
         Assert.IsTrue(SMTPAccountPage."Check OAuth 2.0 authentication".Visible(), 'OAuth 2.0 actions should be visible if the authentication is OAuth 2.0 in SMTP setup');
         SMTPAccountPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('BasicAuthNotificationHandler')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure SMTPBasicAuthenticationObsoleteNotificationTest()
+    var
+        SMTPAccount: Record "SMTP Account";
+        SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+        EmailOutboxPage: TestPage "Email Outbox";
+    begin
+        // [SCENARIO]
+        // Verifies that when an SMTP account uses Basic authentication, a deprecation notification
+        // is displayed on the Email Outbox page. Once the user switches the authentication method
+        // to OAuth 2.0, the notification should no longer appear.
+
+        // [GIVEN] An SMTP account configured with Basic authentication.
+        SMTPAccount.DeleteAll();
+        SMTPAccount.Id := CreateGuid();
+        SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::Basic;
+        SMTPAccount.Server := SMTPConnectorImpl.GetO365SmtpServer();
+        SMTPAccount.Insert();
+
+        // Reset the notification tracking flag before test execution.
+        NotificationIsSent := false;
+
+        // [GIVEN] Simulate OnPrem environment (not SaaS) so that the local SMTP implementation is used.
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+
+        // [WHEN] The Email Outbox page is opened while Basic Auth is still in use.
+        EmailOutboxPage.OpenView();
+
+        // [THEN] A notification should be triggered warning about Basic Auth deprecation.
+        Assert.IsTrue(NotificationIsSent, 'Notification about basic authentication being obsolete was not shown.');
+        EmailOutboxPage.Close();
+
+        // [WHEN] The SMTP account authentication is changed to OAuth 2.0.
+        SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::"OAuth 2.0";
+        SMTPAccount.Modify();
+
+        // Reset the notification tracking flag to verify that no new notification is triggered.
+        NotificationIsSent := false;
+
+        // [WHEN] The Email Outbox page is opened again (after switching to OAuth 2.0).
+        EmailOutboxPage.OpenView();
+
+        // [THEN] No notification should appear, as Basic Auth is no longer used.
+        Assert.IsFalse(NotificationIsSent, 'Notification about basic authentication being obsolete is shown.');
+        EmailOutboxPage.Close();
+    end;
+
+    [SendNotificationHandler]
+    procedure BasicAuthNotificationHandler(var Notification: Notification): Boolean
+    begin
+        if StrPos(Notification.Message(), 'Basic authentication') > 0 then begin
+            NotificationIsSent := true;
+            exit(true);
+        end;
     end;
 
     [Test]
@@ -350,6 +408,163 @@ codeunit 139762 "SMTP Account Auth Tests"
 
         SMTPAccountPage.Close();
     end;
+
+    [Test]
+    procedure TestEmailAddressDoesNotOverwriteExistingUserName()
+    begin
+        // [SCENARIO] Email Address OnValidate does not override User Name if it is already set.
+
+        // [GIVEN] A new SMTP Account record with a pre-set User Name
+        CreateSMTPAccount();
+        SMTPAccount."Sender Type" := SMTPAccount."Sender Type"::"Specific User";
+        SMTPAccount."User Name" := 'existing-user@example.com';
+        SMTPAccount.Modify();
+
+        // [WHEN] Opening the page and changing Email Address
+        SMTPAccountPage.OpenEdit();
+        SMTPAccountPage.GoToRecord(SMTPAccount);
+        SMTPAccountPage.EmailAddress.SetValue('new-mail@example.com');
+
+        // [THEN] User Name remains unchanged
+        Assert.AreEqual('existing-user@example.com', SMTPAccountPage.UserName.Value(), 'User Name should not be overwritten by Email Address if already set');
+
+        SMTPAccountPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmCloseCustomOAuthHandler')]
+    procedure TestCustomOAuth2ActionsVisibility()
+    var
+        SMTPConnectorImpl: Codeunit "SMTP Connector Impl.";
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+    begin
+        // [SCENARIO] When Client Id Storage Id is set (custom OAuth),
+        // the custom authenticate action is visible and standard OAuth actions are hidden.
+
+        // [GIVEN] OnPrem + an SMTP account
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+        CreateSMTPAccount();
+
+        // [WHEN] Open the SMTP Account page and configure OAuth 2.0 with O365 via the UI
+        SMTPAccountPage.OpenEdit();
+        SMTPAccountPage.GoToRecord(SMTPAccount);
+
+        // Set Authentication to OAuth 2.0 (fires OnValidate(Authentication) -> SetProperties())
+        SMTPAccountPage.Authentication.SetValue(SMTPAccount."Authentication Type"::"OAuth 2.0");
+
+        // Set server to O365 SMTP (fires OnValidate(ServerUrl) -> SetProperties())
+        SMTPAccountPage.ServerUrl.SetValue(SMTPConnectorImpl.GetO365SmtpServer());
+
+        // At this point, standard OAuth 2.0 actions are visible (already covered by SwitchingToOAuth2Authentication test)
+        SMTPAccountPage.Close();
+
+        // [GIVEN] Custom OAuth is considered "enabled" when Client Id Storage Id is not null
+        SMTPAccount.Get(SMTPAccount.Id);
+        SMTPAccount."Client Id Storage Id" := CreateGuid();
+        SMTPAccount.Modify();
+
+        // [WHEN] Reopen the page (OnOpenPage -> SetProperties() sees Client Id Storage Id <> GUID_EMPTY)
+        SMTPAccountPage.OpenEdit();
+        SMTPAccountPage.GoToRecord(SMTPAccount);
+        SMTPAccountPage.Authentication.SetValue(SMTPAccount."Authentication Type"::"OAuth 2.0");
+
+        // [THEN] Custom OAuth authenticate action is visible
+        Assert.IsTrue(SMTPAccountPage."Authenticate with Customized OAuth 2.0".Visible(), 'Custom OAuth 2.0 authenticate action should be visible when Client Id Storage Id is set');
+
+        // [THEN] Standard OAuth 2.0 actions are hidden
+        Assert.IsFalse(SMTPAccountPage."Authenticate with OAuth 2.0".Visible(), 'Standard OAuth 2.0 authenticate action should be hidden when custom OAuth is enabled');
+        Assert.IsFalse(SMTPAccountPage."Check OAuth 2.0 authentication".Visible(), 'Check OAuth 2.0 authentication action should be hidden when custom OAuth is enabled');
+        SMTPAccountPage.Close();
+    end;
+
+    [Test]
+    procedure TestCustomOAuth2ToggleClearsSecrets()
+    begin
+        // [SCENARIO] Turning off Custom OAuth 2.0 clears secret-related fields.
+
+        // [GIVEN] An SMTP account with custom OAuth 2.0 GUIDs filled
+        CreateSMTPAccount();
+        SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::"OAuth 2.0";
+        SMTPAccount."Client Id Storage Id" := CreateGuid();
+        SMTPAccount."Client Secret Storage Id" := CreateGuid();
+        SMTPAccount."Tenant Id" := CreateGuid();
+        SMTPAccount."Redirect Uri" := 'https://example.com/redirect';
+        SMTPAccount.Modify();
+
+        // [WHEN] Opening the page and setting CustomOAuth2Settings to false
+        SMTPAccountPage.OpenEdit();
+        SMTPAccountPage.GoToRecord(SMTPAccount);
+        SMTPAccountPage.CustomOAuth2Settings.SetValue(false);
+
+        SMTPAccountPage.Close();
+
+        // [THEN] All related GUIDs and redirect URI are cleared
+        SMTPAccount.Get(SMTPAccount.Id);
+        Assert.IsTrue(IsNullGuid(SMTPAccount."Client Id Storage Id"), 'Client Id Storage Id should be cleared when disabling Custom OAuth 2.0');
+        Assert.IsTrue(IsNullGuid(SMTPAccount."Client Secret Storage Id"), 'Client Secret Storage Id should be cleared when disabling Custom OAuth 2.0');
+        Assert.IsTrue(IsNullGuid(SMTPAccount."Tenant Id"), 'Tenant Id should be cleared when disabling Custom OAuth 2.0');
+        Assert.AreEqual('', SMTPAccount."Redirect Uri", 'Redirect URI should be cleared when disabling Custom OAuth 2.0');
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmCloseCustomOAuthHandler')]
+    procedure TestCustomOAuth2AuthenticateRequiresClientIdAndSecret()
+    begin
+        // [SCENARIO] "Authenticate with Customized OAuth 2.0" errors when Client Id or Secret is missing.
+
+        // [GIVEN] OAuth 2.0 account using O365 server and Custom OAuth toggled on, but without ClientId/Secret
+        CreateSMTPAccount();
+        SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::"OAuth 2.0";
+        SMTPAccount.Server := 'smtp.office365.com';
+        SMTPAccount."Client Id Storage Id" := CreateGuid(); // Only ClientId is present to force partial configuration
+        SMTPAccount.Modify();
+
+        SMTPAccountPage.OpenEdit();
+        SMTPAccountPage.GoToRecord(SMTPAccount);
+
+        // Turn on Custom OAuth 2.0 (in case it isn't already)
+        if not SMTPAccountPage.CustomOAuth2Settings.AsBoolean() then
+            SMTPAccountPage.CustomOAuth2Settings.SetValue(true);
+
+        // [THEN] Invoking authenticate should raise an error because Client Secret is missing
+        asserterror SMTPAccountPage."Authenticate with Customized OAuth 2.0".Invoke();
+        Assert.ExpectedError('To use customized OAuth 2.0 settings, the Client ID, Client Secret and Tenant ID must be provided.');
+
+        SMTPAccountPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmCloseCustomOAuthHandler')]
+    procedure TestClosePageWithIncompleteCustomOAuthRequiresConfirm()
+    begin
+        // [SCENARIO] When Custom OAuth 2.0 is enabled but required fields are missing, closing page asks for confirmation.
+
+        // [GIVEN] OAuth 2.0 account with Custom OAuth enabled and incomplete configuration
+        CreateSMTPAccount();
+        SMTPAccount."Authentication Type" := SMTPAccount."Authentication Type"::"OAuth 2.0";
+        SMTPAccount."Client Id Storage Id" := CreateGuid(); // Only ClientId present
+        SMTPAccount.Modify();
+
+        SMTPAccountPage.OpenEdit();
+        SMTPAccountPage.GoToRecord(SMTPAccount);
+
+        // Ensure Custom OAuth 2.0 setting is true
+        if not SMTPAccountPage.CustomOAuth2Settings.AsBoolean() then
+            SMTPAccountPage.CustomOAuth2Settings.SetValue(true);
+
+        // [WHEN] Closing the page
+        SMTPAccountPage.Close();
+
+        // [THEN] The ConfirmCloseCustomOAuthHandler confirms that the right question was asked
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmCloseCustomOAuthHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Assert.AreEqual('To use customized OAuth 2.0 settings, the Client ID, Client Secret and Tenant ID must be provided. Do you want to exit without these information?', Question, 'Unexpected confirmation question when closing page with incomplete Custom OAuth settings.');
+        Reply := true;
+    end;
+
     #endregion
 
     #region Wizard page tests 
@@ -555,8 +770,168 @@ codeunit 139762 "SMTP Account Auth Tests"
         SMTPAccountWizardPage.EmailAddress.SetValue('test@example.com');
 
         // [THEN] Next button should be enabled
-        if not SMTPAccountWizardPage.Next.Enabled() then
-            Error('Next button should be enabled with valid data');
+        Assert.IsTrue(SMTPAccountWizardPage.Next.Enabled(), 'Next button should be enabled with valid data');
+
+        SMTPAccountWizardPage.Close();
+    end;
+
+    [Test]
+    procedure TestWizardNextDisabledUntilBasicFieldsValid()
+    begin
+        // [SCENARIO] In Step 1, Next is disabled until account is considered valid.
+
+        // [WHEN] Opening the wizard
+        SMTPAccountWizardPage.OpenNew();
+
+        // [THEN] Next is initially disabled
+        Assert.IsFalse(SMTPAccountWizardPage.Next.Enabled(), 'Next should be disabled when required fields are empty');
+
+        // [WHEN] Filling the required fields (same pattern as in existing tests for a valid account)
+        SMTPAccountWizardPage.NameField.SetValue('Validation Test');
+        SMTPAccountWizardPage.ServerUrl.SetValue('smtp.test.com');
+        SMTPAccountWizardPage.SenderTypeField.SetValue("SMTP Connector Sender Type"::"Specific User");
+        SMTPAccountWizardPage.EmailAddress.SetValue('valid@example.com');
+
+        // [THEN] Next becomes enabled
+        Assert.IsTrue(SMTPAccountWizardPage.Next.Enabled(), 'Next should be enabled when required fields are filled');
+
+        SMTPAccountWizardPage.Close();
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestWizardOAuth2ShowsStep2()
+    var
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+    begin
+        // [SCENARIO] When Authentication is OAuth 2.0, Next from Step 1 goes to Step 2 (custom OAuth question).
+
+        // [GIVEN] Force SaaS environment so no "authenticate" message is shown
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [WHEN] Opening wizard and filling basic valid data
+        SMTPAccountWizardPage.OpenNew();
+        SMTPAccountWizardPage.NameField.SetValue('OAuth Step Test');
+        SMTPAccountWizardPage.ServerUrl.SetValue('smtp.office365.com');
+        SMTPAccountWizardPage.SenderTypeField.SetValue("SMTP Connector Sender Type"::"Specific User");
+        SMTPAccountWizardPage.EmailAddress.SetValue('test@example.com');
+
+        // Set authentication to OAuth 2.0 (this is where the message would be shown in OnPrem)
+        SMTPAccountWizardPage.Authentication.SetValue("SMTP Authentication"::"OAuth 2.0");
+
+        // Move to Step 2
+        SMTPAccountWizardPage.Next.Invoke();
+
+        // [THEN] Step 2 (Custom app registration question) is visible
+        Assert.IsTrue(
+            SMTPAccountWizardPage.Custom.Visible(),
+            'Custom OAuth question should be visible in Step 2 for OAuth 2.0 flow'
+        );
+
+        SMTPAccountWizardPage.Close();
+    end;
+
+    [Test]
+    procedure TestWizardBackFromStep2ToStep1()
+    begin
+        // [SCENARIO] Back action navigates from Step 2 to Step 1.
+
+        // [GIVEN] We are in Step 2 (OAuth 2.0 flow)
+        SMTPAccountWizardPage.OpenNew();
+        SMTPAccountWizardPage.NameField.SetValue('Back Nav Test');
+        SMTPAccountWizardPage.ServerUrl.SetValue('smtp.office365.com');
+        SMTPAccountWizardPage.SenderTypeField.SetValue("SMTP Connector Sender Type"::"Specific User");
+        SMTPAccountWizardPage.EmailAddress.SetValue('test@example.com');
+        SMTPAccountWizardPage.Authentication.SetValue("SMTP Authentication"::"OAuth 2.0");
+        SMTPAccountWizardPage.Next.Invoke();
+        Assert.IsTrue(SMTPAccountWizardPage.Custom.Visible(), 'Custom OAuth question should be visible before pressing Back');
+
+        // [WHEN] Pressing Back
+        SMTPAccountWizardPage.Back.Invoke();
+
+        // [THEN] We are back on Step 1 (Name field is visible and Custom is not)
+        Assert.IsTrue(SMTPAccountWizardPage.NameField.Visible(), 'Name field should be visible again on Step 1');
+        Assert.IsFalse(SMTPAccountWizardPage.Custom.Visible(), 'Custom OAuth question should not be visible on Step 1');
+
+        SMTPAccountWizardPage.Close();
+    end;
+
+    [Test]
+    procedure TestWizardCustomOAuthDisablesNextUntilOAuthFieldsValid()
+    begin
+        // [SCENARIO] When using Custom OAuth in the wizard, Next on Step 3 is disabled
+        // until Client Id, Client Secret, and Tenant ID are filled.
+
+        // [GIVEN] OAuth 2.0 flow and Step 2 = Custom OAuth enabled
+        SMTPAccountWizardPage.OpenNew();
+        SMTPAccountWizardPage.NameField.SetValue('Custom OAuth Wizard');
+        SMTPAccountWizardPage.ServerUrl.SetValue('smtp.office365.com');
+        SMTPAccountWizardPage.SenderTypeField.SetValue("SMTP Connector Sender Type"::"Specific User");
+        SMTPAccountWizardPage.EmailAddress.SetValue('test@example.com');
+        SMTPAccountWizardPage.Authentication.SetValue("SMTP Authentication"::"OAuth 2.0");
+
+        // Step 1 -> Step 2
+        SMTPAccountWizardPage.Next.Invoke();
+
+        // Enable Custom OAuth
+        SMTPAccountWizardPage.Custom.SetValue(true);
+
+        // Step 2 -> Step 3
+        SMTPAccountWizardPage.Next.Invoke();
+
+        // [THEN] In Step 3, Next should be disabled because OAuth fields are not filled yet
+        Assert.IsFalse(SMTPAccountWizardPage.Next.Enabled(), 'Next should be disabled on Step 3 when OAuth fields are empty for Custom OAuth');
+
+        // [WHEN] Filling OAuth fields
+        SMTPAccountWizardPage.ClientId.SetValue('client-id-value');
+        SMTPAccountWizardPage.ClientSecret.SetValue('client-secret-value');
+        SMTPAccountWizardPage."Tenant Id".SetValue(Format(CreateGuid())); // valid GUID string
+
+        // [THEN] Next is enabled after all OAuth fields are valid
+        Assert.IsTrue(SMTPAccountWizardPage.Next.Enabled(), 'Next should be enabled once all Custom OAuth fields are filled');
+
+        SMTPAccountWizardPage.Close();
+    end;
+
+    [Test]
+    procedure TestWizardEmailAddressAutoFillsUserName()
+    begin
+        // [SCENARIO] In the wizard, setting Email Address when User Name is empty fills User Name.
+
+        SMTPAccountWizardPage.OpenNew();
+        SMTPAccountWizardPage.NameField.SetValue('UserName AutoFill');
+        SMTPAccountWizardPage.SenderTypeField.SetValue("SMTP Connector Sender Type"::"Specific User");
+        SMTPAccountWizardPage.EmailAddress.SetValue('wizard-user@example.com');
+
+        // [THEN] User Name is auto-filled (same as page 4512 behavior)
+        Assert.AreEqual('wizard-user@example.com', SMTPAccountWizardPage.UserName.Value(), 'User Name should be auto-filled in wizard');
+
+        SMTPAccountWizardPage.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('OAuth2AuthenticationMessageHandler2')]
+    procedure TestWizardShowsAuthenticateMessageWhenSwitchingToO365WithOAuth()
+    var
+        EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
+    begin
+        // [SCENARIO] When Authentication = OAuth 2.0 and Server is set to O365 on-prem,
+        // the wizard shows the "every user should authenticate" message.
+
+        // [GIVEN] OnPrem environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+
+        SMTPAccountWizardPage.OpenNew();
+        SMTPAccountWizardPage.NameField.SetValue('Auth Msg Wizard');
+        SMTPAccountWizardPage.SenderTypeField.SetValue("SMTP Connector Sender Type"::"Specific User");
+        SMTPAccountWizardPage.EmailAddress.SetValue('user@example.com');
+
+        SMTPAccountWizardPage.Authentication.SetValue("SMTP Authentication"::"OAuth 2.0");
+
+        // [WHEN] Setting server to O365 SMTP server triggers message in OnValidate(ServerUrl)
+        SMTPAccountWizardPage.ServerUrl.SetValue('smtp.office365.com');
+
+        // [THEN] OAuth2AuthenticationMessageHandler verifies the message text
 
         SMTPAccountWizardPage.Close();
     end;
@@ -634,9 +1009,15 @@ codeunit 139762 "SMTP Account Auth Tests"
     end;
 
     [MessageHandler]
-    procedure OAuth2AuthenticationMessageHandler(Message: Text[1024])
+    procedure OAuth2AuthenticationMessageHandler1(Message: Text[1024])
     begin
-        Assert.AreEqual(EveryUserShouldPressAuthenticateMsg, Message, 'Incorrect message is shown.');
+        Assert.ExpectedMessage('Before people can send email they must authenticate their email account. They can do that by choosing the Authenticate action on the SMTP Account page.', Message);
+    end;
+
+    [MessageHandler]
+    procedure OAuth2AuthenticationMessageHandler2(Message: Text[1024])
+    begin
+        Assert.ExpectedMessage('Before people can send email they must authenticate their account.', Message);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Azure AD Auth Flow", 'OnAcquireTokenFromCacheWithCredentials', '', false, false)]

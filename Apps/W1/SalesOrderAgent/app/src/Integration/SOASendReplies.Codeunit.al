@@ -47,7 +47,7 @@ codeunit 4581 "SOA Send Replies"
         OutputAgentTaskMessage.ReadIsolation(IsolationLevel::ReadCommitted);
         OutputAgentTaskMessage.SetRange(Status, OutputAgentTaskMessage.Status::Reviewed);
         OutputAgentTaskMessage.SetRange(Type, OutputAgentTaskMessage.Type::Output);
-        OutputAgentTaskMessage.SetRange("Agent User Security ID", SOASetup."Agent User Security ID");
+        OutputAgentTaskMessage.SetRange("Agent User Security ID", SOASetup."User Security ID");
 
         if not OutputAgentTaskMessage.FindSet() then
             exit;

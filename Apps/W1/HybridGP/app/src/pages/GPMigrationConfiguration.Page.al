@@ -326,15 +326,6 @@ page 4050 "GP Migration Configuration"
             }
 #pragma warning restore AA0219
 
-#if not CLEAN25
-            group(Inactives)
-            {
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '25.0';
-                ObsoleteReason = 'Group replaced by IncludeTheseRecords';
-            }
-#endif
 
             group(IncludeTheseRecords)
             {

@@ -54,27 +54,6 @@ page 1830 "MS - QBO Data Migration"
                     }
                 }
             }
-#if not CLEAN25
-            group("2")
-            {
-                ObsoleteState = Pending;
-                ObsoleteReason = 'Not used anymore';
-                ObsoleteTag = '17.0';
-
-                Visible = false;
-                ShowCaption = false;
-                field(Instructions1; '')
-                {
-                    ApplicationArea = Basic, Suite;
-                    Editable = false;
-                    MultiLine = true;
-                    ShowCaption = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Not used anymore';
-                    ObsoleteTag = '25.0';
-                }
-            }
-#endif
             group("3")
             {
                 InstructionalText = 'Enter the accounts to use when you post sales and purchase transactions to the general ledger.';

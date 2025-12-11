@@ -4175,12 +4175,6 @@ End Function
         <Field Name="AmountCaption">
           <DataField>AmountCaption</DataField>
         </Field>
-        <Field Name="UnrealizedBaseCaption">
-          <DataField>UnrealizedBaseCaption</DataField>
-        </Field>
-        <Field Name="UnrealizedAmountCaption">
-          <DataField>UnrealizedAmountCaption</DataField>
-        </Field>
         <Field Name="OriginalVATBaseCaption">
           <DataField>OriginalVATBaseCaption</DataField>
         </Field>
@@ -4249,30 +4243,6 @@ End Function
         </Field>
         <Field Name="UserID_VATEntry">
           <DataField>UserID_VATEntry</DataField>
-        </Field>
-        <Field Name="UnrealizedAmount_VATEntry">
-          <DataField>UnrealizedAmount_VATEntry</DataField>
-        </Field>
-        <Field Name="UnrealizedAmount_VATEntryFormat">
-          <DataField>UnrealizedAmount_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="UnrealizedBase_VATEntry">
-          <DataField>UnrealizedBase_VATEntry</DataField>
-        </Field>
-        <Field Name="UnrealizedBase_VATEntryFormat">
-          <DataField>UnrealizedBase_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdAmt_VATEntry">
-          <DataField>AddCurrUnrlzdAmt_VATEntry</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdAmt_VATEntryFormat">
-          <DataField>AddCurrUnrlzdAmt_VATEntryFormat</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdBas_VATEntry">
-          <DataField>AddCurrUnrlzdBas_VATEntry</DataField>
-        </Field>
-        <Field Name="AddCurrUnrlzdBas_VATEntryFormat">
-          <DataField>AddCurrUnrlzdBas_VATEntryFormat</DataField>
         </Field>
         <Field Name="OriginalVATAmount_VATEntry">
           <DataField>OriginalVATAmount_VATEntry</DataField>

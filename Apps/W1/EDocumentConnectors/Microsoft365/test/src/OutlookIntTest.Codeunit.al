@@ -398,7 +398,7 @@ codeunit 148198 "Outlook Int. Test"
         Mock: JsonObject;
     begin
         Mock.ReadFrom(JsonText);
-        if OutlookProcessing.IgnoreMailAttachment(Mock.GetInteger('size'), Mock.GetText('contentType')) then
+        if OutlookProcessing.IgnoreMailAttachment(Mock.GetInteger('size'), Mock.GetText('contentType'), 'file.pdf') then
             exit;
         MockArray.Add(Mock);
     end;

@@ -45,15 +45,7 @@
       "action": "Warning"
     },
     {
-      "id": "AL0551",
-      "action": "Warning"
-    },
-    {
       "id": "AL0589",
-      "action": "Warning"
-    },
-    {
-      "id": "AL0602",
       "action": "Warning"
     },
     {
@@ -249,10 +241,6 @@
       "id": "AA0181",
       "action": "Warning",
       "justification": "The FindSet() or Find() method on the record must be used only in connection with the Next() method."
-    },
-    {
-      "id": "AA0189",
-      "action": "Warning"
     },
     {
       "id": "AA0194",

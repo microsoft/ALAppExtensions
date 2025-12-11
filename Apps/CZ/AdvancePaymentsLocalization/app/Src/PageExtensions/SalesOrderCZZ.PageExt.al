@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -50,18 +50,6 @@ pageextension 31023 "Sales Order CZZ" extends "Sales Order"
         }
         addlast(factboxes)
         {
-#if not CLEAN25
-            part("Sales Adv. Usage FactBox CZZ"; "Sales Adv. Usage FactBox CZZ")
-            {
-                ApplicationArea = Basic, Suite;
-                Provider = SalesLines;
-                SubPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Line No." = field("Line No.");
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteReason = 'Replaced by "Advance Usage FactBox CZZ"';
-                ObsoleteTag = '25.0';
-            }
-#endif
             part(AdvanceUsageFactBoxCZZ; "Advance Usage FactBox CZZ")
             {
                 ApplicationArea = Basic, Suite;

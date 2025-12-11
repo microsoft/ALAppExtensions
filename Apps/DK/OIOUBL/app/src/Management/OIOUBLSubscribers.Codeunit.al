@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -20,13 +20,6 @@ codeunit 13622 "OIOUBL-Subscribers"
         OIOUBLSetupShortTitleTxt: Label 'Electronic Invoicing';
         OIOUBLSetupDescriptionTxt: Label 'Get ready for submitting invoices, credit memos, finance charge memos, and reminders for sales and services.';
 
-#if not CLEAN25
-    [Obsolete('Replaced by subscriber ExportCustomerDocumentsOnBeforeSendToDisk.', '15.4')]
-    [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSend', '', false, false)]
-    procedure ExportCustomerDocumentOnBeforeSend(VAR Sender: Record "Document Sending Profile"; ReportUsage: Integer; RecordVariant: Variant; DocNo: Code[20]; ToCust: Code[20]; DocName: Text[150]; CustomerFieldNo: Integer; DocumentNoFieldNo: Integer; VAR IsHandled: Boolean)
-    begin
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnBeforeSendToDisk', '', false, false)]
     local procedure ExportCustomerDocumentsOnBeforeSendToDisk(var Sender: Record "Document Sending Profile"; ReportUsage: Integer; RecordVariant: Variant; DocNo: Code[20]; DocName: Text; ToCust: Code[20]; var IsHandled: Boolean)

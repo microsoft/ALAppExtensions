@@ -87,34 +87,6 @@ pageextension 10050 "IRS 1099 Vendor List" extends "Vendor List"
     }
     actions
     {
-#if not CLEAN25
-#pragma warning disable AL0432
-        modify("1099 Statistics")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Div")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Information")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Int")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Misc")
-        {
-            Visible = false;
-        }
-        modify(RunVendor1099NecReport)
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast("&Purchases")
         {
             action(IRS1099Setup)

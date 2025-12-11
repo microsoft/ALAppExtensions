@@ -6,8 +6,9 @@
 namespace System.Email;
 
 using System.Azure.Identity;
-using System.Text;
+using System.Environment;
 using System.Security.Authentication;
+using System.Text;
 
 codeunit 4516 "OAuth2 SMTP Authentication"
 {
@@ -17,12 +18,15 @@ codeunit 4516 "OAuth2 SMTP Authentication"
         CouldNotAuthenticateErr: Label 'Could not authenticate. To resolve the problem, choose the Authenticate action on the SMTP Account page.';
         AuthenticationSuccessfulMsg: Label '%1 was authenticated.', Comment = '%1 - user email, for example, admin@domain.com';
         AuthenticationFailedMsg: Label 'Could not authenticate.';
-        SMTPAuthorityCannotBeEmptyErr: Label 'SMTP Authority cannot be empty.';
         GetSMTPClientSecretFailedErr: Label 'Failed to get SMTP Client Secret Storage Id.';
         GetSMTPClientIdFailedErr: Label 'Failed to get SMTP Client Id.';
         FetchAccessTokenFromHttpsErr: Label 'Failed to acquire access token. HTTP Status: %1.', Comment = '%1 - Status code of http request.';
         NoTokenInReposonseErr: Label 'The response does not contain an access token.';
         FailedToParseResponseErr: Label 'Failed to parse the response as JSON.';
+        AdminConsentErrLbl: Label 'Consent authorization failed. Please try again or contact your administrator.';
+        TelemetryCategoryLbl: Label 'SMTP OAuth2 Authentication', Locked = true;
+        UsingCustomizedOAuth2TelemetryLbl: Label 'Using customized OAuth2 for SMTP authentication.', Locked = true;
+        UsingDefaultOAuth2TelemetryLbl: Label 'Using default OAuth2 for SMTP authentication.', Locked = true;
 
     /// <summary>
     /// Provide the credentials to authenticate using OAuth 2.0 for Exchange Online mailboxes.
@@ -58,21 +62,26 @@ codeunit 4516 "OAuth2 SMTP Authentication"
     end;
 
     [NonDebuggable]
-    internal procedure AuthenticateWithOAuth2CustomAppReg(SMTPAccount: Record "SMTP Account")
+    internal procedure AuthenticateWithOAuth2CustomAppReg(var SMTPAccount: Record "SMTP Account")
     var
-        AzureAdMgt: Codeunit "Azure AD Mgt.";
         OAuth2: Codeunit OAuth2;
-        ClientId: Text;
+        EnvironmentInformation: Codeunit "Environment Information";
+        ClientId: SecretText;
         ClientSecret: SecretText;
         PermissionGrantError: Text;
+        RedirectUri: Text;
         ConsentGranted: Boolean;
-        AdminConsentErrLbl: Label 'Consent authorization failed. Please try again or contact your administrator.';
+        ConsentUrlLbl: Label 'https://login.microsoftonline.com/common/adminconsent', Locked = true;
     begin
-        if not IsolatedStorage.Get(SMTPAccount."Client Id Storage Id", ClientId) then Error(GetSMTPClientIdFailedErr);
+        ClientId := SMTPAccount.GetClientId(SMTPAccount."Client Id Storage Id");
+        if ClientId.IsEmpty() then Error(GetSMTPClientIdFailedErr);
 
-        if not IsolatedStorage.Get(SMTPAccount."Client Secret Storage Id", ClientSecret) then Error(GetSMTPClientSecretFailedErr);
+        ClientSecret := SMTPAccount.GetClientSecret(SMTPAccount."Client Secret Storage Id");
+        if ClientSecret.IsEmpty() then Error(GetSMTPClientSecretFailedErr);
 
-        if OAuth2.RequestClientCredentialsAdminPermissions(ClientId, SMTPAccount."Authority URL", AzureAdMgt.GetO365Resource(), ConsentGranted, PermissionGrantError) then begin
+        RedirectUri := EnvironmentInformation.IsOnPrem() ? Format(SMTPAccount."Redirect Uri") : '';
+
+        if OAuth2.RequestClientCredentialsAdminPermissions(ClientId.Unwrap(), ConsentUrlLbl, RedirectUri, ConsentGranted, PermissionGrantError) then begin
             if not ConsentGranted then
                 Error(PermissionGrantError)
         end else
@@ -142,12 +151,17 @@ codeunit 4516 "OAuth2 SMTP Authentication"
         if Handled then
             exit;
         if SMTPServer = SMTPConnectorImpl.GetO365SmtpServer() then begin
-            if SMTPConnectorImpl.CheckIfCustomizedSMTPOAuth(SMTPAuthentication.GetAccountId(), SMTPAccount) then
+            if SMTPConnectorImpl.CheckIfCustomizedSMTPOAuth(SMTPAuthentication.GetAccountId(), SMTPAccount) then begin
                 // if it is customized, use the token stored.
-                GetCustomTenantOAuthToken(UserName, AccessToken, SMTPAccount)
-            else
+                GetCustomTenantOAuthToken(UserName, AccessToken, SMTPAccount);
+                Session.LogMessage('0000QPH', UsingCustomizedOAuth2TelemetryLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
+            end
+            else begin
                 // if it is not customized - use the normal way to fetch token
                 GetOAuth2Credentials(UserName, AccessToken);
+                Session.LogMessage('0000QPI', UsingDefaultOAuth2TelemetryLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
+            end;
+
             SMTPAuthentication.SetOAuth2AuthInfo(CopyStr(UserName, 1, 250), AccessToken);
             Handled := true;
         end;
@@ -178,15 +192,12 @@ codeunit 4516 "OAuth2 SMTP Authentication"
         Resp: HttpResponseMessage;
         RespTxt: Text;
         JsonObj: JsonObject;
-        Authority: Text;
         ClientSecret: SecretText;
         ClientID: SecretText;
+        TenantID: Text;
         BodyTxt: Label 'client_id=%1&client_secret=%2&scope=https://outlook.office365.com/.default&grant_type=client_credentials', Locked = true;
+        AuthorityLbl: Label 'https://login.microsoftonline.com/%1/oauth2/v2.0/token', Locked = true;
     begin
-        Authority := SMTPAccount."Authority URL";
-        if Authority = '' then
-            Error(SMTPAuthorityCannotBeEmptyErr);
-
         if not GetValueFromStorage(SMTPAccount."Client Id Storage Id", ClientID) then Error(GetSMTPClientIdFailedErr);
 
         if not GetValueFromStorage(SMTPAccount."Client Secret Storage Id", ClientSecret) then Error(GetSMTPClientSecretFailedErr);
@@ -197,7 +208,9 @@ codeunit 4516 "OAuth2 SMTP Authentication"
         Headers.Clear();
         Headers.Add('Content-Type', 'application/x-www-form-urlencoded');
 
-        HttpClient.Post(Authority, HttpContent, Resp);
+        TenantID := SMTPAccount."Tenant Id".ToText();
+        HttpClient.Post(StrSubstNo(AuthorityLbl, TenantID), HttpContent, Resp);
+
         if not Resp.IsSuccessStatusCode() then
             Error(FetchAccessTokenFromHttpsErr, Resp.HttpStatusCode());
 

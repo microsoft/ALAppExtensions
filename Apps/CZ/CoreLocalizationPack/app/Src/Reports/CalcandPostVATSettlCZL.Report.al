@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -115,20 +115,6 @@ report 11971 "Calc. and Post VAT Settl. CZL"
             column(AmountCaption; "VAT Entry".FieldCaption(Amount))
             {
             }
-#if not CLEAN25
-            column(UnrealizedBaseCaption; "VAT Entry".FieldCaption("Unrealized Base"))
-            {
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This field is obsolete and will be removed in a future version.';
-                ObsoleteTag = '25.0';
-            }
-            column(UnrealizedAmountCaption; "VAT Entry".FieldCaption("Unrealized Amount"))
-            {
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This field is obsolete and will be removed in a future version.';
-                ObsoleteTag = '25.0';
-            }
-#endif
             column(OriginalVATBaseCaption; "VAT Entry".FieldCaption("Original VAT Base CZL"))
             {
             }
@@ -206,40 +192,6 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                         column(UserID_VATEntry; "User ID")
                         {
                         }
-#if not CLEAN25
-                        column(UnrealizedAmount_VATEntry; "Unrealized Amount")
-                        {
-                            AutoFormatExpression = GetCurrency();
-                            AutoFormatType = 1;
-                            ObsoleteState = Pending;
-                            ObsoleteReason = 'This field is obsolete and will be removed in a future version.';
-                            ObsoleteTag = '25.0';
-                        }
-                        column(UnrealizedBase_VATEntry; "Unrealized Base")
-                        {
-                            AutoFormatExpression = GetCurrency();
-                            AutoFormatType = 1;
-                            ObsoleteState = Pending;
-                            ObsoleteReason = 'This field is obsolete and will be removed in a future version.';
-                            ObsoleteTag = '25.0';
-                        }
-                        column(AddCurrUnrlzdAmt_VATEntry; "Add.-Currency Unrealized Amt.")
-                        {
-                            AutoFormatExpression = GetCurrency();
-                            AutoFormatType = 1;
-                            ObsoleteState = Pending;
-                            ObsoleteReason = 'This field is obsolete and will be removed in a future version.';
-                            ObsoleteTag = '25.0';
-                        }
-                        column(AddCurrUnrlzdBas_VATEntry; "Add.-Currency Unrealized Base")
-                        {
-                            AutoFormatExpression = GetCurrency();
-                            AutoFormatType = 1;
-                            ObsoleteState = Pending;
-                            ObsoleteReason = 'This field is obsolete and will be removed in a future version.';
-                            ObsoleteTag = '25.0';
-                        }
-#endif
                         column(OriginalVATAmount_VATEntry; "Original VAT Amount CZL")
                         {
                             AutoFormatExpression = GetCurrency();

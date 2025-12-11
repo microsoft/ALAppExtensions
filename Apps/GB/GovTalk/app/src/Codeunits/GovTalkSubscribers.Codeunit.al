@@ -366,7 +366,7 @@ codeunit 10503 "GovTalk Subscribers"
 #endif
 
     [EventSubscriber(ObjectType::Report, Report::"VAT Report Request Page", 'OnBeforeVATStatementLineFindSet', '', false, false)]
-    local procedure OnBeforeVATStatementLineFindSet(VATStatementLine: Record "VAT Statement Line"; VATReportHeader: Record "VAT Report Header")
+    local procedure OnBeforeVATStatementLineFindSet(var VATStatementLine: Record "VAT Statement Line"; VATReportHeader: Record "VAT Report Header")
 #if not CLEAN27
     var
         GovTalk: Codeunit GovTalk;
@@ -384,7 +384,7 @@ codeunit 10503 "GovTalk Subscribers"
 #pragma warning disable AL0432
     [Obsolete('Event will be removed in a future release', '27.0')]
     [EventSubscriber(ObjectType::Report, Report::"VAT Report Request Page", 'OnBeforeVATStatementLineFindSet2', '', false, false)]
-    local procedure OnBeforeVATStatementLineFindSet2(VATStatementLine: Record "VAT Statement Line"; VATReportHeader: Record "VAT Report Header"; var IsHandled: Boolean)
+    local procedure OnBeforeVATStatementLineFindSet2(var VATStatementLine: Record "VAT Statement Line"; VATReportHeader: Record "VAT Report Header"; var IsHandled: Boolean)
     var
         GovTalk: Codeunit GovTalk;
     begin

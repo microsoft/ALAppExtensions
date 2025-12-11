@@ -70,9 +70,6 @@ codeunit 11465 "US Contoso Localization"
                     Codeunit.Run(Codeunit::"Create Currency US");
                     Codeunit.Run(Codeunit::"Create Tax Group US");
                     Codeunit.Run(Codeunit::"Create Tax Setup US");
-#if not CLEAN27
-                    Codeunit.Run(Codeunit::"Create IRS 1099 Form-Box US");
-#endif
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin

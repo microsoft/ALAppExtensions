@@ -85,6 +85,9 @@ codeunit 11724 "Cash Desk Management CZP"
 
         CheckCashDesks();
         SetCashDeskFilter(CashDeskCZP);
+        CashDeskCZP.FilterGroup(2);
+        CashDeskCZP.SetRange(Blocked, false);
+        CashDeskCZP.FilterGroup(0);
 
         case CashDeskCZP.Count() of
             0:

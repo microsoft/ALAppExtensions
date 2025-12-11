@@ -9,8 +9,6 @@ namespace Microsoft.Agent.SalesOrderAgent;
 using System.Agents;
 using System.AI;
 using System.Email;
-using System.Environment.Configuration;
-using System.Globalization;
 using System.Security.AccessControl;
 using System.Telemetry;
 
@@ -22,8 +20,9 @@ page 4400 "SOA Setup"
     Caption = 'Configure Sales Order Agent';
     InstructionalText = 'Choose how the agent helps with inquiries, quotes, and orders.';
     AdditionalSearchTerms = 'Sales order agent, Copilot agent, Agent, SOA';
-    SourceTable = Agent;
+    SourceTable = "SOA Setup";
     SourceTableTemporary = true;
+    RefreshOnActivate = true;
     InherentEntitlements = X;
     InherentPermissions = X;
     HelpLink = 'https://go.microsoft.com/fwlink/?linkid=2281481';
@@ -32,36 +31,44 @@ page 4400 "SOA Setup"
     {
         area(Content)
         {
+            part(AgentSetupPart; "Agent Setup Part")
+            {
+                ApplicationArea = All;
+                Visible = AgentSetupPartVisible;
+                UpdatePropagation = Both;
+            }
             group(StartCard)
             {
+                Visible = not AgentSetupPartVisible;
                 group(Header)
                 {
-                    field(Badge; BadgeTxt)
+                    field(Badge; AgentSetupBuffer.Initials)
                     {
                         ShowCaption = false;
                         Editable = false;
                         ToolTip = 'The badge of the sales order agent.';
                     }
-                    field(Type; AgentType)
+                    field(Type; AgentSetupBuffer."Agent Metadata Provider")
                     {
                         ShowCaption = false;
                         Editable = false;
                         ToolTip = 'Specifies the type of the sales order agent.';
                     }
-                    field(Name; Rec."Display Name")
+                    field(Name; AgentSetupBuffer."Display Name")
                     {
                         ShowCaption = false;
                         Editable = false;
                         ToolTip = 'Specifies the name of the sales order agent.';
                     }
-                    field(State; Rec.State)
+                    field(State; AgentSetupBuffer.State)
                     {
                         Caption = 'Active';
                         ToolTip = 'Specifies the state of the sales order agent, such as active or inactive.';
-
                         trigger OnValidate()
                         begin
-                            IsConfigUpdated := true;
+                            AgentSetupBuffer."State Updated" := true;
+                            AgentSetupBuffer.Modify();
+                            ConfigUpdated();
                         end;
                     }
                     field(UserSettingsLink; ManageUserAccessLbl)
@@ -71,23 +78,13 @@ page 4400 "SOA Setup"
                         ToolTip = 'Specifies the user access control settings for the sales order agent.';
 
                         trigger OnDrillDown()
-                        var
-                            TempBackupAgentAccessControl: Record "Agent Access Control" temporary;
                         begin
-                            CopyTempAgentAccessControl(TempAgentAccessControl, TempBackupAgentAccessControl);
-                            if (Page.RunModal(Page::"Select Agent Access Control", TempAgentAccessControl) in [Action::LookupOK, Action::OK]) then begin
-                                AccessUpdated := true;
-                                IsConfigUpdated := true;
-                                exit;
-                            end;
-
-                            CopyTempAgentAccessControl(TempBackupAgentAccessControl, TempAgentAccessControl);
+                            AgentSetup.UpdateUserAccessControl(AgentSetupBuffer);
+                            IsConfigUpdated := IsConfigUpdated or AgentSetup.GetChangesMade(AgentSetupBuffer);
                         end;
                     }
                 }
-
-
-                field(Summary; AgentSummary)
+                field(Summary; AgentSummaryTxt)
                 {
                     Caption = 'Summary';
                     MultiLine = true;
@@ -95,13 +92,12 @@ page 4400 "SOA Setup"
                     ToolTip = 'Specifies a brief description of the sales order agent.';
                 }
             }
-
             group(MonitorIncomingCard)
             {
                 Caption = 'Monitor incoming information';
                 InstructionalText = 'The agent will read messages in these channels:';
 
-                field("Monitor incoming inquiries"; TempSOASetup."Incoming Monitoring")
+                field("Monitor incoming inquiries"; Rec."Incoming Monitoring")
                 {
                     ShowCaption = false;
                     ToolTip = 'Specifies if the sales order agent should monitor incoming inquiries.';
@@ -110,11 +106,10 @@ page 4400 "SOA Setup"
                         ConfigUpdated();
                     end;
                 }
-
                 group(MailboxGroup)
                 {
                     Caption = 'Mailbox';
-                    field(MailEnabled; TempSOASetup."Email Monitoring")
+                    field(MailEnabled; Rec."Email Monitoring")
                     {
                         ShowCaption = false;
                         ToolTip = 'Specifies if the sales order agent should monitor incoming mail.';
@@ -152,8 +147,9 @@ page 4400 "SOA Setup"
                     {
                         Caption = 'Default language';
                         InstructionalText = 'Used for task details and outgoing messages unless the recipient has a language set.';
+                        Visible = not AgentSetupPartVisible;
 
-                        field(LanguageAndRegion; SelectedLanguageTxt)
+                        field(LanguageAndRegion; AgentSetupBuffer."Language Used")
                         {
                             ShowCaption = false;
                             Editable = false;
@@ -161,17 +157,9 @@ page 4400 "SOA Setup"
 
                             ApplicationArea = All;
                             trigger OnDrillDown()
-                            var
-                                Language: Codeunit Language;
-                                AgentUserSettings: Page "Agent User Settings";
                             begin
-                                AgentUserSettings.InitializeTemp(UserSettings);
-                                if AgentUserSettings.RunModal() in [Action::LookupOK, Action::OK] then begin
-                                    AgentUserSettings.GetRecord(UserSettings);
-                                    IsConfigUpdated := true;
-                                    UserSettingsUpdated := true;
-                                    SelectedLanguageTxt := Language.GetWindowsLanguageName(UserSettings."Language ID");
-                                end;
+                                AgentSetup.SetupLanguageAndRegion(AgentSetupBuffer);
+                                IsConfigUpdated := IsConfigUpdated or AgentSetup.GetChangesMade(AgentSetupBuffer);
                             end;
                         }
                     }
@@ -191,7 +179,6 @@ page 4400 "SOA Setup"
                         end;
                     }
                 }
-
                 group(BillingInformationSecondSetup)
                 {
                     Visible = not FirstConfig;
@@ -209,7 +196,6 @@ page 4400 "SOA Setup"
                     }
                 }
             }
-
             group(RespondToInquiriesCard)
             {
                 Caption = 'Respond to inquiries';
@@ -218,7 +204,7 @@ page 4400 "SOA Setup"
                 group(RegisteredSenderMessages)
                 {
                     Caption = 'Messages from already registered senders';
-                    field(RegisteredSenderInputMessageReview; TempSOASetup."Known Sender In. Msg. Review")
+                    field(RegisteredSenderInputMessageReview; Rec."Known Sender In. Msg. Review")
                     {
                         Caption = 'Review';
                         ToolTip = 'Specifies the type of review required for incoming messages from already registered senders.';
@@ -228,11 +214,10 @@ page 4400 "SOA Setup"
                         end;
                     }
                 }
-
                 group(UnregisteredSenderMessages)
                 {
                     Caption = 'Messages from unregistered senders';
-                    field(UnregisteredSenderInputMessageReview; TempSOASetup."Unknown Sender In. Msg. Review")
+                    field(UnregisteredSenderInputMessageReview; Rec."Unknown Sender In. Msg. Review")
                     {
                         Caption = 'Review';
                         ToolTip = 'Specifies the type of review required for incoming messages from unregistered senders.';
@@ -242,7 +227,6 @@ page 4400 "SOA Setup"
                         end;
                     }
                 }
-
                 group(ItemSearch)
                 {
                     Caption = 'Search for requested items';
@@ -252,19 +236,19 @@ page 4400 "SOA Setup"
                         Caption = 'Select only available items';
                         InstructionalText = 'The agent checks availability of requested quantity';
 
-                        field(SearchOnlyAvailableItems; TempSOASetup."Search Only Available Items")
+                        field(SearchOnlyAvailableItems; Rec."Search Only Available Items")
                         {
                             ShowCaption = false;
                             ToolTip = 'Specifies if the agent takes item availability into account when searching for matches to the requested items.';
                             trigger OnValidate()
                             begin
-                                if not TempSOASetup."Search Only Available Items" then
-                                    TempSOASetup."Incl. Capable to Promise" := false;
+                                if not Rec."Search Only Available Items" then
+                                    Rec."Incl. Capable to Promise" := false;
 
                                 ConfigUpdated();
                             end;
                         }
-                        field(IncludeCapableToPromise; TempSOASetup."Incl. Capable to Promise")
+                        field(IncludeCapableToPromise; Rec."Incl. Capable to Promise")
                         {
                             Caption = 'Include capable to promise';
                             ToolTip = 'Specifies whether the agent includes in the search results items that are currently unavailable but can be ordered for a later shipment date.';
@@ -277,7 +261,6 @@ page 4400 "SOA Setup"
                     }
                 }
             }
-
             group(SOASalesDocConfigCard)
             {
                 Caption = 'Create sales documents';
@@ -286,7 +269,7 @@ page 4400 "SOA Setup"
                 group(QuoteSetup)
                 {
                     ShowCaption = false;
-                    field(RequestQuoteReview; TempSOASetup."Quote Review")
+                    field(RequestQuoteReview; Rec."Quote Review")
                     {
                         Caption = 'Review quotes when created and updated';
                         ToolTip = 'Specifies if the agent requests review when a quote is created and updated.';
@@ -296,7 +279,7 @@ page 4400 "SOA Setup"
                             ConfigUpdated();
                         end;
                     }
-                    field(SendSalesQuote; TempSOASetup."Send Sales Quote")
+                    field(SendSalesQuote; Rec."Send Sales Quote")
                     {
                         Caption = 'Send quotes for confirmation';
                         ToolTip = 'Specifies if the agent sends sales quotes for confirmation.';
@@ -307,7 +290,6 @@ page 4400 "SOA Setup"
                         end;
                     }
                 }
-
                 group(OrderSetup)
                 {
                     ShowCaption = false;
@@ -316,7 +298,7 @@ page 4400 "SOA Setup"
                         Caption = 'Make orders from quotes';
                         InstructionalText = 'The agent turns accepted quotes into orders';
 
-                        field(CreateOrderFromQuote; TempSOASetup."Create Order from Quote")
+                        field(CreateOrderFromQuote; Rec."Create Order from Quote")
                         {
                             Caption = 'Make orders from quotes';
                             ToolTip = 'Specifies if the agent makes orders from quotes.';
@@ -324,12 +306,12 @@ page 4400 "SOA Setup"
 
                             trigger OnValidate()
                             begin
-                                if not TempSOASetup."Create Order from Quote" then
-                                    TempSOASetup."Order Review" := false;
+                                if not Rec."Create Order from Quote" then
+                                    Rec."Order Review" := false;
                                 ConfigUpdated();
                             end;
                         }
-                        field(RequestOrderReview; TempSOASetup."Order Review")
+                        field(RequestOrderReview; Rec."Order Review")
                         {
                             Caption = 'Review orders when created and updated';
                             ToolTip = 'Specifies if the agent requests review when an order is created and updated.';
@@ -343,7 +325,6 @@ page 4400 "SOA Setup"
                     }
                 }
             }
-
             group(SOAManageMailboxConfigCard)
             {
                 Caption = 'Manage mailbox';
@@ -379,21 +360,17 @@ page 4400 "SOA Setup"
                         EmailFolders: Page "Email Account Folders";
                     begin
                         EmailFolders.LookupMode(true);
-                        EmailFolders.SetEmailAccount(TempSOASetup."Email Account ID", TempSOASetup."Email Connector");
+                        EmailFolders.SetEmailAccount(Rec."Email Account ID", Rec."Email Connector");
                         if EmailFolders.RunModal() = Action::LookupOK then begin
                             EmailFolders.GetRecord(TempEmailFolder);
-                            TempSOASetup."Email Folder" := TempEmailFolder."Folder Name";
-                            TempSOASetup."Email Folder Id" := TempEmailFolder."Id";
+                            Rec."Email Folder" := TempEmailFolder."Folder Name";
+                            Rec."Email Folder Id" := TempEmailFolder."Id";
                             MailboxFolder := TempEmailFolder."Folder Name";
+                            ConfigUpdated();
                         end;
                     end;
 
-                    trigger OnValidate()
-                    begin
-                        ConfigUpdated();
-                    end;
                 }
-
                 group(IncomingMail)
                 {
                     Caption = 'Incoming mail';
@@ -404,7 +381,7 @@ page 4400 "SOA Setup"
                         Caption = 'Analyze attachments';
                         InstructionalText = 'Includes attachments when analyzing intent. Supported formats: PDF, PNG, JPG.';
 
-                        field(AnalyzeAttachments; TempSOASetup."Analyze Attachments")
+                        field(AnalyzeAttachments; Rec."Analyze Attachments")
                         {
                             Caption = 'Analyze attachments';
                             ToolTip = 'Includes attachments when analyzing intent. Supported formats: PDF, PNG, JPG.';
@@ -417,7 +394,6 @@ page 4400 "SOA Setup"
                         }
                     }
                 }
-
                 group(ProcessingLimits)
                 {
                     Caption = 'Processing Limits';
@@ -431,14 +407,13 @@ page 4400 "SOA Setup"
 
                         trigger OnValidate()
                         begin
-                            TempSOASetup."Message Limit" := DailyEmailLimit;
+                            Rec."Message Limit" := DailyEmailLimit;
                             ConfigUpdated();
                         end;
                     }
                 }
 
             }
-
             group(OutputMailGroup)
             {
                 Caption = 'Format outgoing messages';
@@ -451,7 +426,7 @@ page 4400 "SOA Setup"
                     {
                         Caption = 'Include a custom signature in the replies';
 
-                        field(ConfigureEmailSignature; TempSOASetup."Configure Email Template")
+                        field(ConfigureEmailSignature; Rec."Configure Email Template")
                         {
                             ShowCaption = false;
                             ToolTip = 'Specifies if the agent includes a custom mail signature below the message body when preparing outgoing mails.';
@@ -459,7 +434,7 @@ page 4400 "SOA Setup"
                             trigger OnValidate()
                             begin
                                 IsConfigUpdated := true;
-                                MailTemplateEditable := TempSOASetup."Configure Email Template";
+                                MailTemplateEditable := Rec."Configure Email Template";
                             end;
                         }
                         field(EmailTemplate; EmailSignatureModifyLbl)
@@ -475,7 +450,6 @@ page 4400 "SOA Setup"
                     }
                 }
             }
-
         }
     }
     actions
@@ -488,7 +462,6 @@ page 4400 "SOA Setup"
                 Enabled = IsConfigUpdated;
                 ToolTip = 'Apply the changes to the agent setup.';
             }
-
             systemaction(Cancel)
             {
                 Caption = 'Cancel';
@@ -501,24 +474,47 @@ page 4400 "SOA Setup"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         SOASetupCU: Codeunit "SOA Setup";
+        UserSecurityIDFilter: Text;
+        UserSecurityID: Guid;
     begin
         if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Order Agent") then
             Error('');
 
         IsConfigUpdated := false;
         FirstConfig := IsFirstConfig();
+        UserSecurityIDFilter := Rec.GetFilter("User Security ID");
+        if not Evaluate(UserSecurityID, UserSecurityIDFilter) then
+            Clear(UserSecurityID);
+
+        if not AgentSetupPartVisible then begin
+            AgentSetup.GetSetupRecord(AgentSetupBuffer,
+               UserSecurityID,
+               "Agent Metadata Provider"::"SO Agent",
+               SOASetupCU.GetSOAUsername(),
+               SOASetupCU.GetSOAUserDisplayName(),
+               SOASetupCU.GetAgentSummary()
+            );
+            AgentSummaryTxt := SOASetupCU.GetAgentSummary();
+        end else begin
+            CurrPage.AgentSetupPart.Page.Initialize(UserSecurityID,
+               "Agent Metadata Provider"::"SO Agent",
+               SOASetupCU.GetSOAUsername(),
+               SOASetupCU.GetSOAUserDisplayName(),
+               SOASetupCU.GetAgentSummary());
+            UpdateAgentSetupBuffer();
+        end;
+
+        InitialState := AgentSetupBuffer.State;
         UpdateControls();
         FeatureTelemetry.LogUptake('0000QIK', SOASetupCU.GetFeatureName(), Enum::"Feature Uptake Status"::Discovered);
     end;
 
-    trigger OnAfterGetRecord()
-    var
-        Agent: Codeunit Agent;
-        Language: Codeunit Language;
+    trigger OnAfterGetCurrRecord()
     begin
-        UpdateControls();
-        Agent.GetUserSettings(Rec."User Security ID", UserSettings);
-        SelectedLanguageTxt := Language.GetWindowsLanguageName(UserSettings."Language ID");
+        if AgentSetupPartVisible then begin
+            UpdateAgentSetupBuffer();
+            IsConfigUpdated := IsConfigUpdated or AgentSetup.GetChangesMade(AgentSetupBuffer);
+        end;
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -538,26 +534,27 @@ page 4400 "SOA Setup"
             if Confirm(ReadyToActivateLbl) then
                 Rec.State := Rec.State::Enabled;
 
-        if (Rec.State = Rec.State::Enabled) and MailboxChanged and StateChanged() then
+        UpdateAgentSetupBuffer();
+        if (AgentSetupBuffer.State = AgentSetupBuffer.State::Enabled) and MailboxChanged and StateChanged() then
             if CheckIsValidConfig() then begin
                 SOASessionEvents.BindUserEvents();
-                SOASetupCU.ValidateEmailConnection(StateChanged(), TempSOASetup);
+                SOASetupCU.ValidateEmailConnection(StateChanged(), Rec);
             end
             else begin
                 SOASessionEvents.BindUserEvents();
-                if TempSOASetup."Incoming Monitoring" and TempSOASetup."Email Monitoring" and (MailboxName = '') then
+                if Rec."Incoming Monitoring" and Rec."Email Monitoring" and (MailboxName = '') then
                     Error(ActivateWithoutMailboxNameErr);
 
-                if TempSOASetup."Incoming Monitoring" and not TempSOASetup."Email Monitoring" then
+                if Rec."Incoming Monitoring" and not Rec."Email Monitoring" then
                     if not Confirm(ActivateWithoutMailboxLbl) then
                         exit(false);
 
-                if not TempSOASetup."Incoming Monitoring" then
+                if not Rec."Incoming Monitoring" then
                     if not Confirm(ActivateWithoutMonitoringLbl) then
                         exit(false);
             end;
 
-        if (TempSOASetup."Message Limit" <= 0) then
+        if (Rec."Message Limit" <= 0) then
             Error(DailyEmailLimitErr);
 
         if ShowDeactivateAgentEmailPermissionsWarning() then
@@ -565,28 +562,35 @@ page 4400 "SOA Setup"
                 exit(false);
 
         if StateChanged() then
-            SOASetupCU.UpdateSOASetupActivationDT(TempSOASetup);
+            SOASetupCU.UpdateSOASetupActivationDT(Rec);
 
-        SOASetupCU.UpdateAgent(Rec, TempAgentAccessControl, TempSOASetup, AccessUpdated, ShouldScheduleTask(), UserSettingsUpdated, UserSettings);
+        SOASetupCU.UpdateAgent(AgentSetupBuffer, Rec, ShouldScheduleTask());
         exit(true);
+    end;
+
+    local procedure UpdateAgentSetupBuffer()
+    begin
+        if AgentSetupPartVisible then
+            CurrPage.AgentSetupPart.Page.GetAgentSetupBuffer(AgentSetupBuffer);
     end;
 
     local procedure StateChanged(): Boolean
     begin
-        exit((Rec.State <> InitialState) or IsFirstConfig());
+        exit((AgentSetupBuffer.State <> InitialState) or IsFirstConfig());
     end;
 
     local procedure ShouldScheduleTask(): Boolean
     begin
-        exit((Rec.State = Rec.State::Enabled) and (StateChanged() or MailboxChanged));
+        exit((AgentSetupBuffer.State = AgentSetupBuffer.State::Enabled) and (StateChanged() or MailboxChanged));
     end;
 
     local procedure ShowDeactivateAgentEmailPermissionsWarning(): Boolean
     var
         SOASetupCU: Codeunit "SOA Setup";
     begin
-        if (Rec.State = Rec.State::Disabled) and StateChanged() and not IsFirstConfig() then
-            if not SOASetupCU.ValidateEmailConnectionStatus(TempSOASetup) then
+        UpdateAgentSetupBuffer();
+        if (AgentSetupBuffer.State = AgentSetupBuffer.State::Disabled) and StateChanged() and not IsFirstConfig() then
+            if not SOASetupCU.ValidateEmailConnectionStatus(Rec) then
                 exit(true);
     end;
 
@@ -595,43 +599,27 @@ page 4400 "SOA Setup"
         User: Record User;
         SOASetupCU: Codeunit "SOA Setup";
     begin
-        BadgeTxt := SOASetupCU.GetInitials();
-        AgentType := SOASetupCU.GetAgentType();
-        AgentSummary := SOASetupCU.GetAgentSummary();
-
-        if Rec.IsEmpty() then begin
-            SOASetupCU.GetAgent(Rec);
-            if not IsNullGuid(Rec."User Security ID") then begin
-                Rec.Insert();
-                InitialState := Rec.State;
-            end else
-                InitialState := Rec.State::Disabled;
-        end;
-
-        if TempSOASetup.IsEmpty() or (TempSOASetup."Agent User Security ID" <> Rec."User Security ID") then begin
-            SOASetupCU.GetDefaultSOASetup(TempSOASetup, Rec);
-            MailboxName := TempSOASetup."Email Address";
-            if TempSOASetup."Email Folder" <> '' then
-                MailboxFolder := TempSOASetup."Email Folder"
+        if Rec.IsEmpty() or (Rec."User Security ID" <> AgentSetupBuffer."User Security ID") then begin
+            SOASetupCU.GetSOASetup(Rec, AgentSetupBuffer."User Security ID");
+            MailboxName := Rec."Email Address";
+            if Rec."Email Folder" <> '' then
+                MailboxFolder := Rec."Email Folder"
             else
                 MailboxFolder := OptionalMailboxLbl;
-            ShowLastSync := CheckIsValidConfig() and (TempSOASetup."Last Sync At" <> 0DT);
-            LastSync := Format(TempSOASetup."Last Sync At");
+            ShowLastSync := CheckIsValidConfig() and (Rec."Last Sync At" <> 0DT);
+            LastSync := Format(Rec."Last Sync At");
         end;
 
-        MailTemplateEditable := TempSOASetup."Configure Email Template";
+        MailTemplateEditable := Rec."Configure Email Template";
 
-        if TempAgentAccessControl.IsEmpty() then
-            SOASetupCU.GetDefaultAgentAccessControl(Rec."User Security ID", TempAgentAccessControl);
+        CreateOrderFromQuoteActive := Rec."Create Order from Quote";
+        OnlyAvailableItemsActive := Rec."Search Only Available Items";
 
-        CreateOrderFromQuoteActive := TempSOASetup."Create Order from Quote";
-        OnlyAvailableItemsActive := TempSOASetup."Search Only Available Items";
-
-        DailyEmailLimit := TempSOASetup."Message Limit";
+        DailyEmailLimit := Rec."Message Limit";
         if DailyEmailLimit = 0 then
-            DailyEmailLimit := TempSOASetup.GetDefaultMessageLimit();
+            DailyEmailLimit := Rec.GetDefaultMessageLimit();
 
-        if User.Get(Rec.SystemModifiedBy) then
+        if User.Get(AgentSetupBuffer."Configured By") then
             ConfiguredBy := User."Full Name";
 
         CheckIsValidConfig();
@@ -641,26 +629,26 @@ page 4400 "SOA Setup"
     begin
         IsConfigUpdated := true;
         CheckIsValidConfig();
-        CreateOrderFromQuoteActive := TempSOASetup."Create Order from Quote";
-        OnlyAvailableItemsActive := TempSOASetup."Search Only Available Items";
+        CreateOrderFromQuoteActive := Rec."Create Order from Quote";
+        OnlyAvailableItemsActive := Rec."Search Only Available Items";
 
         if EnabledAgentFirstConfig() then
-            Rec.State := Rec.State::Enabled;
+            AgentSetupBuffer.State := AgentSetupBuffer.State::Enabled;
     end;
 
     local procedure EnabledAgentFirstConfig(): Boolean
     begin
-        exit((Rec.State = Rec.State::Disabled) and IsFirstConfig() and CheckIsValidConfig());
+        exit((AgentSetupBuffer.State = AgentSetupBuffer.State::Disabled) and IsFirstConfig() and CheckIsValidConfig());
     end;
 
     local procedure CheckIsValidConfig(): Boolean
     begin
-        exit(TempSOASetup."Incoming Monitoring" and TempSOASetup."Email Monitoring" and (MailboxName <> ''));
+        exit(Rec."Incoming Monitoring" and Rec."Email Monitoring" and (MailboxName <> ''));
     end;
 
     local procedure IsFirstConfig(): Boolean
     begin
-        exit(IsNullGuid(TempSOASetup."Agent User Security ID"));
+        exit(IsNullGuid(Rec."User Security ID"));
     end;
 
     local procedure CheckMailboxExists(): Boolean
@@ -701,78 +689,60 @@ page 4400 "SOA Setup"
         EmailAccounts.FilterConnectorV4Accounts(true);
         if EmailAccounts.RunModal() = Action::LookupOK then begin
             EmailAccounts.GetAccount(TempEmailAccount);
-            TempSOASetup."Email Account ID" := TempEmailAccount."Account Id";
-            TempSOASetup."Email Connector" := TempEmailAccount.Connector;
-            TempSOASetup."Email Address" := TempEmailAccount."Email Address";
+            Rec."Email Account ID" := TempEmailAccount."Account Id";
+            Rec."Email Connector" := TempEmailAccount.Connector;
+            Rec."Email Address" := TempEmailAccount."Email Address";
         end;
 
-        if MailboxName <> TempSOASetup."Email Address" then begin
+        if MailboxName <> Rec."Email Address" then begin
             MailboxChanged := true;
-            MailboxName := TempSOASetup."Email Address";
+            MailboxName := Rec."Email Address";
             ConfigUpdated();
 
             MailboxFolder := OptionalMailboxLbl;
-            Clear(TempSOASetup."Email Folder");
-            Clear(TempSOASetup."Email Folder Id");
+            Clear(Rec."Email Folder");
+            Clear(Rec."Email Folder Id");
         end;
-    end;
-
-    local procedure CopyTempAgentAccessControl(var SourceTempAgentAccessControl: Record "Agent Access Control" temporary; var TargetTempAgentAccessControl: Record "Agent Access Control" temporary)
-    begin
-        TargetTempAgentAccessControl.Reset();
-        TargetTempAgentAccessControl.DeleteAll();
-        if not SourceTempAgentAccessControl.FindSet() then
-            exit;
-
-        repeat
-            TargetTempAgentAccessControl.TransferFields(SourceTempAgentAccessControl, true);
-            TargetTempAgentAccessControl.Insert()
-        until SourceTempAgentAccessControl.Next() = 0;
     end;
 
     local procedure UpdateEmailSignature()
     var
         EmailTemplatePage: Page "SOA Email Template";
     begin
-        if not TempSOASetup."Configure Email Template" then
+        if not Rec."Configure Email Template" then
             exit;
-        EmailTemplatePage.SetCurrentSignatureAsTxt(TempSOASetup.GetEmailSignatureAsTxt());
+        EmailTemplatePage.SetCurrentSignatureAsTxt(Rec.GetEmailSignatureAsTxt());
         EmailTemplatePage.RunModal();
         if EmailTemplatePage.IsValueUpdated() then begin
-            TempSOASetup.SetEmailSignature(EmailTemplatePage.GetNewSignatureAsTxt());
-            TempSOASetup.Modify();
+            Rec.SetEmailSignature(EmailTemplatePage.GetNewSignatureAsTxt());
+            Rec.Modify();
             IsConfigUpdated := true;
         end;
     end;
 
     var
-        UserSettings: Record "User Settings";
-        TempAgentAccessControl: Record "Agent Access Control" temporary;
+        AgentSetupBuffer: Record "Agent Setup Buffer";
         TempEmailAccount: Record "Email Account" temporary;
-        TempSOASetup: Record "SOA Setup" temporary;
         AzureOpenAI: Codeunit "Azure OpenAI";
+        AgentSetup: Codeunit "Agent Setup";
         MailboxName, MailboxFolder : Text;
+        InitialState: Option;
         LastSync: Text;
-        BadgeTxt: Text[4];
-        AgentType: Text;
-        AgentSummary: Text;
         ShowLastSync: Boolean;
-        IsConfigUpdated: Boolean;
-        AccessUpdated: Boolean;
-        UserSettingsUpdated: Boolean;
         FirstConfig: Boolean;
         MailTemplateEditable: Boolean;
         CreateOrderFromQuoteActive: Boolean;
         OnlyAvailableItemsActive: Boolean;
         MailboxChanged: Boolean;
         DailyEmailLimit: Integer;
-        ConfiguredBy: Text;
-        InitialState: Option Enabled,Disabled;
         LearnMoreTxt: Label 'Learn more';
         LearnMoreBillingDocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2333517';
         ManageUserAccessLbl: Label 'Manage user access';
         DailyEmailLimitErr: Label 'The daily email limit must be greater than zero.';
         EmailSignatureModifyLbl: Label 'Edit signature';
-        SelectedLanguageTxt: Text;
+        ConfiguredBy: Text[80];
+        AgentSummaryTxt: Text;
         OptionalMailboxLbl: Label '(optional)';
+        IsConfigUpdated: Boolean;
+        AgentSetupPartVisible: Boolean;
 }

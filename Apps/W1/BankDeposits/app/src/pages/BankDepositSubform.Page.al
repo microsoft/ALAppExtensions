@@ -518,7 +518,20 @@ page 1693 "Bank Deposit Subform"
             if CustLedgerEntry."Applies-to ID" = '' then
                 exit;
         end;
-        Rec."Applies-to ID" := BankDepositPost.GetAppliesToIDForLine(BankDepositHeader."No.", Rec."Line No.");
+        if CheckCustomerApplicationMethod() then
+            Rec."Applies-to ID" := BankDepositPost.GetAppliesToIDForLine(BankDepositHeader."No.", Rec."Line No.");
+    end;
+
+    local procedure CheckCustomerApplicationMethod(): Boolean
+    var
+        Customer: Record Customer;
+    begin
+        if Rec."Account Type" <> Rec."Account Type"::Customer then
+            exit(true);
+
+        if Customer.Get(Rec."Account No.") then
+            if Customer."Application Method" <> Customer."Application Method"::"Apply to Oldest" then
+                exit(true);
     end;
 
     [IntegrationEvent(true, false)]

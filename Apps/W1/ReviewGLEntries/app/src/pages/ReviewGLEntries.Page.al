@@ -342,6 +342,8 @@ page 22207 "Review G/L Entries"
     begin
         Rec.CalcFields("Reviewed Amount");
         RemainingAmount := Rec.Amount - Rec."Reviewed Amount";
+        if Rec."Amount to Review" = 0 then
+            Rec."Amount to Review" := RemainingAmount;
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -375,6 +377,7 @@ page 22207 "Review G/L Entries"
         GLEntry: Record "G/L Entry";
     begin
         SelectedGLEntries(GLEntry);
+        GLEntry.SetLoadFields("Debit Amount", "Credit Amount");
         GLEntry.CalcSums("Debit Amount", "Credit Amount");
         Debit := GLEntry."Debit Amount";
         Credit := GLEntry."Credit Amount";
@@ -390,6 +393,7 @@ page 22207 "Review G/L Entries"
     var
         GLAccount: record "G/L Account";
     begin
+        GLAccount.SetLoadFields("No.", Name, "Review Policy");
         if not GLAccount.Get(Rec."G/L Account No.") then
             if Rec.GetFilter(Rec."G/L Account No.") <> '' then
                 GLAccount.Get(Rec.GetRangeMin(Rec."G/L Account No."));
@@ -400,13 +404,23 @@ page 22207 "Review G/L Entries"
     local procedure CalcBalance()
     var
         GLEntry: Record "G/L Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         Balance := 0;
         GLEntry.Copy(Rec);
-        if GLEntry.FindSet() then
-            repeat
-                Balance += GLEntry."Amount to Review";
-            until GLEntry.Next() = 0;
+        GLEntry.SetLoadFields("Amount to Review");
+        GLEntry.SetFilter("Amount to Review", '<>0');
+        if GLEntry.CalcSums("Amount to Review") then
+            Balance := GLEntry."Amount to Review"
+        else begin
+            FeatureTelemetry.LogUsage('0000QPE', 'Review G/L Entries', 'Adding up Amount to Review one by one');
+            if GLEntry.FindSet() then
+                repeat
+                    Balance += GLEntry."Amount to Review";
+                until GLEntry.Next() = 0;
+            FeatureTelemetry.LogUsage('0000QPF', 'Review G/L Entries', 'Added up Amount to Review one by one');
+        end;
+
     end;
 
     local procedure AreOppositeSign(Amount1: Decimal; Amount2: Decimal): Boolean

@@ -492,6 +492,7 @@ codeunit 1685 "Email Logging Invoke"
 
     local procedure GetInboundOutboundInteraction(var EmailLoggingMessage: Codeunit "Email Logging Message"; var SegmentLine: Record "Segment Line"): Boolean
     begin
+        OnBeforeGetInboundOutboundInteraction(EmailLoggingMessage, SegmentLine);
         // Check if in- or out-bound and store sender and recipients in segment line(s)
         if IsSalesperson(EmailLoggingMessage.GetSender(), SegmentLine) then begin
             SegmentLine."Information Flow" := SegmentLine."Information Flow"::Outbound;
@@ -534,5 +535,10 @@ codeunit 1685 "Email Logging Invoke"
     local procedure SetErrorContext(NewContext: Text)
     begin
         ErrorContext := NewContext;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetInboundOutboundInteraction(var EmailLoggingMessage: Codeunit "Email Logging Message"; var SegmentLine: Record "Segment Line")
+    begin
     end;
 }

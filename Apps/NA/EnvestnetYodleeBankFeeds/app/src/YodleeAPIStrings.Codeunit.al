@@ -120,10 +120,9 @@ codeunit 1458 "Yodlee API Strings"
         exit(GetFullURL('/user/register'));
     end;
 
-#if not CLEAN28
+
     [Scope('OnPrem')]
     [NonDebuggable]
-    [Obsolete('Use GetRegisterConsumerBodySecret instead', '28.0')]
     procedure GetRegisterConsumerBody(CobrandToken: Text; UserName: Text; UserPassword: SecretText; UserEmail: Text; UserCurrency: Text): Text;
     var
         GetRegisterConsumerRequestBodyJsonObject: JsonObject;
@@ -141,9 +140,10 @@ codeunit 1458 "Yodlee API Strings"
         GetRegisterConsumerRequestBodyJsonObject.WriteTo(GetRegisterConsumerRequestBodyText);
         exit(GetRegisterConsumerRequestBodyText);
     end;
-#endif
 
+#if not CLEAN28
     [Scope('OnPrem')]
+    [Obsolete('Use GetRegisterConsumerBody instead', '28.0')]
     procedure GetRegisterConsumerBodySecret(CobrandToken: Text; UserName: Text; UserPassword: SecretText; UserEmail: Text; UserCurrency: Text): SecretText;
     var
         RegisterConsumerRequestBodyJsonObject: JsonObject;
@@ -172,6 +172,7 @@ codeunit 1458 "Yodlee API Strings"
 
         exit(RegisterConsumerRequestBodySecretText);
     end;
+#endif
 
     [Scope('OnPrem')]
     procedure GetRemoveConsumerURL(): Text;

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -48,12 +48,6 @@ page 10020 "IRS 1096 Form Subform"
                     ApplicationArea = BasicUS;
                     ToolTip = 'Specifies the adjustment amount per period and IRS code calculated by the Create Forms action on the list page.';
 
-#if not CLEAN25
-                    trigger OnDrillDown()
-                    begin
-                        Rec.ShowAdjustments();
-                    end;
-#endif
                 }
                 field("Manually Changed"; Rec."Manually Changed")
                 {

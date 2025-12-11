@@ -6,17 +6,23 @@ namespace Microsoft.Finance.VAT.Setup;
 
 using Microsoft.Sales.Document;
 
+#if not CLEAN28
 using Microsoft.FixedAssets.Reports;
+#endif
 using Microsoft.Purchases.Setup;
 using Microsoft.Sales.Reports;
 using Microsoft.Purchases.Document;
 using Microsoft.CashFlow.Forecast;
 using Microsoft.Sales.Reminder;
+#if not CLEAN28
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.FixedAsset;
+#endif  
 using Microsoft.CashFlow.Reports;
 using Microsoft.Purchases.History;
+#if not CLEAN28
 using Microsoft.Foundation.Period;
+#endif
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Reports;
 
@@ -72,7 +78,10 @@ codeunit 10581 "Reports Subscribers"
                 AddError(StrSubstNo(Text10500Err, Round(0)), ErrorCounter, ErrorText);
     end;
 
+#if not CLEAN28
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Report, Report::"Fixed Asset - Projected Value", OnAfterAccountingPeriodSetFilter, '', false, false)]
+#pragma warning restore AL0432
     local procedure OnAfterAccountingPeriodSetFilter(var AccountingPeriod: Record "Accounting Period"; var PeriodEndingDate: Date; UseAccountingPeriod: Boolean; Year365Days: Boolean)
     begin
         if Year365Days then
@@ -86,6 +95,7 @@ codeunit 10581 "Reports Subscribers"
         AccountingPeriod.SetFilter(
             "Starting Date", '>=%1', PeriodEndingDate + 1);
     end;
+#endif
 
     [EventSubscriber(ObjectType::Report, Report::"Purchase - Receipt", OnAfterInitializeRequest, '', false, false)]
     local procedure OnAfterInitializeRequest(var NoOfCopies: Integer; var ShowInternalInfo: Boolean; var LogInteraction: Boolean; var ShowCorrectionLines: Boolean; var sender: Report "Purchase - Receipt")
@@ -100,11 +110,15 @@ codeunit 10581 "Reports Subscribers"
         sender.SetPrintEmptyLines(PrintEmptyLines);
     end;
 
+#if not CLEAN28
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Report, Report::"Fixed Asset - Projected Value", OnBeforeCalculateFirstDeprAmount, '', false, false)]
     local procedure OnBeforeCalculateFirstDeprAmount(sender: Report "Fixed Asset - Projected Value"; var CalculateDepr: Codeunit "Calculate Depreciation"; var Custom1Amount: Decimal; var Custom1NumberOfDays: Integer; var DaysInFirstPeriod: Integer; var DeprAmount: Decimal; var DeprBookCode: Code[10]; var DepreciationCalculation: Codeunit "Depreciation Calculation"; var Done: Boolean; var EndingDate: Date; var EntryAmounts: array[4] of Decimal; var FirstTime: Boolean; var FixedAsset: Record "Fixed Asset"; var IsHandled: Boolean; var NumberOfDays: Integer; var StartingDate: Date; var UntilDate: Date)
+#pragma warning restore AL0432
     begin
         sender.SetUntilDate(UntilDate);
     end;
+#endif
 
     [EventSubscriber(ObjectType::Report, Report::Reminder, OnAfterResetAmounts, '', false, false)]
     local procedure OnAfterResetAmounts(var VATInterest: Decimal; var AddFeeInclVAT: Decimal; var AddFeePerLineInclVAT: Decimal; var sender: Report Reminder)
@@ -131,8 +145,11 @@ codeunit 10581 "Reports Subscribers"
         sender.SetDim_Code_ValCode_ValName(DimCode, DimValCode, DimValName, Level);
     end;
 
+#if not CLEAN28
+#pragma warning disable AL0432
     [EventSubscriber(ObjectType::Report, Report::"Fixed Asset - Projected Value", OnAfterTransferValues, '', false, false)]
     local procedure OnAfterTransferValues(GroupAmounts: array[4] of Decimal; TotalBookValue: array[2] of Decimal; var sender: Report "Fixed Asset - Projected Value")
+#pragma warning restore AL0432
     begin
         sender.SetGroupAmounts(GroupAmounts);
         sender.SetTotalBookValue(TotalBookValue);
@@ -145,6 +162,7 @@ codeunit 10581 "Reports Subscribers"
             ThisDate := ThisDate + 1;
         exit(ThisDate);
     end;
+#endif
 
     local procedure AddError(Text: Text; var ErrorCounter: Integer; var ErrorText: Text[250])
     begin

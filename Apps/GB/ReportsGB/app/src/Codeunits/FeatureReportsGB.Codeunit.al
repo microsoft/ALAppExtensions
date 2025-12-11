@@ -98,7 +98,9 @@ codeunit 10580 "Feature - Reports GB" implements "Feature Data Update"
         SetDefaultReportLayout(Report::"Bank Account - List");
         SetDefaultReportLayout(Report::"Cash Flow Dimensions - Detail");
         SetDefaultReportLayout(Report::"Finance Charge Memo");
+#if not CLEAN28
         SetDefaultReportLayout(Report::"Fixed Asset - Projected Value");
+#endif
         SetDefaultReportLayout(Report::"Purchase - Quote");
         SetDefaultReportLayout(Report::"Purchase - Receipt");
         SetDefaultReportLayout(Report::"Sales - Shipment");
