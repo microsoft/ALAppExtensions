@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.FixedAssets.Depreciation;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.Journal;
 
 codeunit 5213 "Create FA Jnl. Lines"
@@ -19,14 +19,14 @@ codeunit 5213 "Create FA Jnl. Lines"
 
     trigger OnRun()
     var
-        ContosoUtilities: Codeunit "Contoso Utilities";
         ContosoFixedAsset: Codeunit "Contoso Fixed Asset";
-        CreateFixedAsset: Codeunit "Create Fixed Asset";
-        CreateFANoSeries: Codeunit "Create FA No Series";
+        ContosoUtilities: Codeunit "Contoso Utilities";
         CreateFAJnlTemplate: Codeunit "Create FA Jnl. Template";
+        CreateFANoSeries: Codeunit "Create FA No Series";
+        CreateFixedAsset: Codeunit "Create Fixed Asset";
         CreateGLAccount: Codeunit "Create G/L Account";
-        FAJournalTemplateName: Code[10];
         FAJournalBatchName: Code[10];
+        FAJournalTemplateName: Code[10];
     begin
         FAJournalTemplateName := CreateFAJnlTemplate.Assets();
         FAJournalBatchName := CreateFAJnlTemplate.Default();
@@ -67,8 +67,8 @@ codeunit 5213 "Create FA Jnl. Lines"
 
     local procedure CalculateDepreciationLines(PostingDate: Date; BatchCount: Integer)
     var
-        CreateFADepreciationBook: Codeunit "Create FA Depreciation Book";
         CalculateDepreciation: Report "Calculate Depreciation";
+        CreateFADepreciationBook: Codeunit "Create FA Depreciation Book";
     begin
         CalculateDepreciation.InitializeRequest(CreateFADepreciationBook.Company(), PostingDate, false, 0, PostingDate, StrSubstNo('%1%2', AssetDepreciationLbl, BatchCount), DepreciationLbl, true);
         CalculateDepreciation.UseRequestPage(false);
@@ -84,8 +84,8 @@ codeunit 5213 "Create FA Jnl. Lines"
     end;
 
     var
-        AssetAcquisitionLbl: Label 'ASSET-ACQ', MaxLength = 20;
         AcquisitionLbl: Label 'Acquisition', MaxLength = 100;
+        AssetAcquisitionLbl: Label 'ASSET-ACQ', MaxLength = 20;
         AssetDepreciationLbl: Label 'ASSET-DEPR', MaxLength = 20;
         DepreciationLbl: Label 'Depreciation', MaxLength = 100;
 }

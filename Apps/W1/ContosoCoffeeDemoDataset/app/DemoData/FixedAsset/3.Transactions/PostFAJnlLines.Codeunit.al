@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
 
 codeunit 5214 "Post FA Jnl. Lines"
 {
@@ -18,8 +18,8 @@ codeunit 5214 "Post FA Jnl. Lines"
     var
         GenJournalLine: Record "Gen. Journal Line";
         CreateFAJnlTemplate: Codeunit "Create FA Jnl. Template";
-        FAJournalTemplateName: Code[10];
         FAJournalBatchName: Code[10];
+        FAJournalTemplateName: Code[10];
     begin
         FAJournalTemplateName := CreateFAJnlTemplate.Assets();
         FAJournalBatchName := CreateFAJnlTemplate.Default();

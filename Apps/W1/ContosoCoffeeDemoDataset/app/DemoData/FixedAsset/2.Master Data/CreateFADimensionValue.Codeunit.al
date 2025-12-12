@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.Dimension;
+using Microsoft.FixedAssets.FixedAsset;
 
 codeunit 5212 "Create FA Dimension Value"
 {
@@ -18,9 +18,9 @@ codeunit 5212 "Create FA Dimension Value"
     trigger OnRun()
     var
         ContosoDimension: Codeunit "Contoso Dimension";
-        CreateFixedAsset: Codeunit "Create Fixed Asset";
         CreateDimension: Codeunit "Create Dimension";
         CreateDimensionValue: Codeunit "Create Dimension Value";
+        CreateFixedAsset: Codeunit "Create Fixed Asset";
     begin
         ContosoDimension.InsertDefaultDimensionValue(Database::"Fixed Asset", CreateFixedAsset.FA000010(), CreateDimension.DepartmentDimension(), CreateDimensionValue.AdministrationDepartment(), Enum::"Default Dimension Value Posting Type"::" ");
         ContosoDimension.InsertDefaultDimensionValue(Database::"Fixed Asset", CreateFixedAsset.FA000020(), CreateDimension.DepartmentDimension(), CreateDimensionValue.AdministrationDepartment(), Enum::"Default Dimension Value Posting Type"::" ");

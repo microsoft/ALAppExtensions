@@ -5,11 +5,11 @@
 namespace Microsoft.DemoTool.Helpers;
 
 using Microsoft.FixedAssets.Depreciation;
-using Microsoft.FixedAssets.Setup;
 using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.FixedAssets.Maintenance;
-using Microsoft.FixedAssets.Journal;
 using Microsoft.FixedAssets.Insurance;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Maintenance;
+using Microsoft.FixedAssets.Setup;
 
 codeunit 4776 "Contoso Fixed Asset"
 {
@@ -269,8 +269,8 @@ codeunit 4776 "Contoso Fixed Asset"
 
     procedure InsertMainAssetComponent(MainAssetNo: Code[20]; FANo: Code[20])
     var
-        MainAssetComponent: Record "Main Asset Component";
         FixedAsset: Record "Fixed Asset";
+        MainAssetComponent: Record "Main Asset Component";
         Exists: Boolean;
     begin
         if MainAssetComponent.Get(MainAssetNo, FANo) then begin

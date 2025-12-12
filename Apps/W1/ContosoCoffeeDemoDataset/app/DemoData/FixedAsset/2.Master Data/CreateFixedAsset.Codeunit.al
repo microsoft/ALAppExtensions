@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.FixedAssets.FixedAsset;
 
 codeunit 5118 "Create Fixed Asset"
@@ -59,9 +59,9 @@ codeunit 5118 "Create Fixed Asset"
     local procedure CreateFADepreciationBookForAssets()
     var
         ContosoFixedAsset: Codeunit "Contoso Fixed Asset";
+        ContosoUtilities: Codeunit "Contoso Utilities";
         CreateFADepreciationBook: Codeunit "Create FA Depreciation Book";
         CreateFAPostingGroup: Codeunit "Create FA Posting Group";
-        ContosoUtilities: Codeunit "Contoso Utilities";
     begin
         ContosoFixedAsset.InsertFADepreciationBook(FA000010(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010101D), 5, CreateFAPostingGroup.Vehicles());
         ContosoFixedAsset.InsertFADepreciationBook(FA000020(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19010501D), 5, CreateFAPostingGroup.Vehicles());
@@ -120,22 +120,22 @@ codeunit 5118 "Create Fixed Asset"
     end;
 
     var
-        Vehicle1Lbl: Label 'Vehicle 1', MaxLength = 100;
-        Vehicle2Lbl: Label 'Vehicle 2', MaxLength = 100;
-        Truck1Lbl: Label 'Truck 1', MaxLength = 100;
-        ConveyorMainAssetLbl: Label 'Conveyor, Main Asset', MaxLength = 100;
+        CargoLiftLbl: Label 'Cargo Lift', MaxLength = 100;
         ConveyorBeltLbl: Label 'Conveyor Belt', MaxLength = 100;
         ConveyorComputerLbl: Label 'Conveyor Computer', MaxLength = 100;
-        CargoLiftLbl: Label 'Cargo Lift', MaxLength = 100;
         ConveyorLiftLbl: Label 'Conveyor Lift', MaxLength = 100;
-        SwitchboardLbl: Label 'Switchboard', MaxLength = 100;
+        ConveyorMainAssetLbl: Label 'Conveyor, Main Asset', MaxLength = 100;
+        SerialNoAKW2476111Lbl: Label 'AKW2476111', Locked = true;
         SerialNoEA12394QLbl: Label 'EA 12 394 Q', Locked = true;
         SerialNoEA12395QLbl: Label 'EA 12 395 Q', Locked = true;
         SerialNoEA15397QLbl: Label 'EA 15 397 Q', Locked = true;
+        SerialNoTELE4476ZLbl: Label 'TELE 4476 Z', Locked = true;
         SerialNoX23111SW0Lbl: Label '23 111 SW0', Locked = true;
         SerialNoX23111SW1Lbl: Label '23 111 SW1', Locked = true;
         SerialNoX23111SW2Lbl: Label '23 111 SW2', Locked = true;
         SerialNoX23111SW3Lbl: Label '23 111 SW3', Locked = true;
-        SerialNoAKW2476111Lbl: Label 'AKW2476111', Locked = true;
-        SerialNoTELE4476ZLbl: Label 'TELE 4476 Z', Locked = true;
+        SwitchboardLbl: Label 'Switchboard', MaxLength = 100;
+        Truck1Lbl: Label 'Truck 1', MaxLength = 100;
+        Vehicle1Lbl: Label 'Vehicle 1', MaxLength = 100;
+        Vehicle2Lbl: Label 'Vehicle 2', MaxLength = 100;
 }
