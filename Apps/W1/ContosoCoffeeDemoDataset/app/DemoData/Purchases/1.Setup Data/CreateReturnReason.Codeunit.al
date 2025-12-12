@@ -43,12 +43,12 @@ codeunit 5392 "Create Return Reason"
     end;
 
     var
+        ColorTok: Label 'COLOR', MaxLength = 10;
+        DamageDescriptionLbl: Label 'Damaged or defective', MaxLength = 50;
         DamagedTok: Label 'DAMAGED', MaxLength = 10;
         ItemTok: Label 'ITEM', MaxLength = 10;
         SizeTok: Label 'SIZE', MaxLength = 10;
-        ColorTok: Label 'COLOR', MaxLength = 10;
-        DamageDescriptionLbl: Label 'Damaged or defective', MaxLength = 50;
+        WrongColorDescriptionLbl: Label 'Wrong color', MaxLength = 50;
         WrongItemDescriptionLbl: Label 'Wrong item', MaxLength = 50;
         WrongSizeDescriptionLbl: Label 'Wrong size', MaxLength = 50;
-        WrongColorDescriptionLbl: Label 'Wrong color', MaxLength = 50;
 }

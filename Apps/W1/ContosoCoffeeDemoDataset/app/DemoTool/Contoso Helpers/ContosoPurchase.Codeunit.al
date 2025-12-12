@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Purchases.Document;
-using Microsoft.Inventory.Item;
 using Microsoft.Foundation.AuditCodes;
-using Microsoft.Purchases.Setup;
-using Microsoft.Projects.Resources.Resource;
+using Microsoft.Inventory.Item;
 using Microsoft.Pricing.Calculation;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Setup;
 
 codeunit 4781 "Contoso Purchase"
 {
@@ -143,8 +143,8 @@ codeunit 4781 "Contoso Purchase"
 
     procedure InsertPurchaseLineWithResource(PurchaseHeader: Record "Purchase Header"; ResourceNo: Code[20]; Quantity: Decimal)
     var
-        Resource: Record Resource;
         PurchaseLine: Record "Purchase Line";
+        Resource: Record Resource;
     begin
         PurchaseLine.Validate("Document Type", PurchaseHeader."Document Type");
         PurchaseLine.Validate("Document No.", PurchaseHeader."No.");
