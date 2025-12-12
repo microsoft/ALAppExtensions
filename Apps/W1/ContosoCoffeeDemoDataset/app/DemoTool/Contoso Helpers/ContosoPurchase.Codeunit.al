@@ -85,6 +85,11 @@ codeunit 4781 "Contoso Purchase"
         InsertPurchaseLineWithItem(PurchaseHeader, ItemNo, Quantity, UnitOfMeasureCode, UnitCost, 0, ReturnReasonCode);
     end;
 
+    procedure InsertPurchaseLineWithItem(PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; UnitOfMeasureCode: Code[10]; UnitCost: Decimal; LineDiscount: Decimal)
+    begin
+        InsertPurchaseLineWithItem(PurchaseHeader, ItemNo, Quantity, UnitOfMeasureCode, UnitCost, LineDiscount, '');
+    end;
+
     procedure InsertPurchaseLineWithItem(PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; UnitOfMeasureCode: Code[10]; UnitCost: Decimal; LineDiscount: Decimal; ReturnReasonCode: Code[20])
     var
         Item: Record Item;
