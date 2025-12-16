@@ -14,6 +14,7 @@ using Microsoft.Foundation.Company;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Location;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
@@ -114,7 +115,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertEmbeddedDocument(RootXMLNode, SalesInvoiceHeader);
         InsertAttachment(RootXMLNode, Database::"Sales Invoice Header", SalesInvoiceHeader."No.");
         CalculateLineAmounts(SalesInvoiceHeader, SalesInvLine, Currency, LineAmounts);
-        InsertAccountingSupplierParty(RootXMLNode);
+        InsertAccountingSupplierParty(SalesInvoiceHeader."Responsibility Center", RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesInvoiceHeader);
         InsertDelivery(RootXMLNode, SalesInvoiceHeader);
         InsertPaymentMeans(RootXMLNode, '68', 'PayeeFinancialAccount', SalesInvoiceHeader."Company Bank Account Code");
@@ -159,7 +160,7 @@ codeunit 13916 "Export XRechnung Document"
         InsertEmbeddedDocument(RootXMLNode, SalesCrMemoHeader);
         InsertAttachment(RootXMLNode, Database::"Sales Cr.Memo Header", SalesCrMemoHeader."No.");
         CalculateLineAmounts(SalesCrMemoHeader, SalesCrMemoLine, Currency, LineAmounts);
-        InsertAccountingSupplierParty(RootXMLNode);
+        InsertAccountingSupplierParty(SalesCrMemoHeader."Responsibility Center", RootXMLNode);
         InsertAccountingCustomerParty(RootXMLNode, SalesCrMemoHeader);
         InsertDelivery(RootXMLNode, SalesCrMemoHeader);
         InsertPaymentMeans(RootXMLNode, '68', '', SalesCrMemoHeader."Company Bank Account Code");
@@ -285,12 +286,12 @@ codeunit 13916 "Export XRechnung Document"
             until SalesCrMemoLine.Next() = 0;
     end;
 
-    local procedure InsertAccountingSupplierParty(var RootXMLNode: XmlElement)
+    local procedure InsertAccountingSupplierParty(RespCenterCode: Code[10]; var RootXMLNode: XmlElement)
     var
         AccountingSupplierPartyElement: XmlElement;
     begin
         AccountingSupplierPartyElement := XmlElement.Create('AccountingSupplierParty', XmlNamespaceCAC);
-        InsertSupplierParty(AccountingSupplierPartyElement);
+        InsertSupplierParty(RespCenterCode, AccountingSupplierPartyElement);
         RootXMLNode.Add(AccountingSupplierPartyElement);
     end;
 
@@ -348,6 +349,7 @@ codeunit 13916 "Export XRechnung Document"
     local procedure InsertAddress(var RootElement: XmlElement; ElementName: Text; Address: Record "Standard Address");
     var
         AddressElement: XmlElement;
+        IdentificationCode: Code[2];
     begin
         AddressElement := XmlElement.Create(ElementName, XmlNamespaceCAC);
         AddressElement.Add(XmlElement.Create('StreetName', XmlNamespaceCBC, Address.Address));
@@ -355,7 +357,8 @@ codeunit 13916 "Export XRechnung Document"
             AddressElement.Add(XmlElement.Create('AdditionalStreetName', XmlNamespaceCBC, Address."Address 2"));
         AddressElement.Add(XmlElement.Create('CityName', XmlNamespaceCBC, Address.City));
         AddressElement.Add(XmlElement.Create('PostalZone', XmlNamespaceCBC, Address."Post Code"));
-        InsertCountry(AddressElement, GetCountryRegionCode(Address."Country/Region Code"));
+        IdentificationCode := GetCountryISOCode(GetCountryRegionCode(Address."Country/Region Code"));
+        InsertCountry(AddressElement, IdentificationCode);
         RootElement.Add(AddressElement);
     end;
 
@@ -541,7 +544,7 @@ codeunit 13916 "Export XRechnung Document"
         RootElement.Add(ContactElement);
     end;
 
-    local procedure InsertSupplierParty(var AccountingSupplierPartyElement: XmlElement);
+    local procedure InsertSupplierParty(RespCenterCode: Code[10]; var AccountingSupplierPartyElement: XmlElement);
     var
         TempCompanyAddress: Record "Standard Address" temporary;
         PartyElement: XmlElement;
@@ -555,6 +558,7 @@ codeunit 13916 "Export XRechnung Document"
             InsertPartyIdentification(PartyElement, GetVATRegistrationNo(CompanyInformation."VAT Registration No.", CompanyInformation."Country/Region Code"));
         InsertPartyName(PartyElement, CompanyInformation.Name);
         TempCompanyAddress.CopyFromCompanyInformation(CompanyInformation);
+        UpdateSellerAddressFromResponsibilityCenter(RespCenterCode, TempCompanyAddress);
         InsertAddress(PartyElement, 'PostalAddress', TempCompanyAddress);
         InsertPartyTaxScheme(PartyElement, CompanyInformation."VAT Registration No.", CompanyInformation."Country/Region Code");
         InsertPartyLegalEntity(PartyElement);
@@ -1088,6 +1092,24 @@ codeunit 13916 "Export XRechnung Document"
             TotalAmounts.Set(VATPercent, TotalAmounts.Get(VATPercent) + NewAmount);
     end;
 
+    local procedure UpdateSellerAddressFromResponsibilityCenter(RespCenterCode: Code[10]; var TempCompanyAddress: Record "Standard Address" temporary)
+    var
+        RespCenter: Record "Responsibility Center";
+    begin
+        if RespCenterCode = '' then
+            exit;
+        if not RespCenter.Get(RespCenterCode) then
+            exit;
+
+        TempCompanyAddress.Address := RespCenter.Address;
+        TempCompanyAddress."Address 2" := RespCenter."Address 2";
+        TempCompanyAddress.City := RespCenter.City;
+        TempCompanyAddress."Country/Region Code" := RespCenter."Country/Region Code";
+        TempCompanyAddress."Post Code" := RespCenter."Post Code";
+        TempCompanyAddress.County := RespCenter.County;
+        TempCompanyAddress.Modify(false);
+    end;
+
     local procedure FindEDocumentService(EDocumentFormat: Code[20])
     begin
         if EDocumentFormat = '' then
@@ -1168,6 +1190,14 @@ codeunit 13916 "Export XRechnung Document"
             Currency.TestField("Unit-Amount Rounding Precision");
             exit(DocumentCurrencyCode);
         end;
+    end;
+
+    local procedure GetCountryISOCode(CountryRegionCode: Code[10]): Code[2]
+    var
+        CountryRegion: Record "Country/Region";
+    begin
+        CountryRegion.Get(CountryRegionCode);
+        exit(CountryRegion."ISO Code");
     end;
 
     local procedure GetCountryRegionCode(CountryRegionCode: Code[10]): Code[10]
