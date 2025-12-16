@@ -428,7 +428,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         if Address2 <> '' then
             PostalTradeAddressElement.Add(XmlElement.Create('LineTwo', XmlNamespaceRAM, Address2));
         PostalTradeAddressElement.Add(XmlElement.Create('CityName', XmlNamespaceRAM, City));
-        PostalTradeAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryRegionCode(CountryCode)));
+        PostalTradeAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryISOCode(GetCountryRegionCode(CountryCode))));
         BuyerTradePartyElement.Add(PostalTradeAddressElement);
 
         // Buyer E-Mail
@@ -460,7 +460,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         PostalAddressElement.Add(XmlElement.Create('PostcodeCode', XmlNamespaceRAM, SalesInvoiceHeader."Sell-to Post Code"));
         PostalAddressElement.Add(XmlElement.Create('LineOne', XmlNamespaceRAM, SalesInvoiceHeader."Sell-to Address"));
         PostalAddressElement.Add(XmlElement.Create('CityName', XmlNamespaceRAM, SalesInvoiceHeader."Sell-to City"));
-        PostalAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryRegionCode(SalesInvoiceHeader."Sell-to Country/Region Code")));
+        PostalAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryISOCode(GetCountryRegionCode(SalesInvoiceHeader."Sell-to Country/Region Code"))));
 
         ShipToPartyElement.Add(PostalAddressElement);
         DeliveryElement.Add(ShipToPartyElement);
@@ -480,7 +480,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         PostalAddressElement.Add(XmlElement.Create('PostcodeCode', XmlNamespaceRAM, SalesCrMemoHeader."Sell-to Post Code"));
         PostalAddressElement.Add(XmlElement.Create('LineOne', XmlNamespaceRAM, SalesCrMemoHeader."Sell-to Address"));
         PostalAddressElement.Add(XmlElement.Create('CityName', XmlNamespaceRAM, SalesCrMemoHeader."Sell-to City"));
-        PostalAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryRegionCode(SalesCrMemoHeader."Sell-to Country/Region Code")));
+        PostalAddressElement.Add(XmlElement.Create('CountryID', XmlNamespaceRAM, GetCountryISOCode(GetCountryRegionCode(SalesCrMemoHeader."Sell-to Country/Region Code"))));
 
         ShipToPartyElement.Add(PostalAddressElement);
         DeliveryElement.Add(ShipToPartyElement);
