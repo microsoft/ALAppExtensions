@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument.Formats;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.CRM.Team;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
@@ -310,6 +311,9 @@ codeunit 13917 "Export ZUGFeRD Document"
         SellerStreetName: Text;
         SellerAdditionalStreetName: Text;
         SellerCityName: Text;
+        SellerContactName: Text;
+        SellerEmailAddress: Text;
+        SellerPhoneNumber: Text;
         SellerPostalZone: Text;
         SellerCountryCode: Code[2];
         RespCentrCode: Code[10];
@@ -334,6 +338,7 @@ codeunit 13917 "Export ZUGFeRD Document"
                     CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Invoice".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
                     PhoneNumber := SalesInvoiceHeader."Sell-to Phone No.";
                     RespCentrCode := SalesInvoiceHeader."Responsibility Center";
+                    GetSellerContactInfo(SalesInvoiceHeader, SellerContactName, SellerPhoneNumber, SellerEmailAddress);
                 end;
             Database::"Sales Cr.Memo Header":
                 begin
@@ -352,6 +357,7 @@ codeunit 13917 "Export ZUGFeRD Document"
                     CustomerEmail := ReportSelections.GetEmailAddressExt("Report Selection Usage"::"S.Cr.Memo".AsInteger(), RecordVariant, CustomerNo, TempBodyReportSelections);
                     PhoneNumber := SalesCrMemoHeader."Sell-to Phone No.";
                     RespCentrCode := SalesCrMemoHeader."Responsibility Center";
+                    GetSellerContactInfo(SalesCrMemoHeader, SellerContactName, SellerPhoneNumber, SellerEmailAddress);
                 end;
         end;
 
@@ -368,14 +374,14 @@ codeunit 13917 "Export ZUGFeRD Document"
         SellerTradePartyElement.Add(XmlElement.Create('Name', XmlNamespaceRAM, CompanyInformation.Name));
 
         // Seller Contact
-        if CompanyInformation."Phone No." <> '' then begin
+        if SellerPhoneNumber <> '' then begin
             ContactElement := XmlElement.Create('DefinedTradeContact', XmlNamespaceRAM);
-            ContactElement.Add(XmlElement.Create('PersonName', XmlNamespaceRAM, CompanyInformation."Contact Person"));
+            ContactElement.Add(XmlElement.Create('PersonName', XmlNamespaceRAM, SellerContactName));
             ContactElement.Add(XmlElement.Create('TelephoneUniversalCommunication', XmlNamespaceRAM,
-                XmlElement.Create('CompleteNumber', XmlNamespaceRAM, CompanyInformation."Phone No.")));
-            if CompanyInformation."E-Mail" <> '' then
+                XmlElement.Create('CompleteNumber', XmlNamespaceRAM, SellerPhoneNumber)));
+            if SellerEmailAddress <> '' then
                 ContactElement.Add(XmlElement.Create('EmailURIUniversalCommunication', XmlNamespaceRAM,
-                    XmlElement.Create('URIID', XmlNamespaceRAM, CompanyInformation."E-Mail")));
+                    XmlElement.Create('URIID', XmlNamespaceRAM, SellerEmailAddress)));
             SellerTradePartyElement.Add(ContactElement);
         end;
 
@@ -983,6 +989,41 @@ codeunit 13917 "Export ZUGFeRD Document"
         CityName := CompanyInformation.City;
         PostalZone := CompanyInformation."Post Code";
         CountryRegionCode := CompanyInformation."Country/Region Code";
+    end;
+
+    local procedure GetSellerContactInfo(SalesInvoiceHeader: Record "Sales Invoice Header"; var ContactName: Text; var PhoneNumber: Text; var EmailAddress: Text)
+    begin
+        if SetSellerContactFromSalesPerson(SalesInvoiceHeader."Salesperson Code", ContactName, PhoneNumber, EmailAddress) then
+            exit;
+        SetSellerContactFromCompanyInformation(ContactName, PhoneNumber, EmailAddress);
+    end;
+
+    local procedure GetSellerContactInfo(SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var ContactName: Text; var PhoneNumber: Text; var EmailAddress: Text)
+    begin
+        if SetSellerContactFromSalesPerson(SalesCrMemoHeader."Salesperson Code", ContactName, PhoneNumber, EmailAddress) then
+            exit;
+        SetSellerContactFromCompanyInformation(ContactName, PhoneNumber, EmailAddress);
+    end;
+
+    local procedure SetSellerContactFromSalesPerson(SalesPersonCode: Code[20]; var ContactName: Text; var PhoneNumber: Text; var EmailAddress: Text): Boolean
+    var
+        Salesperson: Record "Salesperson/Purchaser";
+    begin
+        if SalesPersonCode = '' then
+            exit(false);
+        if not Salesperson.Get(SalesPersonCode) then
+            exit(false);
+        ContactName := Salesperson.Name;
+        PhoneNumber := Salesperson."Phone No.";
+        EmailAddress := Salesperson."E-Mail";
+        exit(true);
+    end;
+
+    local procedure SetSellerContactFromCompanyInformation(var ContactName: Text; var PhoneNumber: Text; var EmailAddress: Text)
+    begin
+        ContactName := CompanyInformation."Contact Person";
+        PhoneNumber := CompanyInformation."Phone No.";
+        EmailAddress := CompanyInformation."E-Mail";
     end;
 
     #region CommonFunctions
