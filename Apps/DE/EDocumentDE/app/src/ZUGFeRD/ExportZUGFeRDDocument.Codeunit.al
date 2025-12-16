@@ -1011,6 +1011,7 @@ codeunit 13917 "Export ZUGFeRD Document"
     begin
         if SalesPersonCode = '' then
             exit(false);
+        Salesperson.SetLoadFields(Name, "Phone No.", "E-Mail");
         if not Salesperson.Get(SalesPersonCode) then
             exit(false);
         ContactName := Salesperson.Name;
