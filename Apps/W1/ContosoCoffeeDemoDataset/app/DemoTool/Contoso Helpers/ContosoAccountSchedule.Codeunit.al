@@ -112,7 +112,7 @@ codeunit 5239 "Contoso Account Schedule"
         InsertAccScheduleName(Name, Description, AnalysisViewName, '');
     end;
 
-    procedure InsertAccScheduleName(Name: Code[10]; Description: Text[80]; AnalysisViewName: Code[10]; InternalDescription: Code[250])
+    procedure InsertAccScheduleName(Name: Code[10]; Description: Text[80]; AnalysisViewName: Code[10]; InternalDescription: Text[500])
     var
         AccScheduleName: Record "Acc. Schedule Name";
         Exists: Boolean;
