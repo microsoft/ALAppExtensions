@@ -140,7 +140,7 @@ codeunit 5239 "Contoso Account Schedule"
         InsertColumnLayoutName(Name, Description, '');
     end;
 
-    procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80]; InternalDescription: Text[250])
+    procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80]; InternalDescription: Text[500])
     var
         ColumnLayoutName: Record "Column Layout Name";
         Exists: Boolean;
