@@ -266,7 +266,7 @@ codeunit 5239 "Contoso Account Schedule"
         InsertFinancialReport(Name, Description, FinancialReportRowGrp, FinancialReportColumnGrp, '');
     end;
 
-    procedure InsertFinancialReport(Name: Code[10]; Description: Text[80]; FinancialReportRowGrp: Code[10]; FinancialReportColumnGrp: Code[10]; InternalDescription: Text[250])
+    procedure InsertFinancialReport(Name: Code[10]; Description: Text[80]; FinancialReportRowGrp: Code[10]; FinancialReportColumnGrp: Code[10]; InternalDescription: Text[500])
     var
         FinancialReport: Record "Financial Report";
         Exists: Boolean;
