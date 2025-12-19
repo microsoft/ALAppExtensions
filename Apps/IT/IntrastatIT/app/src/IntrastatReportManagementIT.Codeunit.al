@@ -30,7 +30,6 @@ using System.Utilities;
 
 codeunit 148121 "Intrastat Report Management IT"
 {
-    Access = Internal;
     SingleInstance = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeInitSetup', '', true, true)]

@@ -971,15 +971,11 @@ codeunit 13918 "XRechnung XML Document Tests"
     end;
 
     local procedure VerifyAccountingSupplierParty(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text)
-    var
-        Path: Text;
     begin
         VerifyAccountingSupplierParty(TempXMLBuffer, DocumentTok, CompanyInformation.Address, CompanyInformation."Post Code", CompanyInformation.City);
     end;
 
     local procedure VerifyAccountingSupplierParty(var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text; ResponsibilityCenter: Record "Responsibility Center")
-    var
-        Path: Text;
     begin
         VerifyAccountingSupplierParty(TempXMLBuffer, DocumentTok, ResponsibilityCenter.Address, ResponsibilityCenter."Post Code", ResponsibilityCenter.City);
     end;

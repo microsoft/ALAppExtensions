@@ -32,6 +32,9 @@ codeunit 11732 "Alt. Cust. VAT Reg. Impl. CZZ" implements "Alt. Cust. VAT Reg. A
         DontShowMsg: Label 'Don''t show';
         AddAltCustVATRegNotificationNameTok: Label 'Suggest an alternative customer VAT registration from sales advance letter';
         AddAltCustVATRegNotificationDescTok: Label 'Suggest the user to add an alternative customer VAT registration when choosing a VAT country different from the customer''s';
+        DiffVATRegNoMsg: Label 'The VAT Registration No. in the sales advance letter is different than the one in the document.';
+        DiffVATRegNoNotificationNameTxt: Label 'Different VAT Registration No. in sales advance letter';
+        DiffVATRegNoNotificationDescriptionTxt: Label 'Warn if VAT Registration No. in sales advance letter is different than in the document.';
 
     procedure Init(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; xSalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     begin
@@ -274,6 +277,32 @@ codeunit 11732 "Alt. Cust. VAT Reg. Impl. CZZ" implements "Alt. Cust. VAT Reg. A
     local procedure AddAltCustVATRegNotificationId(): Text
     begin
         exit('34c4fa1d-07b6-450b-b524-0d367b1e6221')
+    end;
+
+    procedure ThrowDiffVATRegNoNotification()
+    var
+        MyNotifications: Record "My Notifications";
+        Notification: Notification;
+    begin
+        if not MyNotifications.IsEnabled(DiffVATRegNoNotificationId()) then
+            exit;
+        Notification.Id(DiffVATRegNoNotificationId());
+        Notification.Message(DiffVATRegNoMsg);
+        Notification.AddAction(DontShowMsg, Codeunit::"Alt. Cust. VAT Reg. Impl. CZZ", 'DisableDiffVATRegNoNotification');
+        Notification.Send();
+    end;
+
+    procedure DisableDiffVATRegNoNotification(Notification: Notification)
+    var
+        MyNotifications: Record "My Notifications";
+    begin
+        if not MyNotifications.Disable(Notification.Id()) then
+            MyNotifications.InsertDefault(Notification.Id(), DiffVATRegNoNotificationNameTxt, DiffVATRegNoNotificationDescriptionTxt, false);
+    end;
+
+    local procedure DiffVATRegNoNotificationId(): Text
+    begin
+        exit('150bf347-91ac-4e52-8520-e8024bf08e4c');
     end;
 
     [IntegrationEvent(false, false)]

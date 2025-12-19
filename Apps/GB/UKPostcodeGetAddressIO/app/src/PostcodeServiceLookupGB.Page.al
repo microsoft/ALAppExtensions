@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -17,6 +18,10 @@ page 10506 "Postcode Service Lookup GB"
     ShowFilter = false;
     SourceTable = "Name/Value Buffer";
     SourceTableTemporary = true;
+    UsageCategory = None;
+    ObsoleteReason = 'Page has been moved to W1 BaseApp.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     layout
     {
@@ -70,3 +75,4 @@ page 10506 "Postcode Service Lookup GB"
         PostcodeServiceManager: Codeunit "Postcode Service Manager";
         DisabledLbl: Label 'Disabled';
 }
+#endif

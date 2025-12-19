@@ -137,7 +137,7 @@ codeunit 148000 "Test UK Postcode Config"
 
     [ModalPageHandler]
     [Scope('OnPrem')]
-    procedure ServiceLookupHandler(var PostcodeServiceLookup: TestPage "Postcode Service Lookup GB")
+    procedure ServiceLookupHandler(var PostcodeServiceLookup: TestPage "Postcode Service Lookup W1")
     var
         "Action": Text;
     begin

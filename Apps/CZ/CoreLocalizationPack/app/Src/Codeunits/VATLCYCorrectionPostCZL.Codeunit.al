@@ -91,7 +91,7 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
 
     local procedure PostCorrectionAmount(var VATLCYCorrectionBufferCZL: Record "VAT LCY Correction Buffer CZL")
     var
-        PurchVATAccount: Code[20];
+        VATAccountNo: Code[20];
         VATLCYCorrRoundingAccNo: Code[20];
     begin
         if VATLCYCorrectionBufferCZL."VAT Correction Amount" = 0 then
@@ -102,13 +102,24 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         CheckVATDateCZL(VATLCYCorrectionBufferCZL);
 
         VATEntry.Get(VATLCYCorrectionBufferCZL."Entry No.");
-        VATEntry.TestField(Type, VATEntry.Type::Purchase);
+        if not (VATEntry.Type in [VATEntry.Type::Sale, VATEntry.Type::Purchase]) then
+            VATEntry.FieldError(Type);
         VATPostingSetup.Get(VATLCYCorrectionBufferCZL."VAT Bus. Posting Group", VATLCYCorrectionBufferCZL."VAT Prod. Posting Group");
-        PurchVATAccount := VATPostingSetup.GetPurchAccount(false);
-        VATLCYCorrRoundingAccNo := VATPostingSetup.GetLCYCorrRoundingAccCZL();
+        case VATEntry.Type of
+            VATEntry.Type::Purchase:
+                begin
+                    VATAccountNo := VATPostingSetup.GetPurchAccount(false);
+                    VATLCYCorrRoundingAccNo := VATPostingSetup.GetPurchaseLCYCorrRoundingAccCZL();
+                end;
+            VATEntry.Type::Sale:
+                begin
+                    VATAccountNo := VATPostingSetup.GetSalesAccount(false);
+                    VATLCYCorrRoundingAccNo := VATPostingSetup.GetSalesLCYCorrRoundingAccCZL();
+                end;
+        end;
 
-        // Post to Purchase VAT Account
-        SetGenJournalLine(GenJournalLine, VATLCYCorrectionBufferCZL, PurchVATAccount, VATLCYCorrectionBufferCZL."VAT Correction Amount", true);
+        // Post to VAT Account
+        SetGenJournalLine(GenJournalLine, VATLCYCorrectionBufferCZL, VATAccountNo, VATLCYCorrectionBufferCZL."VAT Correction Amount", true);
         CopyFromVATEntry(GenJournalLine, VATEntry);
         SetDefaultDimensions(GenJournalLine);
         OnPostCorrectionAmountOnBeforePostVATAccountLine(GenJournalLine);

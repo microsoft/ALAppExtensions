@@ -66,6 +66,21 @@ codeunit 31127 "VAT Rep. Date Mgt. Handler CZZ"
         UpdateRelatedGLEntries(VATEntry);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"VAT Orig.Doc.VAT Date Mgt. CZL", 'OnAfterUpdateOrigDocVATDate', '', false, false)]
+    local procedure UpdateAdvanceLedgerEntriesOnAfterUpdateOrigDocVATDate(VATEntry: Record "VAT Entry")
+    var
+        PurchAdvLetterEntry: Record "Purch. Adv. Letter Entry CZZ";
+    begin
+        if VATEntry.Type <> VATEntry.Type::Purchase then
+            exit;
+
+        PurchAdvLetterEntry.SetCurrentKey("Document No.", "Posting Date");
+        PurchAdvLetterEntry.SetRange("Document No.", VATEntry."Document No.");
+        PurchAdvLetterEntry.SetRange("Posting Date", VATEntry."Posting Date");
+        PurchAdvLetterEntry.SetFilter("Original Document VAT Date", '<>%1', 0D);
+        PurchAdvLetterEntry.ModifyAll("Original Document VAT Date", VATEntry."Original Doc. VAT Date CZL");
+    end;
+
     local procedure FilterRelatedVATEntries(VATEntry: Record "VAT Entry"; var RelatedVATEntry: Record "VAT Entry")
     begin
         RelatedVATEntry.SetFilter("Entry No.", '<>%1', VATEntry."Entry No.");

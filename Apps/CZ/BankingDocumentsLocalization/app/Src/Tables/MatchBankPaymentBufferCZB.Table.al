@@ -130,20 +130,10 @@ table 31260 "Match Bank Payment Buffer CZB"
         "Specific Symbol" := CustLedgerEntry."Specific Symbol CZL";
         "Variable Symbol" := CustLedgerEntry."Variable Symbol CZL";
         "Constant Symbol" := CustLedgerEntry."Constant Symbol CZL";
-        if UseLCYAmounts then
-            "Remaining Amount" := CustLedgerEntry."Remaining Amt. (LCY)"
-        else
-            "Remaining Amount" := CustLedgerEntry."Remaining Amount";
-        "Pmt. Discount Due Date" := GetCustomerLedgerEntryDiscountDueDate(CustLedgerEntry);
-        "Remaining Amt. Incl. Discount" := "Remaining Amount";
-        if "Pmt. Discount Due Date" > 0D then begin
-            if UseLCYAmounts then
-                "Remaining Amt. Incl. Discount" -=
-                  Round(CustLedgerEntry."Remaining Pmt. Disc. Possible" / CustLedgerEntry."Adjusted Currency Factor")
-            else
-                "Remaining Amt. Incl. Discount" -= CustLedgerEntry."Remaining Pmt. Disc. Possible";
-            UsePaymentDiscounts := true;
-        end;
+        "Remaining Amount" := CustLedgerEntry.GetRemainingAmount(UseLCYAmounts);
+        "Pmt. Discount Due Date" := CustLedgerEntry.GetPmtDiscountDate();
+        "Remaining Amt. Incl. Discount" := CustLedgerEntry.GetRemainingAmountInclPmtDiscToDate(0D, UseLCYAmounts);
+        UsePaymentDiscounts := "Remaining Amount" <> "Remaining Amt. Incl. Discount";
         "Dimension Set ID" := CustLedgerEntry."Dimension Set ID";
         OnBeforeInsertFromCustomerLedgerEntry(Rec, CustLedgerEntry);
         Insert(true);
@@ -161,20 +151,10 @@ table 31260 "Match Bank Payment Buffer CZB"
         "Specific Symbol" := VendorLedgerEntry."Specific Symbol CZL";
         "Variable Symbol" := VendorLedgerEntry."Variable Symbol CZL";
         "Constant Symbol" := VendorLedgerEntry."Constant Symbol CZL";
-        if UseLCYAmounts then
-            "Remaining Amount" := VendorLedgerEntry."Remaining Amt. (LCY)"
-        else
-            "Remaining Amount" := VendorLedgerEntry."Remaining Amount";
-        "Pmt. Discount Due Date" := GetVendorLedgerEntryDiscountDueDate(VendorLedgerEntry);
-        "Remaining Amt. Incl. Discount" := "Remaining Amount";
-        if "Pmt. Discount Due Date" > 0D then begin
-            if UseLCYAmounts then
-                "Remaining Amt. Incl. Discount" -=
-                  Round(VendorLedgerEntry."Remaining Pmt. Disc. Possible" / VendorLedgerEntry."Adjusted Currency Factor")
-            else
-                "Remaining Amt. Incl. Discount" -= VendorLedgerEntry."Remaining Pmt. Disc. Possible";
-            UsePaymentDiscounts := true;
-        end;
+        "Remaining Amount" := VendorLedgerEntry.GetRemainingAmount(UseLCYAmounts);
+        "Pmt. Discount Due Date" := VendorLedgerEntry.GetPmtDiscountDate();
+        "Remaining Amt. Incl. Discount" := VendorLedgerEntry.GetRemainingAmountInclPmtDiscToDate(0D, UseLCYAmounts);
+        UsePaymentDiscounts := "Remaining Amount" <> "Remaining Amt. Incl. Discount";
         "Dimension Set ID" := VendorLedgerEntry."Dimension Set ID";
         OnBeforeInsertFromVendorLedgerEntry(Rec, VendorLedgerEntry);
         Insert(true);
@@ -211,24 +191,6 @@ table 31260 "Match Bank Payment Buffer CZB"
         "Account No." := VendorBankAccount."Vendor No.";
         OnBeforeInsertFromVendorBankAccount(Rec, VendorBankAccount);
         Insert(true);
-    end;
-
-    local procedure GetCustomerLedgerEntryDiscountDueDate(CustLedgerEntry: Record "Cust. Ledger Entry"): Date
-    begin
-        if CustLedgerEntry."Remaining Pmt. Disc. Possible" = 0 then
-            exit(0D);
-        if CustLedgerEntry."Pmt. Disc. Tolerance Date" >= CustLedgerEntry."Pmt. Discount Date" then
-            exit(CustLedgerEntry."Pmt. Disc. Tolerance Date");
-        exit(CustLedgerEntry."Pmt. Discount Date");
-    end;
-
-    local procedure GetVendorLedgerEntryDiscountDueDate(VendorLedgerEntry: Record "Vendor Ledger Entry"): Date
-    begin
-        if VendorLedgerEntry."Remaining Pmt. Disc. Possible" = 0 then
-            exit(0D);
-        if VendorLedgerEntry."Pmt. Disc. Tolerance Date" >= VendorLedgerEntry."Pmt. Discount Date" then
-            exit(VendorLedgerEntry."Pmt. Disc. Tolerance Date");
-        exit(VendorLedgerEntry."Pmt. Discount Date");
     end;
 
     [IntegrationEvent(false, false)]

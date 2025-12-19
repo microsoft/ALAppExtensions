@@ -1673,7 +1673,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdBas_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1683,6 +1682,9 @@
                           <rd:DefaultName>textbox60</rd:DefaultName>
                           <ZIndex>61</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -1705,7 +1707,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdAmt_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1715,6 +1716,9 @@
                           <rd:DefaultName>textbox61</rd:DefaultName>
                           <ZIndex>60</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2049,7 +2053,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdBas_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2059,6 +2062,9 @@
                           <rd:DefaultName>textbox70</rd:DefaultName>
                           <ZIndex>49</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2081,7 +2087,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdAmt_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2091,6 +2096,9 @@
                           <rd:DefaultName>textbox71</rd:DefaultName>
                           <ZIndex>48</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2424,7 +2432,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdBas_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2434,6 +2441,9 @@
                           <rd:DefaultName>textbox83</rd:DefaultName>
                           <ZIndex>37</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2456,7 +2466,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdAmt_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2466,6 +2475,9 @@
                           <rd:DefaultName>textbox84</rd:DefaultName>
                           <ZIndex>36</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2496,6 +2508,9 @@
                           <rd:DefaultName>textbox85</rd:DefaultName>
                           <ZIndex>35</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2796,7 +2811,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdBas_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2806,6 +2820,9 @@
                           <rd:DefaultName>textbox99</rd:DefaultName>
                           <ZIndex>5</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -2828,7 +2845,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=Fields!AddCurrUnrlzdAmt_VATEntryFormat.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -2838,6 +2854,9 @@
                           <rd:DefaultName>textbox100</rd:DefaultName>
                           <ZIndex>4</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -3102,7 +3121,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=First(Fields!VATAmountAddCurrFormat.Value)</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -3112,6 +3130,9 @@
                           <rd:DefaultName>textbox6</rd:DefaultName>
                           <ZIndex>17</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>
@@ -3139,6 +3160,9 @@
                           <rd:DefaultName>textbox4</rd:DefaultName>
                           <ZIndex>16</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -3387,7 +3411,6 @@
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
-                                    <Format>=First(Fields!VATAmountFormat.Value)</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -3397,6 +3420,9 @@
                           <rd:DefaultName>textbox8</rd:DefaultName>
                           <ZIndex>27</ZIndex>
                           <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.075cm</PaddingLeft>
                             <PaddingRight>0.075cm</PaddingRight>

@@ -34,7 +34,7 @@
       "to": 13689
     },
     {
-      "from": 13695,
+      "from": 13694,
       "to": 13698
     }
   ],
@@ -43,5 +43,12 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
+  "internalsVisibleTo": [
+    {
+      "id": "b7fc717e-b79c-4548-b6dc-e27f895171f1",
+      "name": "SAF-T Modification DK Tests",
+      "publisher": "Microsoft"
+    }
+  ],
   "target": "Cloud"
 }
