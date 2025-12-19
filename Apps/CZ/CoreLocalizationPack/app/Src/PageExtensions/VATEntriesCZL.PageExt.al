@@ -16,6 +16,7 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT entry''s Original Document VAT Date.';
+                Editable = IsVATDateEditable;
             }
         }
         addafter("Posting Date")
@@ -110,11 +111,15 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
         }
     }
     trigger OnOpenPage()
+    var
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
     begin
         NonDeductibleVATVisible := NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
+        IsVATDateEditable := VATReportingDateMgt.IsVATDateModifiable();
     end;
 
     var
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+        IsVATDateEditable: Boolean;
         NonDeductibleVATVisible: Boolean;
 }

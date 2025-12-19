@@ -83,7 +83,6 @@ codeunit 7237 "Master Data Mgt. Subscribers"
             end else
                 JobQueueEntry.Status := JobQueueEntry.Status::Ready;
             FeatureTelemetry.LogUptake('0000OUA', MasterDataManagement.GetFeatureName(), Enum::"Feature Uptake Status"::Used);
-            FeatureTelemetry.LogUsage('0000JIR', MasterDataManagement.GetFeatureName(), 'Synch job finished');
             if IntegrationTableMapping.IsFullSynch() then begin
                 Session.LogMessage('0000JIS', StrSubstNo(RunningFullSynchTelemetryTxt, IntegrationTableMapping.Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
                 OriginalIntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
@@ -301,9 +300,6 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                         if IntegrationFieldMapping."Overwrite Local Change" or IntegrationTableMapping."Overwrite Local Change" or (IntegrationFieldMapping.Status = IntegrationFieldMapping.Status::Disabled) then
                             ThrowError := false;
                 end;
-
-                Session.LogMessage('0000JIT', DestinationRecordRef.Caption(), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
-                Session.LogMessage('0000JIU', DestinationRecordRef.Caption() + '.' + DestinationFieldRef.Caption(), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
             end;
             if ThrowError then
                 Error(ValueWillBeOverwrittenErr, DestinationFieldRef.Caption(), Format(DestinationFieldRef.Record().RecordId()), Format(SourceFieldRef.Value()), Format(DestinationFieldRef.Record().Caption()));

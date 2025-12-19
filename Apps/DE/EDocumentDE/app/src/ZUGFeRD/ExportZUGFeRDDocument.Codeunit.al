@@ -315,7 +315,7 @@ codeunit 13917 "Export ZUGFeRD Document"
         SellerEmailAddress: Text;
         SellerPhoneNumber: Text;
         SellerPostalZone: Text;
-        SellerCountryCode: Code[2];
+        SellerCountryCode: Code[10];
         RespCentrCode: Code[10];
     begin
         if not DataTypeManagement.GetRecordRef(RecordVariant, HeaderRecordRef) then

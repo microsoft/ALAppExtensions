@@ -1,3 +1,0 @@
-<participation_lookups xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
-    <participation_lookup />
-</participation_lookups>

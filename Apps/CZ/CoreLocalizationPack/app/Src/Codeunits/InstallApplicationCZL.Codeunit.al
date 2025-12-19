@@ -201,6 +201,18 @@ codeunit 11748 "Install Application CZL"
     var
         InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
         AppInfo: ModuleInfo;
+        PurchaseVATDelaySourceCodeTxt: Label 'VATPD', MaxLength = 10;
+        PurchaseVATDelaySourceCodeDescriptionTxt: Label 'Purchase VAT Delay', MaxLength = 100;
+        SalesVATDelaySourceCodeTxt: Label 'VATSD', MaxLength = 10;
+        SalesVATDelaySourceCodeDescriptionTxt: Label 'Sales VAT Delay', MaxLength = 100;
+        VATLCYCorrectionSourceCodeTxt: Label 'VATCORR', MaxLength = 10;
+        VATLCYCorrectionSourceCodeDescriptionTxt: Label 'VAT Correction in LCY', MaxLength = 100;
+        OpenBalanceSheetSourceCodeTxt: Label 'OPBALANCE', MaxLength = 10;
+        OpenBalanceSheetSourceCodeDescriptionTxt: Label 'Open Balance Sheet', MaxLength = 100;
+        CloseBalanceSheetSourceCodeTxt: Label 'CLBALANCE', MaxLength = 10;
+        CloseBalanceSheetSourceCodeDescriptionTxt: Label 'Close Balance Sheet', MaxLength = 100;
+        VATCoeffCorrectionSourceCodeTxt: Label 'VATCOEFF', MaxLength = 10;
+        VATCoeffCorrectionSourceCodeDescriptionTxt: Label 'VAT Coefficient Correction', MaxLength = 100;
 
     trigger OnInstallAppPerCompany()
     begin
@@ -766,16 +778,6 @@ codeunit 11748 "Install Application CZL"
     var
         SourceCodeSetup: Record "Source Code Setup";
         PrevSourceCodeSetup: Record "Source Code Setup";
-        PurchaseVATDelaySourceCodeTxt: Label 'VATPD', MaxLength = 10;
-        PurchaseVATDelaySourceCodeDescriptionTxt: Label 'Purchase VAT Delay', MaxLength = 100;
-        SalesVATDelaySourceCodeTxt: Label 'VATSD', MaxLength = 10;
-        SalesVATDelaySourceCodeDescriptionTxt: Label 'Sales VAT Delay', MaxLength = 100;
-        VATLCYCorrectionSourceCodeTxt: Label 'VATCORR', MaxLength = 10;
-        VATLCYCorrectionSourceCodeDescriptionTxt: Label 'VAT Correction in LCY', MaxLength = 100;
-        OpenBalanceSheetSourceCodeTxt: Label 'OPBALANCE', MaxLength = 10;
-        OpenBalanceSheetSourceCodeDescriptionTxt: Label 'Open Balance Sheet', MaxLength = 100;
-        CloseBalanceSheetSourceCodeTxt: Label 'CLBALANCE', MaxLength = 10;
-        CloseBalanceSheetSourceCodeDescriptionTxt: Label 'Close Balance Sheet', MaxLength = 100;
     begin
         if not SourceCodeSetup.Get() then
             exit;
@@ -790,12 +792,15 @@ codeunit 11748 "Install Application CZL"
             InsertSourceCode(SourceCodeSetup."Open Balance Sheet CZL", OpenBalanceSheetSourceCodeTxt, OpenBalanceSheetSourceCodeDescriptionTxt);
         if SourceCodeSetup."Close Balance Sheet CZL" = '' then
             InsertSourceCode(SourceCodeSetup."Close Balance Sheet CZL", CloseBalanceSheetSourceCodeTxt, CloseBalanceSheetSourceCodeDescriptionTxt);
+        if SourceCodeSetup."VAT Coeff. Correction CZL" = '' then
+            InsertSourceCode(SourceCodeSetup."VAT Coeff. Correction CZL", VATCoeffCorrectionSourceCodeTxt, VATCoeffCorrectionSourceCodeDescriptionTxt);
 
         if (SourceCodeSetup."Purchase VAT Delay CZL" <> PrevSourceCodeSetup."Purchase VAT Delay CZL") or
            (SourceCodeSetup."Sales VAT Delay CZL" <> PrevSourceCodeSetup."Sales VAT Delay CZL") or
            (SourceCodeSetup."VAT LCY Correction CZL" <> PrevSourceCodeSetup."VAT LCY Correction CZL") or
            (SourceCodeSetup."Open Balance Sheet CZL" <> PrevSourceCodeSetup."Open Balance Sheet CZL") or
-           (SourceCodeSetup."Close Balance Sheet CZL" <> PrevSourceCodeSetup."Close Balance Sheet CZL")
+           (SourceCodeSetup."Close Balance Sheet CZL" <> PrevSourceCodeSetup."Close Balance Sheet CZL") or
+           (SourceCodeSetup."VAT Coeff. Correction CZL" <> PrevSourceCodeSetup."VAT Coeff. Correction CZL")
         then
             SourceCodeSetup.Modify();
     end;
@@ -804,16 +809,6 @@ codeunit 11748 "Install Application CZL"
     var
         SourceCodeSetup: Record "Source Code Setup";
         PrevSourceCodeSetup: Record "Source Code Setup";
-        PurchaseVATDelaySourceCodeTxt: Label 'VATPD', MaxLength = 10;
-        PurchaseVATDelaySourceCodeDescriptionTxt: Label 'Purchase VAT Delay', MaxLength = 100;
-        SalesVATDelaySourceCodeTxt: Label 'VATSD', MaxLength = 10;
-        SalesVATDelaySourceCodeDescriptionTxt: Label 'Sales VAT Delay', MaxLength = 100;
-        VATLCYCorrectionSourceCodeTxt: Label 'VATCORR', MaxLength = 10;
-        VATLCYCorrectionSourceCodeDescriptionTxt: Label 'VAT Correction in LCY', MaxLength = 100;
-        OpenBalanceSheetSourceCodeTxt: Label 'OPBALANCE', MaxLength = 10;
-        OpenBalanceSheetSourceCodeDescriptionTxt: Label 'Open Balance Sheet', MaxLength = 100;
-        CloseBalanceSheetSourceCodeTxt: Label 'CLBALANCE', MaxLength = 10;
-        CloseBalanceSheetSourceCodeDescriptionTxt: Label 'Close Balance Sheet', MaxLength = 100;
     begin
         if not SourceCodeSetup.Get() then begin
             SourceCodeSetup.Init();
@@ -825,12 +820,14 @@ codeunit 11748 "Install Application CZL"
         InsertSourceCode(SourceCodeSetup."VAT LCY Correction CZL", VATLCYCorrectionSourceCodeTxt, VATLCYCorrectionSourceCodeDescriptionTxt);
         InsertSourceCode(SourceCodeSetup."Open Balance Sheet CZL", OpenBalanceSheetSourceCodeTxt, OpenBalanceSheetSourceCodeDescriptionTxt);
         InsertSourceCode(SourceCodeSetup."Close Balance Sheet CZL", CloseBalanceSheetSourceCodeTxt, CloseBalanceSheetSourceCodeDescriptionTxt);
+        InsertSourceCode(SourceCodeSetup."VAT Coeff. Correction CZL", VATCoeffCorrectionSourceCodeTxt, VATCoeffCorrectionSourceCodeDescriptionTxt);
 
         if (SourceCodeSetup."Purchase VAT Delay CZL" <> PrevSourceCodeSetup."Purchase VAT Delay CZL") or
            (SourceCodeSetup."Sales VAT Delay CZL" <> PrevSourceCodeSetup."Sales VAT Delay CZL") or
            (SourceCodeSetup."VAT LCY Correction CZL" <> PrevSourceCodeSetup."VAT LCY Correction CZL") or
            (SourceCodeSetup."Open Balance Sheet CZL" <> PrevSourceCodeSetup."Open Balance Sheet CZL") or
-           (SourceCodeSetup."Close Balance Sheet CZL" <> PrevSourceCodeSetup."Close Balance Sheet CZL")
+           (SourceCodeSetup."Close Balance Sheet CZL" <> PrevSourceCodeSetup."Close Balance Sheet CZL") or
+           (SourceCodeSetup."VAT Coeff. Correction CZL" <> PrevSourceCodeSetup."VAT Coeff. Correction CZL")
         then
             SourceCodeSetup.Modify();
     end;
