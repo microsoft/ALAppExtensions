@@ -56,13 +56,11 @@ page 40066 "Company Migration Status"
                     IntelligentCloudSetup: Record "Intelligent Cloud Setup";
                     HybridCompanyStatus: Record "Hybrid Company Status";
                     MigrationValidation: Codeunit "Migration Validation";
+                    ScheduledEntryNumber: Integer;
                     ForceRun: Boolean;
-                    InitialCompanyName: Text;
                 begin
                     if not IntelligentCloudSetup.Get() then
                         exit;
-
-                    InitialCompanyName := CompanyName();
 
                     ForceRun := Dialog.Confirm(ShouldForceValidateQst, false);
 
@@ -76,13 +74,17 @@ page 40066 "Company Migration Status"
                         exit;
                     end;
 
+                    ScheduledEntryNumber := 1;
                     repeat
-                        ChangeCompany(HybridCompanyStatus.Name);
-                        MigrationValidation.StartValidation(IntelligentCloudSetup."Product ID", ForceRun);
+                        if ForceRun then
+                            MigrationValidation.DeleteMigrationValidationEntriesForCompany(HybridCompanyStatus.Name);
+
+                        MigrationValidation.ScheduleCompanyValidation(HybridCompanyStatus.Name, ScheduledEntryNumber);
+
+                        ScheduledEntryNumber += 1;
                     until HybridCompanyStatus.Next() = 0;
 
-                    ChangeCompany(InitialCompanyName);
-                    Message(ValidationFinishedMsg);
+                    Message(ValidationScheduledMsg);
                 end;
             }
         }
@@ -91,5 +93,5 @@ page 40066 "Company Migration Status"
     var
         ShouldForceValidateQst: Label 'Do you want to force validation on all companies, even if it was previously validated?';
         NoCompaniesToValidateMsg: Label 'No companies need to be validated.';
-        ValidationFinishedMsg: Label 'Validation is finished.';
+        ValidationScheduledMsg: Label 'Validation is scheduled.';
 }

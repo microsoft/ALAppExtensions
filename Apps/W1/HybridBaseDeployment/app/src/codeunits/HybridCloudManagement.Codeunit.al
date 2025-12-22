@@ -2291,7 +2291,7 @@ codeunit 4001 "Hybrid Cloud Management"
         if not IntelligentCloudSetup.Get() then
             exit;
 
-        MigrationValidation.StartValidation(IntelligentCloudSetup."Product ID", false);
+        MigrationValidation.StartValidation(IntelligentCloudSetup."Product ID", true);
 
         MigrationValidationError.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
         MigrationValidationError.SetRange("Company Name", CompanyName());

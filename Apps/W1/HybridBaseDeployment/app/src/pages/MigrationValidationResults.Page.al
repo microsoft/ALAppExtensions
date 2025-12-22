@@ -113,8 +113,11 @@ page 40067 "Migration Validation Results"
                 ToolTip = 'Open the Company Migration Status page.';
 
                 trigger OnAction()
+                var
+                    CompanyMigrationStatus: Page "Company Migration Status";
                 begin
-                    Page.Run(Page::"Company Migration Status");
+                    CompanyMigrationStatus.RunModal();
+                    CurrPage.Update(false);
                 end;
             }
         }

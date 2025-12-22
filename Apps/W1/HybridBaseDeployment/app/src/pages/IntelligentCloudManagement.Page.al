@@ -416,6 +416,22 @@ page 4003 "Intelligent Cloud Management"
                     HybridCloudManagement.ChangeRemovePermissionsFromUsers();
                 end;
             }
+            action(ValidationStatus)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Validation Status';
+                Image = Process;
+                ToolTip = 'View the Company migration status page to manually run validation.';
+                Visible = (NumberOfRegisteredValidators > 0);
+
+                trigger OnAction()
+                var
+                    CompanyMigrationStatus: Page "Company Migration Status";
+                begin
+                    CompanyMigrationStatus.RunModal();
+                    CurrPage.Update(false);
+                end;
+            }
         }
     }
 
@@ -427,6 +443,7 @@ page 4003 "Intelligent Cloud Management"
     trigger OnOpenPage()
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        MigrationValidatorRegistry: Record "Migration Validator Registry";
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
         EnvironmentInformation: Codeunit "Environment Information";
@@ -458,8 +475,12 @@ page 4003 "Intelligent Cloud Management"
         CanShowUpdateReplicationCompanies(UpdateReplicationCompaniesEnabled);
         CanMapCustomTables(CustomTablesEnabled);
 
-        if IntelligentCloudSetup.Get() then
+        if IntelligentCloudSetup.Get() then begin
             HybridDeployment.Initialize(IntelligentCloudSetup."Product ID");
+
+            MigrationValidatorRegistry.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
+            NumberOfRegisteredValidators := MigrationValidatorRegistry.Count();
+        end;
 
         IntelligentCloudNotifier.ShowICUpdateNotification();
         WarnAboutNonInitializedCompanies();
@@ -663,4 +684,5 @@ page 4003 "Intelligent Cloud Management"
         IntelligentCloudNotSetupMsg: Label 'Cloud migration was not set up. To migrate data to the cloud, complete the wizard.';
         RunReplicationConfirmQst: Label 'Are you sure you want to trigger migration?';
         DataRepairNotCompletedMsg: Label 'Data repair has not completed. Before you complete the cloud migration or trigger an upgrade, invoke the ''Repair Companion Table Records'' action';
+        NumberOfRegisteredValidators: Integer;
 }

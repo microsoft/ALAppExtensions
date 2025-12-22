@@ -224,7 +224,8 @@ page 4008 "Intelligent Cloud Stat Factbox"
 
                             MigrationValidationTest.SetFilter("Validator Code", ValidatorFilter);
                             MigrationValidationResults.SetTableView(MigrationValidationTest);
-                            MigrationValidationResults.Run();
+                            MigrationValidationResults.RunModal();
+                            RefreshStats();
                         end;
                     }
                 }
@@ -241,7 +242,7 @@ page 4008 "Intelligent Cloud Stat Factbox"
         }
     }
 
-    trigger OnOpenPage()
+    trigger OnAfterGetRecord()
     begin
         RefreshStats();
     end;
