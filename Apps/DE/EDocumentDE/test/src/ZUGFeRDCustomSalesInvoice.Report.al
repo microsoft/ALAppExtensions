@@ -35,31 +35,23 @@ report 13918 "ZUGFeRD Custom Sales Invoice"
             Type = Word;
         }
     }
-    trigger OnPreReport()
-    var
-        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
-    begin
-        CreateZUGFeRDXML := ExportZUGFeRDDocument.IsZUGFeRDPrintProcess();
-    end;
 
     trigger OnPreRendering(var RenderingPayload: JsonObject)
     begin
-        this.OnRenderingCompleteJson(RenderingPayload);
+        AddXMLAttachmentforZUGFeRDExport(RenderingPayload);
     end;
 
-    local procedure OnRenderingCompleteJson(var RenderingPayload: JsonObject)
+    local procedure AddXMLAttachmentforZUGFeRDExport(var RenderingPayload: JsonObject)
     var
         ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
     begin
-        if CurrReport.TargetFormat <> ReportFormat::PDF then
+        if CurrReport.TargetFormat() <> ReportFormat::PDF then
             exit;
 
-        if not CreateZUGFeRDXML then
+        if not ExportZUGFeRDDocument.IsZUGFeRDPrintProcess() then
             exit;
 
         ExportZUGFeRDDocument.CreateAndAddXMLAttachmentToRenderingPayload(Header, RenderingPayload);
     end;
 
-    var
-        CreateZUGFeRDXML: Boolean;
 }

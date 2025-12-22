@@ -8,26 +8,20 @@ using Microsoft.Sales.History;
 
 reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Memo"
 {
-    trigger OnPreReport()
-    var
-        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
-    begin
-        CreateZUGFeRDXML := ExportZUGFeRDDocument.IsZUGFeRDPrintProcess();
-    end;
 
     trigger OnPreRendering(var RenderingPayload: JsonObject)
     begin
-        this.OnRenderingCompleteJson(RenderingPayload);
+        AddXMLAttachmentforZUGFeRDExport(RenderingPayload);
     end;
 
-    local procedure OnRenderingCompleteJson(var RenderingPayload: JsonObject)
+    local procedure AddXMLAttachmentforZUGFeRDExport(var RenderingPayload: JsonObject)
     var
         ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
     begin
-        if CurrReport.TargetFormat <> ReportFormat::PDF then
+        if CurrReport.TargetFormat() <> ReportFormat::PDF then
             exit;
 
-        if not CreateZUGFeRDXML then
+        if not ExportZUGFeRDDocument.IsZUGFeRDPrintProcess() then
             exit;
 
         ExportZUGFeRDDocument.CreateAndAddXMLAttachmentToRenderingPayload(Header, RenderingPayload);
@@ -42,8 +36,5 @@ reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Me
     end;
 #endif
 #pragma warning restore AS0072
-
-    var
-        CreateZUGFeRDXML: Boolean;
 
 }
