@@ -3,9 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
-using System.Utilities;
+
 using Microsoft.Sales.History;
-using System.IO;
+
 reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
 {
     trigger OnPreReport()
@@ -13,8 +13,6 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
         ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
     begin
         CreateZUGFeRDXML := ExportZUGFeRDDocument.IsZUGFeRDPrintProcess();
-        Clear(PDFDocument);
-        PDFDocument.Initialize();
     end;
 
     trigger OnPreRendering(var RenderingPayload: JsonObject)
@@ -25,40 +23,15 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
     [NonDebuggable]
     local procedure OnRenderingCompleteJson(var RenderingPayload: JsonObject)
     var
-        TempBlob: Codeunit "Temp Blob";
-        XmlInStream: InStream;
-        UserCode: SecretText;
-        AdminCode: SecretText;
-        Name: Text;
-        MimeType: Text;
-        Description: Text;
-        DataType: Enum "PDF Attach. Data Relationship";
+        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
     begin
         if CurrReport.TargetFormat <> ReportFormat::PDF then
             exit;
 
         if not CreateZUGFeRDXML then
             exit;
-        Name := 'factur-x.xml';
-        CreateXmlFile(TempBlob);
-        DataType := "PDF Attach. Data Relationship"::Alternative;
-        MimeType := 'text/xml';
-        Description := 'This is the e-invoicing xml document';
 
-        TempBlob.CreateInStream(XmlInStream, TextEncoding::UTF8);
-        PDFDocument.AddAttachment(Name, DataType, MimeType, XmlInStream, Description, true);
-
-        RenderingPayload := PDFDocument.ToJson(RenderingPayload);
-        PDFDocument.ProtectDocument(UserCode, AdminCode);
-    end;
-
-    local procedure CreateXmlFile(var TempBlob: Codeunit "Temp Blob")
-    var
-        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
-        OutStream: OutStream;
-    begin
-        TempBlob.CreateOutStream(OutStream, TextEncoding::UTF8);
-        ExportZUGFeRDDocument.CreateXML(Header, OutStream);
+        ExportZUGFeRDDocument.CreateAndAddXMLAttachmentToRenderingPayload(Header, RenderingPayload);
     end;
 
 #pragma warning disable AS0072 
@@ -72,6 +45,5 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
 #pragma warning restore AS0072
 
     var
-        PDFDocument: Codeunit "PDF Document";
         CreateZUGFeRDXML: Boolean;
 }
