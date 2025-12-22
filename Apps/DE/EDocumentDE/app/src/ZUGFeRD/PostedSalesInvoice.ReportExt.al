@@ -20,7 +20,6 @@ reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
         this.OnRenderingCompleteJson(RenderingPayload);
     end;
 
-    [NonDebuggable]
     local procedure OnRenderingCompleteJson(var RenderingPayload: JsonObject)
     var
         ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";

@@ -20,7 +20,6 @@ reportextension 13919 "Posted Sales Cr.Memo" extends "Standard Sales - Credit Me
         this.OnRenderingCompleteJson(RenderingPayload);
     end;
 
-    [NonDebuggable]
     local procedure OnRenderingCompleteJson(var RenderingPayload: JsonObject)
     var
         ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
