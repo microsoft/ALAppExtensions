@@ -2280,6 +2280,11 @@ codeunit 4001 "Hybrid Cloud Management"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Migration Mgt.", OnValidateMigration, '', false, false)]
     local procedure StartMigrationValidation(var DataCreationFailed: Boolean)
+    begin
+        StartMigrationValidationImp(DataCreationFailed);
+    end;
+
+    internal procedure StartMigrationValidationImp(var DataCreationFailed: Boolean)
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         MigrationValidationError: Record "Migration Validation Error";

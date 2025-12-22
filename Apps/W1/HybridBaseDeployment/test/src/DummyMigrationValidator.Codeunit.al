@@ -3,46 +3,94 @@ codeunit 139501 "Dummy Migration Validator"
     trigger OnRun()
     begin
         RunCustomerMigrationValidation();
+
+        MigrationValidation.ReportCompanyValidated();
     end;
 
     local procedure RunCustomerMigrationValidation()
     var
         Customer: Record Customer;
-        MigrationValidationMgmt: Codeunit "Migration Validation Mgmt.";
     begin
         // [Customer: Test 1]
 
         // Set the context of this set of tests
-        MigrationValidationMgmt.SetContext(GetValidatorCode(), 'Customer', 'TEST-1');
+        MigrationValidation.SetContext(GetValidatorCode(), 'Customer', 'TEST-1');
 
         // Check for the entity record by the key
-        if not MigrationValidationMgmt.ValidateRecordExists(Customer.Get('TEST-1'), 'Missing TEST-1') then
+        if not MigrationValidation.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get('TEST-1'), 'Missing TEST-1') then
             exit;
 
         // This is a test that is not a warning, and would fail the migration
-        MigrationValidationMgmt.ValidateAreEqual('Test 1', Customer.Name, 'Name');
+        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME_Tok, 'Test 1', Customer.Name, 'Name');
 
         // This is a test that would be just a warning
-        MigrationValidationMgmt.ValidateAreEqual('Test name 2', Customer."Name 2", 'Name 2', true);
+        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
 
         // [Customer: Test 2]
 
         // Set the context of this set of tests
-        MigrationValidationMgmt.SetContext(GetValidatorCode(), 'Customer', 'TEST-2');
+        MigrationValidation.SetContext(GetValidatorCode(), 'Customer', 'TEST-2');
 
         // Check for the entity record by the key
-        if not MigrationValidationMgmt.ValidateRecordExists(Customer.Get('TEST-2'), 'Missing TEST-2') then
+        if not MigrationValidation.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get('TEST-2'), 'Missing TEST-2') then
             exit;
 
         // This is a test that is not a warning, and would fail the migration
-        MigrationValidationMgmt.ValidateAreEqual('Test 2', Customer.Name, 'Name');
+        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME_Tok, 'Test 2', Customer.Name, 'Name');
 
         // This is a test that would be just a warning
-        MigrationValidationMgmt.ValidateAreEqual('Test name 2', Customer."Name 2", 'Name 2', true);
+        MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
     end;
 
     internal procedure GetValidatorCode(): Code[20]
     begin
         exit('TEST');
     end;
+
+    // Normally initialized by this event, but called directly for testing.
+    //[EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", OnPrepareMigrationValidation, '', false, false)]
+    internal procedure OnPrepareMigrationValidation(ProductID: Text[250])
+    begin
+        RegisterValidator(ProductID);
+
+        AddTest(Test_CUSTOMEREXISTS_Tok, 'Customer', 'Missing Customer');
+        AddTest(Test_CUSTOMERNAME_Tok, 'Customer', 'Name');
+        AddTest(Test_CUSTOMERNAME2_Tok, 'Customer', 'Name 2');
+    end;
+
+    local procedure RegisterValidator(ProductID: Text[250])
+    var
+        MigrationValidatorRegistry: Record "Migration Validator Registry";
+        ValidatorCodeunitId: Integer;
+    begin
+        ValidatorCodeunitId := Codeunit::"Dummy Migration Validator";
+        if not MigrationValidatorRegistry.Get(GetValidatorCode()) then begin
+            MigrationValidatorRegistry.Validate("Validator Code", GetValidatorCode());
+            MigrationValidatorRegistry.Validate("Migration Type", ProductID);
+            MigrationValidatorRegistry.Validate(Description, ValidatorDescriptionLbl);
+            MigrationValidatorRegistry.Validate("Codeunit Id", ValidatorCodeunitId);
+            MigrationValidatorRegistry.Validate(Automatic, true);
+            MigrationValidatorRegistry.Insert(true);
+        end;
+    end;
+
+    local procedure AddTest(Code: Code[30]; Entity: Text[50]; Description: Text)
+    var
+        MigrationValidationTest: Record "Migration Validation Test";
+    begin
+        if not MigrationValidationTest.Get(Code, GetValidatorCode()) then begin
+            MigrationValidationTest.Validate(Code, Code);
+            MigrationValidationTest.Validate("Validator Code", GetValidatorCode());
+            MigrationValidationTest.Validate(Entity, Entity);
+            MigrationValidationTest.Validate("Test Description", Description);
+            MigrationValidationTest.Insert(true);
+        end;
+    end;
+
+    var
+        MigrationValidation: Codeunit "Migration Validation";
+        ValidatorDescriptionLbl: Label 'Dummy migration validator', MaxLength = 250;
+        Test_CUSTOMEREXISTS_Tok: Label 'CUSTOMEREXISTS', Locked = true;
+        Test_CUSTOMERNAME_Tok: Label 'CUSTOMERNAME', Locked = true;
+        Test_CUSTOMERNAME2_Tok: Label 'CUSTOMERNAME2', Locked = true;
 }
