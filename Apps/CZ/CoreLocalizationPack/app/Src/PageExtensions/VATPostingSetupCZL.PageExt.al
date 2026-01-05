@@ -50,7 +50,13 @@ pageextension 11756 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             field("VAT LCY Corr. Rounding Acc.CZL"; Rec."VAT LCY Corr. Rounding Acc.CZL")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on documents in foreign currency, eg use an account for document rounding';
+                ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on purchase documents in foreign currency, eg use an account for document rounding';
+                Visible = false;
+            }
+            field("VAT LCY Corr. Rnd. Acc. S. CZL"; Rec."VAT LCY Corr. Rnd. Acc. S. CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on sales documents in foreign currency, eg use an account for document rounding';
                 Visible = false;
             }
             field("VIES Sales CZL"; Rec."VIES Sales CZL")

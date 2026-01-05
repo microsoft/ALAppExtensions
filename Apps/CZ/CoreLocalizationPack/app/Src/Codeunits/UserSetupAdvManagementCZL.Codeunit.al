@@ -420,4 +420,10 @@ codeunit 31072 "User Setup Adv. Management CZL"
         GetUserSetup();
         UserSetup.TestField("Allow VAT Date Changing CZL");
     end;
+
+    procedure CheckOrigDocVATDateChanging()
+    begin
+        GetUserSetup();
+        UserSetup.TestField("Allow Orig Doc VAT Date Ch CZL");
+    end;
 }

@@ -78,6 +78,10 @@ pageextension 31287 "Bank Account Card CZB" extends "Bank Account Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies copying variable symbol of the payment to the external document number field in payment journal.';
                 }
+                field("Keep Description CZB"; Rec."Keep Description CZB")
+                {
+                    ApplicationArea = Basic, Suite;
+                }
                 field("Dimension from Apply Entry CZB"; Rec."Dimension from Apply Entry CZB")
                 {
                     ApplicationArea = Basic, Suite;

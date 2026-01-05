@@ -1048,12 +1048,6 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
                                                   </TextRun>
-                                                  <TextRun>
-                                                    <Value>3333333333333333333333333333333333333</Value>
-                                                    <Style>
-                                                      <FontSize>7pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
                                                 </TextRuns>
                                                 <Style />
                                               </Paragraph>
@@ -1082,12 +1076,6 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
                                                 <TextRuns>
                                                   <TextRun>
                                                     <Value>=Fields!VariableSymbolLbl.Value</Value>
-                                                    <Style>
-                                                      <FontSize>7pt</FontSize>
-                                                    </Style>
-                                                  </TextRun>
-                                                  <TextRun>
-                                                    <Value>3</Value>
                                                     <Style>
                                                       <FontSize>7pt</FontSize>
                                                     </Style>
@@ -2353,7 +2341,6 @@ Cstr(Fields!RegistrationNoLbl.Value)</Value>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DataSet_Result</DataSetName>
-            <Top>0in</Top>
             <Left>0.03cm</Left>
             <Height>14.30505cm</Height>
             <Width>18cm</Width>
