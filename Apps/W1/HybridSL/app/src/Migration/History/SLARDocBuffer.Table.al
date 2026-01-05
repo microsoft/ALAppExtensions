@@ -73,7 +73,7 @@ table 47074 "SL ARDoc Buffer"
         {
             Caption = 'ContractID';
         }
-        field(16; CpnyID; Text[10])
+        field(16; CpnyID; Text[30])
         {
             Caption = 'CpnyID';
         }
