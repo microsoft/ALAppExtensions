@@ -56,5 +56,9 @@ table 41000 "GP GL00105"
         {
             Clustered = true;
         }
+        key(Key2; DEX_ROW_ID)
+        {
+            Clustered = false;
+        }
     }
 }

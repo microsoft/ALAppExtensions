@@ -1,8 +1,11 @@
+#if not CLEAN28
 codeunit 134414 "Service Connection Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
         // [FEATURE] [Document Exchange Service] [Service Connections] [UI]
@@ -116,4 +119,4 @@ codeunit 134414 "Service Connection Test"
         exit(Format(ServiceConnectionsOverviewTestPage.Status) = Format(ServiceConnection.Status));
     end;
 }
-
+#endif

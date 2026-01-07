@@ -183,6 +183,9 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeVATReport();
         UpgradeSetEnableNonDeductibleVATCZ();
         UpgradeUseW1RegistrationNumberFromSalesDoc();
+#if CLEAN28        
+        UpgradeUseVATReturnPeriodInsteadOfVATPeriod();
+#endif
     end;
 
     local procedure UpgradeReplaceVATDateCZL()
@@ -761,8 +764,70 @@ codeunit 31017 "Upgrade Application CZL"
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberFromSalesDocUpgradeTag());
     end;
+#if CLEAN28
 
-    local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10]; ReportID: Integer)
+    local procedure UpgradeUseVATReturnPeriodInsteadOfVATPeriod()
+    var
+        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetUseVATReturnPeriodInsteadOfVATPeriodUpgradeTag()) then
+            exit;
+
+        if VATPeriodCZL.FindSet() then
+            repeat
+                VATReturnPeriod.SetRange("Start Date", VATPeriodCZL."Starting Date");
+                if not VATReturnPeriod.FindLast() then begin
+                    VATReturnPeriod.Init();
+                    VATReturnPeriod."No." := BuildVATReturnPeriodNo(VATPeriodCZL."Starting Date");
+                    VATReturnPeriod."Start Date" := VATPeriodCZL."Starting Date";
+                    VATReturnPeriod."End Date" := CalcEndDate(VATPeriodCZL);
+                    VATReturnPeriod."Due Date" := CalcDueDate(VATReturnPeriod."End Date");
+                    if VATReturnPeriod.Insert(true) then;
+                end;
+                if VATPeriodCZL.Closed then begin
+                    VATReturnPeriod.Status := VATReturnPeriod.Status::Closed;
+                    VATReturnPeriod.Modify();
+                end;
+            until VATPeriodCZL.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseVATReturnPeriodInsteadOfVATPeriodUpgradeTag());
+    end;
+
+    local procedure BuildVATReturnPeriodNo(StartDate: Date): Code[20]
+    begin
+        exit(Format(StartDate, 0, '.<Year><Month,2><Day,2>'));
+    end;
+
+    local procedure CalcEndDate(VATPeriodCZL: Record "VAT Period CZL"): Date
+    var
+        StartingDate: Date;
+    begin
+        if VATPeriodCZL.Next() > 0 then
+            exit(VATPeriodCZL."Starting Date" - 1);
+        StartingDate := VATPeriodCZL."Starting Date";
+        if VATPeriodCZL.Next(-1) < 0 then
+            case StartingDate of
+                CalcDate('<+1M>', VATPeriodCZL."Starting Date"):
+                    exit(CalcDate('<CM>', StartingDate));
+                CalcDate('<+1Q>', VATPeriodCZL."Starting Date"):
+                    exit(CalcDate('<CQ>', StartingDate));
+                else
+                    exit(StartingDate + (StartingDate - VATPeriodCZL."Starting Date") - 1);
+            end;
+        exit(0D);
+    end;
+
+    local procedure CalcDueDate(EndDate: Date): Date
+    begin
+        if EndDate = 0D then
+            exit(0D);
+        exit(CalcDate('<+25D>', EndDate));
+    end;
+#endif
+
+    local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10];
+                                                        ReportID: Integer)
     var
         ReportSelections: Record "Report Selections";
     begin

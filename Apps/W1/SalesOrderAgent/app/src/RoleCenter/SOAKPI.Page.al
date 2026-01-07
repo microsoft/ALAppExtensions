@@ -14,7 +14,7 @@ page 4402 "SOA KPI"
 {
     PageType = CardPart;
     ApplicationArea = All;
-    SourceTable = Agent;
+    SourceTable = "SOA KPI";
     Permissions = tabledata "General Ledger Setup" = R;
     Caption = 'Sales Order Agent';
     InherentEntitlements = X;
@@ -27,13 +27,13 @@ page 4402 "SOA KPI"
             cuegroup(Summary)
             {
                 ShowCaption = false;
-                field(ReceivedEmails; SOAgentKPI."Received Emails")
+                field(ReceivedEmails; Rec."Received Emails")
                 {
                     ApplicationArea = All;
                     Caption = 'Received emails';
                     ToolTip = 'Specifies the total number of emails that the agent has received.';
                 }
-                field(Quotes; SOAgentKPI."Total Quotes Created")
+                field(Quotes; Rec."Total Quotes Created")
                 {
                     ApplicationArea = All;
                     Caption = 'Quotes created';
@@ -48,7 +48,7 @@ page 4402 "SOA KPI"
                         Page.Run(Page::"SOA KPI Entries", SOAKPIEntry);
                     end;
                 }
-                field(Orders; SOAgentKPI."Total Orders Created")
+                field(Orders; Rec."Total Orders Created")
                 {
                     ApplicationArea = All;
                     Caption = 'Orders created';
@@ -92,6 +92,12 @@ page 4402 "SOA KPI"
         }
     }
 
+    trigger OnOpenPage()
+    begin
+        Rec.GetSafe();
+        VerifyUserHasAccessToAgent();
+    end;
+
     trigger OnAfterGetCurrRecord()
     begin
         CalculateTotals();
@@ -100,9 +106,8 @@ page 4402 "SOA KPI"
     local procedure CalculateTotals()
     begin
         VerifyUserHasAccessToAgent();
-        SOAgentKPI.GetSafe();
-        SOAgentKPI.UpdateEmailKPIs(Rec."User Security ID");
-        GetAmount(SOAgentKPI."Total Amount Orders", TotalAmountOrders, TotalAmountOrdersFormat);
+        Rec.UpdateEmailKPIs(Rec."User Security ID");
+        GetAmount(Rec."Total Amount Orders", TotalAmountOrders, TotalAmountOrdersFormat);
         TimeSavedEmails := GetTimeSavedEmails(EmailTimeAutoFormatExpression);
         TimeSavedQuotes := GetTimeSavedQuotes(QuoteTimeAutoFormatExpression);
     end;
@@ -184,12 +189,12 @@ page 4402 "SOA KPI"
 
     local procedure GetTimeSavedEmails(var ControlAutoFormatExpression: Text): Decimal
     begin
-        exit(ConvertDurationToText(SOAgentKPI."Total Emails" * 3, ControlAutoFormatExpression)); // Estimate is - 3 minutes per email
+        exit(ConvertDurationToText(Rec."Total Emails" * 3, ControlAutoFormatExpression)); // Estimate is - 3 minutes per email
     end;
 
     local procedure GetTimeSavedQuotes(var ControlAutoFormatExpression: Text): Decimal
     begin
-        exit(ConvertDurationToText(SOAgentKPI."Total Quotes Created" * 6, ControlAutoFormatExpression)); // Estimate is - 6 minutes per quote
+        exit(ConvertDurationToText(Rec."Total Quotes Created" * 6, ControlAutoFormatExpression)); // Estimate is - 6 minutes per quote
     end;
 
     local procedure ConvertDurationToText(MinutesSaved: Integer; var ControlAutoFormatExpression: Text): Decimal
@@ -233,7 +238,6 @@ page 4402 "SOA KPI"
     end;
 
     var
-        SOAgentKPI: Record "SOA KPI";
         TimeSavedEmails: Decimal;
         TimeSavedQuotes: Decimal;
         EmailTimeAutoFormatExpression: Text;

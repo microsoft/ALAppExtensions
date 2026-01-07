@@ -10,7 +10,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
     end;
 
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         FromVATPostingSetup: Record "VAT Posting Setup";
         ToVATPostingSetup: Record "VAT Posting Setup";
         LibraryERM: Codeunit "Library - ERM";
@@ -39,10 +39,14 @@ codeunit 148066 "VAT Exchange Rate CZL"
         LibraryERM.CreateExchangeRate('EUR', WorkDate(), 25.00, 25.00);
         LibraryERM.CreateExchangeRate('EUR', CalcDate('<+1D>', WorkDate()), 25.50, 25.50);
 
-        if not VATPeriodCZL.Get(WorkDate()) then begin
-            VATPeriodCZL.Init();
-            VATPeriodCZL."Starting Date" := WorkDate();
-            VATPeriodCZL.Insert();
+        VATReturnPeriod.SetCurrentKey("Start Date");
+        VATReturnPeriod.SetRange("Start Date", WorkDate());
+        if not VATReturnPeriod.FindLast() then begin
+            VATReturnPeriod.Init();
+            VATReturnPeriod."No." := BuildVATReturnPeriodNo(WorkDate());
+            VATReturnPeriod."Start Date" := WorkDate();
+            VATReturnPeriod."End Date" := CalcDate('<CM>', WorkDate());
+            VATReturnPeriod.Insert();
         end;
 
         isInitialized := true;
@@ -392,6 +396,11 @@ codeunit 148066 "VAT Exchange Rate CZL"
         ToVATPostingSetup.Find();
         ToVATPostingSetup.Testfield("Sales VAT Curr. Exch. Acc CZL", FromVATPostingSetup."Sales VAT Curr. Exch. Acc CZL");
         ToVATPostingSetup.Testfield("Purch. VAT Curr. Exch. Acc CZL", FromVATPostingSetup."Purch. VAT Curr. Exch. Acc CZL");
+    end;
+
+    local procedure BuildVATReturnPeriodNo(StartDate: Date): Code[20]
+    begin
+        exit(Format(StartDate, 0, '.<Year><Month,2><Day,2>'));
     end;
 
     [ConfirmHandler]

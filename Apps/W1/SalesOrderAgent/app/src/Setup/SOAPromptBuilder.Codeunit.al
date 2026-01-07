@@ -7,6 +7,9 @@ namespace Microsoft.Agent.SalesOrderAgent;
 
 codeunit 4002 "SOA Prompt Builder"
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     internal procedure PrepareInstructions(var InstructionsSecret: SecretText; var SOASetup: Record "SOA Setup")
     var
         SOAInstructions: Codeunit "SOA Instructions";

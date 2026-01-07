@@ -7,7 +7,7 @@ namespace Microsoft.Finance.VAT.Setup;
 using Microsoft.Purchases.History;
 using Microsoft.Sales.History;
 
-permissionset 10580 "Reports GB - Objects"
+permissionset 10595 "Reports GB - Objects"
 {
     Access = Internal;
     Assignable = false;

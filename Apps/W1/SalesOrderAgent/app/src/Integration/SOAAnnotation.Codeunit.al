@@ -7,6 +7,7 @@ namespace Microsoft.Agent.SalesOrderAgent;
 using System.Agents;
 using System.Azure.KeyVault;
 using System.AI;
+using System.Telemetry;
 
 codeunit 4399 "SOA Annotation"
 {
@@ -17,22 +18,24 @@ codeunit 4399 "SOA Annotation"
 
     var
         SOAImpl: Codeunit "SOA Impl";
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         AnnotationProcessingLimitReachedCodeLbl: Label 'DAILYLIMITREACHED', Locked = true, MaxLength = 20;
         AnnotationAccessTokenCodeLbl: Label '1251', Locked = true;
         AnnotationAgentTaskFailureCodeLbl: Label '1252', Locked = true;
-        AnnotationTooManyEntriesCodeLbl: Label '1253', Locked = true;
+        AnnotationAgentTaskSendRepliesFailureCodeLbl: Label 'SENDREPLYFAIL', MaxLength = 20, Locked = true;
         AnnotationIrrelevantCodeLbl: Label '1254', Locked = true;
         AnnotationAccessTokenLbl: Label 'The agent can''t currently access the selected mailbox because the mailbox access token is missing. Please reactivate the agent after signing in to Business Central again.';
         AnnotationProcessingLimitReachedLbl: Label 'You have reached today''s limit of %1 tasks. You can update this limit in the agent settings or return tomorrow to continue.', Comment = '%1 = Process Limit';
         AnnotationAgentTaskFailureLbl: Label 'The agent can''t currently access the selected mailbox.';
-        AnnotationIrrelevantLbl: Label 'Note that this incoming message appears not to be relevant for %1', Comment = '%1 = Agent Name';
+        AnnotationAgentTaskSendRepliesFailureLbl: Label 'The agent can''t currently send email replies from the selected mailbox. Please ensure the mailbox has the proper ''send as'' permissions in the Exchange admin portal.';
+        AnnotationIrrelevantLbl: Label 'All or parts of this message may not be relevant for %1', Comment = '%1 = Agent Name';
 
     internal procedure GetAgentAnnotations(AgentUserId: Guid; var Annotations: Record "Agent Annotation")
     var
         SOASetup: Record "SOA Setup";
-        SOABilling: Codeunit "SOA Billing";
     begin
-        SOASetup.SetRange("Agent User Security ID", AgentUserId);
+        SOASetup.SetRange("User Security ID", AgentUserId);
         if not SOASetup.FindFirst() then
             exit;
 
@@ -48,10 +51,10 @@ codeunit 4399 "SOA Annotation"
             AddAccessTokenAnnotation(Annotations)
         else
             if ShouldAddAgentTaskFailureAnnotation() then
-                AddAgentTaskFailureAnnotation(Annotations);
-
-        if SOABilling.TooManyUnpaidEntries() then
-            AddUnpaidEntriesAnnotation(Annotations);
+                AddAgentTaskFailureAnnotation(Annotations)
+            else
+                if ShouldAddAgentTaskSendRepliesFailureAnnotation() then
+                    AddAgentTaskSendRepliesFailureAnnotation(Annotations);
     end;
 
     local procedure ShouldAddOverProcessLimitAnnotation(var SOASetup: Record "SOA Setup"): Boolean
@@ -67,19 +70,18 @@ codeunit 4399 "SOA Annotation"
 
     local procedure AddOverProcessLimitAnnotation(var Annotations: Record "Agent Annotation"; var SOASetup: Record "SOA Setup")
     var
-        CustomDimensions: Dictionary of [Text, Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         Clear(Annotations);
         Annotations.Code := AnnotationProcessingLimitReachedCodeLbl;
         Annotations.Message := StrSubstNo(AnnotationProcessingLimitReachedLbl, SOASetup."Message Limit");
         Annotations.Severity := Annotations.Severity::Warning;
 
-        CustomDimensions := SOAImpl.GetCustomDimensions();
-        CustomDimensions.Add('Limit', Format(SOASetup."Message Limit"));
+        TelemetryDimensions.Add('Limit', Format(SOASetup."Message Limit"));
         if Annotations.Insert() then
-            Session.LogMessage('0000PZ6', 'Daily message limit reached.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions)
+            FeatureTelemetry.LogUsage('0000PZ6', SOASetupCU.GetFeatureName(), 'Daily message limit reached.', TelemetryDimensions)
         else
-            Session.LogMessage('0000PZ7', 'Failed to insert annotation for daily message limit reached.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000PZ7', SOASetupCU.GetFeatureName(), 'Daily message limit reached.', 'Failed to insert annotation for daily message limit reached.', GetLastErrorCallStack(), TelemetryDimensions);
     end;
 
     local procedure ShouldAddAccessTokenAnnotation(): Boolean
@@ -114,8 +116,8 @@ codeunit 4399 "SOA Annotation"
     local procedure ShouldAddAgentTaskFailureAnnotation(): Boolean
     var
         SOATask: Record "SOA Task";
-        Failures: Integer;
         Counter: Integer;
+        Failures: Integer;
     begin
 #pragma warning disable AA0233
         if SOATask.FindLast() then;
@@ -128,36 +130,55 @@ codeunit 4399 "SOA Annotation"
         until (SOATask.Next(-1) = 0) or (Counter >= GetFailedTaskLimit());
 #pragma warning restore AA0181
 
-        if Counter < GetFailedTaskLimit() then
-            exit(false);
-
         exit(Failures >= GetFailedTaskLimit());
     end;
 
     local procedure AddAgentTaskFailureAnnotation(var Annotations: Record "Agent Annotation")
+    var
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         Clear(Annotations);
         Annotations.Code := AnnotationAgentTaskFailureCodeLbl;
         Annotations.Message := AnnotationAgentTaskFailureLbl;
         Annotations.Severity := Annotations.Severity::Warning;
         if Annotations.Insert() then
-            Session.LogMessage('0000PQ8', 'Agent task failure detected.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions())
+            FeatureTelemetry.LogUsage('0000PQ8', SOASetupCU.GetFeatureName(), 'Agent task failure detected.', TelemetryDimensions)
         else
-            Session.LogMessage('0000PQ9', 'Failed to insert annotation for agent task failure.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogError('0000PQ9', SOASetupCU.GetFeatureName(), 'Agent task failure detected.', 'Failed to insert annotation for agent task failure.', GetLastErrorCallStack(), TelemetryDimensions);
     end;
 
-    local procedure AddUnpaidEntriesAnnotation(var Annotations: Record "Agent Annotation")
+    local procedure ShouldAddAgentTaskSendRepliesFailureAnnotation(): Boolean
     var
-        SOABilling: Codeunit "SOA Billing";
+        SOATask: Record "SOA Task";
+        Counter: Integer;
+        Failures: Integer;
+    begin
+#pragma warning disable AA0233
+        if SOATask.FindLast() then;
+#pragma warning restore AA0233
+        repeat
+            Counter += 1;
+            if (SOATask.Status = SOATask.Status::Succeeded) and not SOATask."Send Replies Successful" then
+                Failures += 1;
+#pragma warning disable AA0181
+        until (SOATask.Next(-1) = 0) or (Counter >= GetFailedTaskLimit());
+#pragma warning restore AA0181
+
+        exit(Failures >= GetFailedTaskLimit());
+    end;
+
+    local procedure AddAgentTaskSendRepliesFailureAnnotation(var Annotations: Record "Agent Annotation")
+    var
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         Clear(Annotations);
-        Annotations.Code := AnnotationTooManyEntriesCodeLbl;
-        Annotations.Message := CopyStr(SOABilling.GetTooManyUnpaidEntriesMessage(), 1, MaxStrLen(Annotations.Message));
-        Annotations.Severity := Annotations.Severity::Error;
+        Annotations.Code := AnnotationAgentTaskSendRepliesFailureCodeLbl;
+        Annotations.Message := AnnotationAgentTaskSendRepliesFailureLbl;
+        Annotations.Severity := Annotations.Severity::Warning;
         if Annotations.Insert() then
-            Session.LogMessage('0000PQA', 'Too many unpaid entries detected for agent.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions())
+            FeatureTelemetry.LogUsage('0000QG5', SOASetupCU.GetFeatureName(), 'Agent send replies failure detected.', TelemetryDimensions)
         else
-            Session.LogMessage('0000PQB', 'Failed to insert annotation for too many unpaid entries.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogError('0000QG4', SOASetupCU.GetFeatureName(), 'Agent send replies failure detected.', 'Failed to insert annotation for agent send replies failure.', GetLastErrorCallStack(), TelemetryDimensions);
     end;
 
     local procedure GetFailedTaskLimit(): Integer
@@ -169,13 +190,12 @@ codeunit 4399 "SOA Annotation"
     var
         Agent: Codeunit Agent;
         IrrelevanceReason: Text;
-        CustomDimensions: Dictionary of [Text, Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if CheckReleavanceOfAgentTaskMessage(AgentTaskMessage, IrrelevanceReason) then
             exit; // Message is relevant, no annotation needed
 
-        CustomDimensions := SOAImpl.GetCustomDimensions();
-        CustomDimensions.Add('taskid', Format(AgentTaskMessage."Task ID"));
+        TelemetryDimensions.Add('TaskId', Format(AgentTaskMessage."Task ID"));
 
         Clear(Annotations);
         Annotations.Code := AnnotationIrrelevantCodeLbl;
@@ -183,9 +203,9 @@ codeunit 4399 "SOA Annotation"
         Annotations.Details := CopyStr(IrrelevanceReason, 1, MaxStrLen(Annotations.Details));
         Annotations.Severity := Annotations.Severity::Warning;
         if Annotations.Insert() then
-            Session.LogMessage('0000PPH', 'Irrelevant message detected for agent.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions)
+            FeatureTelemetry.LogUsage('0000PPH', SOASetupCU.GetFeatureName(), 'Irrelevant message detected for agent.', TelemetryDimensions)
         else
-            Session.LogMessage('0000PQC', 'Failed to insert annotation for irrelevant message.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000PQC', SOASetupCU.GetFeatureName(), 'Irrelevant message detected for agent.', 'Failed to insert annotation for irrelevant message.', GetLastErrorCallStack(), TelemetryDimensions);
     end;
 
     local procedure CheckReleavanceOfAgentTaskMessage(var AgentTaskMessage: Record "Agent Task Message"; var IrrelevanceReason: Text): Boolean
@@ -193,7 +213,7 @@ codeunit 4399 "SOA Annotation"
         IsMessageRelevant: Boolean;
         IsAttachmentRelevant: Boolean;
     begin
-        IsMessageRelevant := CheckIfMessageRelevant(AgentTaskMessage."Task ID", IrrelevanceReason);
+        IsMessageRelevant := CheckIfMessageRelevant(AgentTaskMessage, IrrelevanceReason);
         IsAttachmentRelevant := CheckIfAttachmentRelevant(AgentTaskMessage);
 
         //If the message is deemed irrelevant, but at least one attachment is relevant, then the message should be considered relevant.
@@ -206,12 +226,14 @@ codeunit 4399 "SOA Annotation"
     internal procedure CheckIfAttachmentRelevant(var AgentTaskMessage: Record "Agent Task Message"): Boolean
     var
         AgentTaskMessageAttachment: Record "Agent Task Message Attachment";
+        SOABilling: Codeunit "SOA Billing";
         IrrelevanceReason: Text;
         IsAttachmentRelevant: Boolean;
     begin
         AgentTaskMessageAttachment.ReadIsolation(IsolationLevel::ReadCommitted);
         AgentTaskMessageAttachment.SetRange("Task ID", AgentTaskMessage."Task ID");
         AgentTaskMessageAttachment.SetRange("Message ID", AgentTaskMessage.ID);
+        AgentTaskMessageAttachment.SetRange(Ignored, false);
         if not AgentTaskMessageAttachment.FindSet() then
             exit(false);
 
@@ -220,9 +242,12 @@ codeunit 4399 "SOA Annotation"
             if not CheckIfAttachmentRelevant(AgentTaskMessage, AgentTaskMessageAttachment, IrrelevanceReason) then begin
                 AgentTaskMessageAttachment.Ignored := true;
                 AgentTaskMessageAttachment.Modify();
+                SOABilling.LogIrrelevantAttachment(AgentTaskMessageAttachment.SystemId, AgentTaskMessage."Task ID", AgentTaskMessage.ID, AgentTaskMessageAttachment."File ID");
             end
-            else
+            else begin
                 IsAttachmentRelevant := true;
+                SOABilling.LogRelevantAttachment(AgentTaskMessageAttachment.SystemId, AgentTaskMessage."Task ID", AgentTaskMessage.ID, AgentTaskMessageAttachment."File ID");
+            end;
         until AgentTaskMessageAttachment.Next() = 0;
         Commit();
         exit(IsAttachmentRelevant);
@@ -240,18 +265,18 @@ codeunit 4399 "SOA Annotation"
         AgentTaskMessageTxt: Text;
         AgentAttachmentTxt: Text;
         InStream: InStream;
-        CustomDimensions: Dictionary of [Text, Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
         IrrelevantValidationErr: Label 'SOA attachment irrelevant validation failed. Status: %1, Error: %2', Comment = '%1 = Status Code, %2 = Error', Locked = true;
         AttachmentUserMessageTxt: Label '<message>%1</message> <attachment>%2</attachment>', Locked = true;
     begin
         AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
 
-        CustomDimensions := SOAImpl.GetCustomDimensions();
-        CustomDimensions.Add('taskid', Format(AgentTaskMessageAttachment."Task ID"));
-        CustomDimensions.Add('messageid', Format(AgentTaskMessageAttachment."Message ID"));
+        TelemetryDimensions.Add('TaskId', Format(AgentTaskMessageAttachment."Task ID"));
+        TelemetryDimensions.Add('MessageId', Format(AgentTaskMessageAttachment."Message ID"));
+        TelemetryDimensions.Add('AgentUserSecurityId', Format(AgentTaskMessage."Agent User Security ID"));
 
         if not GetIrrelevantAttachmentPrompt(Prompt) then begin
-            Session.LogMessage('0000Q7L', 'Unable to retrieve SOA Irrelevant Prompt from Azure Key Vault.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000Q7L', SOASetupCU.GetFeatureName(), 'Retrieve SOA Irrelevant Prompt', 'Unable to retrieve SOA Irrelevant Prompt from Azure Key Vault.', GetLastErrorCallStack(), TelemetryDimensions);
             exit(false);
         end;
 
@@ -272,7 +297,7 @@ codeunit 4399 "SOA Annotation"
         InStream.Read(AgentAttachmentTxt);
 
         if AgentAttachmentTxt = '' then begin
-            Session.LogMessage('0000Q7M', 'No attachment content found for the task.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogUsage('0000Q7M', SOASetupCU.GetFeatureName(), 'No attachment content found for the task.', TelemetryDimensions);
             exit(false);
         end;
 
@@ -280,26 +305,26 @@ codeunit 4399 "SOA Annotation"
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
 
         if not AOAIOperationResponse.IsSuccess() then begin
-            Session.LogMessage('0000Q7N', StrSubstNo(IrrelevantValidationErr, AOAIOperationResponse.GetStatusCode(), AOAIOperationResponse.GetError()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000Q7N', SOASetupCU.GetFeatureName(), 'Retrieve SOA Attachment Validation', StrSubstNo(IrrelevantValidationErr, AOAIOperationResponse.GetStatusCode(), AOAIOperationResponse.GetError()), GetLastErrorCallStack(), TelemetryDimensions);
             exit(false);
         end;
 
         if not AOAIOperationResponse.IsFunctionCall() then begin
-            Session.LogMessage('0000Q7O', 'SOA attachment irrelevant validation: response did not contain a function call.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000Q7O', SOASetupCU.GetFeatureName(), 'SOA attachment irrelevant validation', 'Response did not contain a function call.', GetLastErrorCallStack(), TelemetryDimensions);
             exit(false);
         end;
 
         if not SOAValidationFunc.IsIrrelevant() then begin
-            Session.LogMessage('0000Q7P', 'SOA attachment determined as relevant.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogUsage('0000Q7P', SOASetupCU.GetFeatureName(), 'SOA attachment determined as relevant.', TelemetryDimensions);
             exit(true);
         end;
 
-        Session.LogMessage('0000Q7Q', 'SOA attachment determined as irrelevant.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+        FeatureTelemetry.LogUsage('0000Q7Q', SOASetupCU.GetFeatureName(), 'SOA attachment determined as irrelevant.', TelemetryDimensions);
         IrrelevanceReason := SOAValidationFunc.GetIrrelevantReason();
         exit(false);
     end;
 
-    local procedure CheckIfMessageRelevant(TaskId: BigInteger; var IrrelevanceReason: Text): Boolean
+    local procedure CheckIfMessageRelevant(AgentTaskMessage: Record "Agent Task Message"; var IrrelevanceReason: Text): Boolean
     var
         AgentTaskMessages: Record "Agent Task Message";
         AzureOpenAI: Codeunit "Azure OpenAI";
@@ -309,18 +334,18 @@ codeunit 4399 "SOA Annotation"
         AOAIOperationResponse: Codeunit "AOAI Operation Response";
         SOAValidationFunc: Codeunit "SOA Validation Function";
         Prompt: SecretText;
-        AgentTaskMessage: Text;
+        AgentTaskMessageTxt: Text;
         InStream: InStream;
-        CustomDimensions: Dictionary of [Text, Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
         IrrelevantValidationErr: Label 'SOA irrelevant validation failed. Status: %1, Error: %2', Comment = '%1 = Status Code, %2 = Error', Locked = true;
     begin
         AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
 
-        CustomDimensions := SOAImpl.GetCustomDimensions();
-        CustomDimensions.Add('taskid', Format(TaskId));
+        TelemetryDimensions.Add('TaskId', Format(AgentTaskMessage."Task ID"));
+        TelemetryDimensions.Add('AgentUserSecurityId', Format(AgentTaskMessage."Agent User Security ID"));
 
         if not GetIrrelevantMessagePrompt(Prompt) then begin
-            Session.LogMessage('0000PPC', 'Unable to retrieve SOA Irrelevant Prompt from Azure Key Vault.', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000PPC', SOASetupCU.GetFeatureName(), 'Retrieve SOA Irrelevant Prompt', 'Unable to retrieve SOA Irrelevant Prompt from Azure Key Vault.', GetLastErrorCallStack(), TelemetryDimensions);
             exit(true);
         end;
 
@@ -334,38 +359,38 @@ codeunit 4399 "SOA Annotation"
 
         AgentTaskMessages.ReadIsolation(IsolationLevel::ReadUncommitted);
         AgentTaskMessages.SetAutoCalcFields(Content);
-        AgentTaskMessages.SetRange("Task ID", TaskId);
+        AgentTaskMessages.SetRange("Task ID", AgentTaskMessage."Task ID");
 
         AgentTaskMessages.SetAscending(ID, true);
         if AgentTaskMessages.FindSet() then
             repeat
                 AgentTaskMessages.Content.CreateInStream(InStream, TextEncoding::UTF8);
-                InStream.Read(AgentTaskMessage);
+                InStream.Read(AgentTaskMessageTxt);
                 if AgentTaskMessages.Type = AgentTaskMessages.Type::Input then
-                    AOAIChatMessages.AddUserMessage(AgentTaskMessage)
+                    AOAIChatMessages.AddUserMessage(AgentTaskMessageTxt)
                 else
                     if AgentTaskMessages.Type = AgentTaskMessages.Type::Output then
-                        AOAIChatMessages.AddAssistantMessage(AgentTaskMessage);
+                        AOAIChatMessages.AddAssistantMessage(AgentTaskMessageTxt);
             until AgentTaskMessages.Next() = 0
         else begin
-            Session.LogMessage('0000PPD', 'No messages found for the task.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogUsage('0000PPD', SOASetupCU.GetFeatureName(), 'No messages found for the task.', TelemetryDimensions);
             exit(true);
         end;
 
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
 
         if not AOAIOperationResponse.IsSuccess() then begin
-            Session.LogMessage('0000PPE', StrSubstNo(IrrelevantValidationErr, AOAIOperationResponse.GetStatusCode(), AOAIOperationResponse.GetError()), Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000PPE', SOASetupCU.GetFeatureName(), 'AOAIOperationResponse', StrSubstNo(IrrelevantValidationErr, AOAIOperationResponse.GetStatusCode(), AOAIOperationResponse.GetError()), GetLastErrorCallStack(), TelemetryDimensions);
             exit(true);
         end;
 
         if not AOAIOperationResponse.IsFunctionCall() then begin
-            Session.LogMessage('0000PPF', 'SOA irrelevant validation: response did not contain a function call.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogError('0000PPF', SOASetupCU.GetFeatureName(), 'AOAIOperationResponse IsFunctionCall', 'SOA irrelevant validation: response did not contain a function call.', GetLastErrorCallStack(), TelemetryDimensions);
             exit(true);
         end;
 
         if not SOAValidationFunc.IsIrrelevant() then begin
-            Session.LogMessage('0000PPG', 'SOA message determined as relevant.', Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            FeatureTelemetry.LogUsage('0000PPG', SOASetupCU.GetFeatureName(), 'SOA message determined as relevant.', TelemetryDimensions);
             exit(true);
         end;
 

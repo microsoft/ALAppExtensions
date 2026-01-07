@@ -28,16 +28,10 @@ codeunit 31215 "Contoso CZ Localization"
         case Module of
             Enum::"Contoso Demo Data Module"::Finance:
                 FinanceModuleBefore(ContosoDemoDataLevel);
-            Enum::"Contoso Demo Data Module"::Inventory:
-                InventoryModuleBefore(ContosoDemoDataLevel);
-            Enum::"Contoso Demo Data Module"::"Common Module":
-                CommonModuleBefore(ContosoDemoDataLevel);
             Enum::"Contoso Demo Data Module"::Bank:
                 BankModuleBefore(ContosoDemoDataLevel);
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 FixedAssetModuleBefore(ContosoDemoDataLevel);
-            Enum::"Contoso Demo Data Module"::"Manufacturing Module":
-                ManufacturingModuleBefore(ContosoDemoDataLevel);
         end;
     end;
 
@@ -59,12 +53,8 @@ codeunit 31215 "Contoso CZ Localization"
                 SalesModule(ContosoDemoDataLevel);
             Enum::"Contoso Demo Data Module"::"Fixed Asset Module":
                 FixedAssetModule(ContosoDemoDataLevel);
-            Enum::"Contoso Demo Data Module"::"Common Module":
-                CommonModule(ContosoDemoDataLevel);
             Enum::"Contoso Demo Data Module"::"Human Resources Module":
                 HumanResourcesModule(ContosoDemoDataLevel);
-            Enum::"Contoso Demo Data Module"::"Manufacturing Module":
-                ManufacturingModule(ContosoDemoDataLevel);
         end;
 
         UnbindSubscriptions(Module, ContosoDemoDataLevel);
@@ -94,21 +84,20 @@ codeunit 31215 "Contoso CZ Localization"
 
     local procedure FinanceModuleBefore(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateCZGLAccounts: Codeunit "Create CZ GL Accounts";
         CreateNoSeriesCZ: Codeunit "Create No. Series CZ";
-        CreateVatPostingGroupsCZ: Codeunit "Create Vat Posting Groups CZ";
     begin
         BindSubscription(CreateCZGLAccounts); // due to g/l account categories
 
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
+                    FinanceModuleSetup.InitRecord();
                     Codeunit.Run(Codeunit::"Create VAT Posting Groups CZ");
                     Codeunit.Run(Codeunit::"Create Posting Groups CZ");
                     CreateNoSeriesCZ.CreateDummyNoSeries();
                 end;
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                CreateVatPostingGroupsCZ.CreateDummyVATProductPostingGroup();
         end;
     end;
 
@@ -131,7 +120,6 @@ codeunit 31215 "Contoso CZ Localization"
                     CreatePostingGroupsCZ.InsertGenPostingSetupWithoutGLAccounts();
                     Codeunit.Run(Codeunit::"Create G/L Account CZ");
                     CreateVatPostingGroupsCZ.UpdateVATPostingSetup();
-                    CreateVatPostingGroupsCZ.DeleteVATProductPostingGroups();
                     CreateVatPostingGroupsCZ.DeleteVATClauses();
                     CreatePostingGroupsCZ.UpdateGenPostingSetup();
                     CreatePostingGroupsCZ.DeleteGenProductPostingGroups();
@@ -147,32 +135,24 @@ codeunit 31215 "Contoso CZ Localization"
                     Codeunit.Run(Codeunit::"Create Column Layout CZ");
                     Codeunit.Run(Codeunit::"Create Financial Report CZ");
                     CreateNoSeriesCZ.DeleteNoSeries();
+                    CreateVatPostingGroupsCZ.DeleteVATProductPostingGroups();
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
+#if not CLEAN28
+#pragma warning disable AL0432
                     Codeunit.Run(Codeunit::"Create VAT Period CZ");
+#pragma warning restore AL0432
+#endif
                     Codeunit.Run(Codeunit::"Create VAT Return Period CZ");
                     CreateStatRepSetupCZ.CreateFinanceStatutoryReportingSetup();
-                    CreateVatPostingGroupsCZ.DeleteVATProductPostingGroups();
                     Codeunit.Run(Codeunit::"Create Currency Ex. Rate CZ");
                     CreateCurrencyExRateCZ.DeleteLocalCurrencyExchangeRate();
                 end;
         end;
     end;
 
-    local procedure InventoryModuleBefore(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateVatPostingGroupsCZ: Codeunit "Create Vat Posting Groups CZ";
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                CreateVatPostingGroupsCZ.CreateDummyVATProductPostingGroup();
-        end;
-    end;
-
     local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateVatPostingGroupsCZ: Codeunit "Create Vat Posting Groups CZ";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
@@ -182,10 +162,7 @@ codeunit 31215 "Contoso CZ Localization"
                     Codeunit.Run(Codeunit::"Create Assembly Setup CZ");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Item Template CZ");
-                    CreateVatPostingGroupsCZ.DeleteVATProductPostingGroups();
-                end;
+                Codeunit.Run(Codeunit::"Create Item Template CZ");
         end;
     end;
 
@@ -280,26 +257,6 @@ codeunit 31215 "Contoso CZ Localization"
         end;
     end;
 
-    local procedure CommonModuleBefore(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateVatPostingGroupsCZ: Codeunit "Create Vat Posting Groups CZ";
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Setup Data":
-                CreateVatPostingGroupsCZ.CreateDummyVATProductPostingGroup();
-        end;
-    end;
-
-    local procedure CommonModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateVatPostingGroupsCZ: Codeunit "Create Vat Posting Groups CZ";
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Setup Data":
-                CreateVatPostingGroupsCZ.DeleteVATProductPostingGroups();
-        end;
-    end;
-
     local procedure HumanResourcesModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
         CreateStatRepSetupCZ: Codeunit "Create Stat. Rep. Setup CZ";
@@ -310,26 +267,6 @@ codeunit 31215 "Contoso CZ Localization"
                     Codeunit.Run(Codeunit::"Create Company Official CZ");
                     CreateStatRepSetupCZ.CreateHRStatutoryReportingSetup();
                 end;
-        end;
-    end;
-
-    local procedure ManufacturingModuleBefore(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateVatPostingGroupsCZ: Codeunit "Create Vat Posting Groups CZ";
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Setup Data":
-                CreateVatPostingGroupsCZ.CreateDummyVATProductPostingGroup();
-        end;
-    end;
-
-    local procedure ManufacturingModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreateVatPostingGroupsCZ: Codeunit "Create Vat Posting Groups CZ";
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Setup Data":
-                CreateVatPostingGroupsCZ.DeleteVATProductPostingGroups();
         end;
     end;
 

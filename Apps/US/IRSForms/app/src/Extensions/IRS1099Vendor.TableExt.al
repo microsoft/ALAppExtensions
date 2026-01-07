@@ -41,12 +41,21 @@ tableextension 10042 "IRS 1099 Vendor" extends Vendor
                 IRS1099VendorEmail.PropagateEmailToFormDocuments(Rec);
             end;
         }
+#if not CLEANSCHEMA31
 #pragma warning disable AA0232
         field(10033; "IRS Reporting Period"; Code[20])
         {
             FieldClass = FlowField;
             CalcFormula = max("IRS 1099 Vendor Form Box Setup"."Period No." where("Vendor No." = field("No.")));
             Editable = false;
+            ObsoleteReason = 'Replaced a dynamic field on the vendor card and list pages.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '31.0';
+#endif
         }
 #pragma warning restore AA0232
         field(10034; "IRS 1099 Form No."; Code[20])
@@ -54,13 +63,30 @@ tableextension 10042 "IRS 1099 Vendor" extends Vendor
             FieldClass = FlowField;
             CalcFormula = max("IRS 1099 Vendor Form Box Setup"."Form No." where("Vendor No." = field("No.")));
             Editable = false;
+            ObsoleteReason = 'Replaced a dynamic field on the vendor card and list pages.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '31.0';
+#endif
         }
         field(10035; "IRS 1099 Form Box No."; Code[20])
         {
             FieldClass = FlowField;
             CalcFormula = max("IRS 1099 Vendor Form Box Setup"."Form Box No." where("Vendor No." = field("No.")));
             Editable = false;
+            ObsoleteReason = 'Replaced a dynamic field on the vendor card and list pages.';
+#if not CLEAN28
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '31.0';
+#endif
         }
+#endif
         modify("E-Mail")
         {
             trigger OnAfterValidate()

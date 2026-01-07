@@ -42,7 +42,8 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
     begin
         OutlookProcessing.MarkMessageAsRead(EDocument, EDocumentService);
     end;
-
+#if not CLEAN28
+    [Obsolete('Replaced by SelectEmailAccountV4.', '28.0')]
     procedure SelectEmailAccountV3(var EmailAccount: Record "Email Account"): Boolean
     var
         EmailAccounts: Page "Email Accounts";
@@ -73,9 +74,46 @@ codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumen
         TempEmailAccounts.FindSet();
         repeat
             EmailConnector := TempEmailAccounts.Connector;
+#pragma warning disable AL0432
             if EmailConnector is "Email Connector v3" then
+#pragma warning restore AL0432
                 exit(true);
         until TempEmailAccounts.Next() = 0;
+        exit(false);
+    end;
+#endif
+
+    procedure SelectEmailAccount(var EmailAccount: Record "Email Account"): Boolean
+    var
+        EmailAccounts: Page "Email Accounts";
+    begin
+        if not EmailAccountV4Exists() then begin
+            Page.RunModal(Page::"Email Account Wizard");
+            if not EmailAccountV4Exists() then
+                exit(false);
+        end;
+        EmailAccounts.EnableLookupMode();
+        EmailAccounts.FilterConnectorV4Accounts(true);
+        if EmailAccounts.RunModal() <> Action::LookupOK then
+            exit(false);
+
+        EmailAccounts.GetAccount(EmailAccount);
+        exit(not IsNullGuid(EmailAccount."Account Id"));
+    end;
+
+    local procedure EmailAccountV4Exists(): Boolean
+    var
+        TempEmailAccounts: Record "Email Account" temporary;
+        EmailAccount: Codeunit "Email Account";
+        EmailConnector: Interface "Email Connector";
+    begin
+        EmailAccount.GetAllAccounts(false, TempEmailAccounts);
+        if TempEmailAccounts.FindSet() then
+            repeat
+                EmailConnector := TempEmailAccounts.Connector;
+                if EmailConnector is "Email Connector v4" then
+                    exit(true);
+            until TempEmailAccounts.Next() = 0;
         exit(false);
     end;
 

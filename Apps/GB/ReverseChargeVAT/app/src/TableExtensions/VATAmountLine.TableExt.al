@@ -6,13 +6,7 @@ namespace Microsoft.Finance.VAT.Setup;
 
 using Microsoft.Finance.VAT.Calculation;
 
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
 tableextension 10552 "VAT Amount Line" extends "VAT Amount Line"
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
 {
     fields
     {

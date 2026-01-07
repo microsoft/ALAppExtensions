@@ -19,6 +19,8 @@ page 4405 "SOA Email Attachments"
     DeleteAllowed = false;
     ShowFilter = false;
     SourceTableTemporary = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {
@@ -82,20 +84,39 @@ page 4405 "SOA Email Attachments"
     local procedure GetReviewStatus(): Enum "SOA Email Attachment Status"
     var
         AgentTaskMessageAttachment: Record "Agent Task Message Attachment";
+        AgentTaskFile: Record "Agent Task File";
         SOASetup: Codeunit "SOA Setup";
+        InStream: InStream;
+        ExceedsPageCountThreshold: Boolean;
     begin
         AgentTaskMessageAttachment.ReadIsolation(IsolationLevel::ReadCommitted);
         AgentTaskMessageAttachment.SetLoadFields(Ignored);
         AgentTaskMessageAttachment.SetRange("Task ID", Rec."Task ID");
         AgentTaskMessageAttachment.SetRange("File ID", Rec.ID);
-        if AgentTaskMessageAttachment.FindFirst() then
-            if AgentTaskMessageAttachment.Ignored then
-                if not SOASetup.SupportedAttachmentContentType(Rec."File MIME Type") then
-                    exit(AttachmentStatus::UnsupportedFormat)
-                else
-                    exit(AttachmentStatus::NoRelevantContent);
+        if not AgentTaskMessageAttachment.FindFirst() then
+            exit(AttachmentStatus::Reviewed);
 
-        exit(AttachmentStatus::Reviewed);
+        if not AgentTaskMessageAttachment.Ignored then
+            exit(AttachmentStatus::Reviewed);
+
+        if not SOASetup.SupportedAttachmentContentType(Rec."File MIME Type") then
+            exit(AttachmentStatus::UnsupportedFormat);
+
+        if SOASetup.IsPdfAttachmentContentType(Rec."File MIME Type") then
+            if AgentTaskFile.Get(AgentTaskMessageAttachment."Task ID", AgentTaskMessageAttachment."File ID") then begin
+                AgentTaskFile.CalcFields(Content);
+                AgentTaskFile.Content.CreateInStream(InStream, GetDefaultEncoding());
+                if SOASetup.DocumentExceedsPageCountThreshold(InStream, ExceedsPageCountThreshold) then
+                    if ExceedsPageCountThreshold then
+                        exit(AttachmentStatus::ExceedsPageCount);
+            end;
+
+        AgentTaskMessageAttachment.Reset();
+        AgentTaskMessageAttachment.SetRange("Task ID", Rec."Task ID");
+        if AgentTaskMessageAttachment.Count() > SOASetup.GetMaxNoOfAttachmentsPerEmail() then
+            exit(AttachmentStatus::ExceedsNumberOfAttachments);
+
+        exit(AttachmentStatus::NoRelevantContent);
     end;
 
     internal procedure LoadRecords(var AgentTaskMessage: Record "Agent Task Message")
@@ -139,8 +160,19 @@ page 4405 "SOA Email Attachments"
 
         AttachmentFileName := AgentTaskFile."File Name";
         AgentTaskFile.Content.CreateInStream(InStream, GetDefaultEncoding());
-        if not File.ViewFromStream(InStream, AttachmentFileName, true) then
+        if SupportedByFileViewer(AgentTaskFile."File MIME Type") then begin
+            if not File.ViewFromStream(InStream, AttachmentFileName, true) then
+                File.DownloadFromStream(InStream, DownloadDialogTitleLbl, '', '', AttachmentFileName);
+        end
+        else
             File.DownloadFromStream(InStream, DownloadDialogTitleLbl, '', '', AttachmentFileName);
+    end;
+
+    local procedure SupportedByFileViewer(FileMIMEType: Text): Boolean
+    begin
+        if FileMIMEType <> '' then
+            exit(LowerCase(FileMIMEType).Contains('pdf'));
+        exit(false);
     end;
 
     procedure GetDefaultEncoding(): TextEncoding

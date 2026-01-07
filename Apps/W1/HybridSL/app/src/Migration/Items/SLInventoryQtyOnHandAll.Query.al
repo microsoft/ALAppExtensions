@@ -11,7 +11,7 @@ query 47000 "SL Inventory QtyOnHand All"
 
     elements
     {
-        dataitem(SL_ItemSite; "SL ItemSite")
+        dataitem(SL_ItemSite; "SL ItemSite Buffer")
         {
             column(InvtID; InvtID)
             {

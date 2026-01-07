@@ -1,5 +1,6 @@
 namespace Microsoft.Sustainability.Journal;
 
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Sustainability.Account;
@@ -26,6 +27,9 @@ tableextension 6233 "Sust. Item Journal Line" extends "Item Journal Line"
                 end else begin
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Sust. Account No."));
                     CopyFromSustainabilityAccount(Rec);
+
+                    if Rec.IsSourceItemJournal() then
+                        UpdateCO2eInformation();
                 end;
 
                 Rec.CreateDimFromDefaultDim(FieldNo(Rec."Sust. Account No."));
@@ -132,7 +136,7 @@ tableextension 6233 "Sust. Item Journal Line" extends "Item Journal Line"
         Sign := 1;
 
         case Rec."Entry Type" of
-            Rec."Entry Type"::Consumption:
+            Rec."Entry Type"::Consumption, Rec."Entry Type"::Sale, Rec."Entry Type"::"Negative Adjmt.":
                 if not GHGCredit then
                     Sign := -1;
             else
@@ -164,6 +168,33 @@ tableextension 6233 "Sust. Item Journal Line" extends "Item Journal Line"
             ItemJournalLine."Total CO2e" := ItemJournalLine."CO2e per Unit" * GetTotalTimePerOperation(ItemJournalLine)
         else
             ItemJournalLine."Total CO2e" := ItemJournalLine."CO2e per Unit" * ItemJournalLine."Qty. per Unit of Measure" * ItemJournalLine.Quantity;
+    end;
+
+    internal procedure ShouldUpdateJournalLineWithPostingSign(): Boolean
+    begin
+        exit((Rec."Order Type" = Rec."Order Type"::Production) or
+              IsSourceItemJournal() or
+              IsSourceItemReclassJournal())
+    end;
+
+    internal procedure IsSourceItemJournal(): Boolean
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+    begin
+        SourceCodeSetup.SetLoadFields("Item Journal");
+        SourceCodeSetup.Get();
+
+        exit(Rec."Source Code" = SourceCodeSetup."Item Journal");
+    end;
+
+    internal procedure IsSourceItemReclassJournal(): Boolean
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+    begin
+        SourceCodeSetup.SetLoadFields("Item Reclass. Journal");
+        SourceCodeSetup.Get();
+
+        exit(Rec."Source Code" = SourceCodeSetup."Item Reclass. Journal");
     end;
 
     local procedure GetTotalTimePerOperation(var ItemJournalLine: Record "Item Journal Line"): Decimal
@@ -235,6 +266,15 @@ tableextension 6233 "Sust. Item Journal Line" extends "Item Journal Line"
         ItemJournalLine.Validate("Sust. Account Name", SustainabilityAccount.Name);
         ItemJournalLine.Validate("Sust. Account Category", SustainabilityAccount.Category);
         ItemJournalLine.Validate("Sust. Account Subcategory", SustainabilityAccount.Subcategory);
+    end;
+
+    local procedure UpdateCO2eInformation()
+    var
+        Item: Record Item;
+    begin
+        Item.Get(Rec."Item No.");
+
+        Rec.Validate("CO2e per Unit", Item."CO2e per Unit");
     end;
 
     var

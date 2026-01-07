@@ -8,6 +8,7 @@ namespace Microsoft.Agent.SalesOrderAgent;
 using System.AI;
 using System.Globalization;
 using System.Azure.KeyVault;
+using System.Telemetry;
 
 codeunit 4302 "SOA Validation Function" implements "AOAI Function"
 {
@@ -24,12 +25,14 @@ codeunit 4302 "SOA Validation Function" implements "AOAI Function"
     procedure GetPrompt(): JsonObject
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
-        SOAImpl: Codeunit "SOA Impl";
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         Tool: JsonObject;
         ToolText: Text;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if not AzureKeyVault.GetAzureKeyVaultSecret('BCSOAIrrelevanceValidateToolV27', ToolText) then begin
-            Session.LogMessage('0000PPJ', AKVRetrievalErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogError('0000PPJ', SOASetupCU.GetFeatureName(), 'Get AKV Secret', AKVRetrievalErr, GetLastErrorCallStack(), TelemetryDimensions);
             Error(AKVRetrievalErr);
         end;
         ReplaceAgentLanguageInPrompt(ToolText);

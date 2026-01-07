@@ -15,6 +15,7 @@ page 30019 "APIV2 - Currencies"
     PageType = API;
     SourceTable = Currency;
     Extensible = false;
+    AboutText = 'Manages currency master data including codes, symbols, ISO codes, rounding settings, and related financial accounts. Supports full CRUD operations for synchronizing currency lists, automating exchange rate updates, and enabling multi-currency processing between Business Central and external financial or ERP platforms. Ideal for integrations requiring accurate and up-to-date currency information for global business operations.';
 
     layout
     {

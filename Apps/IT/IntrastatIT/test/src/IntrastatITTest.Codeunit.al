@@ -82,6 +82,7 @@ codeunit 139511 "Intrastat IT Test"
         DataExchangeXMLCSQP2Txt: Label '<TransformationRules><Code>GETAMOUNTSIGN</Code><Description>Get Amount Sign</Description><TransformationType>6</TransformationType><FindValue>^\d</FindValue><ReplaceValue>+</ReplaceValue><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>FIRSTCHAR</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="12" FieldID="13" Optional="true" TransformationRule="ROUNDTOINT"><TransformationRules><Code>ALPHANUMERIC_ONLY</Code><Description>Alphanumeric Text Only</Description><TransformationType>7</TransformationType><FindValue /><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules><TransformationRules><Code>ROUNDTOINT</Code><Description>Round to Integer</Description><TransformationType>14</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>1.00</Precision><Direction>=</Direction><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="13" FieldID="8" Optional="true" TransformationRule="FIRSTCHAR"><TransformationRules><Code>FIRSTCHAR</Code><Description>First Character</Description><TransformationType>4</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>1</StartPosition><Length>1</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping><DataExchFieldMapping ColumnNo="14" FieldID="5" Optional="true" TransformationRule="TRIMALL"><TransformationRules><Code>TRIMALL</Code><Description>Removes all spaces</Description><TransformationType>5</TransformationType><FindValue>&amp;#032;</FindValue><ReplaceValue /><StartPosition>0</StartPosition><Length>0</Length><DataFormat /><DataFormattingCulture /><NextTransformationRule /><TableID>0</TableID><SourceFieldID>0</SourceFieldID><TargetFieldID>0</TargetFieldID><FieldLookupRule>0</FieldLookupRule><Precision>0.00</Precision><Direction /><ExportFromDateType>0</ExportFromDateType></TransformationRules></DataExchFieldMapping></DataExchMapping></DataExchLineDef></DataExchDef></root>',
                             Locked = true;
         AmountErr: Label 'Amount must be %1 in %2.', Comment = '%1= Amount Value, %2= Table Caption.';
+        SourceEntryNoErr: Label 'Source Entry No. should match FA Ledger Entry No.';
 
     [Test]
     [Scope('OnPrem')]
@@ -2944,6 +2945,70 @@ codeunit 139511 "Intrastat IT Test"
         Assert.ExpectedError(PurchaseHeader.FieldName("Transport Method"));
     end;
 
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure IntrastatReportForPurchaseHaveSourceEntryNoForFixedAsset()
+    var
+        FALedgerEntry: Record "FA Ledger Entry";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        PurchaseLine: Record "Purchase Line";
+        DocumentNo, IntrastatReportNo : Code[20];
+        FAPostingType: Enum "FA Ledger Entry FA Posting Type";
+    begin
+        // [SCENARIO 603678] Verify that Source Entry No. is populated for Fixed Asset entries in Intrastat Report
+        Initialize();
+
+        // [GIVEN] Posted Fixed Asset Purchase Order.
+        DocumentNo := LibraryIntrastat.CreateAndPostFixedAssetPurchaseOrder(PurchaseLine, WorkDate());
+
+        // [WHEN] Get Intrastat Report Lines for Fixed Asset Purchase Order.
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo, Periodicity::Month, Type::Purchase, false, IncStr(FileNo), false);
+
+        // [THEN] Verify that Source Entry No. is populated with FA Ledger Entry No.
+        LibraryIntrastat.GetIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLine);
+
+        // [GIVEN] Find the corresponding FA Ledger Entry
+        FindFALedgerEntry(FALedgerEntry, DocumentNo, PurchaseLine."No.", FAPostingType::"Acquisition Cost");
+
+        // [THEN] Verify Source Entry No. is set and matches the FA Ledger Entry
+        Assert.AreEqual(FALedgerEntry."Entry No.", IntrastatReportLine."Source Entry No.", SourceEntryNoErr);
+    end;
+
+    [Test]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure IntrastatReportForSalesHaveSourceEntryNoForFixedAsset()
+    var
+        FALedgerEntry: Record "FA Ledger Entry";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        PurchaseLine: Record "Purchase Line";
+        SalesLine: Record "Sales Line";
+        DocumentNo, IntrastatReportNo : Code[20];
+        FAPostingType: Enum "FA Ledger Entry FA Posting Type";
+    begin
+        // [SCENARIO 603678] Verify that Source Entry No. is populated for Fixed Asset entries in Intrastat Report
+        Initialize();
+
+        // [GIVEN] Create and post Aquisition Purchase Order
+        LibraryIntrastat.CreateAndPostFixedAssetPurchaseOrder(PurchaseLine, WorkDate());
+
+        // [GIVEN] Create and Post Disposal Sales Order.
+        DocumentNo := LibraryIntrastat.CreateAndPostSalesDocumentMultiLine(
+            SalesLine, SalesLine."Document Type"::Order, WorkDate(), SalesLine.Type::"Fixed Asset",
+            PurchaseLine."No.", 1);
+
+        // [WHEN] Get Intrastat Report Lines for Fixed Asset Sales Order.
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo, Periodicity::Month, Type::Sales, false, IncStr(FileNo), false);
+
+        // [THEN] Verify that Source Entry No. is populated with FA Ledger Entry No.
+        LibraryIntrastat.GetIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLine);
+
+        // [GIVEN] Find the corresponding FA Ledger Entry.
+        FindFALedgerEntry(FALedgerEntry, DocumentNo, SalesLine."No.", FAPostingType::"Proceeds on Disposal");
+
+        // [THEN] Verify Source Entry No. is set and matches the FA Ledger Entry.
+        Assert.AreEqual(FALedgerEntry."Entry No.", IntrastatReportLine."Source Entry No.", SourceEntryNoErr);
+    end;
+
     local procedure Initialize()
     var
         CompanyInformation: Record "Company Information";
@@ -3960,5 +4025,13 @@ codeunit 139511 "Intrastat IT Test"
                 OutText += 'y';
         end;
         exit(OutText);
+    end;
+
+    local procedure FindFALedgerEntry(var FALedgerEntry: Record "FA Ledger Entry"; DocumentNo: Code[20]; FANo: Code[20]; FAPostingType: Enum "FA Ledger Entry FA Posting Type")
+    begin
+        FALedgerEntry.SetRange("Document No.", DocumentNo);
+        FALedgerEntry.SetRange("FA No.", FANo);
+        FALedgerEntry.SetRange("FA Posting Type", FAPostingType);
+        FALedgerEntry.FindFirst();
     end;
 }

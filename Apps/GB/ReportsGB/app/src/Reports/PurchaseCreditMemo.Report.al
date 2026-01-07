@@ -926,4 +926,3 @@ report 10580 "Purchase Credit Memo"
         InteractionLogging := SegManagement.FindInteractionTemplateCode("Interaction Log Entry Document Type"::"Purch. Cr. Memo") <> '';
     end;
 }
-

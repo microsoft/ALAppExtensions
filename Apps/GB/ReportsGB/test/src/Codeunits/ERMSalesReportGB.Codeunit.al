@@ -1,7 +1,10 @@
+namespace Microsoft.Sales.Document;
+
 codeunit 144022 "ERM Sales Report - GB"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    TestType = IntegrationTest;
 
     trigger OnRun()
     begin

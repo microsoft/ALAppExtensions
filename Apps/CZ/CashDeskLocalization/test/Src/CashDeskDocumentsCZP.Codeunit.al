@@ -279,7 +279,7 @@ codeunit 148070 "Cash Desk Documents CZP"
         FALedgerEntry.SetRange("Posting Date", PostedCashDocumentHdrCZP."Posting Date");
         FALedgerEntry.FindLast();
         FALedgerEntry.TestField("FA No.", CashDocumentLineCZP."Account No.");
-        FALedgerEntry.TestField("FA Posting Type", FALedgerEntry."FA Posting Type"::"Acquisition Cost");
+        FALedgerEntry.TestField("FA Posting Type", FALedgerEntry."FA Posting Type"::"Custom 2");
         FALedgerEntry.TestField(Amount, CashDocumentLineCZP.Amount);
     end;
 

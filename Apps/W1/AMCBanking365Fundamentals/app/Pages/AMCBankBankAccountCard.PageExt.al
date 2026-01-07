@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -9,7 +10,9 @@ using Microsoft.Bank.BankAccount;
 pageextension 20103 "AMC Bank Bank Account Card" extends "Bank Account Card"
 {
     ContextSensitiveHelpPage = '304';
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     layout
     {
         addAfter("Creditor No.")
@@ -44,3 +47,4 @@ pageextension 20103 "AMC Bank Bank Account Card" extends "Bank Account Card"
     end;
 
 }
+#endif

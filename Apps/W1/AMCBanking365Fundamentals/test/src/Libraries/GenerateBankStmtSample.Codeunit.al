@@ -1,7 +1,10 @@
+#if not CLEAN28
 codeunit 135083 "Generate Bank Stmt. Sample"
 {
     TableNo = "Data Exch.";
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     var
         TempBlob: Codeunit "Temp Blob";
@@ -14,4 +17,4 @@ codeunit 135083 "Generate Bank Stmt. Sample"
         AMCBankImpSTMTHndl.ConvertBankStatementToFormat(TempBlob, Rec);
     end;
 }
-
+#endif

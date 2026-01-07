@@ -18,35 +18,9 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         CompletionTaskTxt: SecretText;
         CompletionTaskPartTxt: SecretText;
         CompletionTaskBuildingFromKeyVaultFailed: Boolean;
-        ConcatSubstrTok: Label '%1%2', Locked = true;
     begin
         if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching1') then
             CompletionTaskTxt := CompletionTaskPartTxt
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching2') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching3') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching4') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching5') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAIMatching6') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
         else
             CompletionTaskBuildingFromKeyVaultFailed := true;
 
@@ -252,13 +226,13 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
     begin
         // this is because we are using GPT4 which has a 100K token limit
         // on top of that, we are setting aside a number of tokens for the response in MaxTokens())
-        exit(18000);
+        exit(48000);
     end;
 
     procedure LedgerEntryInputThreshold(): Integer
     begin
         // this is the max size of the part of the prompt that carries information about ledger entries
-        exit(10000);
+        exit(32000);
     end;
 
     procedure MaxTokens(): Integer

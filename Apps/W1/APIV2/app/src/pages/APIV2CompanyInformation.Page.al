@@ -20,6 +20,7 @@ page 30011 "APIV2 - Company Information"
     SaveValues = true;
     SourceTable = "Company Information";
     Extensible = false;
+    AboutText = 'Exposes company profile data including name, address, contact details, tax registration numbers, banking information, and branding attributes. Supports read-only access for retrieving company metadata, enabling external applications to automate document generation, compliance validation, and ensure consistent company information across integrated business systems. Ideal for scenarios requiring company-level context in multi-system integrations and administrative workflows.';
 
     layout
     {

@@ -12,6 +12,7 @@ page 30098 "APIV2 - Fixed Assets"
     PageType = API;
     SourceTable = "Fixed Asset";
     Extensible = false;
+    AboutText = 'Provides access to fixed asset master data, including asset numbers, descriptions, location codes, class and subclass codes, blocked status, serial numbers, responsible employees, maintenance status, and last modified dates. Supports full CRUD operations (GET, POST, PATCH, DELETE) for managing the asset lifecycle, enabling integration with external asset tracking, maintenance, and compliance systems. Ideal for scenarios requiring synchronization of asset records, ownership details, and operational status between Business Central and external asset management platforms.';
 
     layout
     {

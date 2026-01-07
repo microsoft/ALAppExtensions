@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -828,13 +828,8 @@ table 11733 "Cash Document Line CZP"
             Caption = 'VAT Difference (LCY)';
             DataClassification = CustomerContent;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
-#if CLEAN25
             ObsoleteState = Removed;
             ObsoleteTag = '28.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '18.0';
-#endif
         }
 #endif
         field(63; "System-Created Entry"; Boolean)
@@ -924,6 +919,16 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'FA Posting Type';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Account Type" <> "Account Type"::"Fixed Asset" then
+                    exit;
+
+                if "FA Posting Type" = "FA Posting Type"::"Acquisition Cost" then
+                    if FASetup.IsFAAcquisitionAsCustom2CZL() then
+                        "FA Posting Type" := "FA Posting Type"::"Custom 2";
+            end;
         }
         field(91; "Depreciation Book Code"; Code[10])
         {
@@ -1253,6 +1258,7 @@ table 11733 "Cash Document Line CZP"
         CashDeskEventCZP: Record "Cash Desk Event CZP";
         TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary;
         FixedAsset: Record "Fixed Asset";
+        FASetup: Record "FA Setup";
         DimensionManagement: Codeunit DimensionManagement;
         ConfirmManagement: Codeunit "Confirm Management";
         RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = TableCaption';
@@ -1788,7 +1794,6 @@ table 11733 "Cash Document Line CZP"
     var
         PostedGLAccount: Record "G/L Account";
         FAPostingGroup: Record "FA Posting Group";
-        FASetup: Record "FA Setup";
         FADepreciationBook: Record "FA Depreciation Book";
         SetFADeprBook: Record "FA Depreciation Book";
         FADeprBook: Record "FA Depreciation Book";
@@ -1821,7 +1826,7 @@ table 11733 "Cash Document Line CZP"
                 exit;
         end;
         if "FA Posting Type" = "FA Posting Type"::" " then
-            "FA Posting Type" := "FA Posting Type"::"Acquisition Cost";
+            "FA Posting Type" := FASetup.IsFAAcquisitionAsCustom2CZL() ? "FA Posting Type"::"Custom 2" : "FA Posting Type"::"Acquisition Cost";
         FADepreciationBook.Get("Account No.", "Depreciation Book Code");
         FADepreciationBook.TestField("FA Posting Group");
         FAPostingGroup.Get(FADepreciationBook."FA Posting Group");
@@ -1962,10 +1967,6 @@ table 11733 "Cash Document Line CZP"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         EmployeeLedgerEntry: Record "Employee Ledger Entry";
-#if not CLEAN25
-        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
-        AppliesToAdvanceLetterNo: Code[20];
-#endif
     begin
         if "Account No." = '' then
             exit;
@@ -2000,17 +2001,6 @@ table 11733 "Cash Document Line CZP"
                             EmployeeLedgerEntry.CollectSuggestedApplicationCZL(Rec, CrossApplicationBufferCZL);
                     end;
             end;
-#if not CLEAN25
-#pragma warning disable AL0432
-        if "Account Type" = "Account Type"::Vendor then begin
-            OnBeforeFindRelatedAmoutToApply(Rec, AppliesToAdvanceLetterNo);
-            if AppliesToAdvanceLetterNo <> '' then
-                CrossApplicationMgtCZL.OnGetSuggestedAmountForPurchAdvLetterHeader(
-                    AppliesToAdvanceLetterNo, CrossApplicationBufferCZL,
-                    Database::"Cash Document Line CZP", "Cash Document No.", "Line No.");
-        end;
-#pragma warning restore AL0432
-#endif
 
         OnAfterCollectSuggestedApplication(Rec, CrossApplicationBufferCZL);
     end;
@@ -2188,13 +2178,6 @@ table 11733 "Cash Document Line CZP"
     local procedure OnAfterIsEETCashRegister(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETCashRegister: Boolean)
     begin
     end;
-#if not CLEAN25
-    [Obsolete('The event is obsolete and will be removed in the future version. Use OnAfterCollectSuggestedApplication instead.', '25.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeFindRelatedAmoutToApply(CashDocumentLineCZP: Record "Cash Document Line CZP"; var AppliesToAdvanceLetterNo: Code[20]);
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateDim(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)

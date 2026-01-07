@@ -23,8 +23,9 @@ codeunit 4581 "SOA Send Replies"
     end;
 
     var
-        SOAImpl: Codeunit "SOA Impl";
-        Telemetry: Codeunit Telemetry;
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        AllSentSuccessfully: Boolean;
         TelemetryEmailReplySentLbl: Label 'Email reply sent.', Locked = true;
         TelemetryEmailReplyFailedToSendLbl: Label 'Email reply failed to send.', Locked = true;
         TelemetryEmailReplyExternalIdEmptyLbl: Label 'Email reply failed to be sent due to input agent task message containing empty External Id.', Locked = true;
@@ -39,39 +40,46 @@ codeunit 4581 "SOA Send Replies"
         InputAgentTaskMessage: Record "Agent Task Message";
         EmailOutbox: Record "Email Outbox";
         AgentMessage: Codeunit "Agent Message";
-        CustomDimensions: Dictionary of [Text, Text];
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
+        AllSentSuccessfully := true;
+
         OutputAgentTaskMessage.ReadIsolation(IsolationLevel::ReadCommitted);
         OutputAgentTaskMessage.SetRange(Status, OutputAgentTaskMessage.Status::Reviewed);
         OutputAgentTaskMessage.SetRange(Type, OutputAgentTaskMessage.Type::Output);
-        OutputAgentTaskMessage.SetRange("Agent User Security ID", SOASetup."Agent User Security ID");
+        OutputAgentTaskMessage.SetRange("Agent User Security ID", SOASetup."User Security ID");
 
         if not OutputAgentTaskMessage.FindSet() then
             exit;
 
-        CustomDimensions := SOAImpl.GetCustomDimensions();
         repeat
             Clear(EmailOutbox);
-            CustomDimensions.Set('AgentTaskID', Format(OutputAgentTaskMessage."Task ID"));
-            CustomDimensions.Set('AgentTaskMessageID', OutputAgentTaskMessage."ID");
+            TelemetryDimensions.Set('AgentTaskID', Format(OutputAgentTaskMessage."Task ID"));
+            TelemetryDimensions.Set('AgentTaskMessageID', OutputAgentTaskMessage."ID");
 
             if not InputAgentTaskMessage.Get(OutputAgentTaskMessage."Task ID", OutputAgentTaskMessage."Input Message ID") then begin
-                Session.LogMessage('0000NDQ', TelemetryFailedToGetInputAgentTaskMessageLbl, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+                FeatureTelemetry.LogError('0000NDQ', SOASetupCU.GetFeatureName(), 'Get Input Agent Task Message', TelemetryFailedToGetInputAgentTaskMessageLbl, GetLastErrorCallStack(), TelemetryDimensions);
                 exit;
             end;
             if (InputAgentTaskMessage."External ID" = '') then begin
-                Session.LogMessage('0000NDR', TelemetryEmailReplyExternalIdEmptyLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+                FeatureTelemetry.LogUsage('0000NDR', SOASetupCU.GetFeatureName(), TelemetryEmailReplyExternalIdEmptyLbl, TelemetryDimensions);
                 exit;
             end;
 
             if TryReply(InputAgentTaskMessage, OutputAgentTaskMessage, SOASetup) then begin
                 AgentMessage.SetStatusToSent(OutputAgentTaskMessage);
-                Session.LogMessage('0000NDS', TelemetryEmailReplySentLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+                FeatureTelemetry.LogUsage('0000NDS', SOASetupCU.GetFeatureName(), TelemetryEmailReplySentLbl, TelemetryDimensions);
             end else begin
-                CustomDimensions.Set('Error', GetLastErrorText());
-                Session.LogMessage('0000OAB', TelemetryEmailReplyFailedToSendLbl, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+                AllSentSuccessfully := false;
+                TelemetryDimensions.Set('Error', GetLastErrorText());
+                FeatureTelemetry.LogError('0000OAB', SOASetupCU.GetFeatureName(), 'Send Email Reply', TelemetryEmailReplyFailedToSendLbl, GetLastErrorCallStack(), TelemetryDimensions);
             end;
         until OutputAgentTaskMessage.Next() = 0;
+    end;
+
+    procedure GetAllSentSuccessfully(): Boolean
+    begin
+        exit(AllSentSuccessfully);
     end;
 
     local procedure TryReply(InputAgentTaskMessage: Record "Agent Task Message"; OutputAgentTaskMessage: Record "Agent Task Message"; SOASetup: Record "SOA Setup"): Boolean
@@ -95,6 +103,7 @@ codeunit 4581 "SOA Send Replies"
         AgentTaskFile: Record "Agent Task File";
         AgentTaskMessageAttachment: Record "Agent Task Message Attachment";
         AgentTaskFileInStream: InStream;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         AgentTaskMessageAttachment.SetRange("Task ID", AgentTaskMessage."Task ID");
         AgentTaskMessageAttachment.SetRange("Message ID", AgentTaskMessage.ID);
@@ -103,14 +112,14 @@ codeunit 4581 "SOA Send Replies"
 
         repeat
             if not AgentTaskFile.Get(AgentTaskMessageAttachment."Task ID", AgentTaskMessageAttachment."File ID") then begin
-                Telemetry.LogMessage('0000NE7', TelemetryFailedToGetAgentTaskMessageAttachmentLbl, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+                FeatureTelemetry.LogError('0000NE7', SOASetupCU.GetFeatureName(), 'Get Agent Task Message Attachment', TelemetryFailedToGetAgentTaskMessageAttachmentLbl, '', TelemetryDimensions);
                 exit;
             end;
             AgentTaskFile.CalcFields(Content);
             //TODO: Refactor to a better interface 
             AgentTaskFile.Content.CreateInStream(AgentTaskFileInStream, TextEncoding::UTF8);
             EmailMessage.AddAttachment(AgentTaskFile."File Name", AgentTaskFile."File MIME Type", AgentTaskFileInStream);
-            Telemetry.LogMessage('0000NE8', TelemetryAttachmentAddedToEmailLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000NE8', SOASetupCU.GetFeatureName(), TelemetryAttachmentAddedToEmailLbl, TelemetryDimensions);
         until AgentTaskMessageAttachment.Next() = 0;
     end;
 }

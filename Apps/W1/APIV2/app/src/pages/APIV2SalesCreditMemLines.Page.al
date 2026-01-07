@@ -20,6 +20,7 @@ page 30046 "APIV2 - Sales Credit Mem Lines"
     SourceTable = "Sales Invoice Line Aggregate";
     SourceTableTemporary = true;
     Extensible = false;
+    AboutText = 'Manages line-level details of sales credit memos, including item, quantity, unit price, discounts, tax amounts, and dimensions. Supports creation, update, retrieval, and deletion of credit memo lines for processing returns, refunds, and revenue reversals, enabling integration with RMA systems, returns portals, and external inventory management solutions.';
 
     layout
     {

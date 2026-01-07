@@ -1,4 +1,4 @@
-Codeunit 148003 "Library - Tax CZL"
+codeunit 148003 "Library - Tax CZL"
 {
     var
         LibraryUtility: Codeunit "Library - Utility";
@@ -143,6 +143,29 @@ Codeunit 148003 "Library - Tax CZL"
         end;
     end;
 
+    procedure CreateVATReturnPeriod(var VATReturnPeriod: Record "VAT Return Period"; StartDate: Date; EndDate: Date; DueDate: Date; Status: Option)
+    begin
+        VATReturnPeriod.Init();
+        VATReturnPeriod."No." := LibraryUtility.GenerateGUID();
+        VATReturnPeriod."Start Date" := StartDate;
+        VATReturnPeriod."End Date" := EndDate;
+        VATReturnPeriod."Due Date" := DueDate;
+        VATReturnPeriod.Insert();
+    end;
+
+    procedure CreateVATReturnPeriods(StartDate: Date; NoOfPeriods: Integer)
+    var
+        VATReturnPeriod: Record "VAT Return Period";
+        EndDate: Date;
+        i: Integer;
+    begin
+        for i := 1 to NoOfPeriods do begin
+            EndDate := CalcDate('<CM>', StartDate);
+            CreateVATReturnPeriod(VATReturnPeriod, StartDate, EndDate, CalcDate('<+25D>', EndDate), VATReturnPeriod.Status::Open);
+            StartDate := CalcDate('<1M>', StartDate);
+        end;
+    end;
+
     procedure GetCompanyOfficialsNo(): Code[20]
     var
         CompanyOfficialCZL: Record "Company Official CZL";
@@ -153,10 +176,10 @@ Codeunit 148003 "Library - Tax CZL"
 
     procedure GetDateFromLastOpenVATPeriod(): Date
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
     begin
-        FindLastOpenVATPeriod(VATPeriodCZL);
-        exit(VATPeriodCZL."Starting Date");
+        FindLastOpenVATPeriod(VATReturnPeriod);
+        exit(VATReturnPeriod."Start Date");
     end;
 
     procedure GetInvalidVATRegistrationNo(): Text[20]
@@ -189,14 +212,14 @@ Codeunit 148003 "Library - Tax CZL"
 
     procedure GetVATPeriodStartingDate(): Date
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         VATEntry: Record "VAT Entry";
     begin
-        FindFirstOpenVATPeriod(VATPeriodCZL);
+        FindFirstOpenVATPeriod(VATReturnPeriod);
         FindFirstOpenVATEntry(VATEntry);
 
-        if VATPeriodCZL."Starting Date" > VATEntry."Posting Date" then
-            exit(VATPeriodCZL."Starting Date");
+        if VATReturnPeriod."Start Date" > VATEntry."Posting Date" then
+            exit(VATReturnPeriod."Start Date");
         exit(VATEntry."Posting Date");
     end;
 
@@ -239,7 +262,9 @@ Codeunit 148003 "Library - Tax CZL"
         VATEntry.SetRange(Closed, false);
         VATEntry.FindFirst();
     end;
-
+#if not CLEAN28
+#pragma warning disable AL0432
+    [Obsolete('Replaced by FindFirstOpenVATPeriod procedure with VAT Return Period in parameters.', '28.0')]
     procedure FindFirstOpenVATPeriod(var VATPeriodCZL: Record "VAT Period CZL")
     begin
         VATPeriodCZL.Reset();
@@ -247,11 +272,30 @@ Codeunit 148003 "Library - Tax CZL"
         VATPeriodCZL.FindFirst();
     end;
 
+    [Obsolete('Replaced by FindLastOpenVATPeriod procedure with VAT Return Period in parameters.', '28.0')]
     procedure FindLastOpenVATPeriod(var VATPeriodCZL: Record "VAT Period CZL")
     begin
         VATPeriodCZL.Reset();
         VATPeriodCZL.SetRange(Closed, false);
         VATPeriodCZL.FindLast();
+    end;
+#pragma warning restore AL0432
+#endif
+
+    procedure FindFirstOpenVATPeriod(var VATReturnPeriod: Record "VAT Return Period")
+    begin
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.SetCurrentKey("Start Date");
+        VATReturnPeriod.SetRange(Status, VATReturnPeriod.Status::Open);
+        VATReturnPeriod.FindFirst();
+    end;
+
+    procedure FindLastOpenVATPeriod(var VATReturnPeriod: Record "VAT Return Period")
+    begin
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.SetCurrentKey("Start Date");
+        VATReturnPeriod.SetRange(Status, VATReturnPeriod.Status::Open);
+        VATReturnPeriod.FindLast();
     end;
 
     procedure FindVATStatementTemplate(var VATStatementTemplate: Record "VAT Statement Template")
@@ -295,12 +339,13 @@ Codeunit 148003 "Library - Tax CZL"
 
     procedure ReopenVATPeriod(StartingDate: Date)
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
     begin
-        VATPeriodCZL.Reset();
-        VATPeriodCZL.Get(StartingDate);
-        VATPeriodCZL.Validate(Closed, false);
-        VATPeriodCZL.Modify();
+        VATReturnPeriod.Reset();
+        VATReturnPeriod.SetRange("Start Date", StartingDate);
+        VATReturnPeriod.FindLast();
+        VATReturnPeriod.Validate(Status, VATReturnPeriod.Status::Open);
+        VATReturnPeriod.Modify();
     end;
 
     procedure ReopenVIESDeclaration(var VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL")
@@ -313,7 +358,7 @@ Codeunit 148003 "Library - Tax CZL"
     procedure RunCreateVATPeriod()
     begin
         Commit();
-        Report.Run(Report::"Create VAT Period CZL", true, false);
+        Report.Run(Report::"Create VAT Return Period CZL", true, false);
     end;
 
     procedure RunExportVATCtrlReport(VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL"; var TempBlob: Codeunit "Temp Blob")

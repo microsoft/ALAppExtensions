@@ -27,6 +27,7 @@ codeunit 148060 "VAT Statements CZL"
         LibraryTestInitialize.OnTestInitialize(Codeunit::"VAT Statements CZL");
         LibraryRandom.Init();
         LibraryTaxCZL.SetUseVATDate(true);
+        LibraryTaxCZL.CreateVATReturnPeriods(CalcDate('<-CY>', WorkDate()), 12);
         if isInitialized then
             exit;
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"VAT Statements CZL");
@@ -43,7 +44,7 @@ codeunit 148060 "VAT Statements CZL"
     var
         VATStatementName: Record "VAT Statement Name";
         VATStatementLine: Record "VAT Statement Line";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         VATStatementPreviewCZL: TestPage "VAT Statement Preview CZL";
         VATStatement: TestPage "VAT Statement";
         VATEntries: TestPage "VAT Entries";
@@ -70,8 +71,8 @@ codeunit 148060 "VAT Statements CZL"
         VATStatement."P&review CZL".Invoke();
 
         // [GIVEN] Dates has been set
-        LibraryTaxCZL.FindFirstOpenVATPeriod(VATPeriodCZL);
-        StartingDate := VATPeriodCZL."Starting Date";
+        LibraryTaxCZL.FindFirstOpenVATPeriod(VATReturnPeriod);
+        StartingDate := VATReturnPeriod."Start Date";
         EndingDate := CalcDate('<+1M-1D>', StartingDate);
         VATStatementPreviewCZL.VATPeriodStartDate.SetValue(StartingDate);
         VATStatementPreviewCZL.VATPeriodEndDate.SetValue(EndingDate);

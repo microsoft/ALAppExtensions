@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -10,13 +10,7 @@ using Microsoft.Sales.Receivables;
 
 codeunit 31415 "Cross Application Handler CZC"
 {
-#if not CLEAN25
-    ObsoleteState = Pending;
-    ObsoleteReason = 'The Access property will be changed to Internal.';
-    ObsoleteTag = '25.0';
-#else
     Access = Internal;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cross Application Mgt. CZL", 'OnCollectSuggestedApplication', '', false, false)]
     local procedure AddCompensationLineCZCOnCollectSuggestedApplication(

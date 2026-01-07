@@ -49,6 +49,9 @@ table 4585 "SOA Email"
         field(101; "Task Message ID"; Guid)
         {
         }
+        field(102; "Attachment Transferred"; Boolean)
+        {
+        }
         field(120; "Agent Task Message Exist"; Boolean)
         {
             FieldClass = FlowField;

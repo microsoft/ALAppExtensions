@@ -1,3 +1,14 @@
+namespace Microsoft.FixedAsset.Depreciation;
+
+using System.TestLibraries.Utilities;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Posting;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.FixedAssets.Setup;
+using Microsoft.Finance.GeneralLedger.Posting;
+
 codeunit 144021 "UT REP ACCPER - Fixed Asset"
 {
     //  1. Purpose of the test is to validate Fixed Asset - OnPreDataItem Trigger of Report 10560 (FA - Projected Value) with Group Totals FA Posting Group.
@@ -32,7 +43,7 @@ codeunit 144021 "UT REP ACCPER - Fixed Asset"
 
     Subtype = Test;
     TestPermissions = Disabled;
-
+    TestType = Uncategorized;
     trigger OnRun()
     begin
     end;
@@ -128,8 +139,10 @@ codeunit 144021 "UT REP ACCPER - Fixed Asset"
         RunFAProjectedValueAfterPostFAGLJournals(FixedAsset, GroupTotals::"Global Dimension 1");
 
         // Verify.
+#pragma warning disable AA0139
         VerifyXMLData(
           FixedAsset.FieldCaption("Global Dimension 1 Code"), StrSubstNo('%1%2', FixedAsset."Global Dimension 1 Code", '*****'));
+#pragma warning restore AA0139
     end;
 
     [Test]
@@ -145,8 +158,10 @@ codeunit 144021 "UT REP ACCPER - Fixed Asset"
         RunFAProjectedValueAfterPostFAGLJournals(FixedAsset, GroupTotals::"Global Dimension 2");
 
         // Verify.
+#pragma warning disable AA0139
         VerifyXMLData(
           FixedAsset.FieldCaption("Global Dimension 2 Code"), StrSubstNo('%1%2', FixedAsset."Global Dimension 2 Code", '*****'));
+#pragma warning restore AA0139
     end;
 
     [Test]
@@ -286,6 +301,8 @@ codeunit 144021 "UT REP ACCPER - Fixed Asset"
         LibraryReportDataset.AssertElementWithValueExists('TotalBookValue_1_', Amount);
     end;
 
+#if not CLEAN27
+    [Obsolete('Not used anymore', '28.0')]
     [Test]
     [HandlerFunctions('FAProjectedValWithProjectedDisposalReqPageHandler')]
 
@@ -296,7 +313,7 @@ codeunit 144021 "UT REP ACCPER - Fixed Asset"
         RunFAProjectedValAfterPostFAGLJnlWithProjectedDisposal(true);  // Projected Disposal as True.
     end;
 
-#if not CLEAN27
+    [Obsolete('Not used anymore', '28.0')]
     [Test]
     [HandlerFunctions('FAProjectedValWithProjectedDisposalReqPageHandler')]
 
@@ -574,7 +591,7 @@ codeunit 144021 "UT REP ACCPER - Fixed Asset"
     procedure FAProjectedValueWithNumberOfDaysReqPageHandler(var FAProjectedValue: TestRequestPage "FA - Projected Value GB")
     begin
         SetValuesOnFAProjectedValueRequestPage(FAProjectedValue);
-        FAProjectedValue."Number of Days".SetValue(LibraryRandom.RandInt(10));
+        FAProjectedValue."Number of Days".SetValue(LibraryRandom.RandIntInRange(5, 360));
         FAProjectedValue.SaveAsXml(LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
     end;
 }

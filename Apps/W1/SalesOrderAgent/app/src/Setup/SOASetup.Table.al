@@ -25,9 +25,19 @@ table 4325 "SOA Setup"
             DataClassification = SystemMetadata;
             AutoIncrement = true;
         }
+#if not CLEANSCHEMA28
         field(2; "Agent User Security ID"; Guid)
         {
             DataClassification = SystemMetadata;
+            ObsoleteReason = 'Replaced by "User Security ID" field.';
+#if not CLEAN28            
+            ObsoleteState = Pending;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '31.0';
+#endif
+#endif
         }
         field(3; "Email Account ID"; Guid)
         {
@@ -49,7 +59,7 @@ table 4325 "SOA Setup"
         {
             Caption = 'Exists';
             FieldClass = FlowField;
-            CalcFormula = exist(Agent where("User Security ID" = field("Agent User Security Id")));
+            CalcFormula = exist(Agent where("User Security ID" = field("User Security ID")));
         }
         field(8; State; Option)
         {
@@ -58,7 +68,7 @@ table 4325 "SOA Setup"
             OptionCaption = 'Enabled,Disabled';
             OptionMembers = Enabled,Disabled;
             FieldClass = FlowField;
-            CalcFormula = lookup(Agent.State where("User Security ID" = field("Agent User Security Id")));
+            CalcFormula = lookup(Agent.State where("User Security ID" = field("User Security ID")));
         }
         field(9; "Agent Scheduled Task ID"; Guid)
         {
@@ -177,6 +187,22 @@ table 4325 "SOA Setup"
             Caption = 'Configure Email Signature';
             ToolTip = 'Specifies whether the email signature is configured for the sales order agent.';
         }
+
+        field(29; "Email Folder"; Text[2048])
+        {
+            Caption = 'Email Folder';
+            ToolTip = 'Specifies the email folder that the agent monitors.';
+            DataClassification = SystemMetadata;
+        }
+        field(30; "Email Folder Id"; Text[2048])
+        {
+            Caption = 'Email Folder Id';
+            ToolTip = 'Specifies the unique identifier of the email folder that the agent monitors.';
+        }
+        field(50; "User Security ID"; Guid)
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys
@@ -185,7 +211,14 @@ table 4325 "SOA Setup"
         {
             Clustered = true;
         }
+#if not CLEAN28
+#pragma warning disable AL0432
         key(Key2; "Agent User Security ID")
+#pragma warning restore AL0432
+        {
+        }
+#endif
+        key(Key3; "User Security ID")
         {
         }
     }
@@ -195,7 +228,7 @@ table 4325 "SOA Setup"
         NotFoundErr: Label 'Sales Order Agent Setup not found.';
     begin
         Rec.Reset();
-        Rec.SetRange("Agent User Security ID", AgentUserSecurityID);
+        Rec.SetRange("User Security ID", AgentUserSecurityID);
         if Rec.FindFirst() then
             exit(true);
 

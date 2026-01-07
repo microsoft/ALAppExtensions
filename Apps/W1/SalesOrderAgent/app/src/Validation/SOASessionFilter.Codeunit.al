@@ -9,6 +9,7 @@ namespace Microsoft.Agent.SalesOrderAgent;
 using Microsoft.CRM.Contact;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
+using System.Telemetry;
 
 /// <summary>
 /// This codeunit is used to filter the documents based on the contact that sent the email.
@@ -85,9 +86,11 @@ codeunit 4306 "SOA Session Filter"
     local procedure SetFilterOnSalesHeader(var Rec: Record "Sales Header")
     var
         SOAFiltersImpl: Codeunit "SOA Filters Impl.";
-        SOAImpl: Codeunit "SOA Impl";
+        SOASetupCU: Codeunit "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         ContactFilter: Text;
         CustomerFilter: Text;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         ContactFilter := SOAFiltersImpl.GetSecurityFiltersForContacts(AgentTaskID);
 
@@ -105,7 +108,7 @@ codeunit 4306 "SOA Session Filter"
         end;
 
         Rec.SetFilter("Sell-to Customer No.", SOAFiltersImpl.GetExcludeAllFilter());
-        Session.LogMessage('0000O34', FilteringOutAllSalesRecordsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, SOAImpl.GetCustomDimensions());
+        FeatureTelemetry.LogUsage('0000O34', SOASetupCU.GetFeatureName(), FilteringOutAllSalesRecordsTxt, TelemetryDimensions);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Contact List", 'OnOpenPageEvent', '', false, false)]

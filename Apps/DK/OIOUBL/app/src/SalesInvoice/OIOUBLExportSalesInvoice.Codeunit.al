@@ -233,6 +233,8 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
             Round((SalesInvoiceLine.Amount + SalesInvoiceLine."Inv. Discount Amount") / SalesInvoiceLine.Quantity, Currency."Unit-Amount Rounding Precision"),
             SalesInvoiceLine."Unit of Measure Code", CurrencyCode);
 
+
+        OnExportXMLOnAfterInsertInvoiceLine(InvoiceLineElement, SalesInvoiceHeader, SalesInvoiceLine, CurrencyCode);
         InvoiceElement.Add(InvoiceLineElement);
     end;
 
@@ -505,4 +507,10 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
     local procedure OnExportXMLOnAfterExportXMLFile(var SalesInvoiceHeader: Record "Sales Invoice Header"; var TempBlob: Codeunit "Temp Blob"; FileName: Text)
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportXMLOnAfterInsertInvoiceLine(var InvoiceLineElement: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceLine: Record "Sales Invoice Line"; CurrencyCode: Code[10])
+    begin
+    end;
+
 }

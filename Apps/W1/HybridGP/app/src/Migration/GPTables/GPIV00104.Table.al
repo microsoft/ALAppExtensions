@@ -40,5 +40,9 @@ table 41007 "GP IV00104"
         {
             Clustered = true;
         }
+        key(Key2; SEQNUMBR)
+        {
+            Clustered = false;
+        }
     }
 }

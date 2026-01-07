@@ -10,6 +10,7 @@ using Microsoft.Inventory.Availability;
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Document;
 using System.Environment.Configuration;
+using System.Telemetry;
 
 codeunit 4591 "SOA Item Search"
 {
@@ -19,10 +20,25 @@ codeunit 4591 "SOA Item Search"
     InherentPermissions = X;
 
     var
-        NotificationMsg: Label 'The available inventory for item %1 is lower than the entered quantity at this location.', Comment = '%1=Item Description';
+        AgentTaskID: BigInteger;
+        NotificationMsg: Label 'The available inventory for item %1 is lower than the entered quantity at this location at the requested shipment date.', Comment = '%1=Item Description';
+        NotificationCTPDateMsg: Label 'Earliest possible shipping date for the new quantity is %1.', Comment = '%1=Earliest Shipment Date';
+
+    procedure SetAgentTaskID(NewAgentTaskID: BigInteger)
+    begin
+        AgentTaskID := NewAgentTaskID;
+    end;
 
     [TryFunction]
     procedure GetItemFilters(var ItemFilter: Text; SearchPrimaryKeyWords: List of [Text])
+    var
+        DummySearchType: Text;
+    begin
+        GetItemFilters(ItemFilter, SearchPrimaryKeyWords, DummySearchType);
+    end;
+
+    [TryFunction]
+    local procedure GetItemFilters(var ItemFilter: Text; SearchPrimaryKeyWords: List of [Text]; var SearchType: Text)
     var
         Item: Record Item;
         GlobalItemSearch: Codeunit "Global Item Search";
@@ -43,6 +59,7 @@ codeunit 4591 "SOA Item Search"
                 // Search only using key fields
                 if Item.FindFirst() then begin
                     ItemFilter := Item.SystemId;
+                    SearchType := 'item_get';
                     exit;
                 end;
             end;
@@ -56,9 +73,10 @@ codeunit 4591 "SOA Item Search"
         GlobalItemSearch.SetupSOACapabilityInformation();
         GlobalItemSearch.SetupSearchQuery(SearchPrimaryKeyWords.Get(1), SearchPrimaryKeyWords, DummySearchOptionalKeyWords, true, 50);
         ItemFilter := GlobalItemSearch.SearchAndReturnResultAsTxt(SearchPrimaryKeyWords.Get(1), 0, '|');
+        SearchType := 'item_search';
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Item List", 'OnBeforeFindRecord', '', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::"Item List", OnBeforeFindRecord, '', false, false)]
     local procedure FindRecordItemFromList(var Rec: Record Item; Which: Text; var CrossColumnSearchFilter: Text; var Found: Boolean; var IsHandled: Boolean)
     var
         MatchingItem: Boolean;
@@ -66,7 +84,7 @@ codeunit 4591 "SOA Item Search"
         FindRecordItem(Rec, Which, CrossColumnSearchFilter, Found, 0, '', IsHandled, false, MatchingItem);
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"Item Lookup", 'OnBeforeFindRecord', '', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::"Item Lookup", OnBeforeFindRecord, '', false, false)]
     local procedure FindRecordItemFromLookup(var Rec: Record Item; Which: Text; var CrossColumnSearchFilter: Text; var Found: Boolean; var IsHandled: Boolean)
     var
         MatchingItem: Boolean;
@@ -74,38 +92,65 @@ codeunit 4591 "SOA Item Search"
         FindRecordItem(Rec, Which, CrossColumnSearchFilter, Found, 0, '', IsHandled, false, MatchingItem);
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::"SOA Multi Items Availability", 'OnBeforeFindRecord', '', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::"SOA Multi Items Availability", OnBeforeFindRecord, '', false, false)]
     local procedure FindRecordItemFromMultiItemsAvailability(var Rec: Record Item; Which: Text; var CrossColumnSearchFilter: Text; var Found: Boolean; RequiredQuantity: Decimal; InUOMCode: Code[10]; var IsHandled: Boolean; var MatchingItem: Boolean)
+    var
+        TelemetryCustomDimension: Dictionary of [Text, Text];
     begin
-        FindRecordItem(Rec, Which, CrossColumnSearchFilter, Found, RequiredQuantity, InUOMCode, IsHandled, true, MatchingItem);
+        FindRecordItem(Rec, Which, CrossColumnSearchFilter, Found, RequiredQuantity, InUOMCode, IsHandled, true, MatchingItem, TelemetryCustomDimension);
+        LogTelemetryForFindItems(TelemetryCustomDimension);
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterCheckItemAvailable', '', false, false)]
+    [EventSubscriber(ObjectType::Page, Page::"SOA Multi Items Availability", OnOpenPageEvent, '', false, false)]
+    local procedure LogInventoryInquiryReplied()
+    var
+        SOABilling: Codeunit "SOA Billing";
+    begin
+        SOABilling.LogInventoryInquiryReplied(AgentTaskID);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnAfterCheckItemAvailable, '', false, false)]
     local procedure OnAfterCheckItemAvailable(var SalesLine: Record "Sales Line"; CalledByFieldNo: Integer; HideValidationDialog: Boolean)
     var
         Item: Record Item;
         SOASetup: Record "SOA Setup";
         NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
+        SOAShipmentDateMgt: Codeunit "SOA Shipment Date Mgt.";
         QuoteAvailabilityCheckNotification: Notification;
+        Msg: Text;
     begin
-        if SalesLine.IsTemporary() then
+        if SalesLine.IsTemporary() or (SalesLine."Document Type" <> SalesLine."Document Type"::Quote) or
+           (SalesLine.Type <> SalesLine.Type::Item) or (SalesLine."No." = '') or (SalesLine.Quantity = 0)
+        then
             exit;
 
-        if (SalesLine."Document Type" = SalesLine."Document Type"::Quote) and (SalesLine.Type = SalesLine.Type::Item) and (SalesLine."No." <> '') then
-            if SOASetup.FindFirst() and (SOASetup."Search Only Available Items" and not SOASetup."Incl. Capable to Promise") and Item.Get(SalesLine."No.") then begin
-                Item.SetRange("Drop Shipment Filter", false);
-                Item.SetRange("Variant Filter", '');
-                Item.SetFilter("Date Filter", '..%1', SalesLine."Shipment Date");
-                Item.SetFilter("Location Filter", '%1', SalesLine."Location Code");
+        if not SOASetup.FindFirst() or not SOASetup."Search Only Available Items" then
+            exit;
 
-                NotificationLifecycleMgt.RecallNotificationsForRecordWithAdditionalContext(SalesLine.RecordId, GetQuoteItemAvailabilityNotificationId(), true);
-                if (SalesLine.Quantity > 0) and (not IsRequiredQuantityAvailable(Item, SalesLine.Quantity, SalesLine."Unit of Measure Code")) then begin
-                    QuoteAvailabilityCheckNotification.Id(CreateGuid());
-                    QuoteAvailabilityCheckNotification.Message(StrSubstNo(NotificationMsg, Item.Description));
-                    QuoteAvailabilityCheckNotification.Scope(NotificationScope::LocalScope);
-                    NotificationLifecycleMgt.SendNotificationWithAdditionalContext(QuoteAvailabilityCheckNotification, SalesLine.RecordId, GetQuoteItemAvailabilityNotificationId());
-                end;
-            end;
+        Item.Get(SalesLine."No.");
+        Item.SetRange("Drop Shipment Filter", false);
+        Item.SetRange("Variant Filter", '');
+        Item.SetFilter("Date Filter", '..%1', SalesLine."Shipment Date");
+        Item.SetFilter("Location Filter", '%1', SalesLine."Location Code");
+
+        if IsRequiredQuantityAvailable(Item, SalesLine.Quantity, SalesLine."Unit of Measure Code") then
+            exit;
+
+        Msg := StrSubstNo(NotificationMsg, Item.Description);
+
+        if SOASetup."Incl. Capable to Promise" then begin
+            SOAShipmentDateMgt.SetParamenters(Item."No.", '', SalesLine."Location Code", SalesLine."Unit of Measure Code", SalesLine."Shipment Date", SalesLine.Quantity);
+            SOAShipmentDateMgt.Run();
+            if SOAShipmentDateMgt.GetEarliestShipmentDate() <= SalesLine."Shipment Date" then
+                exit;
+            Msg += StrSubstNo(NotificationCTPDateMsg, SOAShipmentDateMgt.GetEarliestShipmentDate());
+        end;
+
+        NotificationLifecycleMgt.RecallNotificationsForRecordWithAdditionalContext(SalesLine.RecordId, GetQuoteItemAvailabilityNotificationId(), true);
+        QuoteAvailabilityCheckNotification.Id(CreateGuid());
+        QuoteAvailabilityCheckNotification.Message(Msg);
+        QuoteAvailabilityCheckNotification.Scope(NotificationScope::LocalScope);
+        NotificationLifecycleMgt.SendNotificationWithAdditionalContext(QuoteAvailabilityCheckNotification, SalesLine.RecordId, GetQuoteItemAvailabilityNotificationId());
     end;
 
     local procedure GetQuoteItemAvailabilityNotificationId(): Guid
@@ -114,6 +159,13 @@ codeunit 4591 "SOA Item Search"
     end;
 
     local procedure FindRecordItem(var Rec: Record Item; Which: Text; var CrossColumnSearchFilter: Text; var Found: Boolean; RequiredQuantity: Decimal; InUOMCode: Code[10]; var IsHandled: Boolean; CheckAvailability: Boolean; var MatchingItem: Boolean)
+    var
+        DummyCustomDimension: Dictionary of [Text, Text];
+    begin
+        FindRecordItem(Rec, Which, CrossColumnSearchFilter, Found, RequiredQuantity, InUOMCode, IsHandled, CheckAvailability, MatchingItem, DummyCustomDimension);
+    end;
+
+    local procedure FindRecordItem(var Rec: Record Item; Which: Text; var CrossColumnSearchFilter: Text; var Found: Boolean; RequiredQuantity: Decimal; InUOMCode: Code[10]; var IsHandled: Boolean; CheckAvailability: Boolean; var MatchingItem: Boolean; var TelemetryCustomDimension: Dictionary of [Text, Text])
     var
         SOASetup: Record "SOA Setup";
         Item: Record Item;
@@ -125,6 +177,8 @@ codeunit 4591 "SOA Item Search"
         TrimmedItemFilter: Text;
         OriginalFilterGroup: Integer;
         ItemSystemId: Guid;
+        SearchType: Text;
+        CountBeforeAvailabilityCheck: Integer;
     begin
         MatchingItem := true;
         OriginalFilterGroup := Rec.FilterGroup();
@@ -140,16 +194,18 @@ codeunit 4591 "SOA Item Search"
 
         if SearchKeyWordsTrimmed.Count() = 0 then
             exit;
-        if not GetItemFilters(ItemFilter, SearchKeyWordsTrimmed) then   //Search for the items using the entity search
+        if not GetItemFilters(ItemFilter, SearchKeyWordsTrimmed, SearchType) then //Search for the items using the entity search
             exit;
 
         if (ItemFilter = '') and (SplitSearchKeywords <> '') then begin
             BroaderItemSearch.BroaderItemSearch(ItemFilter, SplitSearchKeywords.TrimEnd(','));
             MatchingItem := false;
+            SearchType := 'broader_item_search';
         end;
 
         if SOASetup.FindFirst() then
             if ItemFilter <> '' then begin
+                CountBeforeAvailabilityCheck := ItemFilter.Split('|').Count();
                 foreach ItemSystemId in ItemFilter.Split('|') do begin
                     if Item.GetBySystemId(ItemSystemId) then
                         Item.CopyFilters(Rec);
@@ -178,6 +234,12 @@ codeunit 4591 "SOA Item Search"
             Item.CopyFilter("Variant Filter", Rec."Variant Filter");
             Found := Rec.Find(Which);
         end;
+
+        // Prepare Custom Dimensions for Telemetry
+        TelemetryCustomDimension.Add('SearchType', SearchType);
+        TelemetryCustomDimension.Add('ResultCount', Format(ItemFilter.Split('|').Count()));
+        TelemetryCustomDimension.Add('CountBeforeAvailabilityCheck', Format(CountBeforeAvailabilityCheck));
+
         IsHandled := true;
         OnAfterFindRecordItem(ItemFilter, Which, CrossColumnSearchFilter, Found, RequiredQuantity, InUOMCode);
     end;
@@ -252,6 +314,30 @@ codeunit 4591 "SOA Item Search"
                 exit(Round(ProjAvailableBalance / ItemUnitOfMeasure."Qty. per Unit of Measure", QtyRoundingPrecision));
             end else
                 exit(0);
+    end;
+
+    local procedure LogTelemetryForFindItems(TelemetryCustomDimension: Dictionary of [Text, Text])
+    var
+        SOASetupRec: Record "SOA Setup";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        SOASetup: Codeunit "SOA Setup";
+    begin
+        // Log only for agent session
+        if AgentTaskID = 0 then
+            exit;
+
+        // Agent session context
+        TelemetryCustomDimension.Add('TaskId', Format(AgentTaskID));
+        TelemetryCustomDimension.Add('AgentUserSecurityId', Format(UserSecurityId()));
+
+        // Search setup
+        if SOASetupRec.FindFirst() then begin
+            TelemetryCustomDimension.Add('SearchOnlyAvailableItems', Format(SOASetupRec."Search Only Available Items"));
+            TelemetryCustomDimension.Add('IncludeCapableToPromise', Format(SOASetupRec."Incl. Capable to Promise"));
+        end;
+
+        // Log usage
+        FeatureTelemetry.LogUsage('0000QB0', SOASetup.GetFeatureName(), 'SOA Multi Items Availability: Find Items', TelemetryCustomDimension)
     end;
 
     [InternalEvent(false, false)]

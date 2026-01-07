@@ -32,14 +32,14 @@ codeunit 148100 "Tax Reports CZL"
     end;
 
     [Test]
-    [HandlerFunctions('YesConfirmHandler,RequestPageDocumentationForVATHandler,RequestPageCreateVATPeriodHandler')]
+    [HandlerFunctions('RequestPageDocumentationForVATHandler,RequestPageCreateVATPeriodHandler')]
     procedure PrintingDocumentationForVATOutVATDate()
     begin
         PrintingDocumentationForVAT(true);
     end;
 
     [Test]
-    [HandlerFunctions('YesConfirmHandler,RequestPageDocumentationForVATHandler,RequestPageCreateVATPeriodHandler')]
+    [HandlerFunctions('RequestPageDocumentationForVATHandler,RequestPageCreateVATPeriodHandler')]
     procedure PrintingDocumentationForVATInVATDate()
     begin
         PrintingDocumentationForVAT(false);
@@ -103,9 +103,9 @@ codeunit 148100 "Tax Reports CZL"
 
     local procedure DeleteVATPeriod()
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
     begin
-        VATPeriodCZL.DeleteAll();
+        VATReturnPeriod.DeleteAll();
     end;
 
     local procedure PostPurchaseDocument(var PurchaseHeader: Record "Purchase Header"): Code[20]
@@ -134,12 +134,12 @@ codeunit 148100 "Tax Reports CZL"
     end;
 
     [RequestPageHandler]
-    procedure RequestPageCreateVATPeriodHandler(var CreateVATPeriodCZL: TestRequestPage "Create VAT Period CZL")
+    procedure RequestPageCreateVATPeriodHandler(var CreateVATReturnPeriodCZL: TestRequestPage "Create VAT Return Period CZL")
     begin
-        CreateVATPeriodCZL.VATPeriodStartDateCZL.SetValue(LibraryVariableStorage.DequeueDate());
-        CreateVATPeriodCZL.NoOfPeriodsCZL.SetValue(LibraryVariableStorage.DequeueInteger());
-        CreateVATPeriodCZL.PeriodLengthCZL.SetValue(LibraryVariableStorage.DequeueText());
-        CreateVATPeriodCZL.OK().Invoke();
+        CreateVATReturnPeriodCZL.StartDateField.SetValue(LibraryVariableStorage.DequeueDate());
+        CreateVATReturnPeriodCZL.NoOfPeriodsField.SetValue(LibraryVariableStorage.DequeueInteger());
+        CreateVATReturnPeriodCZL.PeriodLengthField.SetValue(LibraryVariableStorage.DequeueText());
+        CreateVATReturnPeriodCZL.OK().Invoke();
     end;
 
     [RequestPageHandler]
@@ -149,12 +149,6 @@ codeunit 148100 "Tax Reports CZL"
         DocumentationforVATCZL.SelectionCZL.SetValue(LibraryVariableStorage.DequeueInteger());
         DocumentationforVATCZL.PrintVATEntriesCZL.SetValue(LibraryVariableStorage.DequeueBoolean());
         DocumentationforVATCZL.OK().Invoke();
-    end;
-
-    [ConfirmHandler]
-    procedure YesConfirmHandler(Question: Text[1024]; var Reply: Boolean)
-    begin
-        Reply := true;
     end;
 }
 

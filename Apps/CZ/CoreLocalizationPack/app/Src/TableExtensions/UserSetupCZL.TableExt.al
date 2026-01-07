@@ -111,6 +111,16 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
             DataClassification = CustomerContent;
         }
     }
+
+    trigger OnDelete()
+    var
+        UserSetupLineCZL: Record "User Setup Line CZL";
+    begin
+        UserSetupLineCZL.Reset();
+        UserSetupLineCZL.SetRange("User ID", Rec."User ID");
+        UserSetupLineCZL.DeleteAll();
+    end;
+
     procedure CopyToCZL(ToUserId: Code[50])
     var
         FromUserSetupLine: Record "User Setup Line CZL";

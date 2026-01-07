@@ -570,6 +570,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
     [NonDebuggable]
     [Scope('OnPrem')]
     procedure SaveConsumerPassword(var ConsumerPasswordKey: Guid; ConsumerPasswordValue: Text);
+    var
     begin
         ConsumerPasswordValue := DELCHR(ConsumerPasswordValue, '=', ' ');
 

@@ -194,7 +194,7 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         CheckOAuthConfigured(false);
         GetOAuthSetup(OAuth20Setup);
         ElecVATLoggingMgt.LogRefreshAccessToken();
-        exit(OAuth20Setup.RefreshAccessToken(HttpError));
+        exit(RefreshAccessToken(OAuth20Setup, HttpError));
     end;
 
     procedure InvokePostRequest(var ResponseJson: Text; var HttpLogError: Text; RequestPath: Text; ContentType: Text; Request: Text; ActivityLogContext: Text): Boolean
@@ -256,7 +256,7 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         JObject.WriteTo(RequestJson);
         OldServiceUrL := OAuth20Setup."Service URL";
         OAuth20Setup."Service URL" := CopyStr(RequestPath, 1, MaxStrLen(OAuth20Setup."Service URL"));
-        Result := OAuth20Setup.InvokeRequest(RequestJson, ResponseJson, HttpError, true);
+        Result := InvokeRequest(OAuth20Setup, RequestJson, ResponseJson, HttpError, true);
         if not Result then
             TryParseErrors(HttpError, HttpLogError, ResponseJson);
 
@@ -407,12 +407,14 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         if not IsElectronicVATOAuthSetup(Rec) then
             exit;
 
-        with Rec do begin
-            DeleteToken("Client ID");
-            DeleteToken("Client Secret");
-            DeleteToken("Access Token");
-            DeleteToken("Refresh Token");
-        end;
+        if IsolatedStorage.Contains(Rec."Client ID", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Client ID", Rec.GetTokenDataScope());
+        if IsolatedStorage.Contains(Rec."Client Secret", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Client Secret", Rec.GetTokenDataScope());
+        if IsolatedStorage.Contains(Rec."Access Token", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Access Token", Rec.GetTokenDataScope());
+        if IsolatedStorage.Contains(Rec."Refresh Token", Rec.GetTokenDataScope()) then
+            IsolatedStorage.Delete(Rec."Refresh Token", Rec.GetTokenDataScope());
     end;
 
     [NonDebuggable]
@@ -443,7 +445,7 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
 
         if AuthorizationCode <> '' then begin
             OAuth20Setup.Get(OAuth20Setup.Code);
-            if not OAuth20Setup.RequestAccessToken(auth_error, AuthorizationCode) then
+            if not RequestAccessToken(OAuth20Setup, AuthorizationCode, auth_error) then
                 Error(auth_error);
         end;
     end;
@@ -451,15 +453,24 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
     [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAccessToken', '', true, true)]
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
+    begin
+        if not IsElectronicVATOAuthSetup(OAuth20Setup) or Processed then
+            exit;
+        Processed := true;
+
+        Result := RequestAccessToken(OAuth20Setup, AuthorizationCode, MessageText)
+    end;
+
+    [NonDebuggable]
+    local procedure RequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var MessageText: Text) Result: Boolean
     var
         RequestJSON: Text;
         AccessToken: SecretText;
         RefreshToken: SecretText;
         TokenDataScope: DataScope;
     begin
-        if not IsElectronicVATOAuthSetup(OAuth20Setup) or Processed then
+        if not IsElectronicVATOAuthSetup(OAuth20Setup) then
             exit;
-        Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
 
@@ -479,6 +490,16 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
     [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRefreshAccessToken', '', true, true)]
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
+    begin
+        if not IsElectronicVATOAuthSetup(OAuth20Setup) or Processed then
+            exit;
+        Processed := true;
+
+        Result := RefreshAccessToken(OAuth20Setup, MessageText)
+    end;
+
+    [NonDebuggable]
+    local procedure RefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var MessageText: Text) Result: Boolean
     var
         RequestJSON: Text;
         AccessToken: SecretText;
@@ -486,9 +507,8 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         TokenDataScope: DataScope;
         OldServiceUrl: Text[250];
     begin
-        if not IsElectronicVATOAuthSetup(OAuth20Setup) or Processed then
+        if not IsElectronicVATOAuthSetup(OAuth20Setup) then
             exit;
-        Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
 
@@ -536,6 +556,26 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         if not IsElectronicVATOAuthSetup(OAuth20Setup) or Processed then
             exit;
         Processed := true;
+
+        CheckOAuthConsistencySetup(OAuth20Setup);
+        ElecVATSetup.GetRecordOnce();
+        ElecVATSetup.TestField("Submission Environment URL");
+        if StrPos(OAuth20Setup."Service URL", ElecVATSetup."Submission Environment URL") = 1 then
+            TokenValue := GetToken(OAuth20Setup."Altinn Token", OAuth20Setup.GetTokenDataScope()).Unwrap()
+        else
+            TokenValue := GetToken(OAuth20Setup."Access Token", OAuth20Setup.GetTokenDataScope()).Unwrap();
+        Result :=
+            OAuth20Mgt.InvokeRequest(
+                OAuth20Setup, RequestJSON, ResponseJSON, HttpError, TokenValue, RetryOnCredentialsFailure);
+    end;
+
+    [NonDebuggable]
+    local procedure InvokeRequest(var OAuth20Setup: Record "OAuth 2.0 Setup"; RequestJSON: Text; var ResponseJSON: Text; var HttpError: Text; RetryOnCredentialsFailure: Boolean) Result: Boolean
+    var
+        TokenValue: Text;
+    begin
+        if not IsElectronicVATOAuthSetup(OAuth20Setup) then
+            exit;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
         ElecVATSetup.GetRecordOnce();

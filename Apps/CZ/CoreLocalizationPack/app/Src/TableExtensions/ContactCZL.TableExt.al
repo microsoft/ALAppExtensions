@@ -61,6 +61,12 @@ tableextension 11700 "Contact CZL" extends Contact
             end;
         }
     }
+
+    trigger OnDelete()
+    begin
+        RegistrationLogMgtCZL.DeleteContactLog(Rec);
+    end;
+
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
         RegistrationNoMgtCZL: Codeunit "Registration No. Mgt. CZL";

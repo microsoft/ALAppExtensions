@@ -527,6 +527,10 @@ table 4061 "GPPOPReceiptHist"
         {
             Clustered = false;
         }
+        key(Key2; DEX_ROW_ID)
+        {
+            Clustered = false;
+        }
     }
 
     fieldgroups

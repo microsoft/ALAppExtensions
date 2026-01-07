@@ -929,4 +929,3 @@ report 10581 "Purchase Invoice"
         FeatureNameTok: Label 'Purchase Invoice GB', Locked = true;
         EventNameTok: Label 'Purchase Invoice GB report has been used', Locked = true;
 }
-

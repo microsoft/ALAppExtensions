@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA31
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,10 +10,11 @@ permissionset 20111 "AMC Banking - Edit"
     Assignable = false;
     Access = Public;
     Caption = 'AMC Banking - Edit';
-
     IncludedPermissionSets = "AMC Banking - Read";
-
+#if not CLEAN28
     Permissions = tabledata "AMC Bank Banks" = IMD,
                   tabledata "AMC Bank Pmt. Type" = IMD,
                   tabledata "AMC Banking Setup" = IMD;
+#endif
 }
+#endif

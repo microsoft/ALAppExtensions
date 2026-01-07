@@ -535,7 +535,7 @@ codeunit 148085 "MTDTestReturnsWebService"
         // MockServicePacket360 MockService\MakingTaxDigital\200_authorize_submit.txt
         // MockServicePacket358 MockService\MakingTaxDigital\201_submit.txt
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket358\MockServicePacket360', '');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket358\MockServicePacket360', '333333339');
 
         RequestJson := '{}';
         SubmitVATReturn(RequestJson, ResponseJson, true);

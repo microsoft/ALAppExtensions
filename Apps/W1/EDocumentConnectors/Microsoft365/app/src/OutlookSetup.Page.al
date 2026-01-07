@@ -58,7 +58,7 @@ page 6384 "Outlook Setup"
                         if Rec.Enabled then
                             Error(DisableToConfigErr);
 
-                        if OutlookIntegrationImpl.SelectEmailAccountV3(TempEmailAccount) then begin
+                        if OutlookIntegrationImpl.SelectEmailAccount(TempEmailAccount) then begin
                             TempOutlookSetup."Email Account ID" := TempEmailAccount."Account Id";
                             TempOutlookSetup."Email Connector" := TempEmailAccount.Connector;
                             if Format(TempOutlookSetup."Email Connector") <> M365Lbl then

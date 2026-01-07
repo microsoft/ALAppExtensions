@@ -2283,6 +2283,8 @@ codeunit 6610 "FS Int. Table Subscriber"
             exit;
         end;
 
+        Codeunit.Run(Codeunit::"CRM Integration Management");
+
         // write back consumption data to Field Service
         if not FSWorkOrderProduct.WritePermission() then
             exit;

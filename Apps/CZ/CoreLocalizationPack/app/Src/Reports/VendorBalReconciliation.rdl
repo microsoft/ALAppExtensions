@@ -24,7 +24,7 @@
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>23.34636cm</Height>
+                  <Height>23.51499cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -1916,7 +1916,7 @@
                                 </TablixColumns>
                                 <TablixRows>
                                   <TablixRow>
-                                    <Height>5.48206cm</Height>
+                                    <Height>5.6507cm</Height>
                                     <TablixCells>
                                       <TablixCell>
                                         <CellContents>
@@ -2317,6 +2317,114 @@
                                                                 </Paragraph>
                                                               </Paragraphs>
                                                               <rd:DefaultName>Textbox15</rd:DefaultName>
+                                                              <Style>
+                                                                <Border>
+                                                                  <Color>LightGrey</Color>
+                                                                  <Style>None</Style>
+                                                                </Border>
+                                                                <PaddingLeft>2pt</PaddingLeft>
+                                                                <PaddingRight>2pt</PaddingRight>
+                                                                <PaddingTop>2pt</PaddingTop>
+                                                                <PaddingBottom>2pt</PaddingBottom>
+                                                              </Style>
+                                                            </Textbox>
+                                                          </CellContents>
+                                                        </TablixCell>
+                                                      </TablixCells>
+                                                    </TablixRow>
+                                                    <TablixRow>
+                                                      <Height>0.42301cm</Height>
+                                                      <TablixCells>
+                                                        <TablixCell>
+                                                          <CellContents>
+                                                            <Textbox Name="OpenCustVendDocumentsCaption">
+                                                              <CanGrow>true</CanGrow>
+                                                              <KeepTogether>true</KeepTogether>
+                                                              <Paragraphs>
+                                                                <Paragraph>
+                                                                  <TextRuns>
+                                                                    <TextRun>
+                                                                      <Value>=Fields!OpenCustVendDocumentsCaption.Value</Value>
+                                                                      <Style>
+                                                                        <FontSize>7pt</FontSize>
+                                                                      </Style>
+                                                                    </TextRun>
+                                                                  </TextRuns>
+                                                                  <Style />
+                                                                </Paragraph>
+                                                              </Paragraphs>
+                                                              <rd:DefaultName>OpenCustVendDocumentsCaption</rd:DefaultName>
+                                                              <Style>
+                                                                <Border>
+                                                                  <Color>LightGrey</Color>
+                                                                  <Style>None</Style>
+                                                                </Border>
+                                                                <PaddingLeft>2pt</PaddingLeft>
+                                                                <PaddingRight>2pt</PaddingRight>
+                                                                <PaddingTop>2pt</PaddingTop>
+                                                                <PaddingBottom>2pt</PaddingBottom>
+                                                              </Style>
+                                                            </Textbox>
+                                                            <ColSpan>7</ColSpan>
+                                                          </CellContents>
+                                                        </TablixCell>
+                                                        <TablixCell />
+                                                        <TablixCell />
+                                                        <TablixCell />
+                                                        <TablixCell />
+                                                        <TablixCell />
+                                                        <TablixCell />
+                                                        <TablixCell>
+                                                          <CellContents>
+                                                            <Textbox Name="Textbox32">
+                                                              <CanGrow>true</CanGrow>
+                                                              <KeepTogether>true</KeepTogether>
+                                                              <Paragraphs>
+                                                                <Paragraph>
+                                                                  <TextRuns>
+                                                                    <TextRun>
+                                                                      <Value />
+                                                                      <Style>
+                                                                        <FontSize>7pt</FontSize>
+                                                                      </Style>
+                                                                    </TextRun>
+                                                                  </TextRuns>
+                                                                  <Style />
+                                                                </Paragraph>
+                                                              </Paragraphs>
+                                                              <rd:DefaultName>Textbox32</rd:DefaultName>
+                                                              <Style>
+                                                                <Border>
+                                                                  <Color>LightGrey</Color>
+                                                                  <Style>None</Style>
+                                                                </Border>
+                                                                <PaddingLeft>2pt</PaddingLeft>
+                                                                <PaddingRight>2pt</PaddingRight>
+                                                                <PaddingTop>2pt</PaddingTop>
+                                                                <PaddingBottom>2pt</PaddingBottom>
+                                                              </Style>
+                                                            </Textbox>
+                                                          </CellContents>
+                                                        </TablixCell>
+                                                        <TablixCell>
+                                                          <CellContents>
+                                                            <Textbox Name="Textbox38">
+                                                              <CanGrow>true</CanGrow>
+                                                              <KeepTogether>true</KeepTogether>
+                                                              <Paragraphs>
+                                                                <Paragraph>
+                                                                  <TextRuns>
+                                                                    <TextRun>
+                                                                      <Value />
+                                                                      <Style>
+                                                                        <FontSize>7pt</FontSize>
+                                                                      </Style>
+                                                                    </TextRun>
+                                                                  </TextRuns>
+                                                                  <Style />
+                                                                </Paragraph>
+                                                              </Paragraphs>
+                                                              <rd:DefaultName>Textbox38</rd:DefaultName>
                                                               <Style>
                                                                 <Border>
                                                                   <Color>LightGrey</Color>
@@ -3034,14 +3142,14 @@
                                                     <TablixMember>
                                                       <TablixMembers>
                                                         <TablixMember>
-                                                          <Group Name="Group1">
+                                                          <Group Name="CustomerVendorNumber">
                                                             <GroupExpressions>
-                                                              <GroupExpression>=Fields!CurrenciesNumber.Value</GroupExpression>
+                                                              <GroupExpression>=Fields!CustomerVendorNumber.Value</GroupExpression>
                                                             </GroupExpressions>
                                                           </Group>
                                                           <SortExpressions>
                                                             <SortExpression>
-                                                              <Value>=Fields!CurrenciesNumber.Value</Value>
+                                                              <Value>=Fields!CustomerVendorNumber.Value</Value>
                                                             </SortExpression>
                                                           </SortExpressions>
                                                           <TablixMembers>
@@ -3049,16 +3157,36 @@
                                                               <KeepWithGroup>After</KeepWithGroup>
                                                             </TablixMember>
                                                             <TablixMember>
-                                                              <Group Name="Details4" />
-                                                              <Visibility>
-                                                                <Hidden>=Cstr(Fields!CVLedgEntryBufNumber.Value) = ""</Hidden>
-                                                              </Visibility>
-                                                            </TablixMember>
-                                                            <TablixMember>
-                                                              <Visibility>
-                                                                <Hidden>=(Last(Fields!TotalCaption.Value) = "")</Hidden>
-                                                              </Visibility>
-                                                              <KeepWithGroup>Before</KeepWithGroup>
+                                                              <Group Name="Group1">
+                                                                <GroupExpressions>
+                                                                  <GroupExpression>=Fields!CurrenciesNumber.Value</GroupExpression>
+                                                                </GroupExpressions>
+                                                              </Group>
+                                                              <SortExpressions>
+                                                                <SortExpression>
+                                                                  <Value>=Fields!CurrenciesNumber.Value</Value>
+                                                                </SortExpression>
+                                                              </SortExpressions>
+                                                              <TablixMembers>
+                                                                <TablixMember>
+                                                                  <Visibility>
+                                                                    <Hidden>=not Fields!PrintAmountsInCurrency.Value</Hidden>
+                                                                  </Visibility>
+                                                                  <KeepWithGroup>After</KeepWithGroup>
+                                                                </TablixMember>
+                                                                <TablixMember>
+                                                                  <Group Name="Details4" />
+                                                                  <Visibility>
+                                                                    <Hidden>=Cstr(Fields!CVLedgEntryBufNumber.Value) = ""</Hidden>
+                                                                  </Visibility>
+                                                                </TablixMember>
+                                                                <TablixMember>
+                                                                  <Visibility>
+                                                                    <Hidden>=(Last(Fields!TotalCaption.Value) = "")</Hidden>
+                                                                  </Visibility>
+                                                                  <KeepWithGroup>Before</KeepWithGroup>
+                                                                </TablixMember>
+                                                              </TablixMembers>
                                                             </TablixMember>
                                                           </TablixMembers>
                                                         </TablixMember>
@@ -3078,7 +3206,7 @@
                                                 </Filters>
                                                 <Top>1.88844cm</Top>
                                                 <Left>0.57302cm</Left>
-                                                <Height>2.07967cm</Height>
+                                                <Height>2.50268cm</Height>
                                                 <Width>17.58451cm</Width>
                                                 <ZIndex>3</ZIndex>
                                                 <Style>
@@ -3209,7 +3337,7 @@
                                                     </FilterValues>
                                                   </Filter>
                                                 </Filters>
-                                                <Top>4.4157cm</Top>
+                                                <Top>5.0507cm</Top>
                                                 <Left>10.65955cm</Left>
                                                 <Height>0.6cm</Height>
                                                 <Width>7.49999cm</Width>
@@ -3282,7 +3410,7 @@
                                 <BreakLocation>Start</BreakLocation>
                               </PageBreak>
                               <Top>17.86429cm</Top>
-                              <Height>5.48206cm</Height>
+                              <Height>5.6507cm</Height>
                               <Width>18.73016cm</Width>
                               <ZIndex>35</ZIndex>
                               <Visibility>
@@ -3486,7 +3614,7 @@
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DataSet_Result</DataSetName>
-            <Height>23.34636cm</Height>
+            <Height>23.51499cm</Height>
             <Width>18.73016cm</Width>
             <Style>
               <Border>
@@ -3495,7 +3623,7 @@
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>23.34636cm</Height>
+        <Height>23.51499cm</Height>
         <Style />
       </Body>
       <Width>18.73016cm</Width>
@@ -3840,6 +3968,9 @@ End Function</Code>
         <Field Name="ResponsibleEmployee">
           <DataField>ResponsibleEmployee</DataField>
         </Field>
+        <Field Name="PrintAmountsInCurrency">
+          <DataField>PrintAmountsInCurrency</DataField>
+        </Field>
         <Field Name="DebitAmount">
           <DataField>DebitAmount</DataField>
         </Field>
@@ -3872,6 +4003,12 @@ End Function</Code>
         </Field>
         <Field Name="FooterNumber">
           <DataField>FooterNumber</DataField>
+        </Field>
+        <Field Name="CustomerVendorNumber">
+          <DataField>CustomerVendorNumber</DataField>
+        </Field>
+        <Field Name="OpenCustVendDocumentsCaption">
+          <DataField>OpenCustVendDocumentsCaption</DataField>
         </Field>
         <Field Name="OpenDocumentsCaption">
           <DataField>OpenDocumentsCaption</DataField>

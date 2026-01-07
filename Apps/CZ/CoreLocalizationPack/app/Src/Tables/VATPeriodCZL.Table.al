@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEANSCHEMA31
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -7,7 +8,15 @@ namespace Microsoft.Finance.VAT.Reporting;
 table 11769 "VAT Period CZL"
 {
     Caption = 'VAT Period';
+#if not CLEAN28
     LookupPageId = "VAT Periods CZL";
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '31.0';
+#endif
+    ObsoleteReason = 'Replaced by standard VAT Return Period table.';
 
     fields
     {
@@ -54,3 +63,4 @@ table 11769 "VAT Period CZL"
     var
         MonthTok: Label '<Month Text>', Locked = true;
 }
+#endif

@@ -20,9 +20,8 @@ codeunit 4587 "SOA Impl"
     InherentPermissions = X;
 
     var
-        Telemetry: Codeunit "Telemetry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         CantCreateTaskErr: Label 'User cannot create tasks.';
-        CategoryLbl: Label 'Sales Order Agent', Locked = true;
         TelemetrySOASetupRecordNotValidLbl: Label 'SOA Setup record is not valid.', Locked = true;
         TelemetryAgentScheduledTaskCancelledLbl: Label 'Agent scheduled task cancelled.', Locked = true;
         TelemetryRecoveryScheduledTaskCancelledLbl: Label 'Recovery scheduled task cancelled.', Locked = true;
@@ -30,16 +29,20 @@ codeunit 4587 "SOA Impl"
 
     internal procedure ScheduleSOAgent(var SOASetup: Record "SOA Setup")
     var
+        SOASetupCU: Codeunit "SOA Setup";
         ScheduledTaskId: Guid;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if IsNullGuid(SOASetup.SystemId) then begin
-            Telemetry.LogMessage('0000NDU', TelemetrySOASetupRecordNotValidLbl, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, GetCustomDimensions());
+            FeatureTelemetry.LogError('0000NDU', SOASetupCU.GetFeatureName(), 'Invalid SOA Setup', TelemetrySOASetupRecordNotValidLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit;
         end;
 
         if not TaskScheduler.CanCreateTask() then
             Error(CantCreateTaskErr);
 
+        SOASetup.LockTable(); // Ensure that no other process can change the setup while we are scheduling the task
+        SOASetup.GetBySystemId(SOASetup.SystemId);
         RemoveScheduledTask(SOASetup);
 
         ScheduledTaskId := TaskScheduler.CreateTask(Codeunit::"SOA Dispatcher", Codeunit::"SOA Error Handler", true, CompanyName(), CurrentDateTime() + ScheduleDelay(), SOASetup.RecordId);
@@ -47,7 +50,8 @@ codeunit 4587 "SOA Impl"
         ScheduleSOARecovery(SOASetup);
 
         SOASetup.Modify();
-        Telemetry.LogMessage('0000NGM', TelemetryAgentScheduledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, GetCustomDimensions());
+        Commit();
+        FeatureTelemetry.LogUsage('0000NGM', SOASetupCU.GetFeatureName(), TelemetryAgentScheduledLbl, TelemetryDimensions);
     end;
 
     /// <summary>
@@ -70,7 +74,7 @@ codeunit 4587 "SOA Impl"
             exit(true);
 
         repeat
-            if User.Get(SOASetup."Agent User Security ID") then
+            if User.Get(SOASetup."User Security ID") then
                 if User.State = User.State::Enabled then
                     exit(true);
         until SOASetup.Next() = 0;
@@ -88,16 +92,18 @@ codeunit 4587 "SOA Impl"
 
     internal procedure RemoveScheduledTask(var SOASetup: Record "SOA Setup")
     var
+        SOASetupCU: Codeunit "SOA Setup";
         NullGuid: Guid;
+        TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if TaskScheduler.TaskExists(SOASetup."Agent Scheduled Task ID") then begin
             TaskScheduler.CancelTask(SOASetup."Agent Scheduled Task ID");
-            Telemetry.LogMessage('0000NGN', TelemetryAgentScheduledTaskCancelledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000NGN', SOASetupCU.GetFeatureName(), TelemetryAgentScheduledTaskCancelledLbl, TelemetryDimensions);
         end;
 
         if TaskScheduler.TaskExists(SOASetup."Recovery Scheduled Task ID") then begin
             TaskScheduler.CancelTask(SOASetup."Recovery Scheduled Task ID");
-            Telemetry.LogMessage('0000NGO', TelemetryRecoveryScheduledTaskCancelledLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, GetCustomDimensions());
+            FeatureTelemetry.LogUsage('0000NGO', SOASetupCU.GetFeatureName(), TelemetryRecoveryScheduledTaskCancelledLbl, TelemetryDimensions);
         end;
 
         SOASetup."Agent Scheduled Task ID" := NullGuid;
@@ -134,27 +140,18 @@ codeunit 4587 "SOA Impl"
         Commit();
     end;
 
-    procedure GetCustomDimensions(): Dictionary of [Text, Text]
-    var
-        CustomDimensions: Dictionary of [Text, Text];
-    begin
-        CustomDimensions.Set('category', GetCategory());
-        exit(CustomDimensions);
-    end;
-
-    procedure GetCategory(): Text
-    begin
-        exit(CategoryLbl);
-    end;
-
     procedure RegisterCapability()
     var
         CopilotCapability: Codeunit "Copilot Capability";
         EnvironmentInformation: Codeunit "Environment Information";
         LearnMoreUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2281481', Locked = true;
     begin
-        if EnvironmentInformation.IsSaaSInfrastructure() then; //TODO: Add this check back once the feature development is complete
-        if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Sales Order Agent") then
-            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Sales Order Agent", Enum::"Copilot Availability"::Preview, Enum::"Copilot Billing Type"::"Microsoft Billed", LearnMoreUrlTxt);
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
+            exit;
+
+        if CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Sales Order Agent") then
+            CopilotCapability.ModifyCapability(Enum::"Copilot Capability"::"Sales Order Agent", Enum::"Copilot Availability"::"Generally Available", Enum::"Copilot Billing Type"::"Microsoft Billed", LearnMoreUrlTxt)
+        else
+            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Sales Order Agent", Enum::"Copilot Availability"::"Generally Available", Enum::"Copilot Billing Type"::"Microsoft Billed", LearnMoreUrlTxt);
     end;
 }

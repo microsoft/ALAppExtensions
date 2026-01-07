@@ -17,6 +17,7 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
 
     var
         IRSReportingPeriod: Codeunit "IRS Reporting Period";
+        IRS1099VendorFormBox: Codeunit "IRS 1099 Vendor Form Box";
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeader', '', false, false)]
     local procedure UpdateIRSDataOnAfterCopyGenJnlLineFromPurchHeader(PurchaseHeader: Record "Purchase Header"; var GenJournalLine: Record "Gen. Journal Line")
@@ -98,6 +99,7 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Posting Date', false, false)]
     local procedure UpdateIRSDataOnAfterValidatePostingDate(var Rec: Record "Purchase Header")
     begin
+        IRS1099VendorFormBox.ShowNotificationIfVendorHas1099CodePrevPeriodButNotCurr(Rec."Pay-to Vendor No.", Rec."Posting Date");
         UpdateIRSDataInPurchHeader(Rec, true);
     end;
 
@@ -110,6 +112,7 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterInitRecord', '', false, false)]
     local procedure UpdateIRSDataOnAfterInitRecord(var PurchHeader: Record "Purchase Header")
     begin
+        IRS1099VendorFormBox.ShowNotificationIfVendorHas1099CodePrevPeriodButNotCurr(PurchHeader."Pay-to Vendor No.", PurchHeader."Posting Date");
         UpdateIRSDataInPurchHeader(PurchHeader, false);
     end;
 

@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -163,16 +163,11 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
     begin
         "Source Currency Code" := SalesAdvLetterHeaderCZZ."Currency Code";
         "Bill-to/Pay-to No." := SalesAdvLetterHeaderCZZ."Bill-to Customer No.";
-        "Country/Region Code" := SalesAdvLetterHeaderCZZ."Bill-to Country/Region Code";
+        "Country/Region Code" := SalesAdvLetterHeaderCZZ."VAT Country/Region Code";
         "VAT Registration No." := SalesAdvLetterHeaderCZZ."VAT Registration No.";
         "Registration No. CZL" := SalesAdvLetterHeaderCZZ."Registration No.";
         "Tax Registration No. CZL" := SalesAdvLetterHeaderCZZ."Tax Registration No.";
         "System-Created Entry" := true;
-#if not CLEAN25
-#pragma warning disable AL0432
-        OnAfterCopyGenJnlLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ, Rec);
-#pragma warning restore AL0432
-#endif
         OnAfterCopyGenJournalLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ, Rec);
     end;
 
@@ -182,11 +177,6 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         "Shortcut Dimension 2 Code" := SalesAdvLetterEntryCZZ."Global Dimension 2 Code";
         "Dimension Set ID" := SalesAdvLetterEntryCZZ."Dimension Set ID";
         "Adv. Letter No. (Entry) CZZ" := SalesAdvLetterEntryCZZ."Sales Adv. Letter No.";
-#if not CLEAN25
-#pragma warning disable AL0432
-        OnAfterCopyGenJnlLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ, Rec);
-#pragma warning restore AL0432
-#endif
         OnAfterCopyGenJournalLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ, Rec);
     end;
 
@@ -194,7 +184,7 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
     begin
         "Source Currency Code" := PurchAdvLetterHeaderCZZ."Currency Code";
         "Bill-to/Pay-to No." := PurchAdvLetterHeaderCZZ."Pay-to Vendor No.";
-        "Country/Region Code" := PurchAdvLetterHeaderCZZ."Pay-to Country/Region Code";
+        "Country/Region Code" := PurchAdvLetterHeaderCZZ."VAT Country/Region Code";
         "VAT Registration No." := PurchAdvLetterHeaderCZZ."VAT Registration No.";
         "Registration No. CZL" := PurchAdvLetterHeaderCZZ."Registration No.";
         "Tax Registration No. CZL" := PurchAdvLetterHeaderCZZ."Tax Registration No.";
@@ -310,19 +300,6 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
     local procedure OnAfterInitNewLineCZZ(var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
-#if not CLEAN25
-    [Obsolete('Replaced by OnAfterCopyGenJournalLineFromSalesAdvLetterHeaderCZZ event.', '25.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyGenJnlLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; Rec: Record "Gen. Journal Line")
-    begin
-    end;
-
-    [Obsolete('Replaced by OnAfterCopyGenJournalLineFromSalesAdvLetterEntryCZZ event.', '25.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCopyGenJnlLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; Rec: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyGenJournalLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var GenJournalLine: Record "Gen. Journal Line")

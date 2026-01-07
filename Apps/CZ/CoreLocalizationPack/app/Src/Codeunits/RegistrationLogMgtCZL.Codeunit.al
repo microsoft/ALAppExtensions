@@ -159,6 +159,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
         NewRegistrationLogCZL."Verified Address" := CopyStr(FormatAddress(Address), 1, MaxStrLen(NewRegistrationLogCZL."Verified Address"));
         if NewRegistrationLogCZL."Verified Address" = '' then
             NewRegistrationLogCZL."Verified Address" := CopyStr(AddressText, 1, MaxStrLen(NewRegistrationLogCZL."Verified Address"));
+        OnLogVerificationOnBeforeInsertRegistrationLogCZL(NewRegistrationLogCZL, ResponseObject, Address, AddressText);
         NewRegistrationLogCZL.Insert(true);
 
         if NewRegistrationLogCZL.LogDetails() then
@@ -456,6 +457,11 @@ codeunit 11755 "Registration Log Mgt. CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnLogVerificationOnAfterSetDataFromAddressObject(AddressObject: JsonObject; var NewRegistrationLogCZL: Record "Registration Log CZL")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnLogVerificationOnBeforeInsertRegistrationLogCZL(var RegistrationLogCZL: Record "Registration Log CZL"; ResponseObject: JsonObject; Address: array[10] of Text; AddressText: Text)
     begin
     end;
 }

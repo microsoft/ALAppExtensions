@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 
 namespace Microsoft.DataMigration.SL.HistoricalData;
+using Microsoft.DataMigration.SL;
 
 permissionset 42801 "SL Historical Querys"
 {
@@ -12,10 +13,14 @@ permissionset 42801 "SL Historical Querys"
     Caption = 'SL Historical Transactions';
 
     Permissions = query "SL Hist. Shippers" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   query "SL Hist. APTransactions" = X,
                   query "SL Hist. ARTransactions" = X,
-                  query "SL Hist. Batch" = X,
                   query "SL Hist. GLTransactions" = X,
+#pragma warning restore AL0432
+#endif
+                  query "SL Hist. Batch" = X,
                   query "SL Hist. InventoryTransactions" = X,
                   query "SL Hist. OpenARDocuments" = X,
                   query "SL Hist. APDocuments" = X,
@@ -29,15 +34,33 @@ permissionset 42801 "SL Historical Querys"
                   query "SL Hist. ShipperLineItems" = X,
                   query "SL Hist. POReceiptLineItems" = X,
                   tabledata "SL Hist. APAdjust" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL Hist. APDoc" = RIMD,
                   tabledata "SL Hist. APTran" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL Hist. APTran Archive" = RIMD,
                   tabledata "SL Hist. ARAdjust" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL Hist. ARDoc" = RIMD,
                   tabledata "SL Hist. ARTran" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL Hist. ARTran Archive" = RIMD,
                   tabledata "SL Hist. Batch" = RIMD,
+                  tabledata "SL Hist. GLSetup" = RIMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL Hist. GLTran" = RIMD,
                   tabledata "SL Hist. INTran" = RIMD,
                   tabledata "SL Hist. LotSerT" = RIMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL Hist. GLTran Archive" = RIMD,
+                  tabledata "SL Hist. INTran Archive" = RIMD,
+                  tabledata "SL Hist. LotSerT Archive" = RIMD,
                   tabledata "SL Hist. Migration Cur. Status" = RIMD,
                   tabledata "SL Hist. Migration Step Status" = RIMD,
                   tabledata "SL Hist. POReceipt" = RIMD,
@@ -51,15 +74,31 @@ permissionset 42801 "SL Historical Querys"
                   tabledata "SL Hist. SOShipLot" = RIMD,
                   tabledata "SL Hist. SOType" = RIMD,
                   table "SL Hist. APAdjust" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL Hist. APDoc" = X,
                   table "SL Hist. APTran" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL Hist. APTran Archive" = X,
                   table "SL Hist. ARAdjust" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL Hist. ARDoc" = X,
                   table "SL Hist. ARTran" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL Hist. ARTran Archive" = X,
                   table "SL Hist. Batch" = X,
+                  table "SL Hist. GLSetup" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "SL Hist. GLTran" = X,
-                  table "SL Hist. INTran" = X,
-                  table "SL Hist. LotSerT" = X,
+#pragma warning restore AL0432
+#endif
+                  table "SL Hist. GLTran Archive" = X,
+                  table "SL Hist. INTran Archive" = X,
+                  table "SL Hist. LotSerT Archive" = X,
                   table "SL Hist. Migration Cur. Status" = X,
                   table "SL Hist. Migration Step Status" = X,
                   table "SL Hist. POReceipt" = X,

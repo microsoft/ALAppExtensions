@@ -111,7 +111,7 @@ pageextension 6280 "Sust. Item Charge Assign Purch" extends "Item Charge Assignm
 
     local procedure VisibleSustainabilityControls()
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Use Emissions In Purch. Doc.";
     end;

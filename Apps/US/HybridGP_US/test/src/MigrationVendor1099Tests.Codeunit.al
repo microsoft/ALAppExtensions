@@ -11,9 +11,6 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         TestVendorNoLbl: Label 'TESTVENDOR01', Locked = true;
         PayablesAccountNoLbl: Label '2100', Locked = true;
         PostingGroupCodeTxt: Label 'GP', Locked = true;
-#if not CLEAN25
-        IRSFormFeatureKeyIdTok: Label 'IRSForm', Locked = true;
-#endif
 
     [Test]
     procedure TestMappingsCreated()
@@ -309,9 +306,6 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
     begin
-#if not CLEAN25
-        ManuallyEnabledIRSFormFeatureIfRequired();
-#endif
 
         Vendor.SetRange("No.", TestVendorNoLbl);
         if not Vendor.IsEmpty() then
@@ -506,23 +500,4 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         end;
     end;
 
-#if not CLEAN25
-    local procedure ManuallyEnabledIRSFormFeatureIfRequired()
-    var
-        FeatureKey: Record "Feature Key";
-        FeatureDataUpdateStatus: Record "Feature Data Update Status";
-    begin
-        if FeatureKey.Get(IRSFormFeatureKeyIdTok) then
-            if FeatureKey.Enabled <> FeatureKey.Enabled::"All Users" then begin
-                FeatureKey.Enabled := FeatureKey.Enabled::"All Users";
-                FeatureKey.Modify();
-            end;
-
-        if FeatureDataUpdateStatus.Get(IRSFormFeatureKeyIdTok, CompanyName()) then
-            if FeatureDataUpdateStatus."Feature Status" <> FeatureDataUpdateStatus."Feature Status"::Enabled then begin
-                FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Enabled;
-                FeatureDataUpdateStatus.Modify();
-            end;
-    end;
-#endif
 }

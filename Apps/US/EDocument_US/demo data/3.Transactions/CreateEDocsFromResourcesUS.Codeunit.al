@@ -7,6 +7,7 @@ namespace Microsoft.DemoData.Localization;
 using Microsoft.Purchases.Document;
 using Microsoft.DemoData.Finance;
 using Microsoft.eServices.EDocument.Format;
+using Microsoft.eServices.EDocument.DemoData;
 using Microsoft.DemoData.Jobs;
 using Microsoft.Inventory.Item;
 using Microsoft.DemoData.Foundation;

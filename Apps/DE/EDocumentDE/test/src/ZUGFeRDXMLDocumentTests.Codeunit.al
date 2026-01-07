@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument.Formats;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Purchases.Document;
 using System.Utilities;
 using Microsoft.Bank.BankAccount;
 using System.Reflection;
@@ -18,6 +20,8 @@ using Microsoft.Finance.Currency;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Reporting;
+
 codeunit 13922 "ZUGFeRD XML Document Tests"
 {
     Subtype = Test;
@@ -33,6 +37,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         GeneralLedgerSetup: Record "General Ledger Setup";
         EDocumentService: Record "E-Document Service";
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySales: Codeunit "Library - Sales";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryRandom: Codeunit "Library - Random";
@@ -111,6 +116,28 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     end;
 
     [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales invoice for ZUGFeRD format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLine("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
+    end;
+
+    [Test]
     procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifySellerDataApplicableHeaderTradeAgreement();
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -184,6 +211,29 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [THEN] ZUGFeRD Electronic Document is created with payment terms
         VerifyPaymentTerms(SalesInvoiceHeader."Payment Terms Code", SalesInvoiceHeader."Due Date", TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatVerifyDueDate();
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export "Due Date" when no "Payment Terms" are defined for the customer, ensuring a valid ZUGFeRD format.
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice without Payment Terms.
+        SalesHeader.Get("Sales Document Type"::Invoice, CreateSalesDocumentWithLine("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+        SalesHeader."Payment Terms Code" := '';
+        SalesHeader.Modify();
+        SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created with due date
+        VerifyDueDate(SalesInvoiceHeader."Due Date", TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms');
     end;
 
     [Test]
@@ -300,6 +350,56 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         VerifyInvoiceWithInvDiscount(SalesInvoiceHeader, TempXMLBuffer);
         VerifyInvoiceLineWithDiscount(SalesInvoiceHeader, TempXMLBuffer);
     end;
+
+    [Test]
+    procedure ExportPostedSalesInvoiceInZUGFeRDFormatWithCustomReportLayout();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export posted sales invoice with Custom Report Layout creates electronic document in ZUGFeRD format
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [GIVEN] Custom Report Layout is used
+        UpdateReport(Enum::"Report Selection Usage"::"S.Invoice", Report::"ZUGFeRD Custom Sales Invoice");
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportInvoice(SalesInvoiceHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created
+        VerifyHeaderData(SalesInvoiceHeader, TempXMLBuffer);
+    end;
+
+    [Test]
+    procedure PrintPostedSalesInvoiceWithCustomReportLayout();
+    var
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        ExportZUGFeRDDocument: Codeunit "Export ZUGFeRD Document";
+        PDFDocument: Codeunit "PDF Document";
+        PDFTempBlob: Codeunit "Temp Blob";
+        TempBlob: Codeunit "Temp Blob";
+        PDFInStream: InStream;
+    begin
+        // [SCENARIO] Print a posted sales invoice with Custom Report Layout. Ensure that no xml is embedded
+        Initialize();
+
+        // [GIVEN] Create and Post Sales Invoice.
+        SalesInvoiceHeader.Get(CreateAndPostSalesDocument("Sales Document Type"::Invoice, Enum::"Sales Line Type"::Item, false));
+
+        // [GIVEN] Custom Report Layout is used
+        UpdateReport(Enum::"Report Selection Usage"::"S.Invoice", Report::"ZUGFeRD Custom Sales Invoice");
+
+        // [WHEN] Create PDF Attachment
+        ExportZUGFeRDDocument.GenerateSalesInvoicePDFAttachment(SalesInvoiceHeader, PDFTempBlob);
+
+        // [THEN] No XML should be embedded
+        PDFTempBlob.CreateInStream(PDFInStream);
+        Assert.IsFalse(PDFDocument.GetDocumentAttachmentStream(PDFInStream, TempBlob), 'No Document Attachment should be found.');
+    end;
+
     #endregion
 
     #region SalesCreditMemo
@@ -366,6 +466,28 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [THEN] ZUGFeRD Electronic Document is created with buyer reference XX
         VerifyBuyerReference(SalesCrMemoHeader."Your Reference", TempXMLBuffer, '/rsm:CrossIndustryInvoice');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatMandateBuyerReferenceAsYourReference();
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        // Mandate buyer reference as your reference when releasing sales credit memo for ZUGFeRD format
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = your reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Your Reference");
+
+        // [GIVEN] Create Sales Invoice with your reference = XX
+        SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLine("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+
+        // [WHEN] Remove your reference
+        SalesHeader.Validate("Your Reference", '');
+        SalesHeader.Modify(false);
+
+        // [THEN] Error message is shown when releasing the sales invoice
+        asserterror CheckSalesHeader(SalesHeader);
     end;
 
     [Test]
@@ -442,6 +564,29 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
         // [THEN] ZUGFeRD Electronic Document is created with payment terms
         VerifyPaymentTerms(SalesCrMemoHeader."Payment Terms Code", SalesCrMemoHeader."Due Date", TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms');
+    end;
+
+    [Test]
+    procedure ExportPostedSalesCrMemoInZUGFeRDFormatVerifyDueDate();
+    var
+        SalesHeader: Record "Sales Header";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+    begin
+        // [SCENARIO] Export "Due Date" when no "Payment Terms" are defined for the customer, ensuring a valid ZUGFeRD format.
+        Initialize();
+
+        // [GIVEN] Create and Post Credit Memo without Payment Terms.
+        SalesHeader.Get("Sales Document Type"::"Credit Memo", CreateSalesDocumentWithLine("Sales Document Type"::"Credit Memo", Enum::"Sales Line Type"::Item, false));
+        SalesHeader."Payment Terms Code" := '';
+        SalesHeader.Modify();
+        SalesCrMemoHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+
+        // [WHEN] Export ZUGFeRD Electronic Document.
+        ExportCreditMemo(SalesCrMemoHeader, TempXMLBuffer);
+
+        // [THEN] ZUGFeRD Electronic Document is created with due date
+        VerifyDueDate(SalesCrMemoHeader."Due Date", TempXMLBuffer, '/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms');
     end;
 
     [Test]
@@ -540,6 +685,47 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         VerifyCrMemoLineWithDiscounts(SalesCrMemoHeader, TempXMLBuffer);
     end;
     #endregion
+
+    #region PurchaseInvoice
+    [Test]
+    procedure ReleasePurchaseInvoiceInZUGFeRDFormat();
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        // [SCENARIO] Release purchase invoice regardless if ZUGFeRD format is setup with customer reference
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = customer reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+
+        // [WHEN] Create and release Purchase Invoice
+        CreatePurchDocument(PurchaseHeader, "Purchase Document Type"::Invoice);
+        LibraryPurchase.ReleasePurchaseDocument(PurchaseHeader);
+
+        // [THEN] No error occurs
+    end;
+    #endregion
+
+    #region PurchaseCreditMemo
+    [Test]
+    procedure ReleasePurchaseCreditMemoInZUGFeRDFormat();
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        // [SCENARIO] Release purchase credit memo regardless if ZUGFeRD format is setup with customer reference
+        Initialize();
+
+        // [GIVEN] Set Buyer reference = customer reference
+        SetEdocumentServiceBuyerReference("E-Document Buyer Reference"::"Customer Reference");
+
+        // [WHEN] Create and release Purchase credit Memo
+        CreatePurchDocument(PurchaseHeader, "Purchase Document Type"::"Credit Memo");
+        LibraryPurchase.ReleasePurchaseDocument(PurchaseHeader);
+
+        // [THEN] No error occurs
+    end;
+    #endregion
+
     local procedure CreateAndPostSalesDocument(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
     var
         SalesHeader: Record "Sales Header";
@@ -562,6 +748,27 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     begin
         SalesHeader.Get(DocumentType, CreateSalesDocumentWithTwoLineLineDiscount(DocumentType, LineType, InvoiceDiscount));
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure CreatePurchDocument(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        CreatePurchHeader(PurchaseHeader, DocumentType);
+        LibraryPurchase.CreatePurchaseLine(
+          PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDec(50, 2));
+        PurchaseLine.Modify(true);
+    end;
+
+    local procedure CreatePurchHeader(var PurchaseHeader: Record "Purchase Header"; DocumentType: Enum "Purchase Document Type")
+    var
+        Vendor: Record Vendor;
+    begin
+        LibraryPurchase.CreateVendor(Vendor);
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, Vendor."No.");
+        PurchaseHeader.Validate("Vendor Invoice No.", PurchaseHeader."No.");
+        PurchaseHeader.Modify(true);
     end;
 
     local procedure CreateSalesDocumentWithLine(DocumentType: Enum "Sales Document Type"; LineType: Enum "Sales Line Type"; InvoiceDiscount: Boolean): Code[20];
@@ -644,6 +851,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Customer.Validate("Country/Region Code", CompanyInformation."Country/Region Code");
         Customer.Validate("VAT Registration No.", CompanyInformation."VAT Registration No.");
         Customer.Validate("E-Invoice Routing No.", LibraryUtility.GenerateRandomText(20));
+        Customer.Validate("E-Mail", LibraryUtility.GenerateRandomEmail());
         Customer.Modify(true);
         exit(Customer."No.")
     end;
@@ -664,6 +872,14 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         if LineDiscount then
             SalesLine.Validate("Line Discount %", LibraryRandom.RandDecInRange(10, 20, 2));
         SalesLine.Modify(true);
+    end;
+
+    local procedure CheckSalesHeader(SalesHeader: Record "Sales Header")
+    var
+        SourceDocumentHeader: RecordRef;
+    begin
+        SourceDocumentHeader.GetTable(SalesHeader);
+        ZUGFeRDFormat.Check(SourceDocumentHeader, EDocumentService, "E-Document Processing Phase"::Release);
     end;
 
     local procedure ExportInvoice(SalesInvoiceHeader: Record "Sales Invoice Header"; var TempXMLBuffer: Record "XML Buffer" temporary);
@@ -756,6 +972,9 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         Path := DocumentTok + '/ram:PostalTradeAddress/ram:CityName';
         Assert.AreEqual(CompanyInformation.City, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
 
+        Path := DocumentTok + '/ram:URIUniversalCommunication/ram:URIID';
+        Assert.AreEqual(CompanyInformation."E-Mail", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+
         Path := DocumentTok + '/ram:SpecifiedTaxRegistration/ram:ID';
         Assert.AreEqual(GetVATRegistrationNo(CompanyInformation."VAT Registration No.", CompanyInformation."Country/Region Code"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
@@ -767,6 +986,10 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
     begin
         Path := DocumentPartyTok + '/ram:Name';
         Assert.AreEqual(SalesInvoiceHeader."Bill-to Name", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+
+        Path := DocumentPartyTok + '/ram:URIUniversalCommunication/ram:URIID';
+        Assert.AreEqual(SalesInvoiceHeader."Sell-to E-Mail", GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+
         Path := DocumentPartyTok + '/ram:SpecifiedTaxRegistration/ram:ID';
         Assert.AreEqual(GetVATRegistrationNo(SalesInvoiceHeader."VAT Registration No.", CompanyInformation."Country/Region Code"), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
@@ -802,6 +1025,14 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         PaymentTerms.Get(PaymentTermsCode);
         Path := DocumentTok + '/ram:Description';
         Assert.AreEqual(PaymentTerms.Description, GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+        Path := DocumentTok + '/ram:DueDateDateTime/udt:DateTimeString';
+        Assert.AreEqual(FormatDate(DueDate), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
+    end;
+
+    local procedure VerifyDueDate(DueDate: Date; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentTok: Text);
+    var
+        Path: Text;
+    begin
         Path := DocumentTok + '/ram:DueDateDateTime/udt:DateTimeString';
         Assert.AreEqual(FormatDate(DueDate), GetNodeByPathWithError(TempXMLBuffer, Path), StrSubstNo(IncorrectValueErr, Path));
     end;
@@ -1016,6 +1247,7 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
 
     local procedure SetEdocumentServiceBuyerReference(EInvoiceBuyerReference: Enum "E-Document Buyer Reference");
     begin
+        EDocumentService."Buyer Reference Mandatory" := true;
         EDocumentService."Buyer Reference" := EInvoiceBuyerReference;
         EDocumentService.Modify();
     end;
@@ -1151,6 +1383,27 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         end;
     end;
 
+    local procedure UpdateReport(ReportUsage: Enum "Report Selection Usage"; ReportId: Integer)
+    var
+        ReportSelection: Record "Report Selections";
+    begin
+        if not ReportSelection.Get(ReportUsage, '1') then begin
+            ReportSelection.Init();
+            ReportSelection.Validate(Usage, ReportUsage);
+            ReportSelection.Validate(Sequence, '1');
+            ReportSelection.Validate("Report ID", ReportId);
+            ReportSelection.Insert(true);
+        end;
+        if ReportSelection."Report ID" <> ReportId then begin
+            ReportSelection.Validate("Report ID", ReportId);
+            ReportSelection.Modify(true);
+        end;
+        ReportSelection.SetRange(Usage, ReportUsage);
+        ReportSelection.SetFilter(Sequence, '<>1');
+        if not ReportSelection.IsEmpty() then
+            ReportSelection.DeleteAll(true);
+    end;
+
     procedure FormatDate(VarDate: Date): Text[20];
     begin
         if VarDate = 0D then
@@ -1186,4 +1439,3 @@ codeunit 13922 "ZUGFeRD XML Document Tests"
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"ZUGFeRD XML Document Tests");
     end;
 }
-

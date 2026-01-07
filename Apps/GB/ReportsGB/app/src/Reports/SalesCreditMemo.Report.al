@@ -1116,4 +1116,3 @@ report 10582 "Sales - Credit Memo"
         NextEntryNo := NextEntryNo + 1
     end;
 }
-

@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -12,6 +13,9 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
 {
     Permissions = TableData "AMC Banking Setup" = r;
     TableNo = "Data Exch.";
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     var
@@ -178,4 +182,4 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
     end;
 
 }
-
+#endif

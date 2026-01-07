@@ -301,49 +301,49 @@ report 10604 "Sales Quote GB"
                     dataitem(RoundLoop; "Integer")
                     {
                         DataItemTableView = sorting(Number);
-                        column(SalesLineType; SalesLine.Type)
+                        column(TempSalesLineType; TempSalesLine.Type)
                         {
                         }
-                        column(LineNo_SalesLine; "Sales Line"."Line No.")
+                        column(LineNo_TempSalesLine; "Sales Line"."Line No.")
                         {
                         }
-                        column(SalesLineLineAmt; SalesLine."Line Amount")
-                        {
-                            AutoFormatExpression = "Sales Header"."Currency Code";
-                            AutoFormatType = 1;
-                        }
-                        column(SalesLineDesc; SalesLine.Description)
-                        {
-                        }
-                        column(No_SalesLine; "Sales Line"."No.")
-                        {
-                        }
-                        column(No_SalesLineCaption; "Sales Line".FieldCaption("No."))
-                        {
-                        }
-                        column(Desc1_SalesLine; "Sales Line".Description)
-                        {
-                        }
-                        column(Qty_SalesLine; "Sales Line".Quantity)
-                        {
-                        }
-                        column(UOM_SalesLine; "Sales Line"."Unit of Measure")
-                        {
-                        }
-                        column(LineAmt1_SalesLine; "Sales Line"."Line Amount")
+                        column(TempSalesLineLineAmt; TempSalesLine."Line Amount")
                         {
                             AutoFormatExpression = "Sales Header"."Currency Code";
                             AutoFormatType = 1;
                         }
-                        column(UnitPrice_SalesLine; "Sales Line"."Unit Price")
+                        column(TempSalesLineDesc; TempSalesLine.Description)
+                        {
+                        }
+                        column(No_TempSalesLine; "Sales Line"."No.")
+                        {
+                        }
+                        column(No_TempSalesLineCaption; "Sales Line".FieldCaption("No."))
+                        {
+                        }
+                        column(Desc1_TempSalesLine; "Sales Line".Description)
+                        {
+                        }
+                        column(Qty_TempSalesLine; "Sales Line".Quantity)
+                        {
+                        }
+                        column(UOM_TempSalesLine; "Sales Line"."Unit of Measure")
+                        {
+                        }
+                        column(LineAmt1_TempSalesLine; "Sales Line"."Line Amount")
+                        {
+                            AutoFormatExpression = "Sales Header"."Currency Code";
+                            AutoFormatType = 1;
+                        }
+                        column(UnitPrice_TempSalesLine; "Sales Line"."Unit Price")
                         {
                             AutoFormatExpression = "Sales Header"."Currency Code";
                             AutoFormatType = 2;
                         }
-                        column(LineDisc_SalesLine; "Sales Line"."Line Discount %")
+                        column(LineDisc_TempSalesLine; "Sales Line"."Line Discount %")
                         {
                         }
-                        column(VATIdentifier_SalesLine; "Sales Line"."VAT Identifier")
+                        column(VATIdentifier_TempSalesLine; "Sales Line"."VAT Identifier")
                         {
                         }
                         column(VATBaseDisc_SalesHeader; "Sales Header"."VAT Base Discount %")
@@ -355,7 +355,7 @@ report 10604 "Sales Quote GB"
                         column(TotalLineAmount; TotalLineAmount)
                         {
                         }
-                        column(SalesLineInvDiscAmt; -SalesLine."Inv. Discount Amount")
+                        column(TempSalesLineInvDiscAmt; -TempSalesLine."Inv. Discount Amount")
                         {
                             AutoFormatExpression = "Sales Header"."Currency Code";
                             AutoFormatType = 1;
@@ -363,12 +363,12 @@ report 10604 "Sales Quote GB"
                         column(TotalText; TotalText)
                         {
                         }
-                        column(SalesLineLAmtSLInvDiscAmt; SalesLine."Line Amount" - SalesLine."Inv. Discount Amount")
+                        column(TempSalesLineLAmtSLInvDiscAmt; TempSalesLine."Line Amount" - TempSalesLine."Inv. Discount Amount")
                         {
                             AutoFormatExpression = "Sales Header"."Currency Code";
                             AutoFormatType = 1;
                         }
-                        column(VATAmtLineVATAmtText; VATAmountLine.VATAmountText())
+                        column(VATAmtLineVATAmtText; TempVATAmountLine.VATAmountText())
                         {
                         }
                         column(TotalExclVATText; TotalExclVATText)
@@ -382,7 +382,7 @@ report 10604 "Sales Quote GB"
                             AutoFormatExpression = "Sales Header"."Currency Code";
                             AutoFormatType = 1;
                         }
-                        column(SalesLineLAmtDiscAmtVATAmt; SalesLine."Line Amount" - SalesLine."Inv. Discount Amount" + VATAmount)
+                        column(TempSalesLineLAmtDiscAmtVATAmt; TempSalesLine."Line Amount" - TempSalesLine."Inv. Discount Amount" + VATAmount)
                         {
                             AutoFormatExpression = "Sales Header"."Currency Code";
                             AutoFormatType = 1;
@@ -411,13 +411,13 @@ report 10604 "Sales Quote GB"
                         column(PaymentDisconVATCaption; PaymentDisconVATCaptionLbl)
                         {
                         }
-                        column(Desc1_SalesLineCaption; "Sales Line".FieldCaption(Description))
+                        column(Desc1_TempSalesLineCaption; "Sales Line".FieldCaption(Description))
                         {
                         }
-                        column(Qty_SalesLineCaption; "Sales Line".FieldCaption(Quantity))
+                        column(Qty_TempSalesLineCaption; "Sales Line".FieldCaption(Quantity))
                         {
                         }
-                        column(UOM_SalesLineCaption; "Sales Line".FieldCaption("Unit of Measure"))
+                        column(UOM_TempSalesLineCaption; "Sales Line".FieldCaption("Unit of Measure"))
                         {
                         }
                         dataitem(DimensionLoop2; "Integer")
@@ -471,40 +471,40 @@ report 10604 "Sales Quote GB"
                         trigger OnAfterGetRecord()
                         begin
                             if Number = 1 then
-                                SalesLine.Find('-')
+                                TempSalesLine.Find('-')
                             else
-                                SalesLine.Next();
-                            "Sales Line" := SalesLine;
+                                TempSalesLine.Next();
+                            "Sales Line" := TempSalesLine;
 
                             if not "Sales Header"."Prices Including VAT" and
-                               (SalesLine."VAT Calculation Type" = SalesLine."VAT Calculation Type"::"Full VAT")
+                               (TempSalesLine."VAT Calculation Type" = TempSalesLine."VAT Calculation Type"::"Full VAT")
                             then
-                                SalesLine."Line Amount" := 0;
+                                TempSalesLine."Line Amount" := 0;
 
-                            if (SalesLine.Type = SalesLine.Type::"G/L Account") and (not ShowInternalInfo) then
+                            if (TempSalesLine.Type = TempSalesLine.Type::"G/L Account") and (not ShowInternalInfo) then
                                 "Sales Line"."No." := '';
 
-                            TotalInvoiceDiscAmount += SalesLine."Inv. Discount Amount";
-                            TotalLineAmount += SalesLine."Line Amount";
+                            TotalInvoiceDiscAmount += TempSalesLine."Inv. Discount Amount";
+                            TotalLineAmount += TempSalesLine."Line Amount";
                         end;
 
                         trigger OnPostDataItem()
                         begin
-                            SalesLine.DeleteAll();
+                            TempSalesLine.DeleteAll();
                         end;
 
                         trigger OnPreDataItem()
                         begin
-                            MoreLines := SalesLine.Find('+');
-                            while MoreLines and (SalesLine.Description = '') and (SalesLine."Description 2" = '') and
-                                  (SalesLine."No." = '') and (SalesLine.Quantity = 0) and
-                                  (SalesLine.Amount = 0)
+                            MoreLines := TempSalesLine.Find('+');
+                            while MoreLines and (TempSalesLine.Description = '') and (TempSalesLine."Description 2" = '') and
+                                  (TempSalesLine."No." = '') and (TempSalesLine.Quantity = 0) and
+                                  (TempSalesLine.Amount = 0)
                             do
-                                MoreLines := SalesLine.Next(-1) <> 0;
+                                MoreLines := TempSalesLine.Next(-1) <> 0;
                             if not MoreLines then
                                 CurrReport.Break();
-                            SalesLine.SetRange("Line No.", 0, SalesLine."Line No.");
-                            SetRange(Number, 1, SalesLine.Count);
+                            TempSalesLine.SetRange("Line No.", 0, TempSalesLine."Line No.");
+                            SetRange(Number, 1, TempSalesLine.Count);
                             TotalInvoiceDiscAmount := 0;
                             TotalLineAmount := 0;
                         end;
@@ -515,36 +515,36 @@ report 10604 "Sales Quote GB"
                         dataitem(VATCounter; "Integer")
                         {
                             DataItemTableView = sorting(Number);
-                            column(VATAmtLineVATBase; VATAmountLine."VAT Base")
+                            column(VATAmtLineVATBase; TempVATAmountLine."VAT Base")
                             {
                                 AutoFormatExpression = "Sales Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmtLineVATAmt; VATAmountLine."VAT Amount")
+                            column(VATAmtLineVATAmt; TempVATAmountLine."VAT Amount")
                             {
                                 AutoFormatExpression = "Sales Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmtLineLineAmt; VATAmountLine."Line Amount")
+                            column(VATAmtLineLineAmt; TempVATAmountLine."Line Amount")
                             {
                                 AutoFormatExpression = "Sales Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmtLineInvDiscBaseAmt; VATAmountLine."Inv. Disc. Base Amount")
+                            column(VATAmtLineInvDiscBaseAmt; TempVATAmountLine."Inv. Disc. Base Amount")
                             {
                                 AutoFormatExpression = "Sales Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmtLineInvoiceDiscountAmt; VATAmountLine."Invoice Discount Amount")
+                            column(VATAmtLineInvoiceDiscountAmt; TempVATAmountLine."Invoice Discount Amount")
                             {
                                 AutoFormatExpression = "Sales Header"."Currency Code";
                                 AutoFormatType = 1;
                             }
-                            column(VATAmtLineVAT; VATAmountLine."VAT %")
+                            column(VATAmtLineVAT; TempVATAmountLine."VAT %")
                             {
                                 DecimalPlaces = 0 : 5;
                             }
-                            column(VATAmtLineVATIdentifier; VATAmountLine."VAT Identifier")
+                            column(VATAmtLineVATIdentifier; TempVATAmountLine."VAT Identifier")
                             {
                             }
                             column(VATPercentCaption; VATPercentCaptionLbl)
@@ -574,18 +574,18 @@ report 10604 "Sales Quote GB"
 
                             trigger OnAfterGetRecord()
                             begin
-                                VATAmountLine.GetLine(Number);
+                                TempVATAmountLine.GetLine(Number);
                             end;
 
                             trigger OnPreDataItem()
                             begin
-                                SetRange(Number, 1, VATAmountLine.Count);
+                                SetRange(Number, 1, TempVATAmountLine.Count);
                             end;
                         }
 
                         trigger OnPreDataItem()
                         begin
-                            if VATAmountLine.Count <= 1 then
+                            if TempVATAmountLine.Count <= 1 then
                                 CurrReport.Break();
                         end;
                     }
@@ -652,18 +652,18 @@ report 10604 "Sales Quote GB"
                 var
                     SalesPost: Codeunit "Sales-Post";
                 begin
-                    Clear(SalesLine);
+                    Clear(TempSalesLine);
                     Clear(SalesPost);
-                    SalesLine.DeleteAll();
-                    VATAmountLine.DeleteAll();
-                    SalesPost.GetSalesLines("Sales Header", SalesLine, 0);
-                    SalesLine.CalcVATAmountLines(0, "Sales Header", SalesLine, VATAmountLine);
-                    SalesLine.UpdateVATOnLines(0, "Sales Header", SalesLine, VATAmountLine);
-                    VATAmount := VATAmountLine.GetTotalVATAmount();
-                    VATBaseAmount := VATAmountLine.GetTotalVATBase();
+                    TempSalesLine.DeleteAll();
+                    TempVATAmountLine.DeleteAll();
+                    SalesPost.GetSalesLines("Sales Header", TempSalesLine, 0);
+                    TempSalesLine.CalcVATAmountLines(0, "Sales Header", TempSalesLine, TempVATAmountLine);
+                    TempSalesLine.UpdateVATOnLines(0, "Sales Header", TempSalesLine, TempVATAmountLine);
+                    VATAmount := TempVATAmountLine.GetTotalVATAmount();
+                    VATBaseAmount := TempVATAmountLine.GetTotalVATBase();
                     VATDiscountAmount :=
-                      VATAmountLine.GetTotalVATDiscount("Sales Header"."Currency Code", "Sales Header"."Prices Including VAT");
-                    TotalAmountInclVAT := VATAmountLine.GetTotalAmountInclVAT();
+                      TempVATAmountLine.GetTotalVATDiscount("Sales Header"."Currency Code", "Sales Header"."Prices Including VAT");
+                    TotalAmountInclVAT := TempVATAmountLine.GetTotalAmountInclVAT();
 
                     if Number > 1 then
                         CopyText := Text003Txt;
@@ -677,7 +677,7 @@ report 10604 "Sales Quote GB"
 
                 trigger OnPreDataItem()
                 begin
-                    NoOfLoops := Abs(NoOfCopies) + 1;
+                    NoOfLoops := Abs(NumberOfCopies) + 1;
                     CopyText := '';
                     SetRange(Number, 1, NoOfLoops);
                 end;
@@ -750,10 +750,10 @@ report 10604 "Sales Quote GB"
                 ShowShippingAddr := FormatAddr.SalesHeaderShipTo(ShipToAddr, CustAddr, "Sales Header");
 
                 if not CurrReport.Preview then begin
-                    if ArchiveDocument then
-                        ArchiveManagement.StoreSalesDocument("Sales Header", LogInteraction);
+                    if ArchiveDocumentOption then
+                        ArchiveManagement.StoreSalesDocument("Sales Header", LogInteractionOption);
 
-                    if LogInteraction then begin
+                    if LogInteractionOption then begin
                         CalcFields("No. of Archived Versions");
                         if "Bill-to Contact No." <> '' then
                             SegManagement.LogDocument(
@@ -800,7 +800,7 @@ report 10604 "Sales Quote GB"
                 group(Options)
                 {
                     Caption = 'Options';
-                    field(NoOfCopies; NoOfCopies)
+                    field(NoOfCopies; NumberOfCopies)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'No. of Copies';
@@ -812,7 +812,7 @@ report 10604 "Sales Quote GB"
                         Caption = 'Show Internal Information';
                         ToolTip = 'Specifies if you want the printed document to show information that is only for internal use.';
                     }
-                    field(ArchiveDocument; ArchiveDocument)
+                    field(ArchiveDocument; ArchiveDocumentOption)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Archive Document';
@@ -821,11 +821,11 @@ report 10604 "Sales Quote GB"
 
                         trigger OnValidate()
                         begin
-                            if not ArchiveDocument then
-                                LogInteraction := false;
+                            if not ArchiveDocumentOption then
+                                LogInteractionOption := false;
                         end;
                     }
-                    field(LogInteraction; LogInteraction)
+                    field(LogInteraction; LogInteractionOption)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Log Interaction';
@@ -834,8 +834,8 @@ report 10604 "Sales Quote GB"
 
                         trigger OnValidate()
                         begin
-                            if LogInteraction then
-                                ArchiveDocument := ArchiveDocumentEnable;
+                            if LogInteractionOption then
+                                ArchiveDocumentOption := ArchiveDocumentEnable;
                         end;
                     }
                 }
@@ -854,13 +854,13 @@ report 10604 "Sales Quote GB"
 
         trigger OnOpenPage()
         begin
-            ArchiveDocument :=
+            ArchiveDocumentOption :=
               (SalesSetup."Archive Quotes" = SalesSetup."Archive Quotes"::Question) or
               (SalesSetup."Archive Quotes" = SalesSetup."Archive Quotes"::Always);
-            LogInteraction := SegManagement.FindInteractionTemplateCode("Interaction Log Entry Document Type"::"Sales Qte.") <> '';
+            LogInteractionOption := SegManagement.FindInteractionTemplateCode("Interaction Log Entry Document Type"::"Sales Qte.") <> '';
 
-            ArchiveDocumentEnable := ArchiveDocument;
-            LogInteractionEnable := LogInteraction;
+            ArchiveDocumentEnable := ArchiveDocumentOption;
+            LogInteractionEnable := LogInteractionOption;
         end;
     }
 
@@ -906,8 +906,8 @@ report 10604 "Sales Quote GB"
         CompanyInfo2: Record "Company Information";
         CompanyInfo3: Record "Company Information";
         SalesSetup: Record "Sales & Receivables Setup";
-        VATAmountLine: Record "VAT Amount Line" temporary;
-        SalesLine: Record "Sales Line" temporary;
+        TempVATAmountLine: Record "VAT Amount Line" temporary;
+        TempSalesLine: Record "Sales Line" temporary;
         DimSetEntry1: Record "Dimension Set Entry";
         DimSetEntry2: Record "Dimension Set Entry";
         RespCenter: Record "Responsibility Center";
@@ -926,7 +926,7 @@ report 10604 "Sales Quote GB"
         TotalInclVATText: Text;
         PaymentDiscountText: Text;
         MoreLines: Boolean;
-        NoOfCopies: Integer;
+        NumberOfCopies: Integer;
         NoOfLoops: Integer;
         CopyText: Text;
         ShowShippingAddr: Boolean;
@@ -934,24 +934,28 @@ report 10604 "Sales Quote GB"
         OldDimText: Text;
         ShowInternalInfo: Boolean;
         Continue: Boolean;
-        ArchiveDocument: Boolean;
-        LogInteraction: Boolean;
+        ArchiveDocumentOption: Boolean;
+        LogInteractionOption: Boolean;
         VATAmount: Decimal;
         VATBaseAmount: Decimal;
         VATDiscountAmount: Decimal;
         Text007Txt: Label 'Do you want to create a follow-up task?';
         Text000Txt: Label 'Salesperson';
+#pragma warning disable AA0470
         Text001Txt: Label 'Total %1';
         Text002Txt: Label 'Total %1 Incl. VAT';
         Text003Txt: Label 'COPY';
         Text004Lbl: Label 'Sales - Quote %1';
         Text005Lbl: Label 'Page %1';
         Text006Txt: Label 'Total %1 Excl. VAT';
+#pragma warning restore AA0470
         TotalAmountInclVAT: Decimal;
         TotalInvoiceDiscAmount: Decimal;
         TotalLineAmount: Decimal;
         NoOfRecords: Integer;
+#pragma warning disable AA0470
         Text1041000Txt: Label '%1 %, VAT discounted at %2 %';
+#pragma warning restore AA0470
         ArchiveDocumentEnable: Boolean;
         LogInteractionEnable: Boolean;
         UnitPriceCaptionLbl: Label 'Unit Price';
@@ -988,4 +992,3 @@ report 10604 "Sales Quote GB"
         FeatureNameTok: Label 'Sales Quote GB', Locked = true;
         EventNameTok: Label 'Sales Quote GB report has been used', Locked = true;
 }
-

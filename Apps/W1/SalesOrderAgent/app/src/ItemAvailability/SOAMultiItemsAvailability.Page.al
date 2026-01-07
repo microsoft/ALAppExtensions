@@ -91,7 +91,6 @@ page 4410 "SOA Multi Items Availability"
                     Caption = 'Customer No.';
                     TableRelation = Customer;
                     ToolTip = 'Specifies the customer number that will be used to calculate prices and discounts.';
-                    Visible = not IsAgentSession;
 
                     trigger OnValidate()
                     var
@@ -103,9 +102,12 @@ page 4410 "SOA Multi Items Availability"
                         if Customer.Get(CustomerNo) then begin
                             LocationFilter := Customer.GetDefaultLocation();
                             if LocationFilter = '' then
-                                LocationFilter := ''''''
+                                LocationFilter := '''''';
+                            Rec.SetFilter("Location Filter", '%1', LocationFilter);
                         end else
                             CustomerNo := '';
+
+                        LanguageCode := GetLanguageCode(ContactNo, CustomerNo);
 
                         CurrPage.Update(false);
                     end;
@@ -115,7 +117,6 @@ page 4410 "SOA Multi Items Availability"
                     Caption = 'Contact No.';
                     TableRelation = Contact;
                     ToolTip = 'Specifies the contact number that will be used to calculate prices and discounts.';
-                    Visible = not IsAgentSession;
 
                     trigger OnValidate()
                     var
@@ -129,13 +130,16 @@ page 4410 "SOA Multi Items Availability"
                                 CustomerNo := Customer."No.";
                                 LocationFilter := Customer.GetDefaultLocation();
                                 if LocationFilter = '' then
-                                    LocationFilter := ''''''
+                                    LocationFilter := '''''';
+                                Rec.SetFilter("Location Filter", '%1', LocationFilter);
                             end else begin
                                 CustomerNo := '';
                                 LocationFilter := '''''';
                             end;
                         end else
                             ContactNo := '';
+
+                        LanguageCode := GetLanguageCode(ContactNo, CustomerNo);
 
                         CurrPage.Update(false);
                     end;
@@ -144,7 +148,6 @@ page 4410 "SOA Multi Items Availability"
                 {
                     Caption = 'Location Filter';
                     ToolTip = 'Specifies the location(-s) that will be used to filter the amounts in the window.';
-                    Visible = not IsAgentSession;
 
                     trigger OnLookup(var Text: Text): Boolean
                     var
@@ -225,6 +228,13 @@ page 4410 "SOA Multi Items Availability"
                 field(Description; Rec.Description)
                 {
                     ToolTip = 'Specifies a description of the item.';
+                    Visible = not IsAgentSession;
+                }
+                field(TranslatedDescription; TranslatedDescription)
+                {
+                    Caption = 'Description';
+                    ToolTip = 'Specifies a translated description of the item.';
+                    Visible = IsAgentSession;
                 }
                 field(Available; Available)
                 {
@@ -699,6 +709,7 @@ page 4410 "SOA Multi Items Availability"
         AgentTaskID: BigInteger;
         OriginalFilterGroup: Integer;
     begin
+        LanguageCode := GetLanguageCode(ContactNo, CustomerNo);
         Rec.SetFilter("Location Filter", '%1', LocationFilter);
         Rec.SetRange("Drop Shipment Filter", false);
         Rec.SetRange("Variant Filter", '');
@@ -707,6 +718,8 @@ page 4410 "SOA Multi Items Availability"
             Rec.FilterGroup(-1);
             Rec.SetRange("No.", '<>*');
             Rec.FilterGroup(OriginalFilterGroup);
+            if LocationFilter = '' then
+                LocationFilter := '''''';
         end;
 
         FindPeriod('');
@@ -727,6 +740,7 @@ page 4410 "SOA Multi Items Availability"
 
     trigger OnAfterGetRecord()
     var
+        ItemTranslation: Record "Item Translation";
         Location: Record Location;
         SOAShipmentDateMgt: Codeunit "SOA Shipment Date Mgt.";
         LocationCode: Code[10];
@@ -747,7 +761,21 @@ page 4410 "SOA Multi Items Availability"
             SOAShipmentDateMgt.SetParamenters(Rec."No.", '', LocationCode, InUOMCode, WorkDate(), QuantityFilter);
             if SOAShipmentDateMgt.Run() then
                 EarliestShipmentDate := SOAShipmentDateMgt.GetEarliestShipmentDate();
+
+            if (EarliestShipmentDate <> 0D) and (EarliestShipmentDate <= Rec.GetRangeMax("Date Filter")) then begin
+                Available := true;
+                AvailabilityLevel := AvailabilityLevel::Available;
+                EarliestShipmentDate := 0D;
+            end;
         end;
+
+        TranslatedDescription := Rec.Description;
+        TranslatedDescription2 := Rec."Description 2";
+        if LanguageCode <> '' then
+            if ItemTranslation.Get(Rec."No.", '', LanguageCode) then begin
+                TranslatedDescription := ItemTranslation.Description;
+                TranslatedDescription2 := ItemTranslation."Description 2";
+            end;
     end;
 
     var
@@ -763,10 +791,12 @@ page 4410 "SOA Multi Items Availability"
         AnalysisPeriodType: Enum "Analysis Period Type";
         AvailabilityLevel: Enum "SOA Availability Level";
         CustomerNo, ContactNo : Code[20];
-        InUOMCode, LineUOM, CurrencyCode : Code[10];
+        InUOMCode, LineUOM, CurrencyCode, LanguageCode : Code[10];
         QuantityFilter, ExpectedInventory, QtyAvailable, PlannedOrderReleases, GrossRequirement, PlannedOrderRcpt, ScheduledRcpt, ProjAvailableBalance, ProjAvailableBalanceInUOM : Decimal;
         UnitCost, UnitPrice, UnitPriceInclDiscount, DiscountPct : Decimal;
         DateFilter, LocationFilter, CrossColumnSearchFilter, LineUOMDescription : Text;
+        TranslatedDescription: Text[100];
+        TranslatedDescription2: Text[50];
         EarliestShipmentDate: Date;
         Available, CalculateEarliestShipmentDate, OptionsVisible, IsAgentSession, IncludeCapableToPromiseItems, MatchingItem : Boolean;
         PreviewDisclaimerLbl: Label 'Item Availability page (preview). Learn more';
@@ -941,6 +971,20 @@ page 4410 "SOA Multi Items Availability"
         UnitPriceInclDiscount := TempSalesLine."Line Amount";
         if TempSalesLine."Currency Code" <> '' then
             CurrencyCode := TempSalesLine."Currency Code";
+    end;
+
+    local procedure GetLanguageCode(ContNo: Code[20]; CustNo: Code[20]): Code[10]
+    var
+        Contact: Record Contact;
+        Customer: Record Customer;
+    begin
+        if Contact.Get(ContNo) and (Contact."Language Code" <> '') then
+            exit(Contact."Language Code");
+
+        if Customer.Get(CustNo) and (Customer."Language Code" <> '') then
+            exit(Customer."Language Code");
+            
+        exit('');
     end;
 
     [InternalEvent(false, false)]

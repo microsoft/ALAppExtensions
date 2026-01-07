@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
 
 report 11745 "VAT Report Request Page CZL"
 {
@@ -28,19 +29,19 @@ report 11745 "VAT Report Request Page CZL"
             var
                 TempVATStatementReportLine: Record "VAT Statement Report Line" temporary;
                 TempVATStmtReportLineDataCZL: Record "VAT Stmt. Report Line Data CZL" temporary;
+                TempVATEntry: Record "VAT Entry" temporary;
                 VATAttributeCodeCZL: Record "VAT Attribute Code CZL";
                 VATStatementLine: Record "VAT Statement Line";
                 VATStatementReportLine: Record "VAT Statement Report Line";
                 VATStatementName: Record "VAT Statement Name";
                 VATStmtReportLineDataCZL: Record "VAT Stmt. Report Line Data CZL";
                 GeneralLedgerSetup: Record "General Ledger Setup";
-                VATStatement: Report "VAT Statement";
-                VATStatementHandlerCZL: Codeunit "VAT Statement Handler CZL";
                 Amount: Decimal;
                 LineNo: Integer;
             begin
                 Copy(Rec);
                 CheckOnlyStandardVATReportInPeriod(true);
+                Rec.UnlinkVATEntries();
 
                 VATStatementName.SetRange("Statement Template Name", "Statement Template Name");
                 VATStatementName.SetRange(Name, "Statement Name");
@@ -53,15 +54,9 @@ report 11745 "VAT Report Request Page CZL"
                 VATStatementLine.SetFilter("Box No.", '<>%1', '');
                 VATStatementLine.FindSet();
 
-                BindSubscription(VATStatementHandlerCZL);
                 GeneralLedgerSetup.Get();
-                if (GeneralledgerSetup."Additional Reporting Currency" <> '') and GeneralLedgerSetup."Functional Currency CZL" then
+                if (GeneralLedgerSetup."Additional Reporting Currency" <> '') and GeneralLedgerSetup."Functional Currency CZL" then
                     "Amounts in Add. Rep. Currency" := false;
-                VATStatement.InitializeRequest(
-                  VATStatementName, VATStatementLine, VATStatementReportSelection, VATStatementReportPeriodSelection, RoundToInteger, "Amounts in Add. Rep. Currency");
-                VATStatementHandlerCZL.Initialize(
-                  VATStatementName, VATStatementLine, VATStatementReportSelection, VATStatementReportPeriodSelection, RoundToInteger,
-                  "Amounts in Add. Rep. Currency", "Start Date", "End Date", '', RoundingDirection);
 
                 VATStatementReportLine.SetRange("VAT Report No.", "No.");
                 VATStatementReportLine.SetRange("VAT Report Config. Code", "VAT Report Config. Code");
@@ -76,17 +71,10 @@ report 11745 "VAT Report Request Page CZL"
                 repeat
                     VATAttributeCodeCZL.Get(VATStatementLine."Statement Template Name", VATStatementLine."Attribute Code CZL");
                     if not SkipVATStatementLine("VAT Report Header", VATAttributeCodeCZL) then begin
-                        VATStatement.CalcLineTotal(VATStatementLine, Amount, 0);
-                        case VATStatementLine."Show CZL" of
-                            VATStatementLine."Show CZL"::"Zero If Negative":
-                                if Amount < 0 then
-                                    Amount := 0;
-                            VATStatementLine."Show CZL"::"Zero If Positive":
-                                if Amount > 0 then
-                                    Amount := 0;
-                        end;
-                        if VATStatementLine."Print with" = VATStatementLine."Print with"::"Opposite Sign" then
-                            Amount := -Amount;
+                        VATStatementLine.GetVATEntries(this.GetVATStmtCalcParameters("Amounts in Add. Rep. Currency"), TempVATEntry);
+                        VATStatementLine.CalcTotal(this.GetVATStmtCalcParameters("Amounts in Add. Rep. Currency"), Amount);
+                        VATStatementLine.PrepareAmountToShow(Amount);
+                        Amount := Amount * VATStatementLine.GetPrintSign();
 
                         TempVATStatementReportLine.SetRange("Box No.", VATStatementLine."Box No.");
                         if not TempVATStatementReportLine.FindFirst() then begin
@@ -111,30 +99,18 @@ report 11745 "VAT Report Request Page CZL"
                     end;
                 until VATStatementLine.Next() = 0;
 
-                if (GeneralledgerSetup."Additional Reporting Currency" <> '') and GeneralLedgerSetup."Functional Currency CZL" then begin
+                if (GeneralLedgerSetup."Additional Reporting Currency" <> '') and GeneralLedgerSetup."Functional Currency CZL" then begin
                     Amount := 0;
                     VATStatementLine.FindSet();
-                    VATStatement.InitializeRequest(
-                        VATStatementName, VATStatementLine, VATStatementReportSelection, VATStatementReportPeriodSelection, RoundToInteger, true);
-                    VATStatementHandlerCZL.Initialize(
-                      VATStatementName, VATStatementLine, VATStatementReportSelection, VATStatementReportPeriodSelection, RoundToInteger,
-                      true, "Start Date", "End Date", '', RoundingDirection);
 
                     LineNo := 0;
                     repeat
                         VATAttributeCodeCZL.Get(VATStatementLine."Statement Template Name", VATStatementLine."Attribute Code CZL");
                         if not SkipVATStatementLine("VAT Report Header", VATAttributeCodeCZL) then begin
-                            VATStatement.CalcLineTotal(VATStatementLine, Amount, 0);
-                            case VATStatementLine."Show CZL" of
-                                VATStatementLine."Show CZL"::"Zero If Negative":
-                                    if Amount < 0 then
-                                        Amount := 0;
-                                VATStatementLine."Show CZL"::"Zero If Positive":
-                                    if Amount > 0 then
-                                        Amount := 0;
-                            end;
-                            if VATStatementLine."Print with" = VATStatementLine."Print with"::"Opposite Sign" then
-                                Amount := -Amount;
+                            VATStatementLine.GetVATEntries(this.GetVATStmtCalcParameters(true), TempVATEntry);
+                            VATStatementLine.CalcTotal(this.GetVATStmtCalcParameters(true), Amount);
+                            VATStatementLine.PrepareAmountToShow(Amount);
+                            Amount := Amount * VATStatementLine.GetPrintSign();
 
                             TempVATStatementReportLine.SetRange("Box No.", VATStatementLine."Box No.");
                             if not TempVATStatementReportLine.FindFirst() then begin
@@ -160,7 +136,8 @@ report 11745 "VAT Report Request Page CZL"
                         end;
                     until VATStatementLine.Next() = 0;
                 end;
-                UnbindSubscription(VATStatementHandlerCZL);
+
+                LinkVATEntries(TempVATEntry);
 
                 TempVATStatementReportLine.Reset();
                 if TempVATStatementReportLine.FindSet() then
@@ -207,13 +184,19 @@ report 11745 "VAT Report Request Page CZL"
                         ShowMandatory = true;
                         ToolTip = 'Specifies whether to include VAT entries based on their status. For example, Open is useful when submitting for the first time, Open and Closed is useful when resubmitting.';
                     }
+#if not CLEAN28
                     field(PeriodSelection; VATStatementReportPeriodSelection)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Include VAT entries';
                         ShowMandatory = true;
+                        Visible = false;
                         ToolTip = 'Specifies whether to include VAT entries only from the specified period, or also from previous periods within the specified year.';
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Period selection will no longer be used. The value "within period" will always be used for the calculation.';
+                        ObsoleteTag = '28.0';
                     }
+#endif
                     field(VATStatementTemplate; Rec."Statement Template Name")
                     {
                         ApplicationArea = Basic, Suite;
@@ -316,7 +299,10 @@ report 11745 "VAT Report Request Page CZL"
 
     protected var
         VATStatementReportSelection: Enum "VAT Statement Report Selection";
+#if not CLEAN28
+        [Obsolete('Period selection will no longer be used. The value "within period" will always be used for the calculation.', '28.0')]
         VATStatementReportPeriodSelection: Enum "VAT Statement Report Period Selection";
+#endif
         RoundToInteger: Boolean;
         RoundingDirection: Option Nearest,Down,Up;
 
@@ -326,6 +312,17 @@ report 11745 "VAT Report Request Page CZL"
               (VATAttributeCodeCZL."XML Code" in ['dano_no', 'dano_da'])) or
              ((VATReportHeader."VAT Report Type" <> VATReportHeader."VAT Report Type"::Supplementary) and
               (VATAttributeCodeCZL."XML Code" in ['dano'])));
+    end;
+
+    protected procedure GetVATStmtCalcParameters(UserAmountsInACY: Boolean) VATStmtCalcParameters: Record "VAT Stmt. Calc. Parameters CZL"
+    begin
+        VATStmtCalcParameters."Start Date" := "VAT Report Header"."Start Date";
+        VATStmtCalcParameters.SetEndDate("VAT Report Header"."End Date");
+        VATStmtCalcParameters."Selection" := VATStatementReportSelection;
+        VATStmtCalcParameters."Period Selection" := Enum::"VAT Statement Report Period Selection"::"Within Period";
+        VATStmtCalcParameters."Print in Integers" := RoundToInteger;
+        VATStmtCalcParameters."Use Amounts in Add. Currency" := UserAmountsInACY;
+        VATStmtCalcParameters.SetRoundingType(RoundingDirection);
     end;
 
     [IntegrationEvent(false, false)]

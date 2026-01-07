@@ -327,6 +327,15 @@ codeunit 5171 "Contoso Human Resources"
         Employee.Modify(true);
     end;
 
+    procedure UpdateEmployeeManager(EmployeeNo: Code[20]; ManagerNo: Code[20])
+    var
+        Employee: Record Employee;
+    begin
+        Employee.Get(EmployeeNo);
+        Employee.Validate("Manager No.", ManagerNo);
+        Employee.Modify(true);
+    end;
+
     procedure InsertEmployeePostingGroup(PostingGroupCode: Code[20]; PayableAccount: Code[20])
     var
         EmployeePostingGroup: Record "Employee Posting Group";

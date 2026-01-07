@@ -15,7 +15,7 @@ query 42804 "SL Hist. ARDocuments"
     Caption = 'Dynamics SL Accounts Receivable Documents';
     elements
     {
-        dataitem(SL_ARDocHist; "SL Hist. ARDoc")
+        dataitem(SL_ARDocHist; "SL Hist. ARDoc Archive")
         {
             column(CpnyID; CpnyID)
             {

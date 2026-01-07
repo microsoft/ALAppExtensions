@@ -34,20 +34,11 @@ codeunit 148017 "IRS 1099 Printing Tests"
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-    begin
+begin
         // [SCENARIO 495389] User gets error when trying to run report with empty statement lines
         Initialize();
 
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
-        // [GIVEN] IRS 1099 Document exists for Vendor in period
+// [GIVEN] IRS 1099 Document exists for Vendor in period
         CreateIRS1099Document(IRS1099FormDocHeader);
 
         // [GIVEN] Form Box No exists in period
@@ -64,10 +55,7 @@ codeunit 148017 "IRS 1099 Printing Tests"
 
         // Tear down
         IRS1099FormDocHeader.Delete(true);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure UT_IRS1099Print_SavingReportWorks()
@@ -76,20 +64,11 @@ codeunit 148017 "IRS 1099 Printing Tests"
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
         IRS1099PrintParams: Record "IRS 1099 Print Params";
         IRSFormsFacade: Codeunit "IRS Forms Facade";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        FormBoxNo: Code[20];
+FormBoxNo: Code[20];
     begin
         // [SCENARIO 495389] SaveContentForDocument works for document
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
-        // [GIVEN] IRS 1099 Document exists for Vendor in period
+// [GIVEN] IRS 1099 Document exists for Vendor in period
         CreateIRS1099Document(IRS1099FormDocHeader);
 
         // [GIVEN] Form Box No exists in period
@@ -112,10 +91,7 @@ codeunit 148017 "IRS 1099 Printing Tests"
 
         // Tear down
         IRS1099FormDocHeader.Delete(true);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure UT_IRS1099Print_BankAccountNo()
@@ -123,20 +99,11 @@ codeunit 148017 "IRS 1099 Printing Tests"
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
         VendorBankAccount: Record "Vendor Bank Account";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        FormBoxNo: Code[20];
+FormBoxNo: Code[20];
     begin
         // [SCENARIO 495389] Bank Account No for Vendor is shown correctly in report
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-
-        // [GIVEN] IRS 1099 Document exists for Vendor in period
+// [GIVEN] IRS 1099 Document exists for Vendor in period
         CreateIRS1099Document(IRS1099FormDocHeader);
 
         // [GIVEN] Vendor Bank Account exists for this vendor with Bank Account No = "XXX"
@@ -166,10 +133,7 @@ codeunit 148017 "IRS 1099 Printing Tests"
 
         // Tear down
         IRS1099FormDocHeader.Delete(true);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     local procedure Initialize()
     var

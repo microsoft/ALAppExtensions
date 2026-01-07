@@ -36,6 +36,7 @@ codeunit 31362 "Match Bank Payment CZB"
         SummaryGenJournalLine: Record "Gen. Journal Line";
         BankAccountNo: Code[20];
         MinAmount, MaxAmount : Decimal;
+        AppliesToIDTok: Label '%1%2', Locked = true, MaxLength = 50;
 
     local procedure Code()
     begin
@@ -205,8 +206,9 @@ codeunit 31362 "Match Bank Payment CZB"
                             GenJournalLine.Validate("Applies-to Doc. Type", TempMatchBankPaymentBufferCZB."Document Type");
                             GenJournalLine.SetSuppressCommit(true);
                             GenJournalLine.Validate("Applies-to Doc. No.", TempMatchBankPaymentBufferCZB."Document No.");
-                        end;
-                        if BankAccount."Dimension from Apply Entry CZB" then
+                        end else
+                            GenJournalLine.Validate("Applies-to ID", BuildAppliesToID(GenJournalLine));
+                        if BankAccount."Dimension from Apply Entry CZB" and not SearchRuleLineCZB."Match Related Party Only" then
                             GenJournalLine.Validate("Dimension Set ID", TempMatchBankPaymentBufferCZB."Dimension Set ID");
                         if GenJournalLine."Currency Code" <> OriginalGenJournalLine."Currency Code" then
                             GenJournalLine.Validate("Currency Code", OriginalGenJournalLine."Currency Code");
@@ -486,6 +488,11 @@ codeunit 31362 "Match Bank Payment CZB"
         end;
         MinAmount := Round(MinAmount);
         MaxAmount := Round(MaxAmount);
+    end;
+
+    local procedure BuildAppliesToID(GenJournalLine: Record "Gen. Journal Line"): Code[50]
+    begin
+        exit(CopyStr(StrSubstNo(AppliesToIDTok, GenJournalLine."Document No.", Format(GenJournalLine."Line No.")), 1, MaxStrLen(GenJournalLine."Applies-to ID")));
     end;
 
     [IntegrationEvent(false, false)]
