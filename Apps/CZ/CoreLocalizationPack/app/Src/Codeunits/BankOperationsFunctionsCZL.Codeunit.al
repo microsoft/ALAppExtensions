@@ -25,11 +25,10 @@ codeunit 31037 "Bank Operations Functions CZL"
         IdentificationIncorrectChecksumErr: Label 'Bank account identification has incorrect checksum.';
         FirstHyphenErr: Label 'Bank account no. must not start with character "-".';
 
-    procedure CreateVariableSymbol(Input: Code[35]): Code[10]
+    procedure CreateVariableSymbol(Input: Code[35]) VariableSymbol: Code[10]
     begin
-        if Input = '' then
-            exit('');
-        exit(CopyStr(TrimLeft(NumbersOnly(Input), '0'), 1, 10));
+        VariableSymbol := CopyStr(TrimLeft(NumbersOnly(Input), '0'), 1, 10);
+        OnCreateVariableSymbol(Input, VariableSymbol);
     end;
 
     local procedure NumbersOnly(Input: Text): Text
@@ -222,5 +221,10 @@ codeunit 31037 "Bank Operations Functions CZL"
           (Input[10] - '0') * 1;
 
         exit(OutputSum mod 11);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateVariableSymbol(Input: Code[35]; var VariableSymbol: Code[10])
+    begin
     end;
 }

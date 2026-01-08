@@ -6,7 +6,6 @@ page 40031 "Table Field Mappings"
 {
     PageType = List;
     ApplicationArea = All;
-    UsageCategory = Lists;
     SourceTable = "Table Field Mappings";
     InherentPermissions = X;
     InherentEntitlements = X;

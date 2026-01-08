@@ -1,4 +1,0 @@
-<error xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
-  <code>Internal Server</code>
-  <message>Unhandled system error</message>
-</error>

@@ -33,10 +33,12 @@ codeunit 10054 "IRS Forms Facade"
         IRSFormsOrchestrator.GetPrintingImplementation().PrintContent(IRS1099FormDocHeader);
     end;
 
-    procedure CreateTransmission(var Transmission: Record "Transmission IRIS"; PeriodNo: Text[4])
+#pragma warning disable AS0078
+    procedure CreateTransmission(Transmission: Record "Transmission IRIS"; PeriodNo: Text[4])
     begin
         IRSFormsOrchestrator.GetIRISImplementation().CreateTransmission(Transmission, PeriodNo);
     end;
+#pragma warning restore AS0078
 
     procedure CheckOriginalTransmission(var Transmission: Record "Transmission IRIS")
     begin

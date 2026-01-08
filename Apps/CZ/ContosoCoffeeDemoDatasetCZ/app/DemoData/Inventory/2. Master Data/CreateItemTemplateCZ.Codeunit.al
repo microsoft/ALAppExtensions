@@ -18,8 +18,6 @@ codeunit 31335 "Create Item Template CZ"
         CreateVATPostingGroupsCZ: Codeunit "Create VAT Posting Groups CZ";
         CreateItemTemplate: Codeunit "Create Item Template";
     begin
-        UpdateItemTemplate(CreateItemTemplate.Item(), CreateVatPostingGroupsCZ.VAT21I());
-        UpdateItemTemplate(CreateItemTemplate.Service(), CreateVatPostingGroupsCZ.VAT21S());
         UpdateItemTemplate(CreateItemTemplate.NonInv(), CreateVatPostingGroupsCZ.VAT21I());
     end;
 

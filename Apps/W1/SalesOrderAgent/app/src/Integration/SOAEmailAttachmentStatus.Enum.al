@@ -22,4 +22,12 @@ enum 4594 "SOA Email Attachment Status"
     {
         Caption = 'Unsupported format';
     }
+    value(3; ExceedsPageCount)
+    {
+        Caption = 'Exceeds Page Count';
+    }
+    value(4; ExceedsNumberOfAttachments)
+    {
+        Caption = 'Exceeds maximum number of attachments';
+    }
 }

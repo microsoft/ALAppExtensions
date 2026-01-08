@@ -44,7 +44,6 @@ codeunit 10048 "Helper FIRE"
         FormBoxes[1, 11] := 'MISC-11';
         FormBoxes[1, 12] := 'MISC-12';
         FormBoxes[1, 13] := 'MISC-13';
-        FormBoxes[1, 14] := 'MISC-14';
         FormBoxes[1, 15] := 'MISC-15';
 
         FormBoxes[2, 1] := 'DIV-01-A';

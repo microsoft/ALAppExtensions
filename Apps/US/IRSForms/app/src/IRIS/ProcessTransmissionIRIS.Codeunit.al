@@ -45,6 +45,7 @@ codeunit 10056 "Process Transmission IRIS"
         UnexpectedStatusErr: Label 'Unexpected status: %1', Comment = '%1 - status text returned by IRIS';
         UnableToParseResponseErr: Label 'Could not parse the response from IRIS.', Locked = true;
         UnableToParseResponseUserErr: Label 'Could not get the transmission status from the response returned by IRIS. Use the Download Acknowledgment Content action on the Transmission History page to download the response content and check the errors.';
+        CannotUpdateRejectedTransmissionErr: Label 'Updating rejected transmissions is not allowed. \Send the replacement transmission until it is no longer rejected.';
 
     procedure CheckOriginal(var Transmission: Record "Transmission IRIS")
     begin
@@ -343,6 +344,8 @@ codeunit 10056 "Process Transmission IRIS"
 
         OAuthClient.RequestTransmStatusOrAcknowledgement(GetStatusRequestContentBlob, AcknowledgContentBlob, HttpStatusCode);
 
+        if ReceiptID = '' then
+            ReceiptID := ProcessResponse.GetReceiptIDFromAcknowledgXmlResponse(AcknowledgContentBlob);
         if not TransmissionLog.FindRecordByUTID(UniqueTransmissionId) then
             if TransmissionLog.FindLastRecByReceiptID(ReceiptID) then;
 
@@ -642,6 +645,9 @@ codeunit 10056 "Process Transmission IRIS"
         FormDocsCreated: Boolean;
         UpdateMessage: Text;
     begin
+        if Transmission.Status = Enum::"Transmission Status IRIS"::Rejected then
+            Error(CannotUpdateRejectedTransmissionErr);
+
         // add existing released form documents first
         AddedDocsCount := AddReleasedFormDocsToTransmission(Transmission);
         if AddedDocsCount > 0 then

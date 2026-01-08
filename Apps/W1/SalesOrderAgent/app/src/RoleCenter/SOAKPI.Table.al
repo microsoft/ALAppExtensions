@@ -57,6 +57,11 @@ table 4593 "SOA KPI"
             Caption = 'Updated at';
             ToolTip = 'Specifies the date and time when the KPI was last updated.';
         }
+        field(5000; "User Security ID"; Guid)
+        {
+            Caption = 'User Security ID';
+            ToolTip = 'Specifies the security identifier (SID) of the agent for whom the KPIs are tracked.';
+        }
     }
 
     keys
@@ -68,10 +73,18 @@ table 4593 "SOA KPI"
     }
 
     internal procedure GetSafe()
+    var
+        UserSecurityIDFilter: Text;
     begin
         Rec.ReadIsolation := IsolationLevel::ReadCommitted;
         if not Rec.Get() then
             Rec.Insert();
+
+        if IsNullGuid(Rec."User Security ID") then begin
+            UserSecurityIDFilter := Rec.GetFilter("User Security ID");
+            if Evaluate(Rec."User Security ID", UserSecurityIDFilter) then
+                Rec.Modify(false);
+        end;
     end;
 
     internal procedure UpdateEntryKPIs(var SOAKPIEntry: Record "SOA KPI Entry"; PreviousAmount: Decimal; InsertedRecord: Boolean)
@@ -118,7 +131,7 @@ table 4593 "SOA KPI"
         if IsNullGuid(AgentSecurityID) then
             exit;
 
-        SOASetup.SetRange("Agent User Security ID", AgentSecurityID);
+        SOASetup.SetRange("User Security ID", AgentSecurityID);
         if SOASetup.IsEmpty() then
             exit;
 

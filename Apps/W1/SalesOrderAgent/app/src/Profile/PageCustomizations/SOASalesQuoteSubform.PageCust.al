@@ -75,5 +75,7 @@ pagecustomization "SOA Sales Quote Subform" customizes "Sales Quote Subform"
         {
             Visible = true;
         }
+
+        moveafter("No."; "Shipment Date")
     }
 }

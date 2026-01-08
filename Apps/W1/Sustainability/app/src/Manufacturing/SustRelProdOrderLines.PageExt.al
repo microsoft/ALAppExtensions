@@ -31,7 +31,7 @@ pageextension 6249 "Sust. Rel. Prod. Order Lines" extends "Released Prod. Order 
 
     local procedure VisibleSustainabilityControls()
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Enable Value Chain Tracking";
     end;

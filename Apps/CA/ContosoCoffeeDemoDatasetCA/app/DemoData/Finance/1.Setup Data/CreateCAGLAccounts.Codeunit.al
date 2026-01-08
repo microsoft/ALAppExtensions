@@ -76,7 +76,14 @@ codeunit 27009 "Create CA GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.DirectCostAppliedCapName(), '52450');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '52460');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '52475');
+
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '57100');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '57200');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '57210');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapOverheadVarianceName(), '57300');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '57400');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialNonInvVarianceName(), '57150');
+
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.FinishedGoodsName(), '14200');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '14600');
     end;
@@ -1967,7 +1974,6 @@ codeunit 27009 "Create CA GL Accounts"
         exit(MfgOverheadVarianceTok);
     end;
 #endif
-
     procedure TotalVariance(): Code[20]
     begin
         exit(ContosoGLAccount.GetAccountNo(TotalVarianceName()));
@@ -2406,7 +2412,7 @@ codeunit 27009 "Create CA GL Accounts"
         DirectCostAppliedRetailTok: Label 'Direct Cost Applied, Retail', MaxLength = 100;
         TotalCostOfRetailTok: Label 'Total Cost of Retail', MaxLength = 100;
         VarianceTok: Label 'Variance', MaxLength = 100;
-#if not CLEAN28        
+#if not CLEAN28  
         MaterialVarianceTok: Label 'Material Variance', MaxLength = 100;
         CapacityVarianceTok: Label 'Capacity Variance', MaxLength = 100;
         SubcontractedVarianceTok: Label 'Subcontracted Variance', MaxLength = 100;

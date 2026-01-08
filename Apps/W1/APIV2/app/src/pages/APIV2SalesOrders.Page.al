@@ -25,6 +25,7 @@ page 30028 "APIV2 - Sales Orders"
     PageType = API;
     SourceTable = "Sales Order Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages sales order documents including customer details, billing and shipping addresses, order status, delivery dates, and financial totals. Supports full CRUD operations for creating, retrieving, updating, and deleting sales orders, enabling integration with e-commerce platforms, order processing systems, and automated sales workflows. Facilitates synchronization and lifecycle management of sales orders between Business Central and external applications.';
 
     layout
     {

@@ -41,5 +41,6 @@ codeunit 11741 "VAT Entry Handler CZL"
     begin
         VATEntry."EU 3-Party Intermed. Role CZL" := FromVATEntry."EU 3-Party Intermed. Role CZL";
         VATEntry."External Document No." := FromVATEntry."External Document No.";
+        VATEntry."Original Doc. VAT Date CZL" := FromVATEntry."Original Doc. VAT Date CZL";
     end;
 }

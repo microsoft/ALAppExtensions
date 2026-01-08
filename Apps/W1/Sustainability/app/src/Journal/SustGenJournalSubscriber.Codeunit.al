@@ -69,7 +69,9 @@ codeunit 6251 "Sust. Gen. Journal Subscriber"
         CH4ToPost := GenJournalLine."Total Emission CH4" * Sign;
         N2OToPost := GenJournalLine."Total Emission N2O" * Sign;
 
-        SustainabilitySetup.Get();
+        if not SustainabilitySetup.Get() then
+            exit;
+
         if not CanPostSustainabilityJnlLine(GenJournalLine, CO2ToPost, CH4ToPost, N2OToPost) then
             exit;
 

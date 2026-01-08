@@ -35,7 +35,6 @@ codeunit 10039 "IRS Forms Data"
         AddFormBox(PeriodNo, 'MISC', 'MISC-10', 'Gross Proceeds Paid to an Attorney', 0);
         AddFormBox(PeriodNo, 'MISC', 'MISC-11', 'Fish purchased for resale', 600);
         AddFormBox(PeriodNo, 'MISC', 'MISC-12', 'Section 409A deferrals', 600);
-        AddFormBox(PeriodNo, 'MISC', 'MISC-14', 'Excess golden parachute payments', 0);
         AddFormBox(PeriodNo, 'MISC', 'MISC-15', 'Nonqualified deferred compensation', 0);
         AddFormBox(PeriodNo, 'MISC', 'MISC-16', 'State tax withheld', 0);
         AddFormStatementLine(PeriodNo, 'MISC', 'MISC-01', 10000, 'Rents');
@@ -50,17 +49,18 @@ codeunit 10039 "IRS Forms Data"
         AddFormStatementLine(PeriodNo, 'MISC', 'MISC-10', 100000, 'Gross Proceeds Paid to an Attorney');
         AddFormStatementLine(PeriodNo, 'MISC', 'MISC-11', 110000, 'Fish purchased for resale');
         AddFormStatementLine(PeriodNo, 'MISC', 'MISC-12', 120000, 'Section 409A deferrals');
-        AddFormStatementLine(PeriodNo, 'MISC', 'MISC-14', 130000, 'Excess golden parachute payments');
         AddFormStatementLine(PeriodNo, 'MISC', 'MISC-15', 140000, 'Nonqualified deferred compensation');
         AddFormStatementLine(PeriodNo, 'MISC', 'MISC-16', 150000, 'State tax withheld');
 
         AddForm(PeriodNo, 'NEC', 'Nonemployee Compensation');
         AddFormBox(PeriodNo, 'NEC', 'NEC-01', 'Nonemployee Compensation', 600);
         AddFormBox(PeriodNo, 'NEC', 'NEC-02', 'Payer made direct sales totaling $5,000 or more of consumer products to recipient for resale', 5000);
+        AddFormBox(PeriodNo, 'NEC', 'NEC-03', 'Excess golden parachute payments', 0);
         AddFormBox(PeriodNo, 'NEC', 'NEC-04', 'Federal Income Tax Withheld', 0);
         AddFormStatementLine(PeriodNo, 'NEC', 'NEC-01', 10000, 'Nonemployee Compensation');
         AddFormStatementLine(PeriodNo, 'NEC', Enum::"IRS 1099 Print Value Type"::"Yes/No", 'NEC-02', 20000, 'Payer made direct sales totaling $5,000 or more of consumer products to recipient for resale');
-        AddFormStatementLine(PeriodNo, 'NEC', 'NEC-04', 30000, 'Federal Income Tax Withheld');
+        AddFormStatementLine(PeriodNo, 'NEC', 'NEC-03', 30000, 'Excess golden parachute payments');
+        AddFormStatementLine(PeriodNo, 'NEC', 'NEC-04', 40000, 'Federal Income Tax Withheld');
 
         AddForm(PeriodNo, 'INT', 'Interest Income');
         AddFormBox(PeriodNo, 'INT', 'INT-01', 'Interest Income', 10);
@@ -267,7 +267,7 @@ codeunit 10039 "IRS Forms Data"
         IRS1099Form.Insert(true);
     end;
 
-    local procedure AddFormBox(PeriodNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20]; Description: Text; MinimumReportableAmount: Decimal)
+    procedure AddFormBox(PeriodNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20]; Description: Text; MinimumReportableAmount: Decimal)
     var
         IRS1099FormBox: Record "IRS 1099 Form Box";
     begin
@@ -279,7 +279,7 @@ codeunit 10039 "IRS Forms Data"
         IRS1099FormBox.Insert(true);
     end;
 
-    local procedure AddFormStatementLine(PeriodNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20]; StatementLineNo: Integer; Description: Text)
+    procedure AddFormStatementLine(PeriodNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20]; StatementLineNo: Integer; Description: Text)
     begin
         AddFormStatementLine(PeriodNo, FormNo, Enum::"IRS 1099 Print Value Type"::Amount, FormBoxNo, StatementLineNo, Description);
     end;

@@ -10,34 +10,64 @@ pageextension 10053 "IRS 1099 Vendor Card" extends "Vendor Card"
 {
     layout
     {
-#if not CLEAN25
-#pragma warning disable AL0432
-        modify("IRS 1099 Code")
-        {
-            Visible = false;
-        }
-        modify("FATCA filing requirement")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addafter("Exclude from Pmt. Practices")
         {
+#if not CLEAN28
+#pragma warning disable AL0432
             field("IRS Reporting Period"; Rec."IRS Reporting Period")
             {
                 ApplicationArea = BasicUS;
                 ToolTip = 'Specifies the last IRS reporting period where the vendor has a vendor form box setup';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Replaced by a dynamic field on the vendor card and list pages.';
+                ObsoleteTag = '28.0';
             }
             field("IRS 1099 Form No."; Rec."IRS 1099 Form No.")
             {
                 ApplicationArea = BasicUS;
                 ToolTip = 'Specifies the IRS form number where the vendor has a vendor form box setup';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Replaced by a dynamic field on the vendor card and list pages.';
+                ObsoleteTag = '28.0';
             }
             field("IRS 1099 Form Box No."; Rec."IRS 1099 Form Box No.")
             {
                 ApplicationArea = BasicUS;
                 ToolTip = 'Specifies the IRS form box number where the vendor has a vendor form box setup';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Replaced by a dynamic field on the vendor card and list pages.';
+                ObsoleteTag = '28.0';
+            }
+#pragma warning restore AL0432
+#endif
+            field(IRSReportingPeriodNoField; IRSReportingPeriodNo)
+            {
+                ApplicationArea = BasicUS;
+                Caption = 'IRS Reporting Period';
+                ToolTip = 'Specifies the current IRS reporting period where the vendor has a vendor form box setup';
+                Editable = false;
+            }
+            field(IRS1099FormNoField; IRS1099FormNo)
+            {
+                ApplicationArea = BasicUS;
+                Caption = 'IRS 1099 Form No.';
+                ToolTip = 'Specifies the current IRS form number where the vendor has a vendor form box setup';
+                Editable = false;
+            }
+            field(IRS1099FormBoxNoField; IRS1099FormBoxNo)
+            {
+                ApplicationArea = BasicUS;
+                Caption = 'IRS 1099 Form Box No.';
+                ToolTip = 'Specifies the current IRS form box number where the vendor has a vendor form box setup';
+                Editable = false;
+
+                trigger OnDrillDown()
+                begin
+                    IRS1099VendorFormBox.ShowVendor1099FormBoxSetupAsOfWorkDate(Rec."No.");
+                end;
             }
             field("Receive Elec. IRS Forms"; Rec."Receiving 1099 E-Form Consent")
             {
@@ -61,30 +91,6 @@ pageextension 10053 "IRS 1099 Vendor Card" extends "Vendor Card"
 
     actions
     {
-#if not CLEAN25
-#pragma warning disable AL0432
-        modify("1099 Statistics")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Div")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Information")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Int")
-        {
-            Visible = false;
-        }
-        modify("Vendor 1099 Misc")
-        {
-            Visible = false;
-        }
-#pragma warning restore AL0432
-#endif
         addlast("&Purchases")
         {
             action(IRS1099Setup)
@@ -99,4 +105,18 @@ pageextension 10053 "IRS 1099 Vendor Card" extends "Vendor Card"
             }
         }
     }
+
+    var
+        IRS1099VendorFormBox: Codeunit "IRS 1099 Vendor Form Box";
+        IRSReportingPeriodNo, IRS1099FormNo, IRS1099FormBoxNo : Code[20];
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        IRS1099VendorFormBox.GetVendorIRS1099FormBoxSetupAsOfWorkdate(IRSReportingPeriodNo, IRS1099FormNo, IRS1099FormBoxNo, Rec."No.");
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        IRS1099VendorFormBox.GetVendorIRS1099FormBoxSetupAsOfWorkdate(IRSReportingPeriodNo, IRS1099FormNo, IRS1099FormBoxNo, Rec."No.");
+    end;
 }

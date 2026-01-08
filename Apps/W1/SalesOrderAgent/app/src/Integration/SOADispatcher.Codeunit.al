@@ -120,7 +120,7 @@ codeunit 4586 "SOA Dispatcher"
         end;
 
         // Check if the agent is enabled
-        if not Agent.IsActive(Setup."Agent User Security ID") then begin
+        if not Agent.IsActive(Setup."User Security ID") then begin
             FeatureTelemetry.LogError('0000NDL', SOASetupCU.GetFeatureName(), 'Agent enable check', TelemetryAgentNotEnabledLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit(false);
         end;

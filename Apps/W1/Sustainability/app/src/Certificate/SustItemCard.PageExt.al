@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Certificate;
 
 using Microsoft.Inventory.Item;
+using Microsoft.Sustainability.Codes;
 using Microsoft.Sustainability.EPR;
 using Microsoft.Sustainability.Setup;
 
@@ -122,6 +123,22 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the value of the End-of-Life Disposal Requirements field.';
                 }
+                group("Product Classification")
+                {
+                    Caption = 'Product Classification';
+                    field("Product Classification Type"; Rec."Product Classification Type")
+                    {
+                        ApplicationArea = Basic, Suite;
+                    }
+                    field("Product Classification Code"; Rec."Product Classification Code")
+                    {
+                        ApplicationArea = Basic, Suite;
+                    }
+                    field("Product Classification Name"; Rec."Product Classification Name")
+                    {
+                        ApplicationArea = Basic, Suite;
+                    }
+                }
             }
         }
 
@@ -173,6 +190,18 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                 end;
             }
         }
+        addlast(navigation)
+        {
+            action(ProductClassificationCodes)
+            {
+                Caption = 'Product Classification Codes';
+                ApplicationArea = All;
+                Image = ListPage;
+                ToolTip = 'Opens the Product Classification Codes page.';
+                RunPageMode = Edit;
+                RunObject = page "Product Classification List";
+            }
+        }
     }
 
     trigger OnOpenPage()
@@ -184,7 +213,7 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
     var
         SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Item Emissions";
         SustainabilityAllGasesAsCO2eVisible := SustainabilitySetup."Use All Gases As CO2e";

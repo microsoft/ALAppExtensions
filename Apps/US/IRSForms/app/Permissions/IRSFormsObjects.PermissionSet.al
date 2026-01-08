@@ -49,6 +49,8 @@ permissionset 10032 "IRS Forms - Objects"
                   page "Transmission IRIS Subform" = X,
                   page "Transmission Logs IRIS" = X,
                   page "Transmissions IRIS" = X,
+                  page "IRS Forms Company Selector" = X,
+                  page "IRS 1099 Vendor Overview" = X,
                   codeunit "Data Check IRIS" = X,
                   codeunit "Generate Xml File IRIS" = X,
                   codeunit "IRS 1099 Send Email" = X,
@@ -62,7 +64,7 @@ permissionset 10032 "IRS Forms - Objects"
                   report "IRS 1099 FIRE" = X,
                   report "IRS 1099 Print" = X,
 #pragma warning disable AL0432
-#if not CLEAN27
+#if not CLEAN28
                   report "Upgrade IRS 1099 Data" = X,
 #endif
 #pragma warning restore AL0432

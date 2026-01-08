@@ -41,6 +41,8 @@ codeunit 139683 "Statistical Account Test"
         TotalNumberOfEmployeeLedgerEntries: Integer;
         BalanceMustBeEqualErr: Label 'Balance must be equal to %1.', Comment = '%1 = Field Value';
         WrongBalanceErr: Label 'Wrong balance on the statistical account %1', Comment = '%1 = Statistical Account No.';
+        WrongPageErr: Label 'Wrong page opened.';
+        WrongAmountErr: Label 'Wrong amount in the statistical ledger entry list.';
 
     local procedure Initialize()
     var
@@ -744,6 +746,54 @@ codeunit 139683 "Statistical Account Test"
         // [THEN] No error message should appear.
     end;
 
+    [Test]
+    [HandlerFunctions('MessageDialogHandler,ConfirmationDialogHandler,AvailableStatisticalLedgerEntryListDrillDownHandler')]
+    procedure VerifyStatisticalAccountCreationAndAnalysisView()
+    var
+        AnalysisView: Record "Analysis View";
+        StatisticalAccount: Record "Statistical Account";
+        AnalysisViewCard: TestPage "Analysis View Card";
+        AnalysisViewEntries: TestPage "Analysis View Entries";
+        StatisticalAccountsJournal: TestPage "Statistical Accounts Journal";
+        StatisticalLedgerEntryList: TestPage "Statistical Ledger Entry List";
+    begin
+        // [SCENARIO] Create Statistical Account, post entries and verify Analysis View
+        Initialize();
+
+        // [GIVEN] Create a new Statistical Account
+        CreateStatisticalAccount(StatisticalAccount);
+
+        // [GIVEN] Create Statistical Account Journal entry
+        StatisticalAccountsJournal.OpenEdit();
+        StatisticalAccountsJournal.New();
+        StatisticalAccountsJournal."Posting Date".SetValue(DMY2Date(1, 1, 2023));
+        StatisticalAccountsJournal.StatisticalAccountNo.SetValue(StatisticalAccount."No.");
+        StatisticalAccountsJournal.Amount.SetValue(1200);
+
+        // [WHEN] Register the journal
+        RegisterJournal(StatisticalAccountsJournal);
+        StatisticalAccountsJournal.Close();
+
+        // [WHEN] Create Analysis View
+        AnalysisViewCard.OpenNew();
+        AnalysisViewCard.Code.SetValue(LibraryRandom.RandText(10));
+        AnalysisViewCard."Account Source".SetValue(AnalysisView."Account Source"::"Statistical Account");
+        AnalysisViewCard."Account Filter".SetValue(StatisticalAccount."No.");
+        AnalysisViewCard."&Update".Invoke();
+        AnalysisViewCard.Close();
+
+        // [WHEN] Open Analysis View Entries page and click amount field
+        AnalysisViewEntries.OpenEdit();
+        AnalysisViewEntries.Filter.SetFilter("Account No.", StatisticalAccount."No.");
+        AnalysisViewEntries.First();
+
+        // [WHEN] Click Amount field to open Statistical Ledger Entry List
+        StatisticalLedgerEntryList.Trap();
+        AnalysisViewEntries.Amount.DrillDown();
+
+        // [THEN] Verify Statistical Ledger Entry List page opens with correct entry
+    end;
+
     local procedure SetupFinancialReport()
     var
         AccScheduleLine: Record "Acc. Schedule Line";
@@ -1154,6 +1204,14 @@ codeunit 139683 "Statistical Account Test"
     begin
         StatBatch.Filter.SetFilter(Name, LibraryVariableStorage.DequeueText());
         StatBatch.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure AvailableStatisticalLedgerEntryListDrillDownHandler(var StatisticalLedgerEntryList: TestPage "Statistical Ledger Entry List")
+    begin
+        Assert.AreEqual('Statistical Account Ledger Entries', StatisticalLedgerEntryList.Caption(), WrongPageErr);
+        StatisticalLedgerEntryList.First();
+        Assert.AreEqual(1200, StatisticalLedgerEntryList.Amount.AsDecimal(), WrongAmountErr);
     end;
 
     [PageHandler]

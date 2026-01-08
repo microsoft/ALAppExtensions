@@ -155,7 +155,10 @@ codeunit 6254 "Sust. Manufacturing Subscriber"
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnValidateQuantityOnBeforeGetUnitAmount', '', false, false)]
     local procedure OnValidateQuantityOnBeforeGetUnitAmount(var ItemJournalLine: Record "Item Journal Line")
     begin
-        if ItemJournalLine."Entry Type" in [ItemJournalLine."Entry Type"::Output, ItemJournalLine."Entry Type"::Consumption] then
+        if (ItemJournalLine."Entry Type" in [ItemJournalLine."Entry Type"::Output, ItemJournalLine."Entry Type"::Consumption]) or
+           ItemJournalLine.IsSourceItemJournal() or
+           ItemJournalLine.IsSourceItemReclassJournal()
+        then
             ItemJournalLine.UpdateSustainabilityEmission(ItemJournalLine);
     end;
 

@@ -32,7 +32,7 @@ pageextension 6227 "Sust. G/L Account Card" extends "G/L Account Card"
     var
         SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."G/L Account Emissions";
     end;

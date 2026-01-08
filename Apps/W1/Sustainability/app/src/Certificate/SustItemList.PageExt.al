@@ -55,7 +55,7 @@ pageextension 6271 "Sust. Item List" extends "Item List"
     var
         SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Item Emissions";
         SustainabilityAllGasesAsCO2eVisible := SustainabilitySetup."Use All Gases As CO2e";

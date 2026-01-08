@@ -42,6 +42,7 @@ codeunit 5417 "Create Dimension Value"
         ContosoDimension.InsertDimensionValue(CreateDimension.DepartmentDimension(), AdministrationDepartment(), AdministrationLbl, 0, '');
         ContosoDimension.InsertDimensionValue(CreateDimension.DepartmentDimension(), ProductionDepartment(), ProductionLbl, 0, '');
         ContosoDimension.InsertDimensionValue(CreateDimension.DepartmentDimension(), SalesDepartment(), SalesLbl, 0, '');
+        ContosoDimension.InsertDimensionValue(CreateDimension.DepartmentDimension(), PurchasingDepartment(), PurchasingLbl, 0, '');
 
         ContosoDimension.InsertDimensionValue(CreateDimension.SalesCampaignDimension(), SummerSalesCampaign(), SummerLbl, 0, '');
         ContosoDimension.InsertDimensionValue(CreateDimension.SalesCampaignDimension(), WinterSalesCampaign(), WinterLbl, 0, '');
@@ -149,6 +150,11 @@ codeunit 5417 "Create Dimension Value"
         exit(SalesTok);
     end;
 
+    procedure PurchasingDepartment(): Code[20]
+    begin
+        exit(PurchasingTok);
+    end;
+
     procedure SummerSalesCampaign(): Code[20]
     begin
         exit(SummerTok);
@@ -180,6 +186,7 @@ codeunit 5417 "Create Dimension Value"
         AdministrationLbl: Label 'Administration', MaxLength = 50;
         ProductionLbl: Label 'Production', MaxLength = 50;
         SalesLbl: Label 'Sales', MaxLength = 50;
+        PurchasingLbl: Label 'Purchasing', MaxLength = 50;
         SummerLbl: Label 'Summer', MaxLength = 50;
         WinterLbl: Label 'Winter', MaxLength = 50;
         HomeTok: Label 'HOME', MaxLength = 20;
@@ -191,6 +198,7 @@ codeunit 5417 "Create Dimension Value"
         AdministrationTok: Label 'ADM', MaxLength = 20;
         ProductionTok: Label 'PROD', MaxLength = 20;
         SalesTok: Label 'SALES', MaxLength = 20;
+        PurchasingTok: Label 'PURCHASING', MaxLength = 20;
         SummerTok: Label 'SUMMER', MaxLength = 20;
         WinterTok: Label 'WINTER', MaxLength = 20;
 }

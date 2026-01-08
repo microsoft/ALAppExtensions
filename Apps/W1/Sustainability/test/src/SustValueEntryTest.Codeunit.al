@@ -1,27 +1,28 @@
 namespace Microsoft.Test.Sustainability;
 
-using System.TestLibraries.Utilities;
-using Microsoft.Sustainability.Ledger;
-using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.Emission;
-using Microsoft.Purchases.Document;
-using Microsoft.Foundation.Address;
-using Microsoft.Purchases.History;
 using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.Navigate;
-using Microsoft.Sales.Document;
-using Microsoft.Sales.History;
 using Microsoft.Inventory.Item;
-using Microsoft.Sustainability.Setup;
-using Microsoft.Manufacturing.Routing;
-using Microsoft.Manufacturing.WorkCenter;
-using Microsoft.Manufacturing.MachineCenter;
-using Microsoft.Manufacturing.ProductionBOM;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Location;
+using Microsoft.Manufacturing.Capacity;
 using Microsoft.Manufacturing.Document;
 using Microsoft.Manufacturing.Journal;
-using Microsoft.Foundation.AuditCodes;
-using Microsoft.Inventory.Journal;
-using Microsoft.Manufacturing.Capacity;
+using Microsoft.Manufacturing.MachineCenter;
+using Microsoft.Manufacturing.ProductionBOM;
+using Microsoft.Manufacturing.Routing;
+using Microsoft.Manufacturing.WorkCenter;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
+using System.TestLibraries.Utilities;
 
 codeunit 148190 "Sust. Value Entry Test"
 {
@@ -40,10 +41,12 @@ codeunit 148190 "Sust. Value Entry Test"
         LibrarySales: Codeunit "Library - Sales";
         LibraryManufacturing: Codeunit "Library - Manufacturing";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryWarehouse: Codeunit "Library - Warehouse";
         ValueMustBeEqualErr: Label '%1 must be equal to %2 in the %3.', Comment = '%1 = Field Caption , %2 = Expected Value, %3 = Table Caption';
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
+        CO2eMustNotBeZeroErr: Label 'The CO2e fields must have a value that is not 0.';
 
     [Test]
     procedure VerifySustainabilityValueEntryShouldBeCreatedWhenPurchDocumentIsPosted()
@@ -3351,6 +3354,652 @@ codeunit 148190 "Sust. Value Entry Test"
         Assert.RecordCount(SustainabilityValueEntry, 1);
     end;
 
+    [Test]
+    procedure TestSustValueEntryIsCreatedForItemJournalWhenEntryTypeIsPurchase()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ItemJournal: TestPage "Item Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedTotalCO2e: Decimal;
+    begin
+        // [SCENARIO 580139] Verify "Sustainability Value Entry" is created for Item Journal When "Entry Type" is purchase.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Generate Expected "Total CO2e".
+        ExpectedTotalCO2e := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalBatch(ItemJournalBatch);
+
+        // [GIVEN] Create Item Journal Line with "Entry Type" Purchase.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::Purchase, Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [GIVEN] Open Item Journal page and create new line.
+        ItemJournal.OpenEdit();
+        ItemJournal.GotoRecord(ItemJournalLine);
+        ItemJournal.New();
+
+        // [GIVEN] Update "Item No.", Quantity, "Total CO2e" in Item Journal.
+        ItemJournal."Item No.".SetValue(Item."No.");
+        ItemJournal.Quantity.SetValue(LibraryRandom.RandIntInRange(100, 200));
+        ItemJournal."Total CO2e".SetValue(ExpectedTotalCO2e);
+        ItemJournal.Close();
+
+        // [WHEN] Post Item Journal Batch.
+        LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
+
+        // [THEN] Verify Sustainability Value entry must be created.
+        SustainabilityValueEntry.SetRange("Item No.", Item."No.");
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            ExpectedTotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), ExpectedTotalCO2e, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure TestSustValueEntryIsCreatedForItemJournalWhenEntryTypeIsPositiveAdjmt()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ItemJournal: TestPage "Item Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedTotalCO2e: Decimal;
+    begin
+        // [SCENARIO 580139] Verify "Sustainability Value Entry" is created for Item Journal When "Entry Type" is Positive Adjmt.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Generate Expected "Total CO2e".
+        ExpectedTotalCO2e := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalBatch(ItemJournalBatch);
+
+        // [GIVEN] Create Item Journal Line with "Entry Type" Positive Adjmt.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::"Positive Adjmt.", Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [GIVEN] Open Item Journal page and create new line.
+        ItemJournal.OpenEdit();
+        ItemJournal.GotoRecord(ItemJournalLine);
+        ItemJournal.New();
+
+        // [GIVEN] Update "Item No.", Quantity, "Total CO2e" in Item Journal.
+        ItemJournal."Item No.".SetValue(Item."No.");
+        ItemJournal.Quantity.SetValue(LibraryRandom.RandIntInRange(100, 200));
+        ItemJournal."Total CO2e".SetValue(ExpectedTotalCO2e);
+        ItemJournal.Close();
+
+        // [WHEN] Post Item Journal Batch.
+        LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
+
+        // [THEN] Verify Sustainability Value entry must be created.
+        SustainabilityValueEntry.SetRange("Item No.", Item."No.");
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            ExpectedTotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), ExpectedTotalCO2e, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure TestSustValueEntryIsCreatedForItemJournalWhenEntryTypeIsSale()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ItemJournal: TestPage "Item Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedTotalCO2e: Decimal;
+    begin
+        // [SCENARIO 580139] Verify "Sustainability Value Entry" is created for Item Journal When "Entry Type" is Sale.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Generate Expected "Total CO2e".
+        ExpectedTotalCO2e := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalBatch(ItemJournalBatch);
+
+        // [GIVEN] Create Item Journal Line with "Entry Type" Sale.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::Sale, Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [GIVEN] Open Item Journal page and create new line.
+        ItemJournal.OpenEdit();
+        ItemJournal.GotoRecord(ItemJournalLine);
+        ItemJournal.New();
+
+        // [GIVEN] Update "Item No.", Quantity, "Total CO2e" in Item Journal.
+        ItemJournal."Item No.".SetValue(Item."No.");
+        ItemJournal.Quantity.SetValue(LibraryRandom.RandIntInRange(100, 200));
+        ItemJournal."Total CO2e".SetValue(ExpectedTotalCO2e);
+        ItemJournal.Close();
+
+        // [WHEN] Post Item Journal Batch.
+        LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
+
+        // [THEN] Verify Sustainability Value entry must be created.
+        SustainabilityValueEntry.SetRange("Item No.", Item."No.");
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            -ExpectedTotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), -ExpectedTotalCO2e, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure TestSustValueEntryIsCreatedForItemJournalWhenEntryTypeIsNegativeAdjmt()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ItemJournal: TestPage "Item Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedTotalCO2e: Decimal;
+    begin
+        // [SCENARIO 580139] Verify "Sustainability Value Entry" is created for Item Journal When "Entry Type" is Negative Adjmt.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Generate Expected "Total CO2e".
+        ExpectedTotalCO2e := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalBatch(ItemJournalBatch);
+
+        // [GIVEN] Create Item Journal Line with "Entry Type" Negative Adjmt.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::"Negative Adjmt.", Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [GIVEN] Open Item Journal page and create new line.
+        ItemJournal.OpenEdit();
+        ItemJournal.GotoRecord(ItemJournalLine);
+        ItemJournal.New();
+
+        // [GIVEN] Update "Item No.", Quantity, "Total CO2e" in Item Journal.
+        ItemJournal."Item No.".SetValue(Item."No.");
+        ItemJournal.Quantity.SetValue(LibraryRandom.RandIntInRange(100, 200));
+        ItemJournal."Total CO2e".SetValue(ExpectedTotalCO2e);
+        ItemJournal.Close();
+
+        // [WHEN] Post Item Journal Batch.
+        LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
+
+        // [THEN] Verify Sustainability Value entry must be created.
+        SustainabilityValueEntry.SetRange("Item No.", Item."No.");
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            -ExpectedTotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), -ExpectedTotalCO2e, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure TestSustAccountNoMustBeBlankInItemJournalIfSourceCodeIsNotItemJournal()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 580139] Verify "Sust. Account No." must be blank in Item Journal Line If "Source Code" is not Item Journal.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalBatch(ItemJournalBatch);
+
+        // [WHEN] Create Item Journal Line with "Entry Type" Negative Adjmt.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::"Negative Adjmt.", Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [THEN] Verify "Sust. Account No." must be blank in Item Journal Line.
+        Assert.AreEqual(
+            '',
+            ItemJournalLine."Sust. Account No.",
+            StrSubstNo(ValueMustBeEqualErr, ItemJournalLine.FieldCaption("Sust. Account No."), '', ItemJournalLine.TableCaption()));
+    end;
+
+    [Test]
+    procedure TestSystemMustThrowAnErrorIfTotalCO2eIsZeroWhenItemJournalIsPosted()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        ItemJournal: TestPage "Item Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+    begin
+        // [SCENARIO 580139] Verify System must throw an error If "Total CO2e" is zero in Item Journal Line.
+        // When Item Journal is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Modify();
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalBatch(ItemJournalBatch);
+
+        // [GIVEN] Create Item Journal Line with "Entry Type" Negative Adjmt.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::"Negative Adjmt.", Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [GIVEN] Open Item Journal page and create new line.
+        ItemJournal.OpenEdit();
+        ItemJournal.GotoRecord(ItemJournalLine);
+        ItemJournal.New();
+
+        // [GIVEN] Update "Item No.", Quantity, "Total CO2e" in Item Journal.
+        ItemJournal."Item No.".SetValue(Item."No.");
+        ItemJournal.Quantity.SetValue(LibraryRandom.RandIntInRange(100, 200));
+        ItemJournal.Close();
+
+        // [WHEN] Post Item Journal Batch.
+        asserterror LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
+
+        // [THEN] Verify system must throw an error If "Total CO2e" is zero in Item Journal Line.
+        Assert.ExpectedError(CO2eMustNotBeZeroErr);
+    end;
+
+    [Test]
+    procedure TestSustValueEntryIsCreatedForItemJournalWithDefaultValues()
+    var
+        Item: Record Item;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ItemJournal: TestPage "Item Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedTotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 580139] Verify "Sustainability Value Entry" is created for Item Journal When "Entry Type" is Negative Adjmt with Default values.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Generate Expected "Total CO2e",Quantity.
+        ExpectedTotalCO2e := LibraryRandom.RandInt(100);
+        Quantity := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Validate("CO2e per Unit", ExpectedTotalCO2e);
+        Item.Modify();
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalBatch(ItemJournalBatch);
+
+        // [GIVEN] Create Item Journal Line with "Entry Type" Negative Adjmt.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::"Negative Adjmt.", Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [GIVEN] Open Item Journal page and create new line.
+        ItemJournal.OpenEdit();
+        ItemJournal.GotoRecord(ItemJournalLine);
+        ItemJournal.New();
+
+        // [GIVEN] Update "Item No.", Quantity, "Total CO2e" in Item Journal.
+        ItemJournal."Item No.".SetValue(Item."No.");
+        ItemJournal.Quantity.SetValue(Quantity);
+        ItemJournal.Close();
+
+        // [WHEN] Post Item Journal Batch.
+        LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
+
+        // [THEN] Verify Sustainability Value entry must be created.
+        SustainabilityValueEntry.SetRange("Item No.", Item."No.");
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            -ExpectedTotalCO2e * Quantity,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), -ExpectedTotalCO2e * Quantity, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure TestSustValueEntryIsCreatedForItemReclassJournal()
+    var
+        Item: Record Item;
+        Location: Record Location;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        ItemReclassJournal: TestPage "Item Reclass. Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedTotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 580139] Verify "Sustainability Value Entry" is created for Item Reclass Journal When "Entry Type" is Transfer.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create Location.
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(Location);
+
+        // [GIVEN] Generate Expected "Total CO2e",Quantity.
+        ExpectedTotalCO2e := LibraryRandom.RandInt(100);
+        Quantity := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Validate("CO2e per Unit", ExpectedTotalCO2e);
+        Item.Modify();
+
+        // [GIVEN] Post Inventory for Item.
+        PostInventoryForItem(Item."No.");
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalTransferBatch(ItemJournalBatch);
+
+        // [GIVEN] Create Item Journal Line with "Entry Type" Transfer.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::Transfer, Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [GIVEN] Open Item Reclass Journal page and create new line.
+        ItemReclassJournal.OpenEdit();
+        ItemReclassJournal.GotoRecord(ItemJournalLine);
+        ItemReclassJournal.New();
+
+        // [GIVEN] Update "Item No.", Quantity, "Total CO2e" in Item Reclass Journal.
+        ItemReclassJournal."Item No.".SetValue(Item."No.");
+        ItemReclassJournal."New Location Code".SetValue(Location.Code);
+        ItemReclassJournal.Quantity.SetValue(Quantity);
+        ItemReclassJournal."Total CO2e".SetValue(ExpectedTotalCO2e);
+        ItemReclassJournal.Close();
+
+        // [WHEN] Post Item Journal Batch.
+        LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
+
+        // [THEN] Verify Sustainability Value entry must be created.
+        SustainabilityValueEntry.SetRange("Item No.", Item."No.");
+        SustainabilityValueEntry.FindFirst();
+        Assert.RecordCount(SustainabilityValueEntry, 1);
+        Assert.AreEqual(
+            ExpectedTotalCO2e,
+            SustainabilityValueEntry."CO2e Amount (Actual)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Actual)"), ExpectedTotalCO2e, SustainabilityValueEntry.TableCaption()));
+        Assert.AreEqual(
+            0,
+            SustainabilityValueEntry."CO2e Amount (Expected)",
+            StrSubstNo(ValueMustBeEqualErr, SustainabilityValueEntry.FieldCaption("CO2e Amount (Expected)"), 0, SustainabilityValueEntry.TableCaption()));
+    end;
+
+    [Test]
+    procedure TestTotalCO2eMustNotBeUpdatedFromItemInItemReclassJournal()
+    var
+        Item: Record Item;
+        Location: Record Location;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        ItemReclassJournal: TestPage "Item Reclass. Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedTotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 580139] Verify "Total CO2e" must not be updated from item For Item Reclass Journal.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create Location.
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(Location);
+
+        // [GIVEN] Generate Expected "Total CO2e",Quantity.
+        ExpectedTotalCO2e := LibraryRandom.RandInt(100);
+        Quantity := LibraryRandom.RandInt(100);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Validate("CO2e per Unit", ExpectedTotalCO2e);
+        Item.Modify();
+
+        // [GIVEN] Post Inventory for Item.
+        PostInventoryForItem(Item."No.");
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalTransferBatch(ItemJournalBatch);
+
+        // [GIVEN] Create Item Journal Line with "Entry Type" Transfer.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::Transfer, Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [GIVEN] Open Item Reclass Journal page and create new line.
+        ItemReclassJournal.OpenEdit();
+        ItemReclassJournal.GotoRecord(ItemJournalLine);
+        ItemReclassJournal.New();
+
+        // [WHEN] Update "Item No.", Quantity, "Total CO2e" in Item Reclass Journal.
+        ItemReclassJournal."Item No.".SetValue(Item."No.");
+        ItemReclassJournal."New Location Code".SetValue(Location.Code);
+        ItemReclassJournal.Quantity.SetValue(Quantity);
+
+        // [THEN] Verify "Total CO2e" must not be updated from Item.
+        ItemReclassJournal."Total CO2e".AssertEquals(0);
+    end;
+
+    [Test]
+    procedure TestSystemMustThrowAnErrorIfTotalCO2eIsZeroWhenItemReclassJournalIsPosted()
+    var
+        Item: Record Item;
+        Location: Record Location;
+        SustainabilityAccount: Record "Sustainability Account";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        ItemReclassJournal: TestPage "Item Reclass. Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ExpectedTotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 580139] Verify System must throw an error If "Total CO2e" is zero in Item Journal Line.
+        // When Item Reclass Journal is posted.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create Location.
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(Location);
+
+        // [GIVEN] Generate Expected "Total CO2e",Quantity.
+        ExpectedTotalCO2e := LibraryRandom.RandInt(100);
+        Quantity := LibraryRandom.RandInt(10);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create Item with Sustainability Account.
+        LibraryInventory.CreateItem(Item);
+        Item.Validate("Default Sust. Account", AccountCode);
+        Item.Validate("CO2e per Unit", ExpectedTotalCO2e);
+        Item.Modify();
+
+        // [GIVEN] Post Inventory for Item.
+        PostInventoryForItem(Item."No.");
+
+        // [GIVEN] Select Item Journal Batch.
+        SelectItemJournalTransferBatch(ItemJournalBatch);
+
+        // [GIVEN] Create Item Journal Line with "Entry Type" Transfer.
+        LibraryInventory.CreateItemJournalLine(
+            ItemJournalLine, ItemJournalBatch."Journal Template Name", ItemJournalBatch.Name,
+            ItemJournalLine."Entry Type"::Transfer, Item."No.", LibraryRandom.RandIntInRange(100, 100));
+
+        // [GIVEN] Open Item Reclass Journal page and create new line.
+        ItemReclassJournal.OpenEdit();
+        ItemReclassJournal.GotoRecord(ItemJournalLine);
+        ItemReclassJournal.New();
+
+        // [GIVEN] Update "Item No.", Quantity, "Total CO2e" in Item Reclass Journal.
+        ItemReclassJournal."Item No.".SetValue(Item."No.");
+        ItemReclassJournal."New Location Code".SetValue(Location.Code);
+        ItemReclassJournal.Quantity.SetValue(Quantity);
+        ItemReclassJournal.Close();
+
+        // [WHEN] Post Item Journal Batch.
+        asserterror LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
+
+        // [THEN] Verify system must throw an error If "Total CO2e" is zero in Item Journal Line.
+        Assert.ExpectedError(CO2eMustNotBeZeroErr);
+    end;
+
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
     begin
         CreateSustainabilitySubcategory(CategoryCode, SubcategoryCode, i);
@@ -3550,6 +4199,13 @@ codeunit 148190 "Sust. Value Entry Test"
         LibraryInventory.PostItemJournalBatch(ItemJournalBatch);
     end;
 
+    local procedure SelectItemJournalTransferBatch(var ItemJournalBatch: Record "Item Journal Batch")
+    var
+        ItemJournalTemplate: Record "Item Journal Template";
+    begin
+        SelectItemJournalBatchByTemplateType(ItemJournalBatch, ItemJournalTemplate.Type::Transfer);
+    end;
+
     local procedure SelectItemJournalBatch(var ItemJournalBatch: Record "Item Journal Batch")
     var
         ItemJournalTemplate: Record "Item Journal Template";
@@ -3563,6 +4219,7 @@ codeunit 148190 "Sust. Value Entry Test"
     begin
         LibraryInventory.SelectItemJournalTemplateName(ItemJournalTemplate, TemplateType);
         LibraryInventory.SelectItemJournalBatchName(ItemJournalBatch, ItemJournalTemplate.Type, ItemJournalTemplate.Name);
+        LibraryInventory.ClearItemJournal(ItemJournalTemplate, ItemJournalBatch);
     end;
 
     local procedure FindProdOrderLine(var ProdOrderLine: Record "Prod. Order Line"; ProductionOrder: Record "Production Order"; ItemNo: Code[20])

@@ -126,7 +126,7 @@ pageextension 6215 "Sust. Purch. Cr. Memo Subform" extends "Purch. Cr. Memo Subf
     var
         SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Use Emissions In Purch. Doc.";
         SustainabilityFormulasFieldVisible := SustainabilitySetup."Use Formulas In Purch. Docs";

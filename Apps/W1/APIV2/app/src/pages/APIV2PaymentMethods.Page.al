@@ -15,6 +15,7 @@ page 30020 "APIV2 - Payment Methods"
     PageType = API;
     SourceTable = "Payment Method";
     Extensible = false;
+    AboutText = 'Manages payment method definitions including codes, descriptions, balance account settings, and direct debit options for both customers and vendors. Supports full CRUD operations to enable synchronization and automation of payment workflows with external banking or payment service providers, ensuring consistent and customizable payment processing across integrated systems.';
 
     layout
     {

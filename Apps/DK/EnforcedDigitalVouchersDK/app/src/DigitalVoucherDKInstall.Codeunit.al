@@ -55,7 +55,7 @@ codeunit 13645 "Digital Voucher DK Install."
         DigitalVouchersEntrySetup."Entry Type" := EntryType;
         DigitalVouchersEntrySetup."Check Type" := CheckType;
         DigitalVouchersEntrySetup."Generate Automatically" := GenerateAutomatically;
-        DigitalVouchersEntrySetup.Insert();
+        if DigitalVouchersEntrySetup.Insert() then;
     end;
 
     local procedure InsertDigitalVoucherEntrySourceCode(EntryType: Enum "Digital Voucher Entry Type"; SourceCode: Code[10])
@@ -69,6 +69,6 @@ codeunit 13645 "Digital Voucher DK Install."
             exit;
         VoucherSourceCode.Validate("Entry Type", EntryType);
         VoucherSourceCode.Validate("Source Code", SourceCode);
-        VoucherSourceCode.Insert(true);
+        if VoucherSourceCode.Insert(true) then;
     end;
 }

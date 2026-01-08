@@ -19,6 +19,7 @@ page 30064 "APIV2 - Purchase Receipts"
     PageType = API;
     SourceTable = "Purch. Rcpt. Header";
     Extensible = false;
+    AboutText = 'Exposes purchase receipt documents, capturing details of goods received from vendors including receipt numbers, dates, vendor information, addresses, related order data, and currency. Supports read-only GET operations for external systems to retrieve and synchronize inbound delivery information with warehouse, procurement, and accounts payable processes. Ideal for integrations requiring accurate tracking of supplier receipts and inventory updates, while ensuring data consistency across procurement and financial workflows.';
 
     layout
     {

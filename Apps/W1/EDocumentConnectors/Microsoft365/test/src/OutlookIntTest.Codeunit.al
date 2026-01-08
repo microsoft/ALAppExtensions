@@ -228,6 +228,29 @@ codeunit 148198 "Outlook Int. Test"
 
     [Test]
     [Scope('OnPrem')]
+    procedure ReceiveNoEDocumentForEmailWithTooManyAttachments()
+    var
+        EDocument: Record "E-Document";
+        EDocumentService: Record "E-Document Service";
+        EDocIntegrationManagement: Codeunit "E-Doc. Integration Management";
+        ReceiveContext: Codeunit ReceiveContext;
+        InitialIncomingDocumentCount: Integer;
+    begin
+        // [SCENARIO 610563] When using Receive Document functionality, and received e-mail has too many attachments (we have a limit in code), no EDocument is imported
+        // [GIVEN] A setup for importing Outlook attachments as e-documents
+        // [GIVEN] That received e-mail has too many attachments (in test, this is determined by description TestImportTooManyAttachmentsTxt)
+        Initialize(EDocumentService, Enum::"Service Integration"::TestOutlook, TestImportTooManyAttachmentsTxt);
+        InitialIncomingDocumentCount := EDocument.Count();
+
+        // [WHEN] ReceiveDocument method is called (either from UI or from scheduled task)
+        EDocIntegrationManagement.ReceiveDocuments(EDocumentService, ReceiveContext);
+
+        // [THEN] No new e-documents are created
+        Assert.AreEqual(InitialIncomingDocumentCount, EDocument.Count(), '');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
     procedure ReceiveSingleIncomingDocumentNoExtension()
     var
         EDocument: Record "E-Document";
@@ -351,6 +374,20 @@ codeunit 148198 "Outlook Int. Test"
                     AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "56333810-80bf-4979-9e70-ea43e9b6bfd0", "receiveddatetime" : "2025-01-06T20:28:29Z", "externalmessageid" : "GAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hGGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "2", "contentId": "2", "name": "Medical-Bill-ReceiptX.pdf", "contentType": "application/pdf", "size": 88764 }');
                     AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "e66c9cfb-2771-4f10-ad57-071c38ba2582", "receiveddatetime" : "2025-01-06T21:28:29Z", "externalmessageid" : "DAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hHGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "3", "contentId": "3", "name": "AnotherPropsoalX.pdf", "contentType": "application/pdf", "size": 88764 }');
                 end;
+            TestImportTooManyAttachmentsTxt:
+                begin
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "1, "contentId": "1", "name": "D1.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "2", "contentId": "2", "name": "D2.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "3", "contentId": "3", "name": "D3.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "4", "contentId": "4", "name": "D4.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "5", "contentId": "5", "name": "D5.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "6", "contentId": "6", "name": "D6.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "7", "contentId": "7", "name": "D7.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "8", "contentId": "8", "name": "D8.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "9", "contentId": "9", "name": "D9.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "10", "contentId": "10", "name": "D10.pdf", "contentType": "application/pdf", "size": 199264 }');
+                    AddMockAttachment(MockArray, '{ "@odata.type": "#microsoft.graph.fileAttachment", "@odata.mediaContentType": "application/pdf", "messageid" : "8fcc15ea-5b25-4f36-9eda-4c2570f0a1f4", "receiveddatetime" : "2025-01-06T17:28:29Z", "externalmessageid" : "AAMkAGVlZWQ2YTA0LWU1M2YtNGQ5Ni1hIGY2LTcyYTZkODA3MzM0NABGAAAAAAAvbEHYnrF6RLhp0mCflYAeBwCTxOILDj3VTqP9lOsW0rxmAAAAAAEMAACTxOILDj3VTqP9lOsW0rxmAAAfYCJIAAA=", "id": "11", "contentId": "11", "name": "D11.pdf", "contentType": "application/pdf", "size": 199264 }');
+                end;
         end;
         OutlookProcessing.BuildDocumentsList(Documents, MockArray);
     end;
@@ -361,7 +398,7 @@ codeunit 148198 "Outlook Int. Test"
         Mock: JsonObject;
     begin
         Mock.ReadFrom(JsonText);
-        if OutlookProcessing.IgnoreMailAttachment(Mock.GetInteger('size'), Mock.GetText('contentType')) then
+        if OutlookProcessing.IgnoreMailAttachment(Mock.GetInteger('size'), Mock.GetText('contentType'), 'file.pdf') then
             exit;
         MockArray.Add(Mock);
     end;
@@ -374,5 +411,6 @@ codeunit 148198 "Outlook Int. Test"
         TestImportOneDocumentNoExtTxt: label 'TestImportOneDocumentNoExt', Locked = true;
         TestImportOnlyPdfDocumentsTxt: label 'TestImportOnlyPdfDocuments', Locked = true;
         TestImportDocumentsFromTwoMessagesTxt: label 'TestImportDocumentsFromTwoMessages', Locked = true;
+        TestImportTooManyAttachmentsTxt: label 'TestImportTooManyAttachmentsTxt', Locked = true;
 }
 

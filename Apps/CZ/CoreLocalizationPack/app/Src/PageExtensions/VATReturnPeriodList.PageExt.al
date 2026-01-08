@@ -18,12 +18,26 @@ pageextension 31264 "VAT Return Period List CZL" extends "VAT Return Period List
                 Image = Period;
                 RunObject = report "Create VAT Return Period CZL";
                 ToolTip = 'This batch job automatically creates VAT periods.';
+#if not CLEAN28
+                Visible = IsReplaceVATPeriodEnabled;
+#endif
             }
         }
     }
+#if not CLEAN28
+    trigger OnOpenPage()
+    begin
+        IsReplaceVATPeriodEnabled := ReplaceVATPeriodMgtCZL.IsEnabled();
+    end;
+#endif
 
     trigger OnAfterGetCurrRecord()
     begin
         Rec.CheckVATReportDueDateCZL();
     end;
+#if not CLEAN28
+    var
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+        IsReplaceVATPeriodEnabled: Boolean;
+#endif
 }

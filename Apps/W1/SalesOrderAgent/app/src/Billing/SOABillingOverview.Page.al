@@ -3,18 +3,19 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-#pragma warning disable AS0007
 namespace Microsoft.Agent.SalesOrderAgent;
+
+using System.Environment.Consumption;
 
 page 4585 "SOA Billing Overview"
 {
     PageType = List;
     ApplicationArea = All;
-    SourceTable = "SOA Billing Log";
-    Permissions = tabledata "SOA Billing Log" = r;
+    SourceTable = "User AI Consumption Data";
     Caption = 'Sales Order Agent - Billing Overview';
     InherentEntitlements = X;
     InherentPermissions = X;
+    Permissions = tabledata "User AI Consumption Data" = r;
 
     layout
     {
@@ -22,11 +23,17 @@ page 4585 "SOA Billing Overview"
         {
             repeater(GroupName)
             {
+#pragma warning disable AA0218
                 field(ID; Rec.ID)
                 {
                 }
-                field(Operation; Rec.Operation)
+                field(CopilotStudioFeature; Rec."Copilot Studio Feature")
                 {
+                    Caption = 'Copilot Studio Feature';
+                }
+                field(Operation; Rec."Actions")
+                {
+                    Caption = 'Actions';
                 }
                 field(Description; DescriptionTxt)
                 {
@@ -40,63 +47,41 @@ page 4585 "SOA Billing Overview"
                 field("Agent Task ID"; Rec."Agent Task ID")
                 {
                 }
-                field("Record System ID"; Rec."Record System ID")
+                field("Company Name"; Rec."Company Name")
                 {
                     Visible = false;
                 }
-                field("Record Table"; Rec."Record Table")
+                field(Credits; Rec."Copilot Credits")
                 {
                     Visible = false;
+                    AutoFormatType = 0;
                 }
-                field(Charged; Rec.Charged)
+                field(ConsumptionDateTime; Rec."Consumption DateTime")
                 {
                 }
             }
         }
     }
-    actions
-    {
-        area(Processing)
-        {
-            action(PayEntries)
-            {
-                ApplicationArea = All;
-                Caption = 'Pay entries';
-                Image = Payment;
-                ToolTip = 'This action will check for unregistered entries and then invoke the payment of all unpaid entries.';
+#pragma warning restore AA0218
 
-                trigger OnAction()
-                var
-                    SOABillingTask: Codeunit "SOA Billing Task";
-                begin
-                    SOABillingTask.SetCheckOtherTasks(false);
-                    SOABillingTask.Run();
-                    Message(PaymentCompletedMsg);
-                    CurrPage.Update(false);
-                end;
-            }
-        }
-        area(Promoted)
-        {
-            group(Category_Process)
-            {
-                actionref(PayEntries_Promoted; PayEntries)
-                {
-                }
-            }
-        }
-    }
+    trigger OnOpenPage()
+    var
+        CurrentModule: ModuleInfo;
+    begin
+        NavApp.GetCurrentModuleInfo(CurrentModule);
+        Rec.SetRange("App Id", CurrentModule.Id);
+    end;
 
     trigger OnAfterGetRecord()
     var
-        SOABilling: Codeunit "SOA Billing";
+        DescriptionInStream: InStream;
     begin
-        DescriptionTxt := SOABilling.GetDescription(Rec);
+        Rec.CalcFields(Description);
+        Rec.Description.CreateInStream(DescriptionInStream, TextEncoding::UTF8);
+        DescriptionInStream.ReadText(DescriptionTxt);
     end;
 
     var
         DescriptionTxt: Text;
-
-        PaymentCompletedMsg: Label 'Completed successfully.';
 }
 

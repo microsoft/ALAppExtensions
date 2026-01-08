@@ -20,12 +20,8 @@ codeunit 10044 "Data Check IRIS"
         PeriodNoErr: Label 'The period of the transmission must be a valid year in the format YYYY.';
         VendorNotFoundErr: Label 'The vendor %1 is not found for the document %2.', Comment = '%1 - vendor number, %2 - document ID';
         IncorrectTINLengthErr: Label '(TIN) must be exactly %1 digits long.', Comment = '%1 - expected length';
-        IncorrectPhoneNoLengthErr: Label 'must be between %1 and %2 digits. Multiple numbers or extensions numbers can be separated by commas.', Comment = '%1 - min length, %2 - max length';
-        IncorrectEmailErr: Label 'address must be between %1 and %2 characters and include @ symbol.', Comment = '%1 - min length, %2 - max length';
-        IncorrectFieldLengthErr: Label 'must be between %1 and %2 characters. Allowed characters: %3.', Comment = '%1 - min length, %2 - max length, %3 - allowed characters';
         IncorrectStateAbbrErr: Label 'must be a valid 2-letter US state code. Example: WA, IL, FL.';
         IncorrectZipCodeErr: Label 'must be 5, 9 or 12 digits.';
-        PersonNameAllowedCharsTxt: Label 'A-Z, a-z, 0-9, hyphen, apostrophe and single space';
         UserIDMustBeSetErr: Label 'IRIS User ID must be specified. Use the action Setup IRIS User ID on the IRS Forms Setup page to see instructions for getting your IRIS User ID.';
 
     procedure CheckDataToReport(var Transmission: Record "Transmission IRIS")
@@ -92,9 +88,6 @@ codeunit 10044 "Data Check IRIS"
     var
         CompanyInformation: Record "Company Information";
         TIN: Text;
-        PhoneNo: Text;
-        ContactPersonName: Text;
-        ContactEmail: Text;
         ZipCode: Text;
         StateTypeIRIS: Enum "State Type IRIS";
     begin
@@ -105,25 +98,6 @@ codeunit 10044 "Data Check IRIS"
             ErrorMessageMgt.LogFieldError(
                 CompanyInformation, CompanyInformation.FieldNo("Federal ID No."),
                 StrSubstNo(IncorrectTINLengthErr, GetTINLength()));
-
-        PhoneNo := Helper.FormatPhoneNumber(CompanyInformation."Phone No.");
-        if (StrLen(PhoneNo) < GetPhoneNoMinLength()) or (StrLen(PhoneNo) > GetPhoneNoMaxLength()) then
-            ErrorMessageMgt.LogFieldError(
-                CompanyInformation, CompanyInformation.FieldNo("Phone No."),
-                StrSubstNo(IncorrectPhoneNoLengthErr, GetPhoneNoMinLength(), GetPhoneNoMaxLength()));
-
-        ContactPersonName := Helper.FormatContactPersonName(CompanyInformation."Contact Person");
-        if (StrLen(ContactPersonName) < 1) or (StrLen(ContactPersonName) > GetPersonNameMaxLength()) then
-            ErrorMessageMgt.LogFieldError(
-                CompanyInformation, CompanyInformation.FieldNo("Contact Person"),
-                StrSubstNo(IncorrectFieldLengthErr, 1, GetPersonNameMaxLength(), PersonNameAllowedCharsTxt));
-
-        ContactEmail := CompanyInformation."E-Mail";
-        if (StrLen(ContactEmail) < 1) or (StrLen(ContactEmail) > GetEmailMaxLength()) or
-           (StrPos(ContactEmail, '@') <= 1) or (StrPos(ContactEmail, '@') = StrLen(ContactEmail))
-        then
-            ErrorMessageMgt.LogFieldError(
-                CompanyInformation, CompanyInformation.FieldNo("E-Mail"), StrSubstNo(IncorrectEmailErr, 1, GetEmailMaxLength()));
 
         // only for US
         if not Helper.IsForeignCountryRegion(CompanyInformation."Country/Region Code") then begin
@@ -207,25 +181,5 @@ codeunit 10044 "Data Check IRIS"
     local procedure GetTINLength(): Integer
     begin
         exit(9);
-    end;
-
-    local procedure GetPersonNameMaxLength(): Integer
-    begin
-        exit(35);
-    end;
-
-    local procedure GetPhoneNoMinLength(): Integer
-    begin
-        exit(10);
-    end;
-
-    local procedure GetPhoneNoMaxLength(): Integer
-    begin
-        exit(30);
-    end;
-
-    local procedure GetEmailMaxLength(): Integer
-    begin
-        exit(75);
     end;
 }

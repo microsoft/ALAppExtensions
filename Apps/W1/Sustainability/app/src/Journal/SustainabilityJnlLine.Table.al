@@ -410,6 +410,10 @@ table 6214 "Sustainability Jnl. Line"
         {
             Caption = 'Renewable Energy';
         }
+        field(5817; Correction; Boolean)
+        {
+            Caption = 'Correction';
+        }
     }
 
     keys

@@ -37,7 +37,6 @@ codeunit 4304 "SOA Session Events"
         if not GlobalSOAKPITrackAll.IsOrderTakerAgentSession(AgentTaskID) then
             exit;
 
-        VerifyUnpaidEntries();
         SetupKPITrackingEvents();
         SetupItemSearchEvents(AgentTaskID);
         SetupFilteringEvents(AgentTaskID);
@@ -51,6 +50,9 @@ codeunit 4304 "SOA Session Events"
     begin
         if GlobalSOAKPITrackAll.IsOrderTakerAgentSession(AgentTaskID) then
             exit;
+
+        if GlobalSOAAwarenessNotifications.IsBindingNeeded() then
+            if BindSubscription(GlobalSOAAwarenessNotifications) then;
 
         // Cover a case when a regular session is updating the work Agent did, if there is any work to track
         TrackChanges := GlobalSOAKPITrackAll.TrackChanges();
@@ -67,9 +69,6 @@ codeunit 4304 "SOA Session Events"
     begin
         if not BindSubscription(GlobalSOAKPITrackAll) then
             FeatureTelemetry.LogUsage('0000O41', SOASetupCU.GetFeatureName(), FailedToBindUserKPISubscriptionErr, TelemetryDimensions);
-
-        if not BindSubscription(GlobalSOAUserNotifications) then
-            FeatureTelemetry.LogUsage('0000ORY', SOASetupCU.GetFeatureName(), FailedToBindUserNotificationErr, TelemetryDimensions);
     end;
 
     local procedure SetupKPITrackingEvents()
@@ -110,14 +109,6 @@ codeunit 4304 "SOA Session Events"
     begin
     end;
 
-    local procedure VerifyUnpaidEntries()
-    var
-        SOABilling: Codeunit "SOA Billing";
-    begin
-        if SOABilling.TooManyUnpaidEntries() then
-            Error(SOABilling.GetTooManyUnpaidEntriesMessage());
-    end;
-
     var
         GlobalSOADocumentEvents: Codeunit "SOA Document Events";
         GlobalSessionFilter: Codeunit "SOA Session Filter";
@@ -125,9 +116,8 @@ codeunit 4304 "SOA Session Events"
         GlobalSOAVariantSearch: Codeunit "SOA Variant Search";
         GlobalSOAKPITrackAgents: Codeunit "SOA - KPI Track Agents";
         GlobalSOAKPITrackAll: Codeunit "SOA - KPI Track All";
-        GlobalSOAUserNotifications: Codeunit "SOA User Notifications";
+        GlobalSOAAwarenessNotifications: Codeunit "SOA Awareness Notifications";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ContactFilteringDisabledAgentTxt: Label 'Contact and customer filtering is disabled for this agent through an event.', Locked = true;
         FailedToBindUserKPISubscriptionErr: Label 'Failed to bind subscription for User Agent KPI changes.', Locked = true;
-        FailedToBindUserNotificationErr: Label 'Failed to bind subscription for User Agent Notifications.', Locked = true;
 }
