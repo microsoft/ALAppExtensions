@@ -5,6 +5,7 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
+using Microsoft.DemoData.Finance;
 using Microsoft.FixedAssets.Depreciation;
 
 codeunit 11505 "Create FA Depreciation Book NL"
@@ -28,5 +29,13 @@ codeunit 11505 "Create FA Depreciation Book NL"
     local procedure ValidateDepreciationBook(var DepreciationBook: Record "Depreciation Book"; DefaultFinalRoundingAmount: Decimal)
     begin
         DepreciationBook.Validate("Default Final Rounding Amount", DefaultFinalRoundingAmount);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create FA GL Account", OnBeforeGetCashAccountForFixedAssetAcquisition, '', false, false)]
+    local procedure GetNLCashAccountForFixedAssetAcquisition(var GLAccountNo: Code[20])
+    var
+        CreateNLGLAccounts: Codeunit "Create NL GL Accounts";
+    begin
+        GLAccountNo := CreateNLGLAccounts.PettyCash();
     end;
 }
