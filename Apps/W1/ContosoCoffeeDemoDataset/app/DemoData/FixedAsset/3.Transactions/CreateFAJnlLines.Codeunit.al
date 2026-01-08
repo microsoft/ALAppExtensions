@@ -5,40 +5,45 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.DemoData.Finance;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Setup;
 
 codeunit 5609 "Create FA Jnl. Lines"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
     EventSubscriberInstance = Manual;
+    Permissions = tabledata "FA Setup" = r;
 
     trigger OnRun()
     var
         ContosoFixedAsset: Codeunit "Contoso Fixed Asset";
         ContosoUtilities: Codeunit "Contoso Utilities";
+        CreateFGLAccount: Codeunit "Create FA GL Account";
         CreateFAJnlTemplate: Codeunit "Create FA Jnl. Template";
         CreateFANoSeries: Codeunit "Create FA No Series";
         CreateFixedAsset: Codeunit "Create Fixed Asset";
-        CreateGLAccount: Codeunit "Create G/L Account";
         FAJournalBatchName: Code[10];
         FAJournalTemplateName: Code[10];
+        BalanceAccountNo: Code[20];
     begin
+        FASetup.Get();
+        FASetup.TestField("Default Depr. Book");
         FAJournalTemplateName := CreateFAJnlTemplate.Assets();
         FAJournalBatchName := CreateFAJnlTemplate.Default();
+        BalanceAccountNo := CreateFGLAccount.GetCashAccountNo();
 
-        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 10000, CreateFixedAsset.FA000010(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), 65000);
-        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 20000, CreateFixedAsset.FA000020(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), 70000);
-        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 30000, CreateFixedAsset.FA000030(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), 95000);
-        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 40000, CreateFixedAsset.FA000050(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), 15000);
-        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 50000, CreateFixedAsset.FA000060(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), 60000);
-        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 60000, CreateFixedAsset.FA000070(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), 1500);
-        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 70000, CreateFixedAsset.FA000080(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), 11000);
-        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 80000, CreateFixedAsset.FA000090(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", CreateGLAccount.Cash(), 4000);
+        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 10000, CreateFixedAsset.FA000010(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 65000);
+        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 20000, CreateFixedAsset.FA000020(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 70000);
+        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 30000, CreateFixedAsset.FA000030(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 95000);
+        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 40000, CreateFixedAsset.FA000050(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 15000);
+        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 50000, CreateFixedAsset.FA000060(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 60000);
+        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 60000, CreateFixedAsset.FA000070(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 1500);
+        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 70000, CreateFixedAsset.FA000080(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 11000);
+        InsertFAGenJournalLine(FAJournalTemplateName, FAJournalBatchName, 80000, CreateFixedAsset.FA000090(), ContosoUtilities.AdjustDate(19010101D), Enum::"Gen. Journal Line FA Posting Type"::"Acquisition Cost", AssetAcquisitionLbl, AcquisitionLbl, Enum::"Gen. Journal Account Type"::"G/L Account", BalanceAccountNo, 4000);
         Codeunit.Run(Codeunit::"Post FA Jnl. Lines");
 
         CalculateDepreciationLines(ContosoUtilities.AdjustDate(19011231D), 1);
@@ -68,9 +73,8 @@ codeunit 5609 "Create FA Jnl. Lines"
     local procedure CalculateDepreciationLines(PostingDate: Date; BatchCount: Integer)
     var
         CalculateDepreciation: Report "Calculate Depreciation";
-        CreateFADepreciationBook: Codeunit "Create FA Depreciation Book";
     begin
-        CalculateDepreciation.InitializeRequest(CreateFADepreciationBook.Company(), PostingDate, false, 0, PostingDate, StrSubstNo('%1%2', AssetDepreciationLbl, BatchCount), DepreciationLbl, true);
+        CalculateDepreciation.InitializeRequest(FASetup."Default Depr. Book", PostingDate, false, 0, PostingDate, StrSubstNo('%1%2', AssetDepreciationLbl, BatchCount), DepreciationLbl, true);
         CalculateDepreciation.UseRequestPage(false);
         BindSubscription(this);
         CalculateDepreciation.Run();
@@ -84,6 +88,7 @@ codeunit 5609 "Create FA Jnl. Lines"
     end;
 
     var
+        FASetup: Record "FA Setup";
         AcquisitionLbl: Label 'Acquisition', MaxLength = 100;
         AssetAcquisitionLbl: Label 'ASSET-ACQ', MaxLength = 20;
         AssetDepreciationLbl: Label 'ASSET-DEPR', MaxLength = 20;
