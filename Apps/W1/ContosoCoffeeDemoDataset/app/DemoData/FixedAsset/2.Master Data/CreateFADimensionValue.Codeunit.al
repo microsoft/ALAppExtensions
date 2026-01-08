@@ -10,7 +10,7 @@ using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.Dimension;
 using Microsoft.FixedAssets.FixedAsset;
 
-codeunit 5212 "Create FA Dimension Value"
+codeunit 5614 "Create FA Dimension Value"
 {
     InherentEntitlements = X;
     InherentPermissions = X;

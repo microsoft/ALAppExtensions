@@ -11,7 +11,7 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.Journal;
 
-codeunit 5213 "Create FA Jnl. Lines"
+codeunit 5609 "Create FA Jnl. Lines"
 {
     InherentEntitlements = X;
     InherentPermissions = X;

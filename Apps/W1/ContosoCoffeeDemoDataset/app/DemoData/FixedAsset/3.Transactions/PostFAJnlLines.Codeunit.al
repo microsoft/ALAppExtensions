@@ -8,7 +8,7 @@ namespace Microsoft.DemoData.FixedAsset;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 
-codeunit 5214 "Post FA Jnl. Lines"
+codeunit 5608 "Post FA Jnl. Lines"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
