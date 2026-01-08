@@ -45,6 +45,16 @@ codeunit 31183 "Create Depreciation Book CZ"
         ContosoFixedAsset.InsertDepreciationBook(CreateFADepreciationBook.Company(), '', false, false, false, false, false, false, false, false, false, 0);
     end;
 
+    internal procedure CreateFAJournalSetups()
+    var
+        ContosoFixedAsset: Codeunit "Contoso Fixed Asset";
+        CreateFAJnlTemplate: Codeunit "Create FA Jnl. Template";
+        CreateFAInsTemplate: Codeunit "Create FA Ins Jnl. Template";
+    begin
+        ContosoFixedAsset.InsertFAJournalSetup('', FirstAccount(), CreateFAJnlTemplate.Assets(), CreateFAInsTemplate.Default(), CreateFAJnlTemplate.Assets(), CreateFAInsTemplate.Default(), CreateFAInsTemplate.Insurance(), CreateFAJnlTemplate.Default());
+        ContosoFixedAsset.InsertFAJournalSetup('', SecondTax(), CreateFAJnlTemplate.Assets(), CreateFAInsTemplate.Default(), CreateFAJnlTemplate.Assets(), CreateFAInsTemplate.Default(), CreateFAInsTemplate.Insurance(), CreateFAJnlTemplate.Default());
+    end;
+
     var
         FirstAccountLbl: Label '1-ACCOUNT', MaxLength = 10;
         SecondTaxLbl: Label '2-TAX', MaxLength = 10;

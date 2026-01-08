@@ -248,6 +248,7 @@ codeunit 31215 "Contoso CZ Localization"
                     Codeunit.Run(Codeunit::"Create FA Posting Group CZ");
                     Codeunit.Run(Codeunit::"Create FA Setup CZ");
                     CreateDepreciationBookCZ.DeleteDepreciationBooks();
+                    CreateDepreciationBookCZ.CreateFAJournalSetups();
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
                 begin
