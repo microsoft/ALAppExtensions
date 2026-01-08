@@ -5,7 +5,7 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Localization;
 using Microsoft.FixedAssets.Depreciation;
 
 codeunit 11505 "Create FA Depreciation Book NL"
