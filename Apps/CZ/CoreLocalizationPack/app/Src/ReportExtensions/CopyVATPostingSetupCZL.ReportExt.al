@@ -22,6 +22,7 @@ reportextension 11700 "Copy - VAT Posting Setup CZL" extends "Copy - VAT Posting
                     "Ratio Coefficient CZL" := VATPostingSetup."Ratio Coefficient CZL";
                     "Corrections Bad Receivable CZL" := VATPostingSetup."Corrections Bad Receivable CZL";
                     "VAT LCY Corr. Rounding Acc.CZL" := VATPostingSetup."VAT LCY Corr. Rounding Acc.CZL";
+                    "VAT LCY Corr. Rnd. Acc. S. CZL" := VATPostingSetup."VAT LCY Corr. Rnd. Acc. S. CZL";
                 end;
                 if Sales then
                     "Sales VAT Curr. Exch. Acc CZL" := VATPostingSetup."Sales VAT Curr. Exch. Acc CZL";

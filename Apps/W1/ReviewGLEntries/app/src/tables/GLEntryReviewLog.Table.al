@@ -46,6 +46,13 @@ table 22218 "G/L Entry Review Log"
         {
             Clustered = true;
         }
+        key(GLEntryNo; "G/L Entry No.")
+        {
+            IncludedFields = "Reviewed Amount";
+        }
+        key(ReviewedAmount; "Reviewed Amount")
+        {
+        }
     }
     trigger OnInsert()
     begin

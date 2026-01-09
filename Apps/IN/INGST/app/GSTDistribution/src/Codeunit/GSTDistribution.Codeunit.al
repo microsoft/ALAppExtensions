@@ -3,15 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GST.Distribution;
-
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
-using Microsoft.Inventory.Item;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.GST.Base;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Location;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
@@ -29,6 +28,7 @@ codeunit 18200 "GST Distribution"
         DistributeErr: Label 'Sum of %1 must be 100 for Distribution Lines.', Comment = '%1 = Distribution %';
         RcptCreditTypeErr: Label '%1 must be Non-Availment as %2 is blank in Line No: %3.', Comment = '%1 = Rcpt. Credit Type , %2 = To GSTIN No. , %3 = Line No.';
         SameToLocationErr: Label 'You cannot have same To Location Code: %1 and Rcpt. Credit Type: %2 combination in multiple lines.', Comment = '%1 = To Location Code, %2  =Rcpt. Credit Type';
+        SameFromLocationErr: Label 'You cannot have same From Location Code: %1 and Rcpt. Credit Type: %2 combination in multiple lines.', Comment = '%1 = From Location Code, %2  =Rcpt. Credit Type';
         PostDistributionQst: Label 'Do you want to post Distribution?';
         PostDistributionReversalQst: Label 'Do you want to post Distribution Reversal?';
         DistRevPostDateErr: Label 'You cannot post Reversal before Reversal Invoice No. %1 Posting Date: %2. Current Posting Date is: %3.', Comment = '%1 = Reversal Invoice No , %2 = Posting Date , %3 = Posting Date';
@@ -175,7 +175,11 @@ codeunit 18200 "GST Distribution"
                             DistComponentAmount.Init();
                             DistComponentAmount."Distribution No." := DistributionNo;
                             if GSTDistributionLine."Rcpt. Credit Type" = GSTDistributionLine."Rcpt. Credit Type"::Availment then begin
-                                Location.Get(GSTDistributionLine."To Location Code");
+                                if GSTDistributionHeader."ISD Document Type" = GSTDistributionHeader."ISD Document Type"::"Credit Memo" then
+                                    Location.Get(GSTDistributionLine."From Location Code")
+                                else
+                                    Location.Get(GSTDistributionLine."To Location Code");
+
                                 Location.TestField("State Code");
                                 GSTPostingSetup.Get(
                                   Location."State Code",
@@ -184,7 +188,12 @@ codeunit 18200 "GST Distribution"
                                       GSTDistributionLine."Distribution Jurisdiction"));
                                 GSTPostingSetup.TestField("Receivable Account");
                                 DistComponentAmount."GST Component Code" := DetailedGSTLedgerEntry."GST Component Code";
-                                DistComponentAmount."To Location Code" := GSTDistributionLine."To Location Code";
+
+                                if GSTDistributionHeader."ISD Document Type" = GSTDistributionHeader."ISD Document Type"::"Credit Memo" then
+                                    DistComponentAmount."To Location Code" := GSTDistributionLine."From Location Code"
+                                else
+                                    DistComponentAmount."To Location Code" := GSTDistributionLine."To Location Code";
+
                                 DistComponentAmount.Type := DistComponentAmount.Type::"G/L Account";
                                 DistComponentAmount."No." := GSTPostingSetup."Receivable Account";
                             end else begin
@@ -401,6 +410,7 @@ codeunit 18200 "GST Distribution"
     local procedure CheckDistributionValidations(DistributionNo: Code[20])
     var
         GSTDistributionLine: Record "GST Distribution Line";
+        GSTDistributionHeader: Record "GST Distribution Header";
         GSTDistributionLine2: Record "GST Distribution Line";
     begin
         GSTDistributionLine.Reset();
@@ -423,17 +433,28 @@ codeunit 18200 "GST Distribution"
                         GSTDistributionLine.FieldCaption("To GSTIN No."),
                         GSTDistributionLine."Line No.");
 
-                GSTDistributionLine2.Reset();
-                GSTDistributionLine2.SetRange("Distribution No.", DistributionNo);
-                GSTDistributionLine2.SetRange("To Location Code", GSTDistributionLine."To Location Code");
-                GSTDistributionLine2.SetRange("Rcpt. Credit Type", GSTDistributionLine."Rcpt. Credit Type");
-                if GSTDistributionLine2.Count() > 1 then
-                    Error(SameToLocationErr, GSTDistributionLine."To Location Code", GSTDistributionLine."Rcpt. Credit Type");
-
+                GSTDistributionHeader.Get(GSTDistributionLine."Distribution No.");
+                if GSTDistributionHeader."ISD Document Type" = GSTDistributionHeader."ISD Document Type"::Invoice then begin
+                    GSTDistributionLine2.Reset();
+                    GSTDistributionLine2.SetRange("Distribution No.", DistributionNo);
+                    GSTDistributionLine2.SetRange("To Location Code", GSTDistributionLine."To Location Code");
+                    GSTDistributionLine2.SetRange("Rcpt. Credit Type", GSTDistributionLine."Rcpt. Credit Type");
+                    if GSTDistributionLine2.Count() > 1 then
+                        Error(SameToLocationErr, GSTDistributionLine."To Location Code", GSTDistributionLine."Rcpt. Credit Type");
+                end
+                else begin
+                    GSTDistributionLine2.Reset();
+                    GSTDistributionLine2.SetRange("Distribution No.", DistributionNo);
+                    GSTDistributionLine2.SetRange("From Location Code", GSTDistributionLine."From Location Code");
+                    GSTDistributionLine2.SetRange("Rcpt. Credit Type", GSTDistributionLine."Rcpt. Credit Type");
+                    if GSTDistributionLine2.Count() > 1 then
+                        Error(SameFromLocationErr, GSTDistributionLine."From Location Code", GSTDistributionLine."Rcpt. Credit Type");
+                end;
             until GSTDistributionLine.Next() = 0;
     end;
 
-    local procedure InsertDetGSTDistEntries(DistributionNo: Code[20]; PostedDistributionNo: Code[20])
+    local procedure InsertDetGSTDistEntries(DistributionNo: Code[20];
+        PostedDistributionNo: Code[20])
     var
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         GSTDistributionHeader: Record "GST Distribution Header";
@@ -479,7 +500,18 @@ codeunit 18200 "GST Distribution"
                         DetailedGSTDistEntry.Init();
                         DetailedGSTDistEntry."Entry No." := 0;
                         DetailedGSTDistEntry."Detailed GST Ledger Entry No." := DetailedGSTLedgerEntry."Entry No.";
-                        DetailedGSTDistEntry."Dist. Location Code" := GSTDistributionLine."From Location Code";
+
+                        if GSTDistributionHeader."ISD Document Type" = GSTDistributionHeader."ISD Document Type"::"Credit Memo" then begin
+                            DetailedGSTDistEntry."Dist. Location Code" := GSTDistributionLine."To Location Code";
+                            DetailedGSTDistEntry."Rcpt. Location Code" := GSTDistributionLine."From Location Code";
+                            DetailedGSTDistEntry."Rcpt. GST Reg. No." := GSTDistributionLine."From GSTIN No.";
+                        end
+                        else begin
+                            DetailedGSTDistEntry."Dist. Location Code" := GSTDistributionLine."From Location Code";
+                            DetailedGSTDistEntry."Rcpt. Location Code" := GSTDistributionLine."To Location Code";
+                            DetailedGSTDistEntry."Rcpt. GST Reg. No." := GSTDistributionLine."To GSTIN No.";
+                        end;
+
                         DetailedGSTDistEntry."Dist. Location State Code" := DetailedGSTLedgerEntryInfo."Location State Code";
                         DetailedGSTDistEntry."Dist. GST Regn. No." := DetailedGSTLedgerEntry."Location  Reg. No.";
                         DetailedGSTDistEntry."Dist. GST Credit" := DetailedGSTLedgerEntry."GST credit";
@@ -500,9 +532,7 @@ codeunit 18200 "GST Distribution"
                         DetailedGSTDistEntry."GST Group Code" := DetailedGSTLedgerEntry."GST Group Code";
                         DetailedGSTDistEntry."GST %" := DetailedGSTLedgerEntry."GST %";
                         DetailedGSTDistEntry."GST Amount" := Sign * DetailedGSTLedgerEntry."GST Amount";
-                        DetailedGSTDistEntry."Rcpt. Location Code" := GSTDistributionLine."To Location Code";
                         DetailedGSTDistEntry."Location ISD document No." := PostedLocationDistNo;
-                        DetailedGSTDistEntry."Rcpt. GST Reg. No." := GSTDistributionLine."To GSTIN No.";
                         DetailedGSTDistEntry."Rcpt. Location State Code" := Location."State Code";
                         DetailedGSTDistEntry."Rcpt. GST Credit" := GSTDistributionLine."Rcpt. Credit Type";
                         if DetailedGSTLedgerEntry."GST Jurisdiction Type" = DetailedGSTLedgerEntry."GST Jurisdiction Type"::Interstate then
@@ -559,9 +589,9 @@ codeunit 18200 "GST Distribution"
         GSTComponentCode: Code[30];
         TransactionType: Enum "Detail Ledger Transaction Type";
         Type: Enum "Distribution Type";
-        GSTCredit: Enum "GST Credit";
-        ISD: Boolean;
-        ReceivableApplicable: Boolean): Code[20]
+    GSTCredit: Enum "GST Credit";
+    ISD: Boolean;
+    ReceivableApplicable: Boolean): Code[20]
     var
         GSTPostingSetup: Record "GST Posting Setup";
         GLAcc: Code[20];
@@ -672,13 +702,13 @@ codeunit 18200 "GST Distribution"
     local procedure PostGenJournalLine(
         var GenJournalLine: Record "Gen. Journal Line";
         DocumentType: Enum "Adjustment Document Type";
-        DocumentNo: Code[20];
-        PostingDate: Date;
-        AccountNo: Code[20];
-        Amt: Decimal;
-        ShortcutDim1: Code[20];
-        ShortcutDim2: Code[20];
-        DimSetID: Integer)
+                          DocumentNo: Code[20];
+                          PostingDate: Date;
+                          AccountNo: Code[20];
+                          Amt: Decimal;
+                          ShortcutDim1: Code[20];
+                          ShortcutDim2: Code[20];
+                          DimSetID: Integer)
     begin
         SourceCodeSetup.Get();
         SourceCodeSetup.TestField("GST Distribution");
@@ -743,13 +773,19 @@ codeunit 18200 "GST Distribution"
         GSTDistributionLine: Record "GST Distribution Line";
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         DistributionNo: Code[20])
+    var
+        GSTDistributionHeader: Record "GST Distribution Header";
     begin
         DistComponentAmount.Reset();
         DistComponentAmount.SetRange("Distribution No.", DistributionNo);
         DistComponentAmount.SetRange("GST Credit", GSTDistributionLine."Rcpt. Credit Type");
         if GSTDistributionLine."Rcpt. Credit Type" = GSTDistributionLine."Rcpt. Credit Type"::Availment then begin
             DistComponentAmount.SetRange("GST Component Code", DetailedGSTLedgerEntry."GST Component Code");
-            DistComponentAmount.SetRange("To Location Code", GSTDistributionLine."To Location Code");
+            GSTDistributionHeader.Get(GSTDistributionLine."Distribution No.");
+            if GSTDistributionHeader."ISD Document Type" = GSTDistributionHeader."ISD Document Type"::"Credit Memo" then
+                DistComponentAmount.SetRange("To Location Code", GSTDistributionLine."From Location Code")
+            else
+                DistComponentAmount.SetRange("To Location Code", GSTDistributionLine."To Location Code");
             DistComponentAmount.SetRange(Type);
             DistComponentAmount.SetRange("No.");
         end else begin

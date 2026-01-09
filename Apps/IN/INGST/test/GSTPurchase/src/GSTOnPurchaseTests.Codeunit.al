@@ -1279,6 +1279,39 @@ codeunit 18131 "GST On Purchase Tests"
         CreateAndPostDistributionDocumentNo(DocType::Invoice, DistGSTCredit::Availment, RcptGSTCredit::Availment, false);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ReferenceInvoiceNoPageHandler,ApplyDistributionEntries,ConfirmationHandler,DimensionHandler,NoSeriesHandler')]
+    procedure PostInterStateCrMemoDistributionITCToITCFromLocAsToLocforReverse()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        LineType: Enum "Purchase Line Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Document Type Enum";
+        GSTVendorType: Enum "GST Vendor Type";
+        DocType: Enum "BankCharges DocumentType";
+        DistGSTCredit: Enum "GST Credit";
+        RcptGSTCredit: Enum "GST Credit";
+    begin
+        // [Scenario] Check if the system is handling Interstate Distribution of Credit Memo with Input Tax Credit to Recipient location as Input Tax Credit is available
+        // [FEATURE] [Inter-State Services, Purchase Credit Memo] [ITC, Registered Vendor]
+
+        // [GIVEN] Created GST Setup and tax rates for registered Vendor where input tax credit is available with GST Group Code type is Service
+        CreateGSTSetup(GSTVendorType::Registered, GSTGroupType::Service, false, false);
+        InitializeShareStep(true, false, false);
+        UpdateInputServiceDistributer(true);
+        Storage.Set(NoOfLineLbl, '1');
+
+        // [WHEN] Create and Post Purchase Order with GST and Line Type as Services for Interstate Transactions.
+        CreateAndPostPurchaseDocument(PurchaseHeader, PurchaseLine, LineType::"G/L Account", DocumentType::Order);
+
+        // [THEN] Create and Post Distribution Document with Document type Inoivce and Distribution GST Credit is Availment and Receipt GST Credit is Availment
+        CreateAndPostDistributionDocumentNo(DocType::Invoice, DistGSTCredit::Availment, RcptGSTCredit::Availment, false);
+
+        // [THEN] Create and Post Distribution Document with Document type Inoivce and Distribution GST Credit is Availment and Receipt GST Credit is Availment
+        CreateAndPostDistributionDocument(DocType::"Credit Memo", DistGSTCredit::Availment, RcptGSTCredit::Availment, true);
+    end;
+
     local procedure VerifyTaxTransactionValueExist(DocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20])
     var
         PurchaseLineArchive: Record "Purchase Line Archive";
@@ -1961,21 +1994,23 @@ codeunit 18131 "GST On Purchase Tests"
 
     local procedure CreateToLocation(): Code[20]
     var
-        State: Record State;
+        CompanyInformation: Record "Company information";
+        //State: Record State;
         TaxComponent: Record "Tax Component";
         LocationGSTRegNo: Code[15];
         LocPANNo: Code[20];
         LocationCode: Code[10];
+        StateCode: Code[10];
     begin
-        LocPANNo := LibraryGST.CreatePANNos();
-        LibraryGST.CreateState(State);
-        LocationGSTRegNo := LibraryGST.CreateGSTRegistrationNos(State.Code, LocPANNo);
-        LocationCode := LibraryGST.CreateLocationSetup(State.Code, LocationGSTRegNo, false);
-
+        CompanyInformation.Get();
+        LocPANNo := CompanyInformation."P.A.N. No.";
+        StateCode := LibraryGST.CreateGSTStateCode();
+        LocationGSTRegNo := LibraryGST.CreateGSTRegistrationNos(StateCode, LocPANNo);
+        LocationCode := LibraryGST.CreateLocationSetup(StateCode, LocationGSTRegNo, false);
         TaxComponent.SetFilter(Name, '%1|%2|%3', CGSTLbl, SGSTLbl, IGSTLbl);
         if TaxComponent.FindSet() then
             repeat
-                LibraryGST.CreateGSTPostingSetup(TaxComponent, State.Code)
+                LibraryGST.CreateGSTPostingSetup(TaxComponent, StateCode)
             until TaxComponent.Next() = 0;
 
         exit(LocationCode);

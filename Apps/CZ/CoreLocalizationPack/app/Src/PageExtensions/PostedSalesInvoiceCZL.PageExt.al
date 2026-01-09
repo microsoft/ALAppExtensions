@@ -208,13 +208,44 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
         }
     }
 
+    actions
+    {
+        addlast(Processing)
+        {
+            action(VATLCYCorrectionCZL)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'VAT LCY Correction';
+                Image = AdjustEntries;
+                ToolTip = 'Allows you to adjust the VAT amount in LCY for sales documents charged in a foreign currency.';
+                Visible = VATLCYCorrectionCZLVisible;
+
+                trigger OnAction()
+                begin
+                    Rec.MakeVATLCYCorrectionCZL();
+                end;
+            }
+        }
+    }
+
     trigger OnOpenPage()
     begin
         AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabledCZL();
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        VATLCYCorrectionCZLVisible := Rec.IsVATLCYCorrectionAllowedCZL();
+    end;
+
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         ChangeExchangeRate: Page "Change Exchange Rate";
+        VATLCYCorrectionCZLVisible: Boolean;
         AddCurrencyVisible: Boolean;
+
+    procedure SetRecPopUpVATLCYCorrectionCZL(NewPopUpVATLCYCorrection: Boolean)
+    begin
+        Rec.SetPopUpVATLCYCorrectionCZL(NewPopUpVATLCYCorrection);
+    end;
 }

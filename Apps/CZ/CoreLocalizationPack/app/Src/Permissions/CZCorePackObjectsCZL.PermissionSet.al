@@ -125,6 +125,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "VAT Entry Handler CZL" = X,
                   codeunit "VAT LCY Correction-Post CZL" = X,
                   codeunit "VAT LCY Corr.-Post(Yes/No) CZL" = X,
+                  codeunit "VAT Orig.Doc.VAT Date Mgt. CZL" = X,
                   codeunit "VAT Reg. Log Suppression CZL" = X,
                   codeunit "VAT Report Archive Mgt CZL" = X,
                   codeunit "VAT Report Export CZL" = X,

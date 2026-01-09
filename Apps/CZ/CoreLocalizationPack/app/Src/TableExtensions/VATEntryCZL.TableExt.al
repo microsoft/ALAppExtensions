@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Ledger;
 
 using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT;
 using Microsoft.Finance.VAT.Reporting;
 
 tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
@@ -98,6 +99,24 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
             Caption = 'Original Document VAT Date';
             Editable = false;
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+                VATOrigDocVATDateMgtCZL: Codeunit "VAT Orig.Doc.VAT Date Mgt. CZL";
+            begin
+                if (Rec."Original Doc. VAT Date CZL" = xRec."Original Doc. VAT Date CZL") and (CurrFieldNo <> 0) then
+                    exit;
+                // if type settlement then we error
+                Validate(Type);
+                if not VATReportingDateMgt.IsVATDateModifiable() then
+                    Error(VATDateNotModifiableErr);
+
+                if Closed then
+                    Error(VATDateModifiableClosedErr);
+
+                VATOrigDocVATDateMgtCZL.UpdateOrigDocVATDate(Rec);
+            end;
         }
     }
 
@@ -111,6 +130,8 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
     var
         VATStmtPeriodSelectionNotSupportedErr: Label 'VAT statement report period selection %1 is not supported.', Comment = '%1 = VAT Statement Report Period Selection';
         VATStmtReportSelectionNotSupportedErr: Label 'VAT statement report selection %1 is not supported.', Comment = '%1 = VAT Statement Report Selection';
+        VATDateNotModifiableErr: Label 'Modification of the VAT Date on the VAT Entry is restricted by the current setting for VAT Reporting Date Usage in the General Ledger Setup.';
+        VATDateModifiableClosedErr: Label 'The VAT Entry is marked as closed, modification of the VAT Date is therefore not allowed.';
 
     internal procedure SetVATStmtCalcFilters(VATStatementLine: Record "VAT Statement Line"; VATStmtCalcParametersCZL: Record "VAT Stmt. Calc. Parameters CZL")
     var
@@ -222,6 +243,9 @@ tableextension 11737 "VAT Entry CZL" extends "VAT Entry"
 
     procedure ToTemporaryCZL(var TempVATEntry: Record "VAT Entry" temporary)
     begin
+        if not TempVATEntry.IsTemporary() then
+            exit;
+
         if FindSet() then
             repeat
                 TempVATEntry := Rec;

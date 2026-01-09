@@ -61,6 +61,11 @@ page 31198 "User Setup Card CZL"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether is allowed to change the VAT Date.';
                 }
+                field("Allow Orig Doc VAT Date Ch CZL"; Rec."Allow Orig Doc VAT Date Ch CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether is allowed to change the Original Document VAT Date.';
+                }
             }
             group(Posting)
             {
@@ -178,11 +183,14 @@ page 31198 "User Setup Card CZL"
         }
         area(Promoted)
         {
-            group(Category_Process)
+            actionref(Lines_Promoted; Lines)
             {
-                actionref(Print_Promoted; Print)
-                {
-                }
+            }
+            actionref(Dimensions_Promoted; Dimensions)
+            {
+            }
+            actionref("Print_Promoted"; Print)
+            {
             }
         }
     }

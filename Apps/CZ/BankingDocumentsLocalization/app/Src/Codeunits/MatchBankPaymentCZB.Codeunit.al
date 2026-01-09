@@ -146,10 +146,18 @@ codeunit 31362 "Match Bank Payment CZB"
 
                 TempMatchBankPaymentBufferCZB.Reset();
                 if TempMatchBankPaymentBufferCZB.IsEmpty() then
-                    if SearchRuleLineCZB.IsPossibleToMatchWithPartnerBankAccount() then begin
-                        FillMatchBankPaymentBufferCustomerBankAccount();
-                        FillMatchBankPaymentBufferVendorBankAccount();
-                    end;
+                    if SearchRuleLineCZB.IsPossibleToMatchWithPartnerBankAccount() then
+                        case SearchRuleLineCZB."Search Scope" of
+                            SearchRuleLineCZB."Search Scope"::Balance:
+                                begin
+                                    FillMatchBankPaymentBufferCustomerBankAccount();
+                                    FillMatchBankPaymentBufferVendorBankAccount();
+                                end;
+                            SearchRuleLineCZB."Search Scope"::Customer:
+                                FillMatchBankPaymentBufferCustomerBankAccount();
+                            SearchRuleLineCZB."Search Scope"::Vendor:
+                                FillMatchBankPaymentBufferVendorBankAccount();
+                        end;
 
                 OnAfterExtraFillMatchBankPaymentBuffer(TempMatchBankPaymentBufferCZB, SearchRuleLineCZB, GenJournalLine, MinAmount, MaxAmount);
 
@@ -234,6 +242,7 @@ codeunit 31362 "Match Bank Payment CZB"
     var
         CustomerBankAccount: Record "Customer Bank Account";
         UsePaymentDiscounts: Boolean;
+        RemainingAmount: Decimal;
     begin
         CustLedgerEntry.Reset();
         CustLedgerEntry.SetCurrentKey("Customer No.", Open);
@@ -263,11 +272,6 @@ codeunit 31362 "Match Bank Payment CZB"
             CustLedgerEntry.SetRange("Customer No.", CustomerBankAccount."Customer No.");
         end;
         CustLedgerEntry.SetRange(Open, true);
-        if SearchRuleLineCZB.Amount then
-            if GenJournalLine.IsLocalCurrencyCZB() then
-                CustLedgerEntry.SetRange("Remaining Amt. (LCY)", MinAmount, MaxAmount)
-            else
-                CustLedgerEntry.SetRange("Remaining Amount", MinAmount, MaxAmount);
         if SearchRuleLineCZB."Variable Symbol" then begin
             if GenJournalLine.GetVariableSymbolCZB() = '' then
                 exit;
@@ -290,8 +294,14 @@ codeunit 31362 "Match Bank Payment CZB"
                 CustLedgerEntry.SetRange(Positive, false);
         end;
         OnFillMatchBankPaymentBufferCustomerOnAfterCustLedgerEntrySetFilters(CustLedgerEntry, SearchRuleLineCZB, GenJournalLine);
+        CustLedgerEntry.SetAutoCalcFields("Remaining Amount", "Remaining Amt. (LCY)");
         if CustLedgerEntry.FindSet() then
             repeat
+                if SearchRuleLineCZB.Amount then begin
+                    RemainingAmount := CustLedgerEntry.GetRemainingAmountInclPmtDiscToDate(GenJournalLine."Posting Date", GenJournalLine.IsLocalCurrencyCZB());
+                    if (RemainingAmount < MinAmount) or (RemainingAmount > MaxAmount) then
+                        continue;
+                end;
                 TempMatchBankPaymentBufferCZB.InsertFromCustomerLedgerEntry(CustLedgerEntry, true, UsePaymentDiscounts);
             until CustLedgerEntry.Next() = 0;
     end;
@@ -300,6 +310,7 @@ codeunit 31362 "Match Bank Payment CZB"
     var
         VendorBankAccount: Record "Vendor Bank Account";
         UsePaymentDiscounts: Boolean;
+        RemainingAmount: Decimal;
     begin
         VendorLedgerEntry.Reset();
         VendorLedgerEntry.SetCurrentKey("Vendor No.", Open);
@@ -329,11 +340,6 @@ codeunit 31362 "Match Bank Payment CZB"
             VendorLedgerEntry.SetRange("Vendor No.", VendorBankAccount."Vendor No.");
         end;
         VendorLedgerEntry.SetRange(Open, true);
-        if SearchRuleLineCZB.Amount then
-            if GenJournalLine.IsLocalCurrencyCZB() then
-                VendorLedgerEntry.SetRange("Remaining Amt. (LCY)", MinAmount, MaxAmount)
-            else
-                VendorLedgerEntry.SetRange("Remaining Amount", MinAmount, MaxAmount);
         if SearchRuleLineCZB."Variable Symbol" then begin
             if GenJournalLine.GetVariableSymbolCZB() = '' then
                 exit;
@@ -356,8 +362,14 @@ codeunit 31362 "Match Bank Payment CZB"
                 VendorLedgerEntry.SetRange(Positive, false);
         end;
         OnFillMatchBankPaymentBufferVendorOnAfterVendorLedgerEntrySetFilters(VendorLedgerEntry, SearchRuleLineCZB, GenJournalLine);
+        VendorLedgerEntry.SetAutoCalcFields("Remaining Amount", "Remaining Amt. (LCY)");
         if VendorLedgerEntry.FindSet() then
             repeat
+                if SearchRuleLineCZB.Amount then begin
+                    RemainingAmount := VendorLedgerEntry.GetRemainingAmountInclPmtDiscToDate(GenJournalLine."Posting Date", GenJournalLine.IsLocalCurrencyCZB());
+                    if (RemainingAmount < MinAmount) or (RemainingAmount > MaxAmount) then
+                        continue;
+                end;
                 TempMatchBankPaymentBufferCZB.InsertFromVendorLedgerEntry(VendorLedgerEntry, true, UsePaymentDiscounts);
             until VendorLedgerEntry.Next() = 0;
     end;

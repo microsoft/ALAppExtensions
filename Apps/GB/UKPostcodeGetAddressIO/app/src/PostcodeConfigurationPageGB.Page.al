@@ -36,7 +36,7 @@ page 10503 "Postcode Configuration Page GB"
                         var
                             TempNameValueBuffer: Record "Name/Value Buffer" temporary;
                         begin
-                            if PAGE.RunModal(PAGE::"Postcode Service Lookup GB", TempNameValueBuffer) = ACTION::LookupOK then
+                            if PAGE.RunModal(PAGE::"Postcode Service Lookup W1", TempNameValueBuffer) = ACTION::LookupOK then
                                 ServiceKeyText := TempNameValueBuffer.Name;
                         end;
 
@@ -44,7 +44,7 @@ page 10503 "Postcode Configuration Page GB"
                         var
                             TempNameValueBuffer: Record "Name/Value Buffer" temporary;
                         begin
-                            if PAGE.RunModal(PAGE::"Postcode Service Lookup GB", TempNameValueBuffer) = ACTION::LookupOK then
+                            if PAGE.RunModal(PAGE::"Postcode Service Lookup W1", TempNameValueBuffer) = ACTION::LookupOK then
                                 ServiceKeyText := TempNameValueBuffer.Name;
                         end;
 
