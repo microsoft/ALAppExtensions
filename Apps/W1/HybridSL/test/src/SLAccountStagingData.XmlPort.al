@@ -4,11 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
-using Microsoft.Finance.GeneralLedger.Account;
-
-xmlport 147602 "SL BC GL Account Data"
+xmlport 147622 "SL Account Staging Data"
 {
-    Caption = 'G/L Account data for import/export';
+    Caption = 'SL Account Staging data for import/export';
     Direction = Both;
     FieldSeparator = ',';
     RecordSeparator = '<CR><LF>';
@@ -18,21 +16,18 @@ xmlport 147602 "SL BC GL Account Data"
     {
         textelement(root)
         {
-            tableelement("G/L Account"; "G/L Account")
+            tableelement("SL Account Staging"; "SL Account Staging")
             {
                 AutoSave = false;
-                XmlName = 'GLAccount';
+                XmlName = 'SLAccountStaging';
 
-                textelement("No.")
+                textelement("AccountNumber")
                 {
                 }
                 textelement("Name")
                 {
                 }
                 textelement("SearchName")
-                {
-                }
-                textelement("AccountType")
                 {
                 }
                 textelement("AccountCategory")
@@ -44,7 +39,7 @@ xmlport 147602 "SL BC GL Account Data"
                 textelement("DebitCredit")
                 {
                 }
-                textelement("DirectPosting")
+                textelement("Active")
                 {
                 }
 
@@ -57,23 +52,20 @@ xmlport 147602 "SL BC GL Account Data"
                 end;
 
                 trigger OnBeforeInsertRecord()
-                var
-                    GLAccount: Record "G/L Account";
                 begin
                     if CaptionRow then begin
                         CaptionRow := false;
                         currXMLport.Skip();
                     end;
 
-                    GLAccount."No." := "No.";
-                    GLAccount.Name := Name;
-                    GLAccount."Search Name" := "SearchName";
-                    Evaluate(GLAccount."Account Type", "AccountType");
-                    Evaluate(GLAccount."Account Category", "AccountCategory");
-                    Evaluate(GLAccount."Income/Balance", "IncomeBalance");
-                    Evaluate(GLAccount."Debit/Credit", "DebitCredit");
-                    Evaluate(GLAccount."Direct Posting", "DirectPosting");
-                    GLAccount.Insert(true);
+                    SLAccountStaging.AcctNum := AccountNumber;
+                    SLAccountStaging.Name := Name;
+                    SLAccountStaging.SearchName := SearchName;
+                    Evaluate(SLAccountStaging.AccountCategory, AccountCategory);
+                    Evaluate(SLAccountStaging.IncomeBalance, IncomeBalance);
+                    Evaluate(SLAccountStaging.DebitCredit, DebitCredit);
+                    Evaluate(SLAccountStaging.Active, Active);
+                    SLAccountStaging.Insert(false);
                 end;
             }
         }
@@ -84,17 +76,7 @@ xmlport 147602 "SL BC GL Account Data"
         CaptionRow := true;
     end;
 
-    procedure GetExpectedGLAccounts(var NewTempGLAccount: Record "G/L Account" temporary)
-    begin
-        if TempGLAccount.FindSet() then begin
-            repeat
-                NewTempGLAccount.Copy(TempGLAccount);
-                NewTempGLAccount.Insert();
-            until TempGLAccount.Next() = 0;
-        end;
-    end;
-
     var
         CaptionRow: Boolean;
-        TempGLAccount: Record "G/L Account" temporary;
+        SLAccountStaging: Record "SL Account Staging";
 }

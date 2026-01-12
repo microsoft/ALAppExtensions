@@ -4,12 +4,20 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 codeunit 147601 "SL Test Helper Functions"
 {
+    procedure ClearAccountTableData()
+    var
+        GLAccount: Record "G/L Account";
+    begin
+        GLAccount.DeleteAll();
+    end;
+
     procedure ClearBCCustomerTableData()
     var
         Customer: Record Customer;
@@ -72,11 +80,27 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateDataMigrationStatusTable(DataMigrationStatusInstream);
     end;
 
+    procedure ImportDimensionData()
+    var
+        DimensionInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLBCDimension.csv', DimensionInstream);
+        PopulateDimensionTable(DimensionInstream);
+    end;
+
+    procedure ImportDimensionValueData()
+    var
+        DimensionValueInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLBCDimensionValue.csv', DimensionValueInstream);
+        PopulateDimensionValueTable(DimensionValueInstream);
+    end;
+
     procedure ImportGLAccountData()
     var
         GLAccountInstream: InStream;
     begin
-        GetInputStreamFromResource('datasets/input/SLGLChartOfAccounts.csv', GLAccountInstream);
+        GetInputStreamFromResource('datasets/input/SLBCGLAccounts.csv', GLAccountInstream);
         PopulateGLAccountTable(GLAccountInstream);
     end;
 
@@ -104,12 +128,28 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateItemTrackingCodeTable(ItemTrackingCodeInstream);
     end;
 
+    procedure ImportSLAccountStagingData()
+    var
+        SLAccountStagingInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLAccountStagingWithInactiveAccount.csv', SLAccountStagingInstream);
+        PopulateSLAccountStagingTable(SLAccountStagingInstream);
+    end;
+
     procedure ImportSLAcctHist()
     var
         SLAcctHistInstream: InStream;
     begin
-        GetInputStreamFromResource('datasets/input/SLTables/SLAcctHistDataForAccountingPeriodTest.csv', SLAcctHistInstream);
+        GetInputStreamFromResource('datasets/input/SLTables/SLAcctHistWithBeginningBalances.csv', SLAcctHistInstream);
         PopulateSLAcctHistTable(SLAcctHistInstream);
+    end;
+
+    procedure ImportSLAPDocBufferData()
+    var
+        SLAPDocBufferInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLAPDocBuffer.csv', SLAPDocBufferInstream);
+        PopulateSLAPDocBufferTable(SLAPDocBufferInstream);
     end;
 
     procedure ImportSLAPSetupData()
@@ -120,6 +160,14 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateSLAPSetupTable(SLAPSetupInstream);
     end;
 
+    procedure ImportSLARDocBufferData()
+    var
+        SLARDocBufferInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLARDocBuffer.csv', SLARDocBufferInstream);
+        PopulateSLARDocBufferTable(SLARDocBufferInstream);
+    end;
+
     procedure ImportSLARSetupData()
     var
         SLARSetupInstream: InStream;
@@ -128,12 +176,12 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateSLARSetupTable(SLARSetupInstream);
     end;
 
-    procedure ImportSLCompanyAdditionalSettingsData()
+    procedure ImportSLBatchData()
     var
-        SLCompanyAdditionalSettingsInstream: InStream;
+        SLBatchInstream: InStream;
     begin
-        GetInputStreamFromResource('datasets/input/SLCompanyAdditonalSettingsDefault.csv', SLCompanyAdditionalSettingsInstream);
-        PopulateSLCompanyAdditionalSettingsTable(SLCompanyAdditionalSettingsInstream);
+        GetInputStreamFromResource('datasets/input/SLTables/SLBatch.csv', SLBatchInstream);
+        PopulateSLBatchTable(SLBatchInstream);
     end;
 
     procedure ImportSLCustClassData()
@@ -144,6 +192,21 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateSLCustClassTable(SLCustClassInstream);
     end;
 
+    procedure ImportSLCustomerData()
+    var
+        SLCustomerInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLCustomerWithClassID.csv', SLCustomerInstream);
+        PopulateSLCustomerTable(SLCustomerInstream);
+    end;
+
+    procedure ImportSLFlexDefData()
+    var
+        SLFlexDefInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLFlexDef.csv', SLFlexDefInstream);
+        PopulateSLFlexDefTable(SLFlexDefInstream);
+    end;
 
     procedure ImportSLGLSetupData12Periods()
     var
@@ -177,13 +240,20 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateSLProductClassTable(SLProductClassInstream);
     end;
 
-
     procedure ImportSLSalesTaxData()
     var
         SLSalesTaxInstream: InStream;
     begin
         GetInputStreamFromResource('datasets/input/SLTables/SLSalesTax.csv', SLSalesTaxInstream);
         PopulateSLSalesTaxTable(SLSalesTaxInstream);
+    end;
+
+    procedure ImportSLSegmentsData()
+    var
+        SLSegmentsInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLSegments.csv', SLSegmentsInstream);
+        PopulateSLSegmentsTable(SLSegmentsInstream);
     end;
 
     procedure ImportSLSOAddressData()
@@ -202,10 +272,36 @@ codeunit 147601 "SL Test Helper Functions"
         PopulateSLVendClassTable(SLVendClassInstream);
     end;
 
+    procedure ImportSLVendorData()
+    var
+        SLVendorInstream: InStream;
+    begin
+        GetInputStreamFromResource('datasets/input/SLTables/SLVendorWithClassID.csv', SLVendorInstream);
+        PopulateSLVendorTable(SLVendorInstream);
+    end;
+
+    procedure PopulateSLCustomerTable(var Instream: InStream)
+    begin
+        // Populate Customer buffer table
+        Xmlport.Import(Xmlport::"SL Customer Data", Instream);
+    end;
+
     procedure PopulateDataMigrationStatusTable(var Instream: InStream)
     begin
         // Populate Data Migration Status table
         Xmlport.Import(Xmlport::"SL BC Data Migration Status", Instream);
+    end;
+
+    procedure PopulateDimensionTable(var Instream: InStream)
+    begin
+        // Populate Dimension table
+        Xmlport.Import(Xmlport::"SL BC Dimension Data", Instream);
+    end;
+
+    procedure PopulateDimensionValueTable(var Instream: InStream)
+    begin
+        // Populate Dimension Value table
+        Xmlport.Import(Xmlport::"SL BC Dimension Value Data", Instream);
     end;
 
     procedure PopulateGLAccountTable(var Instream: InStream)
@@ -232,10 +328,22 @@ codeunit 147601 "SL Test Helper Functions"
         Xmlport.Import(Xmlport::"SL BC Item Tracking Code Data", Instream);
     end;
 
+    procedure PopulateSLAccountStagingTable(var Instream: InStream)
+    begin
+        // Populate SL Account Staging table
+        Xmlport.Import(Xmlport::"SL Account Staging Data", Instream);
+    end;
+
     procedure PopulateSLAcctHistTable(var Instream: InStream)
     begin
         // Populate SL AcctHist table
         Xmlport.Import(Xmlport::"SL AcctHist Data", Instream);
+    end;
+
+    procedure PopulateSLAPDocBufferTable(var Instream: InStream)
+    begin
+        // Populate SL APDoc Buffer table
+        Xmlport.Import(Xmlport::"SL APDoc Buffer Data", Instream);
     end;
 
     procedure PopulateSLAPSetupTable(var Instream: InStream)
@@ -244,22 +352,34 @@ codeunit 147601 "SL Test Helper Functions"
         Xmlport.Import(Xmlport::"SL APSetup Data", Instream);
     end;
 
+    procedure PopulateSLARDocBufferTable(var Instream: InStream)
+    begin
+        // Populate SL ARDoc Buffer table
+        Xmlport.Import(Xmlport::"SL ARDoc Buffer Data", Instream);
+    end;
+
     procedure PopulateSLARSetupTable(var Instream: InStream)
     begin
         // Populate SL ARSetup table
         Xmlport.Import(Xmlport::"SL ARSetup Data", Instream);
     end;
 
-    procedure PopulateSLCompanyAdditionalSettingsTable(var Instream: InStream)
+    procedure PopulateSLBatchTable(var Instream: InStream)
     begin
-        // Populate SL Company Additional Settings table
-        Xmlport.Import(Xmlport::"SL Company Additional Settings", Instream);
+        // Populate SL Batch table
+        Xmlport.Import(Xmlport::"SL Batch Data", Instream);
     end;
 
     procedure PopulateSLCustClassTable(var Instream: InStream)
     begin
         // Populate SL CustClass table
         Xmlport.Import(Xmlport::"SL CustClass Data", Instream);
+    end;
+
+    procedure PopulateSLFlexDefTable(var Instream: InStream)
+    begin
+        // Populate SL FlexDef table
+        Xmlport.Import(Xmlport::"SL FlexDef Data", Instream);
     end;
 
     procedure PopulateSLGLSetupTable(var Instream: InStream)
@@ -286,6 +406,12 @@ codeunit 147601 "SL Test Helper Functions"
         Xmlport.Import(Xmlport::"SL SalesTax Data", Instream);
     end;
 
+    procedure PopulateSLSegmentsTable(var Instream: InStream)
+    begin
+        // Populate SL Segments table
+        Xmlport.Import(Xmlport::"SL Segments", Instream);
+    end;
+
     procedure PopulateSLSOAddressTable(var Instream: InStream)
     begin
         // Populate SL SOAddress table
@@ -296,5 +422,11 @@ codeunit 147601 "SL Test Helper Functions"
     begin
         // Populate SL VendClass table
         Xmlport.Import(Xmlport::"SL VendClass Data", Instream);
+    end;
+
+    procedure PopulateSLVendorTable(var Instream: InStream)
+    begin
+        // Populate Vendor buffer table
+        Xmlport.Import(Xmlport::"SL Vendor Data", Instream);
     end;
 }

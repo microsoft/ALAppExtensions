@@ -1,0 +1,2 @@
+﻿FieldClassName,Caption,Descr00,Descr01,Descr02,Descr03,Descr04,Descr05,Descr06,Descr07,NumberSegments,SegLength00,SegLength01,SegLength02,SegLength03,SegLength04,SegLength05,SegLength06,SegLength07
+SUBACCOUNT     ,Subaccount                     ,Reporting Unit ,Reg/Branch     ,Location       ,Group          ,Sales Type     ,Region         ,,,6,2,3,2,2,2,1,0,0
