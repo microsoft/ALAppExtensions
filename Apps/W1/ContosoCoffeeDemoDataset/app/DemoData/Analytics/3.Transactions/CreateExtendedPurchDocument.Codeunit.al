@@ -5,14 +5,14 @@
 
 namespace Microsoft.DemoData.Analytics;
 
-using Microsoft.Purchases.Document;
-using Microsoft.DemoData.CRM;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoTool;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.CRM;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Purchases;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Purchases.Document;
 
 codeunit 5688 "Create Extended Purch Document"
 {
@@ -24,13 +24,13 @@ codeunit 5688 "Create Extended Purch Document"
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
         PurchaseHeader: Record "Purchase Header";
         ContosoPurchase: Codeunit "Contoso Purchase";
-        CreateVendor: Codeunit "Create Vendor";
         ContosoUtilities: Codeunit "Contoso Utilities";
-        CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateItem: Codeunit "Create Item";
         CreatePaymentMethod: Codeunit "Create Payment Method";
-        CreatePurchaser: Codeunit "Create Salesperson/Purchaser";
+        CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateReturnReason: Codeunit "Create Return Reason";
+        CreatePurchaser: Codeunit "Create Salesperson/Purchaser";
+        CreateVendor: Codeunit "Create Vendor";
         DocumentDate: Date;
         StartingDate: Date;
     begin
