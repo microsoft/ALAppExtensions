@@ -6,9 +6,8 @@
 namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Purchases.Payables;
-using System.TestLibraries.Utilities;
-using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Vendor;
+using System.TestLibraries.Utilities;
 
 codeunit 147650 "SL Migration Vendor 1099 Tests"
 {
@@ -34,9 +33,6 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
     begin
         // [Given] SL Data
         Initialize();
-        SLTestHelperFunctions.ClearBCVendorTableData();
-        SLTestHelperFunctions.DeleteAllSettings();
-        SLTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Current 1099 Year and Next 1099 Year migration in SL Company Additional Settings
         SLCompanyAdditionalSettings.GetSingleInstance();
@@ -79,9 +75,6 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
 
         // [Given] SL Data
         Initialize();
-        SLTestHelperFunctions.ClearBCVendorTableData();
-        SLTestHelperFunctions.DeleteAllSettings();
-        SLTestHelperFunctions.CreateConfigurationSettings();
 
         // Enable Current 1099 Year and Next 1099 Year migration in SL Company Additional Settings
         SLCompanyAdditionalSettings.GetSingleInstance();
@@ -170,6 +163,9 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
         if IsInitialized then
             exit;
 
+        SLTestHelperFunctions.ClearBCVendorTableData();
+        SLTestHelperFunctions.DeleteAllSettings();
+        SLTestHelperFunctions.CreateConfigurationSettings();
         SLTestHelperFunctions.ImportSLAPSetupData();
         Commit();
         IsInitialized := true;

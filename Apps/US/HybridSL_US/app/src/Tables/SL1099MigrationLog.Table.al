@@ -92,6 +92,6 @@ table 47203 "SL 1099 Migration Log"
             ErrorMessageInStream.ReadText(ErrorMessageLine);
             ErrorMessageBuilder.AppendLine(ErrorMessageLine);
         end;
-        exit(ErrorMessageBuilder.ToText().Trim())
+        exit(ErrorMessageBuilder.ToText().Trim());
     end;
 }

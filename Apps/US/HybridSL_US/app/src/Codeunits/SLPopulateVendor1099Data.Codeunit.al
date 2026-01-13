@@ -5,13 +5,13 @@
 
 namespace Microsoft.DataMigration.SL;
 
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.ReceivablesPayables;
-using Microsoft.Purchases.Payables;
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
 using System.Integration;
 
@@ -105,7 +105,8 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
 
         LogMessage(MessageCodeCompletedTxt, 'Completed Vendor Tax Info Update');
 
-        CleanUp();
+        CleanUp(SLCurr1099Yr);
+        CleanUp(SLNext1099Yr);
     end;
 
     local procedure Initialize()
@@ -118,8 +119,6 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
         Month12: Integer;
         NextYear: Integer;
         VendorTaxBatchCode: Code[10];
-        Day31Txt: Label '31', Locked = true;
-        Month12Txt: Label '12', Locked = true;
     begin
         SLCompanyAdditionalSettings.GetSingleInstance();
         CurrentYear := SLCurr1099Yr;
@@ -127,10 +126,8 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
 
         CreateMappingsIfNeeded();
 
-        Evaluate(Day31, Day31Txt);
-        Evaluate(Month12, Month12Txt);
-        PostingDate := DMY2Date(Day31, Month12, CurrentYear);
-        NextYearPostingDate := DMY2Date(Day31, Month12, NextYear);
+        PostingDate := DMY2Date(31, 12, CurrentYear);
+        NextYearPostingDate := DMY2Date(31, 12, NextYear);
 
         CreateNoSeriesIfNeeded();
         DefaultPayablesAccountCode := SLHelperFunctions.GetPostingAccountNumber('PayablesAccount');
@@ -252,17 +249,13 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
 
     local procedure VendorAlreadyHasIRS1099CodeAssigned(var Vendor: Record Vendor; TaxYear: Integer): Boolean
     var
-        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
     begin
-        SLCompanyAdditionalSettings.GetSingleInstance();
-        if IRS1099VendorFormBoxSetup.Get(TaxYear, Vendor."No.") then
-            exit(true);
+        exit(IRS1099VendorFormBoxSetup.Get(TaxYear, Vendor."No."));
     end;
 
     local procedure AssignIRS1099CodeToVendor(var Vendor: Record Vendor; IRS1099Code: Code[10]; TaxYear: Integer): Boolean
     var
-        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
         IRS1099FormBox: Record "IRS 1099 Form Box";
     begin
@@ -270,7 +263,6 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
         if not IRS1099FormBox.FindFirst() then
             exit(false);
 
-        SLCompanyAdditionalSettings.GetSingleInstance();
         IRS1099VendorFormBoxSetup.Validate("Period No.", Format(TaxYear));
         IRS1099VendorFormBoxSetup.Validate("Vendor No.", Vendor."No.");
         IRS1099VendorFormBoxSetup.Validate("Form No.", IRS1099FormBox."Form No.");
@@ -284,7 +276,6 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
     var
         InvoiceGenJournalLine: Record "Gen. Journal Line";
         PaymentGenJournalLine: Record "Gen. Journal Line";
-        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
         NoSeries: Codeunit "No. Series";
         InvoiceDocumentNo: Code[20];
         InvoiceExternalDocumentNo: Code[35];
@@ -310,7 +301,6 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
             exit;
         end;
 
-        SLCompanyAdditionalSettings.GetSingleInstance();
         foreach IRS1099Code in VendorYear1099AmountDictionary.Keys() do begin
             TaxAmount := VendorYear1099AmountDictionary.Get(IRS1099Code);
 
@@ -375,135 +365,48 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
                 if GLAccount.Get(VendorPostingGroup."Payables Account") then
                     exit(GLAccount."No.");
 
-        exit('');
+        exit(DefaultPayablesAccountCode);
     end;
 
     local procedure BuildVendor1099Entries(VendorNo: Code[20]; var VendorYear1099AmountDictionary: Dictionary of [Code[10], Decimal]; TaxYear: Integer)
     var
         SLAPBalances: Record "SL AP_Balances";
+    begin
+        if not SLAPBalances.Get(VendorNo, CompanyName) then
+            exit;
+
+        ProcessBoxAmount(SLAPBalances.CYBox00, '1', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox01, '2', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox02, '3', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox03, '4', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox04, '5', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox05, '6', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox06, '7', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox07, '8', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox09, '10', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox14, '14', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox11, '15', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox13, '13', TaxYear, VendorYear1099AmountDictionary);
+        ProcessBoxAmount(SLAPBalances.CYBox12, '25', TaxYear, VendorYear1099AmountDictionary);
+    end;
+
+    local procedure ProcessBoxAmount(BoxAmount: Decimal; SLBoxCode: Text[10]; TaxYear: Integer; var VendorYear1099AmountDictionary: Dictionary of [Code[10], Decimal])
+    var
         SLVendor1099MappingHelpers: Codeunit "SL Vendor 1099 Mapping Helpers";
         IRS1099Code: Code[10];
         TaxAmount: Decimal;
     begin
-        if SLAPBalances.Get(VendorNo, CompanyName) then begin
-            if SLAPBalances.CYBox00 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '1')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox00)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox00);
-            if SLAPBalances.CYBox01 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '2')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox01)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox01);
-            if SLAPBalances.CYBox02 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '3')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox02)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox02);
-            if SLAPBalances.CYBox03 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '4')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox03)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox03);
-            if SLAPBalances.CYBox04 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '5')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox04)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox04);
-            if SLAPBalances.CYBox05 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '6')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox05)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox05);
-            if SLAPBalances.CYBox06 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '7')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox06)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox06);
-            if SLAPBalances.CYBox07 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '8')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox07)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox07);
-            if SLAPBalances.CYBox09 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '10')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox09)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox09);
-            if SLAPBalances.CYBox14 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '14')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox14)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox14);
-            if SLAPBalances.CYBox11 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '15')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox11)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox11);
-            if SLAPBalances.CYBox13 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '13')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox13)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox13);
-            if SLAPBalances.CYBox12 > 0 then
-                IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, '25')
-            else
-                IRS1099Code := '';
-            if IRS1099Code <> '' then
-                if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
-                    VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + SLAPBalances.CYBox12)
-                else
-                    VendorYear1099AmountDictionary.Add(IRS1099Code, SLAPBalances.CYBox12);
-        end;
+        if BoxAmount <= 0 then
+            exit;
+
+        IRS1099Code := SLVendor1099MappingHelpers.GetIRS1099BoxCode(TaxYear, SLBoxCode);
+        if IRS1099Code = '' then
+            exit;
+
+        if VendorYear1099AmountDictionary.Get(IRS1099Code, TaxAmount) then
+            VendorYear1099AmountDictionary.Set(IRS1099Code, TaxAmount + BoxAmount)
+        else
+            VendorYear1099AmountDictionary.Add(IRS1099Code, BoxAmount);
     end;
 
     local procedure CreateGeneralJournalLine(var GenJournalLine: Record "Gen. Journal Line"; VendorNo: Code[20]; DocumentType: enum "Gen. Journal Document Type"; DocumentNo: Code[20];
@@ -639,7 +542,7 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
         GenJournalBatch.SetRange(Name, GeneralJournalBatchCode);
         GenJournalBatch.SetRange("No. Series", NoSeriesCode);
         GenJournalBatch.SetRange("Posting No. Series", PostingNoSeriesCode);
-        if not GenJournalBatch.FindFirst() then begin
+        if GenJournalBatch.IsEmpty() then begin
             GenJournalBatch.Init();
             GenJournalBatch.Validate("Journal Template Name", TemplateName);
             GenJournalBatch.SetupNewBatch();
@@ -651,55 +554,30 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
         end;
     end;
 
-    local procedure CleanUp()
+    local procedure CleanUp(SL1099Year: Integer)
     var
         GenJournalTemplate: Record "Gen. Journal Template";
         GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLine: Record "Gen. Journal Line";
-        CurrentYearJournalBatchName: Code[20];
+        SL1099YearJournalBatchName: Code[20];
         NextYearJournalBatchName: Code[20];
     begin
-        // Current Year
-        CurrentYearJournalBatchName := VendorTaxBatchNameTxt + Format(SLCurr1099Yr);
-        GenJournalLine.SetRange("Journal Batch Name", CurrentYearJournalBatchName);
+        SL1099YearJournalBatchName := VendorTaxBatchNameTxt + Format(SL1099Year);
+        GenJournalLine.SetRange("Journal Batch Name", SL1099YearJournalBatchName);
         GenJournalLine.SetFilter("Account No.", '<>%1', '');
         if (not GenJournalLine.IsEmpty()) then
             exit;
 
         Clear(GenJournalLine);
-        GenJournalLine.SetRange("Journal Batch Name", CurrentYearJournalBatchName);
+        GenJournalLine.SetRange("Journal Batch Name", SL1099YearJournalBatchName);
         GenJournalLine.SetRange("Account No.", '');
         if not GenJournalLine.IsEmpty() then
             GenJournalLine.DeleteAll();
-        GenJournalBatch.SetRange(Name, CurrentYearJournalBatchName);
-        if GenJournalBatch.FindFirst() then begin
-            GenJournalLine.SetRange("Journal Batch Name", CurrentYearJournalBatchName);
-            if (not GenJournalLine.IsEmpty()) then
-                exit;
-            GenJournalBatch.Delete(true);
-            if (GenJournalTemplate.Get(CurrentYearJournalBatchName)) then
-                GenJournalTemplate.Delete(true);
-        end;
 
-        // Next Year
-        NextYearJournalBatchName := VendorTaxBatchNameTxt + Format(SLNext1099Yr);
-        GenJournalLine.SetRange("Journal Batch Name", NextYearJournalBatchName);
-        GenJournalLine.SetFilter("Account No.", '<>%1', '');
-        if (not GenJournalLine.IsEmpty()) then
-            exit;
-
-        Clear(GenJournalLine);
-        GenJournalLine.SetRange("Journal Batch Name", NextYearJournalBatchName);
-        GenJournalLine.SetRange("Account No.", '');
-        if not GenJournalLine.IsEmpty() then
-            GenJournalLine.DeleteAll();
-        GenJournalBatch.SetRange(Name, NextYearJournalBatchName);
+        GenJournalBatch.SetRange(Name, SL1099YearJournalBatchName);
         if GenJournalBatch.FindFirst() then begin
-            GenJournalLine.SetRange("Journal Batch Name", NextYearJournalBatchName);
-            if (not GenJournalLine.IsEmpty()) then
-                exit;
             GenJournalBatch.Delete(true);
-            if (GenJournalTemplate.Get(NextYearJournalBatchName)) then
+            if (GenJournalTemplate.Get(SL1099YearJournalBatchName)) then
                 GenJournalTemplate.Delete(true);
         end;
     end;
