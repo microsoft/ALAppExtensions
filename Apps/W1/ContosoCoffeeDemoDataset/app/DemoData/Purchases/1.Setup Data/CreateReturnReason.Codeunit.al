@@ -7,7 +7,7 @@ namespace Microsoft.DemoData.Purchases;
 
 using Microsoft.DemoTool.Helpers;
 
-codeunit 5392 "Create Return Reason"
+codeunit 5622 "Create Return Reason"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
