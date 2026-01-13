@@ -310,20 +310,6 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         InsertedEntryNo := SalesAdvLetterPostCZZ.PostAdvancePayment(
             CustLedgerEntry, PostedGenJournalLine, GenJnlPostLine, AdvancePostingParametersCZZ);
     end;
-#if not CLEAN25
-    [Obsolete('Replaced by GetAdvanceGLAccountNoCZZ function in GenJournalLine.', '25.0')]
-    procedure GetAdvanceGLAccount(var GenJournalLine: Record "Gen. Journal Line"): Code[20]
-    var
-        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
-    begin
-        SalesAdvLetterHeaderCZZ.Get(GenJournalLine."Adv. Letter No. (Entry) CZZ");
-        SalesAdvLetterHeaderCZZ.TestField("Advance Letter Code");
-        AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Advance Letter G/L Account");
-        exit(AdvanceLetterTemplateCZZ."Advance Letter G/L Account");
-    end;
-#endif
 
     procedure PostAdvancePaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; PostingDate: Date)
     begin

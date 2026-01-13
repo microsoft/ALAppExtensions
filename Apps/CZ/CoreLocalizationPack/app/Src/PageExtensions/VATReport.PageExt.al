@@ -26,14 +26,6 @@ pageextension 31236 "VAT Report CZL" extends "VAT Report"
         {
             Editable = false;
         }
-#if not CLEAN25
-#pragma warning disable AL0432
-        modify("Attached Documents")
-#pragma warning restore AL0432
-        {
-            Visible = false;
-        }
-#endif
         moveafter("Period Type"; "Period Year")
         addafter("Period No.")
         {

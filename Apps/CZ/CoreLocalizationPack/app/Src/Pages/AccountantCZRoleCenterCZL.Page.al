@@ -880,7 +880,6 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = page "VAT Periods CZL";
                     Image = Period;
                     ToolTip = 'View and set VAT periods.';
-                    Visible = false;
                     ObsoleteState = Pending;
                     ObsoleteReason = 'The VAT Periods CZL page is obsolete. Use the VAT Return Periods action instead.';
                     ObsoleteTag = '28.0';
@@ -1105,6 +1104,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Turnover Rpt. by Gl. Dim. CZL";
                     ToolTip = 'View, print, or send the turnover report by global dimensions.';
                 }
+#if not CLEAN28
                 action("G/L Trial Balance")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1113,7 +1113,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     Image = Report;
                     RunObject = report "Trial Balance";
                     ToolTip = 'View, print, or send a report that shows the balances for the general ledger accounts, including the debits and credits. You can use this report to ensure accurate accounting practices.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 action("Detail Trial Balance")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1189,6 +1193,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ToolTip = 'View or edit estimated amounts for a range of accounting periods.';
                     Visible = false;
                 }
+#if not CLEAN28
                 action("Trial Balance/Budget")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1198,7 +1203,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Trial Balance/Budget";
                     ToolTip = 'View a trial balance in comparison to a budget. You can choose to see a trial balance for selected dimensions. You can use the report at the close of an accounting period or fiscal year.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 action("Trial Balance by Period")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1381,6 +1390,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Vendor-Bal. Reconciliation CZL";
                     ToolTip = 'View, print, or send the vendor balance reconciliation report.';
                 }
+#if not CLEAN28
                 action("Vendor - Top 10")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1389,7 +1399,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     Image = Report;
                     RunObject = report "Vendor - Top 10 List";
                     ToolTip = 'View, print, or send the vendor - top 10 report.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 action("Quantity Received Check")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1399,6 +1413,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Quantity Received Check CZL";
                     ToolTip = 'View, print, or send the quantity received check report.';
                 }
+#if not CLEAN28
                 action("Aged Accounts Payable")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1408,7 +1423,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Aged Accounts Payable";
                     ToolTip = 'View an overview of when your payables to vendors are due or overdue (divided into four periods). You must specify the date you want aging calculated from and the length of the period that each column will contain data for.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
             }
             group("Receivable Reports")
             {
@@ -1431,6 +1450,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Cust.- Bal. Reconciliation CZL";
                     ToolTip = 'View, print, or send the customer balance reconciliation report.';
                 }
+#if not CLEAN28
                 action("Customer - Top 10")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1439,7 +1459,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     Image = Report;
                     RunObject = report "Customer - Top 10 List";
                     ToolTip = 'View, print, or send the customer - top 10 report.';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
                 action("Quantity Shipped Check")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1449,6 +1473,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Quantity Shipped Check CZL";
                     ToolTip = 'View, print, or send the quantity shipped check report.';
                 }
+#if not CLEAN28
                 action("Aged Accounts Receivable")
                 {
                     ApplicationArea = Basic, Suite;
@@ -1458,7 +1483,11 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Aged Accounts Receivable";
                     ToolTip = 'View an overview of when your receivables from customers are due or overdue (divided into four periods). You must specify the date you want aging calculated from and the length of the period that each column will contain data for.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This report is obsolete and will be removed in a future release.';
+                    ObsoleteTag = '28.0';
                 }
+#endif
             }
             group("Inventory Reports")
             {

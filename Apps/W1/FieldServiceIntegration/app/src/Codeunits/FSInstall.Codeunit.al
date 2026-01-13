@@ -97,11 +97,7 @@ codeunit 6616 "FS Install"
         if UpgradeTag.HasUpgradeTag(GetAssistedSetupUpgradeTag()) then
             exit;
 
-#if not CLEAN25
-        GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::Microsoft.Integration.FieldService."FS Connection Setup Wizard");
-#else
         GuidedExperience.Remove("Guided Experience Type"::"Assisted Setup", ObjectType::Page, 6421); // 6421 is the ID of the FS Connection Setup Wizard page in Base Application
-#endif
 
         UpgradeTag.SetUpgradeTag(GetAssistedSetupUpgradeTag());
     end;

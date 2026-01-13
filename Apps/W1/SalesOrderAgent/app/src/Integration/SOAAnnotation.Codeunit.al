@@ -24,7 +24,6 @@ codeunit 4399 "SOA Annotation"
         AnnotationAccessTokenCodeLbl: Label '1251', Locked = true;
         AnnotationAgentTaskFailureCodeLbl: Label '1252', Locked = true;
         AnnotationAgentTaskSendRepliesFailureCodeLbl: Label 'SENDREPLYFAIL', MaxLength = 20, Locked = true;
-        AnnotationTooManyEntriesCodeLbl: Label '1253', Locked = true;
         AnnotationIrrelevantCodeLbl: Label '1254', Locked = true;
         AnnotationAccessTokenLbl: Label 'The agent can''t currently access the selected mailbox because the mailbox access token is missing. Please reactivate the agent after signing in to Business Central again.';
         AnnotationProcessingLimitReachedLbl: Label 'You have reached today''s limit of %1 tasks. You can update this limit in the agent settings or return tomorrow to continue.', Comment = '%1 = Process Limit';
@@ -35,9 +34,8 @@ codeunit 4399 "SOA Annotation"
     internal procedure GetAgentAnnotations(AgentUserId: Guid; var Annotations: Record "Agent Annotation")
     var
         SOASetup: Record "SOA Setup";
-        SOABilling: Codeunit "SOA Billing";
     begin
-        SOASetup.SetRange("Agent User Security ID", AgentUserId);
+        SOASetup.SetRange("User Security ID", AgentUserId);
         if not SOASetup.FindFirst() then
             exit;
 
@@ -57,9 +55,6 @@ codeunit 4399 "SOA Annotation"
             else
                 if ShouldAddAgentTaskSendRepliesFailureAnnotation() then
                     AddAgentTaskSendRepliesFailureAnnotation(Annotations);
-
-        if SOABilling.TooManyUnpaidEntries() then
-            AddUnpaidEntriesAnnotation(Annotations);
     end;
 
     local procedure ShouldAddOverProcessLimitAnnotation(var SOASetup: Record "SOA Setup"): Boolean
@@ -186,21 +181,6 @@ codeunit 4399 "SOA Annotation"
             FeatureTelemetry.LogError('0000QG4', SOASetupCU.GetFeatureName(), 'Agent send replies failure detected.', 'Failed to insert annotation for agent send replies failure.', GetLastErrorCallStack(), TelemetryDimensions);
     end;
 
-    local procedure AddUnpaidEntriesAnnotation(var Annotations: Record "Agent Annotation")
-    var
-        SOABilling: Codeunit "SOA Billing";
-        TelemetryDimensions: Dictionary of [Text, Text];
-    begin
-        Clear(Annotations);
-        Annotations.Code := AnnotationTooManyEntriesCodeLbl;
-        Annotations.Message := CopyStr(SOABilling.GetTooManyUnpaidEntriesMessage(), 1, MaxStrLen(Annotations.Message));
-        Annotations.Severity := Annotations.Severity::Error;
-        if Annotations.Insert() then
-            FeatureTelemetry.LogUsage('0000PQA', SOASetupCU.GetFeatureName(), 'Too many unpaid entries detected for agent.', TelemetryDimensions)
-        else
-            FeatureTelemetry.LogError('0000PQB', SOASetupCU.GetFeatureName(), 'Too many unpaid entries detected for agent.', 'Failed to insert annotation for too many unpaid entries.', GetLastErrorCallStack(), TelemetryDimensions);
-    end;
-
     local procedure GetFailedTaskLimit(): Integer
     begin
         exit(5);
@@ -247,7 +227,6 @@ codeunit 4399 "SOA Annotation"
     var
         AgentTaskMessageAttachment: Record "Agent Task Message Attachment";
         SOABilling: Codeunit "SOA Billing";
-        SOABillingTask: Codeunit "SOA Billing Task";
         IrrelevanceReason: Text;
         IsAttachmentRelevant: Boolean;
     begin
@@ -263,13 +242,12 @@ codeunit 4399 "SOA Annotation"
             if not CheckIfAttachmentRelevant(AgentTaskMessage, AgentTaskMessageAttachment, IrrelevanceReason) then begin
                 AgentTaskMessageAttachment.Ignored := true;
                 AgentTaskMessageAttachment.Modify();
-                SOABilling.LogIrrelevantAttachment(AgentTaskMessageAttachment.SystemId, AgentTaskMessage."Task ID", AgentTaskMessage.ID);
+                SOABilling.LogIrrelevantAttachment(AgentTaskMessageAttachment.SystemId, AgentTaskMessage."Task ID", AgentTaskMessage.ID, AgentTaskMessageAttachment."File ID");
             end
             else begin
                 IsAttachmentRelevant := true;
-                SOABilling.LogRelevantAttachment(AgentTaskMessageAttachment.SystemId, AgentTaskMessage."Task ID", AgentTaskMessage.ID);
+                SOABilling.LogRelevantAttachment(AgentTaskMessageAttachment.SystemId, AgentTaskMessage."Task ID", AgentTaskMessage.ID, AgentTaskMessageAttachment."File ID");
             end;
-            SOABillingTask.ScheduleBillingTask();
         until AgentTaskMessageAttachment.Next() = 0;
         Commit();
         exit(IsAttachmentRelevant);

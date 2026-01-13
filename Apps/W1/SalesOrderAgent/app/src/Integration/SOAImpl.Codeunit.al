@@ -41,6 +41,8 @@ codeunit 4587 "SOA Impl"
         if not TaskScheduler.CanCreateTask() then
             Error(CantCreateTaskErr);
 
+        SOASetup.LockTable(); // Ensure that no other process can change the setup while we are scheduling the task
+        SOASetup.GetBySystemId(SOASetup.SystemId);
         RemoveScheduledTask(SOASetup);
 
         ScheduledTaskId := TaskScheduler.CreateTask(Codeunit::"SOA Dispatcher", Codeunit::"SOA Error Handler", true, CompanyName(), CurrentDateTime() + ScheduleDelay(), SOASetup.RecordId);
@@ -48,6 +50,7 @@ codeunit 4587 "SOA Impl"
         ScheduleSOARecovery(SOASetup);
 
         SOASetup.Modify();
+        Commit();
         FeatureTelemetry.LogUsage('0000NGM', SOASetupCU.GetFeatureName(), TelemetryAgentScheduledLbl, TelemetryDimensions);
     end;
 
@@ -71,7 +74,7 @@ codeunit 4587 "SOA Impl"
             exit(true);
 
         repeat
-            if User.Get(SOASetup."Agent User Security ID") then
+            if User.Get(SOASetup."User Security ID") then
                 if User.State = User.State::Enabled then
                     exit(true);
         until SOASetup.Next() = 0;
@@ -143,8 +146,12 @@ codeunit 4587 "SOA Impl"
         EnvironmentInformation: Codeunit "Environment Information";
         LearnMoreUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2281481', Locked = true;
     begin
-        if EnvironmentInformation.IsSaaSInfrastructure() then; //TODO: Add this check back once the feature development is complete
-        if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Sales Order Agent") then
-            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Sales Order Agent", Enum::"Copilot Availability"::Preview, Enum::"Copilot Billing Type"::"Microsoft Billed", LearnMoreUrlTxt);
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
+            exit;
+
+        if CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Sales Order Agent") then
+            CopilotCapability.ModifyCapability(Enum::"Copilot Capability"::"Sales Order Agent", Enum::"Copilot Availability"::"Generally Available", Enum::"Copilot Billing Type"::"Microsoft Billed", LearnMoreUrlTxt)
+        else
+            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Sales Order Agent", Enum::"Copilot Availability"::"Generally Available", Enum::"Copilot Billing Type"::"Microsoft Billed", LearnMoreUrlTxt);
     end;
 }

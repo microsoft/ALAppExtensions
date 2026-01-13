@@ -162,10 +162,6 @@ codeunit 31191 "Create Posting Groups CZ"
         case Rec.Code of
             CreatePostingGroups.RawMatPostingGroup():
                 Rec."Def. VAT Prod. Posting Group" := CreateVatPostingGroupsCZ.VAT21S();
-            CreatePostingGroups.MiscPostingGroup(),
-            CreatePostingGroups.RetailPostingGroup(),
-            CreatePostingGroups.ServicesPostingGroup():
-                Rec."Def. VAT Prod. Posting Group" := CreateVatPostingGroupsCZ.VAT21I();
         end;
     end;
 

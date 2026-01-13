@@ -2156,7 +2156,10 @@ codeunit 4001 "Hybrid Cloud Management"
         ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
         RecordLinkMigrationNotification: Notification;
     begin
-        if ReplicationRecordLinkBuffer.IsEmpty then
+        if RecordLinkBufferBlocked() then
+            exit;
+
+        if ReplicationRecordLinkBuffer.IsEmpty() then
             exit;
 
         if HybridCompanyStatus.Get() then
@@ -2189,6 +2192,15 @@ codeunit 4001 "Hybrid Cloud Management"
     begin
         if not MyNotifications.SetStatus(GetRecordLinkMigrationNotificationId(), false) then
             MyNotifications.InsertDefault(GetRecordLinkMigrationNotificationId(), WarnRecordLinkMigrationNotificationsTxt, WarnRecordLinkMigrationDescriptionTxt, false);
+    end;
+
+    internal procedure RecordLinkBufferBlocked(): Boolean
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    begin
+        IntelligentCloudStatus.SetRange("Table Id", Database::"Replication Record Link Buffer");
+        IntelligentCloudStatus.SetRange(Blocked, true);
+        exit(not IntelligentCloudStatus.IsEmpty());
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::User, 'OnAfterRenameUser', '', false, false)]

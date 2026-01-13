@@ -3,7 +3,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-#pragma warning disable AS0007
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using Microsoft.Sales.Document;
@@ -16,19 +15,16 @@ codeunit 4590 "SOA Billing"
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
-    Permissions = tabledata "SOA Billing Log" = rmi, tabledata "Agent Task Message" = r, tabledata "SOA Billing Task Setup" = rmi;
+    Permissions = tabledata "Agent Task Message" = r;
 
     procedure LogEmailRead(AgentTaskMessageID: Guid; AgentTaskID: BigInteger)
     begin
-        LogSOATrackingRecord(AgentTaskID, AgentTaskMessageID, "SOA Billing Operation"::"Inbound Message", AgentTaskMessageID, Database::"Agent Task Message", AnalyzedIncomingEmailLbl, BlankSOABillingLog."Copilot Quota Usage Type"::"Generative AI Answer");
+        LogSOATrackingRecord(AgentTaskID, AgentTaskMessageID, "SOA Billing Operation"::"Inbound Message", AgentTaskMessageID, Database::"Agent Task Message", AnalyzedIncomingEmailLbl, Enum::"Copilot Quota Usage Type"::"Generative AI Answer", '');
     end;
 
     procedure LogEmailGenerated(AgentTaskMessageID: Guid; AgentTaskID: BigInteger; AgentMessageID: Guid): Boolean
     begin
-        if EmailLoggedAlready(AgentTaskMessageID, AgentTaskID) then
-            exit(false);
-
-        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Outbound Message", AgentTaskMessageID, Database::"Agent Task Message", GeneratedOutgoingEmailLbl, BlankSOABillingLog."Copilot Quota Usage Type"::"Generative AI Answer");
+        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Outbound Message", AgentTaskMessageID, Database::"Agent Task Message", GeneratedOutgoingEmailLbl, Enum::"Copilot Quota Usage Type"::"Generative AI Answer", '');
         exit(true);
     end;
 
@@ -36,12 +32,7 @@ codeunit 4590 "SOA Billing"
     var
         AgentMessageID: Guid;
     begin
-        if not IsNewQuoteAutonomousAction(AgentTaskID, AgentMessageID) then begin
-            AppendDescriptionToLog(AgentTaskID, QuoteUpdateLbl, Enum::"SOA Billing Operation"::"Quote Action");
-            exit(false);
-        end;
-
-        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Quote Action", DocumentID, Database::"Sales Header", QuoteUpdateLbl, BlankSOABillingLog."Copilot Quota Usage Type"::"Autonomous Action");
+        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Quote Action", DocumentID, Database::"Sales Header", QuoteUpdateLbl, Enum::"Copilot Quota Usage Type"::"Autonomous Action", '');
         exit(true);
     end;
 
@@ -49,12 +40,7 @@ codeunit 4590 "SOA Billing"
     var
         AgentMessageID: Guid;
     begin
-        if not IsNewOrderAutonomousAction(AgentTaskID, AgentMessageID) then begin
-            AppendDescriptionToLog(AgentTaskID, OrderUpdatedLbl, Enum::"SOA Billing Operation"::"Order Action");
-            exit(false);
-        end;
-
-        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Order Action", DocumentID, Database::"Sales Header", OrderUpdatedLbl, BlankSOABillingLog."Copilot Quota Usage Type"::"Autonomous Action");
+        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Order Action", DocumentID, Database::"Sales Header", OrderUpdatedLbl, Enum::"Copilot Quota Usage Type"::"Autonomous Action", '');
         exit(true);
     end;
 
@@ -62,112 +48,31 @@ codeunit 4590 "SOA Billing"
     var
         AgentMessageID: Guid;
     begin
-        if not IsNewItemAvailabilityAutonomousAction(AgentTaskID, AgentMessageID) then begin
-            AppendDescriptionToLog(AgentTaskID, InventoryCheckLbl, Enum::"SOA Billing Operation"::"Item Availability");
-            exit(false);
-        end;
-
-        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Item Availability", AgentMessageID, Database::"Agent Task Message", InventoryCheckLbl, BlankSOABillingLog."Copilot Quota Usage Type"::"Autonomous Action");
+        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Item Availability", AgentMessageID, Database::"Agent Task Message", InventoryCheckLbl, Enum::"Copilot Quota Usage Type"::"Autonomous Action", '');
         exit(true);
     end;
 
-    procedure LogRelevantAttachment(AgentTaskMessageAttachmentID: Guid; AgentTaskID: BigInteger; AgentMessageID: Guid)
+    procedure LogRelevantAttachment(AgentTaskMessageAttachmentID: Guid; AgentTaskID: BigInteger; AgentMessageID: Guid; FileID: BigInteger)
     begin
-        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Relevant Attachment", AgentTaskMessageAttachmentID, Database::"Agent Task Message Attachment", AnalyzedAttachmentLbl, BlankSOABillingLog."Copilot Quota Usage Type"::"Autonomous Action");
+        LogSOATrackingRecord(AgentTaskID, AgentTaskMessageAttachmentID, "SOA Billing Operation"::"Relevant Attachment", AgentTaskMessageAttachmentID, Database::"Agent Task Message Attachment", AnalyzedAttachmentLbl, Enum::"Copilot Quota Usage Type"::"Autonomous Action", Format(FileID, 0, 9));
     end;
 
-    procedure LogIrrelevantAttachment(AgentTaskMessageAttachmentID: Guid; AgentTaskID: BigInteger; AgentMessageID: Guid)
+    procedure LogIrrelevantAttachment(AgentTaskMessageAttachmentID: Guid; AgentTaskID: BigInteger; AgentMessageID: Guid; FileID: BigInteger)
     begin
-        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Irrelevant Attachment", AgentTaskMessageAttachmentID, Database::"Agent Task Message Attachment", AnalyzedAttachmentLbl, BlankSOABillingLog."Copilot Quota Usage Type"::"Generative AI Answer");
+        LogSOATrackingRecord(AgentTaskID, AgentMessageID, "SOA Billing Operation"::"Irrelevant Attachment", AgentTaskMessageAttachmentID, Database::"Agent Task Message Attachment", AnalyzedAttachmentLbl, Enum::"Copilot Quota Usage Type"::"Generative AI Answer", Format(FileID, 0, 9));
     end;
 
-
-    procedure GetDescription(var SOABillingLog: Record "SOA Billing Log"): Text
+    local procedure LogSOATrackingRecord(AgentTaskID: BigInteger; AgentMessageID: Guid; Operation: Enum "SOA Billing Operation"; RecordSystemID: Guid; RecordTable: Integer; OperationDetails: Text; CopilotQuotaUsageType: Enum "Copilot Quota Usage Type"; AdditionalIdentifier: Text)
     var
-        DetailsInStream: InStream;
-        DetailsText: Text;
-    begin
-        SOABillingLog.CalcFields(Details);
-        if not SOABillingLog.Details.HasValue() then
-            exit('');
-
-        SOABillingLog.Details.CreateInStream(DetailsInStream, GetLogEncoding());
-        DetailsInStream.Read(DetailsText);
-        exit(DetailsText);
-    end;
-
-    procedure AddToDescription(var SOABillingLog: Record "SOA Billing Log"; NewDescriptionText: Text)
-    var
-        DetailsOutStream: OutStream;
-        LogDescription: Text;
-    begin
-        LogDescription := GetDescription(SOABillingLog);
-        if LogDescription.EndsWith(NewDescriptionText) then
-            exit;
-
-        if LogDescription = '' then
-            LogDescription := NewDescriptionText
-        else
-            LogDescription += DescriptionSeparatorLbl + NewDescriptionText;
-        SOABillingLog.Details.CreateOutStream(DetailsOutStream, GetLogEncoding());
-        DetailsOutStream.Write(LogDescription);
-        SOABillingLog.Modify(true);
-    end;
-
-    procedure TooManyUnpaidEntries(): Boolean
-    var
-        SOABillingLog: Record "SOA Billing Log";
-    begin
-        SOABillingLog.ReadIsolation := IsolationLevel::ReadCommitted;
-        SOABillingLog.SetRange(Charged, false);
-        exit(SOABillingLog.Count() > 200);
-    end;
-
-    local procedure EmailLoggedAlready(AgentTaskMessageID: Guid; AgentTaskID: BigInteger): Boolean
-    var
-        SOABillingLog: Record "SOA Billing Log";
-    begin
-        SOABillingLog.ReadIsolation := IsolationLevel::ReadCommitted;
-        SOABillingLog.SetRange("Agent Task ID", AgentTaskID);
-        SOABillingLog.SetRange("Record System ID", AgentTaskMessageID);
-        SOABillingLog.SetRange("Record Table", Database::"Agent Task Message");
-        exit(not SOABillingLog.IsEmpty());
-    end;
-
-    local procedure GetLogEncoding(): TextEncoding
-    begin
-        exit(TextEncoding::UTF8);
-    end;
-
-    local procedure SetupInboundMessageFilters(var SOABillingLog: Record "SOA Billing Log"; AgentTaskID: BigInteger)
-    begin
-        SOABillingLog.ReadIsolation := IsolationLevel::ReadCommitted;
-        SOABillingLog.SetCurrentKey(ID);
-        SOABillingLog.Ascending(true);
-        SOABillingLog.SetRange("Agent Task ID", AgentTaskID);
-        SOABillingLog.SetRange(Operation, SOABillingLog.Operation::"Inbound Message");
-    end;
-
-    local procedure LogSOATrackingRecord(AgentTaskID: BigInteger; AgentMessageID: Guid; Operation: Enum "SOA Billing Operation"; RecordSystemID: Guid;
-                                                                                 RecordTable: Integer;
-                                                                                 OperationDetails: Text; CopilotQuotaUsageType: Enum "Copilot Quota Usage Type")
-    var
-        SOABillingLog: Record "SOA Billing Log";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         SOASetup: Codeunit "SOA Setup";
+        CopilotQuota: Codeunit "Copilot Quota";
         TelemetryDimensions: Dictionary of [Text, Text];
+        UniqueID: Text[1024];
     begin
-        SOABillingLog."Agent Task ID" := AgentTaskID;
-        SOABillingLog."Agent Message ID" := AgentMessageID;
-        SOABillingLog.Operation := Operation;
-        SOABillingLog."Record System ID" := RecordSystemID;
-        SOABillingLog."Record Table" := RecordTable;
-#pragma warning disable AA0139
-        SOABillingLog."Company Name" := CompanyName();
-#pragma warning restore AA0139
-        SOABillingLog."Copilot Quota Usage Type" := CopilotQuotaUsageType;
-        SOABillingLog.Insert();
-        AddToDescription(SOABillingLog, OperationDetails);
+        UniqueID := GetUniqueID(AgentTaskID, Operation, RecordSystemID, RecordTable, AdditionalIdentifier);
+        if CopilotQuota.IsAgentUserAIConsumptionLogged(UniqueID) then
+            exit;
 
         // Log telemetry 
         TelemetryDimensions.Add('AgentUserSecurityID', UserSecurityId());
@@ -177,104 +82,46 @@ codeunit 4590 "SOA Billing"
         FeatureTelemetry.LogUsage('0000OT5', SOASetup.GetFeatureName(), CreatedSOABillingOperationMsg, TelemetryDimensions);
 
         if Operation in [Operation::"Order Action", Operation::"Quote Action"] then
-            FeatureTelemetry.LogUptake('0000QB2', SOASetup.GetFeatureName(), Enum::"Feature Uptake Status"::Used, TelemetryDimensions)
+            FeatureTelemetry.LogUptake('0000QB2', SOASetup.GetFeatureName(), Enum::"Feature Uptake Status"::Used, TelemetryDimensions);
+
+        CopilotQuota.LogAgentUserAIConsumption(Enum::"Copilot Capability"::"Sales Order Agent", 1, CopilotQuotaUsageType, AgentTaskID, Format(Operation), OperationDetails, UniqueID);
     end;
 
-    local procedure AppendDescriptionToLog(AgentTaskID: BigInteger; OperationDetails: Text; BillingOperation: Enum "SOA Billing Operation")
+    local procedure GetUniqueID(AgentTaskID: BigInteger; Operation: Enum "SOA Billing Operation"; RecordSystemID: Guid; RecordTable: Integer; AdditionalIdentifier: Text): Text[1024]
     var
-        SOABillingLog: Record "SOA Billing Log";
+        UniqueID: Text[1024];
     begin
-        SOABillingLog.ReadIsolation := IsolationLevel::ReadCommitted;
-        SOABillingLog.SetRange("Agent Task ID", AgentTaskID);
-        SOABillingLog.SetRange(Operation, BillingOperation);
-        if SOABillingLog.FindLast() then
-            AddToDescription(SOABillingLog, OperationDetails);
+        UniqueID := Format(Enum::"Agent Metadata Provider"::"SO Agent", 0, 9) + '-' + Format(AgentTaskID, 0, 9) + '-' + Format(GetTurn(AgentTaskID), 0, 9) + '-' + Format(Operation, 0, 9);
+
+        if ((Operation = Operation::"Inbound Message") or
+            (Operation = Operation::"Outbound Message") or
+            (Operation = Operation::"Relevant Attachment") or
+            (Operation = Operation::"Irrelevant Attachment")) then
+            UniqueID += '-' + Format(RecordTable, 0, 9) + '-' + Format(RecordSystemID);
+
+        if ((Operation = Operation::"Relevant Attachment") or
+            (Operation = Operation::"Irrelevant Attachment")) then
+            UniqueID += '-' + AdditionalIdentifier;
+        exit(UniqueID);
     end;
 
-    local procedure IsNewItemAvailabilityAutonomousAction(AgentTaskID: BigInteger; var AgentMessageID: Guid): Boolean
+    local procedure GetTurn(AgentTaskID: BigInteger): Integer
     var
-        SOABillingLogInboundMsg: Record "SOA Billing Log";
-        SOABillingLogMsg: Record "SOA Billing Log";
+        AgentTaskMessage: Record "Agent Task Message";
+        TurnID: Integer;
     begin
-        SetupInboundMessageFilters(SOABillingLogInboundMsg, AgentTaskID);
-        if not SOABillingLogInboundMsg.FindLast() then
-            exit(true);
-        AgentMessageID := SOABillingLogInboundMsg."Agent Message ID";
+        AgentTaskMessage.SetRange("Task ID", AgentTaskID);
+        AgentTaskMessage.SetRange(Type, AgentTaskMessage.Type::Input);
+        AgentTaskMessage.SetFilter(Status, '<>%1&<>%2&<>%3', AgentTaskMessage.Status::" ", AgentTaskMessage.Status::Discarded, AgentTaskMessage.Status::Rejected);
+        AgentTaskMessage.ReadIsolation := IsolationLevel::ReadUncommitted;
+        TurnID := AgentTaskMessage.Count();
+        if TurnID = 0 then  // Cover the case when we issue a charge before the message is inserted
+            exit(1);
 
-        SOABillingLogMsg.ReadIsolation := IsolationLevel::ReadCommitted;
-        SOABillingLogMsg.SetRange("Agent Task ID", AgentTaskID);
-        SOABillingLogMsg.SetFilter(ID, '>%1', SOABillingLogInboundMsg.ID);
-        SOABillingLogMsg.SetRange(Operation, SOABillingLogInboundMsg.Operation::"Item Availability");
-
-        exit(SOABillingLogMsg.IsEmpty());
-    end;
-
-    local procedure IsNewQuoteAutonomousAction(AgentTaskID: BigInteger; var AgentMessageID: Guid): Boolean
-    var
-        SOABillingLogInboundMsg: Record "SOA Billing Log";
-        SOABillingLogMsg: Record "SOA Billing Log";
-    begin
-        SetupInboundMessageFilters(SOABillingLogInboundMsg, AgentTaskID);
-        if not SOABillingLogInboundMsg.FindLast() then
-            exit(true);
-        AgentMessageID := SOABillingLogInboundMsg."Agent Message ID";
-
-        SOABillingLogMsg.ReadIsolation := IsolationLevel::ReadCommitted;
-        SOABillingLogMsg.SetRange("Agent Task ID", AgentTaskID);
-        SOABillingLogMsg.SetFilter(ID, '>%1', SOABillingLogInboundMsg.ID);
-        SOABillingLogMsg.SetRange(Operation, SOABillingLogInboundMsg.Operation::"Quote Action");
-
-        exit(SOABillingLogMsg.IsEmpty());
-    end;
-
-    local procedure IsNewOrderAutonomousAction(AgentTaskID: BigInteger; var AgentMessageID: Guid): Boolean
-    var
-        SOABillingLogInboundMsg: Record "SOA Billing Log";
-        SOABillingLogMsg: Record "SOA Billing Log";
-    begin
-        SetupInboundMessageFilters(SOABillingLogInboundMsg, AgentTaskID);
-        if not SOABillingLogInboundMsg.FindLast() then
-            exit(true);
-        AgentMessageID := SOABillingLogInboundMsg."Agent Message ID";
-
-        SOABillingLogMsg.ReadIsolation := IsolationLevel::ReadCommitted;
-        SOABillingLogMsg.SetRange("Agent Task ID", AgentTaskID);
-        SOABillingLogMsg.SetFilter(ID, '>%1', SOABillingLogInboundMsg.ID);
-        SOABillingLogMsg.SetRange(Operation, SOABillingLogInboundMsg.Operation::"Order Action");
-
-        exit(SOABillingLogMsg.IsEmpty());
-    end;
-
-    procedure LogUsageSafe(CostType: Enum "Copilot Quota Usage Type"): Boolean
-    var
-        CopilotQuota: Codeunit "Copilot Quota";
-        SOASetup: Codeunit "SOA Setup";
-        FeatureTelemetry: Codeunit "Feature Telemetry";
-        TelemetryDimensions: Dictionary of [Text, Text];
-    begin
-        if not CopilotQuota.TryLogQuotaUsage("Copilot Capability"::"Sales Order Agent", 1, CostType) then begin
-            FeatureTelemetry.LogError('0000ORQ', SOASetup.GetFeatureName(), LogUsageLbl, FailedToLogUsageMsg, '', TelemetryDimensions);
-            exit(false);
-        end;
-
-        exit(true);
-    end;
-
-    procedure GetTooManyUnpaidEntriesMessage(): Text
-    begin
-        exit(StrSubstNo(TheAgentCannotRunTooManyUnpaidEntriesMsg, GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"SOA Billing Overview")));
-    end;
-
-    procedure GetBillingTaskSetupSafe(var SOABillingTaskSetup: Record "SOA Billing Task Setup")
-    begin
-        if not SOABillingTaskSetup.Get() then
-            SOABillingTaskSetup.Insert();
+        exit(TurnID);
     end;
 
     var
-        BlankSOABillingLog: Record "SOA Billing Log";
-        LogUsageLbl: Label 'Log usage', Locked = true;
-        FailedToLogUsageMsg: Label 'Failed to log usage.', Locked = true;
         InventoryCheckLbl: Label 'Inventory Inquiry';
         QuoteUpdateLbl: Label 'Updated quote';
         OrderUpdatedLbl: Label 'Updated order';
@@ -282,6 +129,4 @@ codeunit 4590 "SOA Billing"
         AnalyzedAttachmentLbl: Label 'Analyzed attachment';
         GeneratedOutgoingEmailLbl: Label 'Generated outgoing email';
         CreatedSOABillingOperationMsg: Label 'Created SOA billing operation', Locked = true;
-        TheAgentCannotRunTooManyUnpaidEntriesMsg: Label 'There are too many unpaid entries. The agent will not be able to start until they are paid. Open the page 4585 - "Sales Order Agent - Billing Overview" and invoke the "Pay entries" action. To open the page, use the following link: %1', Locked = true;
-        DescriptionSeparatorLbl: Label '; ', Locked = true;
 }

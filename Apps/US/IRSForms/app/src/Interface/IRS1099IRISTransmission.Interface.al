@@ -14,7 +14,9 @@ interface "IRS 1099 IRIS Transmission"
     /// </summary>
     /// <param name="Transmission"> The transmission record to be created. </param>
     /// <param name="PeriodNo"> The period number for which the transmission is created. </param>
-    procedure CreateTransmission(var Transmission: Record "Transmission IRIS"; PeriodNo: Text[4])
+#pragma warning disable AS0078
+    procedure CreateTransmission(Transmission: Record "Transmission IRIS"; PeriodNo: Text[4])
+#pragma warning restore AS0078
 
     /// <summary>
     /// Checks if the original transmission is ready to be submitted to the IRS.

@@ -20,6 +20,7 @@ page 30062 "APIV2 - Sales Shipments"
     PageType = API;
     SourceTable = "Sales Shipment Header";
     Extensible = false;
+    AboutText = 'Exposes detailed sales shipment document data, including shipment numbers, customer and bill-to/ship-to information, addresses, dates, order references, and tracking details. Supports read-only (GET) operations for retrieving shipment records, enabling external logistics providers, fulfillment systems, and e-commerce platforms to synchronize outbound delivery status and provide real-time shipment visibility and notifications. Ideal for integrations that require accurate, up-to-date shipment information without modifying Business Central records.';
 
     layout
     {

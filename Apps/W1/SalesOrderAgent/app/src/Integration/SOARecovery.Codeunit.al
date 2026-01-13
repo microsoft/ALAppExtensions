@@ -46,7 +46,7 @@ codeunit 4584 "SOA Recovery"
         end;
 
         // Check if the agent is enabled
-        if not Agent.IsActive(Setup."Agent User Security ID") then begin
+        if not Agent.IsActive(Setup."User Security ID") then begin
             FeatureTelemetry.LogError('0000NDW', SOASetupCU.GetFeatureName(), 'Sales order agent enable check', TelemetrySalesOrderAgentIsNotEnabledLbl, GetLastErrorCallStack(), TelemetryDimensions);
             exit;
         end;
@@ -54,6 +54,7 @@ codeunit 4584 "SOA Recovery"
         // Check if task exists
         ScheduledTask.SetRange("Run Codeunit", Codeunit::"SOA Dispatcher");
         ScheduledTask.SetRange(Company, CompanyName());
+        ScheduledTask.SetRange(Record, Setup.RecordId);
         if not ScheduledTask.IsEmpty() then
             exit; // Task already exists
 

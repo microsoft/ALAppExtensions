@@ -86,7 +86,7 @@ codeunit 9099 "Postcode Business Logic GB"
 
     procedure ShowDiscoverabilityNotificationIfNeccessary()
     var
-        PostcodeNotificationMemory: Record "Postcode Notification Memory";
+        PostcodeNotificationMemory: Record "Postcode Notif. Memory";
         TempServiceListNameValueBuffer: Record "Name/Value Buffer" temporary;
         PostcodeServiceConfig: Record "Postcode Service Config";
         DiscoverabilityNotification: Notification;
@@ -112,7 +112,11 @@ codeunit 9099 "Postcode Business Logic GB"
 
     procedure NotificationOnConfigure(Notification: Notification)
     begin
+#if not CLEAN28
         PAGE.Run(PAGE::"Postcode Configuration Page");
+#else
+        PAGE.Run(PAGE::"Postcode Configuration Page GB");
+#endif
         DisableNotificationForUser();
     end;
 
@@ -170,7 +174,7 @@ codeunit 9099 "Postcode Business Logic GB"
 
     local procedure DisableNotificationForUser()
     var
-        PostcodeNotificationMemory: Record "Postcode Notification Memory";
+        PostcodeNotificationMemory: Record "Postcode Notif. Memory";
     begin
         if PostcodeNotificationMemory.Get(UserId) then
             exit;
@@ -182,7 +186,11 @@ codeunit 9099 "Postcode Business Logic GB"
 
     local procedure ShowPostcodeInputFields(var Postcode: Text[20]; var DeliveryPoint: Text[100]): Boolean
     var
+#if not CLEAN28
         PostcodeSearch: Page "Postcode Search";
+#else
+        PostcodeSearch: Page "Postcode Search GB";
+#endif
     begin
         PostcodeSearch.SetValues(Postcode, '');
         if PostcodeSearch.RunModal() = ACTION::Cancel then
@@ -230,8 +238,13 @@ codeunit 9099 "Postcode Business Logic GB"
             PostcodeServiceConfig.SaveServiceKey('Disabled');
         end;
 
+#if not CLEAN28
         ServiceConnection.InsertServiceConnection(ServiceConnection, PostcodeServiceConfig.RecordId,
           UKPostcodeAutocompleteLbl, '', PAGE::"Postcode Configuration Page");
+#else
+        ServiceConnection.InsertServiceConnection(ServiceConnection, PostcodeServiceConfig.RecordId,
+          UKPostcodeAutocompleteLbl, '', PAGE::"Postcode Configuration Page GB");
+#endif
     end;
 }
 

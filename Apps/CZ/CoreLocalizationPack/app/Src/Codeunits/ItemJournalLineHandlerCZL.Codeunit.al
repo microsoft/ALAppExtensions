@@ -92,11 +92,9 @@ codeunit 31078 "Item Journal Line Handler CZL"
         InventorySetup: Record "Inventory Setup";
     begin
         InventorySetup.Get();
-        if ItemJournalLine."Qty. (Phys. Inventory)" > ItemJournalLine."Qty. (Calculated)" then
-            exit(InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL");
         if ItemJournalLine."Qty. (Phys. Inventory)" < ItemJournalLine."Qty. (Calculated)" then
             exit(InventorySetup."Def.Tmpl. for Phys.Neg.Adj CZL");
-        exit('');
+        exit(InventorySetup."Def.Tmpl. for Phys.Pos.Adj CZL");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterSetupNewLine', '', false, false)]

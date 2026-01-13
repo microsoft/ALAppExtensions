@@ -1156,6 +1156,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+        SourceCodeSetup: Record "Source Code Setup";
         NoSeriesBatch: Codeunit "No. Series - Batch";
         NextEntryNo: Integer;
         GetDocNoFromNoSeries: Boolean;
@@ -1183,6 +1184,11 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 NoSeriesBatch.GetNextNo(
                     AdvanceLetterTemplateCZZ."Advance Letter Cr. Memo Nos.", AdvancePostingParametersCZZ."Posting Date");
             NextEntryNo := GenJnlPostLine.GetNextEntryNo();
+        end;
+
+        if AdvancePostingParametersCZZ."Source Code" = '' then begin
+            SourceCodeSetup.Get();
+            AdvancePostingParametersCZZ."Source Code" := SourceCodeSetup."Close Advance Letter CZZ";
         end;
 
         PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
@@ -1247,6 +1253,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             GenJournalLine."Document Date" := AdvancePostingParametersCZZ."Document Date";
             GenJournalLine."VAT Reporting Date" := AdvancePostingParametersCZZ."VAT Date";
             GenJournalLine."Original Doc. VAT Date CZL" := AdvancePostingParametersCZZ."Original Document VAT Date";
+            GenJournalLine."Source Code" := AdvancePostingParametersCZZ."Source Code";
             GenJournalLine."Adv. Letter No. (Entry) CZZ" := PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.";
             GenJournalLine."Use Advance G/L Account CZZ" := true;
             GenJournalLine.SetCurrencyFactor(
@@ -1298,6 +1305,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             GenJournalLine."Document Date" := AdvancePostingParametersCZZ."Document Date";
             GenJournalLine."VAT Reporting Date" := AdvancePostingParametersCZZ."VAT Date";
             GenJournalLine."Original Doc. VAT Date CZL" := AdvancePostingParametersCZZ."Original Document VAT Date";
+            GenJournalLine."Source Code" := AdvancePostingParametersCZZ."Source Code";
             GenJournalLine.SetCurrencyFactor(
                 AdvancePostingParametersCZZ."Currency Code", AdvancePostingParametersCZZ."Currency Factor");
             GenJournalLine.Amount := RemainingAmount;
@@ -2230,11 +2238,6 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 GenJournalLine."Source Currency Code" := DetailedVendorLedgEntry1."Currency Code";
                 GenJournalLine."System-Created Entry" := true;
                 OnUnapplyVendLedgEntryOnBeforeUnapplyVendLedgEntry(VendorLedgerEntry, DetailedVendorLedgEntry1, GenJournalLine);
-#if not CLEAN25
-#pragma warning disable AL0432
-                OnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry(VendorLedgerEntry, DetailedVendorLedgEntry1, GenJournalLine);
-#pragma warning restore AL0432
-#endif
                 GenJnlPostLine.UnapplyVendLedgEntry(GenJournalLine, DetailedVendorLedgEntry1);
             end else
                 Succes := true;
@@ -2857,13 +2860,6 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
     local procedure OnAfterInitGenJournalLineFromVendorLedgerEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
-#if not CLEAN25
-    [Obsolete('Replaced by OnUnapplyVendLedgEntryOnBeforeUnapplyVendLedgEntry event.', '25.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnUnapplyVendLedgEntryOnBeforePostUnapplyVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; DetailedVendorLedgEntry1: Record "Detailed Vendor Ledg. Entry"; GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnUnapplyVendLedgEntryOnBeforeUnapplyVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; var DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry"; var GenJournalLine: Record "Gen. Journal Line")

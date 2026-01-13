@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -148,6 +148,11 @@ page 31171 "Sales Advance Letter CZZ"
                     Editable = "Bill-to Customer No." <> '';
                     ToolTip = 'Specifies the name of the person to contact at the customer.';
                 }
+                field("Your Reference"; Rec."Your Reference")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                }
                 field("Posting Description"; Rec."Posting Description")
                 {
                     ApplicationArea = Basic, Suite;
@@ -202,6 +207,7 @@ page 31171 "Sales Advance Letter CZZ"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the country or region of VAT.';
+                    Importance = Additional;
                 }
                 field("Automatic Post VAT Document"; Rec."Automatic Post VAT Document")
                 {
@@ -377,17 +383,6 @@ page 31171 "Sales Advance Letter CZZ"
                 ApplicationArea = Basic, Suite;
                 SubPageLink = "No." = field("Bill-to Customer No.");
             }
-#if not CLEAN25
-            part("Attached Documents"; "Document Attachment Factbox")
-            {
-                ObsoleteTag = '25.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
-                ApplicationArea = Basic, Suite;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(Database::"Sales Adv. Letter Header CZZ"), "No." = field("No.");
-            }
-#endif
             part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = Basic, Suite;

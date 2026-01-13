@@ -104,8 +104,8 @@ codeunit 31370 "G/L Entry Post Application CZA"
             TempAppliedGLEntry.Ascending(false);
             if TempAppliedGLEntry.FindSet(true) then
                 repeat
-                    if (ApplyingGLEntry.Amount > 0) and (TempAppliedGLEntry.Amount < 0) or
-                       (ApplyingGLEntry.Amount < 0) and (TempAppliedGLEntry.Amount > 0)
+                    if (ApplyingGLEntry.Amount >= 0) and (TempAppliedGLEntry.Amount < 0) or
+                       (ApplyingGLEntry.Amount <= 0) and (TempAppliedGLEntry.Amount > 0)
                     then begin
                         TempAppliedGLEntry.CalcFields("Applied Amount CZA");
                         if (ApplyingAmount <> 0) and
@@ -121,8 +121,8 @@ codeunit 31370 "G/L Entry Post Application CZA"
                 TempAppliedGLEntry.SetFilter("Amount to Apply CZA", '<>0');
                 if TempAppliedGLEntry.FindSet(true) then
                     repeat
-                        if (ApplyingGLEntry.Amount > 0) and (TempAppliedGLEntry.Amount < 0) or
-                           (ApplyingGLEntry.Amount < 0) and (TempAppliedGLEntry.Amount > 0)
+                        if (ApplyingGLEntry.Amount >= 0) and (TempAppliedGLEntry.Amount < 0) or
+                           (ApplyingGLEntry.Amount <= 0) and (TempAppliedGLEntry.Amount > 0)
                         then begin
                             SetAmountToApply(TempAppliedGLEntry, ApplyingAmount);
                             TempAppliedGLEntry.Modify();
@@ -416,9 +416,9 @@ codeunit 31370 "G/L Entry Post Application CZA"
     local procedure IsAppliedEntry(GLEntry: Record "G/L Entry"; ApplyingGLEntry: Record "G/L Entry") IsOk: Boolean
     begin
         IsOk :=
+            (GLEntry."Entry No." <> ApplyingGLEntry."Entry No.") and
             (GLEntry."G/L Account No." = ApplyingGLEntry."G/L Account No.") and
-            ((GLEntry.Amount <> 0) and ((GLEntry.Amount * ApplyingGLEntry.Amount) < 0)) or
-            (GLEntry.Amount = 0);
+            ((GLEntry.Amount * ApplyingGLEntry.Amount) <= 0);
         OnAfterIsAppliedEntry(GLEntry, ApplyingGLEntry, IsOk);
     end;
 

@@ -129,11 +129,17 @@ codeunit 4596 "SOA Broader Item Search"
         JsonToken: JsonToken;
         ConcatenatedKeyword: Text;
     begin
-        if ItemObjectToken.AsObject().Get('concatenated_keyword', JsonToken) then begin
-            ConcatenatedKeyword := JsonToken.AsValue().AsText();
-            if ConcatenatedKeyword <> '' then
-                ConcatenatedKeyword := '|' + ConcatenatedKeyword;
-        end;
+        if not ItemObjectToken.AsObject().Get('concatenated_keyword', JsonToken) then
+            exit('');
+
+        if JsonToken.AsValue().IsNull() then
+            exit('');
+
+        ConcatenatedKeyword := JsonToken.AsValue().AsText();
+        if ConcatenatedKeyword = '' then
+            exit('');
+
+        ConcatenatedKeyword := '|' + ConcatenatedKeyword;
         exit(ConcatenatedKeyword);
     end;
 

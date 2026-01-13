@@ -40,8 +40,11 @@ codeunit 4582 "SOA Retrieve Emails"
         MessageTemplateLbl: Label '<b>Subject:</b> %1<br/><b>Body:</b> %2', Comment = '%1 = Subject, %2 = Body';
         TelemetrySOAEmailNotModifiedLbl: Label 'SOA Email record not modified.', Locked = true;
         TelemetryProcessingLimitReachedLbl: Label 'Processing limit of emails reached.', Locked = true;
+        PageCountExceededTelemetryTxt: label 'PDF Attachment ignored because it exceeds page count of %1.', Locked = true;
+        PageCountCallFailedTelemetryTxt: label 'Unable to calculate PDF Attachment''s page count.', Locked = true;
+        MaxAttachmentsExceededTelemetryTxt: label 'Number of attachments exceeds maximum allowed.', Locked = true;
 
-    local procedure RetrieveEmails(SOASetup: Record "SOA Setup")
+    local procedure RetrieveEmails(var SOASetup: Record "SOA Setup")
     var
         EmailInbox: Record "Email Inbox";
         TempFilters: Record "Email Retrieval Filters" temporary;
@@ -60,7 +63,7 @@ codeunit 4582 "SOA Retrieve Emails"
         if Processed >= ProcessLimit then begin
             TelemetryDimensions.Set('Processed', Format(Processed));
             TelemetryDimensions.Set('ProcessLimit', Format(ProcessLimit));
-            FeatureTelemetry.LogUsage('0000O9Y', SOASetupCU.GetFeatureName(), StrSubstNo(TelemetryProcessingLimitReachedLbl), TelemetryDimensions);
+            FeatureTelemetry.LogUsage('0000O9Y', SOASetupCU.GetFeatureName(), TelemetryProcessingLimitReachedLbl, TelemetryDimensions);
             exit;
         end;
 
@@ -69,20 +72,15 @@ codeunit 4582 "SOA Retrieve Emails"
         TempFilters."Max No. of Emails" := SOAMailSetup.GetMaxNoOfEmails();
         TempFilters."Last Message Only" := true;
         TempFilters."Folder Id" := SOASetup."Email Folder Id";
-        if TempFilters."Folder Id" = '' then
-            TempFilters."Earliest Email" := SOASetup."Last Sync At"
-        else
-            TempFilters."Earliest Email" := SOASetup."Earliest Sync At";
+        TempFilters."Earliest Email" := SOASetup."Earliest Sync At";
         TempFilters.Insert();
 
         Email.RetrieveEmails(SOASetup."Email Account ID", SOASetup."Email Connector", EmailInbox, TempFilters);
 
-        if not EmailInbox.FindSet() then begin
-            FeatureTelemetry.LogUsage('0000NDN', SOASetupCU.GetFeatureName(), TelemetryNoEmailsFoundLbl, TelemetryDimensions);
-            exit;
-        end;
-
-        FeatureTelemetry.LogUsage('0000NDO', SOASetupCU.GetFeatureName(), TelemetryEmailsFoundLbl, TelemetryDimensions);
+        if not EmailInbox.FindSet() then
+            FeatureTelemetry.LogUsage('0000NDN', SOASetupCU.GetFeatureName(), TelemetryNoEmailsFoundLbl, TelemetryDimensions)
+        else
+            FeatureTelemetry.LogUsage('0000NDO', SOASetupCU.GetFeatureName(), TelemetryEmailsFoundLbl, TelemetryDimensions);
 
         if not SOASetupCU.CheckSOASetupStillValid(SOASetup) then
             exit;
@@ -95,10 +93,15 @@ codeunit 4582 "SOA Retrieve Emails"
 
         RemoveEmailsOutsideSyncRange(EmailInbox);
         AddEmailInboxToSOAEmails(SOASetup, EmailInbox);
+        // Only update sync time if we're not syncing from a specific folder
+        // Specifying a folder means we may miss emails if they are moved into the folder after we sync
+        if TempFilters."Folder Id" = '' then
+            UpdateSOAEarliestSyncAt(SOASetup, EmailInbox.Count());
         Commit();
 
         SOAEmail.SetRange(Processed, false);
-        if SOAEmail.FindSet() then;
+        if not SOAEmail.FindSet() then
+            exit;
 
         StartDateTime := CurrentDateTime();
         repeat
@@ -113,17 +116,27 @@ codeunit 4582 "SOA Retrieve Emails"
             if Processed >= ProcessLimit then begin
                 TelemetryDimensions.Set('Processed', Format(Processed));
                 TelemetryDimensions.Set('ProcessLimit', Format(ProcessLimit));
-                FeatureTelemetry.LogUsage('0000O9Z', SOASetupCU.GetFeatureName(), StrSubstNo(TelemetryProcessingLimitReachedLbl), TelemetryDimensions);
+                FeatureTelemetry.LogUsage('0000O9Z', SOASetupCU.GetFeatureName(), TelemetryProcessingLimitReachedLbl, TelemetryDimensions);
                 break;
             end;
         until SOAEmail.Next() = 0;
+    end;
+
+    local procedure UpdateSOAEarliestSyncAt(var SOASetup: Record "SOA Setup"; EmailsProcessed: Integer)
+    begin
+        SOASetup.Get(SOASetup.ID);
+        // Only move the earliest sync time forward if we processed fewer emails than the limit
+        // This ensures we'll re-query and get any we missed
+        if EmailsProcessed < SOAMailSetup.GetMaxNoOfEmails() then
+            SOASetup."Earliest Sync At" := CurrentDateTime();
+
+        SOASetup.Modify();
     end;
 
     local procedure AddEmailToAgentTask(SOASetup: Record "SOA Setup"; var SOAEmail: Record "SOA Email")
     var
         EmailInbox: Record "Email Inbox";
         AgentTaskBuilder: Codeunit "Agent Task Builder";
-        SOABillingTask: Codeunit "SOA Billing Task";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if not EmailInbox.Get(SOAEmail."Email Inbox ID") then begin
@@ -132,12 +145,11 @@ codeunit 4582 "SOA Retrieve Emails"
             exit;
         end;
 
-        if AgentTaskBuilder.TaskExists(SOASetup."Agent User Security ID", EmailInbox."Conversation Id") then
+        if AgentTaskBuilder.TaskExists(SOASetup."User Security ID", EmailInbox."Conversation Id") then
             AddEmailToExistingAgentTask(SOASetup, EmailInbox, SOAEmail)
         else
             AddEmailToNewAgentTask(SOASetup, EmailInbox, SOAEmail);
 
-        SOABillingTask.ScheduleBillingTask();
         OnAfterProcessEmail(SOAEmail."Email Inbox ID");
     end;
 
@@ -147,8 +159,6 @@ codeunit 4582 "SOA Retrieve Emails"
             if EmailInbox."Is Read" then
                 EmailInbox.Delete(true);
         until EmailInbox.Next() = 0;
-
-        if EmailInbox.FindSet() then;
     end;
 
     procedure AddEmailInboxToSOAEmails(SOASetup: Record "SOA Setup"; var EmailInbox: Record "Email Inbox")
@@ -156,6 +166,9 @@ codeunit 4582 "SOA Retrieve Emails"
         SOAEmail: Record "SOA Email";
         Email: Codeunit "Email";
     begin
+        if not EmailInbox.FindSet() then
+            exit;
+
         repeat
             SOAEmail."Email Inbox ID" := EmailInbox.Id;
             SOAEmail."Sender Name" := EmailInbox."Sender Name";
@@ -189,7 +202,7 @@ codeunit 4582 "SOA Retrieve Emails"
             .SetRequiresReview(SOATaskMessage.MessageRequiresReview(SOASetup, EmailInbox, true))
             .SetIgnoreAttachment(not SOASetup."Analyze Attachments");
 
-        AgentTaskBuilder.Initialize(SOASetup."Agent User Security ID", AgentTaskTitle)
+        AgentTaskBuilder.Initialize(SOASetup."User Security ID", AgentTaskTitle)
             .SetExternalId(EmailInbox."Conversation Id")
             .AddTaskMessage(AgentMessageBuilder);
 
@@ -210,24 +223,59 @@ codeunit 4582 "SOA Retrieve Emails"
         InStream: InStream;
         FileMIMEType: Text[100];
         IsFileMimeTypeSupported: Boolean;
+        ExceedsPageCountThreshold: Boolean;
+        PdfContent: Boolean;
+        Ignore: Boolean;
+        NoOfAttachments: Integer;
         SupportedAttachmentLbl: Label 'Email has supported attachment: %1', Locked = true, Comment = '%1 = MIME type of the attachment';
         UnsupportedAttachmentLbl: Label 'Email has unsupported attachment: %1', Locked = true, Comment = '%1 = MIME type of the attachment';
     begin
         if not EmailMessage.Attachments_First() then
             exit;
 
+        NoOfAttachments := 0;
         repeat
             EmailMessage.Attachments_GetContent(InStream);
             FileMIMEType := CopyStr(EmailMessage.Attachments_GetContentType(), 1, 100);
             IsFileMimeTypeSupported := SOASetup.SupportedAttachmentContentType(FileMIMEType);
-            AgentTaskMessageBuilder.AddAttachment(EmailMessage.Attachments_GetName(), FileMIMEType, InStream, not IsFileMimeTypeSupported);
+            if IsFileMimeTypeSupported then begin
+                PdfContent := SOASetup.IsPdfAttachmentContentType(FileMIMEType);
+                if PdfContent then begin
+                    if not SOASetup.DocumentExceedsPageCountThreshold(InStream, ExceedsPageCountThreshold) then
+                        FeatureTelemetry.LogError('0000QHK', SOASetup.GetFeatureName(), 'Document exceeds page count threshold', PageCountCallFailedTelemetryTxt);
+                    if ExceedsPageCountThreshold then
+                        FeatureTelemetry.LogUsage('0000QHL', SOASetup.GetFeatureName(), StrSubstNo(PageCountExceededTelemetryTxt, Format(SOASetup.PageCountThreshold())));
+                end;
+            end;
+            Ignore := IgnoreAttachment(IsFileMimeTypeSupported, ExceedsPageCountThreshold, NoOfAttachments);
+            AgentTaskMessageBuilder.AddAttachment(EmailMessage.Attachments_GetName(), FileMIMEType, InStream, Ignore);
+
+            if not Ignore then
+                NoOfAttachments += 1;
 
             // Log telemetry for SOA session
             if IsFileMimeTypeSupported then
                 FeatureTelemetry.LogUsage('0000QBM', SOASetup.GetFeatureName(), StrSubstNo(SupportedAttachmentLbl, FileMIMEType))
             else
-                FeatureTelemetry.LogUsage('0000QBN', SOASetup.GetFeatureName(), StrSubstNo(UnsupportedAttachmentLbl, FileMIMEType))
+                FeatureTelemetry.LogUsage('0000QBN', SOASetup.GetFeatureName(), StrSubstNo(UnsupportedAttachmentLbl, FileMIMEType));
         until EmailMessage.Attachments_Next() = 0;
+
+        if NoOfAttachments > SOASetupCU.GetMaxNoOfAttachmentsPerEmail() then
+            FeatureTelemetry.LogUsage('0000QK9', SOASetup.GetFeatureName(), MaxAttachmentsExceededTelemetryTxt);
+    end;
+
+    local procedure IgnoreAttachment(IsFileMimeTypeSupported: Boolean; ExceedsPageCountThreshold: Boolean; NoOfAttachments: Integer): Boolean
+    begin
+        if not IsFileMimeTypeSupported then
+            exit(true);
+
+        if ExceedsPageCountThreshold then
+            exit(true);
+
+        if NoOfAttachments >= SOASetupCU.GetMaxNoOfAttachmentsPerEmail() then
+            exit(true);
+
+        exit(false);
     end;
 
     local procedure SetAttachmentsTransferred(var SOAEmail: Record "SOA Email"; EmailMessage: Codeunit "Email Message")

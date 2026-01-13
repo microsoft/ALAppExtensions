@@ -32,16 +32,16 @@ codeunit 31449 "Create Bank Account CZB"
         CreateSearchRuleCZB: Codeunit "Create Search Rule CZB";
     begin
         if BankAccount.Get(CreateBankAccountCZ.NBL()) then begin
-            ValidateBankAccount(BankAccount, CreateGenJournalTemplateCZ.Banks(), CreateGenJnlBatchCZ.NBL(), CreateGenJournalTemplateCZ.Banks(), CreateGenJnlBatchCZ.NBL(), Report::"Iss. Payment Order CZB", Report::"Iss. Payment Order CZB", true, true, true, true, CreateSearchRuleCZB.Default(), CreateGLAccountCZ.Cashtransfer(), true, CreateNoSeriesCZ.PaymentOrder(), CreateNoSeriesCZ.IssuedPaymentOrder(), CreateNoSeriesCZ.BankStatement(), CreateNoSeriesCZ.IssuedBankStatement());
+            ValidateBankAccount(BankAccount, CreateGenJournalTemplateCZ.Banks(), CreateGenJnlBatchCZ.NBL(), CreateGenJournalTemplateCZ.Banks(), CreateGenJnlBatchCZ.NBL(), Report::"Iss. Payment Order CZB", Report::"Iss. Payment Order CZB", true, true, true, true, true, CreateSearchRuleCZB.Default(), CreateGLAccountCZ.Cashtransfer(), true, CreateNoSeriesCZ.PaymentOrder(), CreateNoSeriesCZ.IssuedPaymentOrder(), CreateNoSeriesCZ.BankStatement(), CreateNoSeriesCZ.IssuedBankStatement());
             BankAccount.Modify(true);
         end;
         if BankAccount.Get(CreateBankAccountCZ.WWBEUR()) then begin
-            ValidateBankAccount(BankAccount, CreateGenJournalTemplateCZ.Banks(), CreateGenJnlBatchCZ.WWBEUR(), CreateGenJournalTemplateCZ.Banks(), CreateGenJnlBatchCZ.WWBEUR(), Report::"Iss. Payment Order CZB", Report::"Iss. Payment Order CZB", true, true, true, true, CreateSearchRuleCZB.Default(), CreateGLAccountCZ.Cashtransfer(), true, CreateNoSeriesCZ.PaymentOrder(), CreateNoSeriesCZ.IssuedPaymentOrder(), CreateNoSeriesCZ.BankStatement(), CreateNoSeriesCZ.IssuedBankStatement());
+            ValidateBankAccount(BankAccount, CreateGenJournalTemplateCZ.Banks(), CreateGenJnlBatchCZ.WWBEUR(), CreateGenJournalTemplateCZ.Banks(), CreateGenJnlBatchCZ.WWBEUR(), Report::"Iss. Payment Order CZB", Report::"Iss. Payment Order CZB", true, true, true, true, true, CreateSearchRuleCZB.Default(), CreateGLAccountCZ.Cashtransfer(), true, CreateNoSeriesCZ.PaymentOrder(), CreateNoSeriesCZ.IssuedPaymentOrder(), CreateNoSeriesCZ.BankStatement(), CreateNoSeriesCZ.IssuedBankStatement());
             BankAccount.Modify(true);
         end;
     end;
 
-    local procedure ValidateBankAccount(var BankAccount: Record "Bank Account"; PaymentJnlTemplateName: Code[10]; PaymentJnlBatchName: Code[10]; PmtJnlTemplNameOrder: Code[10]; PmtJnlBatchNameOrder: Code[10]; DomesticPaymentOrderID: Integer; ForeignPaymentOrderID: Integer; VariableStoDescription: Boolean; VariableStoVariableS: Boolean; VariableStoExtDocNo: Boolean; DimensionfromApplyEntry: Boolean; SearchRuleCode: Code[10]; NonAssocPaymentAccount: Code[20]; CheckExtNoCurrYear: Boolean; PaymentOrderNos: Code[20]; IssuedPaymentOrderNos: Code[20]; BankStatementNos: Code[20]; IssuedBankStatementNos: Code[20])
+    local procedure ValidateBankAccount(var BankAccount: Record "Bank Account"; PaymentJnlTemplateName: Code[10]; PaymentJnlBatchName: Code[10]; PmtJnlTemplNameOrder: Code[10]; PmtJnlBatchNameOrder: Code[10]; DomesticPaymentOrderID: Integer; ForeignPaymentOrderID: Integer; VariableStoDescription: Boolean; VariableStoVariableS: Boolean; VariableStoExtDocNo: Boolean; KeepDescription: Boolean; DimensionfromApplyEntry: Boolean; SearchRuleCode: Code[10]; NonAssocPaymentAccount: Code[20]; CheckExtNoCurrYear: Boolean; PaymentOrderNos: Code[20]; IssuedPaymentOrderNos: Code[20]; BankStatementNos: Code[20]; IssuedBankStatementNos: Code[20])
     begin
         BankAccount.Validate("Payment Jnl. Template Name CZB", PaymentJnlTemplateName);
         BankAccount.Validate("Payment Jnl. Batch Name CZB", PaymentJnlBatchName);
@@ -52,6 +52,7 @@ codeunit 31449 "Create Bank Account CZB"
         BankAccount.Validate("Variable S. to Description CZB", VariableStoDescription);
         BankAccount.Validate("Variable S. to Variable S. CZB", VariableStoVariableS);
         BankAccount.Validate("Variable S. to Ext.Doc.No. CZB", VariableStoExtDocNo);
+        BankAccount.Validate("Keep Description CZB", KeepDescription);
         BankAccount.Validate("Dimension from Apply Entry CZB", DimensionfromApplyEntry);
         BankAccount.Validate("Search Rule Code CZB", SearchRuleCode);
         BankAccount.Validate("Non Assoc. Payment Account CZB", NonAssocPaymentAccount);

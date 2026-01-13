@@ -17,6 +17,7 @@ codeunit 5164 "Create Employee"
     begin
         CreateEmployee();
         UpdateEmployeesDetails();
+        UpdateEmployeeManagers();
     end;
 
     local procedure CreateEmployee()
@@ -52,6 +53,18 @@ codeunit 5164 "Create Employee"
         ContosoEmployee.UpdateEmployeeDetails(Secretary(), 19490507D, 19960301D, MaddistonRoadLbl, '', '6571', '1234-1643-4384', '0678-2534-2013', '', '0712635465', '234654-631');
         ContosoEmployee.UpdateEmployeeDetails(ProductionAssistant(), 19620807D, 19960301D, GrahamsRoadLbl, '', '4456', '1234-5464-5446', '0678-2135-4649', '', '0507473497', '346246546345-24535');
         ContosoEmployee.UpdateEmployeeDetails(InventoryManager(), 19631207D, 19960301D, BJamesRoadLbl, '', '4653', '1234-6545-8799', '0678-8712-5466', '', '0705491679', '234654-631');
+    end;
+
+    procedure UpdateEmployeeManagers()
+    var
+        ContosoEmployee: Codeunit "Contoso Human Resources";
+    begin
+        ContosoEmployee.UpdateEmployeeManager(SalesManager(), ManagingDirector());
+        ContosoEmployee.UpdateEmployeeManager(ProductionManager(), ManagingDirector());
+        ContosoEmployee.UpdateEmployeeManager(Designer(), ProductionManager());
+        ContosoEmployee.UpdateEmployeeManager(Secretary(), ManagingDirector());
+        ContosoEmployee.UpdateEmployeeManager(ProductionAssistant(), ProductionManager());
+        ContosoEmployee.UpdateEmployeeManager(InventoryManager(), ManagingDirector());
     end;
 
     var

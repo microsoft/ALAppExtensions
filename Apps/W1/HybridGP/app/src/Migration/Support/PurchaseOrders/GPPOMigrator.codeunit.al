@@ -82,7 +82,6 @@ codeunit 40108 "GP PO Migrator"
                 PurchaseHeader."Shipment Method Code" := CopyStr(GPPOP10100.SHIPMTHD, 1, MaxStrLen(PurchaseHeader."Shipment Method Code"));
                 PurchaseHeader.Validate("Prices Including VAT", false);
                 PurchaseHeader.Validate("Vendor Invoice No.", GPPOP10100.PONUMBER);
-                PurchaseHeader.Validate("Gen. Bus. Posting Group", GPCodeTxt);
 
                 UpdateShipToAddress(GPPOP10100, CountryCode, PurchaseHeader);
 
@@ -278,7 +277,6 @@ codeunit 40108 "GP PO Migrator"
         PurchaseLine."Line No." := LineNo;
         PurchaseLine."Buy-from Vendor No." := GPPOP10110.VENDORID;
         PurchaseLine.Type := PurchaseLineType::Item;
-        PurchaseLine.Validate("Gen. Bus. Posting Group", GPCodeTxt);
         PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);
         PurchaseLine."Unit of Measure" := UnitOfMeasure;
         PurchaseLine."Unit of Measure Code" := UnitOfMeasure;

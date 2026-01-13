@@ -224,6 +224,7 @@ codeunit 139664 "GP Data Migration Tests"
         GenJournalLine.SetRange("Account No.", '!WOW!');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
         Assert.AreEqual('ARTEST987', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line. !WOW!');
+        Assert.AreEqual('CUSTINV02', GenJournalLine."Document No.", 'Incorrect Document No. on Gen. Journal Line. !WOW!');
 
         // [THEN] The default account will be set for the Bal. Account No. where class has no account configured
         Clear(GenJournalLine);
@@ -231,6 +232,7 @@ codeunit 139664 "GP Data Migration Tests"
         GenJournalLine.SetRange("Account No.", '#1');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
         Assert.AreEqual(HelperFunctions.GetPostingAccountNumber('ReceivablesAccount'), GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line. #1');
+        Assert.AreEqual('CUSTINV01', GenJournalLine."Document No.", 'Incorrect Document No. on Gen. Journal Line. #1');
 
         // [WHEN] Customer addresses are migrated
         // [THEN] Email addresses are included with the addresses when they are valid
@@ -741,6 +743,7 @@ codeunit 139664 "GP Data Migration Tests"
         GenJournalLine.SetRange("Account No.", 'V3130');
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
         Assert.AreEqual(HelperFunctions.GetPostingAccountNumber('PayablesAccount'), GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+        Assert.AreEqual('VENDINV01_VCH', GenJournalLine."Document No.", 'Document number is incorrect for Vendor V3130.');
 
         // [WHEN] Vendor addresses are migrated
         // [THEN] Email addresses are included with the addresses when they are valid
@@ -3467,7 +3470,7 @@ codeunit 139664 "GP Data Migration Tests"
         Clear(GPCustomerTransactions);
         GPCustomerTransactions.Id := '1';
         GPCustomerTransactions.CUSTNMBR := '#1';
-        GPCustomerTransactions.DOCNUMBR := '1';
+        GPCustomerTransactions.DOCNUMBR := 'CUSTINV01';
         GPCustomerTransactions.GLDocNo := '1';
         GPCustomerTransactions.DOCDATE := DMY2Date(11, 8, 2022);
         GPCustomerTransactions.CURTRXAM := 1;
@@ -3478,7 +3481,7 @@ codeunit 139664 "GP Data Migration Tests"
         Clear(GPCustomerTransactions);
         GPCustomerTransactions.Id := '2';
         GPCustomerTransactions.CUSTNMBR := '!WOW!';
-        GPCustomerTransactions.DOCNUMBR := '2';
+        GPCustomerTransactions.DOCNUMBR := 'CUSTINV02';
         GPCustomerTransactions.GLDocNo := '2';
         GPCustomerTransactions.DOCDATE := DMY2Date(11, 8, 2022);
         GPCustomerTransactions.CURTRXAM := 2;
@@ -5081,7 +5084,8 @@ codeunit 139664 "GP Data Migration Tests"
         Clear(GPVendorTransactions);
         GPVendorTransactions.Id := '1';
         GPVendorTransactions.VENDORID := 'V3130';
-        GPVendorTransactions.DOCNUMBR := '1';
+        GPVendorTransactions.DOCNUMBR := 'VENDINV01';
+        GPVendorTransactions.VCHRNMBR := 'VENDINV01_VCH';
         GPVendorTransactions.GLDocNo := '1';
         GPVendorTransactions.DOCDATE := DMY2Date(11, 8, 2022);
         GPVendorTransactions.CURTRXAM := 1;
@@ -5092,7 +5096,8 @@ codeunit 139664 "GP Data Migration Tests"
         Clear(GPVendorTransactions);
         GPVendorTransactions.Id := '2';
         GPVendorTransactions.VENDORID := '1160';
-        GPVendorTransactions.DOCNUMBR := '2';
+        GPVendorTransactions.DOCNUMBR := 'VENDINV02';
+        GPVendorTransactions.VCHRNMBR := 'VENDINV02_VCH';
         GPVendorTransactions.GLDocNo := '2';
         GPVendorTransactions.DOCDATE := DMY2Date(11, 8, 2022);
         GPVendorTransactions.CURTRXAM := 2;

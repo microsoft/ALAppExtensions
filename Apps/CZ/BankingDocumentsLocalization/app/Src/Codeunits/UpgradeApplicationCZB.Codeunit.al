@@ -33,6 +33,7 @@ codeunit 31332 "Upgrade Application CZB"
     local procedure UpgradeData()
     begin
         UpgradeBankAccount();
+        UpgradeBankAccountKeepDescription();
     end;
 
     local procedure UpgradeBankAccount();
@@ -47,6 +48,21 @@ codeunit 31332 "Upgrade Application CZB"
         BankaccountDataTransfer.AddFieldValue(BankAccount.FieldNo("Payment Jnl. Template Name CZB"), BankAccount.FieldNo("Pmt.Jnl. Templ. Name Order CZB"));
         BankaccountDataTransfer.AddFieldValue(BankAccount.FieldNo("Payment Jnl. Batch Name CZB"), BankAccount.FieldNo("Pmt. Jnl. Batch Name Order CZB"));
         BankaccountDataTransfer.CopyFields();
+    end;
+
+    local procedure UpgradeBankAccountKeepDescription()
+    var
+        BankAccount: Record "Bank Account";
+        BankaccountDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZB.GetBankAccountKeepDescriptionUpgradeTag()) then
+            exit;
+
+        BankaccountDataTransfer.SetTables(Database::"Bank Account", Database::"Bank Account");
+        BankaccountDataTransfer.AddConstantValue(true, BankAccount.FieldNo("Keep Description CZB"));
+        BankaccountDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZB.GetBankAccountKeepDescriptionUpgradeTag());
     end;
 
     local procedure SetDatabaseUpgradeTags();

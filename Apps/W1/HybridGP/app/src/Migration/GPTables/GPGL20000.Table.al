@@ -108,7 +108,6 @@ table 41001 "GP GL20000"
         }
         key(K2; SOURCDOC)
         {
-
         }
     }
 }

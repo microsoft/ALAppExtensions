@@ -3,6 +3,8 @@ namespace Microsoft.eServices.EDocument.IO.Peppol;
 using Microsoft.eServices.EDocument;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
 using System.Utilities;
 using Microsoft.Sales.Peppol;
 using Microsoft.eServices.EDocument.Formats;
@@ -20,6 +22,7 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
 
     var
         EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";
+        EDocPEPPOLValidationDE: Codeunit "EDoc PEPPOL Validation DE";
         UBLInvoiceNamespaceTxt: Label 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2', Locked = true;
         UBLCrMemoNamespaceTxt: Label 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2', Locked = true;
         UBLCACNamespaceTxt: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2', Locked = true;
@@ -28,7 +31,9 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        BindSubscription(EDocPEPPOLValidationDE);
         EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
+        UnbindSubscription(EDocPEPPOLValidationDE);
     end;
 
     procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
@@ -142,6 +147,16 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
         if not EDocumentService."Buyer Reference Mandatory" then
             exit;
 
+        if not (SourceDocumentHeader.Number in
+            [Database::"Sales Header",
+            Database::"Sales Invoice Header",
+            Database::"Sales Cr.Memo Header",
+            Database::"Service Header",
+            Database::"Service Invoice Header",
+            Database::"Service Cr.Memo Header"])
+        then
+            exit;
+
         case EDocumentService."Buyer Reference" of
             Enum::"E-Document Buyer Reference"::"Customer Reference":
                 begin
@@ -229,12 +244,6 @@ codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
     [IntegrationEvent(false, false)]
     local procedure OnCheckBuyerReferenceOnElseCase(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service")
     begin
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Validation", 'OnCheckSalesDocumentOnBeforeCheckYourReference', '', false, false)]
-    local procedure SkipCheckOnCheckSalesDocumentOnBeforeCheckYourReference(SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
-    begin
-        IsHandled := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Management", 'OnAfterGetBuyerReference', '', false, false)]

@@ -20,7 +20,7 @@ codeunit 13687 "Create Standard Data SAF-T DK" implements CreateStandardDataSAFT
         CSVFieldSeparator: Text[1];
     begin
         CSVFieldSeparator := ';';
-        CSVDocContent := StandardAccountDK.GetStandardAccountsCSV();
+        CSVDocContent := StandardAccountDK.GetStandardAccountsCSV(StandardAccountType);
         if CSVDocContent = '' then
             exit(false);
         ImportAuditDataMgt.LoadStandardAccountsFromCSVTextToCSVBuffer(TempCSVBuffer, CSVDocContent, CSVFieldSeparator);
@@ -34,6 +34,7 @@ codeunit 13687 "Create Standard Data SAF-T DK" implements CreateStandardDataSAFT
 
     procedure LoadStandardTaxCodes() Result: Boolean
     var
+        AuditFileExportSetup: Record "Audit File Export Setup";
         TempCSVBuffer: Record "CSV Buffer" temporary;
         StandardTaxCodeDK: Codeunit "Standard Tax Code DK";
         ImportAuditDataMgt: Codeunit "Import Audit Data Mgt.";
@@ -41,7 +42,17 @@ codeunit 13687 "Create Standard Data SAF-T DK" implements CreateStandardDataSAFT
         CSVFieldSeparator: Text[1];
     begin
         CSVFieldSeparator := ';';
-        CSVDocContent := StandardTaxCodeDK.GetStandardTaxCodesCSV();
+        if not AuditFileExportSetup.Get() then
+            exit(false);
+
+        case AuditFileExportSetup."Standard Account Type" of
+            Enum::"Standard Account Type"::"Four Digit Standard Account":
+                CSVDocContent := StandardTaxCodeDK.GetStandardTaxCodesBefore2025CSV();
+            Enum::"Standard Account Type"::"Standard Account 2025":
+                CSVDocContent := StandardTaxCodeDK.GetStandardTaxCodes2025CSV();
+            else
+                CSVDocContent := StandardTaxCodeDK.GetStandardTaxCodesBefore2025CSV();
+        end;
         if CSVDocContent = '' then
             exit(false);
         ImportAuditDataMgt.LoadStandardAccountsFromCSVTextToCSVBuffer(TempCSVBuffer, CSVDocContent, CSVFieldSeparator);

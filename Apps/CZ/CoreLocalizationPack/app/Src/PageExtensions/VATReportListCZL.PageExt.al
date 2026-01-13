@@ -10,14 +10,6 @@ pageextension 31267 "VAT Report List CZL" extends "VAT Report List"
 {
     layout
     {
-#if not CLEAN25
-#pragma warning disable AL0432
-        modify("Attached Documents")
-#pragma warning restore AL0432
-        {
-            Visible = false;
-        }
-#endif
         addbefore("Attached Documents List")
         {
             part(AttachmentsFactboxCZL; "VAT Stmt. Attach. Factbox CZL")

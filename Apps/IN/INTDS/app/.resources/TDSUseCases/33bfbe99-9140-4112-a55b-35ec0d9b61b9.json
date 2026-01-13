@@ -2,7 +2,7 @@
     {
         "CaseID": "{33BFBE99-9140-4112-A55B-35EC0D9B61B9}",
         "Description": "Calculation of Tax Deduction at Source through General Journal for Vendor where  PAN No. is specified without Concessional Codes.\n",
-        "Version": 3,
+        "Version": 4,
         "MinorVersion": 0,
         "TaxType": "TDS",
         "ChangedBy": "Microsoft",
@@ -10,7 +10,7 @@
         "TaxEntity": "Gen. Journal Line",
         "ParentUseCase": "Calculation of Tax Deduction at Source through General Journal for Vendors.\n",
         "ParentCaseId": "{D0CED206-BE26-47A3-A370-D064D8AFCE44}",
-        "PresentationOrder": 934,
+        "PresentationOrder": 937,
         "Indent": 1,
         "PostingTableName": "TDS Posting Setup",
         "PostingTableFilters": [
@@ -1030,6 +1030,14 @@
                                     "FilterValue": {
                                         "Type": "Constant",
                                         "Value": "Payment"
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "Applied",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Constant",
+                                        "Value": "false"
                                     }
                                 }
                             ]
@@ -2651,6 +2659,52 @@
                                 "Lookup": {
                                     "SourceType": "Variable",
                                     "VariableName": "PrevInvAmount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ActivityType": "IFSTATEMENT",
+                "Activity": {
+                    "Condition": {
+                        "Body": [
+                            {
+                                "Operator": " ",
+                                "ConditionType": "Not Equals",
+                                "LHS": {
+                                    "Lookup": {
+                                        "SourceType": "Variable",
+                                        "VariableName": "AppliedAmount"
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Constant",
+                                    "Value": ""
+                                }
+                            }
+                        ]
+                    },
+                    "Body": [
+                        {
+                            "ActivityType": "NUMBERCALCULATION",
+                            "Activity": {
+                                "OutputVariableName": "TotalInvAmountLCY",
+                                "Operator": "Minus",
+                                "LHS": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Variable",
+                                        "VariableName": "TotalInvAmountLCY"
+                                    }
+                                },
+                                "RHS": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Variable",
+                                        "VariableName": "AppliedAmount"
+                                    }
                                 }
                             }
                         }
@@ -4917,46 +4971,6 @@
                 }
             },
             {
-                "ComponentName": "eCESS",
-                "Sequence": 3,
-                "Formula": {
-                    "VariableName": "eCESS",
-                    "Expression": "(TDSAmount+SurchargeAmount)*EcessPercent/100",
-                    "Tokens": [
-                        {
-                            "TokenName": "EcessPercent",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Component Percent",
-                                    "ComponentName": "eCESS"
-                                }
-                            }
-                        },
-                        {
-                            "TokenName": "SurchargeAmount",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Component",
-                                    "ComponentName": "Surcharge"
-                                }
-                            }
-                        },
-                        {
-                            "TokenName": "TDSAmount",
-                            "TokenValue": {
-                                "Type": "Lookup",
-                                "Lookup": {
-                                    "SourceType": "Component",
-                                    "ComponentName": "TDS"
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            {
                 "ComponentName": "SHE Cess ",
                 "Sequence": 4,
                 "Formula": {
@@ -5020,6 +5034,46 @@
                                 "Lookup": {
                                     "SourceType": "Variable",
                                     "VariableName": "TDSTaxableAmount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "eCESS",
+                "Sequence": 3,
+                "Formula": {
+                    "VariableName": "eCESS",
+                    "Expression": "(TDSAmount+SurchargeAmount)*EcessPercent/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "EcessPercent",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "eCESS"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "SurchargeAmount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component",
+                                    "ComponentName": "Surcharge"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "TDSAmount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component",
+                                    "ComponentName": "TDS"
                                 }
                             }
                         }

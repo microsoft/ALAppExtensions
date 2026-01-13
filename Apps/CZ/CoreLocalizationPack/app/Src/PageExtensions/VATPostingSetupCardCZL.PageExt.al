@@ -85,6 +85,12 @@ pageextension 11757 "VAT Posting Setup Card CZL" extends "VAT Posting Setup Card
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the option to include this posting setup in sales VIES declarations.';
             }
+            field("VAT LCY Corr. Rnd. Acc. S. CZL"; Rec."VAT LCY Corr. Rnd. Acc. S. CZL")
+            {
+                Caption = 'VAT LCY Corr. Rounding Account';
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on documents in foreign currency, eg use an account for document rounding';
+            }
         }
         addlast(Purchases)
         {
@@ -95,6 +101,7 @@ pageextension 11757 "VAT Posting Setup Card CZL" extends "VAT Posting Setup Card
             }
             field("VAT LCY Corr. Rounding Acc.CZL"; Rec."VAT LCY Corr. Rounding Acc.CZL")
             {
+                Caption = 'VAT LCY Corr. Rounding Account';
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the account to which the VAT correction in LCY will be posted on documents in foreign currency, eg use an account for document rounding';
             }

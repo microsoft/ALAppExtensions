@@ -106,15 +106,9 @@ codeunit 4037 "Helper Functions"
         SavedJrnlLinesFoundMsg: Label 'Saved journal lines are found. In order to use the wizard, you will need to delete the journal lines before you migrate your data.';
         MigrationNotSupportedErr: Label 'This migration does not support the "Specific" costing method. Verify your costing method in Inventory Setup.';
         PostingGroupCodeTxt: Label 'GP', Locked = true;
-#if not CLEAN25
-        DocNoOutofBalanceMsg: Label 'Document No. %1 is out of balance by %2. Transactions will not be created. Please check the amount in the import file.', Comment = '%1 = Balance Amount', Locked = true;
-#endif
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         VendorBatchNameTxt: Label 'GPVEND', Locked = true;
         BankBatchNameTxt: Label 'GPBANK', Locked = true;
-#if not CLEAN25
-        GlDocNoTxt: Label 'G00001', Locked = true;
-#endif
         MigrationTypeTxt: Label 'Great Plains';
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
@@ -559,6 +553,13 @@ codeunit 4037 "Helper Functions"
         GPItemMigrator: Codeunit "GP Item Migrator";
     begin
         GPItemMigrator.MigrateKitItems();
+    end;
+
+    local procedure CreateItemCategories()
+    var
+        GPItemMigrator: Codeunit "GP Item Migrator";
+    begin
+        GPItemMigrator.CreateItemCategories();
     end;
 
     procedure CreateSetupRecordsIfNeeded()
@@ -1344,34 +1345,6 @@ codeunit 4037 "Helper Functions"
         Session.LogMessage('00007GK', StrSubstNo(FinishedTelemetryTxt, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
 
-#if not CLEAN25
-    [Obsolete('This procedure will be soon removed.', '25.0')]
-    procedure PostGLBatch(JournalBatchName: Code[10])
-    var
-        GenJournalLine: Record "Gen. Journal Line";
-        TotalBalance: Decimal;
-    begin
-        GenJournalLine.Reset();
-        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
-        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
-        // Do not care about balances for Customer, Vendor, and Bank batches
-        if (JournalBatchName <> CustomerBatchNameTxt) and (JournalBatchName <> VendorBatchNameTxt) and (JournalBatchName <> BankBatchNameTxt) then begin
-            repeat
-                TotalBalance := TotalBalance + GenJournalLine.Amount;
-            until GenJournalLine.Next() = 0;
-            if TotalBalance = 0 then
-                if GenJournalLine.FindFirst() then
-                    codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJournalLine)
-                else begin
-                    Message(StrSubstNo(DocNoOutofBalanceMsg, GlDocNoTxt, FORMAT(TotalBalance)));
-                    if GenJournalLine.FindFirst() then
-                        GenJournalLine.DeleteAll();
-                end;
-        end else
-            if GenJournalLine.FindFirst() then
-                codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJournalLine);
-    end;
-#endif
 
     local procedure SafePostGLBatch(JournalBatchName: Code[10])
     var
@@ -1387,17 +1360,6 @@ codeunit 4037 "Helper Functions"
         end;
     end;
 
-#if not CLEAN25
-    [Obsolete('This procedure will be soon removed.', '25.0')]
-    procedure PostStatisticalAccBatch(JournalBatchName: Code[10])
-    var
-        StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
-    begin
-        StatisticalAccJournalLine.SetRange("Journal Batch Name", JournalBatchName);
-        if StatisticalAccJournalLine.FindFirst() then
-            Codeunit.Run(Codeunit::"Stat. Acc. Post. Batch", StatisticalAccJournalLine);
-    end;
-#endif
 
     local procedure SafePostStatisticalAccBatch(JournalBatchName: Code[10])
     var
@@ -2112,6 +2074,8 @@ codeunit 4037 "Helper Functions"
         if GPCompanyAdditionalSettings.GetMigrateKitItems() then
             CreateKitItems();
 
+        CreateItemCategories();
+
         exit(GPConfiguration.IsAllPostMigrationDataCreated());
     end;
 
@@ -2277,9 +2241,17 @@ codeunit 4037 "Helper Functions"
     internal procedure RunPreMigrationCleanup()
     var
         Dimension: Record Dimension;
+        GeneralPostingSetup: Record "General Posting Setup";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
     begin
         if not Dimension.IsEmpty() then
             Dimension.DeleteAll(true);
+
+        if not GeneralPostingSetup.IsEmpty() then
+            GeneralPostingSetup.DeleteAll(true);
+
+        if not GenProductPostingGroup.IsEmpty() then
+            GenProductPostingGroup.DeleteAll(true);
     end;
 
     internal procedure CreateDimSet(ACTNUMBR_1: Code[20]; ACTNUMBR_2: Code[20]; ACTNUMBR_3: Code[20]; ACTNUMBR_4: Code[20]; ACTNUMBR_5: Code[20]; ACTNUMBR_6: Code[20]; ACTNUMBR_7: Code[20]; ACTNUMBR_8: Code[20]): Integer

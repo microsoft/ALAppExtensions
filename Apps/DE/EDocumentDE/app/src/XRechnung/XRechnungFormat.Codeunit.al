@@ -9,8 +9,12 @@ using Microsoft.Sales.History;
 using Microsoft.Purchases.Document;
 using System.IO;
 using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 using Microsoft.Foundation.Company;
 using Microsoft.eServices.EDocument;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.eServices.EDocument.IO.Peppol;
 
 codeunit 13914 "XRechnung Format" implements "E-Document"
 {
@@ -18,12 +22,17 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
     InherentPermissions = X;
 
     var
+        EDocPEPPOLBIS30: Codeunit "EDoc PEPPOL BIS 3.0";
+        EDocPEPPOLValidationDE: Codeunit "EDoc PEPPOL Validation DE";
         EDocImportXRechnung: Codeunit "Import XRechnung Document";
 
     procedure Check(var SourceDocumentHeader: RecordRef; EDocumentService: Record "E-Document Service"; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     begin
         CheckCompanyInfoMandatory();
         CheckBuyerReferenceMandatory(EDocumentService, SourceDocumentHeader);
+        BindSubscription(EDocPEPPOLValidationDE);
+        EDocPEPPOLBIS30.Check(SourceDocumentHeader, EDocumentService, EDocumentProcessingPhase);
+        UnbindSubscription(EDocPEPPOLValidationDE);
     end;
 
     procedure Create(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
@@ -85,6 +94,16 @@ codeunit 13914 "XRechnung Format" implements "E-Document"
             exit;
 
         if not EDocumentService."Buyer Reference Mandatory" then
+            exit;
+
+        if not (SourceDocumentHeader.Number in
+            [Database::"Sales Header",
+            Database::"Sales Invoice Header",
+            Database::"Sales Cr.Memo Header",
+            Database::"Service Header",
+            Database::"Service Invoice Header",
+            Database::"Service Cr.Memo Header"])
+        then
             exit;
 
         case EDocumentService."Buyer Reference" of

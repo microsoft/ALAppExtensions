@@ -20,4 +20,30 @@ tableextension 31280 "Cust. Ledger Entry CZB" extends "Cust. Ledger Entry"
         }
 #pragma warning restore
     }
+
+    internal procedure GetRemainingAmountInclPmtDiscToDate(ReferenceDate: Date; UseLCY: Boolean): Decimal
+    begin
+        exit(GetRemainingAmount(UseLCY) - GetRemainingPmtDiscPossibleToDate(ReferenceDate, UseLCY));
+    end;
+
+    internal procedure GetRemainingAmount(UseLCY: Boolean): Decimal
+    begin
+        exit(UseLCY ? "Remaining Amt. (LCY)" : "Remaining Amount");
+    end;
+
+    internal procedure GetRemainingPmtDiscPossibleToDate(ReferenceDate: Date; UseLCY: Boolean): Decimal
+    begin
+        if ReferenceDate > GetPmtDiscountDate() then
+            exit(0);
+        exit(UseLCY ? Round("Remaining Pmt. Disc. Possible" / "Adjusted Currency Factor") : "Remaining Pmt. Disc. Possible");
+    end;
+
+    internal procedure GetPmtDiscountDate(): Date
+    begin
+        if "Remaining Pmt. Disc. Possible" = 0 then
+            exit(0D);
+        if "Pmt. Disc. Tolerance Date" >= "Pmt. Discount Date" then
+            exit("Pmt. Disc. Tolerance Date");
+        exit("Pmt. Discount Date");
+    end;
 }

@@ -126,7 +126,7 @@ pageextension 6211 "Sust. Purch. Order Subform" extends "Purchase Order Subform"
     var
         SustainabilitySetup: Record "Sustainability Setup";
     begin
-        SustainabilitySetup.Get();
+        SustainabilitySetup.GetRecordOnce();
 
         SustainabilityVisible := SustainabilitySetup."Use Emissions In Purch. Doc.";
         SustainabilityFormulasFieldVisible := SustainabilitySetup."Use Formulas In Purch. Docs";

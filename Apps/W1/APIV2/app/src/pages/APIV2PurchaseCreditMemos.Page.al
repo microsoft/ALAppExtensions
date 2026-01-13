@@ -28,6 +28,7 @@ page 30083 "APIV2 - Purchase Credit Memos"
     PageType = API;
     SourceTable = "Purch. Cr. Memo Entity Buffer";
     Extensible = false;
+    AboutText = 'Manages purchase credit memo documents, exposing vendor details, transaction amounts, addresses, currency, payment terms, and status. Supports full lifecycle operations (GET, POST, PATCH, DELETE) for automating supplier returns, vendor refunds, and accounts payable adjustments in external procurement and finance integrations. Enables seamless synchronization of credit memo data between Business Central and third-party systems.';
 
     layout
     {

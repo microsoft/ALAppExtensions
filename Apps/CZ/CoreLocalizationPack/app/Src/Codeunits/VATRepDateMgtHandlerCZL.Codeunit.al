@@ -19,6 +19,9 @@ codeunit 31129 "VAT Rep. Date Mgt. Handler CZL"
 
     var
         MustBeLessOrEqualErr: Label 'must be less or equal to %1', Comment = '%1 = fieldcaption of VAT Reporting Date';
+#if not CLEAN28
+        VATDateNotAllowedErr: Label 'You have no right to post VAT to the period.';
+#endif
         VATControlReportAffectedMsg: Label 'The VAT Date was changed on VAT Entry registered in the VAT Control Report %1, which affected its values.\It will be necessary to check the VAT Control report manually.', Comment = '%1 = VAT Control Report No.';
         VIESDeclarationAffectedMsg: Label 'The VAT Date was changed on VAT Entry that can already be included in the VIES Declaration.\The VIES Declaration will need to be re-generated.';
         VATControlReportClosedErr: Label 'The VAT Entry is suggested in the released or closed VAT Control Report %1.\The VAT Date cannot be changed.', Comment = '%1 = VAT Control Report No.';
@@ -101,11 +104,24 @@ codeunit 31129 "VAT Rep. Date Mgt. Handler CZL"
 
     local procedure CheckVATEntry(VATEntry: Record "VAT Entry")
     var
+#if not CLEAN28
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+        VATDateHandler: Codeunit "VAT Date Handler CZL";
+#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
     begin
         VATEntry.TestField(Closed, false);
         if VATEntry."Original Doc. VAT Date CZL" > VATEntry."VAT Reporting Date" then
             VATEntry.FieldError("Original Doc. VAT Date CZL", StrSubstNo(MustBeLessOrEqualErr, VATEntry.FieldCaption(VATEntry."VAT Reporting Date")));
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then begin
+            VATDateHandler.VATPeriodCZLCheck(VATEntry."VAT Reporting Date");
+            if not VATDateHandler.IsVATDateInAllowedPeriod(VATEntry."VAT Reporting Date") then
+                Error(VATDateNotAllowedErr);
+        end else
+#pragma warning restore AL0432
+#endif
         VATReportingDateMgt.IsValidDate(VATEntry, VATEntry.FieldNo("VAT Reporting Date"), true);
     end;
 

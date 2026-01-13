@@ -144,4 +144,64 @@ codeunit 139524 "VAT Group Setup Page Test"
         Assert.AreNotEqual(ClientIdTxt, TestPageVATReportSetup.ClientId.Value(), ValueShouldBeMaskedTxt);
         Assert.AreNotEqual(ClientSecretTxt, TestPageVATReportSetup.ClientSecret.Value(), ValueShouldBeMaskedTxt);
     end;
+
+    [Test]
+    procedure PrepareURIEncodesCompanyNameWithSpecialCharacters()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+        VATGroupCommunication: Codeunit "VAT Group Communication";
+        TypeHelper: Codeunit "Type Helper";
+        ResultURI: Text;
+        CompanyNameWithSpecialChars: Text;
+        ExpectedEncodedCompany: Text;
+    begin
+        // [SCENARIO 613572] PrepareURI URL encodes company name with special characters
+
+        // [GIVEN] VAT Report Setup with company name "Test (Company) Name"
+        CompanyNameWithSpecialChars := 'Test (Company) Name';
+        LibraryVATGroup.DeleteVATReportSetup();
+        VATReportSetup.Init();
+        VATReportSetup."VAT Group Role" := VATReportSetup."VAT Group Role"::Member;
+        VATReportSetup."VAT Group BC Version" := VATReportSetup."VAT Group BC Version"::BC;
+        VATReportSetup."Group Representative API URL" := 'https://api.test.com';
+        VATReportSetup."Group Representative Company" := CopyStr(CompanyNameWithSpecialChars, 1, MaxStrLen(VATReportSetup."Group Representative Company"));
+        VATReportSetup."Group Member ID" := CreateGuid();
+        VATReportSetup.Insert();
+
+        // [WHEN] PrepareURI is called with endpoint
+        ResultURI := VATGroupCommunication.PrepareURI('/testendpoint');
+
+        // [THEN] Company name is URL encoded in the result
+        ExpectedEncodedCompany := TypeHelper.UriEscapeDataString(CompanyNameWithSpecialChars);
+        Assert.IsTrue(StrPos(ResultURI, ExpectedEncodedCompany) > 0, 'URI should contain URL encoded company name');
+        Assert.IsFalse(StrPos(ResultURI, '(Company)') > 0, 'URI should not contain unencoded parentheses');
+    end;
+
+    [Test]
+    procedure PrepareURIKeepsPlainCompanyNameUnchanged()
+    var
+        VATReportSetup: Record "VAT Report Setup";
+        VATGroupCommunication: Codeunit "VAT Group Communication";
+        ResultURI: Text;
+        PlainCompanyName: Text;
+    begin
+        // [SCENARIO 613572] PrepareURI keeps plain company name unchanged in URL
+
+        // [GIVEN] VAT Report Setup with plain company name "TestCompany"
+        PlainCompanyName := 'TestCompany';
+        LibraryVATGroup.DeleteVATReportSetup();
+        VATReportSetup.Init();
+        VATReportSetup."VAT Group Role" := VATReportSetup."VAT Group Role"::Member;
+        VATReportSetup."VAT Group BC Version" := VATReportSetup."VAT Group BC Version"::BC;
+        VATReportSetup."Group Representative API URL" := 'https://api.test.com';
+        VATReportSetup."Group Representative Company" := CopyStr(PlainCompanyName, 1, MaxStrLen(VATReportSetup."Group Representative Company"));
+        VATReportSetup."Group Member ID" := CreateGuid();
+        VATReportSetup.Insert();
+
+        // [WHEN] PrepareURI is called with endpoint
+        ResultURI := VATGroupCommunication.PrepareURI('/testendpoint');
+
+        // [THEN] Company name appears unchanged in the result
+        Assert.IsTrue(StrPos(ResultURI, 'name=''' + PlainCompanyName + '''') > 0, 'URI should contain plain company name unchanged');
+    end;
 }

@@ -11,11 +11,13 @@ using Microsoft.CashFlow.Forecast;
 using Microsoft.CashFlow.Setup;
 using Microsoft.CashFlow.Worksheet;
 using Microsoft.EServices.EDocument;
+using Microsoft.Finance.CashDesk;
 using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Reporting;
 using Microsoft.Purchases.History;
@@ -23,7 +25,6 @@ using Microsoft.Purchases.Payables;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
 using System.Upgrade;
-using Microsoft.Finance.CashDesk;
 
 #pragma warning disable AL0432
 codeunit 31087 "Install Application CZZ"
@@ -57,6 +58,8 @@ codeunit 31087 "Install Application CZZ"
     var
         InstallApplicationsMgtCZL: Codeunit "Install Applications Mgt. CZL";
         AppInfo: ModuleInfo;
+        CloseAdvanceSourceCodeTxt: Label 'CLADVANCE', MaxLength = 10;
+        CloseAdvanceSourceCodeDescriptionTxt: Label 'Close Advance Letter', MaxLength = 100;
 
     trigger OnInstallAppPerCompany()
     begin
@@ -80,6 +83,7 @@ codeunit 31087 "Install Application CZZ"
         CopyVendorLedgerEntries();
         MoveIncomingDocument();
         ModifyReportSelections();
+        InitSourceCodeSetup();
     end;
 
     local procedure CopyCustomerLedgerEntries()
@@ -203,6 +207,7 @@ codeunit 31087 "Install Application CZZ"
     begin
         InitAdvancePaymentsReportSelections();
         ModifyReportSelections();
+        CreateSourceCodeSetup();
 
         DataClassEvalHandlerCZZ.ApplyEvaluationClassificationsForPrivacy();
         UpgradeTag.SetAllUpgradeTags();
@@ -216,5 +221,49 @@ codeunit 31087 "Install Application CZZ"
         ReportSelectionHandlerCZZ.InsertRepSelection(Enum::"Report Selection Usage"::"Purchase Advance VAT Document CZZ", '1', Report::"Purchase - Advance VAT Doc.CZZ");
         ReportSelectionHandlerCZZ.InsertRepSelection(Enum::"Report Selection Usage"::"Sales Advance Letter CZZ", '1', Report::"Sales - Advance Letter CZZ");
         ReportSelectionHandlerCZZ.InsertRepSelection(Enum::"Report Selection Usage"::"Sales Advance VAT Document CZZ", '1', Report::"Sales - Advance VAT Doc. CZZ");
+    end;
+
+    local procedure CreateSourceCodeSetup()
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        PrevSourceCodeSetup: Record "Source Code Setup";
+    begin
+        if not SourceCodeSetup.Get() then
+            exit;
+        PrevSourceCodeSetup := SourceCodeSetup;
+        if SourceCodeSetup."Close Advance Letter CZZ" = '' then
+            InsertSourceCode(SourceCodeSetup."Close Advance Letter CZZ", CloseAdvanceSourceCodeTxt, CloseAdvanceSourceCodeDescriptionTxt);
+
+        if SourceCodeSetup."Close Advance Letter CZZ" <> PrevSourceCodeSetup."Close Advance Letter CZZ" then
+            SourceCodeSetup.Modify();
+    end;
+
+    local procedure InitSourceCodeSetup()
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        PrevSourceCodeSetup: Record "Source Code Setup";
+    begin
+        if not SourceCodeSetup.Get() then begin
+            SourceCodeSetup.Init();
+            SourceCodeSetup.Insert();
+        end;
+        PrevSourceCodeSetup := SourceCodeSetup;
+        InsertSourceCode(SourceCodeSetup."Close Advance Letter CZZ", CloseAdvanceSourceCodeTxt, CloseAdvanceSourceCodeDescriptionTxt);
+
+        if SourceCodeSetup."Close Advance Letter CZZ" <> PrevSourceCodeSetup."Close Advance Letter CZZ" then
+            SourceCodeSetup.Modify();
+    end;
+
+    local procedure InsertSourceCode(var SourceCodeDefCode: Code[10]; "Code": Code[10]; Description: Text[100])
+    var
+        SourceCode: Record "Source Code";
+    begin
+        SourceCodeDefCode := Code;
+        if SourceCode.Get(Code) then
+            exit;
+        SourceCode.Init();
+        SourceCode.Code := Code;
+        SourceCode.Description := Description;
+        SourceCode.Insert();
     end;
 }

@@ -76,6 +76,10 @@ table 4052 "GPIVTrxHist"
         {
             Clustered = false;
         }
+        key(Key2; DEX_ROW_ID)
+        {
+            Clustered = false;
+        }
     }
 
     fieldgroups
