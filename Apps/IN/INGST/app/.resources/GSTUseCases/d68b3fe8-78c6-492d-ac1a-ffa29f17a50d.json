@@ -1,0 +1,154 @@
+[
+    {
+        "CaseID": "{D68B3FE8-78C6-492D-AC1A-FFA29F17A50D}",
+        "Description": "Intrastate Service Transfer Order",
+        "Version": 3,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "GST HSN",
+        "TaxEntity": "Service Transfer Line",
+        "ParentUseCase": "Service Transfer Order",
+        "ParentCaseId": "{C75CF1E3-CC01-4458-86FB-0A29BC40560B}",
+        "PresentationOrder": 4,
+        "Indent": 1,
+        "Attributes": [],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "CGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "CGST",
+                    "Expression": "{Transfer Price}*{CGSTPer}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{CGSTPer}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Service Transfer Line",
+                                    "FieldName": "Transfer Price"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{Transfer Price}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "CGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "SGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "SGST",
+                    "Expression": "{Transfer Price}*{SGSTPer}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{SGSTPer}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "CGST"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{Transfer Price}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Service Transfer Line",
+                                    "FieldName": "Transfer Price"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Service Transfer Line",
+                            "FieldName": "Exempted"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Service Transfer Header",
+                            "TableFieldName": "Transfer-from State",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Service Transfer Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Service Transfer Header",
+                            "TableFieldName": "Transfer-to State",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Service Transfer Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+]

@@ -1,7 +1,12 @@
+#if not CLEAN28
 codeunit 134412 "Pmt. Export AMC - Test Format"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     begin
@@ -1434,3 +1439,4 @@ codeunit 134412 "Pmt. Export AMC - Test Format"
     begin
     end;
 }
+#endif

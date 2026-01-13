@@ -33,6 +33,11 @@ page 31217 "VAT Stmt. Report Line Data CZL"
                 field(Amount; Rec.Amount)
                 {
                     ToolTip = 'Specifies the amount of the statement.';
+
+                    trigger OnDrillDown()
+                    begin
+                        Rec.DrillDown();
+                    end;
                 }
                 field("Additional-Currency Amount"; Rec."Additional-Currency Amount")
                 {

@@ -212,15 +212,18 @@
     },
     {
       "id": "AS0053",
-      "action": "Error"
+      "action": "None",
+      "justification": "The compilation target of an application must be a value that is allowed in a multi-tenant SaaS environment"
     },
     {
       "id": "AS0054",
-      "action": "Error"
+      "action": "None",
+      "justification": "The AppSourceCop configuration must specify the set of affixes used by the application"
     },
     {
       "id": "AS0055",
-      "action": "Error"
+      "action": "None",
+      "justification": "The AppSourceCop configuration must specify the list of countries/regions targeted by the application"
     },
     {
       "id": "AS0056",
@@ -240,7 +243,8 @@
     },
     {
       "id": "AS0060",
-      "action": "Error"
+      "action": "None",
+      "justification": "Unsafe methods cannot be invoked in an AppSource application"
     },
     {
       "id": "AS0061",
@@ -324,7 +328,8 @@
     },
     {
       "id": "AS0081",
-      "action": "Error"
+      "action": "None",
+      "justification": "InternalsVisibleTo should not be used as a security feature."
     },
     {
       "id": "AS0082",
@@ -336,11 +341,13 @@
     },
     {
       "id": "AS0084",
-      "action": "Error"
+      "action": "None",
+      "justification": "The ID range assigned to the extension must be within the allowed range"
     },
     {
       "id": "AS0085",
-      "action": "Error"
+      "action": "None",
+      "justification": "Use the 'application' property instead of specifying explicit dependencies."
     },
     {
       "id": "AS0086",
@@ -368,7 +375,8 @@
     },
     {
       "id": "AS0092",
-      "action": "Error"
+      "action": "None",
+      "justification": "The app.json file must specify an Azure Application Insights resource."
     },
     {
       "id": "AS0093",
@@ -400,7 +408,8 @@
     },
     {
       "id": "AS0100",
-      "action": "Error"
+      "action": "None",
+      "justification": "The 'application' property must be specified in the app.json file."
     },
     {
       "id": "AS0101",
@@ -464,7 +473,8 @@
     },
     {
       "id": "AS0116",
-      "action": "Error"
+      "action": "None",
+      "justification": "Cannot be an error. Validates table moves."
     },
     {
       "id": "AS0117",
@@ -524,15 +534,18 @@
     },
     {
       "id": "AS0131",
-      "action": "Error"
+      "action": "None",
+      "justification": "Schema additive changes are allowed."
     },
     {
       "id": "AS0132",
-      "action": "Error"
+      "action": "None",
+      "justification": "Schema additive changes are allowed."
     },
     {
       "id": "AS0133",
-      "action": "Error"
+      "action": "None",
+      "justification": "Schema additive changes are allowed."
     },
     {
       "id": "AS0134",

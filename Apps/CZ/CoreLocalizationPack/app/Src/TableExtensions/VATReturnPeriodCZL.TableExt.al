@@ -9,9 +9,38 @@ using Microsoft.Utilities;
 
 tableextension 31066 "VAT Return Period CZL" extends "VAT Return Period"
 {
+    keys
+    {
+        key(StartDate; "Start Date")
+        {
+        }
+    }
+
+    trigger OnBeforeInsert()
+    begin
+        if IsDuplicatePeriod() then
+            Error(DuplicatePeriodErr);
+    end;
+
     var
         DueDateForVATReportNameTxt: Label 'Due date for VAT report';
         DueDateForVATReportDescriptionTxt: Label 'Warn if VAT report is due.';
+        DuplicatePeriodErr: Label 'VAT period with the same starting date already exists.';
+
+    internal procedure IsDuplicatePeriod(): Boolean
+    var
+        VATReturnPeriod: Record "VAT Return Period";
+#if not CLEAN28
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
+    begin
+#if not CLEAN28
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then
+            exit(false);
+#endif
+        VATReturnPeriod.SetRange("Start Date", "Start Date");
+        exit(not VATReturnPeriod.IsEmpty());
+    end;
 
     procedure CheckVATReportDueDateCZL()
     var

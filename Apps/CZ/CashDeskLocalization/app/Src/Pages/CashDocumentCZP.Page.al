@@ -1,10 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.CashDesk;
 
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Utilities;
@@ -267,17 +268,6 @@ page 31160 "Cash Document CZP"
         }
         area(factboxes)
         {
-#if not CLEAN25
-            part("Attached Documents"; "Document Attachment Factbox")
-            {
-                ObsoleteTag = '25.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
-                ApplicationArea = All;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(database::"Cash Document Header CZP"), "No." = field("No.");
-            }
-#endif
             part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = All;
@@ -324,6 +314,7 @@ page 31160 "Cash Document CZP"
             {
                 Caption = 'Cash Document';
                 Image = Document;
+#if not CLEAN27
                 action(Statistics)
                 {
                     ApplicationArea = Basic, Suite;
@@ -332,11 +323,30 @@ page 31160 "Cash Document CZP"
                     ShortCutKey = 'F7';
                     RunPageMode = View;
                     ToolTip = 'View the statistics on the selected cash document.';
+                    ObsoleteReason = 'The statistics action will be replaced with the CashDocumentStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
 
                     trigger OnAction()
                     begin
                         CurrPage.CashDocLines.Page.ShowStatistics();
                     end;
+                }
+#endif
+                action(CashDocumentStatistics)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Statistics';
+                    Image = Statistics;
+                    ShortCutKey = 'F7';
+                    ToolTip = 'View the statistics on the selected cash document.';
+#if CLEAN27
+                    Visible = true;
+#else
+                    Visible = false;
+#endif
+                    RunObject = Page "Cash Doc. Statistics CZP";
+                    RunPageLink = "Cash Desk No." = field("Cash Desk No."), "No." = field("No.");
                 }
                 action(Dimensions)
                 {
@@ -544,6 +554,22 @@ page 31160 "Cash Document CZP"
             {
                 Caption = 'P&osting';
                 Image = Post;
+                action("Reconcile")
+                {
+                    ApplicationArea = Suite;
+                    Caption = 'Reconcile';
+                    Image = Reconcile;
+                    ShortcutKey = 'Ctrl+F11';
+                    ToolTip = 'Opens reconciliation page.';
+
+                    trigger OnAction()
+                    var
+                        Reconciliation: Page Reconciliation;
+                    begin
+                        Reconciliation.SetCashDocumentHeaderCZP(Rec);
+                        Reconciliation.Run();
+                    end;
+                }
                 action(Post)
                 {
                     ApplicationArea = Basic, Suite;

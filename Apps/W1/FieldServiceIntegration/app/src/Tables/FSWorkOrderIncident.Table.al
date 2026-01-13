@@ -270,6 +270,7 @@ table 6618 "FS Work Order Incident"
             Description = 'Shows the percent completed on associated tasks. This indicates the total of completed tasks, but not if the incident was resolved.';
             Caption = 'Tasks % Completed';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(51; WorkOrder; GUID)
         {

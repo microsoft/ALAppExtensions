@@ -68,12 +68,12 @@ report 6216 "Sust. Prod. BOM Calculate CO2e"
         Window.Update(1, Round(Counter / RecordCount * 10000, 1));
     end;
 
-    local procedure OpenDialog(var ProductionBOMHeader: Record "Production BOM Header"; var RecordCount: Integer)
+    local procedure OpenDialog(var ProductionBOMHeader: Record "Production BOM Header"; var RecCount: Integer)
     begin
         if not GuiAllowed() then
             exit;
 
-        RecordCount := ProductionBOMHeader.Count();
+        RecCount := ProductionBOMHeader.Count();
         Window.Open(ProcessBarMsg);
     end;
 
@@ -85,12 +85,12 @@ report 6216 "Sust. Prod. BOM Calculate CO2e"
         Window.Close();
     end;
 
-    local procedure ShowCompletionMsg(RecordCount: Integer; Counter: Integer)
+    local procedure ShowCompletionMsg(RecCount: Integer; Counter: Integer)
     begin
         if not GuiAllowed() then
             exit;
 
-        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecordCount));
+        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecCount));
     end;
 
     local procedure UpdateCO2ePerUnit(NewProductionBOMHeader: Record "Production BOM Header")

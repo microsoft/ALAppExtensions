@@ -21,43 +21,43 @@ page 27030 "DIOT Concepts"
         {
             repeater(General)
             {
-                field("Concept No."; "Concept No.")
+                field("Concept No."; Rec."Concept No.")
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'Concept Number';
                     ToolTip = 'Specifies the number of this concept.';
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'Description';
                     ToolTip = 'Specifies the description of this concept.';
                 }
-                field("Column No."; "Column No.")
+                field("Column No."; Rec."Column No.")
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'Column Number';
                     ToolTip = 'Specifies the column number of this concept.';
                 }
-                field("Column Type"; "Column Type")
+                field("Column Type"; Rec."Column Type")
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'Column Type';
                     ToolTip = 'Specifies the column type for this concept.';
                 }
-                field("Non-Deductible"; "Non-Deductible")
+                field("Non-Deductible"; Rec."Non-Deductible")
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'Non-Deductible';
                     ToolTip = 'Specifies if this concept describes non-deductible VAT.';
                 }
-                field("Non-Deductible Pct"; "Non-Deductible Pct")
+                field("Non-Deductible Pct"; Rec."Non-Deductible Pct")
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'Non-Deductible Percent';
                     ToolTip = 'Specifies the percentage of non-deductible VAT for this concept.';
                 }
-                field("VAT Links Count"; "VAT Links Count")
+                field("VAT Links Count"; Rec."VAT Links Count")
                 {
                     ApplicationArea = BasicMX;
                     Caption = 'VAT Links Count';
@@ -66,11 +66,11 @@ page 27030 "DIOT Concepts"
                     Lookup = false;
                     Editable = false;
                     Style = Unfavorable;
-                    StyleExpr = ("VAT Links Count" = 0) and ("Column Type" <> "Column Type"::None);
+                    StyleExpr = (Rec."VAT Links Count" = 0) and (Rec."Column Type" <> Rec."Column Type"::None);
 
                     trigger OnDrillDown()
                     begin
-                        if "Column Type" <> "Column Type"::None then
+                        if Rec."Column Type" <> Rec."Column Type"::None then
                             OpenLinksPage()
                         else
                             Error(ConceptDisabledErr);
@@ -107,7 +107,7 @@ page 27030 "DIOT Concepts"
         ConfirmManagement: Codeunit "Confirm Management";
     begin
         if CloseAction = CloseAction::OK then
-            if CheckLinksForConceptWithTypeNotNone() then
+            if Rec.CheckLinksForConceptWithTypeNotNone() then
                 if not ConfirmManagement.GetResponseOrDefault(NotAllLinksSetupMsg, true) then
                     exit(false);
     end;
@@ -120,7 +120,7 @@ page 27030 "DIOT Concepts"
     var
         DIOTVATPostingSetupLink: Record "DIOT Concept Link";
     begin
-        DIOTVATPostingSetupLink.SetRange("DIOT Concept No.", "Concept No.");
+        DIOTVATPostingSetupLink.SetRange("DIOT Concept No.", Rec."Concept No.");
         Page.RunModal(Page::"DIOT Concept Links", DIOTVATPostingSetupLink);
         CurrPage.Update();
     end;

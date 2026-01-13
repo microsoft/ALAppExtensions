@@ -192,6 +192,12 @@ report 31014 "Sales - Advance Letter CZZ"
             column(PaymentMethod; PaymentMethod.Description)
             {
             }
+            column(YourReference_SalesAdvanceLetterHeaderCaption; FieldCaption("Your Reference"))
+            {
+            }
+            column(YourReference_SalesAdvanceLetterHeader; "Your Reference")
+            {
+            }
             column(CurrencyCode_SalesAdvanceLetterHeader; "Currency Code")
             {
             }

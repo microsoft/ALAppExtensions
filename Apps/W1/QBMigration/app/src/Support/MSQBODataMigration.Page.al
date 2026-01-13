@@ -54,27 +54,6 @@ page 1830 "MS - QBO Data Migration"
                     }
                 }
             }
-#if not CLEAN25
-            group("2")
-            {
-                ObsoleteState = Pending;
-                ObsoleteReason = 'Not used anymore';
-                ObsoleteTag = '17.0';
-
-                Visible = false;
-                ShowCaption = false;
-                field(Instructions1; '')
-                {
-                    ApplicationArea = Basic, Suite;
-                    Editable = false;
-                    MultiLine = true;
-                    ShowCaption = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Not used anymore';
-                    ObsoleteTag = '25.0';
-                }
-            }
-#endif
             group("3")
             {
                 InstructionalText = 'Enter the accounts to use when you post sales and purchase transactions to the general ledger.';
@@ -237,7 +216,7 @@ page 1830 "MS - QBO Data Migration"
                         MigrationQBConfig: Record "MigrationQB Config";
                     begin
                         if MigrationQBConfig.Get() then
-                            if (UnitOfMeasure <> '') AND (MigrationQBConfig."Total Items" > 0) then
+                            if (UnitOfMeasure <> '') and (MigrationQBConfig."Total Items" > 0) then
                                 NextEnabled := true
                             else
                                 NextEnabled := false;
@@ -310,7 +289,7 @@ page 1830 "MS - QBO Data Migration"
 
     trigger OnClosePage()
     begin
-        if Authorized AND not HasErrors then
+        if Authorized and not HasErrors then
             SetAccountNumbers();
     end;
 

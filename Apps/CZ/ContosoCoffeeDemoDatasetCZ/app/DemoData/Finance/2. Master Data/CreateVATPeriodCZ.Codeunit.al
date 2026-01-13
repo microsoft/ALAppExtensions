@@ -1,3 +1,5 @@
+#if not CLEAN28
+#pragma warning disable AL0432
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -11,6 +13,9 @@ codeunit 31214 "Create VAT Period CZ"
 {
     InherentEntitlements = X;
     InherentPermissions = X;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The VAT Period CZL table is replaced by VAT Return Period table. Use the Create VAT Return Period codeunit instead.';
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     var
@@ -29,4 +34,5 @@ codeunit 31214 "Create VAT Period CZ"
         end;
     end;
 }
-
+#pragma warning restore AL0432
+#endif

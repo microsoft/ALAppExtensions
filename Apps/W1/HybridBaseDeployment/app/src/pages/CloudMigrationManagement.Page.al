@@ -45,6 +45,20 @@ page 40063 "Cloud Migration Management"
                                 Message(StatusTxt);
                         end;
                     }
+                    field(Warnings; NumberOfWarnings)
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                        Caption = 'Warnings';
+                        ToolTip = 'Specifies the number of warnings for the selected migration.';
+                        Style = Unfavorable;
+                        StyleExpr = (NumberOfWarnings > 0);
+
+                        trigger OnDrillDown()
+                        begin
+                            Page.Run(Page::"Cloud Migration Warnings");
+                        end;
+                    }
                 }
 
                 group(MigrationStatistics)
@@ -227,6 +241,25 @@ page 40063 "Cloud Migration Management"
                     HybridCloudManagement.RunDataUpgrade(LastHybridReplicationSummary);
                 end;
             }
+            action(MigrateRecordLinks)
+            {
+                Enabled = IsSuper and IsSetupComplete and RecordLinkBufferNotEmpty;
+                Visible = not IsOnPrem;
+                ApplicationArea = All;
+                Caption = 'Migrate record links and notes';
+                ToolTip = 'Migrate record links and notes from the on-premises database to the cloud.';
+                Image = Links;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    WarnRecordLinkMigrationDoneBefore();
+                    HybridCloudManagement.MigrateRecordLinks();
+                    Message(RecordLinkMigrationCompletedTxt);
+                    UpdateWarningCounts();
+                end;
+            }
 
             action(RunDiagnostic)
             {
@@ -274,6 +307,7 @@ page 40063 "Cloud Migration Management"
                     HybridCloudManagement.GetCloudMigrationStatusText(StatusTxt, StatusTxtStyle, MoreInformationTxt);
                     UpdateTablesStatistics();
                     UpdateControlProperties();
+                    UpdateWarningCounts();
                     CurrPage.Update();
                     WarnAboutNonInitializedCompanies();
                 end;
@@ -682,6 +716,7 @@ page 40063 "Cloud Migration Management"
 
         IntelligentCloudNotifier.ShowICUpdateNotification();
         WarnAboutNonInitializedCompanies();
+        UpdateWarningCounts();
     end;
 
     trigger OnAfterGetCurrRecord()
@@ -727,6 +762,7 @@ page 40063 "Cloud Migration Management"
     var
         IntelligentCloudStatus: Record "Intelligent Cloud Status";
         HybridCompany: Record "Hybrid Company";
+        ReplicationRecordLinkBuffer: Record "Replication Record Link Buffer";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         PermissionManager: Codeunit "Permission Manager";
     begin
@@ -738,6 +774,9 @@ page 40063 "Cloud Migration Management"
         TablesRemainingVisible := TotalTablesRemainingCount > 0;
         WarningsVisible := TotalTablesWithWarningsCount > 0;
         TablesFailedVisible := TotalTablesFailedCount > 0;
+
+        if not HybridCloudManagement.RecordLinkBufferBlocked() then
+            RecordLinkBufferNotEmpty := not ReplicationRecordLinkBuffer.IsEmpty();
     end;
 
     procedure SendRepairDataNotification()
@@ -831,6 +870,35 @@ page 40063 "Cloud Migration Management"
         UninitializedCompaniesNotification.Send();
     end;
 
+    local procedure WarnRecordLinkMigrationDoneBefore()
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        if not HybridCompanyStatus.Get() then
+            exit;
+
+        if not HybridCompanyStatus."Record Link Move Completed" then
+            exit;
+
+        if not Confirm(StrSubstNo(RecordLinkMigrationWasDoneContinueQst, HybridCompanyStatus."Last Record Link Move DateTime")) then
+            Error('');
+    end;
+
+    local procedure UpdateWarningCounts()
+    var
+        ICloudMigrationWarning: Interface "Cloud Migration Warning";
+        CloudMigrationWarningType: Enum "Cloud Migration Warning Type";
+        WarningImplementations: List of [Integer];
+        WarningImplementation: Integer;
+    begin
+        NumberOfWarnings := 0;
+        WarningImplementations := CloudMigrationWarningType.Ordinals();
+        foreach WarningImplementation in WarningImplementations do begin
+            ICloudMigrationWarning := "Cloud Migration Warning Type".FromInteger(WarningImplementation);
+            NumberOfWarnings += ICloudMigrationWarning.GetWarningCount();
+        end;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure CanRunDiagnostic(var CanRun: Boolean)
     begin
@@ -890,11 +958,14 @@ page 40063 "Cloud Migration Management"
         IntelligentCloudNotSetupMsg: Label 'Cloud migration is not enabled. To start the migration you must complete the setup.';
         RunReplicationConfirmQst: Label 'Are you sure you want to start data replication?';
         DataRepairNotCompletedMsg: Label 'Data repair has not completed. Before you complete the cloud migration or start an upgrade, invoke the ''Repair Companion Table Records'' action';
+        RecordLinkMigrationCompletedTxt: Label 'Record links and notes have been successfully migrated.';
+        RecordLinkMigrationWasDoneContinueQst: Label 'You already migrated record links in this migration on %1. If you migrate record links again, you might run into unwanted results. Are you sure that you want to continue?', Comment = '%1 - Date and time when the last record link migration was done';
         TotalSuccessfulTablesCount: Integer;
         TotalTablesFailedCount: Integer;
         TotalTablesRemainingCount: Integer;
         TotalTablesWithWarningsCount: Integer;
         NotInitializedCompaniesCount: Integer;
+        NumberOfWarnings: Integer;
         StatusTxt: Text;
         StatusTxtStyle: Text;
         MoreInformationTxt: Text;
@@ -915,5 +986,5 @@ page 40063 "Cloud Migration Management"
         UpdateReplicationCompaniesEnabled: Boolean;
         CustomTablesEnabled: Boolean;
         LastRefresh: DateTime;
-
+        RecordLinkBufferNotEmpty: Boolean;
 }

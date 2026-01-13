@@ -71,12 +71,12 @@ report 6218 "Sust. Routing Calculate CO2e"
         Window.Update(1, Round(Counter / RecordCount * 10000, 1));
     end;
 
-    local procedure OpenDialog(var RoutingHeader: Record "Routing Header"; var RecordCount: Integer)
+    local procedure OpenDialog(var RoutingHeader: Record "Routing Header"; var RecCount: Integer)
     begin
         if not GuiAllowed() then
             exit;
 
-        RecordCount := RoutingHeader.Count();
+        RecCount := RoutingHeader.Count();
         Window.Open(ProcessBarMsg);
     end;
 
@@ -88,12 +88,12 @@ report 6218 "Sust. Routing Calculate CO2e"
         Window.Close();
     end;
 
-    local procedure ShowCompletionMsg(RecordCount: Integer; Counter: Integer)
+    local procedure ShowCompletionMsg(RecCount: Integer; Counter: Integer)
     begin
         if not GuiAllowed() then
             exit;
 
-        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecordCount));
+        Message(StrSubstNo(UpdateCompleteMsg, Counter, RecCount));
     end;
 
     local procedure UpdateCO2ePerUnit(NewRoutingHeader: Record "Routing Header")

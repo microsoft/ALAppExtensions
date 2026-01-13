@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -11,11 +12,14 @@ query 42813 "SL Hist. ARTransactions"
 {
     QueryType = Normal;
     OrderBy = ascending(BatNbr);
-    QueryCategory = 'Customer List';
     Caption = 'Dynamics SL Accounts Receivable Transactions';
+    ObsoleteReason = 'Replaced by SL Hist. ARTran Entries page';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+
     elements
     {
-        dataitem(SLARTranHist; "SL Hist. ARTran")
+        dataitem(SLARTranHist; "SL Hist. ARTran Archive")
         {
             column(CpnyID; CpnyID)
             {
@@ -98,3 +102,4 @@ query 42813 "SL Hist. ARTransactions"
     var
         GlobalCompanyName: Text[10];
 }
+#endif

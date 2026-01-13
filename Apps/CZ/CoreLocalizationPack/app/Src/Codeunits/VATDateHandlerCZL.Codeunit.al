@@ -38,6 +38,9 @@ codeunit 11742 "VAT Date Handler CZL"
                   tabledata "Vendor Ledger Entry" = m;
 
     var
+#if not CLEAN28
+        ReplaceVATPeriodMgtCZL: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 
     [EventSubscriber(ObjectType::Table, Database::"G/L Entry", 'OnAfterCopyGLEntryFromGenJnlLine', '', false, false)]
@@ -89,11 +92,15 @@ codeunit 11742 "VAT Date Handler CZL"
     local procedure FillVATReportingDateOnBeforeGLLedgEntryModify(var GLEntry: Record "G/L Entry"; FromGLEntry: Record "G/L Entry")
     begin
         GLEntry."VAT Reporting Date" := FromGLEntry."VAT Reporting Date";
+        GLEntry."External Document No." := FromGLEntry."External Document No.";
     end;
-
+#if not CLEAN28
+    [Obsolete('Replaced by CheckDateAllowed function in VAT Reporting Date Mgt. codeunit.', '28.0')]
     procedure VATPeriodCZLCheck(VATDate: Date)
     var
+#pragma warning disable AL0432
         VATPeriodCZL: Record "VAT Period CZL";
+#pragma warning restore AL0432
         VATPeriodNotExistErr: Label '%1 does not exist for date %2.', Comment = '%1 = VAT Period TableCaption, %2 = VAT Date';
     begin
         VATPeriodCZL.SetRange("Starting Date", 0D, VATDate);
@@ -102,6 +109,7 @@ codeunit 11742 "VAT Date Handler CZL"
         else
             Error(VATPeriodNotExistErr, VATPeriodCZL.TableCaption(), VATDate);
     end;
+#endif
 
     internal procedure IsVATDateInAllowedPeriod(VATDate: Date; var SetupRecordID: RecordID; var FieldNo: Integer): Boolean
     var
@@ -120,48 +128,68 @@ codeunit 11742 "VAT Date Handler CZL"
 
     procedure CheckVATDateCZL(GenJournalLine: Record "Gen. Journal Line")
     begin
-        if not VATReportingDateMgt.IsVATDateEnabled() then
-            GenJournalLine.TestField("VAT Reporting Date", GenJournalLine."Posting Date")
-        else begin
-            GenJournalLine.TestField("VAT Reporting Date");
-            VATPeriodCZLCheck(GenJournalLine."VAT Reporting Date");
+        if not VATReportingDateMgt.IsVATDateEnabled() then begin
+            GenJournalLine.TestField("VAT Reporting Date", GenJournalLine."Posting Date");
+            exit;
         end;
+        GenJournalLine.TestField("VAT Reporting Date");
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then
+            VATPeriodCZLCheck(GenJournalLine."VAT Reporting Date");
+#pragma warning restore AL0432
+#endif
     end;
 
     procedure CheckVATDateCZL(var SalesHeader: Record "Sales Header")
     begin
-        if not VATReportingDateMgt.IsVATDateEnabled() then
-            SalesHeader.TestField("VAT Reporting Date", SalesHeader."Posting Date")
-        else begin
-            SalesHeader.TestField("VAT Reporting Date");
-            VATPeriodCZLCheck(SalesHeader."VAT Reporting Date");
+        if not VATReportingDateMgt.IsVATDateEnabled() then begin
+            SalesHeader.TestField("VAT Reporting Date", SalesHeader."Posting Date");
+            exit;
         end;
+        SalesHeader.TestField("VAT Reporting Date");
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then
+            VATPeriodCZLCheck(SalesHeader."VAT Reporting Date");
+#pragma warning restore AL0432
+#endif
     end;
 
     procedure CheckVATDateCZL(var PurchaseHeader: Record "Purchase Header")
     var
         MustBeLessOrEqualErr: Label 'must be less or equal to %1', Comment = '%1 = fieldcaption of VAT Date';
     begin
-        if not VATReportingDateMgt.IsVATDateEnabled() then
-            PurchaseHeader.TestField("VAT Reporting Date", PurchaseHeader."Posting Date")
-        else begin
-            PurchaseHeader.TestField("VAT Reporting Date");
-            VATPeriodCZLCheck(PurchaseHeader."VAT Reporting Date");
-            if PurchaseHeader.Invoice then
-                PurchaseHeader.TestField("Original Doc. VAT Date CZL");
-            if PurchaseHeader."Original Doc. VAT Date CZL" > PurchaseHeader."VAT Reporting Date" then
-                PurchaseHeader.FieldError("Original Doc. VAT Date CZL", StrSubstNo(MustBeLessOrEqualErr, PurchaseHeader.FieldCaption("VAT Reporting Date")));
+        if not VATReportingDateMgt.IsVATDateEnabled() then begin
+            PurchaseHeader.TestField("VAT Reporting Date", PurchaseHeader."Posting Date");
+            exit;
         end;
+        PurchaseHeader.TestField("VAT Reporting Date");
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then
+            VATPeriodCZLCheck(PurchaseHeader."VAT Reporting Date");
+#pragma warning restore AL0432
+#endif
+        if PurchaseHeader.Invoice then
+            PurchaseHeader.TestField("Original Doc. VAT Date CZL");
+        if PurchaseHeader."Original Doc. VAT Date CZL" > PurchaseHeader."VAT Reporting Date" then
+            PurchaseHeader.FieldError("Original Doc. VAT Date CZL", StrSubstNo(MustBeLessOrEqualErr, PurchaseHeader.FieldCaption("VAT Reporting Date")));
     end;
 
     procedure CheckVATDateCZL(var ServiceHeader: Record "Service Header")
     begin
-        if not VATReportingDateMgt.IsVATDateEnabled() then
-            ServiceHeader.TestField("VAT Reporting Date", ServiceHeader."Posting Date")
-        else begin
-            ServiceHeader.TestField("VAT Reporting Date");
-            VATPeriodCZLCheck(ServiceHeader."VAT Reporting Date");
+        if not VATReportingDateMgt.IsVATDateEnabled() then begin
+            ServiceHeader.TestField("VAT Reporting Date", ServiceHeader."Posting Date");
+            exit;
         end;
+        ServiceHeader.TestField("VAT Reporting Date");
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgtCZL.IsEnabled() then
+            VATPeriodCZLCheck(ServiceHeader."VAT Reporting Date");
+#pragma warning restore AL0432
+#endif
     end;
 
     procedure InitVATDateFromRecordCZL(TableNo: Integer)
@@ -191,6 +219,9 @@ codeunit 11742 "VAT Date Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"General Ledger Setup", 'OnAfterInsertEvent', '', false, false)]
     local procedure InitVATReportingDateUsageOnAfteInsertEvent(var Rec: Record "General Ledger Setup")
     begin
+        if Rec.IsTemporary() then
+            exit;
+
         Rec."VAT Reporting Date Usage" := Rec."VAT Reporting Date Usage"::"Enabled (Prevent modification)";
     end;
 }

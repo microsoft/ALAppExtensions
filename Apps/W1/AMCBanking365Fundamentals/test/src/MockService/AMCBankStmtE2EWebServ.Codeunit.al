@@ -1,8 +1,12 @@
+#if not CLEAN28
 codeunit 135080 "AMC Bank Stmt E2E Web Serv"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
         // [FEATURE] [AMC Banking Fundamentals] [Web Service]
@@ -124,4 +128,4 @@ codeunit 135080 "AMC Bank Stmt E2E Web Serv"
     end;
     */
 }
-
+#endif

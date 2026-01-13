@@ -4,12 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Foundation.Navigate;
-#if not CLEAN25
-using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Payables;
-using Microsoft.Purchases.Vendor;
-#endif
 using System.Environment;
 using System.Environment.Configuration;
 using System.Telemetry;
@@ -67,11 +61,16 @@ page 10032 "IRS Forms Guide"
                         BlankZero = true;
                         ToolTip = 'Specifies the year for which you will be reporting the tax data to the IRS. This is applicable for both options below.';
                     }
+#if not CLEAN28
 
                     field(CreateNewSetupControl; CreateNewSetup)
                     {
                         Caption = 'Create new setup';
                         ToolTip = 'Specifies whether you want to create the new setup automatically instead of doing it manually - a reporting period, forms, form boxes and a statement.';
+                        Visible = false;
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Creating new setup option is not longer available through the IRS forms guide. You can create a new reporting period manually in the IRS Reporting Periods page.';
+                        ObsoleteTag = '28.0';
 
                         trigger OnValidate()
                         begin
@@ -84,7 +83,10 @@ page 10032 "IRS Forms Guide"
                     {
                         Caption = 'Transfer existing data';
                         ToolTip = 'Specifies whether you want to transfer the data from the IRS 1099 Base Application to the new IRS forms extension. This includes IRS 1099 form boxes, vendor setup, purchase documents and vendor ledger entries.';
-                        Editable = CanTransferData;
+                        Visible = false;
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Transfer existing data option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                        ObsoleteTag = '28.0';
 
                         trigger OnValidate()
                         begin
@@ -101,22 +103,40 @@ page 10032 "IRS Forms Guide"
                         Editable = false;
                         StyleExpr = true;
                         Style = StandardAccent;
-                        Visible = DataTransferStatus <> '';
+                        Visible = false;
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Data transfer status is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                        ObsoleteTag = '28.0';
                     }
+#endif
                 }
             }
+#pragma warning disable AS0032
+#if not CLEAN28
             group(TransferExistingDataStepParent)
             {
-                Visible = TransferExistingDataStepEnabled;
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                ObsoleteTag = '28.0';
                 group(TransferExistingDataWhatIsUpdated)
                 {
                     Caption = 'What is updated';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                    ObsoleteTag = '28.0';
                     group(TransferExistingDataWhatIsUpdatedDescr)
                     {
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                        ObsoleteTag = '28.0';
                         ShowCaption = false;
                         field(TransferExistingDataDescription; ReviewUpdatedDataTok)
                         {
                             ApplicationArea = Basic, Suite;
+                            ObsoleteState = Pending;
+                            ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                            ObsoleteTag = '28.0';
                             ShowCaption = false;
                             Editable = false;
                             MultiLine = true;
@@ -127,62 +147,87 @@ page 10032 "IRS Forms Guide"
                 group(TransferExistingDataReviewAffectedData)
                 {
                     ShowCaption = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                    ObsoleteTag = '28.0';
                     field(TransferExistingDataReviewDataField; ReviewDataLinkTok)
                     {
                         ApplicationArea = Basic, Suite;
                         ShowCaption = false;
-
-                        trigger OnDrillDown()
-                        begin
-                            ReviewData();
-                        end;
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                        ObsoleteTag = '28.0';
                     }
                 }
                 group(Background)
                 {
                     ShowCaption = false;
-                    Visible = CanCreateTask;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                    ObsoleteTag = '28.0';
                     field(BackgroundTask; Rec."Background Task")
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Run in background session';
                         ToolTip = 'Specifies whether the task should be run in the current or in the background session.';
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                        ObsoleteTag = '28.0';
                     }
                 }
                 group(SetupBackgroundTaskParent)
                 {
                     Caption = 'Schedule background task';
                     Visible = Rec."Background Task";
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                    ObsoleteTag = '28.0';
                     group(SetupBackgroundTask)
                     {
                         ShowCaption = false;
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                        ObsoleteTag = '28.0';
                         field("Start Date/Time"; Rec."Task Start Date/Time")
                         {
                             ApplicationArea = Basic, Suite;
                             Enabled = not Rec."Run Task Now";
                             Caption = 'Start Date/Time';
                             ToolTip = 'Specifies the earliest date and time when the task should be run in the background session.';
+                            ObsoleteState = Pending;
+                            ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                            ObsoleteTag = '28.0';
                         }
                         field(RunTaskNow; Rec."Run Task Now")
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Run immediately';
                             ToolTip = 'Specifies whether the task should be run immediately in the background session.';
+                            ObsoleteState = Pending;
+                            ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                            ObsoleteTag = '28.0';
                         }
                     }
                 }
                 group(TransferExistingDataDataUpgradeAgreement)
                 {
                     ShowCaption = false;
-
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                    ObsoleteTag = '28.0';
                     field(TransferExistingDataAgreed; DataUpgradeAgreed)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'I accept the data update';
                         ToolTip = 'Specifies whether the user does understand the update procedure and agree to proceed.';
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Transfer option is not longer available through the IRS forms guide. Use report 10063 "Upgrade IRS 1099 Data" instead.';
+                        ObsoleteTag = '28.0';
                     }
                 }
             }
+#endif
+#pragma warning restore AS0032
             group(FeaturesStepParent)
             {
                 Visible = FeaturesStepEnabled;
@@ -197,6 +242,14 @@ page 10032 "IRS Forms Guide"
                     field("Protect TIN"; Rec."Protect TIN")
                     {
                         ToolTip = 'Specifies if the TIN of the vendor/company must be protected when printing reports.';
+                    }
+                    field("Business Name Control"; Rec."Business Name Control")
+                    {
+                        ToolTip = 'Specifies the business name control that must match the one in the IRS''s National Account Profile (NAP) database. Generally, it can be up to the first four alphanumeric characters of the business''s legal name.';
+                    }
+                    field("API Client ID"; Rec."IRIS API Client ID")
+                    {
+                        ToolTip = 'Specifies the GUID that is used to authenticate and authorize access to the IRS''s Information Returns Intake System (IRIS) API.';
                     }
                 }
             }
@@ -293,22 +346,6 @@ page 10032 "IRS Forms Guide"
     trigger OnOpenPage();
     begin
         Rec.InitSetup();
-        CanTransferData := true;
-        case true of
-            Rec."Data Transfer Error Message" <> '':
-                DataTransferStatus := StrSubstNo(DataTransferFailedErr, Rec."Data Transfer Error Message");
-            Rec.DataTransferInProgress():
-                begin
-                    DataTransferStatus := 'Data transfer is in progress';
-                    CanTransferData := false;
-                end;
-            Rec."Data Transfer Completed":
-                begin
-                    DataTransferStatus := 'Data transfer has been completed';
-                    CanTransferData := false;
-                end;
-        end;
-        CanCreateTask := TaskScheduler.CanCreateTask();
         FeatureTelemetry.LogUptake('0000MJO', IRSFormsTok, Enum::"Feature Uptake Status"::Discovered);
         Commit();
 
@@ -317,24 +354,23 @@ page 10032 "IRS Forms Guide"
     end;
 
     var
-        TempDocumentEntry: Record "Document Entry" temporary;
         MediaRepositoryDone, MediaRepositoryStandard : Record "Media Repository";
         MediaResourcesFinished: Record "Media Resources";
         MediaResourcesStd: Record "Media Resources";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        IRSFormsData: Codeunit "IRS Forms Data";
+        KeyVaultClientIRIS: Codeunit "Key Vault Client IRIS";
         CreateNewSetup, TransferExistingData : Boolean;
-        Step: Option Start,Data,TransferExistingData,Features,Finish;
-        DataStepEnabled, TransferExistingDataStepEnabled : Boolean;
+        Step: Option Start,Data,Features,Finish;
+        DataStepEnabled: Boolean;
         FeaturesStepEnabled, BackActionEnabled, FinishActionEnabled, NextActionEnabled : Boolean;
-        WelcomeStepVisible, TopBannerVisible, SetupCompleted, DataUpgradeAgreed, CanCreateTask : Boolean;
-        CanTransferData: Boolean;
+        WelcomeStepVisible, TopBannerVisible, SetupCompleted, DataUpgradeAgreed : Boolean;
+#if not CLEAN28
         DataTransferStatus: Text;
-        SkipDataSetupStepQst: Label 'You have not chosen to create a new setup or to transfer the existing date.\\Are you sure that you want to skip this step and set up the feature manually?';
         ReviewUpdatedDataTok: Label 'Records from several Base Application tables will be copied to the new IRS Forms App tables. Please review affected data as the data update can take longer in case of large amount of records. In case of large amount of records you can consider a run in background session option. The data update process starts when you finish the guide.';
         ReviewDataLinkTok: Label 'Review affected data';
+#endif
         SetupNotCompletedQst: Label 'Set up of IRS Forms has not been completed.\\Are you sure that you want to exit?';
-        DataUpdateNotAcceptedErr: Label 'Please, accept the data update to proceed.';
-        DataTransferFailedErr: Label 'The data transfer failed: %1.', Comment = '%1 = error message.';
         IRSFormsTok: Label 'IRS Forms', Locked = true;
 
     local procedure EnableControls();
@@ -346,8 +382,6 @@ page 10032 "IRS Forms Guide"
                 ShowWelcomeStep();
             Step::Data:
                 ShowDataStep();
-            Step::TransferExistingData:
-                TransferExistingDataStep();
             Step::Features:
                 ShowFeaturesStep();
             Step::Finish:
@@ -357,28 +391,10 @@ page 10032 "IRS Forms Guide"
 
     local procedure FinishAction();
     var
-        IRSFormsData: Codeunit "IRS Forms Data";
         GuidedExperience: Codeunit "Guided Experience";
-#if not CLEAN25
-        IRSFormsFeature: Codeunit "IRS Forms Feature";
-#endif
     begin
         SetupCompleted := true;
         Commit();
-#if not CLEAN25
-        case true of
-            CreateNewSetup:
-                IRSFormsData.AddReportingPeriodsWithForms(Rec."Init Reporting Year");
-            TransferExistingData:
-                IRSFormsFeature.UpgradeFromBaseApplication();
-        end;
-#else
-        if CreateNewSetup then
-            IRSFormsData.AddReportingPeriodsWithForms(Rec."Init Reporting Year");
-#endif
-#if not CLEAN25
-        IRSFormsFeature.InsertAssistedSetup();
-#endif
         GuidedExperience.CompleteAssistedSetup(ObjectType::Page, Page::"IRS Forms Guide");
         CurrPage.Close();
     end;
@@ -390,33 +406,19 @@ page 10032 "IRS Forms Guide"
 
     local procedure NextStep(Backwards: Boolean);
     begin
-        if not ValidateControlsBeforeStep(Backwards) then
-            exit;
         if Backwards then begin
             if Step = Step::Features then
                 Step := Step::Data
             else
                 Step -= 1;
         end else
-            if (Step = Step::Data) and (not TransferExistingData) then
-                Step := Step::Features
-            else
-                Step += 1;
+            Step += 1;
         EnableControls();
-    end;
 
-    local procedure ValidateControlsBeforeStep(Backwards: Boolean): Boolean
-    var
-        ConfirmManagement: Codeunit "Confirm Management";
-    begin
-        if (not Backwards) and DataStepEnabled and (not CreateNewSetup) and (not TransferExistingData) then
-            if not ConfirmManagement.GetResponse(SkipDataSetupStepQst, false) then
-                exit(false);
-        if (not Backwards) and TransferExistingDataStepEnabled and (not DataUpgradeAgreed) then begin
-            Message(DataUpdateNotAcceptedErr);
-            exit(false);
+        if not Backwards and (Step = Step::Features) then begin
+            Rec."Business Name Control" := IRSFormsData.GetNameControl();
+            Rec."IRIS API Client ID" := KeyVaultClientIRIS.GetAPIClientIDFromKV();
         end;
-        exit(true);
     end;
 
     local procedure ShowWelcomeStep();
@@ -425,7 +427,6 @@ page 10032 "IRS Forms Guide"
         BackActionEnabled := false;
         NextActionEnabled := true;
         DataStepEnabled := false;
-        TransferExistingDataStepEnabled := false;
         FeaturesStepEnabled := false;
         FinishActionEnabled := false;
     end;
@@ -436,18 +437,6 @@ page 10032 "IRS Forms Guide"
         BackActionEnabled := true;
         NextActionEnabled := true;
         DataStepEnabled := true;
-        TransferExistingDataStepEnabled := false;
-        FeaturesStepEnabled := false;
-        FinishActionEnabled := false;
-    end;
-
-    local procedure TransferExistingDataStep();
-    begin
-        WelcomeStepVisible := false;
-        BackActionEnabled := true;
-        NextActionEnabled := true;
-        DataStepEnabled := false;
-        TransferExistingDataStepEnabled := true;
         FeaturesStepEnabled := false;
         FinishActionEnabled := false;
     end;
@@ -458,7 +447,6 @@ page 10032 "IRS Forms Guide"
         BackActionEnabled := true;
         NextActionEnabled := true;
         DataStepEnabled := false;
-        TransferExistingDataStepEnabled := false;
         FeaturesStepEnabled := true;
         FinishActionEnabled := false;
     end;
@@ -469,7 +457,6 @@ page 10032 "IRS Forms Guide"
         BackActionEnabled := true;
         NextActionEnabled := false;
         DataStepEnabled := false;
-        TransferExistingDataStepEnabled := false;
         FeaturesStepEnabled := false;
         FinishActionEnabled := true;
     end;
@@ -480,7 +467,6 @@ page 10032 "IRS Forms Guide"
         BackActionEnabled := true;
         NextActionEnabled := true;
         DataStepEnabled := false;
-        TransferExistingDataStepEnabled := false;
         FeaturesStepEnabled := false;
         WelcomeStepVisible := false;
     end;
@@ -495,60 +481,4 @@ page 10032 "IRS Forms Guide"
             then
                 TopBannerVisible := MediaResourcesFinished."Media Reference".HasValue();
     end;
-
-    local procedure ReviewData();
-    var
-        DataUpgradeOverview: Page "Data Upgrade Overview";
-    begin
-        Clear(DataUpgradeOverview);
-#if not CLEAN25
-        CountUpdatedRecords();
-#endif
-        DataUpgradeOverview.Set(TempDocumentEntry);
-        DataUpgradeOverview.RunModal();
-    end;
-
-#if not CLEAN25
-    local procedure CountUpdatedRecords()
-    var
-#pragma warning disable AL0432
-        IRS1099FormBox: Record "IRS 1099 Form-Box";
-#pragma warning restore AL0432
-        Vendor: Record Vendor;
-#pragma warning disable AL0432
-        IRS1099Adjustment: Record "IRS 1099 Adjustment";
-#pragma warning restore AL0432
-        PurchaseHeader: Record "Purchase Header";
-        VendorLedgerEntry: Record "Vendor Ledger Entry";
-    begin
-        TempDocumentEntry.Reset();
-        TempDocumentEntry.DeleteAll();
-#pragma warning disable AL0432
-        InsertDocumentEntry(Database::"IRS 1099 Form-Box", IRS1099FormBox.TableCaption(), IRS1099FormBox.Count);
-        Vendor.SetFilter("IRS 1099 Code", '<>%1', '');
-        InsertDocumentEntry(Database::Vendor, Vendor.TableCaption(), Vendor.Count);
-        IRS1099Adjustment.SetRange(Year, Rec."Init Reporting Year");
-        InsertDocumentEntry(Database::"IRS 1099 Adjustment", IRS1099Adjustment.TableCaption(), IRS1099Adjustment.Count);
-        VendorLedgerEntry.SetRange("Posting Date", DMY2Date(1, 1, Rec."Init Reporting Year"), DMY2Date(31, 12, Rec."Init Reporting Year"));
-        VendorLedgerEntry.SetFilter("IRS 1099 Code", '<>%1', '');
-        InsertDocumentEntry(Database::"Vendor Ledger Entry", VendorLedgerEntry.TableCaption(), VendorLedgerEntry.Count);
-        PurchaseHeader.SetRange("Posting Date", DMY2Date(1, 1, Rec."Init Reporting Year"), DMY2Date(31, 12, Rec."Init Reporting Year"));
-        PurchaseHeader.SetFilter("IRS 1099 Code", '<>%1', '');
-        InsertDocumentEntry(Database::"Purchase Header", PurchaseHeader.TableCaption(), PurchaseHeader.Count);
-#pragma warning restore AL0432
-    end;
-
-    local procedure InsertDocumentEntry(TableID: Integer; TableName: Text; RecordCount: Integer)
-    begin
-        if RecordCount = 0 then
-            exit;
-
-        TempDocumentEntry.Init();
-        TempDocumentEntry."Entry No." += 1;
-        TempDocumentEntry."Table ID" := TableID;
-        TempDocumentEntry."Table Name" := CopyStr(TableName, 1, MaxStrLen(TempDocumentEntry."Table Name"));
-        TempDocumentEntry."No. of Records" := RecordCount;
-        TempDocumentEntry.Insert();
-    end;
-#endif
 }

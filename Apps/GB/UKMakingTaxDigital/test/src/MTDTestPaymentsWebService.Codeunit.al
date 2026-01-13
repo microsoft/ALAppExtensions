@@ -6,6 +6,7 @@
 codeunit 148082 "MTDTestPaymentsWebService"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()

@@ -16,5 +16,10 @@ tableextension 31059 "VAT Setup CZZ" extends "VAT Setup"
             DataClassification = CustomerContent;
             ToolTip = 'Specifies if the non-deductible VAT will be used in purchase advances.';
         }
+        field(31005; "Alt. Cust. VAT Reg. Adv. CZZ"; Enum "Alt. Cust. VAT Reg. Adv. CZZ")
+        {
+            Caption = 'Alt. Cust. VAT Reg. Adv.';
+            DataClassification = CustomerContent;
+        }
     }
 }

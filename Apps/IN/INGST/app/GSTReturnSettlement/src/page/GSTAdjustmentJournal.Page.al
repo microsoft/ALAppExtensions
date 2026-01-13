@@ -707,8 +707,8 @@ page 18329 "GST Adjustment Journal"
         GSTJournalPost: Codeunit "GST Journal Post";
         CurrentJnlBatchName: Code[10];
         ShortcutDimCode: array[8] of Code[20];
-        GenBussinessPostingGroup: Code[10];
-        GenProductPostingGroup: Code[10];
+        GenBussinessPostingGroup: Code[20];
+        GenProductPostingGroup: Code[20];
         TransactionNo: Integer;
         Counter: Integer;
         AccName: Text[50];

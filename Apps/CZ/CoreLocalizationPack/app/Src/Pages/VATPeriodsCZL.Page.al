@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -9,11 +10,14 @@ using Microsoft.Finance.VAT.Calculation;
 page 11769 "VAT Periods CZL"
 {
     ApplicationArea = Basic, Suite;
-    Caption = 'VAT Periods';
+    Caption = 'VAT Periods (Obsolete)';
     PageType = List;
     RefreshOnActivate = true;
     SourceTable = "VAT Period CZL";
     UsageCategory = Administration;
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+    ObsoleteReason = 'Replaced by standard VAT Return Period table.';
 
     layout
     {
@@ -144,10 +148,14 @@ page 11769 "VAT Periods CZL"
 
     trigger OnOpenPage()
     begin
+        ReplaceVATPeriodMgt.TestIsNotEnabled();
         NonDeductibleVATVisible := NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
     end;
 
     var
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+        ReplaceVATPeriodMgt: Codeunit "Replace VAT Period Mgt. CZL";
         NonDeductibleVATVisible: Boolean;
 }
+
+#endif

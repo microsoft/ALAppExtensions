@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -129,7 +129,6 @@ table 31257 "Payment Order Line CZB"
                             end;
                         Type::Employee:
                             begin
-                                Testfield("Currency Code", '');
                                 if not Employee.Get("No.") then
                                     Employee.Init();
                                 Employee.Testfield("Privacy Blocked", false);
@@ -464,6 +463,7 @@ table 31257 "Payment Order Line CZB"
                                 VendorLedgerEntries.SetRecord(VendorLedgerEntry);
                             if "No." <> '' then
                                 VendorLedgerEntry.SetRange("Vendor No.", "No.");
+                            OnAppliesToCVEEntryNoLookupOnAfterSetVendorLedgerEntryFilters(VendorLedgerEntry);
                             VendorLedgerEntries.SetTableView(VendorLedgerEntry);
                             VendorLedgerEntries.LookupMode(true);
                             if VendorLedgerEntries.RunModal() = Action::LookupOK then begin
@@ -482,6 +482,7 @@ table 31257 "Payment Order Line CZB"
                                 CustomerLedgerEntries.SetRecord(CustLedgerEntry);
                             if "No." <> '' then
                                 CustLedgerEntry.SetRange("Customer No.", "No.");
+                            OnAppliesToCVEEntryNoLookupOnAfterSetCustomerLedgerEntryFilters(CustLedgerEntry);
                             CustomerLedgerEntries.SetTableView(CustLedgerEntry);
                             CustomerLedgerEntries.LookupMode(true);
                             if CustomerLedgerEntries.RunModal() = Action::LookupOK then begin
@@ -498,6 +499,7 @@ table 31257 "Payment Order Line CZB"
                                 EmployeeLedgerEntries.SetRecord(EmployeeLedgerEntry);
                             if "No." <> '' then
                                 EmployeeLedgerEntry.SetRange("Employee No.", "No.");
+                            OnAppliesToCVEEntryNoLookupOnAfterSetEmployeeLedgerEntryFilters(EmployeeLedgerEntry);
                             EmployeeLedgerEntries.SetTableView(EmployeeLedgerEntry);
                             EmployeeLedgerEntries.LookupMode(true);
                             if EmployeeLedgerEntries.RunModal() = Action::LookupOK then begin
@@ -870,13 +872,6 @@ table 31257 "Payment Order Line CZB"
                 PaymentOrderCurrency.Testfield("Amount Rounding Precision");
             end;
     end;
-#if not CLEAN25
-    [Obsolete('Replaced by CreateDescription function with PlaceholderValues parameter.', '25.0')]
-    procedure CreateDescription(DocType: Text[30]; DocNo: Text[20]; PartnerNo: Text[20]; PartnerName: Text[100]; ExtNo: Text[35]): Text[50]
-    begin
-        exit(CopyStr(StrSubstNo(BankAccount."Payment Order Line Descr. CZB", DocType, DocNo, PartnerNo, PartnerName, ExtNo), 1, 50));
-    end;
-#endif
 
     procedure CreateDescription(PlaceholderValues: List of [Text[100]]) Description: Text[100]
     var
@@ -1276,10 +1271,6 @@ table 31257 "Payment Order Line CZB"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         EmployeeLedgerEntry: Record "Employee Ledger Entry";
-#if not CLEAN25
-        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
-        AppliesToAdvanceLetterNo: Code[20];
-#endif
     begin
         if "No." = '' then
             exit;
@@ -1296,17 +1287,6 @@ table 31257 "Payment Order Line CZB"
                     if EmployeeLedgerEntry.Get("Applies-to C/V/E Entry No.") then
                         EmployeeLedgerEntry.CollectSuggestedApplicationCZL(Rec, CrossApplicationBufferCZL);
             end;
-#if not CLEAN25
-#pragma warning disable AL0432
-        if Type = Type::Vendor then begin
-            OnBeforeFindRelatedAmoutToApply(Rec, AppliesToAdvanceLetterNo);
-            if AppliesToAdvanceLetterNo <> '' then
-                CrossApplicationMgtCZL.OnGetSuggestedAmountForPurchAdvLetterHeader(
-                    AppliesToAdvanceLetterNo, CrossApplicationBufferCZL,
-                    Database::"Iss. Payment Order Line CZB", Rec."Payment Order No.", Rec."Line No.");
-        end;
-#pragma warning restore AL0432
-#endif
 
         OnAfterCollectSuggestedApplication(Rec, CrossApplicationBufferCZL);
     end;
@@ -1340,14 +1320,6 @@ table 31257 "Payment Order Line CZB"
     local procedure OnAfterAppliesToEmplLedgEntryNo(var PaymentOrderLineCZB: Record "Payment Order Line CZB"; EmployeeLedgerEntry: Record "Employee Ledger Entry");
     begin
     end;
-#if not CLEAN25
-
-    [Obsolete('The event is obsolete and will be removed in the future version. Use OnAfterCollectSuggestedApplication instead.', '25.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeFindRelatedAmoutToApply(PaymentOrderLineCZB: Record "Payment Order Line CZB"; var AppliesToAdvanceLetterNo: Code[20]);
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCollectSuggestedApplication(PaymentOrderLineCZB: Record "Payment Order Line CZB"; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
@@ -1381,6 +1353,21 @@ table 31257 "Payment Order Line CZB"
 
     [IntegrationEvent(true, false)]
     local procedure OnAfterReplacePlaceholdersWithValues(PlaceholderText: Text[100]; PlaceholderValues: List of [Text[100]]; var ReplacedText: Text[100])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCVEEntryNoLookupOnAfterSetVendorLedgerEntryFilters(var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCVEEntryNoLookupOnAfterSetCustomerLedgerEntryFilters(var CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAppliesToCVEEntryNoLookupOnAfterSetEmployeeLedgerEntryFilters(var EmployeeLedgerEntry: Record "Employee Ledger Entry")
     begin
     end;
 }

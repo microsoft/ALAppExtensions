@@ -1,3 +1,15 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Test.Finance.AuditFileExport;
+
+using Microsoft.Finance.AuditFileExport;
+using System.Reflection;
+using System.IO;
+using System.Utilities;
+using Microsoft.Finance.GeneralLedger.Ledger;
+
 codeunit 148037 "Data Handling Test" implements "Audit File Export Data Handling"
 {
     var
@@ -104,7 +116,9 @@ codeunit 148037 "Data Handling Test" implements "Audit File Export Data Handling
         BlobOutStream.WriteText(StrSubstNo('Header Comment %1', AuditFileExportHeader."Header Comment") + CRLF);
         BlobOutStream.WriteText(StrSubstNo('Contact %2', AuditFileExportHeader.Contact) + CRLF);
 
+#pragma warning disable AA0210
         GLAccountMappingLine.SetFilter("Standard Account No.", '<>%1', '');
+#pragma warning restore AA0210
         GLAccountMappingLine.FindSet();
         repeat
             BlobOutStream.WriteText(StrSubstNo('G/L Account %1 %2', GLAccountMappingLine."G/L Account No.", GLAccountMappingLine."Standard Account No.") + CRLF);
@@ -126,7 +140,9 @@ codeunit 148037 "Data Handling Test" implements "Audit File Export Data Handling
 
         BlobOutStream.WriteText(GLEntriesTxt + CRLF);
         GLAccountMappingLine.SetRange("G/L Account Mapping Code", AuditFileExportHeader."G/L Account Mapping Code");
+#pragma warning disable AA0210
         GLAccountMappingLine.SetFilter("Standard Account No.", '<>%1', '');
+#pragma warning restore AA0210
         GLAccountMappingLine.FindSet();
         repeat
             GLEntry.SetRange("G/L Account No.", GLAccountMappingLine."G/L Account No.");

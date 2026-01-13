@@ -72,7 +72,7 @@ page 19010 "Finalize India Migration"
         {
             action(ActionBack)
             {
-                ApplicationArea = Invoicing, Basic, Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Back';
                 Enabled = BackActionEnabled;
                 Image = PreviousRecord;
@@ -85,7 +85,7 @@ page 19010 "Finalize India Migration"
             }
             action(ActionNext)
             {
-                ApplicationArea = Invoicing, Basic, Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Next';
                 Enabled = NextActionEnabled;
                 Image = NextRecord;
@@ -98,7 +98,7 @@ page 19010 "Finalize India Migration"
             }
             action(ActionFinish)
             {
-                ApplicationArea = Invoicing, Basic, Suite;
+                ApplicationArea = Basic, Suite;
                 Caption = 'Finish';
                 Enabled = FinishActionEnabled;
                 Image = Approve;

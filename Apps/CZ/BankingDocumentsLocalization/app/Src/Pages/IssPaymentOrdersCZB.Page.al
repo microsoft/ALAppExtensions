@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -81,17 +81,6 @@ page 31265 "Iss. Payment Orders CZB"
         }
         area(FactBoxes)
         {
-#if not CLEAN25
-            part("Attached Documents"; "Document Attachment Factbox")
-            {
-                ObsoleteTag = '25.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
-                ApplicationArea = All;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(Database::"Iss. Payment Order Header CZB"), "No." = field("No.");
-            }
-#endif
             part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = All;
@@ -115,6 +104,7 @@ page 31265 "Iss. Payment Orders CZB"
     {
         area(Navigation)
         {
+#if not CLEAN27
             action(Statistics)
             {
                 ApplicationArea = Basic, Suite;
@@ -122,11 +112,31 @@ page 31265 "Iss. Payment Orders CZB"
                 Image = Statistics;
                 ShortCutKey = 'F7';
                 ToolTip = 'View the statistics on the selected payment order.';
+                ObsoleteReason = 'The statistics action will be replaced with the IssPaymentOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '27.0';
 
                 trigger OnAction()
                 begin
                     Rec.ShowStatistics();
                 end;
+            }
+#endif
+            action(IssPaymentOrderStatistics)
+            {
+                ApplicationArea = VAT;
+                Caption = 'Statistics';
+                Image = Statistics;
+                ShortcutKey = 'F7';
+                Enabled = Rec."No." <> '';
+                ToolTip = 'View statistical information for the record.';
+#if CLEAN27
+                Visible = true;
+#else
+                Visible = false;
+#endif
+                RunObject = Page "Iss. Pmt. Order Statistics CZB";
+                RunPageOnRec = true;
             }
             action(DocAttach)
             {
@@ -232,9 +242,18 @@ page 31265 "Iss. Payment Orders CZB"
             {
                 Caption = 'Payment Order';
 
+#if not CLEAN27
                 actionref(Statistics_Promoted; Statistics)
                 {
+                    ObsoleteReason = 'The statistics action will be replaced with the IssPaymentOrderStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '27.0';
                 }
+#else
+                actionref(IssPaymentOrderStatistics_Promoted; IssPaymentOrderStatistics)
+                {
+                }
+#endif
             }
         }
     }

@@ -12,12 +12,12 @@ using System.Environment;
 codeunit 6364 "Pagero Auth."
 {
     Access = Internal;
-    Permissions = tabledata "OAuth 2.0 Setup" = im;
+    Permissions = tabledata "OAuth 2.0 Setup" = rim;
 
     procedure InitConnectionSetup()
     var
         EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
-        OAuth20: Codeunit OAuth2;
+        OAuth2: Codeunit OAuth2;
         RedirectUrl: Text;
     begin
         if not EDocExtConnectionSetup.Get() then begin
@@ -26,9 +26,26 @@ codeunit 6364 "Pagero Auth."
             EDocExtConnectionSetup."FileAPI URL" := FileAPITxt;
             EDocExtConnectionSetup."DocumentAPI Url" := DocumentAPITxt;
             EDocExtConnectionSetup."Fileparts URL" := FilepartAPITxt;
-            OAuth20.GetDefaultRedirectURL(RedirectUrl);
+            OAuth2.GetDefaultRedirectURL(RedirectUrl);
             EDocExtConnectionSetup.Validate("Redirect URL", CopyStr(RedirectUrl, 1, MaxStrLen(EDocExtConnectionSetup."Redirect URL")));
             EDocExtConnectionSetup.Insert();
+        end;
+    end;
+
+    procedure ResetConnectionSetup()
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+        OAuth2: Codeunit OAuth2;
+        RedirectUrl: Text;
+    begin
+        if EDocExtConnectionSetup.Get() then begin
+            EDocExtConnectionSetup."Authentication URL" := AuthURLTxt;
+            EDocExtConnectionSetup."FileAPI URL" := FileAPITxt;
+            EDocExtConnectionSetup."DocumentAPI Url" := DocumentAPITxt;
+            EDocExtConnectionSetup."Fileparts URL" := FilepartAPITxt;
+            OAuth2.GetDefaultRedirectURL(RedirectUrl);
+            EDocExtConnectionSetup.Validate("Redirect URL", CopyStr(RedirectUrl, 1, MaxStrLen(EDocExtConnectionSetup."Redirect URL")));
+            EDocExtConnectionSetup.Modify();
         end;
     end;
 
@@ -87,7 +104,7 @@ codeunit 6364 "Pagero Auth."
         OAuth20Setup: Record "OAuth 2.0 Setup";
     begin
         GetOAuth2Setup(OAuth20Setup);
-        exit(OAuth20Setup.RefreshAccessToken(HttpError));
+        exit(RefreshAccessToken(OAuth20Setup, HttpError));
     end;
 
     [NonDebuggable]
@@ -116,6 +133,7 @@ codeunit 6364 "Pagero Auth."
         OAuth20Setup."Daily Limit" := 1000;
         OAuth20Setup."Feature GUID" := EDocExtConnectionSetup."OAuth Feature GUID";
         OAuth20Setup."User ID" := CopyStr(UserId(), 1, MaxStrLen(OAuth20Setup."User ID"));
+        OAuth20Setup."Code Challenge Method" := OAuth20Setup."Code Challenge Method"::S256;
         if not Exists then
             OAuth20Setup.Insert()
         else
@@ -221,6 +239,19 @@ codeunit 6364 "Pagero Auth."
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
         EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+    begin
+        if not EDocExtConnectionSetup.Get() then
+            exit;
+
+        Processed := true;
+
+        Result := RequestAccessToken(OAuth20Setup, AuthorizationCode, MessageText)
+    end;
+
+    [NonDebuggable]
+    local procedure RequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var MessageText: Text) Result: Boolean
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
         RequestJSON: Text;
         AccessToken: SecretText;
         RefreshToken: SecretText;
@@ -229,8 +260,6 @@ codeunit 6364 "Pagero Auth."
     begin
         if not EDocExtConnectionSetup.Get() then
             exit;
-
-        Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
@@ -249,6 +278,20 @@ codeunit 6364 "Pagero Auth."
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
         EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+    begin
+        if not EDocExtConnectionSetup.Get() then
+            exit;
+        if not GetOAuth2Setup(OAuth20Setup) or Processed then
+            exit;
+        Processed := true;
+
+        Result := RefreshAccessToken(MessageText)
+    end;
+
+    [NonDebuggable]
+    local procedure RefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var MessageText: Text) Result: Boolean
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
         RequestJSON: Text;
         AccessToken: SecretText;
         RefreshToken: SecretText;
@@ -257,12 +300,11 @@ codeunit 6364 "Pagero Auth."
     begin
         if not EDocExtConnectionSetup.Get() then
             exit;
-        if not GetOAuth2Setup(OAuth20Setup) or Processed then
+
+        if not GetOAuth2Setup(OAuth20Setup) then
             exit;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
-
-        Processed := true;
 
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
         RefreshToken := GetToken(OAuth20Setup."Refresh Token", TokenDataScope);
@@ -302,6 +344,8 @@ codeunit 6364 "Pagero Auth."
         url := SecretStrSubstNo(CurrUrlWithStateTxt, OAuth20Mgt.GetAuthorizationURLAsSecretText(OAuth20Setup, GetClientId()), state);
 
         OAuth2ControlAddIn.SetOAuth2Properties(url.Unwrap(), state);
+
+        Commit();
         OAuth2ControlAddIn.RunModal();
         auth_error := OAuth2ControlAddIn.GetAuthError();
         if auth_error <> '' then
@@ -310,7 +354,7 @@ codeunit 6364 "Pagero Auth."
 
         if AuthorizationCode <> '' then begin
             OAuth20Setup.Get(OAuth20Setup.Code);
-            if not OAuth20Setup.RequestAccessToken(auth_error, AuthorizationCode) then
+            if not RequestAccessToken(OAuth20Setup, AuthorizationCode, auth_error) then
                 Error(auth_error);
         end;
     end;
@@ -340,13 +384,13 @@ codeunit 6364 "Pagero Auth."
     var
         EnvironmentInfo: Codeunit "Environment Information";
         OAuth20Mgt: Codeunit "OAuth 2.0 Mgt.";
-        AuthorizationURLPathTxt: Label '/authorize', Locked = true;
-        AccessTokenURLPathTxt: Label '/token', Locked = true;
-        RefreshTokenURLPathTxt: Label '/token', Locked = true;
+        AuthorizationURLPathTxt: Label '/oauth-authorize', Locked = true;
+        AccessTokenURLPathTxt: Label '/oauth-token', Locked = true;
+        RefreshTokenURLPathTxt: Label '/oauth-token', Locked = true;
         AuthorizationResponseTypeTxt: Label 'code', Locked = true;
         CurrUrlWithStateTxt: Label '%1&state=%2', Comment = '%1 = base url, %2 = guid', Locked = true;
         BearerTxt: Label 'Bearer %1', Comment = '%1 = text value', Locked = true;
-        AuthURLTxt: Label 'https://auth.pageroonline.com/oauth2', Locked = true;
+        AuthURLTxt: Label 'https://sso.pageroonline.com/oauth/v2', Locked = true;
         FileAPITxt: Label 'https://api.pageroonline.com/file/v1/files', Locked = true;
         DocumentAPITxt: Label 'https://api.pageroonline.com/document/v1/documents', Locked = true;
         FilepartAPITxt: Label 'https://api.pageroonline.com/file/v1/fileparts', Locked = true;

@@ -41,17 +41,17 @@ codeunit 19030 "Create IN Item"
             CreateItem.ConferenceBundle18():
                 ValidateRecordFields(Rec, 10540, 0, CreateVATPostingGroups.Standard(), '', '');
             CreateItem.BerlingGuestChairYellow():
-                ValidateRecordFields(Rec, 8690, 6769.984, CreateVATPostingGroups.Zero(), CreateINGSTGroup.GSTGroup0989(), CreateINHSNSAC.HSNSACCode0989001());
+                ValidateRecordFields(Rec, 8690, 6769.984, CreateVATPostingGroups.NoVAT(), CreateINGSTGroup.GSTGroup0989(), CreateINHSNSAC.HSNSACCode0989001());
             CreateItem.GuestSection1():
                 ValidateRecordFields(Rec, 5670, 0, CreateVATPostingGroups.Standard(), '', '');
             CreateItem.RomeGuestChairGreen():
-                ValidateRecordFields(Rec, 8690, 6770.07, CreateVATPostingGroups.Zero(), '', '');
+                ValidateRecordFields(Rec, 8690, 6770.07, CreateVATPostingGroups.NoVAT(), '', '');
             CreateItem.TokyoGuestChairBlue():
-                ValidateRecordFields(Rec, 8690, 6769.987, CreateVATPostingGroups.Zero(), '', '');
+                ValidateRecordFields(Rec, 8690, 6769.987, CreateVATPostingGroups.NoVAT(), '', '');
             CreateItem.ConferenceBundle28():
                 ValidateRecordFields(Rec, 10540, 0, CreateVATPostingGroups.Standard(), '', '');
             CreateItem.MexicoSwivelChairBlack():
-                ValidateRecordFields(Rec, 8560, 6670.026, CreateVATPostingGroups.Zero(), CreateINGSTGroup.GSTGroup0988(), CreateINHSNSAC.HSNSACCode0988001());
+                ValidateRecordFields(Rec, 8560, 6670.026, CreateVATPostingGroups.NoVAT(), CreateINGSTGroup.GSTGroup0988(), CreateINHSNSAC.HSNSACCode0988001());
             CreateItem.ConferencePackage1():
                 ValidateRecordFields(Rec, 15400, 0, CreateVATPostingGroups.Standard(), '', '');
             CreateItem.MunichSwivelChairYellow():
@@ -59,7 +59,7 @@ codeunit 19030 "Create IN Item"
             CreateItem.MoscowSwivelChairRed():
                 ValidateRecordFields(Rec, 8560, 6670, CreateVATPostingGroups.Standard(), '', '');
             CreateItem.SeoulGuestChairRed():
-                ValidateRecordFields(Rec, 8690, 6769.954, CreateVATPostingGroups.Zero(), CreateINGSTGroup.GSTGroup0989(), CreateINHSNSAC.HSNSACCode0989001());
+                ValidateRecordFields(Rec, 8690, 6769.954, CreateVATPostingGroups.NoVAT(), CreateINGSTGroup.GSTGroup0989(), CreateINHSNSAC.HSNSACCode0989001());
             CreateItem.AtlantaWhiteboardBase():
                 ValidateRecordFields(Rec, 62960, 49109.978, CreateVATPostingGroups.Standard(), '', '');
             CreateItem.SydneySwivelChairGreen():

@@ -13,6 +13,7 @@ codeunit 47003 "SL Populate Fiscal Periods"
         SLGLSetup: Record "SL GLSetup";
         NumberOfPeriods: Integer;
         BeginFiscalYear: Integer;
+        IsCalendarYear: Boolean;
 
     internal procedure CreateSLFiscalPeriodsFromGLSetup()
     var
@@ -288,83 +289,133 @@ codeunit 47003 "SL Populate Fiscal Periods"
     internal procedure GetCalendarEndDateOfGLPeriod(GLPeriod: Text[6]): Date
     var
         SLPeriodListWorkTable: Record "SL Period List Work Table";
-        FPDateEnd: Date;
-        PeriodCounter: Integer;
         FiscalYear: Integer;
-        PeriodOfMaxMD: Integer;
-        MaxMonthDay: Text[4];
-        ReturnDate: Text[10];
+        RequestedPeriod: Integer;
+        EndDate: Date;
     begin
-        PeriodCounter := 1;
-        if not SLPeriodListWorkTable.FindFirst() then
-            while PeriodCounter <= NumberOfPeriods do begin
-                SLPeriodListWorkTable.Period := PeriodCounter;
-                case PeriodCounter of
-                    1:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd00;
-                    2:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd01;
-                    3:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd02;
-                    4:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd03;
-                    5:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd04;
-                    6:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd05;
-                    7:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd06;
-                    8:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd07;
-                    9:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd08;
-                    10:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd09;
-                    11:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd10;
-                    12:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd11;
-                    13:
-                        SLPeriodListWorkTable.MonthDay := SLGLSetup.FiscalPerEnd12;
-                end;
+        if SLPeriodListWorkTable.IsEmpty() then
+            InitializePeriodWorkTable();
+        if not Evaluate(FiscalYear, GLPeriod.Substring(1, 4)) then
+            exit(0D);
+        if not Evaluate(RequestedPeriod, GLPeriod.Substring(5, 2)) then
+            exit(0D);
+        AssignCalendarYearsToPeriods(FiscalYear);
+        EndDate := GetPeriodEndDate(RequestedPeriod);
+        exit(EndDate);
+    end;
 
-                SLPeriodListWorkTable.Insert();
-                Commit();
-                PeriodCounter += 1;
-            end;
+    internal procedure InitializePeriodWorkTable()
+    var
+        SLPeriodListWorkTable: Record "SL Period List Work Table";
+        PeriodCounter: Integer;
+        MonthOneTxt: Label '01', Locked = true;
+    begin
+        SLPeriodListWorkTable.DeleteAll();
 
-        Evaluate(FiscalYear, GLPeriod.Substring(1, 4));
-
-        SLPeriodListWorkTable.Reset();
-        SLPeriodListWorkTable.SetCurrentKey(MonthDay);
-        if SLPeriodListWorkTable.Find('+') then begin
-            MaxMonthDay := SLPeriodListWorkTable.MonthDay;
-            PeriodOfMaxMD := SLPeriodListWorkTable.Period;
+        for PeriodCounter := 1 to NumberOfPeriods do begin
+            Clear(SLPeriodListWorkTable);
+            SLPeriodListWorkTable.Period := PeriodCounter;
+            SLPeriodListWorkTable.MonthDay := GetFiscalPeriodEndDate(PeriodCounter);
+            if PeriodCounter = 1 then
+                if SLPeriodListWorkTable.MonthDay.Substring(1, 2) = MonthOneTxt then
+                    IsCalendarYear := true;
+            SLPeriodListWorkTable.Insert();
         end;
+    end;
 
+    internal procedure GetFiscalPeriodEndDate(PeriodNumber: Integer): Text[4]
+    begin
+        case PeriodNumber of
+            1:
+                exit(SLGLSetup.FiscalPerEnd00);
+            2:
+                exit(SLGLSetup.FiscalPerEnd01);
+            3:
+                exit(SLGLSetup.FiscalPerEnd02);
+            4:
+                exit(SLGLSetup.FiscalPerEnd03);
+            5:
+                exit(SLGLSetup.FiscalPerEnd04);
+            6:
+                exit(SLGLSetup.FiscalPerEnd05);
+            7:
+                exit(SLGLSetup.FiscalPerEnd06);
+            8:
+                exit(SLGLSetup.FiscalPerEnd07);
+            9:
+                exit(SLGLSetup.FiscalPerEnd08);
+            10:
+                exit(SLGLSetup.FiscalPerEnd09);
+            11:
+                exit(SLGLSetup.FiscalPerEnd10);
+            12:
+                exit(SLGLSetup.FiscalPerEnd11);
+            13:
+                exit(SLGLSetup.FiscalPerEnd12);
+            else
+                exit('');
+        end;
+    end;
+
+    internal procedure AssignCalendarYearsToPeriods(FiscalYear: Integer)
+    var
+        SLPeriodListWorkTable: Record "SL Period List Work Table";
+        PeriodOfMaxMD: Integer;
+    begin
+        PeriodOfMaxMD := GetPeriodWithLatestMonthDay();
         SLPeriodListWorkTable.Reset();
         if SLPeriodListWorkTable.FindSet() then
             repeat
-                if SLPeriodListWorkTable.Period <= PeriodOfMaxMD then begin
-                    if BeginFiscalYear = 1 then
-                        SLPeriodListWorkTable.year := Format(FiscalYear)
-                    else
-                        SLPeriodListWorkTable.year := Format(FiscalYear - 1);
-                end else
-                    if BeginFiscalYear = 1 then
-                        SLPeriodListWorkTable.year := Format(FiscalYear + 1)
-                    else
-                        SLPeriodListWorkTable.year := Format(FiscalYear);
+                SLPeriodListWorkTable.year := Format(GetCalendarYearForPeriod(SLPeriodListWorkTable.Period, PeriodOfMaxMD, FiscalYear));
                 SLPeriodListWorkTable.Modify();
-                Commit();
             until SLPeriodListWorkTable.Next() = 0;
+    end;
 
+    internal procedure GetPeriodWithLatestMonthDay(): Integer
+    var
+        SLPeriodListWorkTable: Record "SL Period List Work Table";
+    begin
         SLPeriodListWorkTable.Reset();
-        SLPeriodListWorkTable.SetFilter(Period, GLPeriod.Substring(5, 2));
+        SLPeriodListWorkTable.SetCurrentKey(MonthDay);
+        if SLPeriodListWorkTable.FindLast() then
+            exit(SLPeriodListWorkTable.Period);
+
+        exit(0);
+    end;
+
+    internal procedure GetCalendarYearForPeriod(PeriodNumber: Integer; PeriodOfMaxMD: Integer; FiscalYear: Integer): Integer
+    begin
+        if IsCalendarYear then
+            exit(FiscalYear);
+
+        if PeriodNumber <= PeriodOfMaxMD then begin
+            if BeginFiscalYear = 1 then
+                exit(FiscalYear)
+            else
+                exit(FiscalYear - 1);
+        end else
+            if BeginFiscalYear = 1 then
+                exit(FiscalYear + 1)
+            else
+                exit(FiscalYear);
+    end;
+
+    internal procedure GetPeriodEndDate(RequestedPeriod: Integer): Date
+    var
+        SLPeriodListWorkTable: Record "SL Period List Work Table";
+        DateText: Text[10];
+        EndDate: Date;
+    begin
+        SLPeriodListWorkTable.Reset();
+        SLPeriodListWorkTable.SetRange(Period, RequestedPeriod);
         if SLPeriodListWorkTable.FindFirst() then begin
-            ReturnDate := SLPeriodListWorkTable.year + '-' + SLPeriodListWorkTable.MonthDay.Substring(1, 2) + '-' + SLPeriodListWorkTable.MonthDay.Substring(3, 2);
-            Evaluate(FPDateEnd, ReturnDate);
+            DateText := SLPeriodListWorkTable.year + '-' +
+                       SLPeriodListWorkTable.MonthDay.Substring(1, 2) + '-' +
+                       SLPeriodListWorkTable.MonthDay.Substring(3, 2);
+
+            if Evaluate(EndDate, DateText) then
+                exit(EndDate);
         end;
-        exit(FPDateEnd);
+        exit(0D);
     end;
 }

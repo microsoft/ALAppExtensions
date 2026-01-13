@@ -32,7 +32,7 @@ table 5023 "Service Declaration Header"
         field(2; "Config. Code"; Code[20])
         {
             Caption = 'Config. Code';
-            TableRelation = "VAT Reports Configuration"."VAT Report Version" WHERE("VAT Report Type" = CONST("Service Declaration"));
+            TableRelation = "VAT Reports Configuration"."VAT Report Version" where("VAT Report Type" = const("Service Declaration"));
         }
         field(50; "Starting Date"; Date)
         {
@@ -97,10 +97,10 @@ table 5023 "Service Declaration Header"
     begin
         if "No." = '' then begin
             TestNoSeries();
-                "No. Series" := ServiceDeclarationSetup."Declaration No. Series";
-                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
-                    "No. Series" := xRec."No. Series";
-                "No." := NoSeries.GetNextNo("No. Series");
+            "No. Series" := ServiceDeclarationSetup."Declaration No. Series";
+            if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                "No. Series" := xRec."No. Series";
+            "No." := NoSeries.GetNextNo("No. Series");
         end;
     end;
 

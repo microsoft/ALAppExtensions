@@ -4578,12 +4578,6 @@ End Function</Code>
         <Field Name="Formatted_AmountIncludingVAT_SalesHeader">
           <DataField>Formatted_AmountIncludingVAT_SalesHeader</DataField>
         </Field>
-        <Field Name="DueDate_SalesHeaderCaption">
-          <DataField>DueDate_SalesHeaderCaption</DataField>
-        </Field>
-        <Field Name="DueDateFormat_SalesHeader">
-          <DataField>DueDateFormat_SalesHeader</DataField>
-        </Field>
         <Field Name="DocFooterText">
           <DataField>DocFooterText</DataField>
         </Field>

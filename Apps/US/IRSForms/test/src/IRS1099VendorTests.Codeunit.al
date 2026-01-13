@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -14,6 +14,7 @@ using System.TestLibraries.Utilities;
 codeunit 148011 "IRS 1099 Vendor Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var
@@ -164,11 +165,6 @@ codeunit 148011 "IRS 1099 Vendor Tests"
     procedure ChangeIRSDataInVendorLedgerEntry()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
         NewPeriodNo, FormNo, NewFormNo, FormBoxNo, NewFormBoxNo : Code[20];
         IRSAmount: Decimal;
@@ -177,9 +173,6 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         // [SCENARIO 495389] Stan can change the IRS data in the posted vendor ledger entry
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
@@ -210,20 +203,12 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         VendorLedgerEntry.TestField("IRS 1099 Form Box No.", NewFormBoxNo);
         VendorLedgerEntry.TestField("IRS 1099 Reporting Amount", IRSAmount);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
     procedure SetIRSAmountMoreThanAmountInVendLedgEntry()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
         FormNo, FormBoxNo : Code[20];
         IRSAmount: Decimal;
@@ -231,9 +216,6 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         // [SCENARIO 495389] Stan cannot set the IRS Reporting Amount more than amount in Vendor Ledger Entry
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
@@ -250,20 +232,12 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         // [THEN] An error message "IRS Reporting Amount cannot be more than -300" is thrown
         Assert.ExpectedError(IRSReportingAmountCannotBeMoreThanAmountErr);
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
     procedure SetPositiveIRSAmountInInvVendLedgEntry()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
         FormNo, FormBoxNo : Code[20];
         IRSAmount: Decimal;
@@ -271,9 +245,6 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         // [SCENARIO 495389] Stan cannot set the positive IRS Reporting Amount in the invoice Vendor Ledger Entry
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
@@ -289,20 +260,12 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         asserterror VendorLedgerEntriesPage."IRS 1099 Reporting Amount".SetValue(IRSAmount);
         // [THEN] An error message "IRS Reporting Amount must be negative" is thrown
         Assert.ExpectedError(IRSReportingAmountNegativeErr);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
     procedure SetNegativeIRSAmountInInvVendLedgEntry()
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
         VendorLedgerEntriesPage: TestPage "Vendor Ledger Entries";
         FormNo, FormBoxNo : Code[20];
         IRSAmount: Decimal;
@@ -310,9 +273,6 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         // [SCENARIO 495389] Stan cannot set the negative IRS Reporting Amount in the credit memo Vendor Ledger Entry
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
         LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
         FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
@@ -328,9 +288,6 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         asserterror VendorLedgerEntriesPage."IRS 1099 Reporting Amount".SetValue(IRSAmount);
         // [THEN] An error message "IRS Reporting Amount must be positive" is thrown
         Assert.ExpectedError(IRSReportingAmountPositiveErr);
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
     end;
 
     [Test]
@@ -361,6 +318,88 @@ codeunit 148011 "IRS 1099 Vendor Tests"
 
         // [THEN] Vendor ledger entry has IRS 1099 fields filled on Vendor Ledger Entry of selected Vendors
         VerifyIRS1099FieldsOnVendorLedgerEntry(PeriodNo, FormNo, FormBoxNo, VendorNo[1] + '|' + VendorNo[3]);
+    end;
+
+    [Test]
+    procedure VendorCardShowsIRSFieldsWhenVendorHasFormBoxSetup()
+    var
+        VendorCard: TestPage "Vendor Card";
+        VendorNo, PeriodNo, FormNo, FormBoxNo : Code[20];
+    begin
+        // [SCENARIO 562547] Vendor Card displays IRS fields correctly when vendor has form box setup
+        Initialize();
+
+        // [GIVEN] Reporting period, form "F1" and form box "FB1" are created
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        // [GIVEN] Vendor "V" with form box setup for form "F1" and form box "FB1"
+        VendorNo := LibraryPurchase.CreateVendorNo();
+        LibraryIRS1099FormBox.AssignFormBoxForVendorInPeriod(VendorNo, WorkDate(), WorkDate(), FormNo, FormBoxNo);
+
+        // [WHEN] Vendor Card page is opened for vendor "V"
+        VendorCard.OpenView();
+        VendorCard.Filter.SetFilter("No.", VendorNo);
+
+        // [THEN] IRSReportingPeriodNoField shows the reporting period, IRS1099FormNoField shows "F1", IRS1099FormBoxNoField shows "FB1"
+        VendorCard.IRSReportingPeriodNoField.AssertEquals(PeriodNo);
+        VendorCard.IRS1099FormNoField.AssertEquals(FormNo);
+        VendorCard.IRS1099FormBoxNoField.AssertEquals(FormBoxNo);
+        VendorCard.Close();
+    end;
+
+    [Test]
+    procedure VendorCardShowsEmptyIRSFieldsWhenVendorHasNoFormBoxSetup()
+    var
+        VendorCard: TestPage "Vendor Card";
+        VendorNo: Code[20];
+    begin
+        // [SCENARIO 562547] Vendor Card displays empty IRS fields when vendor has no form box setup
+        Initialize();
+
+        // [GIVEN] Vendor "V" with no form box setup
+        VendorNo := LibraryPurchase.CreateVendorNo();
+
+        // [WHEN] Vendor Card page is opened for vendor "V"
+        VendorCard.OpenView();
+        VendorCard.Filter.SetFilter("No.", VendorNo);
+
+        // [THEN] IRSReportingPeriodNoField is empty, IRS1099FormNoField is empty, IRS1099FormBoxNoField is empty
+        VendorCard.IRSReportingPeriodNoField.AssertEquals('');
+        VendorCard.IRS1099FormNoField.AssertEquals('');
+        VendorCard.IRS1099FormBoxNoField.AssertEquals('');
+        VendorCard.Close();
+    end;
+
+    [Test]
+    procedure VendorCardIRSFormBoxNoDrillDownOpensFormBoxSetup()
+    var
+        IRS1099VendorFormBoxSetup: TestPage "IRS 1099 Vendor Form Box Setup";
+        VendorCard: TestPage "Vendor Card";
+        VendorNo, FormNo, FormBoxNo : Code[20];
+    begin
+        // [SCENARIO 562547] Drill down on IRS Form Box No. field opens vendor form box setup page
+        Initialize();
+
+        // [GIVEN] Reporting period, form "F1" and form box "FB1" are created
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        // [GIVEN] Vendor "V" with form box setup for form "F1" and form box "FB1"
+        VendorNo := LibraryPurchase.CreateVendorNo();
+        LibraryIRS1099FormBox.AssignFormBoxForVendorInPeriod(VendorNo, WorkDate(), WorkDate(), FormNo, FormBoxNo);
+        // [GIVEN] Vendor Card page is opened for vendor "V"
+        VendorCard.OpenView();
+        VendorCard.Filter.SetFilter("No.", VendorNo);
+
+        // [WHEN] User drills down on IRS1099FormBoxNoField
+        IRS1099VendorFormBoxSetup.Trap();
+        VendorCard.IRS1099FormBoxNoField.DrillDown();
+
+        // [THEN] IRS 1099 Vendor Form Box Setup page opens filtered by vendor "V"
+        IRS1099VendorFormBoxSetup."Vendor No.".AssertEquals(VendorNo);
+        IRS1099VendorFormBoxSetup.Close();
+        VendorCard.Close();
     end;
 
     local procedure Initialize()

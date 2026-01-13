@@ -45,6 +45,14 @@ table 10031 "IRS Reporting Period"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(101; "IRIS Transmission"; Boolean)
+        {
+            Caption = 'IRIS Transmission';
+            ToolTip = 'Specifies if the IRIS transmission has been created for this reporting period.';
+            Editable = false;
+            FieldClass = FlowField;
+            CalcFormula = exist("Transmission IRIS" where("Period No." = field("No.")));
+        }
     }
 
     keys

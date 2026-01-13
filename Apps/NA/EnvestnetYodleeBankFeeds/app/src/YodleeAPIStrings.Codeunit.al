@@ -141,6 +141,39 @@ codeunit 1458 "Yodlee API Strings"
         exit(GetRegisterConsumerRequestBodyText);
     end;
 
+#if not CLEAN28
+    [Scope('OnPrem')]
+    [Obsolete('Use GetRegisterConsumerBody instead', '28.0')]
+    procedure GetRegisterConsumerBodySecret(CobrandToken: Text; UserName: Text; UserPassword: SecretText; UserEmail: Text; UserCurrency: Text): SecretText;
+    var
+        RegisterConsumerRequestBodyJsonObject: JsonObject;
+        RegisterConsumerRequestBodySecretText: SecretText;
+        RegisterConsumerRequestBody: Text;
+        UserJsonObject: JsonObject;
+        UserPreferencesJsonObject: JsonObject;
+        PlaceholderTok: Label 'Placeholder', Locked = true;
+    begin
+        UserJsonObject.Add('loginName', UserName);
+
+        if not UserPassword.IsEmpty() then
+            UserJsonObject.Add('password', PlaceholderTok);
+
+        UserJsonObject.Add('email', UserEmail);
+        UserPreferencesJsonObject.Add('currency', UserCurrency);
+        UserJsonObject.Add('preferences', UserPreferencesJsonObject);
+        RegisterConsumerRequestBodyJsonObject.Add('user', UserJsonObject);
+
+        if not UserPassword.IsEmpty() then
+            RegisterConsumerRequestBodyJsonObject.WriteWithSecretsTo('$.user.password', UserPassword, RegisterConsumerRequestBodySecretText)
+        else begin
+            RegisterConsumerRequestBodyJsonObject.WriteTo(RegisterConsumerRequestBody);
+            RegisterConsumerRequestBodySecretText := RegisterConsumerRequestBody;
+        end;
+
+        exit(RegisterConsumerRequestBodySecretText);
+    end;
+#endif
+
     [Scope('OnPrem')]
     procedure GetRemoveConsumerURL(): Text;
     begin

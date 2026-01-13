@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -11,13 +11,7 @@ using System.Utilities;
 
 codeunit 31418 "Cross Application Handler CZZ"
 {
-#if not CLEAN25
-    ObsoleteState = Pending;
-    ObsoleteReason = 'The Access property will be changed to Internal.';
-    ObsoleteTag = '25.0';
-#else
     Access = Internal;
-#endif
 
     var
         ConfirmManagement: Codeunit "Confirm Management";
@@ -64,6 +58,9 @@ codeunit 31418 "Cross Application Handler CZZ"
             exit;
 
         PurchAdvLetterHeaderCZZ := CollectedFor;
+
+        if PurchAdvLetterHeaderCZZ."No." = '' then
+            exit;
 
         IssPaymentOrderLineCZB.SetRange("Purch. Advance Letter No. CZZ", PurchAdvLetterHeaderCZZ."No.");
         IssPaymentOrderLineCZB.SetFilter(Status, '<>%1', IssPaymentOrderLineCZB.Status::Canceled);

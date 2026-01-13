@@ -3,6 +3,7 @@ codeunit 139598 "AAC Auto. Acc. Group Posting"
     // [FEATURE] [Automatic Account Group]
 
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -20,12 +21,14 @@ codeunit 139598 "AAC Auto. Acc. Group Posting"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryAAC: Codeunit "Library - AAC";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        CopyGenJournalMgt: Codeunit "Copy Gen. Journal Mgt.";
         IsInitialized: Boolean;
         CopyFromOption: Option AccGroup,GenJournal,AccGroupAndGenJnl;
         DimensionDoesNotExistsErr: Label 'Dimension value %1 %2 does not exists for G/L Entry No. %3.', Comment = '%1 = Dimension Code, %2 = DimensionValue Code, %3 = GLEntry Entry No';
         WrongValueErr: Label 'Wrong value of field %1 in table %2, entry no. %3.', Comment = '%1 = Additional-Currency Amount, %2 =  GLEntry TableCaption, %3 = GLEntry Entry No';
-
         WrongAmountGLEntriesErr: Label 'Wrong Amount in G/L Entry.';
+        GLEntryCountErr: Label 'Posted g/l entry count not match with expected count';
 
     [Test]
     [Scope('OnPrem')]
@@ -719,6 +722,112 @@ codeunit 139598 "AAC Auto. Acc. Group Posting"
             ExpectedAmount += Round(DeferralPeriodAmount * AutomaticAccountLine."Allocation %" / 100);
 
         VerifyGLEntriesBalance(AutomaticAccountLine."G/L Account No.", ExpectedAmount, DeferralTemplate."No. of Periods" + 1);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('CopyGenJournalParametersHandler,ConfirmHandlerFalse')]
+    procedure AutomaticAccountGroupShouldPopulateToGenJnlLine()
+    var
+        GenJnlLine: Record "Gen. Journal Line";
+        PostedGenJournalLine: Record "Posted Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        AutoAccGroupNo: Code[10];
+        GLAccountNo: Code[20];
+    begin
+        // [SCENARIO 573605] The Automatic Account Groups are not populated to the General Journal line using Copy G/L register to Journal line function in the Swedish version.
+        Initialize();
+
+        // [GIVEN] Create "Automatic Acc. Group"
+        AutoAccGroupNo := CreateAutoAccGroupWithRndAllocation();
+
+        // [GIVEN] Create "General Journal Line"with "Auto Acc. Group"
+        GLAccountNo := LibraryERM.CreateGLAccountNo();
+        CreateGenJnlLineWithAutoAccGroupAndCopyToPostedJnlLines(GenJournalBatch, GenJnlLine, AutoAccGroupNo, GLAccountNo, LibraryRandom.RandDec(1000, 2));
+
+        // [WHEN] Post Gen. Jnl. Line
+        LibraryERM.PostGeneralJnlLine(GenJnlLine);
+
+        // [WHEN] Copy first posted general journal line
+        QueueCopyParameters(GenJournalBatch, false);
+        FilterFirstPostedGenJnlLine(PostedGenJournalLine, GenJournalBatch);
+        CopyGenJournalMgt.CopyGLRegister(PostedGenJournalLine);
+
+        // [THEN] The whole register copied to general journal (2 entries copied)
+        VerifyCopiedGenJnlLines(GenJournalBatch, GenJournalBatch, 2);
+    end;
+
+    [Test]
+    procedure PostGenJnlLineWithAmountDivisionWithAccGroup()
+    var
+        GenJnlLine: Record "Gen. Journal Line";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        AutoAccGroupNo: Code[10];
+        CurrencyCode: Code[10];
+        GLAccountNo: array[3] of Code[20];
+    begin
+        // [SCENARIO 575346] Rounding issue leading to "Inconsistency" error when trying to post with different currency and automatic accounting in Swedish localisation.
+        Initialize();
+
+        // [GIVEN] Currency with specific exchange rates.
+        CurrencyCode := CreateCurrencyAndExchangeRate(1, 10.97223, WorkDate());
+
+        // [GIVEN] Created Auto Account Group With 3 GL Account with Allocation 50,50,-100.
+        AutoAccGroupNo := CreateAutoAccGroupWithThreeLines(GLAccountNo[1], GLAccountNo[2], GLAccountNo[3]);
+
+        // [WHEN] "General Journal Line" - "GJL", GJL."Auto Acc. Group" = AAG, GJL."Amount" = "A"
+        CreateAndPostTwoGenJnlLineWithAutoAccGroup(CurrencyCode, GenJournalBatch, GenJnlLine, AutoAccGroupNo, GLAccountNo[2], GLAccountNo[3]);
+
+        // [THEN] Check Posted GL Entry count Match with Expected.
+        CountGLEntryLines(GenJnlLine);//assert
+    end;
+
+    [Test]
+    procedure AllowDeferralPostingPurchaseInvoiceAutoAccGroup()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchInvoiceHeader: Record "Purch. Inv. Header";
+        DeferralTemplate: Record "Deferral Template";
+        PostedInvoiceNo, AutoGroupGLAccountNo : Code[20];
+        AutoAccGroupNo: Code[10];
+    begin
+        // [FEATURE] [Deferral] [Purchase]
+        // [SCENARIO 579189] "Posting Date outside range" error message appears if Deferrals and Auto Acc. Group are used in a purchase document in Swedish version
+
+        // [GIVEN] Automatic Account Group "AAG" with 2 lines where "Account No." = "GL-AG" and balancing line with blank Account No.
+        Initialize();
+
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup.Validate("Allow Posting From", DMY2Date(1, Date2DMY(WorkDate(), 2), Date2DMY(WorkDate(), 3) - 2));
+        GeneralLedgerSetup.Validate("Allow Posting To", CalcDate('<CM>', GeneralLedgerSetup."Allow Posting From"));
+        GeneralLedgerSetup.Validate("Allow Deferral Posting To", CalcDate('<CM>', WorkDate()));
+        GeneralLedgerSetup.Modify(true);
+
+        AutoGroupGLAccountNo := LibraryERM.CreateGLAccountNo();
+        AutoAccGroupNo := CreateAutomaticAccGroupWithTwoLines(AutoGroupGLAccountNo);
+
+        // [GIVEN] Deferral Template "D" where "No. of Periods" = 3 and "Deferral Account" = "GL-D"
+        CreateDeferralCode(
+            DeferralTemplate, "Deferral Calculation Method"::"Equal per Period", "Deferral Calculation Start Date"::"Beginning of Next Period", LibraryRandom.RandIntInRange(2, 5));
+
+        // [GIVEN] Purchase invoice for "G/L Account" = "GL-PI" with Amount = 100, "Automatic Account Group" = "AAG" and "Deferral Code" = "D"
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader.Validate("Posting Date", CalcDate('<-2Y>', WorkDate()));
+        PurchaseHeader.Modify(true);
+        LibraryPurchase.CreatePurchaseLine(
+          PurchaseLine, PurchaseHeader, PurchaseLine.Type::"G/L Account", LibraryERM.CreateGLAccountWithPurchSetup(), 1);
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(100, 200, 2));
+        PurchaseLine.Validate("Automatic Account Group", AutoAccGroupNo);
+        PurchaseLine.Validate("Deferral Code", DeferralTemplate."Deferral Code");
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Post purchase invoice
+        PostedInvoiceNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] No error of Allow Posting Date should be raised while posting purchase invoice.
+        PurchInvoiceHeader.Get(PostedInvoiceNo);
     end;
 
     local procedure Initialize()
@@ -1437,6 +1546,162 @@ codeunit 139598 "AAC Auto. Acc. Group Posting"
                     NoSeriesLinePurchaseRecRef.Modify();
                 until NoSeriesLinePurchaseRecRef.Next() = 0;
         end;
+    end;
+
+    local procedure CreateGenJnlLineWithAutoAccGroupAndCopyToPostedJnlLines(var GenJournalBatch: Record "Gen. Journal Batch"; var GenJnlLine: Record "Gen. Journal Line"; AutoAccGroupNo: Code[10]; GLAccountNo: Code[20]; GLAmount: Decimal)
+    var
+        GLAccount: Record "G/L Account";
+    begin
+        CreateGenJournalTemplateAndBatch(GenJournalBatch);
+        LibraryERM.CreateGLAccount(GLAccount);
+        LibraryJournals.CreateGenJournalLine(
+          GenJnlLine,
+          GenJournalBatch."Journal Template Name",
+          GenJournalBatch.Name,
+          GenJnlLine."Document Type"::" ",
+          GenJnlLine."Account Type"::"G/L Account",
+          GLAccountNo,
+          GenJnlLine."Bal. Account Type"::"G/L Account",
+          GLAccount."No.",
+          GLAmount);
+        GenJnlLine.Validate("Automatic Account Group", AutoAccGroupNo);
+        GenJnlLine.Modify(true);
+    end;
+
+    local procedure CreateGenJournalTemplateAndBatch(var GenJournalBatch: Record "Gen. Journal Batch")
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        GenJournalTemplate.Validate("Copy to Posted Jnl. Lines", true);
+        GenJournalTemplate.Modify(true);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        GenJournalBatch.Validate("Copy to Posted Jnl. Lines", true);
+        GenJournalBatch.Modify(true);
+    end;
+
+    local procedure QueueCopyParameters(GenJournalBatch: Record "Gen. Journal Batch"; ReverseSign: Boolean)
+    begin
+        LibraryVariableStorage.Enqueue(GenJournalBatch."Journal Template Name");
+        LibraryVariableStorage.Enqueue(GenJournalBatch.Name);
+        LibraryVariableStorage.Enqueue(ReverseSign);
+    end;
+
+    local procedure FilterFirstPostedGenJnlLine(var PostedGenJournalLine: Record "Posted Gen. Journal Line"; GenJournalBatch: Record "Gen. Journal Batch")
+    begin
+        PostedGenJournalLine.SetRange("Journal Template Name", GenJournalBatch."Journal Template Name");
+        PostedGenJournalLine.SetRange("Journal Batch Name", GenJournalBatch.Name);
+        PostedGenJournalLine.FindSet();
+    end;
+
+    local procedure VerifyCopiedGenJnlLines(SrcGenJournalBatch: Record "Gen. Journal Batch"; TargetGenJournalBatch: Record "Gen. Journal Batch"; RecordCount: Integer)
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        PostedGenJournalLine: Record "Posted Gen. Journal Line";
+    begin
+        GenJournalLine.SetRange("Journal Template Name", TargetGenJournalBatch."Journal Template Name");
+        GenJournalLine.SetRange("Journal Batch Name", TargetGenJournalBatch.Name);
+        Assert.RecordCount(GenJournalLine, RecordCount);
+
+        PostedGenJournalLine.SetRange("Journal Template Name", SrcGenJournalBatch."Journal Template Name");
+        PostedGenJournalLine.SetRange("Journal Batch Name", SrcGenJournalBatch.Name);
+        if PostedGenJournalLine.FindSet() then
+            repeat
+                GenJournalLine.SetRange("Account No.", PostedGenJournalLine."Account No.");
+                Assert.RecordCount(GenJournalLine, 1);
+            until PostedGenJournalLine.Next() = 0;
+    end;
+
+    local procedure CreateCurrencyAndExchangeRate(Rate: Decimal; RelationalRate: Decimal; FromDate: Date): Code[10]
+    var
+        Currency: Record Currency;
+    begin
+        LibraryERM.CreateCurrency(Currency);
+        LibraryERM.SetCurrencyGainLossAccounts(Currency);
+        Currency.Validate("Residual Gains Account", Currency."Realized Gains Acc.");
+        Currency.Validate("Residual Losses Account", Currency."Realized Losses Acc.");
+        Currency.Modify(true);
+        CreateExchangeRate(Currency.Code, Rate, RelationalRate, FromDate);
+        exit(Currency.Code);
+    end;
+
+    local procedure CreateExchangeRate(CurrencyCode: Code[10]; Rate: Decimal; RelationalRate: Decimal; FromDate: Date)
+    var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+    begin
+        LibraryERM.CreateExchRate(CurrencyExchangeRate, CurrencyCode, FromDate);
+        CurrencyExchangeRate.Validate("Exchange Rate Amount", Rate);
+        CurrencyExchangeRate.Validate("Adjustment Exch. Rate Amount", Rate);
+        CurrencyExchangeRate.Validate("Relational Exch. Rate Amount", RelationalRate);
+        CurrencyExchangeRate.Validate("Relational Adjmt Exch Rate Amt", RelationalRate);
+        CurrencyExchangeRate.Modify(true);
+    end;
+
+    local procedure CreateAndPostTwoGenJnlLineWithAutoAccGroup(CurrencyCode: Code[20]; var GenJournalBatch: Record "Gen. Journal Batch"; var GenJnlLine: Record "Gen. Journal Line"; AutoAccGroupNo: Code[10]; GLAccountNo2: Code[20]; GLAccountNo3: Code[20])
+    var
+        DocNo: Code[20];
+    begin
+        CreateGenJournalTemplateAndBatch(GenJournalBatch);
+        LibraryJournals.CreateGenJournalLine(GenJnlLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJnlLine."Document Type"::Invoice,
+            GenJnlLine."Account Type"::"G/L Account", GLAccountNo2, GenJnlLine."Bal. Account Type"::"G/L Account", '', 480);
+        GenJnlLine.Validate("Automatic Account Group", AutoAccGroupNo);
+        GenJnlLine.Validate("Currency Code", CurrencyCode);
+        GenJnlLine.Modify(true);
+        DocNo := GenJnlLine."Document No.";
+
+        LibraryJournals.CreateGenJournalLine(GenJnlLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJnlLine."Document Type"::Invoice,
+            GenJnlLine."Account Type"::"G/L Account", GLAccountNo3, GenJnlLine."Bal. Account Type"::"G/L Account", '', -480);
+        GenJnlLine.Validate("Document No.", DocNo);
+        GenJnlLine.Validate("Currency Code", CurrencyCode);
+        GenJnlLine.Modify(true);
+
+        LibraryERM.PostGeneralJnlLine(GenJnlLine);
+    end;
+
+    local procedure CreateAutoAccGroupWithThreeLines(var GLAccountNo1: Code[20]; var GLAccountNo2: Code[20]; var GLAccountNo3: Code[20]) AutoAccGroupNo: Code[10]
+    begin
+        GLAccountNo1 := LibraryERM.CreateGLAccountNo();
+        GLAccountNo2 := LibraryERM.CreateGLAccountNo();
+        GLAccountNo3 := LibraryERM.CreateGLAccountNo();
+        AutoAccGroupNo := CreateAutomaticAccGroupWithTwoLinesAndBalanceLine(GLAccountNo1, GLAccountNo2, GLAccountNo3);
+    end;
+
+    local procedure CreateAutomaticAccGroupWithTwoLinesAndBalanceLine(GLAccountNo1: Code[20]; GLAccountNo2: Code[20]; GLAccountNo3: Code[20]): Code[10]
+    var
+        AutomaticAccountHeader: Record "Automatic Account Header";
+    begin
+        LibraryAAC.CreateAutomaticAccountHeader(AutomaticAccountHeader);
+
+        CreateAutoAccLine(AutomaticAccountHeader."No.", GLAccountNo1, 50, '');
+        CreateAutoAccLine(AutomaticAccountHeader."No.", GLAccountNo2, 50, '');
+        CreateAutoAccLine(AutomaticAccountHeader."No.", GLAccountNo3, -100, '');
+        Commit();
+        exit(AutomaticAccountHeader."No.");
+    end;
+
+    local procedure CountGLEntryLines(GenJnlLine: Record "Gen. Journal Line")
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.SetRange("Document No.", GenJnlLine."Document No.");
+        GLEntry.FindSet();
+        Assert.AreEqual(5, GLEntry.Count, GLEntryCountErr);
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure CopyGenJournalParametersHandler(var CopyGenJournalParameters: TestPage "Copy Gen. Journal Parameters")
+    begin
+        CopyGenJournalParameters."Journal Template Name".SetValue(LibraryVariableStorage.DequeueText());
+        CopyGenJournalParameters."Journal Batch Name".SetValue(LibraryVariableStorage.DequeueText());
+        CopyGenJournalParameters."Reverse Sign".SetValue(LibraryVariableStorage.DequeueBoolean());
+        CopyGenJournalParameters.OK().Invoke();
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandlerFalse(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := false;
     end;
 }
 

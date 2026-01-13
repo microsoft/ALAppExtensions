@@ -8,6 +8,7 @@ using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Foundation.Company;
 
 tableextension 11726 "Sales Invoice Header CZL" extends "Sales Invoice Header"
@@ -134,11 +135,21 @@ tableextension 11726 "Sales Invoice Header CZL" extends "Sales Invoice Header"
             ObsoleteReason = 'Replaced by VAT Reporting Date.';
         }
 #endif
+#if not CLEANSCHEMA30
         field(11781; "Registration No. CZL"; Text[20])
         {
-            Caption = 'Registration No.';
+            Caption = 'Registration No. (Obsolete)';
             DataClassification = CustomerContent;
+#if not CLEAN27
+            ObsoleteState = Pending;
+            ObsoleteTag = '27.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '30.0';
+#endif
+            ObsoleteReason = 'Replaced by standard "Registration Number" field.';
         }
+#endif
         field(11782; "Tax Registration No. CZL"; Text[20])
         {
             Caption = 'Tax Registration No.';
@@ -168,6 +179,33 @@ tableextension 11726 "Sales Invoice Header CZL" extends "Sales Invoice Header"
             DataClassification = CustomerContent;
         }
     }
+
+    var
+        PopUpVATLCYCorrection: Boolean;
+
+    procedure SetPopUpVATLCYCorrectionCZL(NewPopUpVATLCYCorrection: Boolean)
+    begin
+        PopUpVATLCYCorrection := NewPopUpVATLCYCorrection;
+    end;
+
+    procedure GetPopUpVATLCYCorrectionCZL(): Boolean
+    begin
+        exit(PopUpVATLCYCorrection);
+    end;
+
+    procedure MakeVATLCYCorrectionCZL()
+    var
+        VATLCYCorrectionCZL: Page "VAT LCY Correction CZL";
+    begin
+        VATLCYCorrectionCZL.InitGlobals(Rec);
+        VATLCYCorrectionCZL.Run();
+    end;
+
+    procedure IsVATLCYCorrectionAllowedCZL(): Boolean
+    begin
+        Rec.CalcFields("Amount Including VAT", "Amount");
+        exit((Rec."Currency Code" <> '') and ((Rec."Amount Including VAT" - Rec."Amount") <> 0));
+    end;
 
     procedure UpdateBankInfoCZL(BankAccountCode: Code[20]; BankAccountNo: Text[30]; BankBranchNo: Text[20]; BankName: Text[100]; TransitNo: Text[20]; IBANCode: Code[50]; SWIFTCode: Code[20])
     begin

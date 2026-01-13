@@ -206,4 +206,30 @@ codeunit 4008 "Hybrid BC Management"
 
         exit(true);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
+    local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        HybridBCWizard: Codeunit "Hybrid BC Wizard";
+    begin
+        if ProductID <> HybridBCWizard.ProductId() then
+            exit;
+
+        HybridCloudManagement.InsertRecordLinkTableMapping();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Notification Handler", 'OnSourceSupported', '', false, false)]
+    local procedure OnRecordLinkMigrationSourceSupported(ProductId: Text[250]; WarningType: Enum "Cloud Migration Warning Type"; var Supported: Boolean)
+    var
+        HybridBCWizard: Codeunit "Hybrid BC Wizard";
+    begin
+        if ProductId <> HybridBCWizard.ProductId() then
+            exit;
+
+        if not (WarningType in ["Cloud Migration Warning Type"::"Record Link", "Cloud Migration Warning Type"::"Tenant Media"]) then
+            exit;
+
+        Supported := true;
+    end;
 }

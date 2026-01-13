@@ -26,7 +26,9 @@ page 4031 "Hybrid GP Errors Factbox"
                     ApplicationArea = Basic, Suite;
                     Style = Unfavorable;
                     StyleExpr = (Rec.MigrationErrorCount > 0);
+#pragma warning disable AA0219
                     ToolTip = 'Indicates the number of errors that occurred during the migration.';
+#pragma warning restore AA0219
 
                     trigger OnDrillDown()
                     var

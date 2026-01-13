@@ -195,17 +195,6 @@ codeunit 4509 "Email - Outlook API Helper"
         exit(RecipientsJson);
     end;
 
-#if not CLEAN25
-    [NonDebuggable]
-    [Obsolete('Replaced by an overload that takes in SecretText data type for ClientSecret', '25.0')]
-    procedure GetClientIDAndSecret(var ClientId: Text; var ClientSecret: Text)
-    var
-        Secret: SecretText;
-    begin
-        GetClientIDAndSecret(ClientId, Secret);
-        ClientSecret := Secret.Unwrap();
-    end;
-#endif
 
     procedure GetClientIDAndSecret(var ClientId: Text; var ClientSecret: SecretText)
     var
@@ -271,6 +260,10 @@ codeunit 4509 "Email - Outlook API Helper"
             IsolatedStorage.Delete(Rec.ClientSecret, DataScope::Module);
     end;
 
+
+#if not CLEAN28
+#pragma warning disable AL0432
+    [Obsolete('Update OutlookAPIClient to v5.', '28.0')]
     procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client v2"; var OAuthClient: interface "Email - OAuth Client v2")
     var
         DefaultAPIClient: Codeunit "Email - Outlook API Client";
@@ -280,8 +273,10 @@ codeunit 4509 "Email - Outlook API Helper"
         OAuthClient := DefaultOAuthClient;
         OnAfterInitializeClientsV2(OutlookAPIClient, OAuthClient);
     end;
-
+#pragma warning restore AL0432
+#endif
 #if not CLEAN26
+#pragma warning disable AL0432
     [Obsolete('Update OutlookAPIClient to v4.', '26.0')]
     procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client v3"; var OAuthClient: interface "Email - OAuth Client v2")
     var
@@ -292,7 +287,11 @@ codeunit 4509 "Email - Outlook API Helper"
         OAuthClient := DefaultOAuthClient;
         OnAfterInitializeClientsV3(OutlookAPIClient, OAuthClient);
     end;
+#pragma warning restore AL0432
 #endif
+#if not CLEAN28
+#pragma warning disable AL0432
+    [Obsolete('Update OutlookAPIClient to v5.', '28.0')]
     procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client v4"; var OAuthClient: interface "Email - OAuth Client v2")
     var
         DefaultAPIClient: Codeunit "Email - Outlook API Client";
@@ -302,11 +301,23 @@ codeunit 4509 "Email - Outlook API Helper"
         OAuthClient := DefaultOAuthClient;
         OnAfterInitializeClientsV4(OutlookAPIClient, OAuthClient);
     end;
+#pragma warning restore AL0432
+#endif
+
+    procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client v5"; var OAuthClient: interface "Email - OAuth Client v2")
+    var
+        DefaultAPIClient: Codeunit "Email - Outlook API Client";
+        DefaultOAuthClient: Codeunit "Email - OAuth Client";
+    begin
+        OutlookAPIClient := DefaultAPIClient;
+        OAuthClient := DefaultOAuthClient;
+        OnAfterInitializeClientsV5(OutlookAPIClient, OAuthClient);
+    end;
 
     procedure Send(EmailMessage: Codeunit "Email Message"; AccountId: Guid)
     var
         EmailOutlookAccount: Record "Email - Outlook Account";
-        APIClient: interface "Email - Outlook API Client v2";
+        APIClient: interface "Email - Outlook API Client v5";
         OAuthClient: interface "Email - OAuth Client v2";
         AccessToken: SecretText;
     begin
@@ -320,7 +331,7 @@ codeunit 4509 "Email - Outlook API Helper"
 
     procedure Send(EmailMessage: Codeunit "Email Message")
     var
-        APIClient: interface "Email - Outlook API Client v2";
+        APIClient: interface "Email - Outlook API Client v5";
         OAuthClient: interface "Email - OAuth Client v2";
         AccessToken: SecretText;
     begin
@@ -357,7 +368,7 @@ codeunit 4509 "Email - Outlook API Helper"
     procedure RetrieveEmails(AccountId: Guid; var EmailInbox: Record "Email Inbox"; var Filters: Record "Email Retrieval Filters")
     var
         EmailOutlookAccount: Record "Email - Outlook Account";
-        APIClient: interface "Email - Outlook API Client v4";
+        APIClient: interface "Email - Outlook API Client v5";
         OAuthClient: interface "Email - OAuth Client v2";
         AccessToken: SecretText;
         EmailsArray: JsonArray;
@@ -464,6 +475,63 @@ codeunit 4509 "Email - Outlook API Helper"
         EmailInbox.Mark(true);
     end;
 
+    procedure GetEmailFolders(AccountId: Guid; var EmailFolders: Record "Email Folders")
+    var
+        EmailOutlookAccount: Record "Email - Outlook Account";
+        APIClient: interface "Email - Outlook API Client v5";
+        OAuthClient: interface "Email - OAuth Client v2";
+        AccessToken: SecretText;
+        EmailFoldersJsonArray: JsonArray;
+    begin
+        InitializeClients(APIClient, OAuthClient);
+        if not EmailOutlookAccount.Get(AccountId) then
+            Error(AccountNotFoundErr);
+
+        EmailOutlookAccountAddressValidation(EmailOutlookAccount);
+
+        OAuthClient.GetAccessToken(AccessToken);
+
+        EmailFoldersJsonArray := APIClient.GetMailboxFolders(AccessToken, EmailOutlookAccount);
+
+        ParseEmailFoldersFromJsonArray(APIClient, AccessToken, EmailOutlookAccount, EmailFoldersJsonArray, '', 0, EmailFolders);
+    end;
+
+    local procedure ParseEmailFoldersFromJsonArray(APIClient: interface "Email - Outlook API Client v5"; AccessToken: SecretText; OutlookAccount: Record "Email - Outlook Account"; EmailFoldersJsonArray: JsonArray; ParentFolderId: Text; ParentIndent: Integer; var EmailFolders: Record "Email Folders")
+    var
+        EmailFolderObject: JsonObject;
+        JsonToken: JsonToken;
+        NextEmailFoldersJsonArray: JsonArray;
+        Counter: Integer;
+        FolderId: Text;
+        DisplayName: Text;
+        ChildrenCount: Integer;
+        Previous: Integer;
+    begin
+        for Counter := 0 to EmailFoldersJsonArray.Count() - 1 do begin
+            Previous := EmailFolders.Ordering;
+            EmailFoldersJsonArray.Get(Counter, JsonToken);
+            EmailFolderObject := JsonToken.AsObject();
+
+            FolderId := GetTextFromJsonObject(EmailFolderObject, 'id');
+            DisplayName := GetTextFromJsonObject(EmailFolderObject, 'displayName');
+            ChildrenCount := GetIntegerFromJsonObject(EmailFolderObject, 'childFolderCount');
+
+            EmailFolders.Init();
+            EmailFolders.Id := CopyStr(FolderId, 1, MaxStrLen(EmailFolders.Id));
+            EmailFolders."Folder Name" := CopyStr(DisplayName, 1, MaxStrLen(EmailFolders."Folder Name"));
+            EmailFolders."Has Children" := ChildrenCount > 0;
+            EmailFolders."Parent Folder Id" := CopyStr(ParentFolderId, 1, MaxStrLen(EmailFolders."Parent Folder Id"));
+            EmailFolders.Indent := ParentIndent + 1;
+            EmailFolders.Ordering := Previous + 1;
+            EmailFolders.Insert();
+
+            if EmailFolders."Has Children" then begin
+                NextEmailFoldersJsonArray := APIClient.GetChildMailboxFolders(AccessToken, OutlookAccount, EmailFolders.Id);
+                ParseEmailFoldersFromJsonArray(APIClient, AccessToken, OutlookAccount, NextEmailFoldersJsonArray, EmailFolders.Id, EmailFolders.Indent + 1, EmailFolders);
+            end;
+        end;
+    end;
+
     /// <summary>
     /// Keep only the last message in the email body.
     /// </summary>
@@ -549,6 +617,14 @@ codeunit 4509 "Email - Outlook API Helper"
         end;
     end;
 
+    local procedure GetIntegerFromJsonObject(JsonObject: JsonObject; KeyName: Text): Integer
+    var
+        JsonToken: JsonToken;
+    begin
+        JsonObject.Get(KeyName, JsonToken);
+        exit(JsonToken.AsValue().AsInteger());
+    end;
+
     local procedure GetTextFromJsonObject(JsonObject: JsonObject; KeyName: Text): Text
     var
         JsonToken: JsonToken;
@@ -584,7 +660,7 @@ codeunit 4509 "Email - Outlook API Helper"
     procedure MarkEmailAsRead(AccountId: Guid; ExternalMessageId: Text)
     var
         EmailOutlookAccount: Record "Email - Outlook Account";
-        APIClient: interface "Email - Outlook API Client v4";
+        APIClient: interface "Email - Outlook API Client v5";
         OAuthClient: interface "Email - OAuth Client v2";
         AccessToken: SecretText;
     begin
@@ -602,7 +678,7 @@ codeunit 4509 "Email - Outlook API Helper"
     var
         EmailOutlookAccount: Record "Email - Outlook Account";
         TempFilters: Record "Email Retrieval Filters" temporary;
-        APIClient: interface "Email - Outlook API Client v4";
+        APIClient: interface "Email - Outlook API Client v5";
         OAuthClient: interface "Email - OAuth Client v2";
         AccessToken: SecretText;
         DraftMessageId: Text;
@@ -651,19 +727,33 @@ codeunit 4509 "Email - Outlook API Helper"
         exit(JToken.AsValue().AsText());
     end;
 
+#if not CLEAN28
+#pragma warning disable AL0432
     [InternalEvent(false)]
     local procedure OnAfterInitializeClientsV2(var OutlookAPIClient: interface "Email - Outlook API Client v2"; var OAuthClient: interface "Email - OAuth Client v2")
     begin
     end;
-
+#pragma warning restore AL0432
+#endif
 #if not CLEAN26
+#pragma warning disable AL0432
     [InternalEvent(false)]
     local procedure OnAfterInitializeClientsV3(var OutlookAPIClient: interface "Email - Outlook API Client v3"; var OAuthClient: interface "Email - OAuth Client v2")
     begin
     end;
+#pragma warning restore AL0432
 #endif
+#if not CLEAN28
+#pragma warning disable AL0432
     [InternalEvent(false)]
     local procedure OnAfterInitializeClientsV4(var OutlookAPIClient: interface "Email - Outlook API Client v4"; var OAuthClient: interface "Email - OAuth Client v2")
+    begin
+    end;
+#pragma warning restore AL0432
+#endif
+
+    [InternalEvent(false)]
+    local procedure OnAfterInitializeClientsV5(var OutlookAPIClient: interface "Email - Outlook API Client v5"; var OAuthClient: interface "Email - OAuth Client v2")
     begin
     end;
 

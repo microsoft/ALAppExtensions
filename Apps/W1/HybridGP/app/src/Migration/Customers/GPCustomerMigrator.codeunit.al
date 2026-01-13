@@ -3,10 +3,16 @@ namespace Microsoft.DataMigration.GP;
 using System.Integration;
 using Microsoft.Sales.Customer;
 using Microsoft.Foundation.Company;
+using Microsoft.Sales.Document;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 4018 "GP Customer Migrator"
 {
     TableNo = "GP Customer";
+    Permissions = tabledata "Standard Sales Code" = RIM,
+        tabledata "Standard Sales Line" = RIM,
+        tabledata "Standard Customer Sales Code" = RIM;
 
     var
         GlobalDocumentNo: Text[30];
@@ -17,6 +23,7 @@ codeunit 4018 "GP Customer Migrator"
         CustomerEmailTypeCodeLbl: Label 'CUS', Locked = true;
         MigrationLogAreaTxt: Label 'Customer', Locked = true;
         PhoneNumberContainsLettersMsg: Label 'Phone/Fax number skipped because it contains letters. Value=%1', Comment = '%1 is the phone/fax number.';
+        NoSeriesStandardSalesCodeTok: Label 'GP-SSC', Locked = true;
 
 #pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
@@ -30,7 +37,8 @@ codeunit 4018 "GP Customer Migrator"
         GPCustomer.Get(RecordIdToMigrate);
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
         MigrateCustomerDetails(GPCustomer, Sender);
-        MigrateCustomerAddresses(GPCustomer);
+        MigrateCustomerAddresses(GPCustomer, Sender);
+        CreateRecurringSalesLines(GPCustomer, Sender);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
@@ -46,6 +54,7 @@ codeunit 4018 "GP Customer Migrator"
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
             exit;
+
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
 
         if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
@@ -97,7 +106,7 @@ codeunit 4018 "GP Customer Migrator"
 
                 Sender.CreateGeneralJournalLine(
                     CopyStr(CustomerBatchNameTxt, 1, 7),
-                    CopyStr(MigrationGPCustTrans.GLDocNo, 1, 20),
+                    CopyStr(MigrationGPCustTrans.DOCNUMBR, 1, 20),
                     CopyStr(MigrationGPCustomer.CUSTNAME, 1, 50),
                     MigrationGPCustTrans.DOCDATE,
                     0D,
@@ -117,7 +126,6 @@ codeunit 4018 "GP Customer Migrator"
                     Sender.CreatePaymentTermsIfNeeded(Copystr(MigrationGPCustTrans.PYMTRMID, 1, 10), MigrationGPCustTrans.PYMTRMID, PaymentTermsFormula);
                 end;
                 Sender.SetGeneralJournalLinePaymentTerms(CopyStr(MigrationGPCustTrans.PYMTRMID, 1, 10));
-                Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(MigrationGPCustTrans.DOCNUMBR.Trim(), 1, 35));
             until MigrationGPCustTrans.Next() = 0;
 
         MigrationGPCustTrans.Reset();
@@ -129,7 +137,7 @@ codeunit 4018 "GP Customer Migrator"
 
                 Sender.CreateGeneralJournalLine(
                     CopyStr(CustomerBatchNameTxt, 1, 7),
-                    CopyStr(MigrationGPCustTrans.GLDocNo, 1, 20),
+                    CopyStr(MigrationGPCustTrans.DOCNUMBR, 1, 20),
                     CopyStr(MigrationGPCustomer.CUSTNAME, 1, 50),
                     MigrationGPCustTrans.DOCDATE,
                     MigrationGPCustTrans.DOCDATE,
@@ -146,7 +154,6 @@ codeunit 4018 "GP Customer Migrator"
                     Sender.CreatePaymentTermsIfNeeded(Copystr(MigrationGPCustTrans.PYMTRMID, 1, 10), MigrationGPCustTrans.PYMTRMID, PaymentTermsFormula);
                 end;
                 Sender.SetGeneralJournalLinePaymentTerms(CopyStr(MigrationGPCustTrans.PYMTRMID, 1, 10));
-                Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(MigrationGPCustTrans.DOCNUMBR.Trim(), 1, 35));
             until MigrationGPCustTrans.Next() = 0;
 
         MigrationGPCustTrans.Reset();
@@ -158,7 +165,7 @@ codeunit 4018 "GP Customer Migrator"
 
                 Sender.CreateGeneralJournalLine(
                     CopyStr(CustomerBatchNameTxt, 1, 7),
-                    CopyStr(MigrationGPCustTrans.GLDocNo, 1, 20),
+                    CopyStr(MigrationGPCustTrans.DOCNUMBR, 1, 20),
                     CopyStr(MigrationGPCustomer.CUSTNAME, 1, 50),
                     MigrationGPCustTrans.DOCDATE,
                     0D,
@@ -177,7 +184,6 @@ codeunit 4018 "GP Customer Migrator"
                     Sender.CreatePaymentTermsIfNeeded(Copystr(MigrationGPCustTrans.PYMTRMID, 1, 10), MigrationGPCustTrans.PYMTRMID, PaymentTermsFormula);
                 end;
                 Sender.SetGeneralJournalLinePaymentTerms(CopyStr(MigrationGPCustTrans.PYMTRMID, 1, 10));
-                Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(MigrationGPCustTrans.DOCNUMBR.Trim(), 1, 35));
             until MigrationGPCustTrans.Next() = 0;
     end;
 #pragma warning restore AA0207
@@ -263,7 +269,7 @@ codeunit 4018 "GP Customer Migrator"
         exit(ClassId);
     end;
 
-    local procedure MigrateCustomerDetails(MigrationGPCustomer: Record "GP Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
+    local procedure MigrateCustomerDetails(var MigrationGPCustomer: Record "GP Customer"; CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
     var
         CompanyInformation: Record "Company Information";
         GPKnownCountries: Record "GP Known Countries";
@@ -279,8 +285,13 @@ codeunit 4018 "GP Customer Migrator"
         FoundKnownCountry: Boolean;
         CountryCodeISO2: Code[2];
         CountryName: Text[50];
+        CustomerNo: Code[20];
+        CustomerName: Text[100];
     begin
-        if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(CopyStr(MigrationGPCustomer.CUSTNMBR, 1, 20), CopyStr(MigrationGPCustomer.CUSTNAME, 1, 50)) then
+        CustomerNo := CopyStr(MigrationGPCustomer.CUSTNMBR, 1, MaxStrLen(CustomerNo));
+        CustomerName := CopyStr(MigrationGPCustomer.CUSTNAME, 1, MaxStrLen(CustomerName));
+
+        if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(CustomerNo, CustomerName) then
             exit;
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(MigrationGPCustomer.RecordId));
@@ -318,7 +329,7 @@ codeunit 4018 "GP Customer Migrator"
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
 
         GPRM00101.SetLoadFields(ADRSCODE);
-        if GPRM00101.Get(MigrationGPCustomer.CUSTNMBR) then
+        if GPRM00101.Get(CustomerNo) then
             if GPSY01200.Get(CustomerEmailTypeCodeLbl, GPRM00101.CUSTNMBR, GPRM00101.ADRSCODE) then
                 CustomerDataMigrationFacade.SetEmail(CopyStr(GPSY01200.GetAllEmailAddressesText(MaxStrLen(Customer."E-Mail")), 1, MaxStrLen(Customer."E-Mail")));
 
@@ -382,15 +393,112 @@ codeunit 4018 "GP Customer Migrator"
                 GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, WarningContext, StrSubstNo(PhoneNumberContainsLettersMsg, MigrationGPCustomer.FAX));
     end;
 
-    local procedure MigrateCustomerAddresses(MigrationGPCustomer: Record "GP Customer")
+    local procedure MigrateCustomerAddresses(var MigrationGPCustomer: Record "GP Customer"; var Sender: Codeunit "Customer Data Migration Facade")
     var
         GPCustomerAddress: Record "GP Customer Address";
+        CustomerNo: Code[20];
     begin
-        GPCustomerAddress.SetRange(CUSTNMBR, MigrationGPCustomer.CUSTNMBR);
+        CustomerNo := CopyStr(MigrationGPCustomer.CUSTNMBR, 1, MaxStrLen(CustomerNo));
+        if not Sender.DoesCustomerExist(CustomerNo) then
+            exit;
+
+        GPCustomerAddress.SetRange(CUSTNMBR, CustomerNo);
         if GPCustomerAddress.FindSet() then
             repeat
                 GPCustomerAddress.MoveStagingData();
             until GPCustomerAddress.Next() = 0;
+    end;
+
+    local procedure CreateRecurringSalesLines(var GPCustomer: Record "GP Customer"; var Sender: Codeunit "Customer Data Migration Facade")
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPRM00201: Record "GP RM00201";
+        GPPostingAccounts: Record "GP Posting Accounts";
+        CustomerNo: Code[20];
+    begin
+        if not GPCompanyAdditionalSettings.GetRecurringSalesLinesEnabled() then
+            exit;
+
+        if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
+            exit;
+
+        CustomerNo := CopyStr(GPCustomer.CUSTNMBR, 1, MaxStrLen(CustomerNo));
+        if not Sender.DoesCustomerExist(CustomerNo) then
+            exit;
+
+        // Customer level
+        if GPCustomer.RMSLSACC > 0 then begin
+            CreateRecurringLineFromAccount(CustomerNo, GPCustomer.RMSLSACC);
+            exit;
+        end;
+
+        // Customer class level
+        if GPCompanyAdditionalSettings.GetMigrateCustomerClasses() then
+            if GPRM00201.Get(GPCustomer.CUSTCLAS) then
+                if GPRM00201.RMSLSACC > 0 then begin
+                    CreateRecurringLineFromAccount(CustomerNo, GPRM00201.RMSLSACC);
+                    exit;
+                end;
+
+        // Fallback - Sales Account
+        if GPPostingAccounts.FindFirst() then
+            if GPPostingAccounts.SalesAccountIdx > 0 then
+                CreateRecurringLineFromAccount(CustomerNo, GPPostingAccounts.SalesAccountIdx);
+    end;
+
+    local procedure CreateRecurringLineFromAccount(CustomerNo: Code[20]; GPActIdx: Integer)
+    var
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+    begin
+        if not GPAccount.Get(GPActIdx) then
+            exit;
+
+        if not GLAccount.Get(GPAccount.AcctNum) then
+            exit;
+
+        CreateRecurringSalesLineImp(CustomerNo, GPAccount);
+    end;
+
+    local procedure CreateRecurringSalesLineImp(CustomerNo: Code[20]; var GPAccount: Record "GP Account")
+    var
+        StandardSalesCode: Record "Standard Sales Code";
+        StandardSalesLine: Record "Standard Sales Line";
+        StandardCustomerSalesCode: Record "Standard Customer Sales Code";
+        NoSeries: Codeunit "No. Series";
+        HelperFunctions: Codeunit "Helper Functions";
+        DimSetID: Integer;
+    begin
+        if GPAccount."Standard Sales Code" = '' then begin
+            GPAccount."Standard Sales Code" := CopyStr(NoSeries.GetNextNo(NoSeriesStandardSalesCodeTok), 1, MaxStrLen(GPAccount."Standard Sales Code"));
+
+            StandardSalesCode.Validate("Code", GPAccount."Standard Sales Code");
+            StandardSalesCode.Validate(Description, CopyStr(HelperFunctions.GenerateStandardCodeDescriptionFromAccount(GPAccount), 1, MaxStrLen(StandardSalesCode.Description)));
+            StandardSalesCode.Insert(true);
+
+            StandardSalesLine.Validate("Standard Sales Code", StandardSalesCode."Code");
+            StandardSalesLine.Validate("Line No.", 10000);
+            StandardSalesLine.Validate(Type, "Sales Line Type"::"G/L Account");
+            StandardSalesLine.Validate("No.", CopyStr(GPAccount.AcctNum, 1, MaxStrLen(StandardSalesLine."No.")));
+            StandardSalesLine.Validate(Quantity, 1);
+
+            DimSetID := HelperFunctions.CreateDimSet(GPAccount.ACTNUMBR_1, GPAccount.ACTNUMBR_2, GPAccount.ACTNUMBR_3, GPAccount.ACTNUMBR_4, GPAccount.ACTNUMBR_5, GPAccount.ACTNUMBR_6, GPAccount.ACTNUMBR_7, GPAccount.ACTNUMBR_8);
+            if DimSetID > 0 then
+                StandardSalesLine.Validate("Dimension Set ID", DimSetID);
+
+            StandardSalesLine.Insert(true);
+            GPAccount.Modify();
+        end;
+
+        if not StandardCustomerSalesCode.Get(CustomerNo, GPAccount."Standard Sales Code") then begin
+            StandardCustomerSalesCode.Validate("Customer No.", CustomerNo);
+            StandardCustomerSalesCode.Validate("Code", GPAccount."Standard Sales Code");
+            StandardCustomerSalesCode.Validate("Insert Rec. Lines On Quotes", StandardCustomerSalesCode."Insert Rec. Lines On Quotes"::Automatic);
+            StandardCustomerSalesCode.Validate("Insert Rec. Lines On Orders", StandardCustomerSalesCode."Insert Rec. Lines On Orders"::Automatic);
+            StandardCustomerSalesCode.Validate("Insert Rec. Lines On Invoices", StandardCustomerSalesCode."Insert Rec. Lines On Invoices"::Automatic);
+            StandardCustomerSalesCode.Validate("Insert Rec. Lines On Cr. Memos", StandardCustomerSalesCode."Insert Rec. Lines On Cr. Memos"::Automatic);
+            StandardCustomerSalesCode.Insert(true);
+        end;
     end;
 
     procedure PopulateStagingTable(JArray: JsonArray)

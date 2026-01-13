@@ -14,6 +14,7 @@ using Microsoft.FixedAssets.Journal;
 using Microsoft.FixedAssets.Ledger;
 using Microsoft.FixedAssets.Setup;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
 using System.Environment.Configuration;
 
 codeunit 31236 "FA Acquisition Handler CZF"
@@ -268,6 +269,17 @@ codeunit 31236 "FA Acquisition Handler CZF"
         IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnBeforeCheckAcquisitionCost', '', false, false)]
+    local procedure AcquisitionAsCustom2OnBeforeCheckAcquisitionCost(var PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if not FASetup.IsFAAcquisitionAsCustom2CZL() then
+            exit;
+        PurchaseLine.TestField("FA Posting Type", PurchaseLine."FA Posting Type"::"Custom 2 CZF");
+        IsHandled := true;
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterCopyToGenJnlLineFA', '', false, false)]
     local procedure FAPostingTypeCustom2OnAfterCopyToGenJnlLineFA(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostingBuffer: Record "Invoice Posting Buffer")
     begin
@@ -316,5 +328,15 @@ codeunit 31236 "FA Acquisition Handler CZF"
     begin
         AcquisitionCost := AcquisitionCost or
             (FASetup.IsFAAcquisitionAsCustom2CZL() and (FALedgerEntry."FA Posting Type" = FALedgerEntry."FA Posting Type"::"Custom 2"));
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", OnCalcSplitFA, '', false, false)]
+    local procedure OnCalcSplitFA(GenJnlLine: Record "Gen. Journal Line"; SplitNo: Integer; var SplitEnabled: Boolean)
+    begin
+        if not FASetup.IsFAAcquisitionAsCustom2CZL() then
+            exit;
+        SplitEnabled :=
+          (SplitNo >= 2) and
+          (GenJnlLine."FA Posting Type" = GenJnlLine."FA Posting Type"::"Custom 2");
     end;
 }

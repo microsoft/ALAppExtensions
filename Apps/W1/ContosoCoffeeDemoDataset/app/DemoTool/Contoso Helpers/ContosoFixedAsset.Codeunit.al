@@ -42,6 +42,11 @@ codeunit 4776 "Contoso Fixed Asset"
     end;
 
     procedure InsertDepreciationBook(BookCode: Code[10]; Description: Text[100]; AcqCost: Boolean; Depreciation: Boolean; WriteDown: Boolean; Appreciation: Boolean; Custom1: Boolean; Custom2: Boolean; Disposal: Boolean; Maintenance: Boolean; UseRoundingInPeriodicDepr: Boolean; DefaultFinalRoundingAmount: Decimal)
+    begin
+        InsertDepreciationBook(BookCode, Description, AcqCost, Depreciation, WriteDown, Appreciation, Custom1, Custom2, Disposal, Maintenance, UseRoundingInPeriodicDepr, DefaultFinalRoundingAmount, 0, false, false, false, false, false);
+    end;
+
+    procedure InsertDepreciationBook(BookCode: Code[10]; Description: Text[100]; AcqCost: Boolean; Depreciation: Boolean; WriteDown: Boolean; Appreciation: Boolean; Custom1: Boolean; Custom2: Boolean; Disposal: Boolean; Maintenance: Boolean; UseRoundingInPeriodicDepr: Boolean; DefaultFinalRoundingAmount: Decimal; DisposalCalculationMethod: Option; AllowIndexation: Boolean; MarkErrorsAsCorrections: Boolean; SubtractDiscInPurchInv: Boolean; AllowCorrectionOfDisposal: Boolean; AllowIdenticalDocumentNo: Boolean)
     var
         DepreciationBook: Record "Depreciation Book";
         Exists: Boolean;
@@ -65,6 +70,12 @@ codeunit 4776 "Contoso Fixed Asset"
         DepreciationBook.Validate("G/L Integration - Maintenance", Maintenance);
         DepreciationBook.Validate("Use Rounding in Periodic Depr.", UseRoundingInPeriodicDepr);
         DepreciationBook.Validate("Default Final Rounding Amount", DefaultFinalRoundingAmount);
+        DepreciationBook.Validate("Disposal Calculation Method", DisposalCalculationMethod);
+        DepreciationBook.Validate("Allow Indexation", AllowIndexation);
+        DepreciationBook.Validate("Mark Errors as Corrections", MarkErrorsAsCorrections);
+        DepreciationBook.Validate("Subtract Disc. in Purch. Inv.", SubtractDiscInPurchInv);
+        DepreciationBook.Validate("Allow Correction of Disposal", AllowCorrectionOfDisposal);
+        DepreciationBook.Validate("Allow Identical Document No.", AllowIdenticalDocumentNo);
 
         if Exists then
             DepreciationBook.Modify(true)
@@ -88,6 +99,30 @@ codeunit 4776 "Contoso Fixed Asset"
         FADepreciationBook.Validate("Depreciation Book Code", DepreciationBookCode);
         FADepreciationBook.Validate("Depreciation Starting Date", DepreciationStartingDate);
         FADepreciationBook.Validate("No. of Depreciation Years", NoOfDepreciationYears);
+
+        if Exists then
+            FADepreciationBook.Modify(true)
+        else
+            FADepreciationBook.Insert(true);
+    end;
+
+    procedure InsertFADepreciationBook(FixedAssetNo: Code[20]; DepreciationBookCode: Code[20]; DepreciationStartingDate: Date; NoOfDepreciationYears: Decimal; FAPostingGroup: Code[20])
+    var
+        FADepreciationBook: Record "FA Depreciation Book";
+        Exists: Boolean;
+    begin
+        if FADepreciationBook.Get(FixedAssetNo, DepreciationBookCode) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        FADepreciationBook.Validate("FA No.", FixedAssetNo);
+        FADepreciationBook.Validate("Depreciation Book Code", DepreciationBookCode);
+        FADepreciationBook.Validate("Depreciation Starting Date", DepreciationStartingDate);
+        FADepreciationBook.Validate("No. of Depreciation Years", NoOfDepreciationYears);
+        FADepreciationBook.Validate("FA Posting Group", FAPostingGroup);
 
         if Exists then
             FADepreciationBook.Modify(true)

@@ -13,7 +13,8 @@ page 31156 "Cash Desk Users CZP"
     DelayedInsert = true;
     PageType = List;
     SourceTable = "Cash Desk User CZP";
-    UsageCategory = None;
+    UsageCategory = Lists;
+    ApplicationArea = Basic, Suite;
 
     layout
     {

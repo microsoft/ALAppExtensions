@@ -17,14 +17,30 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Account Staging Setup" = IMD,
                   tabledata "SL AcctHist" = IMD,
                   tabledata "SL APAdjust" = IMD,
-                  tabledata "SL APDoc" = IMD,
+                  tabledata "SL APDoc Buffer" = IMD,
                   tabledata "SL APSetup" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
+                  tabledata "SL APDoc" = IMD,
                   tabledata "SL APTran" = IMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL APTran Buffer" = IMD,
                   tabledata "SL AP_Balances" = IMD,
                   tabledata "SL ARAdjust" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL ARDoc" = IMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL ARDoc Buffer" = IMD,
                   tabledata "SL ARSetup" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL ARTran" = IMD,
+#pragma warning restore AL0432
+#endif
+                  tabledata "SL ARTran Buffer" = RIMD,
                   tabledata "SL AR_Balances" = IMD,
                   tabledata "SL Batch" = IMD,
                   tabledata "SL Codes" = IMD,
@@ -35,17 +51,31 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Fiscal Periods" = IMD,
                   tabledata "SL FlexDef" = IMD,
                   tabledata "SL GLSetup" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL GLTran" = IMD,
+#pragma warning restore AL0432
+#endif
                   tabledata "SL Hist. Source Error" = IMD,
                   tabledata "SL Hist. Source Progress" = IMD,
                   tabledata "SL INSetup" = IMD,
+                  tabledata "SL INTran Buffer" = IMD,
+                  tabledata "SL Inventory Buffer" = IMD,
+                  tabledata "SL InventoryADG" = IMD,
+                  tabledata "SL ItemCost Buffer" = IMD,
+                  tabledata "SL ItemSite Buffer" = IMD,
+                  tabledata "SL LotSerMst Buffer" = IMD,
+                  tabledata "SL LotSerT Buffer" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL INTran" = IMD,
                   tabledata "SL Inventory" = IMD,
-                  tabledata "SL InventoryADG" = IMD,
                   tabledata "SL ItemCost" = IMD,
                   tabledata "SL ItemSite" = IMD,
                   tabledata "SL LotSerMst" = IMD,
                   tabledata "SL LotSerT" = IMD,
+#pragma warning restore AL0432
+#endif
                   tabledata "SL Migration Config" = IMD,
                   tabledata "SL Migration Error Overview" = IMD,
                   tabledata "SL Migration Errors" = IMD,
@@ -54,16 +84,27 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL Period List Work Table" = IMD,
                   tabledata "SL PJAddr" = IMD,
                   tabledata "SL PJCode" = IMD,
+                  tabledata "SL PJEmploy Buffer" = IMD,
+                  tabledata "SL PJEmpPjt Buffer" = IMD,
+                  tabledata "SL PJEQRate Buffer" = IMD,
+                  tabledata "SL PJEquip Buffer" = IMD,
+                  tabledata "SL PJPent Buffer" = IMD,
+                  tabledata "SL PJProj Buffer" = IMD,
+#if not CLEAN28
+#pragma warning disable AL0432
                   tabledata "SL PJEmploy" = IMD,
                   tabledata "SL PJEmpPjt" = IMD,
                   tabledata "SL PJEQRate" = IMD,
                   tabledata "SL PJEquip" = IMD,
                   tabledata "SL PJPent" = IMD,
                   tabledata "SL PJProj" = IMD,
+#pragma warning restore AL0432
+#endif                  
                   tabledata "SL POAddress" = IMD,
                   tabledata "SL POReceipt" = IMD,
                   tabledata "SL POSetup" = IMD,
                   tabledata "SL POTran" = IMD,
+                  tabledata "SL ProductClass" = IMD,
                   tabledata "SL PurchOrd" = IMD,
                   tabledata "SL PurOrdDet" = IMD,
                   tabledata "SL SalesTax" = IMD,
@@ -81,6 +122,7 @@ permissionset 47004 "SL Migration - Edit"
                   tabledata "SL SOType" = IMD,
                   tabledata "SL Terms" = IMD,
                   tabledata "SL Upgrade Settings" = IMD,
+                  tabledata "SL VendClass" = IMD,
                   tabledata "SL Vendor" = IMD,
                   tabledata SLGLAcctBalByPeriod = IMD;
 }

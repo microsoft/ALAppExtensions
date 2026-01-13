@@ -3,6 +3,8 @@ codeunit 139802 "APIV2 - Customers E2E"
     // version Test,W1,All
 
     Subtype = Test;
+    TestType = IntegrationTest;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -149,12 +151,10 @@ codeunit 139802 "APIV2 - Customers E2E"
         TargetURL := LibraryGraphMgt.CreateTargetURL('', Page::"APIV2 - Customers", ServiceNameTxt);
         CountryRegion.FindLast();
         CityName := LibraryUtility.GenerateGUID();
-
         // [GIVEN] A template selection rule exists to set the city based on the country code.
-        with Customer do
-            LibraryGraphMgt.CreateSimpleTemplateSelectionRule(ConfigTmplSelectionRules, Page::"APIV2 - Customers", Database::Customer,
-              FieldNo("Country/Region Code"), CountryRegion.Code,
-              FieldNo(City), CityName);
+        LibraryGraphMgt.CreateSimpleTemplateSelectionRule(ConfigTmplSelectionRules, Page::"APIV2 - Customers", Database::Customer,
+        Customer.FieldNo("Country/Region Code"), CountryRegion.Code,
+        Customer.FieldNo(City), CityName);
 
         // [GIVEN] The user has constructed a customer object containing a templated country code.
         CreateSimpleCustomer(TempCustomer);
@@ -371,64 +371,9 @@ codeunit 139802 "APIV2 - Customers E2E"
 
     local procedure CreateShipmentMethod(var ShipmentMethod: Record "Shipment Method")
     begin
-        with ShipmentMethod do begin
-            Init();
-            Code := LibraryUtility.GenerateRandomCode(FieldNo(Code), Database::"Shipment Method");
-            Description := Code;
-            Insert(true);
-        end;
+        ShipmentMethod.Init();
+        ShipmentMethod.Code := LibraryUtility.GenerateRandomCode(ShipmentMethod.FieldNo(Code), Database::"Shipment Method");
+        ShipmentMethod.Description := ShipmentMethod.Code;
+        ShipmentMethod.Insert(true);
     end;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

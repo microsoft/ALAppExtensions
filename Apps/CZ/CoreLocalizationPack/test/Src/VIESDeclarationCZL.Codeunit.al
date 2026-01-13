@@ -11,7 +11,7 @@ codeunit 148067 "VIES Declaration CZL"
 
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
         CountryRegion: Record "Country/Region";
         VATPostingSetup: Record "VAT Posting Setup";
         GLAccount: Record "G/L Account";
@@ -57,8 +57,8 @@ codeunit 148067 "VIES Declaration CZL"
         StatutoryReportingSetupCZL."VIES Number of Lines" := 20;
         StatutoryReportingSetupCZL.Modify();
 
-        VATPeriodCZL.SetRange(Closed, false);
-        VATPeriodCZL.FindLast();
+        LibraryTaxCZL.CreateVATReturnPeriods(CalcDate('<-CY>', WorkDate()), 12);
+        LibraryTaxCZL.FindLastOpenVATPeriod(VATReturnPeriod);
 
         CountryRegion.SetFilter("EU Country/Region Code", '<>%1', '');
         CountryRegion.FindFirst();
@@ -474,7 +474,7 @@ codeunit 148067 "VIES Declaration CZL"
     local procedure CreateSalesHeader(CustomerNo: Code[20]; "3PartyIntermedRole": Boolean)
     begin
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, CustomerNo);
-        SalesHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
+        SalesHeader.Validate("Posting Date", VATReturnPeriod."Start Date");
         if "3PartyIntermedRole" then
             SalesHeader.Validate("EU 3-Party Intermed. Role CZL", true);
         SalesHeader.Modify();
@@ -495,8 +495,8 @@ codeunit 148067 "VIES Declaration CZL"
         if CorrectedDeclarationNo = '' then begin
             VIESDeclarationHeaderCZL.Validate("Declaration Period", VIESDeclarationHeaderCZL."Declaration Period"::Month);
             VIESDeclarationHeaderCZL.Validate("Declaration Type", VIESDeclarationHeaderCZL."Declaration Type"::Normal);
-            VIESDeclarationHeaderCZL.Validate("Period No.", Date2DMY(VATPeriodCZL."Starting Date", 2));
-            VIESDeclarationHeaderCZL.Validate(Year, Date2DMY(VATPeriodCZL."Starting Date", 3));
+            VIESDeclarationHeaderCZL.Validate("Period No.", Date2DMY(VATReturnPeriod."Start Date", 2));
+            VIESDeclarationHeaderCZL.Validate(Year, Date2DMY(VATReturnPeriod."Start Date", 3));
         end else begin
             VIESDeclarationHeaderCZL.Validate("Declaration Type", VIESDeclarationHeaderCZL."Declaration Type"::Corrective);
             VIESDeclarationHeaderCZL.Validate("Corrected Declaration No.", CorrectedDeclarationNo);

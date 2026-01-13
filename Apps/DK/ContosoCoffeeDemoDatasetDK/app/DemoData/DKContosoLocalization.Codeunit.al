@@ -59,16 +59,10 @@ codeunit 13750 "DK Contoso Localization"
     end;
 
     local procedure FoundationModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    var
-        CreatePostingGroupsDK: Codeunit "Create Posting Groups DK";
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                begin
-                    Codeunit.Run(Codeunit::"Create Post Code DK");
-                    Codeunit.Run(Codeunit::"Create VAT Posting Groups DK");
-                    CreatePostingGroupsDK.InsertGenPostingGroup();
-                end;
+                Codeunit.Run(Codeunit::"Create Post Code DK");
             Enum::"Contoso Demo Data Level"::"Master Data":
                 Codeunit.Run(Codeunit::"Create Company Information DK");
         end;
@@ -83,7 +77,6 @@ codeunit 13750 "DK Contoso Localization"
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
                 begin
-                    Codeunit.Run(Codeunit::"Create VAT Posting Groups DK");
                     Codeunit.Run(Codeunit::"Create Posting Groups DK");
                     CreateVatPostingGroupDK.UpdateVATPostingSetup();
                     CreatePostingGroupsDK.UpdateGenPostingSetup();
@@ -143,8 +136,9 @@ codeunit 13750 "DK Contoso Localization"
 
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
-    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module")
+    local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreatePostingGroupsDK: Codeunit "Create Posting Groups DK";
         CreateAnalysisViewDK: Codeunit "Create Analysis View DK";
         CreateAccScheduleLineDK: Codeunit "Create Acc. Schedule Line DK";
@@ -175,6 +169,11 @@ codeunit 13750 "DK Contoso Localization"
         case Module of
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
+                        FinanceModuleSetup.InitRecord();
+                        Codeunit.Run(Codeunit::"Create Vat Posting Groups DK");
+                        CreatePostingGroupsDK.InsertGenPostingGroup();
+                    end;
                     BindSubscription(CreatePostingGroupsDK);
                     BindSubscription(CreateAnalysisViewDK);
                     BindSubscription(CreateAccScheduleLineDK);

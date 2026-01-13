@@ -25,6 +25,10 @@ permissionset 10032 "IRS Forms - Objects"
                   table "IRS 1099 Vend. Form Box Buffer" = X,
                   table "IRS Forms Setup" = X,
                   table "IRS Reporting Period" = X,
+                  table "Error Information IRIS" = X,
+                  table "Transmission IRIS" = X,
+                  table "Transmission Log IRIS" = X,
+                  table "Transmission Log Line IRIS" = X,
                   page "IRS 1099 Email Content Setup" = X,
                   page "IRS 1099 Form Boxes" = X,
                   page "IRS 1099 Form Documents" = X,
@@ -37,17 +41,32 @@ permissionset 10032 "IRS Forms - Objects"
                   page "IRS 1099 Forms" = X,
                   page "IRS 1099 Vendor Form Box Setup" = X,
                   page "IRS 1099 Vend. Form Box Adjmts" = X,
+                  page "IRS 1099 Form Doc. Update" = X,
                   page "IRS Forms Guide" = X,
                   page "IRS Forms Setup" = X,
                   page "IRS Reporting Periods" = X,
+                  page "Transmission IRIS" = X,
+                  page "Transmission IRIS Subform" = X,
+                  page "Transmission Logs IRIS" = X,
+                  page "Transmissions IRIS" = X,
+                  page "IRS Forms Company Selector" = X,
+                  page "IRS 1099 Vendor Overview" = X,
+                  codeunit "Data Check IRIS" = X,
+                  codeunit "Generate Xml File IRIS" = X,
                   codeunit "IRS 1099 Send Email" = X,
                   codeunit "IRS 1099 Form Document" = X,
                   codeunit "IRS 1099 Vendor Form Box" = X,
                   codeunit "IRS Forms Data" = X,
                   codeunit "IRS Forms Facade" = X,
                   codeunit "IRS Reporting Period" = X,
+                  report "Create Transmission IRIS" = X,
                   report "IRS 1099 Create Form Docs" = X,
                   report "IRS 1099 FIRE" = X,
                   report "IRS 1099 Print" = X,
+#pragma warning disable AL0432
+#if not CLEAN28
+                  report "Upgrade IRS 1099 Data" = X,
+#endif
+#pragma warning restore AL0432
                   report "IRS 1099 Send Email" = X;
 }

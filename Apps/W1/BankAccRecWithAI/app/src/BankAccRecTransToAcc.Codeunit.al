@@ -74,7 +74,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         BestGLAccountNo := '';
         BankAccReconciliationLine.MarkedOnly(true);
         if not BankAccReconciliationLine.IsEmpty() then begin
-            AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
+            AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
             AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation");
             AOAIChatCompletionParams.SetMaxTokens(BankRecAIMatchingImpl.MaxTokens());
             AOAIChatCompletionParams.SetTemperature(0);
@@ -191,35 +191,9 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         CompletionTaskTxt: SecretText;
         CompletionTaskPartTxt: SecretText;
         CompletionTaskBuildingFromKeyVaultFailed: Boolean;
-        ConcatSubstrTok: Label '%1%2', Locked = true;
     begin
         if BankRecAIMatchingImpl.GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAITransToGLAccount1') then
             CompletionTaskTxt := CompletionTaskPartTxt
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if BankRecAIMatchingImpl.GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAITransToGLAccount2') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if BankRecAIMatchingImpl.GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAITransToGLAccount3') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if BankRecAIMatchingImpl.GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAITransToGLAccount4') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if BankRecAIMatchingImpl.GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAITransToGLAccount5') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
-        else
-            CompletionTaskBuildingFromKeyVaultFailed := true;
-
-        if BankRecAIMatchingImpl.GetAzureKeyVaultSecret(CompletionTaskPartTxt, 'BankAccRecAITransToGLAccount6') then
-            CompletionTaskTxt := SecretStrSubstNo(ConcatSubstrTok, CompletionTaskTxt, CompletionTaskPartTxt)
         else
             CompletionTaskBuildingFromKeyVaultFailed := true;
 

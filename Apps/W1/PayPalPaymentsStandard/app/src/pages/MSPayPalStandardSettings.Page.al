@@ -22,7 +22,7 @@ page 1074 "MS - PayPal Standard Settings"
                 InstructionalText = 'Enter your email address for PayPal payments.';
                 field(AccountID; PayPalAccountID)
                 {
-                    ApplicationArea = Invoicing, Basic, Suite;
+                    ApplicationArea = Basic, Suite;
                     Caption = 'PayPal Email';
                     ExtendedDatatype = EMail;
                     ToolTip = 'Specifies the PayPal email.';
@@ -37,7 +37,7 @@ page 1074 "MS - PayPal Standard Settings"
                 }
                 field("Terms of Service"; TermsOfServiceLbl)
                 {
-                    ApplicationArea = Invoicing, Basic, Suite;
+                    ApplicationArea = Basic, Suite;
                     Caption = 'PayPal Terms of Service';
                     Editable = false;
                     ShowCaption = false;
@@ -54,7 +54,7 @@ page 1074 "MS - PayPal Standard Settings"
                     Visible = IsSandbox;
                     field(SandboxControl; IsSandbox)
                     {
-                        ApplicationArea = Invoicing, Basic, Suite;
+                        ApplicationArea = Basic, Suite;
                         Editable = false;
                         Caption = 'Sandbox active';
                         ToolTip = 'Specifies whether the Sandbox is active.';
@@ -95,6 +95,3 @@ page 1074 "MS - PayPal Standard Settings"
         IsSandbox: Boolean;
         TermsOfServiceLbl: Label 'Terms of service';
 }
-
-
-

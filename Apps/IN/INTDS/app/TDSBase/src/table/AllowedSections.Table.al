@@ -73,6 +73,11 @@ table 18687 "Allowed Sections"
             TableRelation = "Act Applicable";
             DataClassification = CustomerContent;
         }
+        field(10; "Payment Overlook"; Boolean)
+        {
+            Caption = 'Payment Overlook';
+            DataClassification = CustomerContent;
+        }
     }
 
     keys

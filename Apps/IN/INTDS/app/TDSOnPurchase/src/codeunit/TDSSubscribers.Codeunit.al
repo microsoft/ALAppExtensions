@@ -29,7 +29,8 @@ codeunit 18716 "TDS Subscribers"
     begin
         if Rec."Document Type" in [Rec."Document Type"::Order, Rec."Document Type"::Invoice] then begin
             AllowedSections.Reset();
-            AllowedSections.SetRange("Vendor No", Rec."Buy-from Vendor No.");
+            AllowedSections.SetLoadFields("Vendor No", "Default Section", "TDS Section", "Nature of Remittance", "Act Applicable");
+            AllowedSections.SetRange("Vendor No", Rec."Pay-to Vendor No.");
             AllowedSections.SetRange("Default Section", true);
             if AllowedSections.FindFirst() then begin
                 Rec.Validate("TDS Section Code", AllowedSections."TDS Section");
@@ -52,6 +53,7 @@ codeunit 18716 "TDS Subscribers"
         Location: Record Location;
         CompanyInformation: Record "Company Information";
     begin
+        PurchaseLine.SetLoadFields("Document Type", "Document No.", "TDS Section Code");
         PurchaseLine.SetRange("Document Type", PurchHeader."Document Type");
         PurchaseLine.SetRange("Document No.", PurchHeader."No.");
         if PurchaseLine.FindFirst() then
@@ -75,6 +77,7 @@ codeunit 18716 "TDS Subscribers"
         PurchaseLine: Record "Purchase Line";
     begin
         PurchaseLine.Reset();
+        PurchaseLine.SetLoadFields("Document Type", "Document No.", "TDS Section Code");
         PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
         PurchaseLine.SetFilter("TDS Section Code", '<>%1', '');
@@ -105,7 +108,7 @@ codeunit 18716 "TDS Subscribers"
         PurchaseLine: Record "Purchase Line";
         CalculateTax: Codeunit "Calculate Tax";
     begin
-        PurchaseLine.LoadFields("Document Type", "Document No.");
+        PurchaseLine.SetLoadFields("Document Type", "Document No.");
         PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
         PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
         if PurchaseLine.FindSet() then
@@ -156,7 +159,11 @@ codeunit 18716 "TDS Subscribers"
         var PurchaseHeader: Record "Purchase Header";
         var PurchaseLine: Record "Purchase Line")
     begin
-        ValidatePurchLine(PurchaseHeader, PurchaseLine);
+        if PurchaseHeader."Applies-to Doc. No." <> '' then
+            ValidatePurchLineAppliesToDocNo(PurchaseHeader, PurchaseLine);
+
+        if PurchaseHeader."Applies-to ID" <> '' then
+            ValidatePurchLineAppliesToID(PurchaseHeader, PurchaseLine);
     end;
 
     local procedure CheckVendorPANDetails(GenJournalLine: Record "Gen. Journal Line")
@@ -197,20 +204,60 @@ codeunit 18716 "TDS Subscribers"
             Error(CustPANNoErr);
     end;
 
-    local procedure ValidatePurchLine(PurchaseHeader: Record "Purchase Header"; PurchLine: Record "Purchase Line")
+    local procedure ValidatePurchLineAppliesToDocNo(PurchaseHeader: Record "Purchase Header"; PurchLine: Record "Purchase Line")
     var
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeValidatePurchLine(PurchaseHeader, PurchLine, IsHandled);
+        if IsHandled then
+            exit;
+
         if PurchLine."TDS Section Code" = '' then
             exit;
 
         if PurchaseHeader."Applies-to Doc. No." = '' then
             exit;
 
+        VendorLedgerEntry.SetLoadFields("Document Type", "Document No.", "TDS Section Code");
         VendorLedgerEntry.SetRange("Document Type", PurchaseHeader."Applies-to Doc. Type");
-        VendorLedgerEntry.SetRange("Document No.", PurchaseHeader."Applies-to Doc. No.");
+
+        if PurchaseHeader."Applies-to Doc. No." <> '' then
+            VendorLedgerEntry.SetRange("Document No.", PurchaseHeader."Applies-to Doc. No.");
+
         if VendorLedgerEntry.FindFirst() then
             VendorLedgerEntry.TestField("TDS Section Code", PurchLine."TDS Section Code");
+    end;
+
+    local procedure ValidatePurchLineAppliesToID(PurchaseHeader: Record "Purchase Header"; PurchLine: Record "Purchase Line")
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeValidatePurchLineAppliesToID(PurchaseHeader, PurchLine, IsHandled);
+        if IsHandled then
+            exit;
+
+        if PurchLine."TDS Section Code" = '' then
+            exit;
+
+        if PurchaseHeader."Applies-to ID" = '' then
+            exit;
+
+        VendorLedgerEntry.SetLoadFields("Document Type", "Vendor No.", "Applies-to ID", "Open", "TDS Section Code");
+        VendorLedgerEntry.SetRange("Document Type", PurchaseHeader."Applies-to Doc. Type");
+        VendorLedgerEntry.SetRange("Vendor No.", PurchaseHeader."Buy-from Vendor No.");
+
+        if PurchaseHeader."Applies-to ID" <> '' then
+            VendorLedgerEntry.SetRange("Applies-to ID", PurchaseHeader."Applies-to ID");
+        VendorLedgerEntry.SetRange(Open, true);
+
+        if VendorLedgerEntry.FindSet() then
+            repeat
+                VendorLedgerEntry.TestField("TDS Section Code", PurchLine."TDS Section Code");
+            until VendorLedgerEntry.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnCopyPurchDocPurchLineOnAfterCopyPurchLine', '', false, false)]
@@ -220,5 +267,15 @@ codeunit 18716 "TDS Subscribers"
     begin
         if not RecalculateLines then
             CalculateTax.CallTaxEngineOnPurchaseLine(ToPurchLine, ToPurchLine);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidatePurchLine(PurchaseHeader: Record "Purchase Header"; PurchLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidatePurchLineAppliesToID(PurchaseHeader: Record "Purchase Header"; PurchLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
     end;
 }

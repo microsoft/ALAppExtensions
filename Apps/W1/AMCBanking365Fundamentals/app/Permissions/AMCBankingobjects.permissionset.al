@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,6 +10,9 @@ permissionset 20109 "AMC Banking- Objects"
     Assignable = false;
     Access = Internal;
     Caption = 'AMC Banking- Objects';
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     Permissions = codeunit "AMC Bank Assisted Mgt." = X,
                     codeunit "AMC Bank Exp. CT Feedback" = X,
@@ -41,3 +45,4 @@ permissionset 20109 "AMC Banking- Objects"
                     table "AMC Banking Setup" = X,
                     table "AMC Bank Pmt. Type" = X;
 }
+#endif

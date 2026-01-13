@@ -1,6 +1,7 @@
 codeunit 139745 "APIV1 - Journal Lines E2E"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

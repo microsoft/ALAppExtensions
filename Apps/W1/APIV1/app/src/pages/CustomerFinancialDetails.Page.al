@@ -5,6 +5,7 @@ using Microsoft.Sales.Customer;
 page 20048 "Customer Financial Details"
 {
     PageType = API;
+    APIVersion = 'v1.0';
     EntityName = 'customerFinancialDetail';
     EntitySetName = 'customerFinancialDetails';
     SourceTable = Customer;

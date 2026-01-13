@@ -21,6 +21,7 @@ tableextension 6212 "Sustainability Purch. Header" extends "Purchase Header"
             CalcFormula = sum("Purchase Line"."Emission CO2" where("Document Type" = field("Document Type"),
                                                             "Document No." = field("No.")));
             Caption = 'Emission CO2';
+            CaptionClass = '102,6,1';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -31,6 +32,7 @@ tableextension 6212 "Sustainability Purch. Header" extends "Purchase Header"
             CalcFormula = sum("Purchase Line"."Emission CH4" where("Document Type" = field("Document Type"),
                                                             "Document No." = field("No.")));
             Caption = 'Emission CH4';
+            CaptionClass = '102,6,2';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -41,6 +43,7 @@ tableextension 6212 "Sustainability Purch. Header" extends "Purchase Header"
             CalcFormula = sum("Purchase Line"."Emission N2O" where("Document Type" = field("Document Type"),
                                                             "Document No." = field("No.")));
             Caption = 'Emission N2O';
+            CaptionClass = '102,6,3';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -51,6 +54,7 @@ tableextension 6212 "Sustainability Purch. Header" extends "Purchase Header"
             CalcFormula = sum("Purchase Line"."Posted Emission CO2" where("Document Type" = field("Document Type"),
                                                             "Document No." = field("No.")));
             Caption = 'Posted Emission CO2';
+            CaptionClass = '102,11,1';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -61,6 +65,7 @@ tableextension 6212 "Sustainability Purch. Header" extends "Purchase Header"
             CalcFormula = sum("Purchase Line"."Posted Emission CH4" where("Document Type" = field("Document Type"),
                                                             "Document No." = field("No.")));
             Caption = 'Posted Emission CH4';
+            CaptionClass = '102,11,2';
             Editable = false;
             FieldClass = FlowField;
         }
@@ -71,6 +76,51 @@ tableextension 6212 "Sustainability Purch. Header" extends "Purchase Header"
             CalcFormula = sum("Purchase Line"."Posted Emission N2O" where("Document Type" = field("Document Type"),
                                                             "Document No." = field("No.")));
             Caption = 'Posted Emission N2O';
+            CaptionClass = '102,11,3';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(6217; "Energy Consumption"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            CalcFormula = sum("Purchase Line"."Energy Consumption" where("Document Type" = field("Document Type"),
+                                                                         "Document No." = field("No.")));
+            Caption = 'Energy Consumption';
+            CaptionClass = '102,13,4';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(6218; "Posted Energy Consumption"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            CalcFormula = sum("Purchase Line"."Posted Energy Consumption" where("Document Type" = field("Document Type"),
+                                                                                "Document No." = field("No.")));
+            Caption = 'Posted Energy Consumption';
+            CaptionClass = '102,14,4';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(6219; "Total Emission Cost"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            CalcFormula = sum("Purchase Line"."Total Emission Cost" where("Document Type" = field("Document Type"),
+                                                                          "Document No." = field("No.")));
+            Caption = 'Total Emission Cost';
+            CaptionClass = '102,15,5';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(6220; "Posted Total Emission Cost"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            CalcFormula = sum("Purchase Line"."Posted Total Emission Cost" where("Document Type" = field("Document Type"),
+                                                                                 "Document No." = field("No.")));
+            Caption = 'Posted Total Emission Cost';
+            CaptionClass = '102,16,5';
             Editable = false;
             FieldClass = FlowField;
         }

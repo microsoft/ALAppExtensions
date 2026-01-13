@@ -1,6 +1,7 @@
 codeunit 148102 "SAF-T Unit Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

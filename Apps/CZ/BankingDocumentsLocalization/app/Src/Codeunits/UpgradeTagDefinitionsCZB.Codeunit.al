@@ -20,6 +20,7 @@ codeunit 31333 "Upgrade Tag Definitions CZB"
     begin
         PerCompanyUpgradeTags.Add(GetDataVersion190PerCompanyUpgradeTag());
         PerCompanyUpgradeTags.Add(GetDataVersion221PerCompanyUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetBankAccountKeepDescriptionUpgradeTag());
     end;
 
     procedure GetDataVersion190PerDatabaseUpgradeTag(): Code[250]
@@ -40,5 +41,10 @@ codeunit 31333 "Upgrade Tag Definitions CZB"
     procedure GetDataVersion221PerCompanyUpgradeTag(): Code[250]
     begin
         exit('CZB-UpgradeBankingDocumentsLocalizationForCzech-PerCompany-22.1');
+    end;
+
+    procedure GetBankAccountKeepDescriptionUpgradeTag(): Code[250]
+    begin
+        exit('CZB-616353-BankAccountKeepDescriptionUpgradeTag-20251214');
     end;
 }

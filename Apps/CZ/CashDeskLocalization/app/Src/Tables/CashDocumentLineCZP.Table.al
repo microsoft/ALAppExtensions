@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -84,6 +84,8 @@ table 11733 "Cash Document Line CZP"
                 "Document Type" := CashDocumentHeaderCZP."Document Type";
                 "Account Type" := TempCashDocumentLineCZP."Account Type";
                 "Cash Desk Event" := TempCashDocumentLineCZP."Cash Desk Event";
+                OnValidateAccountTypeOnAfterInitRec(Rec, xRec, TempCashDocumentLineCZP);
+
                 UpdateAmounts();
                 UpdateDocumentType();
             end;
@@ -117,6 +119,7 @@ table 11733 "Cash Document Line CZP"
                     CashDeskEventCZP.TestField("Account No.", "Account No.");
 
                 GetCashDocumentHeaderCZP();
+                OnValidateAccountNoOnBeforeUpdateCashDocumentHeader(Rec, CashDocumentHeaderCZP);
                 if ("Account Type" in ["Account Type"::Customer, "Account Type"::Vendor]) and ("Account No." <> '') then
                     if CashDocumentHeaderCZP."Partner No." = '' then begin
                         case "Account Type" of
@@ -251,7 +254,8 @@ table 11733 "Cash Document Line CZP"
             TableRelation = if ("Account Type" = const("Fixed Asset")) "FA Posting Group" else
             if ("Account Type" = const("Bank Account")) "Bank Account Posting Group" else
             if ("Account Type" = const(Customer)) "Customer Posting Group" else
-            if ("Account Type" = const(Vendor)) "Vendor Posting Group";
+            if ("Account Type" = const(Vendor)) "Vendor Posting Group" else
+            if ("Account Type" = const(Employee)) "Employee Posting Group";
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -824,13 +828,8 @@ table 11733 "Cash Document Line CZP"
             Caption = 'VAT Difference (LCY)';
             DataClassification = CustomerContent;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
-#if CLEAN25
             ObsoleteState = Removed;
             ObsoleteTag = '28.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '18.0';
-#endif
         }
 #endif
         field(63; "System-Created Entry"; Boolean)
@@ -920,6 +919,16 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'FA Posting Type';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Account Type" <> "Account Type"::"Fixed Asset" then
+                    exit;
+
+                if "FA Posting Type" = "FA Posting Type"::"Acquisition Cost" then
+                    if FASetup.IsFAAcquisitionAsCustom2CZL() then
+                        "FA Posting Type" := "FA Posting Type"::"Custom 2";
+            end;
         }
         field(91; "Depreciation Book Code"; Code[10])
         {
@@ -1249,6 +1258,7 @@ table 11733 "Cash Document Line CZP"
         CashDeskEventCZP: Record "Cash Desk Event CZP";
         TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary;
         FixedAsset: Record "Fixed Asset";
+        FASetup: Record "FA Setup";
         DimensionManagement: Codeunit DimensionManagement;
         ConfirmManagement: Codeunit "Confirm Management";
         RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = TableCaption';
@@ -1298,7 +1308,7 @@ table 11733 "Cash Document Line CZP"
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Cash Desk Event CZP", Rec."Cash Desk Event", FieldNo = Rec.FieldNo("Cash Desk Event"));
 
-        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource);
+        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource, FieldNo);
     end;
 
     procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
@@ -1784,7 +1794,6 @@ table 11733 "Cash Document Line CZP"
     var
         PostedGLAccount: Record "G/L Account";
         FAPostingGroup: Record "FA Posting Group";
-        FASetup: Record "FA Setup";
         FADepreciationBook: Record "FA Depreciation Book";
         SetFADeprBook: Record "FA Depreciation Book";
         FADeprBook: Record "FA Depreciation Book";
@@ -1817,7 +1826,7 @@ table 11733 "Cash Document Line CZP"
                 exit;
         end;
         if "FA Posting Type" = "FA Posting Type"::" " then
-            "FA Posting Type" := "FA Posting Type"::"Acquisition Cost";
+            "FA Posting Type" := FASetup.IsFAAcquisitionAsCustom2CZL() ? "FA Posting Type"::"Custom 2" : "FA Posting Type"::"Acquisition Cost";
         FADepreciationBook.Get("Account No.", "Depreciation Book Code");
         FADepreciationBook.TestField("FA Posting Group");
         FAPostingGroup.Get(FADepreciationBook."FA Posting Group");
@@ -1836,7 +1845,8 @@ table 11733 "Cash Document Line CZP"
         Validate("VAT Bus. Posting Group", PostedGLAccount."VAT Bus. Posting Group");
         Validate("VAT Prod. Posting Group", PostedGLAccount."VAT Prod. Posting Group");
     end;
-
+#if not CLEAN27
+    [Obsolete('The statistics action will be replaced with the CashDocumentStatistics action. The new action uses RunObject and does not run the action trigger. Use a page extension to modify the behaviour.', '27.0')]
     procedure ExtStatistics()
     var
         CashDocumentLineCZP: Record "Cash Document Line CZP";
@@ -1855,6 +1865,7 @@ table 11733 "Cash Document Line CZP"
         CashDocumentLineCZP.SetRange("Line No.", "Line No.");
         Page.RunModal(Page::"Cash Document Statistics CZP", CashDocumentLineCZP);
     end;
+#endif
 
     procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)
     begin
@@ -1956,10 +1967,6 @@ table 11733 "Cash Document Line CZP"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         EmployeeLedgerEntry: Record "Employee Ledger Entry";
-#if not CLEAN25
-        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
-        AppliesToAdvanceLetterNo: Code[20];
-#endif
     begin
         if "Account No." = '' then
             exit;
@@ -1994,17 +2001,6 @@ table 11733 "Cash Document Line CZP"
                             EmployeeLedgerEntry.CollectSuggestedApplicationCZL(Rec, CrossApplicationBufferCZL);
                     end;
             end;
-#if not CLEAN25
-#pragma warning disable AL0432
-        if "Account Type" = "Account Type"::Vendor then begin
-            OnBeforeFindRelatedAmoutToApply(Rec, AppliesToAdvanceLetterNo);
-            if AppliesToAdvanceLetterNo <> '' then
-                CrossApplicationMgtCZL.OnGetSuggestedAmountForPurchAdvLetterHeader(
-                    AppliesToAdvanceLetterNo, CrossApplicationBufferCZL,
-                    Database::"Cash Document Line CZP", "Cash Document No.", "Line No.");
-        end;
-#pragma warning restore AL0432
-#endif
 
         OnAfterCollectSuggestedApplication(Rec, CrossApplicationBufferCZL);
     end;
@@ -2148,6 +2144,26 @@ table 11733 "Cash Document Line CZP"
         exit(("Account Type" = "Account Type"::" ") and ("Attached to Line No." <> 0) and (Amount = 0));
     end;
 
+    procedure AccountTypeToNetChangeAccountType(): Enum "Net Change Account Type CZL"
+    begin
+        case "Account Type" of
+            "Account Type"::"G/L Account":
+                exit("Net Change Account Type CZL"::"G/L Account");
+            "Account Type"::Customer:
+                exit("Net Change Account Type CZL"::Customer);
+            "Account Type"::Vendor:
+                exit("Net Change Account Type CZL"::Vendor);
+            "Account Type"::Employee:
+                exit("Net Change Account Type CZL"::Employee);
+            "Account Type"::"Bank Account":
+                exit("Net Change Account Type CZL"::"Bank Account");
+            "Account Type"::"Fixed Asset":
+                exit("Net Change Account Type CZL"::"Fixed Asset");
+            "Account Type"::"Allocation Account":
+                exit("Net Change Account Type CZL"::"Allocation Account");
+        end;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsEETTransaction(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETTransaction: Boolean; var IsHandled: Boolean)
     begin
@@ -2162,13 +2178,6 @@ table 11733 "Cash Document Line CZP"
     local procedure OnAfterIsEETCashRegister(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETCashRegister: Boolean)
     begin
     end;
-#if not CLEAN25
-    [Obsolete('The event is obsolete and will be removed in the future version. Use OnAfterCollectSuggestedApplication instead.', '25.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeFindRelatedAmoutToApply(CashDocumentLineCZP: Record "Cash Document Line CZP"; var AppliesToAdvanceLetterNo: Code[20]);
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCreateDim(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
@@ -2181,7 +2190,7 @@ table 11733 "Cash Document Line CZP"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterInitDefaultDimensionSources(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    local procedure OnAfterInitDefaultDimensionSources(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
     begin
     end;
 
@@ -2304,4 +2313,15 @@ table 11733 "Cash Document Line CZP"
     local procedure OnDeleteOnAfterSetCashDocumentLineFilters(var CashDocumentLineCZP: Record "Cash Document Line CZP")
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateAccountNoOnBeforeUpdateCashDocumentHeader(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var CashDocumentHeaderCZP: Record "Cash Document Header CZP");
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnValidateAccountTypeOnAfterInitRec(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary);
+    begin
+    end;
+
 }

@@ -205,10 +205,10 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             column(VATRegistrationNo_SalesInvoiceHeader; "VAT Registration No.")
             {
             }
-            column(RegistrationNo_SalesInvoiceHeaderCaption; FieldCaption("Registration No. CZL"))
+            column(RegistrationNo_SalesInvoiceHeaderCaption; FieldCaption("Registration Number"))
             {
             }
-            column(RegistrationNo_SalesInvoiceHeader; "Registration No. CZL")
+            column(RegistrationNo_SalesInvoiceHeader; "Registration Number")
             {
             }
             column(BankAccountNo_SalesInvoiceHeaderCaption; FieldCaption("Bank Account No. CZL"))

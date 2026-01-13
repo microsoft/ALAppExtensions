@@ -4,6 +4,7 @@ codeunit 139662 "GP Item Tests"
 
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var
@@ -30,6 +31,8 @@ codeunit 139662 "GP Item Tests"
     var
         GPItem: Record "GP Item";
         Item: Record "Item";
+        ItemCategory: Record "Item Category";
+        GeneralPostingSetup: Record "General Posting Setup";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items are migrated from GP
@@ -40,6 +43,7 @@ codeunit 139662 "GP Item Tests"
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Item Classes", true);
         GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", true);
         GPCompanyAdditionalSettings.Validate("Migrate Kit Items", false);
         GPCompanyAdditionalSettings.Modify();
@@ -76,6 +80,7 @@ codeunit 139662 "GP Item Tests"
         Assert.AreEqual(GPItem.ShortName, Item."Description 2", 'Description2 not set.');
         Assert.AreEqual(GPItem.SearchDescription, Item."Search Description", 'Search Description not set.');
         Assert.AreEqual(GPItem.PurchUnitOfMeasure, Item."Purch. Unit of Measure", 'Purch. Unit of Measure not set.');
+        Assert.AreEqual(ItemClassesIdTest1Tok, Item."Item Category Code", 'Item category code is incorrect.');
 
         GPItem.Get(ItemNoStepLadderTok);
         Item.Get(GPItem.No);
@@ -89,6 +94,33 @@ codeunit 139662 "GP Item Tests"
         Assert.AreEqual(GPItem.ShortName, Item."Description 2", 'Description2 not set.');
         Assert.AreEqual(GPItem.SearchDescription, Item."Search Description", 'Search Description not set.');
         Assert.AreEqual(GPItem.PurchUnitOfMeasure, Item."Purch. Unit of Measure", 'Purch. Unit of Measure not set.');
+        Assert.AreEqual(ItemClassIdTest2Tok, Item."Item Category Code", 'Item category code is incorrect.');
+
+        Assert.RecordCount(ItemCategory, 2);
+
+        Assert.IsTrue(GeneralPostingSetup.Get('GP', 'TEST-1'), 'Missing GeneralPostingSetup for TEST-1 class.');
+        Assert.AreEqual('1', GeneralPostingSetup."Purch. Account", 'Purch. Account is incorrect.');
+        Assert.AreEqual('1', GeneralPostingSetup."Direct Cost Applied Account", 'Direct Cost Applied Account is incorrect.');
+        Assert.AreEqual('1', GeneralPostingSetup."Purch. Pmt. Disc. Debit Acc.", 'Purch. Pmt. Disc. Debit Acc. is incorrect.');
+        Assert.AreEqual('2', GeneralPostingSetup."Sales Account", 'Sales Account is incorrect.');
+        Assert.AreEqual('2', GeneralPostingSetup."Sales Inv. Disc. Account", 'Sales Inv. Disc. Account is incorrect.');
+        Assert.AreEqual('2', GeneralPostingSetup."Sales Pmt. Disc. Debit Acc.", 'Sales Pmt. Disc. Debit Acc. is incorrect.');
+        Assert.AreEqual('3', GeneralPostingSetup."Sales Line Disc. Account", 'Sales Line Disc. Account is incorrect.');
+        Assert.AreEqual('4', GeneralPostingSetup."COGS Account", 'COGS Account is incorrect.');
+        Assert.AreEqual('5', GeneralPostingSetup."Purchase Variance Account", 'Purchase Variance Account is incorrect.');
+        Assert.AreEqual('6', GeneralPostingSetup."Inventory Adjmt. Account", 'Inventory Adjmt. Account is incorrect.');
+
+        Assert.IsTrue(GeneralPostingSetup.Get('GP', 'TEST-2'), 'Missing GeneralPostingSetup for TEST-2 class.');
+        Assert.AreEqual('', GeneralPostingSetup."Purch. Account", 'Purch. Account is incorrect.');
+        Assert.AreEqual('', GeneralPostingSetup."Direct Cost Applied Account", 'Direct Cost Applied Account is incorrect.');
+        Assert.AreEqual('1', GeneralPostingSetup."Purch. Pmt. Disc. Debit Acc.", 'Purch. Pmt. Disc. Debit Acc. is incorrect.');
+        Assert.AreEqual('', GeneralPostingSetup."Sales Account", 'Sales Account is incorrect.');
+        Assert.AreEqual('2', GeneralPostingSetup."Sales Inv. Disc. Account", 'Sales Inv. Disc. Account is incorrect.');
+        Assert.AreEqual('2', GeneralPostingSetup."Sales Pmt. Disc. Debit Acc.", 'Sales Pmt. Disc. Debit Acc. is incorrect.');
+        Assert.AreEqual('', GeneralPostingSetup."Sales Line Disc. Account", 'Sales Line Disc. Account is incorrect.');
+        Assert.AreEqual('', GeneralPostingSetup."COGS Account", 'COGS Account is incorrect.');
+        Assert.AreEqual('', GeneralPostingSetup."Purchase Variance Account", 'Purchase Variance Account is incorrect.');
+        Assert.AreEqual('6', GeneralPostingSetup."Inventory Adjmt. Account", 'Inventory Adjmt. Account is incorrect.');
     end;
 
     [Test]
@@ -188,7 +220,7 @@ codeunit 139662 "GP Item Tests"
         GPTestHelperFunctions.InitializeMigration();
 
         Assert.RecordCount(GPIV00101, 8);
-        Assert.RecordCount(GPIV40400, 2);
+        Assert.RecordCount(GPIV40400, 3);
 
         Assert.IsTrue(GPIV00101.Get(ItemNoSashBrshTok), 'Could not locate item.');
         Assert.AreEqual(ItemClassesIdTest1Tok, GPIV00101.ITMCLSCD, 'Incorrect class Id');
@@ -396,12 +428,16 @@ codeunit 139662 "GP Item Tests"
         GenBusPostingGroup: Record "Gen. Business Posting Group";
         GPIV00101: Record "GP IV00101";
         GPIV40400: Record "GP IV40400";
+        InventorySetup: Record "Inventory Setup";
+        ItemCategory: Record "Item Category";
+        GPPostingAccounts: Record "GP Posting Accounts";
     begin
         Clear(ItemDataMigrationFacade);
         Clear(GPItemMigrator);
 
         GPItem.DeleteAll();
         Item.DeleteAll();
+        ItemCategory.DeleteAll();
         GPIV00101.DeleteAll();
         GPIV40400.DeleteAll();
         DataMigrationEntity.DeleteAll();
@@ -410,6 +446,28 @@ codeunit 139662 "GP Item Tests"
             GenBusPostingGroup.Validate(GenBusPostingGroup.Code, PostingGroupGPTok);
             GenBusPostingGroup.Insert(true);
         end;
+
+        if not InventorySetup.Get() then
+            InventorySetup.Insert(true);
+
+        if InventorySetup."Item Nos." = '' then begin
+            InventorySetup."Item Nos." := 'ITEM';
+            InventorySetup.Modify(true);
+        end;
+
+        if not GPPostingAccounts.Get() then begin
+            GPPostingAccounts.PayablesAccount := '1';
+            GPPostingAccounts.PurchAccount := '1';
+            GPPostingAccounts.ReceivablesAccount := '2';
+            GPPostingAccounts.SalesAccount := '2';
+            GPPostingAccounts.SalesAccountIdx := 2;
+            GPPostingAccounts.PurchAccountIdx := 1;
+            GPPostingAccounts.InventoryAdjmtAccountIdx := 6;
+            GPPostingAccounts.SalesInvDiscAccountIdx := 2;
+            GPPostingAccounts.SalesPmtDiscDebitAccountIdx := 2;
+            GPPostingAccounts.PurchPmtDiscDebitAccIdx := 1;
+            GPPostingAccounts.Insert();
+        end;
     end;
 
     local procedure Migrate(GPItem: Record "GP Item")
@@ -417,8 +475,8 @@ codeunit 139662 "GP Item Tests"
         if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Item) then
             exit;
 
-        GPItemMigrator.MigrateItem(ItemDataMigrationFacade, GPItem.RecordId());
-        GPItemMigrator.MigrateItemInventoryPostingGroup(GPItem, ItemDataMigrationFacade);
+        GPItemMigrator.MigrateItemImp(ItemDataMigrationFacade, GPItem.RecordId());
+        GPItemMigrator.MigrateItemPostingGroupsImp(ItemDataMigrationFacade, GPItem.RecordId(), true);
     end;
 
     local procedure CreateStagingTableEntries(var GPItem: Record "GP Item")
@@ -623,55 +681,121 @@ codeunit 139662 "GP Item Tests"
         GPIV00101: Record "GP IV00101";
         GPIV40400: Record "GP IV40400";
     begin
-        GPAccount.Init();
+        Clear(GPAccount);
         GPAccount.AcctNum := '1';
         GPAccount.AcctIndex := 1;
         GPAccount.Name := 'Account 1';
         GPAccount.Active := true;
         GPAccount.Insert();
 
-        GLAccount.Init();
+        Clear(GLAccount);
         GLAccount.Validate("No.", GPAccount.AcctNum);
         GLAccount.Validate(Name, GPAccount.Name);
         GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
         GLAccount.Insert();
 
-        GPAccount.Init();
+        Clear(GPAccount);
         GPAccount.AcctNum := '2';
         GPAccount.AcctIndex := 2;
         GPAccount.Name := 'Account 2';
         GPAccount.Active := true;
         GPAccount.Insert();
 
-        GLAccount.Init();
+        Clear(GLAccount);
         GLAccount.Validate("No.", GPAccount.AcctNum);
         GLAccount.Validate(Name, GPAccount.Name);
         GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
         GLAccount.Insert();
 
-        GPIV40400.Init();
+        Clear(GPAccount);
+        GPAccount.AcctNum := '3';
+        GPAccount.AcctIndex := 3;
+        GPAccount.Name := 'Account 3';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        Clear(GLAccount);
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        Clear(GPAccount);
+        GPAccount.AcctNum := '4';
+        GPAccount.AcctIndex := 4;
+        GPAccount.Name := 'Account 4';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        Clear(GLAccount);
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        Clear(GPAccount);
+        GPAccount.AcctNum := '5';
+        GPAccount.AcctIndex := 5;
+        GPAccount.Name := 'Account 5';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        Clear(GLAccount);
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        Clear(GPAccount);
+        GPAccount.AcctNum := '6';
+        GPAccount.AcctIndex := 6;
+        GPAccount.Name := 'Account 6';
+        GPAccount.Active := true;
+        GPAccount.Insert();
+
+        Clear(GLAccount);
+        GLAccount.Validate("No.", GPAccount.AcctNum);
+        GLAccount.Validate(Name, GPAccount.Name);
+        GLAccount.Validate("Account Type", "G/L Account Type"::Posting);
+        GLAccount.Insert();
+
+        Clear(GPIV40400);
         GPIV40400.ITMCLSCD := ItemClassesIdTest1Tok;
         GPIV40400.ITMCLSDC := 'Test class 1';
         GPIV40400.IVIVINDX := 1;
+        GPIV40400.IVSLSIDX := 2;
+        GPIV40400.IVSLDSIX := 3;
+        GPIV40400.IVCOGSIX := 4;
+        GPIV40400.PURPVIDX := 5;
         GPIV40400.Insert();
 
-        GPIV40400.Init();
+        Clear(GPIV40400);
         GPIV40400.ITMCLSCD := ItemClassIdTest2Tok;
         GPIV40400.ITMCLSDC := 'Test class 2';
         GPIV40400.IVIVINDX := 0;
+        GPIV40400.IVSLSIDX := 0;
+        GPIV40400.IVSLDSIX := 0;
+        GPIV40400.IVCOGSIX := 0;
+        GPIV40400.PURPVIDX := 0;
         GPIV40400.Insert();
 
-        GPIV00101.Init();
+        Clear(GPIV40400);
+        GPIV40400.ITMCLSCD := 'IGNORE';
+        GPIV40400.ITMCLSDC := 'Will not migrate';
+        GPIV40400.IVIVINDX := 0;
+        GPIV40400.Insert();
+
+        Clear(GPIV00101);
         GPIV00101.ITEMNMBR := ItemNoSashBrshTok;
         GPIV00101.ITMCLSCD := ItemClassesIdTest1Tok;
         GPIV00101.Insert();
 
-        GPIV00101.Init();
+        Clear(GPIV00101);
         GPIV00101.ITEMNMBR := ItemNo12345ITEMNUMBERTok;
         GPIV00101.ITMCLSCD := ItemClassesIdTest1Tok;
         GPIV00101.Insert();
 
-        GPIV00101.Init();
+        Clear(GPIV00101);
         GPIV00101.ITEMNMBR := ItemNoStepLadderTok;
         GPIV00101.ITMCLSCD := ItemClassIdTest2Tok;
         GPIV00101.Insert();

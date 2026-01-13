@@ -32,9 +32,10 @@ codeunit 11480 "Create Posting Groups US"
         ContosoGenPostingSetup: Codeunit "Contoso Posting Setup";
         CreatePostingGroups: Codeunit "Create Posting Groups";
         CreateUSGLAccounts: Codeunit "Create US GL Accounts";
+        CreateGLAccount: Codeunit "Create G/L Account";
     begin
-        ContosoGenPostingSetup.InsertGeneralPostingSetup('', NoTaxPostingGroup(), '', '', CreateUSGLAccounts.CostofMaterials(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.GoodsforResale(), '', '', '', '', '', CreateUSGLAccounts.CostofMaterials(), '', '');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), NoTaxPostingGroup(), CreateUSGLAccounts.ResaleofGoods(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.CostofMaterials(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.GoodsforResale(), '', CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.CostofMaterials(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', NoTaxPostingGroup(), '', '', CreateUSGLAccounts.CostofMaterials(), CreateGLAccount.ResaleItems(), CreateGLAccount.ResaleItems(), '', '', '', '', '', CreateUSGLAccounts.CostofMaterials(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), NoTaxPostingGroup(), CreateUSGLAccounts.ResaleofGoods(), CreateGLAccount.ResaleItems(), CreateUSGLAccounts.CostofMaterials(), CreateGLAccount.ResaleItems(), CreateGLAccount.ResaleItems(), '', CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.CostofMaterials(), '', '');
     end;
 
     local procedure UpdateGeneralPostingSetup()
@@ -42,11 +43,12 @@ codeunit 11480 "Create Posting Groups US"
         ContosoGenPostingSetup: Codeunit "Contoso Posting Setup";
         CreatePostingGroups: Codeunit "Create Posting Groups";
         CreateUSGLAccounts: Codeunit "Create US GL Accounts";
+        CreateGLAccount: Codeunit "Create G/L Account";
     begin
         ContosoGenPostingSetup.SetOverwriteData(true);
-        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RetailPostingGroup(), '', '', CreateUSGLAccounts.CostofMaterials(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.GoodsforResale(), '', '', '', '', '', CreateUSGLAccounts.CostofMaterials(), '', '');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ServicesPostingGroup(), '', '', CreateUSGLAccounts.CostofMaterials(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.GoodsforResale(), '', '', '', '', '', CreateUSGLAccounts.CostofMaterials(), '', '');
-        ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateUSGLAccounts.ResaleofGoods(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.CostofMaterials(), CreateUSGLAccounts.GoodsforResale(), CreateUSGLAccounts.GoodsforResale(), '', CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.CostofMaterials(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.RetailPostingGroup(), '', '', CreateUSGLAccounts.CostofMaterials(), CreateGLAccount.ResaleItems(), CreateGLAccount.ResaleItems(), '', '', '', '', '', CreateUSGLAccounts.CostofMaterials(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup('', CreatePostingGroups.ServicesPostingGroup(), '', '', CreateUSGLAccounts.CostofMaterials(), CreateGLAccount.ResaleItems(), CreateGLAccount.ResaleItems(), '', '', '', '', '', CreateUSGLAccounts.CostofMaterials(), '', '');
+        ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), CreateUSGLAccounts.ResaleofGoods(), CreateGLAccount.ResaleItems(), CreateUSGLAccounts.CostofMaterials(), CreateGLAccount.ResaleItems(), CreateGLAccount.ResaleItems(), '', CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.CostofMaterials(), '', '');
         ContosoGenPostingSetup.InsertGeneralPostingSetup(CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.ServicesPostingGroup(), CreateUSGLAccounts.SalesofServiceWork(), CreateUSGLAccounts.OtherExternalServices(), CreateUSGLAccounts.CostofLabor(), CreateUSGLAccounts.OtherExternalServices(), CreateUSGLAccounts.OtherExternalServices(), '', CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.DiscountsandAllowances(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.PurchaseDiscounts(), CreateUSGLAccounts.CostofLabor(), '', '');
         ContosoGenPostingSetup.SetOverwriteData(false);
     end;

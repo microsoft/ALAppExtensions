@@ -3,6 +3,7 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -595,39 +596,6 @@ codeunit 139735 "APIV1 - Sales Order Lines E2E"
 
         // [THEN] Lower order discount is applied
         VerifyTotals(SalesHeader, 0, SalesHeader."Invoice Discount Calculation"::"%");
-        RecallNotifications();
-    end;
-
-    [Test]
-    procedure TestInsertingLineKeepsOrderDiscountAmt()
-    var
-        SalesHeader: Record "Sales Header";
-        Item: Record "Item";
-        TargetURL: Text;
-        ResponseText: Text;
-        OrderLineJSON: Text;
-        DiscountAmount: Decimal;
-    begin
-        // [FEATURE] [Discount]
-        // [SCENARIO] Adding an order through API will keep Discount Amount
-        // [GIVEN] An  order for customer with order discount amount
-        Initialize();
-        SetupAmountDiscountTest(SalesHeader, DiscountAmount);
-        OrderLineJSON := CreateOrderLineJSON(Item.SystemId, LibraryRandom.RandIntInRange(1, 100));
-
-        COMMIT();
-
-        // [WHEN] We create a line through API
-        TargetURL := LibraryGraphMgt
-          .CreateTargetURLWithSubpage(
-            SalesHeader.SystemId,
-            PAGE::"APIV1 - Sales Orders",
-            OrderServiceNameTxt,
-            OrderServiceLinesNameTxt);
-        ASSERTERROR LibraryGraphMgt.PostToWebService(TargetURL, OrderLineJSON, ResponseText);
-
-        // [THEN] Discount Amount is Kept
-        VerifyTotals(SalesHeader, DiscountAmount, SalesHeader."Invoice Discount Calculation"::Amount);
         RecallNotifications();
     end;
 

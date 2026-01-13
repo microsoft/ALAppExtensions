@@ -136,6 +136,19 @@ codeunit 47001 "SL Cloud Migration"
             Commit();
         end;
 
+        if SLCompanyAdditionalSettings.GetMigrateVendorClasses() then begin
+            SLHelperFunctions.DeleteExistingVendorPostingGroups();
+            Commit();
+        end;
+
+        if SLCompanyAdditionalSettings."Migrate Inventory Module" then begin
+            SLHelperFunctions.DeleteExistingInventoryPostingSetups();
+            SLHelperFunctions.DeleteExistingInventoryPostingGroups();
+            SLHelperFunctions.DeleteExistingGeneralPostingSetups();
+            SLHelperFunctions.DeleteExistingGenProductPostingGroups();
+            Commit();
+        end;
+
         Flag := false;
         SLHelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
         if Flag then begin
@@ -221,7 +234,7 @@ codeunit 47001 "SL Cloud Migration"
             CreateDataMigrationStatusRecords(Database::Vendor, VendorsToMigrateCount, Database::"SL Vendor", Codeunit::"SL Vendor Migrator");
 
         if SLCompanyAdditionalSettings.GetInventoryModuleEnabled() then
-            CreateDataMigrationStatusRecords(Database::Item, ItemsToMigrateCount, Database::"SL Inventory", Codeunit::"SL Item Migrator");
+            CreateDataMigrationStatusRecords(Database::Item, ItemsToMigrateCount, Database::"SL Inventory Buffer", Codeunit::"SL Item Migrator");
     end;
 
     [IntegrationEvent(false, false, true)]

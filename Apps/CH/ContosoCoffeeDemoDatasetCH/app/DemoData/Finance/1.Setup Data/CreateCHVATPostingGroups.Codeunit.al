@@ -26,44 +26,65 @@ codeunit 11616 "Create CH VAT Posting Groups"
 
     local procedure CreateVATPostingSetup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingSetup: Codeunit "Contoso Posting Setup";
         CreateCHGLAccounts: Codeunit "Create CH GL Accounts";
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
-        ContosoPostingSetup.InsertVATPostingSetup('', NOVAT(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup('', Normal(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        FinanceModuleSetup.Get();
+
+        ContosoPostingSetup.SetOverwriteData(true);
+        ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup('', OperatingExpense(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatInvOperatingExp(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup('', Reduced(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup('', FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), HalfNormal(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatInvOperatingExp(), 'D', 3.66089, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), Hotel(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'C', 3.6, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), Import(), '', CreateCHGLAccounts.PurchVatOnImports100Percent(), 'H', 100, Enum::"Tax Calculation Type"::"Full VAT", 'S', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), NOVAT(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), Normal(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'A', 8, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'A', 8, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), OperatingExpense(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatInvOperatingExp(), 'A', 8, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), Reduced(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'B', 2.4, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Domestic(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'B', 2.4, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', false);
+
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), Hotel(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), NOVAT(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), Normal(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), OperatingExpense(), '', CreateCHGLAccounts.PurchVatInvOperatingExp(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), Reduced(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), NOVAT(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), Normal(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.EU(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
         ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), OperatingExpense(), '', CreateCHGLAccounts.PurchVatInvOperatingExp(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
-        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), Reduced(), CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.InsertVATPostingSetup(CreateVATPostingGroups.Export(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateCHGLAccounts.VatOwed(), CreateCHGLAccounts.PurchVatMatDl(), 'Z', 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', false);
+        ContosoPostingSetup.SetOverwriteData(false);
+
         UpdateAdjustforPaymentDiscountOnVATPostingSetup();
     end;
 
     procedure CreateVATProductPostingGroup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
     begin
+        FinanceModuleSetup.Get();
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Standard" = '' then begin
+            ContosoPostingGroup.InsertVATProductPostingGroup(Normal(), NormalVATRateLbl);
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Standard", Normal());
+        end;
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Reduced" = '' then begin
+            ContosoPostingGroup.InsertVATProductPostingGroup(Reduced(), ReducedRateLbl);
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Reduced", Reduced());
+        end;
+
+        FinanceModuleSetup.Modify();
+
         ContosoPostingGroup.InsertVATProductPostingGroup(HalfNormal(), HalfStandardRateLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(Hotel(), HotelsLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(Import(), ImportFullTaxLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(NoVAT(), TaxExemptLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(Normal(), NormalVATRateLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(OperatingExpense(), VATOperatingExpensesLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(Reduced(), ReducedRateLbl);
     end;
 
     procedure UpdateVATProductPostingGroup()
@@ -74,14 +95,10 @@ codeunit 11616 "Create CH VAT Posting Groups"
         CreatePostingGroup: Codeunit "Create Posting Groups";
         CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
-        CreateCHPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroup.RawMatPostingGroup(), Normal());
-        CreateCHPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroup.RetailPostingGroup(), Normal());
-        CreateCHPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroup.MiscPostingGroup(), Normal());
         CreateCHPostingGroups.UpdateVATProdPostingGroup(CreatePostingGroup.ServicesPostingGroup(), Normal());
-        CreateCHPostingGroups.UpdateVATProdPostingGroup(CreateCHPostingGroups.NoVATPostingGroup(), NOVAT());
 
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PurchVatOnImports100Percent(), Import());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.VendorPrepaymentsVat0Percent(), NOVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.VendorPrepaymentsVat0Percent(), CreateVATPostingGroups.NoVAT());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.VendorPrepaymentsVat80Percent(), Normal());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.MachinesAndEquipment(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.BusinessFurniture(), OperatingExpense());
@@ -89,9 +106,9 @@ codeunit 11616 "Create CH VAT Posting Groups"
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.ItHardwareAndSoftware(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateGLAccount.Vehicles(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.VehiclesEquipment(), OperatingExpense());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PatentsKnowledgeRecipes(), NOVAT());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.BrandsPrototypesModelsPlans(), NOVAT());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.CustomerPrepaymentsVat0Percent(), NOVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PatentsKnowledgeRecipes(), CreateVATPostingGroups.NoVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.BrandsPrototypesModelsPlans(), CreateVATPostingGroups.NoVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.CustomerPrepaymentsVat0Percent(), CreateVATPostingGroups.NoVAT());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.CustomerPrepaymentsVat80Percent(), Normal());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.ProdEarningsDomestic(), Normal());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.ProdEarningsEurope(), Normal());
@@ -122,7 +139,7 @@ codeunit 11616 "Create CH VAT Posting Groups"
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.DirectPurchCosts(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PurchaseDisc(), Normal());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.CostReductionDiscount(), Normal());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.RoundingDifferencesPurchase(), NOVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.RoundingDifferencesPurchase(), CreateVATPostingGroups.NoVAT());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.MaintProductionPlants(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.MaintSalesEquipment(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.MaintStorageFacilities(), OperatingExpense());
@@ -134,11 +151,11 @@ codeunit 11616 "Create CH VAT Posting Groups"
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.TransportTaxRates(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.TransportCosts(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.ShippingChargeCustomer(), Normal());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PropertyInsurance(), NOVAT());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.OperatingLiability(), NOVAT());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.DowntimeInsurance(), NOVAT());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.TaxRates(), NOVAT());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PermitsPatents(), NOVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PropertyInsurance(), CreateVATPostingGroups.NoVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.OperatingLiability(), CreateVATPostingGroups.NoVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.DowntimeInsurance(), CreateVATPostingGroups.NoVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.TaxRates(), CreateVATPostingGroups.NoVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PermitsPatents(), CreateVATPostingGroups.NoVAT());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.EnergyCosts(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.WasteCosts(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.AdministrativeCosts(), OperatingExpense());
@@ -148,7 +165,7 @@ codeunit 11616 "Create CH VAT Posting Groups"
         UpdateVATProductPostingGroupOnGLAccount(CreateGLAccount.Postage(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.Deductions(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.AccountingConsultancy(), OperatingExpense());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.BoardOfDirectorsGvRevision(), NOVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.BoardOfDirectorsGvRevision(), CreateVATPostingGroups.NoVAT());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.InformationCosts(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.ItLeasing(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.ItProgramLicensesMaint(), OperatingExpense());
@@ -158,8 +175,8 @@ codeunit 11616 "Create CH VAT Posting Groups"
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.AdMaterials(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.Exhibits(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.TravelCostsCustomerService(), OperatingExpense());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.AdvertContribSponsoring(), NOVAT());
-        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PublicRelationsPr(), NOVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.AdvertContribSponsoring(), CreateVATPostingGroups.NoVAT());
+        UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.PublicRelationsPr(), CreateVATPostingGroups.NoVAT());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.AdConsultancyMarketAnaly(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.EconomicInformation(), OperatingExpense());
         UpdateVATProductPostingGroupOnGLAccount(CreateCHGLAccounts.OperReliabilityMonitoring(), OperatingExpense());
@@ -249,10 +266,15 @@ codeunit 11616 "Create CH VAT Posting Groups"
             until VATPostingSetup.Next() = 0;
     end;
 
+#if not CLEAN27
+    [Obsolete('This procedure is moved to codeunit 5473 "Create VAT Posting Groups".', '27.0')]
     procedure NOVAT(): Code[20]
+    var
+        CreateVATPostingGroups: Codeunit "Create VAT Posting Groups";
     begin
-        exit(NoVATTok);
+        exit(CreateVATPostingGroups.NOVAT());
     end;
+#endif
 
     procedure HalfNormal(): Code[20]
     begin
@@ -286,18 +308,16 @@ codeunit 11616 "Create CH VAT Posting Groups"
 
 
     var
-        NoVATTok: Label 'NO VAT', MaxLength = 20, Locked = true;
-        HalfNormalTok: Label 'HALF NORM', MaxLength = 20, Locked = true;
-        HotelTok: Label 'HOTEL', MaxLength = 20, Locked = true;
-        ImportTok: Label 'IMPORT', MaxLength = 20, Locked = true;
-        NormalTok: Label 'NORMAL', MaxLength = 20, Locked = true;
-        OperatingExpenseTok: Label 'OPEXP', MaxLength = 20, Locked = true;
-        ReducedTok: Label 'RED', MaxLength = 20, Locked = true;
+        HalfNormalTok: Label 'HALF NORM', MaxLength = 20;
+        HotelTok: Label 'HOTEL', MaxLength = 20;
+        ImportTok: Label 'IMPORT', MaxLength = 20;
+        NormalTok: Label 'NORMAL', MaxLength = 20;
+        OperatingExpenseTok: Label 'OPEXP', MaxLength = 20;
+        ReducedTok: Label 'RED', MaxLength = 20;
         HalfStandardRateLbl: Label 'Half Standard Rate', MaxLength = 100;
         NormalVATRateLbl: Label 'Normal VAT Rate, 8.0%', MaxLength = 100;
         HotelsLbl: Label 'Hotels, 3.6%', MaxLength = 100;
         ImportFullTaxLbl: Label 'Import, Full Tax 100%', MaxLength = 100;
         VATOperatingExpensesLbl: Label 'Purch. VAT Operating Expenses 8.0%', MaxLength = 100;
         ReducedRateLbl: Label 'Reduced Rate, 2.4%', MaxLength = 100;
-        TaxExemptLbl: Label 'Tax Exempt', MaxLength = 100;
 }

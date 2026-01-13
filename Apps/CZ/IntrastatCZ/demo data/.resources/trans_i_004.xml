@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ciselnik>
+<nazev>trans_i</nazev>
+<data>
+  <radek>
+    <TRANS>11</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Přímý prodej/nákup s výjimkou přímého obchodu se soukromými spotřebiteli/ze strany soukromých spotřebitelů</POPIS>
+    <POPISAN>Outright sale/purchase except direct trade with/by private consumers</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>12</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Přímý obchod se soukromými spotřebiteli/ze strany soukromých spotřebitelů (včetně prodeje na dálku)</POPIS>
+    <POPISAN>Direct trade with/by private consumers (incl. distance sale)</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>13</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Transakce zahrnující skutečný nebo zamýšlený převod vlastnictví za finanční nebo jiné protiplnění, s výjimkou transakcí patřících pod kódy začínající číslicí 2, 7, 8 nebo 9, jedná-li se o výměnný obchod (například barterový)</POPIS>
+    <POPISAN>Transaction involving actual or intended transfer of ownership against compensation (financial or otherwise), except the transactions listed under number 2, 7, 8 or 9, if transaction is barter trade (compensation in kind)</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>14</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Transakce zahrnující skutečný nebo zamýšlený převod vlastnictví za finanční nebo jiné protiplnění, s výjimkou transakcí patřících pod kódy začínající číslem 2, 7, 8 nebo 9, jedná-li se o finanční leasing (prodej či nákup na splátky)</POPIS>
+    <POPISAN>Transaction involving actual or intended transfer of ownership against compensation financial or otherwise, except the transaction beginning with number 2,7,8 or 9, provided it is a financial leasing (hire-purchase).</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>19</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Ostatní transakce zahrnující skutečný nebo zamýšlený převod vlastnictví za finanční nebo jiné protiplnění neoznačované kódy 11 až 14, s výjimkou transakcí patřících pod kódy začínající číslem 2, 7, 8 nebo 9 (například odeslání zboží prodané</POPIS>
+    <POPISAN>Other transaction involving actual or intended transfer of ownership against financial or other compensation not marked under the codes 11 to 14, except the transaction listed under codes belonging under the codes 2,7,8 or 9 (e.g.dispatch o</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>21</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Vrácení zboží</POPIS>
+    <POPISAN>Return of goods</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>22</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Náhrada za vrácené zboží</POPIS>
+    <POPISAN>Replacement for returned goods</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>23</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Náhrada za nevrácené zboží</POPIS>
+    <POPISAN>Replacement (e.g. under warranty) for goods not being returned</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>29</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Vrácení zboží, jehož předchozí odeslání nebo přijetí se označuje kódem povahy transakce „91“</POPIS>
+    <POPISAN>Return of goods, which previous dispatch or arrival was marked under nature of transaction "91".</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>30</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Transakce zahrnující převod vlastnictví zboží bez finančního či jiného protiplnění (například zásilky s pomocí)</POPIS>
+    <POPISAN>Transaction involving transfer of ownership without financial or in kind of compensation (e.g. aid shipment)</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>31</TRANS>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Přeprava do skladu/ze skladu (kromě call-off stock a zboží v konsignačním skladu)</POPIS>
+    <POPISAN>Movements to/from a warehouse (excluding call-off and consignment stock)</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>32</TRANS>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Dodávka pro prodej po schválení či po vyzkoušení (včetně call-off stock a zboží v konsignačním skladu)</POPIS>
+    <POPISAN>Supply for sale on approval or after trial (including call-off and consignment stock)</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>33</TRANS>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Finanční leasing</POPIS>
+    <POPISAN>Financial leasing</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>34</TRANS>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Transakce zahrnující převod vlastnictví bez finanční kompenzace</POPIS>
+    <POPISAN>Transactions involving transfer of ownership without financial compensation</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>41</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Zboží, které se má vrátit do původního členského státu vývozu/původní země vývozu</POPIS>
+    <POPISAN>Goods expected to return to the initial Member State/country of export</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>42</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Zboží, které se nemá vrátit do původního členského státu vývozu/původní země vývozu</POPIS>
+    <POPISAN>Goods not expected to return to the initial Member State/country of export</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>49</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Vrácení zboží, které bylo odeslané nebo přijaté za účelem jeho zpracování dle smlouvy (bez převodu vlastnictví na zpracovatele), a neprošlo žádnou zpracovatelskou operací</POPIS>
+    <POPISAN>Returned goods, which were dispatched or arrived for the processing under the contract (without transfer of ownership to the processor) and have not gone through any processing operation</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>51</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Zboží, které se vrací do původního členského státu vývozu/původní země vývozu</POPIS>
+    <POPISAN>Goods returning to the initial Member State/country of export</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>52</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Zboží, které se nevrací do původního členského státu vývozu/původní země vývozu</POPIS>
+    <POPISAN>Goods not returning to the initial Member State/country of export</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>59</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Vrácení zboží zpět přijatého nebo zpět odeslaného po provedení jedné nebo více zpracovatelských operací při jeho zpracování podle smlouvy</POPIS>
+    <POPISAN>Return of goods arrived or back dispatched after carrying out one or more processing operations by their processing under contract</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>60</TRANS>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Jednotlivé transakce zaznamenávané pro vnitrostátní účely</POPIS>
+    <POPISAN>Particular transactions recorded for national purposes</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>70</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Odeslání a  přijetí zboží podle projektů společné obrany či jiných společných mezivládních výrobních programů</POPIS>
+    <POPISAN>Dispatch or arrival of goods under joint defence project or other joint intergovernmental production programmes</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>71</TRANS>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Propuštění zboží do volného oběhu v členském státě s následným vývozem do jiného členského státu</POPIS>
+    <POPISAN>Release of goods for free circulation in a Member State with a subsequent export to another Member State</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>72</TRANS>
+    <OD>2022-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Přeprava zboží z jednoho členského státu do jiného členského státu s cílem propustit zboží do režimu vývozu</POPIS>
+    <POPISAN>Transportation of goods from one Member State to another Member State to place the goods under the export procedure</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>80</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Transakce zahrnující dodávky stavebních materiálů a technického zařízení pro práce pozemního a inženýrského stavitelství v rámci všeobecné dodavatelské smlouvy, které nevyžadují vystavení faktury za jednotlivé položky smlouvy, ale za její c</POPIS>
+    <POPISAN>Transaction involving the supply of building materials and technical equipment under a general construction or civil engineering contract for which no separate invoicing of the goods is required and an invoice for the total contract is issu</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>82</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Vrácení zboží, které bylo přijato nebo odesláno v rámci dodávky stavebních materiálů a inženýrského stavitelství v rámci všeobecné dodavatelské smlouvy, které nevyžadují vystavení faktury za jednotlivé položky smlouvy, ale za její celek</POPIS>
+    <POPISAN>Return of goods received or dispatched with respect to supply of building materials and equipment for works making a part of general construction or engineering contracts for which no separate invoicing of the goods is required and an invoi</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>83</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Odeslání nebo přijetí zboží dodávaného náhradou za původně odeslané nebo přijaté zboží označené kódem povahy transakce "80"</POPIS>
+    <POPISAN>Dispatch or arrival of the goods which was supplied as replacement of originally dispatched or arrived marked by code nature of transaction "80"</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>91</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Nájem, půjčka a operační leasing s dobou trvání překračující 24 měsíců</POPIS>
+    <POPISAN>Hire, loan, and operational leasing longer than 24 months</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>92</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Odeslání nebo přijetí vlastního majetku přemísťovaného do jiného členského státu Evropské unie nebo z takového státu jednou osobou registrovanou k dani z přidané hodnoty ve státě určení i odeslání</POPIS>
+    <POPISAN>Dispatch or arrival of own property transferred into different European union Member State or from such state by the person registered for VAT purposes in both states (destination and dispatch)</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>94</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Odeslání nebo přijetí částí nebo součástí  zboží, které jeho vlastník dodává osobě, od níž následně nakoupí zboží, při jehož výrobě požaduje použití těchto částí nebo součástí</POPIS>
+    <POPISAN>Dispatch or arrival parts or components of goods, which owner dispatches to person, from which subsequently buy the goods by which production requests usage these parts or components</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>96</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Dočasné odeslání nebo přijetí zboží, při kterém nedochází ke změně vlastnictví, je spojeno s poskytnutím náhrady  a  předpokládaná doba zpětného přijetí nebo odeslání zboží přesahuje 24 měsíců, přičemž se neoznačuje kódem 41, 42 nebo 70 (ze</POPIS>
+    <POPISAN>Temporary dispatch or arrival goods, by which no transfer of ownership occurred, is connected with rendition of replacement and presumed time of back arrival or dispatch of goods exceed 24 months, not marked codes 40 or 70 (especially tempo</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>97</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2021-12-31</DO>
+    <POPIS>Dočasné odeslání nebo přijetí zboží, při kterém nedochází ke změně  vlastnictví, není spojeno s poskytnutím náhrady a předpokládaná doba zpětného přijetí nebo odeslání zboží přesahuje 24 měsíců, přičemž se  neoznačuje kódem 41, 42 nebo 70 (</POPIS>
+    <POPISAN>Temporary dispatch or arrival goods, which is not connected with rendition of replacement and presumed time of back arrival or dispatch of goods exceed 24 months, not marked codes 41, 42 or 70 (especially temporary hire free of charge)</POPISAN>
+  </radek>
+  <radek>
+    <TRANS>99</TRANS>
+    <OD>2018-01-01</OD>
+    <DO>2999-12-31</DO>
+    <POPIS>Ostatní transakce, které nelze zařadit pod žádný z uvedených kódů</POPIS>
+    <POPISAN>Other transactions which cannot be classified under other codes</POPISAN>
+  </radek>
+</data>
+</ciselnik>

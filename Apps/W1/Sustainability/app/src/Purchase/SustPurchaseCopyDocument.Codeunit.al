@@ -23,6 +23,8 @@ codeunit 6229 "Sust. Purchase Copy Document"
         ToPurchLine."Posted Emission CO2" := 0;
         ToPurchLine."Posted Emission CH4" := 0;
         ToPurchLine."Posted Emission N2O" := 0;
+        ToPurchLine."Posted Energy Consumption" := 0;
+        ToPurchLine."Posted Total Emission Cost" := 0;
 
         if ToPurchLine."Sust. Account No." <> FromPurchaseLine."Sust. Account No." then
             ToPurchLine.Validate("Sust. Account No.", FromPurchaseLine."Sust. Account No.");
@@ -33,9 +35,17 @@ codeunit 6229 "Sust. Purchase Copy Document"
         if ToPurchLine."Sust. Account Subcategory" <> FromPurchaseLine."Sust. Account Subcategory" then
             ToPurchLine.Validate("Sust. Account Subcategory", FromPurchaseLine."Sust. Account Subcategory");
 
+        ToPurchLine.Validate("Unit for Sust. Formulas", FromPurchaseLine."Unit for Sust. Formulas");
+        ToPurchLine.Validate("Fuel/Electricity", FromPurchaseLine."Fuel/Electricity");
+        ToPurchLine.Validate(Distance, FromPurchaseLine.Distance);
+        ToPurchLine.Validate("Custom Amount", FromPurchaseLine."Custom Amount");
+        ToPurchLine.Validate("Installation Multiplier", FromPurchaseLine."Installation Multiplier");
+        ToPurchLine.Validate("Time Factor", FromPurchaseLine."Time Factor");
         ToPurchLine.Validate("Emission CO2 Per Unit", FromPurchaseLine."Emission CO2 Per Unit");
         ToPurchLine.Validate("Emission CH4 Per Unit", FromPurchaseLine."Emission CH4 Per Unit");
         ToPurchLine.Validate("Emission N2O Per Unit", FromPurchaseLine."Emission N2O Per Unit");
+        ToPurchLine.Validate("Energy Consumption Per Unit", FromPurchaseLine."Energy Consumption Per Unit");
+        ToPurchLine.Validate("Emission Cost Per Unit", FromPurchaseLine."Emission Cost Per Unit");
     end;
 
     local procedure CopyFromPuchRcptLine(var ToPurchLine: Record "Purchase Line"; FromPurchRcptLine: Record "Purch. Rcpt. Line")
@@ -43,6 +53,8 @@ codeunit 6229 "Sust. Purchase Copy Document"
         ToPurchLine."Posted Emission CO2" := 0;
         ToPurchLine."Posted Emission CH4" := 0;
         ToPurchLine."Posted Emission N2O" := 0;
+        ToPurchLine."Posted Energy Consumption" := 0;
+        ToPurchLine."Posted Total Emission Cost" := 0;
 
         if ToPurchLine."Sust. Account No." <> FromPurchRcptLine."Sust. Account No." then
             ToPurchLine.Validate("Sust. Account No.", FromPurchRcptLine."Sust. Account No.");
@@ -53,8 +65,16 @@ codeunit 6229 "Sust. Purchase Copy Document"
         if ToPurchLine."Sust. Account Subcategory" <> FromPurchRcptLine."Sust. Account Subcategory" then
             ToPurchLine.Validate("Sust. Account Subcategory", FromPurchRcptLine."Sust. Account Subcategory");
 
+        ToPurchLine.Validate("Unit for Sust. Formulas", FromPurchRcptLine."Unit for Sust. Formulas");
+        ToPurchLine.Validate("Fuel/Electricity", FromPurchRcptLine."Fuel/Electricity");
+        ToPurchLine.Validate(Distance, FromPurchRcptLine.Distance);
+        ToPurchLine.Validate("Custom Amount", FromPurchRcptLine."Custom Amount");
+        ToPurchLine.Validate("Installation Multiplier", FromPurchRcptLine."Installation Multiplier");
+        ToPurchLine.Validate("Time Factor", FromPurchRcptLine."Time Factor");
         ToPurchLine.Validate("Emission CO2 Per Unit", FromPurchRcptLine."Emission CO2 Per Unit");
         ToPurchLine.Validate("Emission CH4 Per Unit", FromPurchRcptLine."Emission CH4 Per Unit");
         ToPurchLine.Validate("Emission N2O Per Unit", FromPurchRcptLine."Emission N2O Per Unit");
+        ToPurchLine.Validate("Energy Consumption Per Unit", FromPurchRcptLine."Energy Consumption Per Unit");
+        ToPurchLine.Validate("Emission Cost Per Unit", FromPurchRcptLine."Emission Cost Per Unit");
     end;
 }

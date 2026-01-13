@@ -1,5 +1,5 @@
 #pragma warning disable AA0247
-Codeunit 1917 "MigrationQB Helper Functions"
+codeunit 1917 "MigrationQB Helper Functions"
 {
     var
         StartPositionTxt: Label ' STARTPOSITION %1', Locked = true;
@@ -12,7 +12,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
         ImportedEntityTxt: Label 'Imported %1 data file.', Locked = true;
         PulledEntityTxt: Label 'Pulled %1 from source.', Locked = true;
         AuthHeaderErr: Label 'Unable to get Authorization header. ', Locked = true;
-        QBRequest1Txt: Label '/v3/company/%1/query?query=%2&minorversion=4', comment = '%1 = Realm ID, %2 = Encoded SQL query';
+        QBRequest1Txt: Label '/v3/company/%1/query?query=%2&minorversion=75', comment = '%1 = Realm ID, %2 = Encoded SQL query';
         QBRequest2Txt: Label '/v3/company/%1/query?query=%2', comment = '%1 = Realm ID, %2 = Encoded SQL query';
 
 
@@ -440,7 +440,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
         VATPostingSetup: Record "VAT Posting Setup";
     begin
         if ValidateCountry('GB') then
-            if VATPostingSetup.FindSet(true, false) then begin
+            if VATPostingSetup.FindSet(true) then begin
                 repeat
                     VATPostingSetup."Sales VAT Account" := '';
                     VATPostingSetup."Purchase VAT Account" := '';
@@ -511,21 +511,6 @@ Codeunit 1917 "MigrationQB Helper Functions"
     begin
         exit(LocalGetPropertyFromCode(CodeTxt, Property));
     end;
-#if not CLEAN25
-
-    [TryFunction]
-    [Scope('OnPrem')]
-    [NonDebuggable]
-    [Obsolete('Replaced by GetAuthRequestUrl(ClientId: SecretText; ClientSecret: SecretText; Scope: Text; Url: Text; CallBackUrl: Text; State: Text; var AuthRequestUrl: Text)', '25.0')]
-    procedure GetAuthRequestUrl(ClientId: Text; ClientSecret: Text; Scope: Text; Url: Text; CallBackUrl: Text; State: Text; var AuthRequestUrl: Text)
-    var
-        ClientIdAsSecretText, ClientSecretAsSecretText : SecretText;
-    begin
-        ClientIdAsSecretText := ClientId;
-        ClientSecretAsSecretText := ClientSecret;
-        GetAuthRequestUrl(ClientIdAsSecretText, ClientSecretAsSecretText, Scope, Url, CallBackUrl, State, AuthRequestUrl);
-    end;
-#endif
 
     [TryFunction]
     [Scope('OnPrem')]
@@ -533,23 +518,6 @@ Codeunit 1917 "MigrationQB Helper Functions"
     begin
         GetAuthRequestUrlImp(ClientId, ClientSecret, Scope, Url, CallBackUrl, State, AuthRequestUrl);
     end;
-#if not CLEAN25
-
-    [TryFunction]
-    [Scope('OnPrem')]
-    [NonDebuggable]
-    [Obsolete('Replaced by GetAccessToken(Url: Text; Callback: Text; AuthCode: SecretText; ClientId: SecretText; ClientSecret: SecretText; var AccessKey: SecretText)', '25.0')]
-    procedure GetAccessToken(Url: Text; Callback: Text; AuthCode: Text; ClientId: Text; ClientSecret: Text; var AccessKey: Text)
-    var
-        AuthCodeAsSecretText, ClientIdAsSecretText, ClientSecretAsSecretText, AccessKeyAsSecretText : SecretText;
-    begin
-        AuthCodeAsSecretText := AuthCode;
-        ClientIdAsSecretText := ClientId;
-        ClientSecretAsSecretText := ClientSecret;
-        GetAccessToken(Url, Callback, AuthCodeAsSecretText, ClientIdAsSecretText, ClientSecretAsSecretText, AccessKeyAsSecretText);
-        AccessKey := AccessKeyAsSecretText.Unwrap();
-    end;
-#endif
 
     [TryFunction]
     [Scope('OnPrem')]
@@ -588,7 +556,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
     local procedure InvokeQuickBooksRESTRequest(Request: Text; EntityName: Text; var JToken: JsonToken): Boolean
     var
         BaseUrlTxt: Label 'https://quickbooks.api.intuit.com', Locked = true;
-        //BaseUrlTxt: Label 'https://sandbox-quickbooks.api.intuit.com', Locked = true;
+        // BaseUrlTxt: Label 'https://sandbox-quickbooks.api.intuit.com', Locked = true;
         AuthorizationHeader: SecretText;
         AccessToken: SecretText;
     begin

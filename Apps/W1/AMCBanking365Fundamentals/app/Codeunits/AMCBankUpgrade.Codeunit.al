@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -9,6 +10,9 @@ using System.Upgrade;
 codeunit 20119 "AMC Bank Upgrade"
 {
     Subtype = Upgrade;
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnUpgradePerCompany()
     begin
@@ -45,3 +49,4 @@ codeunit 20119 "AMC Bank Upgrade"
         PerCompanyUpgradeTags.Add(GetAMCConsentUpgradeTag());
     end;
 }
+#endif

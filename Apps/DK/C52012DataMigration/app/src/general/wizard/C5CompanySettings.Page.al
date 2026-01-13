@@ -111,6 +111,7 @@ page 1904 "C5 Company Settings"
             exit;
 
         GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", LocalCurrencyCodeValue);
         GeneralLedgerSetup.Modify(true);
     end;

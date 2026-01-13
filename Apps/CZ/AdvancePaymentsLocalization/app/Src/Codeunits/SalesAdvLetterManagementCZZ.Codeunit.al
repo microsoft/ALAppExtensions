@@ -7,6 +7,7 @@ namespace Microsoft.Finance.AdvancePayments;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
@@ -309,20 +310,6 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         InsertedEntryNo := SalesAdvLetterPostCZZ.PostAdvancePayment(
             CustLedgerEntry, PostedGenJournalLine, GenJnlPostLine, AdvancePostingParametersCZZ);
     end;
-#if not CLEAN25
-    [Obsolete('Replaced by GetAdvanceGLAccountNoCZZ function in GenJournalLine.', '25.0')]
-    procedure GetAdvanceGLAccount(var GenJournalLine: Record "Gen. Journal Line"): Code[20]
-    var
-        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
-        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
-    begin
-        SalesAdvLetterHeaderCZZ.Get(GenJournalLine."Adv. Letter No. (Entry) CZZ");
-        SalesAdvLetterHeaderCZZ.TestField("Advance Letter Code");
-        AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
-        AdvanceLetterTemplateCZZ.TestField("Advance Letter G/L Account");
-        exit(AdvanceLetterTemplateCZZ."Advance Letter G/L Account");
-    end;
-#endif
 
     procedure PostAdvancePaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; PostingDate: Date)
     begin
@@ -332,6 +319,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
     procedure PostAdvancePaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; PostingDate: Date; Silently: Boolean)
     var
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         SalesAdvLetterEntryCZZ2: Record "Sales Adv. Letter Entry CZZ";
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
@@ -373,7 +361,8 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
         AdvanceLetterTemplateCZZ.TestField("Advance Letter Invoice Nos.");
 
-        InitVATAmountLine(TempAdvancePostingBufferCZZ, SalesAdvLetterEntryCZZ."Sales Adv. Letter No.", SalesAdvLetterEntryCZZ.Amount, SalesAdvLetterEntryCZZ."Currency Factor");
+        InitVATAmountLine(TempAdvancePostingBufferCZZ, SalesAdvLetterEntryCZZ."Sales Adv. Letter No.",
+            SalesAdvLetterEntryCZZ.Amount, SalesAdvLetterEntryCZZ."Currency Factor", GeneralLedgerSetup.GetAdditionalCurrencyFactorCZL(PostingDate));
 
         TempAdvancePostingBufferCZZ.Reset();
         TempAdvancePostingBufferCZZ.SetRange("Auxiliary Entry", false);
@@ -412,7 +401,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ, GenJnlPostLine, AdvancePostingParametersCZZ);
     end;
 
-    local procedure InitVATAmountLine(var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ"; AdvanceNo: Code[20]; Amount: Decimal; CurrencyFactor: Decimal)
+    local procedure InitVATAmountLine(var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ"; AdvanceNo: Code[20]; Amount: Decimal; CurrencyFactor: Decimal; AddCurrencyFactor: Decimal)
     var
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
@@ -441,6 +430,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 AdvancePostingBufferCZZ.Amount := AmountRemainder;
                 AdvancePostingBufferCZZ.UpdateVATAmounts();
                 AdvancePostingBufferCZZ.UpdateLCYAmounts(SalesAdvLetterHeaderCZZ."Currency Code", CurrencyFactor);
+                AdvancePostingBufferCZZ.UpdateACYAmounts(AddCurrencyFactor);
                 AdvancePostingBufferCZZ.Insert();
                 AmountRemainder -= AdvancePostingBufferCZZ.Amount;
             until TempAdvancePostingBufferCZZ.Next() = 0;
@@ -737,7 +727,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine."Bill-to/Pay-to No." := SalesInvoiceHeader."Bill-to Customer No.";
         GenJournalLine."Country/Region Code" := SalesInvoiceHeader."Bill-to Country/Region Code";
         GenJournalLine."VAT Registration No." := SalesInvoiceHeader."VAT Registration No.";
-        GenJournalLine."Registration No. CZL" := SalesInvoiceHeader."Registration No. CZL";
+        GenJournalLine."Registration No. CZL" := CopyStr(SalesInvoiceHeader."Registration Number", 1, 20);
         GenJournalLine."Tax Registration No. CZL" := SalesInvoiceHeader."Tax Registration No. CZL";
         GenJournalLine.Amount := 0;
         GenJournalLine."VAT Amount" := -VATAmountCorr;
@@ -756,6 +746,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         CurrencyFactor: Decimal;
+        AddCurrencyFactor: Decimal;
     begin
         SalesAdvLetterEntryCZZ.TestField("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Usage);
         SalesAdvLetterEntryCZZ.TestField(Cancelled, false);
@@ -772,14 +763,15 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
         CustLedgerEntry.Get(SalesAdvLetterEntryCZZ."Cust. Ledger Entry No.");
 
-        if SalesInvoiceHeader.Get(CustLedgerEntry."Document No.") then
-            CurrencyFactor := SalesInvoiceHeader."VAT Currency Factor CZL"
-        else
+        if SalesInvoiceHeader.Get(CustLedgerEntry."Document No.") then begin
+            CurrencyFactor := SalesInvoiceHeader."VAT Currency Factor CZL";
+            AddCurrencyFactor := SalesInvoiceHeader."Additional Currency Factor CZL";
+        end else
             CurrencyFactor := CustLedgerEntry."Original Currency Factor";
 
         SalesAdvLetterPostCZZ.BufferAdvanceVATLines(SalesAdvLetterEntryCZZ2, TempAdvancePostingBufferCZZ, 0D);
         SalesAdvLetterPostCZZ.SuggestUsageVAT(SalesAdvLetterEntryCZZ2, TempAdvancePostingBufferCZZ, CustLedgerEntry."Document No.",
-            SalesAdvLetterEntryCZZ.Amount, CurrencyFactor, false);
+            SalesAdvLetterEntryCZZ.Amount, CurrencyFactor, AddCurrencyFactor, false);
 
         Clear(AdvancePostingParametersCZZ);
         AdvancePostingParametersCZZ.CopyFromCustLedgerEntry(CustLedgerEntry);
@@ -884,6 +876,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         PostingDate: Date;
         VATDate: Date;
         CurrencyFactor: Decimal;
+        AddCurrencyFactor: Decimal;
     begin
         if SalesAdvLetterHeaderCZZ.Status = SalesAdvLetterHeaderCZZ.Status::Closed then
             exit;
@@ -897,17 +890,23 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         if AdvPaymentCloseDialogCZZ.RunModal() <> Action::OK then
             exit;
 
-        AdvPaymentCloseDialogCZZ.GetValues(PostingDate, VATDate, CurrencyFactor);
+        AdvPaymentCloseDialogCZZ.GetValues(PostingDate, VATDate, CurrencyFactor, AddCurrencyFactor);
         if (PostingDate = 0D) or (VATDate = 0D) then
             Error(DateEmptyErr);
 
-        CloseAdvanceLetter(SalesAdvLetterHeaderCZZ, PostingDate, VATDate, CurrencyFactor);
+        CloseAdvanceLetter(SalesAdvLetterHeaderCZZ, PostingDate, VATDate, CurrencyFactor, AddCurrencyFactor);
     end;
 
     procedure CloseAdvanceLetter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostingDate: Date; VATDate: Date; CurrencyFactor: Decimal)
+    begin
+        CloseAdvanceLetter(SalesAdvLetterHeaderCZZ, PostingDate, VATDate, CurrencyFactor, 0);
+    end;
+
+    procedure CloseAdvanceLetter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; PostingDate: Date; VATDate: Date; CurrencyFactor: Decimal; AddCurrencyFactor: Decimal)
     var
         AdvancePostingParametersCZZ: Record "Advance Posting Parameters CZZ";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
     begin
         if SalesAdvLetterHeaderCZZ.Status = SalesAdvLetterHeaderCZZ.Status::Closed then
@@ -924,6 +923,8 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             VATDate := WorkDate();
         if CurrencyFactor = 0 then
             CurrencyFactor := CurrencyExchangeRate.ExchangeRate(PostingDate, SalesAdvLetterHeaderCZZ."Currency Code");
+        if AddCurrencyFactor = 0 then
+            AddCurrencyFactor := GeneralLedgerSetup.GetAdditionalCurrencyFactorCZL(PostingDate);
 
         Clear(AdvancePostingParametersCZZ);
         AdvancePostingParametersCZZ."Posting Date" := PostingDate;
@@ -931,6 +932,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         AdvancePostingParametersCZZ."VAT Date" := VATDate;
         AdvancePostingParametersCZZ."Currency Code" := SalesAdvLetterHeaderCZZ."Currency Code";
         AdvancePostingParametersCZZ."Currency Factor" := CurrencyFactor;
+        AdvancePostingParametersCZZ."Additional Currency Factor" := AddCurrencyFactor;
 
         SalesAdvLetterPostCZZ.PostAdvanceLetterClosing(SalesAdvLetterHeaderCZZ, GenJnlPostLine, AdvancePostingParametersCZZ);
     end;
@@ -952,13 +954,14 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         VATDate: Date;
         PostingDate: Date;
         CurrencyFactor: Decimal;
+        AddCurrencyFactor: Decimal;
     begin
         SalesAdvLetterEntryCZZ.TestField("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment");
         SalesAdvLetterEntryCZZ.TestField(Cancelled, false);
 
         AdvPaymentCloseDialog.SetValues(SalesAdvLetterEntryCZZ."Posting Date", SalesAdvLetterEntryCZZ."VAT Date", SalesAdvLetterEntryCZZ."Currency Code", SalesAdvLetterEntryCZZ."Currency Factor", '', false);
         if AdvPaymentCloseDialog.RunModal() = Action::OK then begin
-            AdvPaymentCloseDialog.GetValues(PostingDate, VATDate, CurrencyFactor);
+            AdvPaymentCloseDialog.GetValues(PostingDate, VATDate, CurrencyFactor, AddCurrencyFactor);
             if (PostingDate = 0D) or (VATDate = 0D) then
                 Error(DateEmptyErr);
             OnPostAdvanceCreditMemoVATOnAfterGetValues(SalesAdvLetterEntryCZZ, PostingDate, VATDate);
@@ -974,6 +977,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 TempAdvancePostingBufferCZZ2.PrepareForSalesAdvLetterEntry(SalesAdvLetterEntryCZZ2);
                 TempAdvancePostingBufferCZZ.Update(TempAdvancePostingBufferCZZ2);
                 TempAdvancePostingBufferCZZ.UpdateLCYAmounts(SalesAdvLetterEntryCZZ2."Currency Code", CurrencyFactor);
+                TempAdvancePostingBufferCZZ.UpdateACYAmounts(AddCurrencyFactor);
                 TempAdvancePostingBufferCZZ.Modify();
             until SalesAdvLetterEntryCZZ2.Next() = 0;
 

@@ -32,7 +32,8 @@ tableextension 11700 "Contact CZL" extends Contact
                     if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
                         LogNotVerified := false;
                         RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Contact);
-                        ResultRecordRef.SetTable(Rec);
+                        if ResultRecordRef.Number <> 0 then
+                            ResultRecordRef.SetTable(Rec);
                     end;
 
                 if LogNotVerified then
@@ -60,6 +61,12 @@ tableextension 11700 "Contact CZL" extends Contact
             end;
         }
     }
+
+    trigger OnDelete()
+    begin
+        RegistrationLogMgtCZL.DeleteContactLog(Rec);
+    end;
+
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
         RegistrationNoMgtCZL: Codeunit "Registration No. Mgt. CZL";

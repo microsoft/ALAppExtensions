@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -21,7 +22,9 @@ page 20107 "AMC Bank Webcall Log"
     UsageCategory = History;
     ApplicationArea = Basic, Suite;
     ContextSensitiveHelpPage = '302';
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     layout
     {
         area(content)
@@ -187,4 +190,4 @@ page 20107 "AMC Bank Webcall Log"
         CurrPage.UPDATE();
     end;
 }
-
+#endif

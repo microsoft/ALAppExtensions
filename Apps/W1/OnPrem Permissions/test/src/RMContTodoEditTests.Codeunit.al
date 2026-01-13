@@ -1,6 +1,7 @@
 codeunit 139870 "RM Cont/Todo - Edit Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Restrictive;
 
     var

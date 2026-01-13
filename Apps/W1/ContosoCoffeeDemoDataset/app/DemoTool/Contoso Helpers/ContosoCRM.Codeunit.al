@@ -740,7 +740,7 @@ codeunit 5180 "Contoso CRM"
         OpportunityEntry.Validate("Date of Change", DateofChange);
         OpportunityEntry.Validate(Active, Active);
         OpportunityEntry.Validate("Date Closed", DateClosed);
-        OpportunityEntry.Validate("Action Taken", ActionTaken);
+        OpportunityEntry.Validate("Action Taken", "Opportunity Action Taken".FromInteger(ActionTaken));
         OpportunityEntry.Validate("Estimated Value (LCY)", EstimatedValueLCY);
         OpportunityEntry.Validate("Completed %", CompletedPercent);
         OpportunityEntry.Validate("Chances of Success %", ChancesofSuccessPercent);

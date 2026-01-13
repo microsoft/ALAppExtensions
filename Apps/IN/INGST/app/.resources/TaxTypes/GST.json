@@ -1,0 +1,1063 @@
+[
+    {
+        "Code": "GST",
+        "TaxTypeDescription": "Goods and Service Tax",
+        "Enable": true,
+        "Version": 6,
+        "MinorVersion": 0,
+        "ChangedBy": "Microsoft",
+        "TaxEntities": [
+            {
+                "TableName": "Location",
+                "Type": "Master"
+            },
+            {
+                "TableName": "G/L Account",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Customer",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Vendor",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Item",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Sales Header",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Sales Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Purchase Header",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Purchase Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Company Information",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Gen. Journal Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "General Ledger Setup",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Resource",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Ship-to Address",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Order Address",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Gen. Journal Batch",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Source Code Setup",
+                "Type": "Master"
+            },
+            {
+                "TableName": "General Posting Setup",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Bank Account",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Finance Charge Memo Header",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Finance Charge Memo Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Issued Fin. Charge Memo Header",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Fixed Asset",
+                "Type": "Master"
+            },
+            {
+                "TableName": "FA Posting Group",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Transfer Header",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Transfer Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Item Charge",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Service Header",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Service Item Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Service Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Service Cost",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Sales Price",
+                "Type": "Master"
+            },
+            {
+                "TableName": "GST Group",
+                "Type": "Master"
+            },
+            {
+                "TableName": "GST Posting Buffer",
+                "Type": "Master"
+            },
+            {
+                "TableName": "GST Posting Setup",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Bank Charge",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Journal Bank Charges",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Service Transfer Header",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Service Transfer Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "Delivery Challan Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "GST Liability Line",
+                "Type": "Transaction"
+            },
+            {
+                "TableName": "State",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Party",
+                "Type": "Master"
+            },
+            {
+                "TableName": "Tax Component",
+                "Type": "Master"
+            }
+        ],
+        "Attributes": [
+            {
+                "TaxType": "",
+                "ID": 1,
+                "Name": "State",
+                "Type": "Text",
+                "LookupTable": "State",
+                "LookupField": "Code",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Vendor",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Company Information",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "Location State Code"
+                    },
+                    {
+                        "Entity": "Order Address",
+                        "MappingField": "State"
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 2,
+                "Name": "PAN No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "P.A.N. No."
+                    },
+                    {
+                        "Entity": "Vendor",
+                        "MappingField": "P.A.N. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 3,
+                "Name": "TCAN No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "T.C.A.N. No."
+                    },
+                    {
+                        "Entity": "Company Information",
+                        "MappingField": "T.C.A.N. No."
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "T.C.A.N. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 4,
+                "Name": "Customer GST Registration No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "GST Registration No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "",
+                "ID": 5,
+                "Name": "TAN No.",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "T.A.N. No."
+                    },
+                    {
+                        "Entity": "Company Information",
+                        "MappingField": "T.A.N. No."
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "T.A.N. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 6,
+                "Name": "HSN/SAC",
+                "Type": "Text",
+                "LookupTable": "HSN/SAC",
+                "LookupField": "Code",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": true,
+                "EntityMapping": [
+                    {
+                        "Entity": "G/L Account",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Item",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Sales Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Purchase Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Resource",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Finance Charge Memo Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Fixed Asset",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Transfer Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Item Charge",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Service Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Bank Charge",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Journal Bank Charges",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "Service Transfer Line",
+                        "MappingField": "SAC Code"
+                    },
+                    {
+                        "Entity": "Delivery Challan Line",
+                        "MappingField": "HSN/SAC Code"
+                    },
+                    {
+                        "Entity": "GST Liability Line",
+                        "MappingField": "HSN/SAC Code"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 7,
+                "Name": "GST Registration Type",
+                "Type": "Text",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Customer",
+                        "MappingField": "GST Customer Type"
+                    },
+                    {
+                        "Entity": "Vendor",
+                        "MappingField": "GST Vendor Type"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 8,
+                "Name": "GST Group Code",
+                "Type": "Text",
+                "LookupTable": "GST Group",
+                "LookupField": "Code",
+                "LookupPage": "GST Group",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": true,
+                "EntityMapping": [
+                    {
+                        "Entity": "G/L Account",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Item",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Sales Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Purchase Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Resource",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Finance Charge Memo Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Fixed Asset",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Transfer Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Item Charge",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Service Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Bank Charge",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Journal Bank Charges",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Service Transfer Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "Delivery Challan Line",
+                        "MappingField": "GST Group Code"
+                    },
+                    {
+                        "Entity": "GST Liability Line",
+                        "MappingField": "GST Group Code"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 9,
+                "Name": "GST Vendor Type",
+                "Type": "Option",
+                "LookupTable": "Vendor",
+                "LookupField": "GST Vendor Type",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Purchase Header",
+                        "MappingField": "GST Vendor Type"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "GST Vendor Type"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 10,
+                "Name": "Vendor GST registration No.",
+                "Type": "Text",
+                "LookupTable": "GST Registration Nos.",
+                "LookupField": "Code",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Vendor",
+                        "MappingField": "GST Registration No."
+                    },
+                    {
+                        "Entity": "Purchase Header",
+                        "MappingField": "Vendor GST Reg. No."
+                    },
+                    {
+                        "Entity": "Order Address",
+                        "MappingField": "GST Registration No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 11,
+                "Name": "Location State Code",
+                "Type": "Text",
+                "LookupTable": "State",
+                "LookupField": "Code",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "State Code"
+                    },
+                    {
+                        "Entity": "Sales Header",
+                        "MappingField": "Location State Code"
+                    },
+                    {
+                        "Entity": "Purchase Header",
+                        "MappingField": "Location State Code"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 12,
+                "Name": "Location GST Registration No.",
+                "Type": "Text",
+                "LookupTable": "GST Registration Nos.",
+                "LookupField": "Code",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Location",
+                        "MappingField": "GST Registration No."
+                    },
+                    {
+                        "Entity": "Sales Header",
+                        "MappingField": "Location GST Reg. No."
+                    },
+                    {
+                        "Entity": "Purchase Header",
+                        "MappingField": "Location GST Reg. No."
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 13,
+                "Name": "GST Credit",
+                "Type": "Option",
+                "LookupTable": "Item",
+                "LookupField": "GST Credit",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "G/L Account",
+                        "MappingField": "GST Credit"
+                    },
+                    {
+                        "Entity": "Item",
+                        "MappingField": "GST Credit"
+                    },
+                    {
+                        "Entity": "Purchase Line",
+                        "MappingField": "GST Credit"
+                    },
+                    {
+                        "Entity": "Resource",
+                        "MappingField": "GST Credit"
+                    },
+                    {
+                        "Entity": "Fixed Asset",
+                        "MappingField": "GST Credit"
+                    },
+                    {
+                        "Entity": "Item Charge",
+                        "MappingField": "GST Credit"
+                    },
+                    {
+                        "Entity": "Bank Charge",
+                        "MappingField": "GST Credit"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 14,
+                "Name": "GST Group Type",
+                "Type": "Option",
+                "LookupTable": "GST Group",
+                "LookupField": "GST Group Type",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Sales Line",
+                        "MappingField": "GST Group Type"
+                    },
+                    {
+                        "Entity": "Purchase Line",
+                        "MappingField": "GST Group Type"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "GST Group Type"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 15,
+                "Name": "Associate Enterprise",
+                "Type": "Boolean",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Vendor",
+                        "MappingField": "Associated Enterprises"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 16,
+                "Name": "POS Out Of India",
+                "Type": "Boolean",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Sales Header",
+                        "MappingField": "POS Out Of India"
+                    },
+                    {
+                        "Entity": "Purchase Header",
+                        "MappingField": "POS Out Of India"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "POS Out Of India"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 17,
+                "Name": "GST on Advance Payment",
+                "Type": "Boolean",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "GST on Advance Payment"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 18,
+                "Name": "POS as Vendor State",
+                "Type": "Boolean",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": "Purchase Header",
+                        "MappingField": "POS as Vendor State"
+                    },
+                    {
+                        "Entity": "Gen. Journal Line",
+                        "MappingField": "POS as Vendor State"
+                    }
+                ]
+            },
+            {
+                "TaxType": "GST",
+                "ID": 19,
+                "Name": "Cess Amount Per Unit Factor",
+                "Type": "Decimal",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": []
+            },
+            {
+                "TaxType": "GST",
+                "ID": 20,
+                "Name": "Cess Factor Quantity",
+                "Type": "Decimal",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": []
+            },
+            {
+                "TaxType": "GST",
+                "ID": 21,
+                "Name": "Before Threshold %",
+                "Type": "Decimal",
+                "LookupTable": "",
+                "LookupField": "",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": []
+            },
+            {
+                "TaxType": "GST",
+                "ID": 22,
+                "Name": "Cess UOM",
+                "Type": "Text",
+                "LookupTable": "Unit of Measure",
+                "LookupField": "Code",
+                "LookupPage": "",
+                "GroupedInSubLedger": false,
+                "VisibleOnInterface": false,
+                "EntityMapping": [
+                    {
+                        "Entity": ""
+                    }
+                ]
+            }
+        ],
+        "AccountingPeriod": {
+            "AccountingPeriodCode": "GST",
+            "AccountingPeriodDesc": "GST Accounting Periods"
+        },
+        "Components": [
+            {
+                "ID": 1,
+                "Name": "Custom Duty",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 2,
+                "Name": "CGST",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 3,
+                "Name": "IGST",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 4,
+                "Name": "CESS",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 5,
+                "Name": "UTGST",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 6,
+                "Name": "SGST",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 7,
+                "Name": "CGST Interim",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 8,
+                "Name": "SGST Interim",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 9,
+                "Name": "IGST Interim",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 10,
+                "Name": "GST Base Amount",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": true,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 11,
+                "Name": "GST Amount",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 12,
+                "Name": "KFC",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": true,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 13,
+                "Name": "BCD Amount",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 14,
+                "Name": "CGST TDS",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 15,
+                "Name": "SGST TDS",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": false,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 16,
+                "Name": "Custom House Amount",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            },
+            {
+                "ID": 17,
+                "Name": "KFloodCess",
+                "Type": "Decimal",
+                "RoundingPrecision": 0.01,
+                "Direction": "Nearest",
+                "VisibleOnInterface": true,
+                "SkipPosting": false,
+                "ComponentType": "Normal"
+            }
+        ],
+        "TaxRateColumnSetup": [
+            {
+                "Sequence": 2,
+                "ID": 1,
+                "ColumnType": "Tax Attributes",
+                "ColumnName": "HSN/SAC",
+                "VisibleOnInterface": true,
+                "Type": "Text",
+                "AllowBlank": true
+            },
+            {
+                "Sequence": 5,
+                "ID": 2,
+                "ColumnType": "Range From and Range To",
+                "ColumnName": "Date",
+                "VisibleOnInterface": false,
+                "Type": "Date",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 3,
+                "ID": 3,
+                "ColumnType": "Value",
+                "ColumnName": "From State",
+                "VisibleOnInterface": true,
+                "Type": "Text",
+                "AllowBlank": false,
+                "LinkedAttributeName": "State"
+            },
+            {
+                "Sequence": 7,
+                "ID": 4,
+                "ColumnType": "Component",
+                "ColumnName": "CGST",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 8,
+                "ID": 5,
+                "ColumnType": "Component",
+                "ColumnName": "IGST",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 1,
+                "ID": 7,
+                "ColumnType": "Tax Attributes",
+                "ColumnName": "GST Group Code",
+                "VisibleOnInterface": true,
+                "Type": "Text",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 4,
+                "ID": 8,
+                "ColumnType": "Value",
+                "ColumnName": "Location State Code",
+                "VisibleOnInterface": true,
+                "Type": "Text",
+                "AllowBlank": false,
+                "LinkedAttributeName": "State"
+            },
+            {
+                "Sequence": 10,
+                "ID": 9,
+                "ColumnType": "Tax Attributes",
+                "ColumnName": "POS Out Of India",
+                "VisibleOnInterface": false,
+                "Type": "Boolean",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 6,
+                "ID": 10,
+                "ColumnType": "Component",
+                "ColumnName": "SGST",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 11,
+                "ID": 12,
+                "ColumnType": "Tax Attributes",
+                "ColumnName": "POS as Vendor State",
+                "VisibleOnInterface": false,
+                "Type": "Boolean",
+                "AllowBlank": false
+            },
+            {
+                "Sequence": 9,
+                "ID": 13,
+                "ColumnType": "Component",
+                "ColumnName": "KFloodCess",
+                "VisibleOnInterface": false,
+                "Type": "Decimal",
+                "AllowBlank": false
+            }
+        ]
+    }
+]

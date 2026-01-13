@@ -121,6 +121,14 @@ table 4096 "GP Vendor"
             Caption = 'Tax ID Number';
             DataClassification = CustomerContent;
         }
+        field(23; VNDCLSID; Text[11])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(24; PMPRCHIX; Integer)
+        {
+            DataClassification = CustomerContent;
+        }
     }
 
     keys

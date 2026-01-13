@@ -13,29 +13,54 @@ using System.Utilities;
 
 codeunit 27021 "DIOT Data Management"
 {
-    trigger OnRun()
-    begin
-    end;
-
     var
         DIOTSetupGuideTxt: Label 'Set up DIOT';
-        ConceptDesc1Txt: Label 'Value of acts or activities paid at the rate of 15% or 16% VAT';
-        ConceptDesc2Txt: Label 'Value of acts or activities paid at the 15% VAT rate';
-        ConceptDesc3Txt: Label 'Amount of VAT paid not creditable at the rate of 15% or 16% (corresponding to the proportion of authorized deductions)';
-        ConceptDesc4Txt: Label 'Value of acts or activities paid at the rate of 10% or 11% VAT';
-        ConceptDesc5Txt: Label 'Value of acts or activities paid at the 10% VAT rate';
-        ConceptDesc6Txt: Label 'Value of the acts or activities paid subject to the stimulation of the northern border region';
-        ConceptDesc7Txt: Label 'Amount of VAT paid not creditable at the rate of 10% or 11% (corresponding to the proportion of authorized deductions)';
-        ConceptDesc8Txt: Label 'Amount of VAT not creditable subject to the stimulation of the northern border region (corresponding to the proportion of authorized deductions)';
-        ConceptDesc9Txt: Label 'Value of acts or activities paid in the importation of goods and services at the rate of 15% or 16% VAT';
-        ConceptDesc10Txt: Label 'Amount of VAT paid not creditable for importation at the rate of 15% or 16% (corresponding to the proportion of authorized deductions)';
-        ConceptDesc11Txt: Label 'Value of the acts or activities paid in the import of goods and services at the rate of 10% or 11% VAT';
-        ConceptDesc12Txt: Label 'Amount of VAT paid not creditable for importation at the rate of 10% or 11% (corresponding in the proportion of authorized deductions)';
-        ConceptDesc13Txt: Label 'Value of acts or activities paid in the importation of goods and services for which VAT is not paid (Exempt)';
-        ConceptDesc14Txt: Label 'Value of other acts or activities paid at the 0% VAT rate';
-        ConceptDesc15Txt: Label 'Value of acts or activities paid for which VAT will not be paid (Exempt)';
-        ConceptDesc16Txt: Label 'VAT Withheld by the taxpayer';
-        ConceptDesc17Txt: Label 'VAT corresponding to returns, discounts and bonuses on purchases';
+        ConceptDesc01Txt: Label 'Total value of acts or activities paid in the northern border region';
+        ConceptDesc02Txt: Label 'Returns, discounts and bonuses paid in the northern border region';
+        ConceptDesc03Txt: Label 'Total value of acts or activities paid in the southern border region';
+        ConceptDesc04Txt: Label 'Returns, discounts and bonuses paid in the southern border region';
+        ConceptDesc05Txt: Label 'Total value of acts or activities paid at 16% VAT rate';
+        ConceptDesc06Txt: Label 'Returns, discounts and bonuses paid at 16% VAT rate';
+        ConceptDesc07Txt: Label 'Total value of acts or activities paid on customs import of tangible goods at 16% VAT rate';
+        ConceptDesc08Txt: Label 'Returns, discounts and bonuses paid on customs import of tangible goods at 16% VAT rate';
+        ConceptDesc09Txt: Label 'Total value of acts or activities paid on import of intangible goods and services at 16% VAT rate';
+        ConceptDesc10Txt: Label 'Returns, discounts and bonuses paid on import of intangible goods and services at 16% VAT rate';
+        ConceptDesc11Txt: Label 'Exclusively from taxed activities paid in the northern border region';
+        ConceptDesc12Txt: Label 'Activities with applied proportion paid in the northern border region';
+        ConceptDesc13Txt: Label 'Exclusively from taxed activities paid in the southern border region';
+        ConceptDesc14Txt: Label 'Activities with applied proportion paid in the southern border region';
+        ConceptDesc15Txt: Label 'Exclusively from taxed activities paid at 16% VAT rate';
+        ConceptDesc16Txt: Label 'Activities with applied proportion paid at 16% VAT rate';
+        ConceptDesc17Txt: Label 'Exclusively from taxed activities paid on customs import of tangible goods at 16% VAT rate';
+        ConceptDesc18Txt: Label 'Activities with applied proportion paid on customs import of tangible goods at 16% VAT rate';
+        ConceptDesc19Txt: Label 'Exclusively from taxed activities paid on import of intangible goods and services at 16% VAT rate';
+        ConceptDesc20Txt: Label 'Activities with applied proportion paid on import of intangible goods and services at 16% VAT rate';
+        ConceptDesc21Txt: Label 'Activities with applied proportion paid in the northern border region';
+        ConceptDesc22Txt: Label 'Activities that do not meet requirements paid in the northern border region';
+        ConceptDesc23Txt: Label 'Exempt activities paid in the northern border region';
+        ConceptDesc24Txt: Label 'Non-object activities paid in the northern border region';
+        ConceptDesc25Txt: Label 'Activities with applied proportion paid in the southern border region';
+        ConceptDesc26Txt: Label 'Activities that do not meet requirements paid in the southern border region';
+        ConceptDesc27Txt: Label 'Exempt activities paid in the southern border region';
+        ConceptDesc28Txt: Label 'Non-object activities paid in the southern border region';
+        ConceptDesc29Txt: Label 'Activities with applied proportion paid at 16% VAT rate';
+        ConceptDesc30Txt: Label 'Activities that do not meet requirements paid at 16% VAT rate';
+        ConceptDesc31Txt: Label 'Exempt activities paid at 16% VAT rate';
+        ConceptDesc32Txt: Label 'Non-object activities paid at 16% VAT rate';
+        ConceptDesc33Txt: Label 'Activities with applied proportion paid on customs import of tangible goods at 16% VAT rate';
+        ConceptDesc34Txt: Label 'Activities that do not meet requirements paid on customs import of tangible goods at 16% VAT rate';
+        ConceptDesc35Txt: Label 'Exempt activities paid on customs import of tangible goods at 16% VAT rate';
+        ConceptDesc36Txt: Label 'Non-object activities paid on customs import of tangible goods at 16% VAT rate';
+        ConceptDesc37Txt: Label 'Activities with applied proportion paid on import of intangible goods and services at 16% VAT rate';
+        ConceptDesc38Txt: Label 'Activities that do not meet requirements paid on import of intangible goods and services at 16% VAT rate';
+        ConceptDesc39Txt: Label 'Exempt activities paid on import of intangible goods and services at 16% VAT rate';
+        ConceptDesc40Txt: Label 'Non-object activities paid on import of intangible goods and services at 16% VAT rate';
+        ConceptDesc41Txt: Label 'VAT withheld by the taxpayer';
+        ConceptDesc42Txt: Label 'Acts or activities paid on import of goods and services for which VAT is not paid (Exempt)';
+        ConceptDesc43Txt: Label 'Acts or activities paid for which VAT will not be paid (Exempt)';
+        ConceptDesc44Txt: Label 'Other acts or activities paid at 0% VAT rate';
+        ConceptDesc45Txt: Label 'Acts or activities not subject to VAT performed in national territory';
+        ConceptDesc46Txt: Label 'Acts or activities not subject to VAT due to not having an establishment in national territory';
         BlankTypeOfOperationErr: Label 'Operations reported in DIOT must have a non-blank Type of Operation or Vendor must have a Type of Operation.';
         LeaseAndRentNonMXErr: Label 'Operations with non-mx Vendor cannot have Lease And Rent Type of operation.';
         MissingRFCNoErr: Label 'MX vendors must have RFC Number filled in.';
@@ -43,19 +68,41 @@ codeunit 27021 "DIOT Data Management"
         NegativeAmountErr: Label 'The amount for Concept No. %1 for Vendor with No. = %2 is negative, which is not valid.', Comment = '%1 = DIOT Concept No. Field Value; %2 = Vendor No. Field Value';
         NoDataMsg: Label 'There are no VAT Entries for configured concepts in the specified date range.';
 
+#if not CLEAN27
+    [Obsolete('Use GetTypeOfOperationCode(TypeOfOperation: Enum) instead.', '27.0')]
     procedure GetTypeOfOperationCode(TypeOfOperation: Option): code[2]
     var
         DummyVendor: Record Vendor;
     begin
         case (TypeOfOperation) of
-            DummyVendor."DIOT Type of Operation"::"Prof. Services":
+            DummyVendor."DIOT Type of Operation"::"Prof. Services".AsInteger():
                 exit('03');
-            DummyVendor."DIOT Type of Operation"::"Lease and Rent":
+            DummyVendor."DIOT Type of Operation"::"Lease and Rent".AsInteger():
                 exit('06');
-            DummyVendor."DIOT Type of Operation"::Others:
+            DummyVendor."DIOT Type of Operation"::Others.AsInteger():
                 exit('85');
             else
                 exit('');
+        end;
+    end;
+#endif
+    procedure GetTypeOfOperationCode(TypeOfOperation: Enum "DIOT Type of Operation"): Text[2]
+    begin
+        case TypeOfOperation of
+            Enum::"DIOT Type of Operation"::"Prof. Services":
+                exit('03');
+            Enum::"DIOT Type of Operation"::"Lease and Rent":
+                exit('06');
+            Enum::"DIOT Type of Operation"::Others:
+                exit('85');
+            Enum::"DIOT Type of Operation"::"Transfer of Goods":
+                exit('02');
+            Enum::"DIOT Type of Operation"::"Import of Goods or Services":
+                exit('07');
+            Enum::"DIOT Type of Operation"::"Import by Virtal Transfer":
+                exit('08');
+            Enum::"DIOT Type of Operation"::"Global operations":
+                exit('87');
         end;
     end;
 
@@ -66,11 +113,11 @@ codeunit 27021 "DIOT Data Management"
         exit('05');
     end;
 
-    local procedure GetTypeOfOperationForEntry(VATEntry: Record "VAT Entry"): Option
+    local procedure GetTypeOfOperationForEntry(VATEntry: Record "VAT Entry"): Enum "DIOT Type of Operation"
     var
         Vendor: Record Vendor;
     begin
-        if VATEntry."DIOT Type of Operation" <> VATEntry."DIOT Type of Operation"::" " then
+        if VATEntry."DIOT Type of Operation" <> Enum::"DIOT Type of Operation"::" " then
             exit(VATEntry."DIOT Type of Operation");
         Vendor.Get(VATEntry."Bill-to/Pay-to No.");
         exit(Vendor."DIOT Type of Operation");
@@ -78,23 +125,52 @@ codeunit 27021 "DIOT Data Management"
 
     procedure InsertDefaultDIOTConcepts()
     begin
-        InsertDIOTConcept(1, 8, 1, ConceptDesc1Txt, 0);
-        InsertDIOTConcept(2, 9, 0, ConceptDesc2Txt, 0);
-        InsertDIOTConcept(3, 10, 2, ConceptDesc3Txt, 20);
-        InsertDIOTConcept(4, 11, 0, ConceptDesc4Txt, 0);
-        InsertDIOTConcept(5, 12, 0, ConceptDesc5Txt, 0);
-        InsertDIOTConcept(6, 13, 1, ConceptDesc6Txt, 0);
-        InsertDIOTConcept(7, 14, 0, ConceptDesc7Txt, 0);
-        InsertDIOTConcept(8, 15, 2, ConceptDesc8Txt, 20);
-        InsertDIOTConcept(9, 16, 1, ConceptDesc9Txt, 0);
-        InsertDIOTConcept(10, 17, 2, ConceptDesc10Txt, 20);
+        InsertDIOTConcept(1, 8, 0, ConceptDesc01Txt, 0);
+        InsertDIOTConcept(2, 9, 0, ConceptDesc02Txt, 0);
+        InsertDIOTConcept(3, 10, 0, ConceptDesc03Txt, 0);
+        InsertDIOTConcept(4, 11, 0, ConceptDesc04Txt, 0);
+        InsertDIOTConcept(5, 12, 1, ConceptDesc05Txt, 0);
+        InsertDIOTConcept(6, 13, 1, ConceptDesc06Txt, 0);
+        InsertDIOTConcept(7, 14, 1, ConceptDesc07Txt, 0);
+        InsertDIOTConcept(8, 15, 1, ConceptDesc08Txt, 0);
+        InsertDIOTConcept(9, 16, 1, ConceptDesc09Txt, 0);
+        InsertDIOTConcept(10, 17, 1, ConceptDesc10Txt, 0);
         InsertDIOTConcept(11, 18, 0, ConceptDesc11Txt, 0);
         InsertDIOTConcept(12, 19, 0, ConceptDesc12Txt, 0);
-        InsertDIOTConcept(13, 20, 1, ConceptDesc13Txt, 0);
-        InsertDIOTConcept(14, 21, 1, ConceptDesc14Txt, 0);
+        InsertDIOTConcept(13, 20, 0, ConceptDesc13Txt, 0);
+        InsertDIOTConcept(14, 21, 0, ConceptDesc14Txt, 0);
         InsertDIOTConcept(15, 22, 1, ConceptDesc15Txt, 0);
-        InsertDIOTConcept(16, 23, 2, ConceptDesc16Txt, 0);
-        InsertDIOTConcept(17, 24, 2, ConceptDesc17Txt, 0);
+        InsertDIOTConcept(16, 23, 1, ConceptDesc16Txt, 0);
+        InsertDIOTConcept(17, 24, 1, ConceptDesc17Txt, 0);
+        InsertDIOTConcept(18, 25, 1, ConceptDesc18Txt, 0);
+        InsertDIOTConcept(19, 26, 1, ConceptDesc19Txt, 0);
+        InsertDIOTConcept(20, 27, 1, ConceptDesc20Txt, 0);
+        InsertDIOTConcept(21, 28, 0, ConceptDesc21Txt, 0);
+        InsertDIOTConcept(22, 29, 0, ConceptDesc22Txt, 0);
+        InsertDIOTConcept(23, 30, 0, ConceptDesc23Txt, 0);
+        InsertDIOTConcept(24, 31, 0, ConceptDesc24Txt, 0);
+        InsertDIOTConcept(25, 32, 0, ConceptDesc25Txt, 0);
+        InsertDIOTConcept(26, 33, 0, ConceptDesc26Txt, 0);
+        InsertDIOTConcept(27, 34, 0, ConceptDesc27Txt, 0);
+        InsertDIOTConcept(28, 35, 0, ConceptDesc28Txt, 0);
+        InsertDIOTConcept(29, 36, 1, ConceptDesc29Txt, 0);
+        InsertDIOTConcept(30, 37, 1, ConceptDesc30Txt, 0);
+        InsertDIOTConcept(31, 38, 1, ConceptDesc31Txt, 0);
+        InsertDIOTConcept(32, 39, 1, ConceptDesc32Txt, 0);
+        InsertDIOTConcept(33, 40, 1, ConceptDesc33Txt, 0);
+        InsertDIOTConcept(34, 41, 1, ConceptDesc34Txt, 0);
+        InsertDIOTConcept(35, 42, 1, ConceptDesc35Txt, 0);
+        InsertDIOTConcept(36, 43, 1, ConceptDesc36Txt, 0);
+        InsertDIOTConcept(37, 44, 1, ConceptDesc37Txt, 0);
+        InsertDIOTConcept(38, 45, 1, ConceptDesc38Txt, 0);
+        InsertDIOTConcept(39, 46, 1, ConceptDesc39Txt, 0);
+        InsertDIOTConcept(40, 47, 1, ConceptDesc40Txt, 0);
+        InsertDIOTConcept(41, 48, 2, ConceptDesc41Txt, 0);
+        InsertDIOTConcept(42, 49, 1, ConceptDesc42Txt, 0);
+        InsertDIOTConcept(43, 50, 1, ConceptDesc43Txt, 0);
+        InsertDIOTConcept(44, 51, 1, ConceptDesc44Txt, 0);
+        InsertDIOTConcept(45, 52, 1, ConceptDesc45Txt, 0);
+        InsertDIOTConcept(46, 53, 1, ConceptDesc46Txt, 0);
     end;
 
     local procedure InsertDIOTConcept(ConceptNo: Integer; Column: Integer; ColumnType: Option; NewDescription: Text[250]; NonDeductiblePct: Decimal)
@@ -119,12 +195,12 @@ codeunit 27021 "DIOT Data Management"
 
     procedure GetWHTConceptNo(): Integer
     begin
-        exit(16);
+        exit(41);
     end;
 
     procedure GetConceptCount(): Integer
     begin
-        exit(17);
+        exit(46);
     end;
 
     procedure GetVendorNameLength(): Integer
@@ -140,6 +216,11 @@ codeunit 27021 "DIOT Data Management"
     procedure GetMXCountryCode(): Code[10]
     begin
         exit('MX');
+    end;
+
+    local procedure GetDIOTOtherCountryCode(): Code[10]
+    begin
+        exit('ZZZ');
     end;
 
     procedure IsCountryCodeMXorBlank(CountryRegionCode: Code[10]): Boolean
@@ -182,19 +263,19 @@ codeunit 27021 "DIOT Data Management"
         end;
     end;
 
-    procedure ConvertToDIOTCountryCode(CountryCode: Code[10]): Text[2]
+    procedure ConvertToDIOTCountryCode(CountryCode: Code[10]): Text[10]
     var
         DIOTCountryData: Record "DIOT Country/Region Data";
     begin
         DIOTCountryData.SetRange("BC Country/Region Code", CountryCode);
-        IF DIOTCountryData.FindFirst() then
-            exit(DIOTCountryData."Country/Region Code");
+        if DIOTCountryData.FindFirst() then
+            exit(DIOTCountryData."ISO A-3 Country/Region Code");
         if DIOTCountryData.Get(CountryCode) then
-            exit(DIOTCountryData."Country/Region Code");
-        exit('');
+            exit(DIOTCountryData."ISO A-3 Country/Region Code");
+        exit(GetDIOTOtherCountryCode());
     end;
 
-    local procedure InsertVendorBufferConditionally(var TempDIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary; VendorNo: Code[20]; DIOTTypeOfOperation: Option)
+    local procedure InsertVendorBufferConditionally(var TempDIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary; VendorNo: Code[20]; DIOTTypeOfOperation: Enum "DIOT Type of Operation")
     var
         Vendor: Record Vendor;
     begin
@@ -215,13 +296,16 @@ codeunit 27021 "DIOT Data Management"
                     "TAX Registration ID" := CopyStr(Vendor."VAT Registration No.", 1, MaxStrLen("TAX Registration ID"));
                     "Vendor Name" := CopyStr(ConvertToDIOTVendorName(Vendor.Name), 1, MaxStrLen("Vendor Name"));
                     "Country/Region Code" := ConvertToDIOTCountryCode(Vendor."Country/Region Code");
-                    Nationality := CopyStr(GetNationalyForCountryCode("Country/Region Code"), 1, MaxStrLen(Nationality));
+                    if "Country/Region Code" = GetDIOTOtherCountryCode() then
+                        "Tax Jurisdiction Location" := Vendor."Tax Jurisdiction Location";
                 end;
+
+                "Tax Effects Applied" := Vendor."Tax Effects Applied";
                 Insert();
             end;
     end;
 
-    local procedure InsertBufferConditionally(var TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary; VendorNo: Code[20]; TypeOfOperation: Option; ConceptNo: Integer; Amount: Decimal)
+    local procedure InsertBufferConditionally(var TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary; VendorNo: Code[20]; TypeOfOperation: Enum "DIOT Type of Operation"; ConceptNo: Integer; Amount: Decimal)
     begin
         with TempDIOTReportBuffer do
             if get(VendorNo, TypeOfOperation, ConceptNo) then begin
@@ -244,7 +328,7 @@ codeunit 27021 "DIOT Data Management"
         CurrentDIOTConcept: Record "DIOT Concept";
         CurrentVATPostingSetup: Record "VAT Posting Setup";
         VendorNo: Code[20];
-        TypeOfOperation: Option;
+        TypeOfOperation: Enum "DIOT Type of Operation";
         CalcAmount: Decimal;
     begin
         VATEntry.SetRange(Type, VATEntry.Type::Purchase);
@@ -295,27 +379,44 @@ codeunit 27021 "DIOT Data Management"
         exit('');
     end;
 
-    local procedure GenerateDIOTLine(DIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer"; ColumnAmounts: array[17] of Decimal): Text
+    local procedure GenerateDIOTLine(ReportVendorBuffer: Record "DIOT Report Vendor Buffer"; ColumnAmounts: array[46] of Decimal): Text
     var
         DIOTLine: Text;
         i: Integer;
         DIOTLineTxt: Label '%1|%2|%3|%4|%5|%6|%7|', Locked = true;
     begin
-        with DIOTReportVendorBuffer do begin
-            DIOTLine := StrSubstNo(DIOTLineTxt, "Type of Vendor Text", "Type of Operation Text", "RFC Number", "TAX Registration ID", "Vendor Name", "Country/Region Code", Nationality);
-            for i := 1 to ArrayLen(ColumnAmounts) do begin
-                if ColumnAmounts[i] > 0 then
-                    DIOTLine += Format(ROUND(ColumnAmounts[i], 1), 0, 9);
-                DIOTLine += '|';
-            end;
+        // vendor data
+        DIOTLine :=
+            StrSubstNo(
+                DIOTLineTxt,
+                ReportVendorBuffer."Type of Vendor Text",
+                ReportVendorBuffer."Type of Operation Text",
+                ReportVendorBuffer."RFC Number",
+                ReportVendorBuffer."TAX Registration ID",
+                ReportVendorBuffer."Vendor Name",
+                ReportVendorBuffer."Country/Region Code",
+                ReportVendorBuffer."Tax Jurisdiction Location");
+
+        // amounts
+        for i := 1 to ArrayLen(ColumnAmounts) do begin
+            if ColumnAmounts[i] > 0 then
+                DIOTLine += Format(Round(ColumnAmounts[i], 1), 0, 9);
+            DIOTLine += '|';
         end;
+
+        // tax effects
+        if ReportVendorBuffer."Tax Effects Applied" then
+            DIOTLine += '01'
+        else
+            DIOTLine += '02';
+
         exit(DIOTLine);
     end;
 
     procedure GenerateDIOTFile(var TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary; var TempDIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary; var TempBLOB: Codeunit "Temp Blob")
     var
         DummyDIOTConcept: Record "DIOT Concept";
-        CurrentColumnNumbers: array[17] of Decimal;
+        CurrentColumnNumbers: array[46] of Decimal;
         oStream: OutStream;
     begin
         Clear(TempBLOB);

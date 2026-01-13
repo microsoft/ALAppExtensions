@@ -49,6 +49,7 @@ codeunit 148064 "VAT Ctrl. Report CZL"
         LibraryTax.SetUseVATDate(true);
         LibraryTax.SetVATControlReportInformation();
         LibraryTax.CreateDefaultVATControlReportSections(true);
+        LibraryTax.CreateVATReturnPeriods(CalcDate('<-CY>', WorkDate()), 12);
 
         LibrarySetupStorage.Save(Database::"General Ledger Setup");
         LibrarySetupStorage.Save(Database::"Statutory Reporting Setup CZL");

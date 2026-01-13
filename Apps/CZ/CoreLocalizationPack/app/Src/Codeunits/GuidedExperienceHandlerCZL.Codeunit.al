@@ -88,12 +88,23 @@ codeunit 11747 "Guided Experience Handler CZL"
 
     local procedure RegisterVATPeriods()
     var
+#if not CLEAN28
+        ReplaceVATPeriodMgt: Codeunit "Replace VAT Period Mgt. CZL";
+#endif
         VATPeriodsNameTxt: Label 'VAT Periods';
         VATPeriodsDescriptionTxt: Label 'Set up the number of VAT periods, such as 12 monthly periods, within the fiscal year. VAT periods can be set separately from accounting periods (eg if you are a quarterly VAT payer).';
         VATPeriodsKeywordsTxt: Label 'VAT, Period';
     begin
+#if not CLEAN28
+#pragma warning disable AL0432
+        if not ReplaceVATPeriodMgt.IsEnabled() then
+            GuidedExperience.InsertManualSetup(VATPeriodsNameTxt, VATPeriodsNameTxt, VATPeriodsDescriptionTxt,
+              2, ObjectType::Page, Page::"VAT Periods CZL", ManualSetupCategory::Finance, VATPeriodsKeywordsTxt)
+        else
+#pragma warning restore AL0432
+#endif
         GuidedExperience.InsertManualSetup(VATPeriodsNameTxt, VATPeriodsNameTxt, VATPeriodsDescriptionTxt,
-          2, ObjectType::Page, Page::"VAT Periods CZL", ManualSetupCategory::Finance, VATPeriodsKeywordsTxt);
+            2, ObjectType::Page, Page::"VAT Return Period List", ManualSetupCategory::Finance, VATPeriodsKeywordsTxt)
     end;
 
     local procedure RegisterStatutoryReportingSetup()

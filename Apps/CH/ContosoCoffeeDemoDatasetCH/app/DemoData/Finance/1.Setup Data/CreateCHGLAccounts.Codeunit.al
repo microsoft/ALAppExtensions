@@ -77,11 +77,12 @@ codeunit 11580 "Create CH GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.OverheadAppliedCapName(), '7792');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '7793');
 
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '7890');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '7891');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '7892');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapOverheadVarianceName(), '7893');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '4892');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '4890');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '4892');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '4893');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapOverheadVarianceName(), '4894');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '4895');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialNonInvVarianceName(), '4891');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.FinishedGoodsName(), '1260');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '2140');
@@ -582,11 +583,6 @@ codeunit 11580 "Create CH GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(InvChangeProjectsName(), '4830');
         ContosoGLAccount.AddAccountForLocalization(MaterialLossName(), '4880');
         ContosoGLAccount.AddAccountForLocalization(GoodsLossName(), '4886');
-        ContosoGLAccount.AddAccountForLocalization(MaterialVarianceProductionName(), '4890');
-        ContosoGLAccount.AddAccountForLocalization(CapacityVarianceProductionName(), '4891');
-        ContosoGLAccount.AddAccountForLocalization(VarianceMatOverheadCostsName(), '4892');
-        ContosoGLAccount.AddAccountForLocalization(VarianceCapOverheadCostsName(), '4893');
-        ContosoGLAccount.AddAccountForLocalization(VarianceSubcontractingName(), '4894');
         ContosoGLAccount.AddAccountForLocalization(CostReductionsName(), '49');
         ContosoGLAccount.AddAccountForLocalization(PurchaseDiscName(), '4900');
         ContosoGLAccount.AddAccountForLocalization(CostReductionDiscountName(), '4901');
@@ -910,11 +906,6 @@ codeunit 11580 "Create CH GL Accounts"
         ContosoGLAccount.InsertGLAccount(InvChangeProjects(), InvChangeProjectsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(MaterialLoss(), MaterialLossName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(GoodsLoss(), GoodsLossName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(MaterialVarianceProduction(), MaterialVarianceProductionName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(CapacityVarianceProduction(), CapacityVarianceProductionName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(VarianceMatOverheadCosts(), VarianceMatOverheadCostsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(VarianceCapOverheadCosts(), VarianceCapOverheadCostsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
-        ContosoGLAccount.InsertGLAccount(VarianceSubcontracting(), VarianceSubcontractingName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', true, false, false);
         ContosoGLAccount.InsertGLAccount(CostReductions(), CostReductionsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Heading", '', '', 0, '', Enum::"General Posting Type"::" ", '', '', false, false, false);
         ContosoGLAccount.InsertGLAccount(PurchaseDisc(), PurchaseDiscName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", CreateVATPostingGroups.Domestic(), '', true, false, false);
         ContosoGLAccount.InsertGLAccount(CostReductionDiscount(), CostReductionDiscountName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::"Cost of Goods Sold", Enum::"G/L Account Type"::"Posting", CreatePostingGroups.DomesticPostingGroup(), CreatePostingGroups.RetailPostingGroup(), 0, '', Enum::"General Posting Type"::"Purchase", CreateVATPostingGroups.Domestic(), '', true, false, false);
@@ -3005,55 +2996,67 @@ codeunit 11580 "Create CH GL Accounts"
         exit(GoodsLossTok);
     end;
 
+#if not CLEAN28
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure MaterialVarianceProduction(): Code[20]
     begin
         exit(ContosoGLAccount.GetAccountNo(MaterialVarianceProductionName()));
     end;
 
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure MaterialVarianceProductionName(): Text[100]
     begin
         exit(MaterialVarianceProductionTok);
     end;
 
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure CapacityVarianceProduction(): Code[20]
     begin
         exit(ContosoGLAccount.GetAccountNo(CapacityVarianceProductionName()));
     end;
 
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure CapacityVarianceProductionName(): Text[100]
     begin
         exit(CapacityVarianceProductionTok);
     end;
 
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure VarianceMatOverheadCosts(): Code[20]
     begin
         exit(ContosoGLAccount.GetAccountNo(VarianceMatOverheadCostsName()));
     end;
 
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure VarianceMatOverheadCostsName(): Text[100]
     begin
         exit(VarianceMatOverheadCostsTok);
     end;
 
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure VarianceCapOverheadCosts(): Code[20]
     begin
         exit(ContosoGLAccount.GetAccountNo(VarianceCapOverheadCostsName()));
     end;
 
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure VarianceCapOverheadCostsName(): Text[100]
     begin
         exit(VarianceCapOverheadCostsTok);
     end;
 
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure VarianceSubcontracting(): Code[20]
     begin
         exit(ContosoGLAccount.GetAccountNo(VarianceSubcontractingName()));
     end;
 
+    [Obsolete('Function not used anymore.', '28.0')]
     procedure VarianceSubcontractingName(): Text[100]
     begin
         exit(VarianceSubcontractingTok);
     end;
+#endif
 
     procedure CostReductions(): Code[20]
     begin
@@ -4450,11 +4453,13 @@ codeunit 11580 "Create CH GL Accounts"
         InvChangeProjectsTok: Label 'Inv. Change Projects', MaxLength = 100;
         MaterialLossTok: Label 'Material Loss', MaxLength = 100;
         GoodsLossTok: Label 'Goods Loss', MaxLength = 100;
+#if not CLEAN28
         MaterialVarianceProductionTok: Label 'Material Variance Production', MaxLength = 100;
         CapacityVarianceProductionTok: Label 'Capacity Variance Production', MaxLength = 100;
         VarianceMatOverheadCostsTok: Label 'Variance Mat. Overhead Costs', MaxLength = 100;
         VarianceCapOverheadCostsTok: Label 'Variance Cap. Overhead Costs', MaxLength = 100;
         VarianceSubcontractingTok: Label 'Variance Subcontracting', MaxLength = 100;
+#endif
         CostReductionsTok: Label 'Cost Reductions', MaxLength = 100;
         PurchaseDiscTok: Label 'Purchase Disc.', MaxLength = 100;
         CostReductionDiscountTok: Label 'Cost Reduction, Discount', MaxLength = 100;

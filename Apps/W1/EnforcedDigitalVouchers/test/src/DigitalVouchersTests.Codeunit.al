@@ -1,6 +1,43 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Test.EServices.EDocument;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.BatchProcessing;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.Service.Item;
+using Microsoft.Service.Test;
+using Microsoft.Tests.EServices.EDocument;
+using System.Email;
+using System.Environment.Configuration;
+using System.TestLibraries.Utilities;
+using System.Utilities;
+
 codeunit 139515 "Digital Vouchers Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
@@ -16,12 +53,13 @@ codeunit 139515 "Digital Vouchers Tests"
         LibraryRandom: Codeunit "Library - Random";
         LibraryLowerPermissions: Codeunit "Library - Lower Permissions";
         Assert: Codeunit Assert;
-        LibraryWorkflow: Codeunit "Library - Workflow";
+        LibraryEmail: Codeunit "Library - Email";
         ActiveDirectoryMockEvents: Codeunit "Active Directory Mock Events";
         LibrarySmallBusiness: Codeunit "Library - Small Business";
         LibraryService: Codeunit "Library - Service";
         IsInitialized: Boolean;
         NotPossibleToPostWithoutVoucherErr: Label 'Not possible to post without attaching the digital voucher.';
+        NotPossibleToPostWithoutVoucherOrNoteErr: Label 'Not possible to post without attaching the digital voucher or adding the note.';
         DialogErrorCodeTok: Label 'Dialog', Locked = true;
         CannotRemoveReferenceRecordFromIncDocErr: Label 'Cannot remove the reference record from the incoming document because it is used for the enforced digital voucher functionality';
         DetachQst: Label 'Do you want to remove the reference from this incoming document to posted document';
@@ -30,6 +68,8 @@ codeunit 139515 "Digital Vouchers Tests"
         PaymentLineAppliedMsg: Label '%1 payment lines out of 1 are applied.\\', Comment = '%1 - number';
         DoYouWantTPostPmtQst: Label 'Do you want to post the payments?';
         LinesPostedMsg: Label 'The journal lines were successfully posted.';
+        DigitalVoucherGenerateErr: Label 'Digital voucher has been generated.';
+        DigitalVoucherNotGenerateErr: Label 'Digital voucher has not been generated';
 
     trigger OnRun()
     begin
@@ -113,7 +153,7 @@ codeunit 139515 "Digital Vouchers Tests"
         EnableDigitalVoucherFeature();
         // [GIVEN] Digital voucher entry setup for purchase document is "Attachment"
         InitSetupCheckOnly("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment);
-        // [GIVEN] Purchase invoice and Incoming document with attachment is created for the purchase document        
+        // [GIVEN] Purchase invoice and Incoming document with attachment is created for the purchase document
         // [WHEN] Post the purchase document
         DocNo := ReceiveAndInvoicePurchaseInvoiceWithIncDoc();
         // [THEN] The document is posted with the digital voucher
@@ -163,7 +203,7 @@ codeunit 139515 "Digital Vouchers Tests"
         InitializeReportSelectionPurchaseInvoice();
         // [GIVEN] Digital voucher entry setup for purchase document is "Attachment", "Generate Automatically" is enabled, "Skip If Manually Added" is enabled
         InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment);
-        // [GIVEN] Purcnase invoice and Incoming document with attachment is created for the purchase document        
+        // [GIVEN] Purcnase invoice and Incoming document with attachment is created for the purchase document
         // [WHEN] Post purchase document
         DocNo := ReceiveAndInvoicePurchaseInvoiceWithIncDoc(PurchHeader);
         // [THEN] Incoming document with two attachments is connected to the posted purchase document
@@ -466,7 +506,7 @@ codeunit 139515 "Digital Vouchers Tests"
 
         BindSubscription(DigVouchersDisableEnforce);
         // [GIVEN] Email account is set up
-        LibraryWorkflow.SetUpEmailAccount();
+        LibraryEmail.SetUpEmailAccount();
         BindActiveDirectoryMockEvents();
         // [GIVEN] Sales shipment report selections without attachment
         PrepareSalesShipmentReportSelectionsForEmailBodyWithoutAttachment();
@@ -638,7 +678,7 @@ codeunit 139515 "Digital Vouchers Tests"
         EnableDigitalVoucherFeature();
         // [GIVEN] Digital voucher entry setup for sales document is "Attachment"
         InitSetupCheckOnly("Digital Voucher Entry Type"::"Sales Document", "Digital Voucher Check Type"::Attachment);
-        // [GIVEN] Service invoice with incoming document       
+        // [GIVEN] Service invoice with incoming document
         // [WHEN] Post the service document
         DocNo := PostServiceInvoiceWithIncDoc();
         // [THEN] The document is posted with the digital voucher
@@ -1072,6 +1112,430 @@ codeunit 139515 "Digital Vouchers Tests"
         UnbindSubscription(DigVouchersDisableEnforce);
     end;
 
+    [Test]
+    procedure DigitalVoucherIsGeneratedForSelfBillingPurchaseOrderAutoGenerateCheckTypeAttechment()
+    var
+        IncomingDocument: Record "Incoming Document";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        Vendor: Record Vendor;
+        PurchInvHeader: Record "Purch. Inv. Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        SelfBillingInvNo: Code[20];
+    begin
+        // [SCENARIO 580348] Digital Voucher is generated for self-billing purchase order with "Attachment" check type.
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+
+        // [GIVEN] Set Report Selection for Purchase Invoice to use "Purchase - Invoice" report.
+        CreateInvoiceReportSelection();
+
+        // [GIVEN] Digital Voucher entry setup for Purchase Document is "Attachment", "Generate Automatically" option is enabled and "Consider Blank Doc. Type" option is disabled.
+        InitSetupGenerateAutomaticallyAndConsiderBlankDocType("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment, false);
+
+        // [GIVEN] Purchases & Payables Setup "Posted Self-Billing Inv. Nos." is set to a No. Series.
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Posted Self-Billing Inv. Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchasesPayablesSetup.Modify(true);
+
+        // [GIVEN] Create Vendor with "Self-Billing Agreement" enabled.
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("Self-Billing Agreement", true);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Purchase Order with Item line.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [WHEN] Post Purchase Order as Self-Billing Invoice.
+        SelfBillingInvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Digital voucher is generated for the posted Self-Billing Purchase Invoice.
+        PurchInvHeader.Get(SelfBillingInvNo);
+        Assert.IsTrue(IncomingDocument.FindByDocumentNoAndPostingDate(
+            IncomingDocument, PurchInvHeader."No.", Format(PurchInvHeader."Posting Date")), DigitalVoucherNotGenerateErr);
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure DigitalVoucherIsGeneratedForSelfBillingPurchaseOrderAutoGenerateCheckTypeAttechmentOrNote()
+    var
+        IncomingDocument: Record "Incoming Document";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        Vendor: Record Vendor;
+        PurchInvHeader: Record "Purch. Inv. Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        SelfBillingInvNo: Code[20];
+    begin
+        // [SCENARIO 580348] Digital Voucher is generated for self-billing purchase order with "Attachment" check type.
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+
+        // [GIVEN] Set Report Selection for Purchase Invoice to use "Purchase - Invoice" report.
+        CreateInvoiceReportSelection();
+
+        // [GIVEN] Digital Voucher entry setup for Purchase Document is "Attachment Or Note", "Generate Automatically" option is enabled and "Consider Blank Doc. Type" option is disabled.
+        InitSetupGenerateAutomaticallyAndConsiderBlankDocType("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::"Attachment or Note", false);
+
+        // [GIVEN] Purchases & Payables Setup "Posted Self-Billing Inv. Nos." is set to a No. Series.
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Posted Self-Billing Inv. Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchasesPayablesSetup.Modify(true);
+
+        // [GIVEN] Create Vendor with "Self-Billing Agreement" enabled.
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("Self-Billing Agreement", true);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Purchase Order with Item line.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [WHEN] Post Purchase Order as Self-Billing Invoice.
+        SelfBillingInvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Digital Voucher is generated for the posted Self-Billing Purchase Invoice.
+        PurchInvHeader.Get(SelfBillingInvNo);
+        Assert.IsTrue(IncomingDocument.FindByDocumentNoAndPostingDate(
+            IncomingDocument, PurchInvHeader."No.", Format(PurchInvHeader."Posting Date")), DigitalVoucherNotGenerateErr);
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure DigitalVoucherNotGeneratedForSelfBillingPurchaseOrderAutoGenerateCheckTypeNoCheck()
+    var
+        IncomingDocument: Record "Incoming Document";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        Vendor: Record Vendor;
+        PurchInvHeader: Record "Purch. Inv. Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        SelfBillingInvNo: Code[20];
+    begin
+        // [SCENARIO 580348] Digital Voucher is generated for self-billing purchase order with "Attachment" check type.
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+
+        // [GIVEN] Set Report Selection for Purchase Invoice to use "Purchase - Invoice" report.
+        CreateInvoiceReportSelection();
+
+        // [GIVEN] Digital Voucher entry setup for Purchase Document is "No Check", "Generate Automatically" option is enabled and "Consider Blank Doc. Type" option is disabled.
+        InitSetupGenerateAutomaticallyAndConsiderBlankDocType("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::"No Check", false);
+
+        // [GIVEN] Purchases & Payables Setup "Posted Self-Billing Inv. Nos." is set to a No. Series.
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Posted Self-Billing Inv. Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchasesPayablesSetup.Modify(true);
+
+        // [GIVEN] Create Vendor with "Self-Billing Agreement" enabled.
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("Self-Billing Agreement", true);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Purchase Order with Item line.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [WHEN] Post Purchase Order as Self-Billing Invoice.
+        SelfBillingInvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Digital Voucher is Not generated for the posted Self-Billing Purchase Invoice.
+        PurchInvHeader.Get(SelfBillingInvNo);
+        Assert.IsFalse(IncomingDocument.FindByDocumentNoAndPostingDate(
+            IncomingDocument, PurchInvHeader."No.", Format(PurchInvHeader."Posting Date")), DigitalVoucherGenerateErr);
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure DigitalVoucherNotGeneratedForSelfBillingPurchaseOrderCheckTypeNoCheckAndAutoGenerateFalse()
+    var
+        IncomingDocument: Record "Incoming Document";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        Vendor: Record Vendor;
+        PurchInvHeader: Record "Purch. Inv. Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        SelfBillingInvNo: Code[20];
+    begin
+        // [SCENARIO 580348] Digital Voucher is generated for self-billing purchase order with "Attachment" check type.
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+
+        // [GIVEN] Set Report Selection for Purchase Invoice to use "Purchase - Invoice" report.
+        CreateInvoiceReportSelection();
+
+        // [GIVEN] Digital Voucher entry setup for Purchase Document is "No Check", "Generate Automatically" option is disabled and "Consider Blank Doc. Type" option is disabled.
+        InitSetupCheckWithConsiderBlankDocType("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::"No Check", false);
+
+        // [GIVEN] Purchases & Payables Setup "Posted Self-Billing Inv. Nos." is set to a No. Series.
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Posted Self-Billing Inv. Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchasesPayablesSetup.Modify(true);
+
+        // [GIVEN] Create Vendor with "Self-Billing Agreement" enabled.
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("Self-Billing Agreement", true);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Purchase Order with Item line.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [WHEN] Post Purchase Order as Self-Billing Invoice.
+        SelfBillingInvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Digital Voucher is Not generated for the posted Self-Billing Purchase Invoice.
+        PurchInvHeader.Get(SelfBillingInvNo);
+        Assert.IsFalse(IncomingDocument.FindByDocumentNoAndPostingDate(
+            IncomingDocument, PurchInvHeader."No.", Format(PurchInvHeader."Posting Date")), DigitalVoucherGenerateErr);
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure DigitalVoucherNotGeneratedForSelfBillingPurchaseOrderCheckTypeAttachmentAndAutoGenerateFalse()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        Vendor: Record Vendor;
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+    begin
+        // [SCENARIO 580348] Digital Voucher is generated for self-billing purchase order with "Attachment" check type.
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+
+        // [GIVEN] Set Report Selection for Purchase Invoice to use "Purchase - Invoice" report.
+        CreateInvoiceReportSelection();
+
+        // [GIVEN] Digital Voucher entry setup for Purchase Document is "Attachment", "Generate Automatically" option is disabled and "Consider Blank Doc. Type" option is disabled.
+        InitSetupCheckWithConsiderBlankDocType("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment, false);
+
+        // [GIVEN] Purchases & Payables Setup "Posted Self-Billing Inv. Nos." is set to a No. Series.
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Posted Self-Billing Inv. Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchasesPayablesSetup.Modify(true);
+
+        // [GIVEN] Create Vendor with "Self-Billing Agreement" enabled.
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("Self-Billing Agreement", true);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Purchase Order with Item line.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [WHEN] Post Purchase Order as Self-Billing Invoice.
+        asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] While posting user receives an error "Not possible to post without attaching the digital voucher"
+        Assert.ExpectedErrorCode(DialogErrorCodeTok);
+        Assert.ExpectedError(NotPossibleToPostWithoutVoucherErr);
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure DigitalVoucherNotGeneratedForSelfBillingPurchaseOrderCheckTypeAttachmentORNoteAndAutoGenerateFalse()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        Vendor: Record Vendor;
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+    begin
+        // [SCENARIO 580348] Digital Voucher is generated for self-billing purchase order with "Attachment" check type.
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+
+        // [GIVEN] Set Report Selection for Purchase Invoice to use "Purchase - Invoice" report.
+        CreateInvoiceReportSelection();
+
+        // [GIVEN] Digital Voucher entry setup for Purchase Document is "Attachment or Note", "Generate Automatically" option is disabled and "Consider Blank Doc. Type" option is disabled.
+        InitSetupCheckWithConsiderBlankDocType("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::"Attachment or Note", false);
+
+        // [GIVEN] Purchases & Payables Setup "Posted Self-Billing Inv. Nos." is set to a No. Series.
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Posted Self-Billing Inv. Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchasesPayablesSetup.Modify(true);
+
+        // [GIVEN] Create Vendor with "Self-Billing Agreement" enabled.
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("Self-Billing Agreement", true);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Purchase Order with Item line.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [WHEN] Post Purchase Order as Self-Billing Invoice.
+        asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] While posting user receives an error "Not possible to post without attaching the digital voucher or adding the note"
+        Assert.ExpectedErrorCode(DialogErrorCodeTok);
+        Assert.ExpectedError(NotPossibleToPostWithoutVoucherOrNoteErr);
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure DigitalVoucherNotGeneratedForSelfBillingPurchaseOrderAutoGenerateCheckTypeAttechmentSkipManual()
+    var
+        IncomingDocument: Record "Incoming Document";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        Vendor: Record Vendor;
+        PurchInvHeader: Record "Purch. Inv. Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        SelfBillingInvNo: Code[20];
+    begin
+        // [SCENARIO 580348] Digital Voucher is not generated for self-billing purchase order with "Attachment" check type and manual added document.
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+
+        // [GIVEN] Set Report Selection for Purchase Invoice to use "Purchase - Invoice" report.
+        CreateInvoiceReportSelection();
+
+        // [GIVEN] Digital voucher entry setup for Purchase Document is "Attachment", "Generate Automatically" option is enabled and "Skip if Manually added" option is enabled.
+        InitSetupGenerateAutomaticallySkipIfManuallyAdded("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment);
+
+        // [GIVEN] Purchases & Payables Setup "Posted Self-Billing Inv. Nos." is set to a No. Series.
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Posted Self-Billing Inv. Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchasesPayablesSetup.Modify(true);
+
+        // [GIVEN] Create Vendor with "Self-Billing Agreement" enabled.
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("Self-Billing Agreement", true);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Purchase Order with Item line.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [WHEN] Post Purchase Order as Self-Billing Invoice.
+        SelfBillingInvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Digital voucher is generated for the posted Self-Billing Purchase Invoice.
+        PurchInvHeader.Get(SelfBillingInvNo);
+        Assert.IsTrue(IncomingDocument.FindByDocumentNoAndPostingDate(
+            IncomingDocument, PurchInvHeader."No.", Format(PurchInvHeader."Posting Date")), DigitalVoucherGenerateErr);
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure DigitalVoucherNotGeneratedForSelfBillingPurchaseOrderAutoGenerateCheckTypeAttechmentOrNoteSkipManual()
+    var
+        IncomingDocument: Record "Incoming Document";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        Vendor: Record Vendor;
+        PurchInvHeader: Record "Purch. Inv. Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        SelfBillingInvNo: Code[20];
+    begin
+        // [SCENARIO 580348] Digital Voucher is not generated for self-billing purchase order with "Attachment or Note" check type and manual added document.
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+
+        // [GIVEN] Set Report Selection for Purchase Invoice to use "Purchase - Invoice" report.
+        CreateInvoiceReportSelection();
+
+        // [GIVEN] Digital Voucher entry setup for Purchase Document is "Attachment or Note", "Generate Automatically" option is enabled and "Skip if Manually added" option is enabled.
+        InitSetupGenerateAutomaticallySkipIfManuallyAdded("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::"Attachment or Note");
+
+        // [GIVEN] Purchases & Payables Setup "Posted Self-Billing Inv. Nos." is set to a No. Series.
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Posted Self-Billing Inv. Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchasesPayablesSetup.Modify(true);
+
+        // [GIVEN] Create Vendor with "Self-Billing Agreement" enabled.
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("Self-Billing Agreement", true);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Purchase Order with Item line.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [WHEN] Post Purchase Order as Self-Billing Invoice.
+        SelfBillingInvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Digital voucher is generated for the posted Self-Billing Purchase Invoice.
+        PurchInvHeader.Get(SelfBillingInvNo);
+        Assert.IsTrue(IncomingDocument.FindByDocumentNoAndPostingDate(
+            IncomingDocument, PurchInvHeader."No.", Format(PurchInvHeader."Posting Date")), DigitalVoucherGenerateErr);
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure DigitalVoucherNotGeneratedForSelfBillingPurchaseOrderAutoGenerateCheckTypeNoCheckSkipManual()
+    var
+        IncomingDocument: Record "Incoming Document";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        Vendor: Record Vendor;
+        PurchInvHeader: Record "Purch. Inv. Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        SelfBillingInvNo: Code[20];
+    begin
+        // [SCENARIO 580348] Digital Voucher is not generated for self-billing purchase order with "No Check" check type and manual added document.
+        Initialize();
+        EnableDigitalVoucherFeature();
+        BindSubscription(DigVouchersDisableEnforce);
+
+        // [GIVEN] Set Report Selection for Purchase Invoice to use "Purchase - Invoice" report.
+        CreateInvoiceReportSelection();
+
+        // [GIVEN] Digital voucher entry setup for Purchase Document is "No Check", "Generate Automatically" option is enabled and "Skip if Manually Added" option is enabled.
+        InitSetupGenerateAutomaticallySkipIfManuallyAdded("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::"No Check");
+
+        // [GIVEN] Purchases & Payables Setup "Posted Self-Billing Inv. Nos." is set to a No. Series.
+        PurchasesPayablesSetup.Get();
+        PurchasesPayablesSetup.Validate("Posted Self-Billing Inv. Nos.", LibraryERM.CreateNoSeriesCode());
+        PurchasesPayablesSetup.Modify(true);
+
+        // [GIVEN] Create Vendor with "Self-Billing Agreement" enabled.
+        LibraryPurchase.CreateVendor(Vendor);
+        Vendor.Validate("Self-Billing Agreement", true);
+        Vendor.Modify(true);
+
+        // [GIVEN] Create Purchase Order with Item line.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [WHEN] Post Purchase Order as Self-Billing Invoice.
+        SelfBillingInvNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] Digital voucher is Not generated for the posted Self-Billing Purchase Invoice.
+        PurchInvHeader.Get(SelfBillingInvNo);
+        Assert.IsFalse(IncomingDocument.FindByDocumentNoAndPostingDate(
+            IncomingDocument, PurchInvHeader."No.", Format(PurchInvHeader."Posting Date")), DigitalVoucherGenerateErr);
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
     local procedure Initialize()
     var
         CompanyInformation: Record "Company Information";
@@ -1312,14 +1776,6 @@ codeunit 139515 "Digital Vouchers Tests"
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
-    local procedure ReceiveAndInvoiceSalesInvoice(): Code[20]
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        LibrarySales.CreateSalesCreditMemo(SalesHeader);
-        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
-    end;
-
     local procedure ShipAndInvoiceSalesDocumentWithIncDoc(): Code[20]
     var
         SalesHeader: Record "Sales Header";
@@ -1379,7 +1835,9 @@ codeunit 139515 "Digital Vouchers Tests"
         ServInvHeader: Record "Service Invoice Header";
     begin
         LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+#pragma warning disable AA0210
         ServInvHeader.SetRange("Pre-Assigned No.", ServiceHeader."No.");
+#pragma warning restore AA0210
         ServInvHeader.FindFirst();
         exit(ServInvHeader."No.");
     end;
@@ -1397,7 +1855,9 @@ codeunit 139515 "Digital Vouchers Tests"
         ServCrMemoHeader: Record "Service Cr.Memo Header";
     begin
         LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+#pragma warning disable AA0210
         ServCrMemoHeader.SetRange("Pre-Assigned No.", ServiceHeader."No.");
+#pragma warning restore AA0210
         ServCrMemoHeader.FindFirst();
         exit(ServCrMemoHeader."No.");
     end;
@@ -1483,6 +1943,20 @@ codeunit 139515 "Digital Vouchers Tests"
         IncomingDocument.FindFirst();
         IncomingDocumentAttachment.SetRange("Incoming Document Entry No.", IncomingDocument."Entry No.");
         Assert.RecordCount(IncomingDocumentAttachment, AttachmentsCount);
+    end;
+
+    local procedure CreateInvoiceReportSelection()
+    var
+        CustomReportSelection: Record "Custom Report Selection";
+        ReportSelections: Record "Report Selections";
+    begin
+        ReportSelections.DeleteAll();
+        CustomReportSelection.DeleteAll();
+
+        ReportSelections.Init();
+        ReportSelections.Usage := ReportSelections.Usage::"P.Invoice";
+        ReportSelections."Report ID" := REPORT::"Purchase - Invoice";
+        if ReportSelections.Insert() then;
     end;
 
     [ConfirmHandler]

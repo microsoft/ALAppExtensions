@@ -203,11 +203,6 @@ codeunit 27011 "Create CA Tax Group"
         UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.JobCostAppliedRawMaterials(), Taxable());
         UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.OverheadAppliedRetail(), Taxable());
         UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.PurchaseVarianceRetail(), Taxable());
-        UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.MaterialVariance(), Taxable());
-        UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.CapacityVariance(), Taxable());
-        UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.SubcontractedVariance(), Taxable());
-        UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.CapOverheadVariance(), Taxable());
-        UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.MfgOverheadVariance(), Taxable());
         UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.HealthInsurance(), Taxable());
         UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.GroupLifeInsurance(), Taxable());
         UpdateTaxGroupOnGLAccount(CreateCAGLAccounts.WorkersCompensation(), Taxable());

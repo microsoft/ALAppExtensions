@@ -27,6 +27,7 @@ codeunit 148059 "Financial Reports CZL"
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Financial Reports CZL");
 
         LibraryTaxCZL.SetUseVATDate(true);
+        LibraryTaxCZL.CreateVATReturnPeriods(CalcDate('<-CY>', WorkDate()), 12);
 
         isInitialized := true;
         Commit();
@@ -51,10 +52,10 @@ codeunit 148059 "Financial Reports CZL"
     [RequestPageHandler]
     procedure CalcPostVATSettlementRequestPageHandler(var CalcandPostVATSettlCZL: TestRequestPage "Calc. and Post VAT Settl. CZL")
     var
-        VATPeriodCZL: Record "VAT Period CZL";
+        VATReturnPeriod: Record "VAT Return Period";
     begin
-        VATPeriodCZL.SetFilter("Starting Date", '..%1', WorkDate());
-        VATPeriodCZL.FindLast();
+        VATReturnPeriod.SetFilter("Start Date", '..%1', WorkDate());
+        VATReturnPeriod.FindLast();
 
 #pragma warning disable AA0210
         GLAccount.SetRange(Blocked, false);
@@ -66,7 +67,7 @@ codeunit 148059 "Financial Reports CZL"
         GLAccount.FindFirst();
 #pragma warning restore
 
-        CalcandPostVATSettlCZL.StartingDate.SetValue(VATPeriodCZL."Starting Date");
+        CalcandPostVATSettlCZL.StartingDate.SetValue(VATReturnPeriod."Start Date");
         CalcandPostVATSettlCZL.PostingDt.SetValue(WorkDate());
         CalcandPostVATSettlCZL.SettlementAcc.SetValue(GLAccount."No.");
         CalcandPostVATSettlCZL.DocumentNo.SetValue(CopyStr(LibraryRandom.RandText(20), 1, 20));

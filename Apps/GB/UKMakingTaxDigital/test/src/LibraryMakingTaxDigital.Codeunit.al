@@ -179,7 +179,7 @@ codeunit 148080 "Library - Making Tax Digital"
         VATReturnPeriod.Modify();
     end;
 
-    internal procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period"; NewStatus: Option)
+    internal procedure MockLinkedVATReturnHeader(var VATReportHeader: Record "VAT Report Header"; var VATReturnPeriod: Record "VAT Return Period"; NewStatus: Enum "VAT Report Status")
     begin
         MockLinkedVATReturnHeader(VATReportHeader, VATReturnPeriod);
         VATReportHeader.Status := NewStatus;
@@ -355,6 +355,7 @@ codeunit 148080 "Library - Making Tax Digital"
 
     local procedure SetOAuthSetupTestTokens(var OAuth20Setup: Record "OAuth 2.0 Setup")
     var
+        MTDOAuth20Mgt: Codeunit "MTD OAuth 2.0 Mgt";
         ClientIdText: Text;
         ClientSecretText: Text;
         AccessTokenText: Text;
@@ -365,10 +366,10 @@ codeunit 148080 "Library - Making Tax Digital"
         AccessTokenText := 'Dummy Test Access Token';
         RefreshTokenText := 'Dummy Test Refresh Token';
 
-        OAuth20Setup.SetToken(OAuth20Setup."Client ID", ClientIdText);
-        OAuth20Setup.SetToken(OAuth20Setup."Client Secret", ClientSecretText);
-        OAuth20Setup.SetToken(OAuth20Setup."Access Token", AccessTokenText);
-        OAuth20Setup.SetToken(OAuth20Setup."Refresh Token", RefreshTokenText);
+        MTDOAuth20Mgt.SetToken(OAuth20Setup."Client ID", ClientIdText, OAuth20Setup.GetTokenDataScope());
+        MTDOAuth20Mgt.SetToken(OAuth20Setup."Client Secret", ClientSecretText, OAuth20Setup.GetTokenDataScope());
+        MTDOAuth20Mgt.SetToken(OAuth20Setup."Access Token", AccessTokenText, OAuth20Setup.GetTokenDataScope());
+        MTDOAuth20Mgt.SetToken(OAuth20Setup."Refresh Token", RefreshTokenText, OAuth20Setup.GetTokenDataScope());
     end;
 
     internal procedure SetOAuthSetupSandbox(IsSandbox: Boolean)

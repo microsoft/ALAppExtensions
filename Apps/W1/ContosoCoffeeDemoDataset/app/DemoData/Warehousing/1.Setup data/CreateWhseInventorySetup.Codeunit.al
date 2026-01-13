@@ -53,7 +53,7 @@ codeunit 5148 "Create Whse Inventory Setup"
         InventorySetup.Modify(true);
     end;
 
-    local procedure CreateInventoryPostingSetup()
+    internal procedure CreateInventoryPostingSetup()
     var
         WhseDemoDataSetup: Record "Warehouse Module Setup";
         ContosoPostingSetup: Codeunit "Contoso Posting Setup";

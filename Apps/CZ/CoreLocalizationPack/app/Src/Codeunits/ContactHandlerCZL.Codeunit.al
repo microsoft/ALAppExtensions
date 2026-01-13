@@ -12,14 +12,6 @@ using Microsoft.Sales.Customer;
 
 codeunit 11751 "Contact Handler CZL"
 {
-    [EventSubscriber(ObjectType::Table, Database::Contact, 'OnAfterDeleteEvent', '', false, false)]
-    local procedure DeleteRegistrationLogCZLOnAfterDelete(var Rec: Record Contact)
-    var
-        RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
-    begin
-        RegistrationLogMgtCZL.DeleteContactLog(Rec);
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::Contact, 'OnBeforeDuplicateCheck', '', false, false)]
     local procedure RegNoOnBeforeDuplicateCheck(Contact: Record Contact; xContact: Record Contact; var IsDuplicateCheckNeeded: Boolean)
     begin

@@ -6,6 +6,7 @@
 codeunit 148010 "C5 LedTrans Migrator Test"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     var

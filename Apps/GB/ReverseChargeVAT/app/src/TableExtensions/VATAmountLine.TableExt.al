@@ -6,19 +6,15 @@ namespace Microsoft.Finance.VAT.Setup;
 
 using Microsoft.Finance.VAT.Calculation;
 
-#if not CLEAN25
-#pragma warning disable AL0432
-#endif
 tableextension 10552 "VAT Amount Line" extends "VAT Amount Line"
-#if not CLEAN25
-#pragma warning restore  AL0432
-#endif
 {
     fields
     {
         field(10507; "Reverse Charge GB"; Decimal)
         {
+#pragma warning disable AA0474 // the amount is FCY but currency code is not known and not relevant in VAT Ammount Line
             AutoFormatType = 1;
+#pragma warning restore AA0474
             Caption = 'Reverse Charge';
             DataClassification = CustomerContent;
 

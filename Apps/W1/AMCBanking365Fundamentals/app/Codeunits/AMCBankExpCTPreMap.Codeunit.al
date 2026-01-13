@@ -1,9 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Payment;
-
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.Currency;
@@ -24,6 +24,9 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
 {
     Permissions = TableData "Payment Export Data" = rimd;
     TableNo = "Data Exch.";
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     begin
@@ -375,4 +378,4 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
     begin
     end;
 }
-
+#endif

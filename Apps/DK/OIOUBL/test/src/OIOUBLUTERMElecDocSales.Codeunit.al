@@ -6,6 +6,7 @@
 codeunit 148054 "OIOUBL-UT ERM Elec. Doc Sales"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun();

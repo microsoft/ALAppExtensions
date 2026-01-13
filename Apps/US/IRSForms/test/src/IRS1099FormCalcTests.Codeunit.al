@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -12,6 +12,7 @@ using Microsoft.Finance.ReceivablesPayables;
 codeunit 148014 "IRS 1099 Form Calc. Tests"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
@@ -41,12 +42,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        PeriodNo: Code[20];
+PeriodNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
         VendNo: Code[20];
@@ -55,10 +51,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         // [SCENARIO 495389] The calculation of the form boxes is correct for a single vendor and a single form
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         // [GIVEN] IRS Reporting "X" with "Starting Date" = 01.01.2024 and "Ending Date" = 31.12.2024
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
@@ -89,10 +82,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         // [THEN] Check connected entry
         LibraryIRS1099FormBox.VerifyConnectedEntryInVendFormBoxBuffer(TempVendFormBoxBuffer, VendorLedgerEntry."Entry No.");
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure SingleVendorSingleFormMultipleBoxes()
@@ -101,12 +91,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        PeriodNo: Code[20];
+PeriodNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: array[2] of Code[20];
         VendNo: Code[20];
@@ -118,10 +103,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         // [SCENARIO 495389] The calculation of the form boxes is correct for a single vendor and single form with multiple form boxes
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         // [GIVEN] MISC form with two boxes - MISC-01 and MISC-02
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
@@ -164,10 +146,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
             LibraryIRS1099FormBox.VerifyConnectedEntryInVendFormBoxBuffer(TempVendFormBoxBuffer, ExpectedEntryNo[i]);
         end;
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure SingleVendorMultipleFormsAndBoxes()
@@ -176,12 +155,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        PeriodNo: Code[20];
+PeriodNo: Code[20];
         FormNo: array[2] of Code[20];
         FormBoxNo: array[2, 2] of Code[20];
         ExpectedAmount: array[2, 2] of Decimal;
@@ -193,10 +167,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         // [SCENARIO 495389] The calculation of the form boxes is correct for a single vendor and multiple forms and form boxes
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         // [GIVEN] A single vendor
         VendNo := LibraryPurchase.CreateVendorNo();
@@ -243,10 +214,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
                     TempVendFormBoxBuffer, PeriodNo, FormNo[i], FormBoxNo[i, j], VendNo, ExpectedAmount[i, j]);
                 LibraryIRS1099FormBox.VerifyConnectedEntryInVendFormBoxBuffer(TempVendFormBoxBuffer, ExpectedEntryNo[i, j]);
             end;
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure MultipleVendorsMultipleFormsAndBoxes()
@@ -255,12 +223,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         PurchaseLine: Record "Purchase Line";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        PeriodNo: Code[20];
+PeriodNo: Code[20];
         FormNo: array[2] of Code[20];
         FormBoxNo: array[2, 2, 2] of Code[20];
         VendNo: array[2] of Code[20];
@@ -272,10 +235,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         // [SCENARIO 495389] The calculation of the form boxes is correct for multiple vendors and multiple forms and form boxes
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         // [GIVEN] Forms MISC and NEC with two boxes each (MISC-01, MISC-02, NEC-01, NEC-02)
         for i := 1 to ArrayLen(FormNo) do
@@ -328,10 +288,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
                     LibraryIRS1099FormBox.VerifyConnectedEntryInVendFormBoxBuffer(TempVendFormBoxBuffer, ExpectedEntryNo[i, j, k]);
                 end;
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure SingleRefundToCrMemo()
@@ -341,12 +298,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         InvVendorLedgerEntry: Record "Vendor Ledger Entry";
         CrMemoVendorLedgerEntry: Record "Vendor Ledger Entry";
         TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
-#if not CLEAN25
-#pragma warning disable AL0432
-        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
-#pragma warning restore AL0432
-#endif
-        PeriodNo: Code[20];
+PeriodNo: Code[20];
         FormNo: Code[20];
         FormBoxNo: Code[20];
         VendNo: Code[20];
@@ -355,10 +307,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         // [SCENARIO 495389] The calculation of the form boxes is correct for a single refund and credit memo
 
         Initialize();
-#if not CLEAN25
-        BindSubscription(IRSFormsEnableFeature);
-#endif
-        PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
+PostingDate := LibraryIRSReportingPeriod.GetPostingDate();
         // [GIVEN] Form box MISC-01 is created for the period "X"
         PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(PostingDate);
         FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(PostingDate);
@@ -407,10 +356,7 @@ codeunit 148014 "IRS 1099 Form Calc. Tests"
         TempVendFormBoxBuffer.Next();
         TempVendFormBoxBuffer.TestField("Vendor Ledger Entry No.", CrMemoVendorLedgerEntry."Entry No.");
 
-#if not CLEAN25
-        UnbindSubscription(IRSFormsEnableFeature);
-#endif
-    end;
+end;
 
     [Test]
     procedure OnlyAdjustment()
