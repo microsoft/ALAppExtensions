@@ -77,6 +77,26 @@ codeunit 12202 "Create Payment Term IT"
         Evaluate(DueDateCalculation, '<7D>');
         ContosoPaymentLines.InsertPaymentLines(PaymentLines.Type::"Payment Terms", CreatePaymentTerms.PaymentTermsDAYS7(), 10000, 100, DueDateCalculation,
                            DiscountDateCalculation, 0, PaymentLines."Sales/Purchase"::" ", '', 0);
+
+        Evaluate(DueDateCalculation, '<2D>');
+        ContosoPaymentLines.InsertPaymentLines(PaymentLines.Type::"Payment Terms", CreatePaymentTerms.PaymentTermsDAYS2(), 10000, 100, DueDateCalculation,
+                           DiscountDateCalculation, 0, PaymentLines."Sales/Purchase"::" ", '', 0);
+
+        Evaluate(DueDateCalculation, '<10D>');
+        ContosoPaymentLines.InsertPaymentLines(PaymentLines.Type::"Payment Terms", CreatePaymentTerms.PaymentTermsDAYS10(), 10000, 100, DueDateCalculation,
+                           DiscountDateCalculation, 0, PaymentLines."Sales/Purchase"::" ", '', 0);
+
+        Evaluate(DueDateCalculation, '<15D>');
+        ContosoPaymentLines.InsertPaymentLines(PaymentLines.Type::"Payment Terms", CreatePaymentTerms.PaymentTermsDAYS15(), 10000, 100, DueDateCalculation,
+                           DiscountDateCalculation, 0, PaymentLines."Sales/Purchase"::" ", '', 0);
+
+        Evaluate(DueDateCalculation, '<30D>');
+        ContosoPaymentLines.InsertPaymentLines(PaymentLines.Type::"Payment Terms", CreatePaymentTerms.PaymentTermsDAYS30(), 10000, 100, DueDateCalculation,
+                           DiscountDateCalculation, 0, PaymentLines."Sales/Purchase"::" ", '', 0);
+
+        Evaluate(DueDateCalculation, '<60D>');
+        ContosoPaymentLines.InsertPaymentLines(PaymentLines.Type::"Payment Terms", CreatePaymentTerms.PaymentTermsDAYS60(), 10000, 100, DueDateCalculation,
+                           DiscountDateCalculation, 0, PaymentLines."Sales/Purchase"::" ", '', 0);
     end;
 
     procedure PaymentTermsDAYS30X2(): code[10]
