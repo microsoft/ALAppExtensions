@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -20,6 +21,9 @@ using System.Utilities;
 codeunit 20105 "AMC Banking Mgt."
 {
     Permissions = TableData "AMC Banking Setup" = r;
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     begin
@@ -680,4 +684,4 @@ codeunit 20105 "AMC Banking Mgt."
         Exit(CopyStr('fb79e895-7de3-4468-8184-cd181eb8b131', 1, 40));
     end;
 }
-
+#endif

@@ -1,6 +1,9 @@
+#if not CLEAN28
 codeunit 130103 "Library - Amc Web Service"
 {
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
     end;
@@ -319,4 +322,4 @@ codeunit 130103 "Library - Amc Web Service"
         end;
     end;
 }
-
+#endif

@@ -6,6 +6,7 @@
 codeunit 139763 "Email Logging Tests"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var

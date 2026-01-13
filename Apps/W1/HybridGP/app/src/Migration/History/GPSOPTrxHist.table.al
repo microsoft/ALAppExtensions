@@ -932,6 +932,16 @@ table 4078 "GPSOPTrxHist"
         {
             Clustered = false;
         }
+        key(Key3; DEX_ROW_ID)
+        {
+            Clustered = false;
+        }
+        key(Key4; DEX_ROW_ID, DOCDATE)
+        {
+        }
+        key(Key5; PYMTRMID)
+        {
+        }
     }
 
     fieldgroups

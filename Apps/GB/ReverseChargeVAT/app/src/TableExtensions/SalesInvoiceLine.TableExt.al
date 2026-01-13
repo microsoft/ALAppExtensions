@@ -20,6 +20,8 @@ tableextension 10565 "Sales Invoice Line" extends "Sales Invoice Line"
         {
             Caption = 'Reverse Charge';
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
     }
 }

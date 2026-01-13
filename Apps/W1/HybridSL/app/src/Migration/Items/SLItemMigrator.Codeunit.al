@@ -19,14 +19,33 @@ codeunit 47026 "SL Item Migrator"
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
         CurrentBatchNumber: Integer;
         CurrentBatchLineNo: Integer;
+        AssignWhenReceivedTxt: Label 'R', Locked = true;
+        AssignWhenUsedTxt: Label 'U', Locked = true;
+        AverageCostValuationMethodTxt: Label 'A', Locked = true;
         DefaultPostingGroupCodeTxt: Label 'SL', Locked = true;
         DefaultPostingGroupDescriptionTxt: Label 'Migrated from SL', Locked = true;
+        ExpirationIssueMethodTxt: Label 'E', Locked = true;
+        FIFOValuationMethodTxt: Label 'F', Locked = true;
+        INSetupIDTxt: Label 'IN', Locked = true;
+        ItemBatchCodePrefixTxt: Label 'SLITM', Locked = true;
+        LIFOValuationMethodTxt: Label 'L', Locked = true;
+        LotTrackedTxt: Label 'LI', Locked = true;
+        LotTrackedWhenReceivedTxt: Label 'LOTRCVD', Locked = true;
+        LotTrackedWhenReceivedWithExpirationTxt: Label 'LOTRCVDEXP', Locked = true;
+        LotTrackedWhenUsedTxt: Label 'LOTUSED', Locked = true;
+        NotTrackedTxt: Label 'NN', Locked = true;
+        SerialTrackedTxt: Label 'SI', Locked = true;
+        SerialTrackedWhenReceivedTxt: Label 'SERRCVD', Locked = true;
+        SerialTrackedWhenReceivedWithExpirationTxt: Label 'SERRCVDEXP', Locked = true;
+        SerialTrackedWhenUsedTxt: Label 'SERUSED', Locked = true;
+        SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
         SLItemImportPostingGroupCodeTxt: Label 'SLITEMIMPORT', Locked = true;
         SLItemImportPostingGroupDescriptionTxt: Label 'SL Item Import (No impact to GL)', Locked = true;
-        SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
-        TranStatusCodeInactiveTxt: Label 'IN', Locked = true;
+        SpecificIdentificationValuationMethodTxt: Label 'S', Locked = true;
+        StandardCostValuationMethodTxt: Label 'T', Locked = true;
         TranStatusCodeDeleteTxt: Label 'DE', Locked = true;
-        ItemBatchCodePrefixTxt: Label 'SLITM', Locked = true;
+        TranStatusCodeInactiveTxt: Label 'IN', Locked = true;
+        UserSpecifiedCostValuationMethodTxt: Label 'U', Locked = true;
         CostingMethodOption: Option FIFO,LIFO,Specific,Average,Standard;
         ItemTypeOption: Option Inventory,Service;
 
@@ -36,13 +55,19 @@ codeunit 47026 "SL Item Migrator"
         MigrateItem(Sender, RecordIdToMigrate);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", OnMigrateItemPostingGroups, '', true, true)]
+    local procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartofAccountsMigrated: Boolean)
+    begin
+        MigrateItemPostingGroups(Sender, RecordIdToMigrate, ChartofAccountsMigrated);
+    end;
+
     internal procedure MigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordToMigrate: RecordId)
     var
-        SLInventory: Record "SL Inventory";
+        SLInventory: Record "SL Inventory Buffer";
         SLINSetup: Record "SL INSetup";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
     begin
-        if RecordToMigrate.TableNo() <> Database::"SL Inventory" then
+        if RecordToMigrate.TableNo() <> Database::"SL Inventory Buffer" then
             exit;
         SLCompanyAdditionalSettings.Get(CompanyName);
         if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
@@ -57,12 +82,12 @@ codeunit 47026 "SL Item Migrator"
             exit;
         end;
 
-        SLINSetup.Get('IN');
+        SLINSetup.Get(INSetupIDTxt);
         MigrateItemDetails(SLInventory, Sender);
         SetGeneralPostingSetupForInventory(SLINSetup);
     end;
 
-    internal procedure ShouldMigrateItem(var SLInventory: Record "SL Inventory"): Boolean
+    internal procedure ShouldMigrateItem(var SLInventory: Record "SL Inventory Buffer"): Boolean
     begin
         if SLInventory.TranStatusCode = TranStatusCodeInactiveTxt then
             if not SLCompanyAdditionalSettings.GetMigrateInactiveItems() then
@@ -81,17 +106,23 @@ codeunit 47026 "SL Item Migrator"
         DataMigrationStatusFacade.IncrementMigratedRecordCount(SLHelperFunctions.GetMigrationTypeTxt(), Database::Item, -1);
     end;
 
-    internal procedure MigrateItemDetails(SLInventory: Record "SL Inventory"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
+    internal procedure MigrateItemDetails(SLInventory: Record "SL Inventory Buffer"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     var
+        SLINSetup: Record "SL INSetup";
         SLInventoryADG: Record "SL InventoryADG";
+        SLSite: Record "SL Site";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        ItemNoToSetLength: Text[20];
+        ItemDescriptionToSetLength: Text[50];
     begin
-        if not ItemDataMigrationFacade.CreateItemIfNeeded(CopyStr(SLInventory.InvtID, 1, 20), CopyStr(SLInventory.Descr, 1, 50), CopyStr(SLInventory.Descr, 1, 50), ItemTypeOption::Inventory) then
+        if not ItemDataMigrationFacade.CreateItemIfNeeded(CopyStr(SLInventory.InvtID, 1, MaxStrLen(ItemNoToSetLength)), CopyStr(SLInventory.Descr, 1, MaxStrLen(ItemDescriptionToSetLength)), '', ItemTypeOption::Inventory) then
             exit;
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLInventory.RecordId));
+        ItemDataMigrationFacade.SetSearchDescription(CopyStr(SLInventory.Descr, 1, MaxStrLen(ItemDescriptionToSetLength)));
         ItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(SLInventory.StkUnit, SLInventory.StkUnit);
-        ItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(SLInventory.DfltPOUnit, SLInventory.DfltPOUnit);
+        ItemDataMigrationFacade.SetBaseUnitOfMeasure(SLInventory.StkUnit);
         ItemDataMigrationFacade.SetUnitPrice(SLInventory.StkBasePrc);
+        ItemDataMigrationFacade.SetCostingMethod(GetCostingMethod(SLInventory));
         if SLInventory.ValMthd <> 'T' then
             ItemDataMigrationFacade.SetUnitCost(SLInventory.LastCost)
         else
@@ -100,41 +131,49 @@ codeunit 47026 "SL Item Migrator"
             ItemDataMigrationFacade.SetStandardCost(SLInventory.StdCost)
         else
             ItemDataMigrationFacade.SetStandardCost(SLInventory.LastCost);
-        ItemDataMigrationFacade.SetCostingMethod(GetCostingMethod(SLInventory));
-        ItemDataMigrationFacade.SetBaseUnitOfMeasure(SLInventory.StkUnit);
+
+        ItemDataMigrationFacade.CreateGeneralProductPostingSetupIfNeeded(SLItemImportPostingGroupCodeTxt, SLItemImportPostingGroupDescriptionTxt, '');
+        ItemDataMigrationFacade.CreateGeneralProductPostingSetupIfNeeded(SLItemImportPostingGroupCodeTxt, SLItemImportPostingGroupDescriptionTxt, DefaultPostingGroupCodeTxt);
+        ItemDataMigrationFacade.SetGeneralProductPostingGroup(DefaultPostingGroupCodeTxt);
+        ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(DefaultPostingGroupCodeTxt, DefaultPostingGroupDescriptionTxt, '');
+        SLINSetup.Get(INSetupIDTxt);
+        ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(DefaultPostingGroupCodeTxt, '', SLINSetup.DfltInvtAcct);
+        ItemDataMigrationFacade.SetInventoryPostingGroup(DefaultPostingGroupCodeTxt);
+        if SLSite.FindSet() then
+            repeat
+                ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(DefaultPostingGroupCodeTxt, DefaultPostingGroupDescriptionTxt, SLSite.SiteId);
+                ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(SLItemImportPostingGroupCodeTxt, SLItemImportPostingGroupDescriptionTxt, SLSite.SiteId);
+                ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(DefaultPostingGroupCodeTxt, SLSite.SiteId, SLINSetup.DfltInvtAcct);
+            until SLSite.Next() = 0;
+
+        ItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(SLInventory.DfltPOUnit, SLInventory.DfltPOUnit);
         ItemDataMigrationFacade.SetPurchUnitOfMeasure(SLInventory.DfltPOUnit);
-        ItemDataMigrationFacade.SetSearchDescription(CopyStr(SLInventory.Descr, 1, 50));
         ItemDataMigrationFacade.SetItemTrackingCode(GetSLBCTrackingCode(SLInventory));
 
-        if SLCompanyAdditionalSettings.GetGLModuleEnabled() then
-            ItemDataMigrationFacade.SetGeneralProductPostingGroup(DefaultPostingGroupCodeTxt);
         if SLInventoryADG.Get(SLInventory.InvtID) then
-            ItemDataMigrationFacade.SetNetWeight(SLInventoryADG.StdGrossWt);
+            ItemDataMigrationFacade.SetNetWeight(SLInventoryADG.StdTareWt);
 
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", OnMigrateItemPostingGroups, '', true, true)]
-    local procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartofAccountsMigrated: Boolean)
-    begin
-        MigrateItemPostingGroups(Sender, RecordIdToMigrate, ChartofAccountsMigrated);
-    end;
-
     internal procedure MigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartofAccountsMigrated: Boolean)
     var
-        SLInventory: Record "SL Inventory";
+        SLInventory: Record "SL Inventory Buffer";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
     begin
         if not ChartofAccountsMigrated then
             exit;
-
-        if RecordIdToMigrate.TableNo() <> Database::"SL Inventory" then
-            exit;
-
         if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
+        if not SLCompanyAdditionalSettings.GetMigrateItemClasses() then
+            exit;
+        if RecordIdToMigrate.TableNo() <> Database::"SL Inventory Buffer" then
+            exit;
 
-        if SLInventory.Get(RecordIdToMigrate) then
-            MigrateItemInventoryPostingGroup(SLInventory, Sender);
+        if SLInventory.Get(RecordIdToMigrate) then begin
+            DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLInventory.RecordId));
+            MigrateInventoryPostingGroup(SLInventory, Sender);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", OnMigrateInventoryTransactions, '', true, true)]
@@ -147,16 +186,16 @@ codeunit 47026 "SL Item Migrator"
     var
         Item: Record Item;
         ItemJnlLine: Record "Item Journal Line";
-        SLItemCost: Record "SL ItemCost";
-        SLItemSite: Record "SL ItemSite";
-        SLInventory: Record "SL Inventory";
-        SLLotSerMst: Record "SL LotSerMst";
+        SLItemCost: Record "SL ItemCost Buffer";
+        SLItemSite: Record "SL ItemSite Buffer";
+        SLInventory: Record "SL Inventory Buffer";
+        SLLotSerMst: Record "SL LotSerMst Buffer";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         ErrorText: Text;
     begin
         if not ChartOfAccountsMigrated then
             exit;
-        if RecordIdToMigrate.TableNo <> Database::"SL Inventory" then
+        if RecordIdToMigrate.TableNo <> Database::"SL Inventory Buffer" then
             exit;
         SLCompanyAdditionalSettings.Get(CompanyName);
         if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
@@ -172,7 +211,7 @@ codeunit 47026 "SL Item Migrator"
                 exit;
 
             case SLInventory.ValMthd of
-                'A', 'T', 'U':  // Average, Standard, User-Specified
+                AverageCostValuationMethodTxt, StandardCostValuationMethodTxt, UserSpecifiedCostValuationMethodTxt:
                     begin
                         SLItemSite.SetRange(InvtID, SLInventory.InvtID);
                         SLItemSite.SetFilter(CpnyID, CompanyName);
@@ -184,20 +223,20 @@ codeunit 47026 "SL Item Migrator"
                             until SLItemSite.Next() = 0;
                     end;
 
-                'F', 'L', 'S':  // FIFO, LIFO, Specific
+                FIFOValuationMethodTxt, LIFOValuationMethodTxt, SpecificIdentificationValuationMethodTxt:
                     begin
                         SLItemSite.SetRange(InvtID, SLInventory.InvtID);
                         SLItemSite.SetFilter(CpnyID, CompanyName);
                         SLItemSite.SetFilter(QtyOnHand, '<>%1', 0);
                         if SLItemSite.FindSet() then
                             repeat
-                                if (SLInventory.LotSerTrack in ['LI', 'SI']) then begin
+                                if (SLInventory.LotSerTrack in [LotTrackedTxt, SerialTrackedTxt]) then begin
                                     SLLotSerMst.SetRange(InvtID, SLItemSite.InvtID);
                                     SLLotSerMst.SetRange(SiteID, SLItemSite.SiteID);
                                     SLLotSerMst.SetFilter(QtyOnHand, '<>%1', 0);
                                     if SLLotSerMst.FindSet() then
                                         repeat
-                                            CreateItemJnlLineLotSerMst(ItemJnlLine, SLInventory, SLLotSerMst, SLLotSerMst.QtyOnHand, DT2Date(SLLotSerMst.RcptDate));
+                                            CreateItemJnlLineLotSerMst(ItemJnlLine, SLInventory, SLLotSerMst, SLLotSerMst.QtyOnHand, SLLotSerMst.RcptDate);
                                             CreateItemTrackingLinesIfNecessary(SLItemSite, SLInventory, ItemJnlLine, SLLotSerMst.LotSerNbr, SLLotSerMst.WhseLoc);
                                         until SLLotSerMst.Next() = 0;
                                 end
@@ -207,8 +246,8 @@ codeunit 47026 "SL Item Migrator"
                                     SLItemCost.SetFilter(Qty, '<>%1', 0);
                                     if SLItemCost.FindSet() then
                                         repeat
-                                            CreateItemJnlLineItemCost(ItemJnlLine, SLInventory, SLItemCost, SLItemCost.Qty, DT2Date(SLItemCost.RcptDate));
-                                            if ((SLInventory.LotSerTrack = 'NN') and (SLInventory.ValMthd = 'S')) then
+                                            CreateItemJnlLineItemCost(ItemJnlLine, SLInventory, SLItemCost, SLItemCost.Qty, SLItemCost.RcptDate);
+                                            if ((SLInventory.LotSerTrack = NotTrackedTxt) and (SLInventory.ValMthd = SpecificIdentificationValuationMethodTxt)) then
                                                 CreateItemTrackingLinesSpecificID(SLItemCost, SLInventory, ItemJnlLine);
                                         until SLItemCost.Next() = 0;
                                 end;
@@ -258,7 +297,7 @@ codeunit 47026 "SL Item Migrator"
             CurrentBatchLineNo := 0;
         end;
 
-        BatchName := CopyStr(ItemBatchCodePrefixTxt + Format(CurrentBatchNumber), 1, 10);
+        BatchName := CopyStr(ItemBatchCodePrefixTxt + Format(CurrentBatchNumber), 1, MaxStrLen(BatchName));
         if not ItemJnlBatch.Get(TemplateName, BatchName) then begin
             Clear(ItemJnlBatch);
             ItemJnlBatch."Journal Template Name" := TemplateName;
@@ -270,7 +309,7 @@ codeunit 47026 "SL Item Migrator"
         exit(BatchName);
     end;
 
-    internal procedure CreateItemJnlLine(var ItemJnlLine: Record "Item Journal Line"; SLInventory: Record "SL Inventory"; SLItemSite: Record "SL ItemSite"; Quantity: Decimal; PostingDate: Date)
+    internal procedure CreateItemJnlLine(var ItemJnlLine: Record "Item Journal Line"; SLInventory: Record "SL Inventory Buffer"; SLItemSite: Record "SL ItemSite Buffer"; Quantity: Decimal; PostingDate: Date)
     var
         AdustItemInventory: Codeunit "Adjust Item Inventory";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -315,7 +354,7 @@ codeunit 47026 "SL Item Migrator"
         ItemJnlLine.Insert(true);
     end;
 
-    internal procedure CreateItemJnlLineItemCost(var ItemJnlLine: Record "Item Journal Line"; SLInventory: Record "SL Inventory"; SLItemCost: Record "SL ItemCost"; Quantity: Decimal; PostingDate: Date)
+    internal procedure CreateItemJnlLineItemCost(var ItemJnlLine: Record "Item Journal Line"; SLInventory: Record "SL Inventory Buffer"; SLItemCost: Record "SL ItemCost Buffer"; Quantity: Decimal; PostingDate: Date)
     var
         AdustItemInventory: Codeunit "Adjust Item Inventory";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -333,14 +372,10 @@ codeunit 47026 "SL Item Migrator"
         ItemJnlLine.Validate("Journal Template Name", ItemTemplate);
         ItemJnlLine.Validate("Journal Batch Name", CreateOrGetItemBatch(ItemTemplate));
         ItemJnlLine.Validate("Posting Date", PostingDate);
-        if SLInventory.ValMthd = 'S' then begin
-            ItemJnlLine.Validate("Posting Date", DT2Date(SLItemCost.Crtd_DateTime));
-            ItemJnlLine."Document No." := CopyStr(SLItemCost.SpecificCostID, 1, MaxStrLen(ItemJnlLine."Document No."));
-        end
-        else begin
-            ItemJnlLine.Validate("Posting Date", PostingDate);
+        if SLInventory.ValMthd = SpecificIdentificationValuationMethodTxt then
+            ItemJnlLine."Document No." := CopyStr(SLItemCost.SpecificCostID, 1, MaxStrLen(ItemJnlLine."Document No."))
+        else
             ItemJnlLine."Document No." := SLItemCost.RcptNbr;
-        end;
         CurrentBatchLineNo := CurrentBatchLineNo + 1;
         ItemJnlLine."Line No." := CurrentBatchLineNo;
         if SLItemCost.Qty > 0 then
@@ -357,7 +392,7 @@ codeunit 47026 "SL Item Migrator"
         ItemJnlLine.Insert(true);
     end;
 
-    internal procedure CreateItemJnlLineLotSerMst(var ItemJnlLine: Record "Item Journal Line"; SLInventory: Record "SL Inventory"; SLLotSerMst: Record "SL LotSerMst"; Quantity: Decimal; PostingDate: Date)
+    internal procedure CreateItemJnlLineLotSerMst(var ItemJnlLine: Record "Item Journal Line"; SLInventory: Record "SL Inventory Buffer"; SLLotSerMst: Record "SL LotSerMst Buffer"; Quantity: Decimal; PostingDate: Date)
     var
         AdustItemInventory: Codeunit "Adjust Item Inventory";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -391,11 +426,11 @@ codeunit 47026 "SL Item Migrator"
         ItemJnlLine.Insert(true);
     end;
 
-    internal procedure CreateItemTrackingLinesIfNecessary(SLItemSite: Record "SL ItemSite"; SLInventory: Record "SL Inventory"; ItemJnlLine: Record "Item Journal Line";
+    internal procedure CreateItemTrackingLinesIfNecessary(SLItemSite: Record "SL ItemSite Buffer"; SLInventory: Record "SL Inventory Buffer"; ItemJnlLine: Record "Item Journal Line";
     LotSerNbr: Text[25]; WhseLoc: Text[10])
     var
         ReservationEntry: Record "Reservation Entry";
-        SLLotSerMst: Record "SL LotSerMst";
+        SLLotSerMst: Record "SL LotSerMst Buffer";
         TempTrackingSpecification: Record "Tracking Specification" temporary;
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         CreateReservEntry: Codeunit "Create Reserv. Entry";
@@ -404,10 +439,10 @@ codeunit 47026 "SL Item Migrator"
         LastEntryNo: Integer;
         SLLotSerialCode: Code[10];
     begin
-        if (SLInventory.LotSerTrack.TrimEnd() = '') or ((SLInventory.LotSerTrack = 'NN') and (SLInventory.ValMthd <> 'S')) then
+        if (SLInventory.LotSerTrack.TrimEnd() = '') or ((SLInventory.LotSerTrack = NotTrackedTxt) and (SLInventory.ValMthd <> SpecificIdentificationValuationMethodTxt)) then
             exit;
         SLLotSerialCode := GetSLBCTrackingCode(SLInventory);
-        if (SLLotSerialCode = 'LOTUSED') or (SLLotSerialCode = 'SERUSED') or (SLLotSerialCode = '') then
+        if (SLLotSerialCode = LotTrackedWhenUsedTxt) or (SLLotSerialCode = SerialTrackedWhenUsedTxt) or (SLLotSerialCode = '') then
             exit;
 
         SLLotSerMst.SetRange(InvtID, SLItemSite.InvtID);
@@ -425,18 +460,15 @@ codeunit 47026 "SL Item Migrator"
 
                 case SLLotSerialCode of
                     // Lot-tracked, when received into Inventory
-                    'LOTRCVD':
+                    LotTrackedWhenReceivedTxt:
                         begin
                             TempTrackingSpecification."Lot No." := SLLotSerMst.LotSerNbr;
                             TempTrackingSpecification."Warranty Date" := 0D;
                             TempTrackingSpecification."Expiration Date" := 0D;
-
                             LastEntryNo += 1;
                             TempTrackingSpecification."Entry No." := LastEntryNo;
                             TempTrackingSpecification."Creation Date" := ItemJnlLine."Posting Date";
-
                             TempTrackingSpecification.Validate("Quantity (Base)", SLLotSerMst.QtyOnHand);
-
                             TempTrackingSpecification.Insert(true);
 
                             ReservationEntry.Init();
@@ -446,28 +478,24 @@ codeunit 47026 "SL Item Migrator"
                                 ItemJnlLine."Entry Type".AsInteger(), ItemJnlLine."Journal Template Name",
                                 ItemJnlLine."Journal Batch Name", 0, ItemJnlLine."Line No.", ItemJnlLine."Qty. per Unit of Measure",
                                 TempTrackingSpecification."Quantity (Base)", TempTrackingSpecification."Quantity (Base)", ReservationEntry);
-
                             CreateReservEntry.CreateEntry(
                                 ItemJnlLine."Item No.", ItemJnlLine."Variant Code", ItemJnlLine."Location Code",
                                 SLInventory.Descr, ItemJnlLine."Posting Date", ItemJnlLine."Posting Date", 0, ReservationStatus::Prospect);
                         end;
 
                     // Lot-tracked, when received into Inventory with expiration date
-                    'LOTRCVDEXP':
+                    LotTrackedWhenReceivedWithExpirationTxt:
                         begin
                             TempTrackingSpecification."Lot No." := SLLotSerMst.LotSerNbr;
                             TempTrackingSpecification."Warranty Date" := 0D;
-                            if DT2Date(SLLotSerMst.ExpDate) = DMY2Date(1, 1, 1900) then
+                            if SLLotSerMst.ExpDate <= DMY2Date(1, 1, 1900) then
                                 TempTrackingSpecification."Expiration Date" := 0D
                             else
-                                TempTrackingSpecification."Expiration Date" := DT2Date(SLLotSerMst.ExpDate);
-
+                                TempTrackingSpecification."Expiration Date" := SLLotSerMst.ExpDate;
                             LastEntryNo += 1;
                             TempTrackingSpecification."Entry No." := LastEntryNo;
                             TempTrackingSpecification."Creation Date" := ItemJnlLine."Posting Date";
-
                             TempTrackingSpecification.Validate("Quantity (Base)", SLLotSerMst.QtyOnHand);
-
                             TempTrackingSpecification.Insert(true);
 
                             ReservationEntry.Init();
@@ -477,27 +505,22 @@ codeunit 47026 "SL Item Migrator"
                                 ItemJnlLine."Entry Type".AsInteger(), ItemJnlLine."Journal Template Name",
                                 ItemJnlLine."Journal Batch Name", 0, ItemJnlLine."Line No.", ItemJnlLine."Qty. per Unit of Measure",
                                 TempTrackingSpecification."Quantity (Base)", TempTrackingSpecification."Quantity (Base)", ReservationEntry);
-
                             CreateReservEntry.SetDates(TempTrackingSpecification."Warranty Date", TempTrackingSpecification."Expiration Date");
-
                             CreateReservEntry.CreateEntry(
                                 ItemJnlLine."Item No.", ItemJnlLine."Variant Code", ItemJnlLine."Location Code",
                                 SLInventory.Descr, ItemJnlLine."Posting Date", ItemJnlLine."Posting Date", 0, ReservationStatus::Prospect);
                         end;
 
                     // Serial-tracked, when received into Inventory
-                    'SERRCVD':
+                    SerialTrackedWhenReceivedTxt:
                         begin
                             TempTrackingSpecification."Serial No." := SLLotSerMst.LotSerNbr;
                             TempTrackingSpecification."Warranty Date" := 0D;
                             TempTrackingSpecification."Expiration Date" := 0D;
-
                             LastEntryNo += 1;
                             TempTrackingSpecification."Entry No." := LastEntryNo;
                             TempTrackingSpecification."Creation Date" := ItemJnlLine."Posting Date";
-
                             TempTrackingSpecification.Validate("Quantity (Base)", 1);
-
                             TempTrackingSpecification.Insert(true);
 
                             ReservationEntry.Init();
@@ -507,28 +530,24 @@ codeunit 47026 "SL Item Migrator"
                                 ItemJnlLine."Entry Type".AsInteger(), ItemJnlLine."Journal Template Name",
                                 ItemJnlLine."Journal Batch Name", 0, ItemJnlLine."Line No.", ItemJnlLine."Qty. per Unit of Measure",
                                 TempTrackingSpecification."Quantity (Base)", TempTrackingSpecification."Quantity (Base)", ReservationEntry);
-
                             CreateReservEntry.CreateEntry(
                                 ItemJnlLine."Item No.", ItemJnlLine."Variant Code", ItemJnlLine."Location Code",
                                 SLInventory.Descr, ItemJnlLine."Posting Date", ItemJnlLine."Posting Date", 0, ReservationStatus::Prospect);
                         end;
 
                     // Serial-tracked, when received into Inventory with expiration date
-                    'SERRCVDEXP':
+                    SerialTrackedWhenReceivedWithExpirationTxt:
                         begin
                             TempTrackingSpecification."Serial No." := SLLotSerMst.LotSerNbr;
                             TempTrackingSpecification."Warranty Date" := 0D;
-                            if DT2Date(SLLotSerMst.ExpDate) = DMY2Date(1, 1, 1900) then
+                            if SLLotSerMst.ExpDate <= DMY2Date(1, 1, 1900) then
                                 TempTrackingSpecification."Expiration Date" := 0D
                             else
-                                TempTrackingSpecification."Expiration Date" := DT2Date(SLLotSerMst.ExpDate);
-
+                                TempTrackingSpecification."Expiration Date" := SLLotSerMst.ExpDate;
                             LastEntryNo += 1;
                             TempTrackingSpecification."Entry No." := LastEntryNo;
                             TempTrackingSpecification."Creation Date" := ItemJnlLine."Posting Date";
-
                             TempTrackingSpecification.Validate("Quantity (Base)", 1);
-
                             TempTrackingSpecification.Insert(true);
 
                             ReservationEntry.Init();
@@ -538,9 +557,7 @@ codeunit 47026 "SL Item Migrator"
                                 ItemJnlLine."Entry Type".AsInteger(), ItemJnlLine."Journal Template Name",
                                 ItemJnlLine."Journal Batch Name", 0, ItemJnlLine."Line No.", ItemJnlLine."Qty. per Unit of Measure",
                                 TempTrackingSpecification."Quantity (Base)", TempTrackingSpecification."Quantity (Base)", ReservationEntry);
-
                             CreateReservEntry.SetDates(TempTrackingSpecification."Warranty Date", TempTrackingSpecification."Expiration Date");
-
                             CreateReservEntry.CreateEntry(
                                 ItemJnlLine."Item No.", ItemJnlLine."Variant Code", ItemJnlLine."Location Code",
                                 SLInventory.Descr, ItemJnlLine."Posting Date", ItemJnlLine."Posting Date", 0, ReservationStatus::Prospect);
@@ -549,7 +566,7 @@ codeunit 47026 "SL Item Migrator"
             until SLLotSerMst.Next() = 0;
     end;
 
-    internal procedure CreateItemTrackingLinesSpecificID(SLItemCost: Record "SL ItemCost"; SLInventory: Record "SL Inventory"; ItemJnlLine: Record "Item Journal Line")
+    internal procedure CreateItemTrackingLinesSpecificID(SLItemCost: Record "SL ItemCost Buffer"; SLInventory: Record "SL Inventory Buffer"; ItemJnlLine: Record "Item Journal Line")
     var
         ReservationEntry: Record "Reservation Entry";
         TempTrackingSpecification: Record "Tracking Specification" temporary;
@@ -560,12 +577,12 @@ codeunit 47026 "SL Item Migrator"
         LastEntryNo: Integer;
         SLLotSerialCode: Text[10];
     begin
-        if SLInventory.ValMthd <> 'S' then
+        if SLInventory.ValMthd <> SpecificIdentificationValuationMethodTxt then
             exit;
-        if SLInventory.LotSerTrack <> 'NN' then
+        if SLInventory.LotSerTrack <> NotTrackedTxt then
             exit;
         SLLotSerialCode := GetSLBCTrackingCode(SLInventory);
-        if SLLotSerialCode.TrimEnd() <> 'LOTRCVD' then
+        if SLLotSerialCode.TrimEnd() <> LotTrackedWhenReceivedTxt then
             exit;
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLItemCost.RecordId));
 
@@ -578,7 +595,6 @@ codeunit 47026 "SL Item Migrator"
         TempTrackingSpecification."Entry No." := LastEntryNo;
         TempTrackingSpecification."Creation Date" := ItemJnlLine."Posting Date";
         TempTrackingSpecification.Validate("Quantity (Base)", SLItemCost.Qty);
-
         TempTrackingSpecification.Insert(true);
 
         ReservationEntry.Init();
@@ -588,55 +604,69 @@ codeunit 47026 "SL Item Migrator"
             ItemJnlLine."Entry Type".AsInteger(), ItemJnlLine."Journal Template Name",
             ItemJnlLine."Journal Batch Name", 0, ItemJnlLine."Line No.", ItemJnlLine."Qty. per Unit of Measure",
             TempTrackingSpecification."Quantity (Base)", TempTrackingSpecification."Quantity (Base)", ReservationEntry);
-
         CreateReservEntry.CreateEntry(
             ItemJnlLine."Item No.", ItemJnlLine."Variant Code", ItemJnlLine."Location Code",
             SLInventory.Descr, ItemJnlLine."Posting Date", ItemJnlLine."Posting Date", 0, ReservationStatus::Prospect);
     end;
 
-    internal procedure MigrateItemInventoryPostingGroup(SLInventory: Record "SL Inventory"; var Sender: Codeunit "Item Data Migration Facade")
+    internal procedure MigrateInventoryPostingGroup(SLInventory: Record "SL Inventory Buffer"; var Sender: Codeunit "Item Data Migration Facade")
     var
         Item: Record Item;
-        SLSite: Record "SL Site";
         SLINSetup: Record "SL INSetup";
+        SLSite: Record "SL Site";
+        SLProductClass: Record "SL ProductClass";
+        ClassID: Text[6];
     begin
         if not Sender.DoesItemExist(CopyStr(SLInventory.InvtID, 1, MaxStrLen(Item."No."))) then
             exit;
 
-        SLINSetup.Get('IN');
-        Sender.CreateInventoryPostingSetupIfNeeded(DefaultPostingGroupCodeTxt, DefaultPostingGroupDescriptionTxt, '');
+        SLINSetup.Get(INSetupIDTxt);
         Sender.CreateGeneralProductPostingSetupIfNeeded(SLItemImportPostingGroupCodeTxt, SLItemImportPostingGroupDescriptionTxt, '');
         Sender.CreateGeneralProductPostingSetupIfNeeded(SLItemImportPostingGroupCodeTxt, SLItemImportPostingGroupDescriptionTxt, DefaultPostingGroupCodeTxt);
-        Sender.SetInventoryPostingSetupInventoryAccount(DefaultPostingGroupCodeTxt, '', SLINSetup.DfltInvtAcct);
 
-        if SLSite.FindSet() then
-            repeat
-                Sender.CreateInventoryPostingSetupIfNeeded(DefaultPostingGroupCodeTxt, DefaultPostingGroupDescriptionTxt, SLSite.SiteId);
-                Sender.CreateInventoryPostingSetupIfNeeded(SLItemImportPostingGroupCodeTxt, SLItemImportPostingGroupDescriptionTxt, SLSite.SiteId);
-                Sender.SetInventoryPostingSetupInventoryAccount(DefaultPostingGroupCodeTxt, SLSite.SiteId, SLINSetup.DfltInvtAcct);
-            until SLSite.Next() = 0;
-
-        Sender.SetInventoryPostingGroup(DefaultPostingGroupCodeTxt);
-
-        Sender.ModifyItem(true);
+        ClassID := SLInventory.ClassID;
+        if ClassID = '' then begin
+            Sender.CreateInventoryPostingSetupIfNeeded(DefaultPostingGroupCodeTxt, DefaultPostingGroupDescriptionTxt, '');
+            Sender.SetInventoryPostingSetupInventoryAccount(DefaultPostingGroupCodeTxt, '', SLINSetup.DfltInvtAcct);
+            if SLSite.FindSet() then
+                repeat
+                    Sender.CreateInventoryPostingSetupIfNeeded(DefaultPostingGroupCodeTxt, DefaultPostingGroupDescriptionTxt, SLSite.SiteId);
+                    Sender.CreateInventoryPostingSetupIfNeeded(SLItemImportPostingGroupCodeTxt, SLItemImportPostingGroupDescriptionTxt, SLSite.SiteId);
+                    Sender.SetInventoryPostingSetupInventoryAccount(DefaultPostingGroupCodeTxt, SLSite.SiteId, SLINSetup.DfltInvtAcct);
+                until SLSite.Next() = 0;
+            Sender.SetInventoryPostingGroup(DefaultPostingGroupCodeTxt);
+            Sender.ModifyItem(true);
+        end else begin
+            SLProductClass.Get(ClassID);
+            Sender.CreateInventoryPostingSetupIfNeeded(SLProductClass.ClassID, SLProductClass.Descr, '');
+            Sender.SetInventoryPostingSetupInventoryAccount(SLProductClass.ClassID, '', SLINSetup.DfltInvtAcct);
+            if SLSite.FindSet() then
+                repeat
+                    Sender.CreateInventoryPostingSetupIfNeeded(SLProductClass.ClassID, SLProductClass.Descr, SLSite.SiteId);
+                    Sender.CreateInventoryPostingSetupIfNeeded(SLItemImportPostingGroupCodeTxt, SLItemImportPostingGroupDescriptionTxt, SLSite.SiteId);
+                    Sender.SetInventoryPostingSetupInventoryAccount(SLProductClass.ClassID, SLSite.SiteId, SLINSetup.DfltInvtAcct);
+                until SLSite.Next() = 0;
+            Sender.SetInventoryPostingGroup(SLProductClass.ClassID);
+            Sender.ModifyItem(true);
+        end;
     end;
 
-    internal procedure GetSLBCTrackingCode(SLInventory: Record "SL Inventory"): Code[10]
+    internal procedure GetSLBCTrackingCode(SLInventory: Record "SL Inventory Buffer"): Code[10]
     begin
-        if (SLInventory.LotSerTrack = 'LI') and (SLInventory.SerAssign = 'R') and (SLInventory.LotSerIssMthd = 'E') then
-            exit('LOTRCVDEXP');
-        if (SLInventory.LotSerTrack = 'LI') and (SLInventory.SerAssign = 'R') and (SLInventory.LotSerIssMthd <> 'E') then
-            exit('LOTRCVD');
-        if (SLInventory.LotSerTrack = 'LI') and (SLInventory.SerAssign = 'U') and (SLInventory.ValMthd <> 'S') then
-            exit('LOTUSED');
-        if (SLInventory.LotSerTrack = 'SI') and (SLInventory.SerAssign = 'R') and (SLInventory.LotSerIssMthd = 'E') then
-            exit('SERRCVDEXP');
-        if (SLInventory.LotSerTrack = 'SI') and (SLInventory.SerAssign = 'R') and (SLInventory.LotSerIssMthd <> 'E') then
-            exit('SERRCVD');
-        if (SLInventory.LotSerTrack = 'SI') and (SLInventory.SerAssign = 'U') and (SLInventory.ValMthd <> 'S') then
-            exit('SERUSED');
-        if (SLInventory.ValMthd = 'S') and ((SLInventory.LotSerTrack = 'NN') or (SLInventory.LotSerTrack in ['LI', 'SI'])) then
-            exit('LOTRCVD');
+        if (SLInventory.LotSerTrack = LotTrackedTxt) and (SLInventory.SerAssign = AssignWhenReceivedTxt) and (SLInventory.LotSerIssMthd = ExpirationIssueMethodTxt) then
+            exit(LotTrackedWhenReceivedWithExpirationTxt);
+        if (SLInventory.LotSerTrack = LotTrackedTxt) and (SLInventory.SerAssign = AssignWhenReceivedTxt) and (SLInventory.LotSerIssMthd <> ExpirationIssueMethodTxt) then
+            exit(LotTrackedWhenReceivedTxt);
+        if (SLInventory.LotSerTrack = LotTrackedTxt) and (SLInventory.SerAssign = AssignWhenUsedTxt) and (SLInventory.ValMthd <> SpecificIdentificationValuationMethodTxt) then
+            exit(LotTrackedWhenUsedTxt);
+        if (SLInventory.LotSerTrack = SerialTrackedTxt) and (SLInventory.SerAssign = AssignWhenReceivedTxt) and (SLInventory.LotSerIssMthd = ExpirationIssueMethodTxt) then
+            exit(SerialTrackedWhenReceivedWithExpirationTxt);
+        if (SLInventory.LotSerTrack = SerialTrackedTxt) and (SLInventory.SerAssign = AssignWhenReceivedTxt) and (SLInventory.LotSerIssMthd <> ExpirationIssueMethodTxt) then
+            exit(SerialTrackedWhenReceivedTxt);
+        if (SLInventory.LotSerTrack = SerialTrackedTxt) and (SLInventory.SerAssign = AssignWhenUsedTxt) and (SLInventory.ValMthd <> SpecificIdentificationValuationMethodTxt) then
+            exit(SerialTrackedWhenUsedTxt);
+        if (SLInventory.ValMthd = SpecificIdentificationValuationMethodTxt) and ((SLInventory.LotSerTrack = NotTrackedTxt) or (SLInventory.LotSerTrack in [LotTrackedTxt, SerialTrackedTxt])) then
+            exit(LotTrackedWhenReceivedTxt);
         exit('');
     end;
 
@@ -685,20 +715,16 @@ codeunit 47026 "SL Item Migrator"
         end;
     end;
 
-    internal procedure GetCostingMethod(var SLInventory: Record "SL Inventory"): Option
+    internal procedure GetCostingMethod(var SLInventory: Record "SL Inventory Buffer"): Option
     begin
         case SLInventory.ValMthd of
-            // FIFO, Specific Cost ID
-            'F', 'S':
+            FIFOValuationMethodTxt, SpecificIdentificationValuationMethodTxt:
                 exit(CostingMethodOption::FIFO);
-            // LIFO
-            'L':
+            LIFOValuationMethodTxt:
                 exit(CostingMethodOption::LIFO);
-            // Average Cost, User-Specified Cost
-            'A', 'U':
+            AverageCostValuationMethodTxt, UserSpecifiedCostValuationMethodTxt:
                 exit(CostingMethodOption::Average);
-            // Standard Cost
-            'T':
+            StandardCostValuationMethodTxt:
                 exit(CostingMethodOption::Standard);
         end;
     end;

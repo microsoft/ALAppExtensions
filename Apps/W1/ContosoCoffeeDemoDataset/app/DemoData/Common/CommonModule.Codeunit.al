@@ -20,6 +20,7 @@ codeunit 4769 "Common Module" implements "Contoso Demo Data Module"
 
     procedure GetDependencies() Dependencies: List of [enum "Contoso Demo Data Module"];
     begin
+        Dependencies.Add(Enum::"Contoso Demo Data Module"::Finance);
         Dependencies.Add(Enum::"Contoso Demo Data Module"::Sales);
         Dependencies.Add(Enum::"Contoso Demo Data Module"::Purchase);
     end;
@@ -35,11 +36,11 @@ codeunit 4769 "Common Module" implements "Contoso Demo Data Module"
         Codeunit.Run(Codeunit::"Create Common Inventory Setup");
         Codeunit.Run(Codeunit::"Create Common Posting Group");
         Codeunit.Run(Codeunit::"Create Common Posting Setup");
-        Codeunit.Run(Codeunit::"Create Common Location");
     end;
 
     procedure CreateMasterData()
     begin
+        Codeunit.Run(Codeunit::"Create Common Location");
         Codeunit.Run(Codeunit::"Create Common Customer/Vendor");
         Codeunit.Run(Codeunit::"Create Common Item Tracking");
     end;

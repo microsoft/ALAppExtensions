@@ -26,6 +26,7 @@ codeunit 14106 "Create General Ledger Setup MX"
 
         GeneralLedgerSetup.Validate("Unrealized VAT", true);
         GeneralLedgerSetup.Validate("Local Address Format", GeneralLedgerSetup."Local Address Format"::"Post Code+City+County");
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.MXN());
         GeneralLedgerSetup.Validate("Local Currency Symbol", '$');
         GeneralLedgerSetup.Validate("Local Currency Description", MexicanPesoLbl);

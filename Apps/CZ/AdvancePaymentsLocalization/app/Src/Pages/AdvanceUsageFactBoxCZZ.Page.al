@@ -269,7 +269,6 @@ page 31216 "Advance Usage FactBox CZZ"
     begin
         PurchPost.GetPurchLines(PurchaseHeader, TempPurchaseLine, 1);
         TempPurchaseLine.CalcVATAmountLines(1, PurchaseHeader, TempPurchaseLine, TempVATAmountLine);
-        TempPurchaseLine.UpdateVATOnLines(1, PurchaseHeader, TempPurchaseLine, TempVATAmountLine);
         exit(TempVATAmountLine.GetTotalAmountInclVAT());
     end;
 
@@ -286,7 +285,6 @@ page 31216 "Advance Usage FactBox CZZ"
     begin
         SalesPost.GetSalesLines(SalesHeader, TempSalesLine, 1);
         TempSalesLine.CalcVATAmountLines(1, SalesHeader, TempSalesLine, TempVATAmountLine);
-        TempSalesLine.UpdateVATOnLines(1, SalesHeader, TempSalesLine, TempVATAmountLine);
         exit(TempVATAmountLine.GetTotalAmountInclVAT());
     end;
 

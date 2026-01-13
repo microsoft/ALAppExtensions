@@ -976,6 +976,31 @@ codeunit 18479 "GST Subcontracting"
         VerifyDeliveryChallanLine(PurchaseLine);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,DeliveryChallanSentMessageHdlr')]
+    procedure SubconOrderMultipleToRegVendSendItem()
+    var
+        ProductionOrderFirst: Record "Production Order";
+        ProductionOrderSecond: Record "Production Order";
+        PurchaseLineFirst: Record "Purchase Line";
+        PurchaseLineSecond: Record "Purchase Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        MultipleSubconOrderDetailsNo: Code[20];
+    begin
+        // [SCENARIO] [579721] Line No on Delivery Challan Line not starting with 10000 when Order subcon send through batch
+        // [GIVEN] Setups created
+        CreateGSTSubconSetups(GSTVendorType::Registered, GSTGroupType::Goods, true);
+
+        // [WHEN] Create Multiple Subcontracting Order from Released Purchase Order, Send Subcon Components
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrderFirst, PurchaseLineFirst);
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrderSecond, PurchaseLineSecond);
+        DeliverSubconComponentsMultiple(PurchaseLineFirst, PurchaseLineSecond, MultipleSubconOrderDetailsNo);
+
+        // [THEN] Delivery Challan is Verified
+        VerifyDeliveryChallanLineDetails(PurchaseLineFirst);
+    end;
+
     local procedure CreateGSTSubconSetups(
         GSTVendorType: Enum "GST Vendor Type";
                            GSTGroupType: Enum "GST Group Type";
@@ -1603,7 +1628,7 @@ codeunit 18479 "GST Subcontracting"
         ProdOrderLine.FindFirst();
         for i := 1 to ProdOrderLine.Quantity do begin
             SlNo := NoSeries.GetNextNo(MainItem."Serial Nos.");
-            LibraryItemTracking.CreateProdOrderItemTracking(ReservationEntry, ProdOrderLine, SlNo, '', 1);
+            LibraryMfg.CreateProdOrderItemTracking(ReservationEntry, ProdOrderLine, SlNo, '', 1);
         end;
     end;
 
@@ -2520,6 +2545,25 @@ codeunit 18479 "GST Subcontracting"
         Codeunit.Run(Codeunit::"Subcontracting Post", PurchaseLine);
     end;
 
+    local procedure VerifyDeliveryChallanLineDetails(PurchaseLine: Record "Purchase Line")
+    var
+        SubOrderComponentList: Record "Sub Order Component List";
+        DeliveryChallanLine: Record "Delivery Challan Line";
+    begin
+        SubOrderComponentList.Reset();
+        SubOrderComponentList.SetRange("Document No.", PurchaseLine."Document No.");
+        SubOrderComponentList.SetRange("Document Line No.", PurchaseLine."Line No.");
+        SubOrderComponentList.SetRange("Parent Item No.", PurchaseLine."No.");
+        if SubOrderComponentList.FindFirst() then begin
+            DeliveryChallanLine.SetRange("Document No.", PurchaseLine."Document No.");
+            DeliveryChallanLine.SetRange("Document Line No.", PurchaseLine."Line No.");
+            DeliveryChallanLine.SetRange("Parent Item No.", PurchaseLine."No.");
+            DeliveryChallanLine.SetRange("Prod. Order Comp. Line No.", SubOrderComponentList."Line No.");
+            DeliveryChallanLine.FindFirst();
+            DeliveryChallanLine.TestField("Line No.", 10000);
+        end;
+    end;
+
     [PageHandler]
     procedure TaxRatePageHandler(var TaxRates: TestPage "Tax Rates")
     begin
@@ -2585,5 +2629,10 @@ codeunit 18479 "GST Subcontracting"
     procedure ItemTrackingSummaryPageHandler(var ItemTrackingSummary: TestPage "Item Tracking Summary")
     begin
         ItemTrackingSummary.OK().Invoke();
+    end;
+
+    [MessageHandler]
+    procedure DeliveryChallanSentMessageHdlr(MsgTxt: Text[1024])
+    begin
     end;
 }

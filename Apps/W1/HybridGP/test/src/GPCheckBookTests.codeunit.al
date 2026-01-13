@@ -4,6 +4,7 @@ codeunit 139678 "GP Checkbook Tests"
 
     EventSubscriberInstance = Manual;
     Subtype = Test;
+    TestType = IntegrationTest;
     Permissions = tableData "Bank Account Ledger Entry" = rimd;
     TestPermissions = Disabled;
 
@@ -37,7 +38,7 @@ codeunit 139678 "GP Checkbook Tests"
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
-        ClearTables();
+        Initialize();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
         BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
@@ -97,7 +98,7 @@ codeunit 139678 "GP Checkbook Tests"
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
-        ClearTables();
+        Initialize();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
         BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
@@ -174,7 +175,7 @@ codeunit 139678 "GP Checkbook Tests"
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
-        ClearTables();
+        Initialize();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
         BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
@@ -246,7 +247,7 @@ codeunit 139678 "GP Checkbook Tests"
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
-        ClearTables();
+        Initialize();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
         BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
@@ -284,7 +285,7 @@ codeunit 139678 "GP Checkbook Tests"
     begin
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
-        ClearTables();
+        Initialize();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
         BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
@@ -327,7 +328,7 @@ codeunit 139678 "GP Checkbook Tests"
 #pragma warning disable AA0210
         // [SCENARIO] CheckBooks are migrated from GP
         // [GIVEN] There are no records in the BankAcount table
-        ClearTables();
+        Initialize();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
         BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
@@ -418,7 +419,7 @@ codeunit 139678 "GP Checkbook Tests"
     begin
         // [SCENARIO] Bank module is disabled
         // [GIVEN] There are no records in the BankAcount table
-        ClearTables();
+        Initialize();
         GenJournalLine.DeleteAll();
         BankAccountLedgerEntry.Reset();
         BankAccountLedgerEntry.SetFilter("Bank Account No.", '%1|%2|%3|%4|%5', MyBankStr1Txt, MyBankStr2Txt, MyBankStr3Txt, MyBankStr4Txt, MyBankStr5Txt);
@@ -466,7 +467,7 @@ codeunit 139678 "GP Checkbook Tests"
         Assert.RecordCount(BankAccountLedgerEntry, 0);
     end;
 
-    local procedure ClearTables()
+    local procedure Initialize()
     var
         GPConfiguration: Record "GP Configuration";
     begin

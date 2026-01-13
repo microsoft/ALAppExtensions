@@ -79,10 +79,11 @@ codeunit 11080 "Create DE GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.PurchaseVarianceCapName(), '5031');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialVarianceName(), '5032');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '5033');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '5034');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapOverheadVarianceName(), '5035');
-        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '5036');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapacityVarianceName(), '5034');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.SubcontractedVarianceName(), '5035');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.CapOverheadVarianceName(), '5036');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MfgOverheadVarianceName(), '5037');
+        ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.MaterialNonInvVarianceName(), '5033');
 
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.FinishedGoodsName(), '1101');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '1085');

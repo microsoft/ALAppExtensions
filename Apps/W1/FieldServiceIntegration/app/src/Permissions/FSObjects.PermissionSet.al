@@ -23,7 +23,11 @@ permissionset 6612 "FS - Objects"
                 page "FS Connection Setup" = X,
                 page "FS Connection Setup Wizard" = X,
                 page "FS Customer Asset List" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                 page "FS Item Avail. by Location" = X,
+#pragma warning restore AL0432
+#endif
                 page "FS Work Order Types" = X,
                 page "FS Work Orders" = X,
                 query "FS Item Avail. by Location" = X,

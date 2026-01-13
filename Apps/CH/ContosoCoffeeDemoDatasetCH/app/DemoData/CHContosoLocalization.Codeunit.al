@@ -30,9 +30,6 @@ codeunit 11620 "CH Contoso Localization"
         if Module = Enum::"Contoso Demo Data Module"::Finance then
             FinanceModule(ContosoDemoDataLevel);
 
-        if Module = Enum::"Contoso Demo Data Module"::Inventory then
-            InventoryModule(ContosoDemoDataLevel);
-
         if Module = Enum::"Contoso Demo Data Module"::Purchase then
             PurchaseModule(ContosoDemoDataLevel);
 
@@ -96,14 +93,6 @@ codeunit 11620 "CH Contoso Localization"
         end;
     end;
 
-    local procedure InventoryModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
-    begin
-        case ContosoDemoDataLevel of
-            Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create CH Item Template");
-        end;
-    end;
-
     local procedure PurchaseModule(ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     begin
         case ContosoDemoDataLevel of
@@ -148,6 +137,7 @@ codeunit 11620 "CH Contoso Localization"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Contoso Demo Tool", 'OnBeforeGeneratingDemoData', '', false, false)]
     local procedure OnBeforeGeneratingDemoData(Module: Enum "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         CreateCHAccScheduleLine: Codeunit "Create CH Acc Schedule Line";
         CreateCHVATPostingGroups: Codeunit "Create CH VAT Posting Groups";
         CreateCHVATStatement: Codeunit "Create CH VAT Statement";
@@ -161,7 +151,6 @@ codeunit 11620 "CH Contoso Localization"
         CreateCHFAPostingGrp: Codeunit "Create CH FA Posting Grp.";
         CreateCHInvPostingSetup: Codeunit "Create CH Inv. Posting Setup";
         CreateCHItem: Codeunit "Create CH Item";
-        CreateCHItemCharge: Codeunit "Create CH Item Charge";
         CreateCHLocation: Codeunit "Create CH Location";
         CreateCHResource: Codeunit "Create CH Resource";
         CreatCHVendorPostingGrp: Codeunit "Create CH Vendor Posting Grp";
@@ -175,7 +164,10 @@ codeunit 11620 "CH Contoso Localization"
         case Module of
             Enum::"Contoso Demo Data Module"::Finance:
                 begin
-                    CreateCHVATPostingGroups.CreateVATProductPostingGroup();
+                    if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
+                        FinanceModuleSetup.InitRecord();
+                        CreateCHVATPostingGroups.CreateVATProductPostingGroup();
+                    end;
                     BindSubscription(CreateCHAccScheduleLine);
                     BindSubscription(CreateCHCurrency);
                     BindSubscription(CreateCHCurrencyExRate);
@@ -198,7 +190,6 @@ codeunit 11620 "CH Contoso Localization"
                 begin
                     BindSubscription(CreateCHInvPostingSetup);
                     BindSubscription(CreateCHItem);
-                    BindSubscription(CreateCHItemCharge);
                     BindSubscription(CreateCHLocation);
                 end;
             Enum::"Contoso Demo Data Module"::Purchase:
@@ -235,7 +226,6 @@ codeunit 11620 "CH Contoso Localization"
         CreateCHFAPostingGrp: Codeunit "Create CH FA Posting Grp.";
         CreateCHInvPostingSetup: Codeunit "Create CH Inv. Posting Setup";
         CreateCHItem: Codeunit "Create CH Item";
-        CreateCHItemCharge: Codeunit "Create CH Item Charge";
         CreateCHLocation: Codeunit "Create CH Location";
         CreateCHResource: Codeunit "Create CH Resource";
         CreatCHVendorPostingGrp: Codeunit "Create CH Vendor Posting Grp";
@@ -270,7 +260,6 @@ codeunit 11620 "CH Contoso Localization"
                 begin
                     UnbindSubscription(CreateCHInvPostingSetup);
                     UnbindSubscription(CreateCHItem);
-                    UnbindSubscription(CreateCHItemCharge);
                     UnbindSubscription(CreateCHLocation);
                 end;
 

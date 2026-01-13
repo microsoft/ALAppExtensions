@@ -30,7 +30,6 @@ codeunit 11536 "Create Currency NL"
             CreateCurrency.CZK(),
             CreateCurrency.DKK(),
             CreateCurrency.DZD(),
-            CreateCurrency.EUR(),
             CreateCurrency.FJD(),
             CreateCurrency.HKD(),
             CreateCurrency.HUF(),

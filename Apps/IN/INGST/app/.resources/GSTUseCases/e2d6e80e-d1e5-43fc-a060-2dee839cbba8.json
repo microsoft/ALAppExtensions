@@ -1,0 +1,1396 @@
+[
+    {
+        "CaseID": "{E2D6E80E-D1E5-43FC-A060-2DEE839CBBA8}",
+        "Description": "Inter-state purchase of services where Services is paid directly through bank and service provider is Unregistered and GST Credit is Not Available on Purchase Journal and Gen. Journal for Bal Acc Type Bank",
+        "Version": 1,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "GST HSN",
+        "TaxEntity": "Gen. Journal Line",
+        "ParentUseCase": "Gen. Journal Line",
+        "ParentCaseId": "{282C9335-DD37-49C9-9C60-7A0DB8A4B8F0}",
+        "PresentationOrder": 390,
+        "Indent": 1,
+        "PostingTableName": "GST Posting Setup",
+        "PostingTableFilters": [
+            {
+                "FiterFieldName": "State Code",
+                "FilterType": "Equals",
+                "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                        "SourceType": "Table",
+                        "TableName": "Party",
+                        "TableFieldName": "State",
+                        "Method": "First",
+                        "TableFilters": [
+                            {
+                                "FiterFieldName": "Code",
+                                "FilterType": "Equals",
+                                "FilterValue": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Current Record",
+                                        "TableName": "Gen. Journal Line",
+                                        "FieldName": "Party Code"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "Attributes": [],
+        "RateColumns": [
+            {
+                "Name": "From State",
+                "When": [
+                    {
+                        "Condition": {
+                            "Body": []
+                        },
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Party",
+                            "TableFieldName": "State",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Party Code"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Date",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Posting Date"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Location State Code",
+                "When": [
+                    {
+                        "ValueType": "Lookup",
+                        "Sequence": 0,
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Location",
+                            "TableFieldName": "State Code",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Location Code"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "IGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "IGST",
+                    "Expression": "{Amount}*{iGST %}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{Amount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Gen. Journal Line",
+                                    "FieldName": "Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{iGST %}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "IGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "GST Base Amount",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "GST Base Amount",
+                    "Expression": "{Amount}",
+                    "Tokens": [
+                        {
+                            "TokenName": "{Amount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Gen. Journal Line",
+                                    "FieldName": "Amount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Document Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Invoice"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Account Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "G/L Account"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "GST Group",
+                            "TableFieldName": "GST Group Type",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Group Code"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Service"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Party",
+                            "TableFieldName": "GST Vendor Type",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Party Code"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "UNRegistered"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "GST Credit"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Non-Availment"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Party",
+                            "TableFieldName": "State",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Party Code"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Location",
+                            "TableFieldName": "State Code",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Code",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Location Code"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "GST Reverse Charge"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "true"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "GST Input Service Distribution"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "POS Out Of India"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Party Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Party"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Bal. Account Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Bank Account"
+                    }
+                }
+            ]
+        },
+        "TaxPostingSetup": [
+            {
+                "ComponentName": "IGST",
+                "TableName": "GST Posting Setup",
+                "AccountSourceType": "Lookup",
+                "AccountFieldLookup": {
+                    "SourceType": "Table",
+                    "TableName": "Gen. Journal Line",
+                    "TableFieldName": "Account No.",
+                    "Method": "First",
+                    "TableFilters": [
+                        {
+                            "FiterFieldName": "Journal Template Name",
+                            "FilterType": "Equals",
+                            "FilterValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Gen. Journal Line",
+                                    "FieldName": "Journal Template Name"
+                                }
+                            }
+                        },
+                        {
+                            "FiterFieldName": "Line No.",
+                            "FilterType": "Equals",
+                            "FilterValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Gen. Journal Line",
+                                    "FieldName": "Line No."
+                                }
+                            }
+                        },
+                        {
+                            "FiterFieldName": "Journal Batch Name",
+                            "FilterType": "Equals",
+                            "FilterValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Gen. Journal Line",
+                                    "FieldName": "Journal Batch Name"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "AccountingImpact": "Debit",
+                "ReverseCharge": true,
+                "ReverseAccountSourceType": "Field",
+                "ReverseChargeFieldName": "Payable Account",
+                "TableFilters": [
+                    {
+                        "FiterFieldName": "Component ID",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                            "Type": "Constant",
+                            "Value": "3"
+                        }
+                    }
+                ],
+                "When": [
+                    {
+                        "ValueType": "Insert Record",
+                        "Sequence": 2,
+                        "InsertRecord": {
+                            "TableName": "Detailed GST Ledger Entry Info",
+                            "RunTrigger": true,
+                            "SubLedgerGrpBy": "Line / Component",
+                            "InsertRecordFields": [
+                                {
+                                    "FieldName": "User ID",
+                                    "Sequence": 42,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Database",
+                                            "DatabaseVariableName": "UserId"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Positive",
+                                    "Sequence": 39,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "true"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Nature of Supply",
+                                    "Sequence": 16,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Nature of Supply"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location State Code",
+                                    "Sequence": 17,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Location State Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Buyer/Seller State Code",
+                                    "Sequence": 43,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Bill-to/BuyFrom State Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Original Doc. Type",
+                                    "Sequence": 34,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Original Doc. No.",
+                                    "Sequence": 35,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "e-Comm. Merchant Id",
+                                    "Sequence": 25,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "E-Comm. Merchant Id"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Gen. Bus. Posting Group",
+                                    "Sequence": 23,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Gen. Bus. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Gen. Prod. Posting Group",
+                                    "Sequence": 24,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Gen. Prod. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Reason Code",
+                                    "Sequence": 33,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Reason Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Reason Type",
+                                    "Sequence": 27,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Reason Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location ARN No.",
+                                    "Sequence": 26,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Location",
+                                            "TableFieldName": "Location ARN No.",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Code",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Gen. Journal Line",
+                                                            "FieldName": "Location Code"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "ValueType": "Insert Record",
+                        "Sequence": 1,
+                        "InsertRecord": {
+                            "TableName": "Detailed GST Ledger Entry",
+                            "RunTrigger": true,
+                            "SubLedgerGrpBy": "Line / Component",
+                            "InsertRecordFields": [
+                                {
+                                    "FieldName": "Transaction Type",
+                                    "Sequence": 1,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Purchase"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document Type",
+                                    "Sequence": 36,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Invoice"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document No.",
+                                    "Sequence": 2,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Posted Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Posting Date",
+                                    "Sequence": 3,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Posting Date"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Type",
+                                    "Sequence": 41,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "G/L Account"
+                                    }
+                                },
+                                {
+                                    "FieldName": "No.",
+                                    "Sequence": 37,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Account No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source Type",
+                                    "Sequence": 4,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Party"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source No.",
+                                    "Sequence": 5,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Party Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "HSN/SAC Code",
+                                    "Sequence": 6,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "HSN/SAC Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Component Code",
+                                    "Sequence": 7,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "IGST"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Group Code",
+                                    "Sequence": 32,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Group Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Jurisdiction Type",
+                                    "Sequence": 8,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Interstate"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Base Amount",
+                                    "Sequence": 9,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Amount"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST %",
+                                    "Sequence": 10,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component Percent",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Amount",
+                                    "Sequence": 11,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "External Document No.",
+                                    "Sequence": 12,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "External Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Quantity",
+                                    "Sequence": 13,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "1"
+                                    }
+                                },
+                                {
+                                    "FieldName": "G/L Account No.",
+                                    "Sequence": 38,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "GST Posting Setup",
+                                            "TableFieldName": "Receivable Account (Interim)",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "State Code",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Gen. Journal Line",
+                                                            "FieldName": "Location State Code"
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "FiterFieldName": "Component ID",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Constant",
+                                                        "Value": "3"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document Line No.",
+                                    "Sequence": 14,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Line No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Reverse Charge",
+                                    "Sequence": 15,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Reverse Charge"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST on Advance Payment",
+                                    "Sequence": 30,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST on Advance Payment"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location  Reg. No.",
+                                    "Sequence": 31,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Location",
+                                            "TableFieldName": "GST Registration No.",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Code",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Gen. Journal Line",
+                                                            "FieldName": "Location Code"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Buyer/Seller Reg. No.",
+                                    "Sequence": 44,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Vendor",
+                                            "TableFieldName": "GST Registration No.",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Gen. Journal Line",
+                                                            "FieldName": "Account No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Group Type",
+                                    "Sequence": 18,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Group Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Credit",
+                                    "Sequence": 19,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Non-Availment"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Code",
+                                    "Sequence": 28,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Currency Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Factor",
+                                    "Sequence": 29,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Currency Factor"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location Code",
+                                    "Sequence": 20,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Location Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Customer Type",
+                                    "Sequence": 21,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Customer Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Vendor Type",
+                                    "Sequence": 48,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Vendor Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Credit Availed",
+                                    "Sequence": 45,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "true"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Place of Supply",
+                                    "Sequence": 22,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Place of Supply"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Liable to Pay",
+                                    "Sequence": 49,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "true"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Eligibility for ITC",
+                                    "Sequence": 46,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Input Services"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Journal Entry",
+                                    "Sequence": 47,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "true"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "ValueType": "Insert Record",
+                        "Sequence": 0,
+                        "InsertRecord": {
+                            "TableName": "GST Ledger Entry",
+                            "RunTrigger": true,
+                            "SubLedgerGrpBy": "Component",
+                            "InsertRecordFields": [
+                                {
+                                    "FieldName": "Gen. Bus. Posting Group",
+                                    "Sequence": 2,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Gen. Bus. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Gen. Prod. Posting Group",
+                                    "Sequence": 3,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Gen. Prod. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Posting Date",
+                                    "Sequence": 4,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Posting Date"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document No.",
+                                    "Sequence": 5,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Posted Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document Type",
+                                    "Sequence": 6,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Base Amount",
+                                    "Sequence": 7,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Amount"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source Type",
+                                    "Sequence": 8,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Party"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source No.",
+                                    "Sequence": 9,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Party Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "User ID",
+                                    "Sequence": 20,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Database",
+                                            "DatabaseVariableName": "UserId"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source Code",
+                                    "Sequence": 10,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Source Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Reason Code",
+                                    "Sequence": 11,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Reason Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Transaction No.",
+                                    "Sequence": 19,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "G/L Entry Transaction No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "External Document No.",
+                                    "Sequence": 12,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "External Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Component Code",
+                                    "Sequence": 13,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "IGST"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST on Advance Payment",
+                                    "Sequence": 14,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST on Advance Payment"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Reverse Charge",
+                                    "Sequence": 15,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Reverse Charge"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Amount",
+                                    "Sequence": 16,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Code",
+                                    "Sequence": 17,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Currency Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Factor",
+                                    "Sequence": 18,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Currency Factor"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "G/L Entry No.",
+                                    "Sequence": 1,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "G/L Entry No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

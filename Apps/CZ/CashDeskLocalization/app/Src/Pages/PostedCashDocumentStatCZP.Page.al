@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN27
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -15,6 +16,9 @@ page 31168 "Posted Cash Document Stat. CZP"
     PageType = ListPlus;
     SourceTable = "Posted Cash Document Line CZP";
     UsageCategory = None;
+    ObsoleteReason = 'The Posted Cash Document Stat. CZP page will be replaced with the Posted Cash Doc. Stat. CZP page.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '27.0';
 
     layout
     {
@@ -288,3 +292,4 @@ page 31168 "Posted Cash Document Stat. CZP"
         VATAmountLines.GetTempVATAmountLine(DrillDownVATAmountLine);
     end;
 }
+#endif

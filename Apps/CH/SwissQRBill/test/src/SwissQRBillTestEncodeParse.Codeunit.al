@@ -1,6 +1,7 @@
 codeunit 148094 "Swiss QR-Bill Test EncodeParse"
 {
     Subtype = Test;
+    TestType = IntegrationTest;
     TestPermissions = Disabled;
 
     trigger OnRun()

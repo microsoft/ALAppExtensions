@@ -1,0 +1,615 @@
+[
+    {
+        "CaseID": "{FA5B2691-7B6B-43B4-92F1-9B6D10A216E4}",
+        "Description": "Intra-State Sales of Services to Overseas Place of Supply to Registered Customer Through Order/Invoice",
+        "Version": 3,
+        "MinorVersion": 0,
+        "TaxType": "GST",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "Sales Line",
+        "ParentUseCase": "Intra-State Sales of Services to Overseas Place of Supply to Registered Customer.",
+        "ParentCaseId": "{F52FFF81-A64B-4A23-B699-49E370AB59F0}",
+        "PresentationOrder": 294,
+        "Indent": 1,
+        "PostingTableName": "GST Posting Setup",
+        "PostingTableFilters": [
+            {
+                "FiterFieldName": "State Code",
+                "FilterType": "Equals",
+                "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                        "SourceType": "Table",
+                        "TableName": "Location",
+                        "TableFieldName": "State Code",
+                        "Method": "First",
+                        "TableFilters": [
+                            {
+                                "FiterFieldName": "Code",
+                                "FilterType": "Equals",
+                                "FilterValue": {
+                                    "Type": "Lookup",
+                                    "Lookup": {
+                                        "SourceType": "Current Record",
+                                        "TableName": "Sales Line",
+                                        "FieldName": "Location Code"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "Attributes": [
+            {
+                "Name": "POS Out Of India",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": false,
+                            "TableName": "Sales Header",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "IGST",
+                "Sequence": 0,
+                "Formula": {
+                    "VariableName": "IGST",
+                    "Expression": "{Amount}*{IGST %}/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "{Amount}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Sales Line",
+                                    "FieldName": "Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "{IGST %}",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "IGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Sales Line",
+                            "FieldName": "Document Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Invoice"
+                    }
+                },
+                {
+                    "Operator": "or",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Sales Line",
+                            "FieldName": "Document Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Order"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Sales Header",
+                            "TableFieldName": "State",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": ""
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Sales Header",
+                            "TableFieldName": "GST-Ship to Customer Type",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Registered"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Table",
+                            "TableName": "Sales Header",
+                            "TableFieldName": "POS Out Of India",
+                            "Method": "First",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Document Type",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Document Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Document No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Yes"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Sales Line",
+                            "FieldName": "Exempted"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "No"
+                    }
+                }
+            ]
+        },
+        "TaxPostingSetup": [
+            {
+                "ComponentName": "IGST",
+                "TableName": "GST Posting Setup",
+                "AccountSourceType": "Field",
+                "FieldName": "Payable Account",
+                "AccountingImpact": "Credit",
+                "ReverseCharge": false,
+                "ReverseAccountSourceType": "Field",
+                "ReverseChargeFieldName": "",
+                "TableFilters": [
+                    {
+                        "FiterFieldName": "Component ID",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                            "Type": "Constant",
+                            "Value": "3"
+                        }
+                    }
+                ],
+                "When": [
+                    {
+                        "ValueType": "Insert Record",
+                        "Sequence": 1,
+                        "InsertRecord": {
+                            "TableName": "Detailed GST Ledger Entry",
+                            "RunTrigger": true,
+                            "SubLedgerGrpBy": "Line / Component",
+                            "InsertRecordFields": [
+                                {
+                                    "FieldName": "Document No.",
+                                    "Sequence": 1,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Posted Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source Type",
+                                    "Sequence": 2,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Customer"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source No.",
+                                    "Sequence": 3,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Sell-to Customer No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "HSN/SAC Code",
+                                    "Sequence": 4,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Tax Attributes",
+                                            "AttributeName": "HSN/SAC"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Component Code",
+                                    "Sequence": 5,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "IGST"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Group Code",
+                                    "Sequence": 6,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Tax Attributes",
+                                            "AttributeName": "GST Group Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Amount",
+                                    "Sequence": 7,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Customer Type",
+                                    "Sequence": 8,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Sales Header",
+                                            "TableFieldName": "GST Customer Type",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Document Type",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Sales Line",
+                                                            "FieldName": "Document Type"
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Sales Line",
+                                                            "FieldName": "Document No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "ValueType": "Insert Record",
+                        "Sequence": 0,
+                        "InsertRecord": {
+                            "TableName": "GST Ledger Entry",
+                            "RunTrigger": true,
+                            "SubLedgerGrpBy": "Component",
+                            "InsertRecordFields": [
+                                {
+                                    "FieldName": "Gen. Bus. Posting Group",
+                                    "Sequence": 0,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Gen. Bus. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Gen. Prod. Posting Group",
+                                    "Sequence": 0,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Gen. Prod. Posting Group"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Posting Date",
+                                    "Sequence": 0,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Sales Header",
+                                            "TableFieldName": "Posting Date",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Document Type",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Sales Line",
+                                                            "FieldName": "Document Type"
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Sales Line",
+                                                            "FieldName": "Document No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Base Amount",
+                                    "Sequence": 0,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Sales Line",
+                                            "FieldName": "Amount"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Component Code",
+                                    "Sequence": 0,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "IGST"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Amount",
+                                    "Sequence": 0,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "POS Out Of India",
+                                    "Sequence": 0,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Sales Header",
+                                            "TableFieldName": "POS Out Of India",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Document Type",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Sales Line",
+                                                            "FieldName": "Document Type"
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "FiterFieldName": "No.",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Sales Line",
+                                                            "FieldName": "Document No."
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "G/L Entry No.",
+                                    "Sequence": 0,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "G/L Entry No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -48,12 +48,6 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
                         trigger OnValidate()
                         begin
                             case AuthenticationTypeSaas of
-#if not CLEAN25
-#pragma warning disable AL0432
-                                AuthenticationTypeSaas::WebServiceAccessKey:
-                                    Rec."VAT Group Authentication Type" := Rec."VAT Group Authentication Type"::WebServiceAccessKey;
-#pragma warning restore
-#endif
                                 AuthenticationTypeSaas::OAuth2:
                                     Rec."VAT Group Authentication Type" := Rec."VAT Group Authentication Type"::OAuth2;
                             end;
@@ -321,13 +315,6 @@ pageextension 4703 "VAT Report Setup Extension" extends "VAT Report Setup"
         case AuthenticationType of
             AuthenticationType::OAuth2:
                 AuthenticationTypeSaaS := AuthenticationTypeSaaS::OAuth2;
-#if not CLEAN25
-#pragma warning disable AL0432
-
-            AuthenticationType::WebServiceAccessKey:
-                AuthenticationTypeSaaS := AuthenticationTypeSaaS::WebServiceAccessKey;
-#pragma warning restore
-#endif
         end;
     end;
 

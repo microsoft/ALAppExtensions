@@ -72,6 +72,12 @@ page 31214 "Confirm VAT Entries Update CZL"
                     ToolTip = 'Specifies the VAT date on the VAT entry. This is either the date that the document was created or posted, depending on your setting on the General Ledger Setup page.';
                     Visible = VATDateEnabled;
                 }
+                field("Original Doc. VAT Date CZL"; Rec."Original Doc. VAT Date CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the Original Document VAT date on the VAT entry.';
+                    Visible = VATDateEnabled;
+                }
                 field("Document No."; Rec."Document No.")
                 {
                     ApplicationArea = Basic, Suite;

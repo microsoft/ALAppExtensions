@@ -1,5 +1,7 @@
 namespace Microsoft.DataMigration;
 
+using System.Telemetry;
+
 codeunit 40022 "Telemetry Subscriber"
 {
     SingleInstance = true;
@@ -37,6 +39,7 @@ codeunit 40022 "Telemetry Subscriber"
 
     local procedure LogTableMappingTelemetry(var MigrationTableMapping: Record "Migration Table Mapping"; EventType: Text)
     var
+        AuditLog: Codeunit "Audit Log";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         if MigrationTableMapping.IsTemporary() then
@@ -46,6 +49,6 @@ codeunit 40022 "Telemetry Subscriber"
         TelemetryDimensions.Add('SourceTableName', MigrationTableMapping."Source Table Name");
         TelemetryDimensions.Add('TargetTableType', Format(MigrationTableMapping."Target Table Type"));
 
-        Session.LogAuditMessage(StrSubstNo(TableMappingChangedLbl, EventType, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0, TelemetryDimensions);
+        AuditLog.LogAuditMessage(StrSubstNo(TableMappingChangedLbl, EventType, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0, TelemetryDimensions);
     end;
 }

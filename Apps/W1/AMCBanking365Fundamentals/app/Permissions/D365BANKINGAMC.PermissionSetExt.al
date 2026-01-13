@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -12,3 +13,4 @@ permissionsetextension 20108 "D365 BANKING - AMC" extends "D365 BANKING"
                   tabledata "AMC Bank Pmt. Type" = RIMD,
                   tabledata "AMC Banking Setup" = RIMD;
 }
+#endif

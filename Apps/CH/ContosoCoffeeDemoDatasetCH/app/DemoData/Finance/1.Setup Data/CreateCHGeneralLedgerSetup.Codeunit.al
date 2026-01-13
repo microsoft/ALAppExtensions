@@ -23,6 +23,7 @@ codeunit 11621 "Create CH General Ledger Setup"
         CreateCurrency: Codeunit "Create Currency";
     begin
         GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.CHF());
         GeneralLedgerSetup."Unit-Amount Rounding Precision" := 0.001;
         GeneralLedgerSetup.Validate("Local Currency Symbol", '');

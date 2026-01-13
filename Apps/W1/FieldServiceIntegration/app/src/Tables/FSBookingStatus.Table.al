@@ -26,7 +26,7 @@ table 6627 "FS Booking Status"
         }
         field(2; CreatedOn; Datetime)
         {
-            ExternalName = 'CreatedOn';
+            ExternalName = 'createdon';
             ExternalType = 'DateTime';
             ExternalAccess = Read;
             Description = 'Date and time when the record was created.';
@@ -35,7 +35,7 @@ table 6627 "FS Booking Status"
         }
         field(3; CreatedBy; GUID)
         {
-            ExternalName = 'CreatedBy';
+            ExternalName = 'createdby';
             ExternalType = 'Lookup';
             ExternalAccess = Read;
             Description = 'Unique identifier of the user who created the record.';
@@ -45,7 +45,7 @@ table 6627 "FS Booking Status"
         }
         field(4; ModifiedOn; Datetime)
         {
-            ExternalName = 'ModifiedOn';
+            ExternalName = 'modifiedon';
             ExternalType = 'DateTime';
             ExternalAccess = Read;
             Description = 'Date and time when the record was modified.';
@@ -54,7 +54,7 @@ table 6627 "FS Booking Status"
         }
         field(5; ModifiedBy; GUID)
         {
-            ExternalName = 'ModifiedBy';
+            ExternalName = 'modifiedby';
             ExternalType = 'Lookup';
             ExternalAccess = Read;
             Description = 'Unique identifier of the user who modified the record.';

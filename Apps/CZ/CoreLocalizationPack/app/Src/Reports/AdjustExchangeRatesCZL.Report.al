@@ -1187,7 +1187,7 @@ report 31004 "Adjust Exchange Rates CZL"
         TotalCaption = 'Total';
         BankAccNoCaption = 'No';
         BankAccNameCaption = 'Name';
-        BankAccCurrencyCodeCaption = 'Currency Code';
+        BankAccCurrencyCodeCaption = 'Curr. Code';
         BankAccFactorCaption = 'Factor';
         BankAccBalToDateCaption = 'Balance to Date';
         BankAccBalToDateLCYCaption = 'Balance to Date (LCY)';
@@ -1198,9 +1198,9 @@ report 31004 "Adjust Exchange Rates CZL"
         DocumentTypeCaption = 'Type';
         DocumentNoCaption = 'Document No';
         PostingDateCaption = 'Post. Date';
-        CurrencyCodeCaption = 'Currency Code';
-        OriginalCurrencyCaption = 'Original Factor';
-        ModifiedAmtCaption = 'Modified Factor';
+        CurrencyCodeCaption = 'Curr. Code';
+        OriginalCurrencyCaption = 'Orig. Factor';
+        ModifiedAmtCaption = 'Mod. Factor';
         RemainingAmtCaption = 'Remaining Amount';
         RemainingAmtLCYCaption = 'Remaining Amount (LCY)';
         ModRemainingAmtLCYCaption = 'Mod. Remaining Amount (LCY)';

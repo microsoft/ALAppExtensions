@@ -102,6 +102,9 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "SOAP WS Request Management CZL" = X,
                   codeunit "Source Code Setup Handler CZL" = X,
                   codeunit "Substitute Report Handler CZL" = X,
+#if not CLEAN27
+                  codeunit "Sync.Dep.Fld-SalesHeader CZL" = X,
+#endif
                   codeunit "Transfer Line Handler CZL" = X,
                   codeunit "Transformation Rule Mgt. CZL" = X,
                   codeunit "Unreliable Payer Mgt. CZL" = X,
@@ -122,6 +125,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "VAT Entry Handler CZL" = X,
                   codeunit "VAT LCY Correction-Post CZL" = X,
                   codeunit "VAT LCY Corr.-Post(Yes/No) CZL" = X,
+                  codeunit "VAT Orig.Doc.VAT Date Mgt. CZL" = X,
                   codeunit "VAT Reg. Log Suppression CZL" = X,
                   codeunit "VAT Report Archive Mgt CZL" = X,
                   codeunit "VAT Report Export CZL" = X,
@@ -202,7 +206,11 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   page "VAT Ctrl. Report St. Subf. CZL" = X,
                   page "VAT Ctrl. Report Subform CZL" = X,
                   page "VAT LCY Correction CZL" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   page "VAT Periods CZL" = X,
+#pragma warning restore AL0432
+#endif
                   page "VAT Statement Attachments CZL" = X,
                   page "VAT Statement Comments CZL" = X,
                   page "VAT Statement Preview CZL" = X,
@@ -228,7 +236,11 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Close Income Statement CZL" = X,
                   report "Copy User Setup CZL" = X,
                   report "Create Stockkeeping Unit CZL" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   report "Create VAT Period CZL" = X,
+#pragma warning restore AL0432
+#endif
                   report "Cust.- Bal. Reconciliation CZL" = X,
                   report "Documentation for VAT CZL" = X,
                   report "EET Confirmation CZL" = X,
@@ -334,7 +346,12 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   table "VAT Ctrl. Report Line CZL" = X,
                   table "VAT Ctrl. Report Section CZL" = X,
                   table "VAT LCY Correction Buffer CZL" = X,
+#if not CLEAN28
+#pragma warning disable AL0432
                   table "VAT Period CZL" = X,
+#pragma warning restore AL0432
+#endif
+                  table "VAT Report Entry Link CZL" = X,
                   table "VAT Stmt. Report Line Data CZL" = X,
                   table "VAT Statement Attachment CZL" = X,
                   table "VAT Statement Comment Line CZL" = X,

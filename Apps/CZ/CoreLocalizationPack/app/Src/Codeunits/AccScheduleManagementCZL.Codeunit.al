@@ -5,7 +5,6 @@
 namespace Microsoft.Finance.FinancialReports;
 
 using Microsoft.Finance.GeneralLedger.Account;
-using System.Utilities;
 using System.Text;
 
 codeunit 11700 "Acc. Schedule Management CZL"
@@ -161,20 +160,6 @@ codeunit 11700 "Acc. Schedule Management CZL"
         AccSchedPageDrillDownCZL.InitParameters(SourceAccScheduleLine, TempColumnLayout);
         AccSchedPageDrillDownCZL.Run();
         IsHandled := true;
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Name", 'OnBeforeDeleteEvent', '', false, false)]
-    local procedure ResultHeaderOnBeforeDeleteEvent(var Rec: Record "Acc. Schedule Name")
-    var
-        AccScheduleResultHeader: Record "Acc. Schedule Result Hdr. CZL";
-        ConfirmManagement: Codeunit "Confirm Management";
-        DeleteQst: Label '%1 has results. Do you want to delete it anyway?', Comment = '%1 = Description';
-    begin
-        if Rec.IsResultsExistCZL(Rec.Name) then
-            if ConfirmManagement.GetResponseOrDefault(StrSubStNo(DeleteQst, Rec.GetRecordDescriptionCZL(Rec.Name)), true) then begin
-                AccScheduleResultHeader.SetRange("Acc. Schedule Name", Rec.Name);
-                AccScheduleResultHeader.DeleteAll(true);
-            end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeValidateEvent', 'Totaling Type', false, false)]

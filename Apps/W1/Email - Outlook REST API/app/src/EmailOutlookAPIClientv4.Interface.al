@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -8,8 +9,14 @@ namespace System.Email;
 /// <summary>
 /// Interface for the Email - Outlook API Client which allows retrieval of emails, replying to emails and marking emails as read.
 /// </summary>
+#pragma warning disable AL0432
 interface "Email - Outlook API Client v4" extends "Email - Outlook API Client v2"
+#pragma warning restore AL0432
 {
+    ObsoleteReason = 'This interface is deprecated. Please use the Email - Outlook API Client v5 interface instead.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+
     /// <summary>
     /// Retrieves the emails from the Outlook API.
     /// </summary>
@@ -54,3 +61,4 @@ interface "Email - Outlook API Client v4" extends "Email - Outlook API Client v2
     /// <param name="ExternalMessageId">The external message id to be marked as read.</param>
     procedure MarkEmailAsRead(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text);
 }
+#endif

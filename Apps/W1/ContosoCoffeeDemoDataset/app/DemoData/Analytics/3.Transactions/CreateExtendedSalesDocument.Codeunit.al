@@ -5,13 +5,13 @@
 
 namespace Microsoft.DemoData.Analytics;
 
-using Microsoft.Sales.Document;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoTool;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Sales.Document;
 
 codeunit 5692 "Create Extended Sales Document"
 {
@@ -29,11 +29,11 @@ codeunit 5692 "Create Extended Sales Document"
     var
         SalesHeader: Record "Sales Header";
         ContosoSales: Codeunit "Contoso Sales";
-        CreateCustomer: Codeunit "Create Customer";
         ContosoUtilities: Codeunit "Contoso Utilities";
-        CreatePaymentTerms: Codeunit "Create Payment Terms";
+        CreateCustomer: Codeunit "Create Customer";
         CreateItem: Codeunit "Create Item";
         CreatePaymentMethod: Codeunit "Create Payment Method";
+        CreatePaymentTerms: Codeunit "Create Payment Terms";
         FirstDayOfTheMonth: Date;
         LastDayOfTheMonth: Date;
     begin
@@ -237,10 +237,10 @@ codeunit 5692 "Create Extended Sales Document"
     var
         SalesHeader: Record "Sales Header";
         ContosoSales: Codeunit "Contoso Sales";
-        CreateCustomer: Codeunit "Create Customer";
         ContosoUtilities: Codeunit "Contoso Utilities";
-        CreatePaymentTerms: Codeunit "Create Payment Terms";
+        CreateCustomer: Codeunit "Create Customer";
         CreateItem: Codeunit "Create Item";
+        CreatePaymentTerms: Codeunit "Create Payment Terms";
         CreateSalesDocument: Codeunit "Create Sales Document";
     begin
 
@@ -392,6 +392,6 @@ codeunit 5692 "Create Extended Sales Document"
     end;
 
     var
-        AnalyticsReferenceTok: Label 'ANALYTICS', Locked = true;
         StartingDate: Date;
+        AnalyticsReferenceTok: Label 'ANALYTICS', MaxLength = 35;
 }

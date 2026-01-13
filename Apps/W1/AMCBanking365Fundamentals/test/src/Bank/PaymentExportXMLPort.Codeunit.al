@@ -1,8 +1,13 @@
+#if not CLEAN28
 codeunit 134423 "Payment Export XMLPort"
 {
     Permissions = TableData "Data Exch." = i;
     Subtype = Test;
+    RequiredTestIsolation = Disabled;
     TestPermissions = Disabled;
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     begin
@@ -322,3 +327,4 @@ codeunit 134423 "Payment Export XMLPort"
 
     end;
 }
+#endif

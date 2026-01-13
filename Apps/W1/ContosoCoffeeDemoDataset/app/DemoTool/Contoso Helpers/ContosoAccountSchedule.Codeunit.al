@@ -63,6 +63,11 @@ codeunit 5239 "Contoso Account Schedule"
     end;
 
     procedure InsertAccScheduleLine(ScheduleName: Code[10]; LineNo: Integer; RowNo: Code[10]; Description: Text[100]; Totaling: Text[250]; TotalingType: Enum "Acc. Schedule Line Totaling Type"; Show: Enum "Acc. Schedule Line Show"; Dimension1Totaling: Text[250]; Bold: Boolean; Italic: Boolean; Underline: Boolean; ShowOppositeSign: Boolean; RowType: Integer; NetAmountType: Enum "Account Schedule Amount Type")
+    begin
+        InsertAccScheduleLine(ScheduleName, LineNo, RowNo, Description, Totaling, TotalingType, Show, Dimension1Totaling, Bold, Italic, Underline, ShowOppositeSign, RowType, Enum::"Account Schedule Amount Type"::"Net Amount", 0);
+    end;
+
+    procedure InsertAccScheduleLine(ScheduleName: Code[10]; LineNo: Integer; RowNo: Code[10]; Description: Text[100]; Totaling: Text[250]; TotalingType: Enum "Acc. Schedule Line Totaling Type"; Show: Enum "Acc. Schedule Line Show"; Dimension1Totaling: Text[250]; Bold: Boolean; Italic: Boolean; Underline: Boolean; ShowOppositeSign: Boolean; RowType: Integer; NetAmountType: Enum "Account Schedule Amount Type"; Indentation: Integer)
     var
         AccScheduleLine: Record "Acc. Schedule Line";
         Exists: Boolean;
@@ -94,6 +99,7 @@ codeunit 5239 "Contoso Account Schedule"
         AccScheduleLine.Validate("Show Opposite Sign", ShowOppositeSign);
         AccScheduleLine.Validate("Row Type", RowType);
         AccScheduleLine.Validate("Amount Type", NetAmountType);
+        AccScheduleLine.Validate(Indentation, Indentation);
 
         if Exists then
             AccScheduleLine.Modify(true)
@@ -102,6 +108,11 @@ codeunit 5239 "Contoso Account Schedule"
     end;
 
     procedure InsertAccScheduleName(Name: Code[10]; Description: Text[80]; AnalysisViewName: Code[10])
+    begin
+        InsertAccScheduleName(Name, Description, AnalysisViewName, '');
+    end;
+
+    procedure InsertAccScheduleName(Name: Code[10]; Description: Text[80]; AnalysisViewName: Code[10]; InternalDescription: Code[250])
     var
         AccScheduleName: Record "Acc. Schedule Name";
         Exists: Boolean;
@@ -116,6 +127,7 @@ codeunit 5239 "Contoso Account Schedule"
         AccScheduleName.Validate(Name, Name);
         AccScheduleName.Validate(Description, Description);
         AccScheduleName.Validate("Analysis View Name", AnalysisViewName);
+        AccScheduleName.Validate("Internal Description", InternalDescription);
 
         if Exists then
             AccScheduleName.Modify(true)
@@ -124,6 +136,11 @@ codeunit 5239 "Contoso Account Schedule"
     end;
 
     procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80])
+    begin
+        InsertColumnLayoutName(Name, Description, '');
+    end;
+
+    procedure InsertColumnLayoutName(Name: Code[10]; Description: Text[80]; InternalDescription: Text[250])
     var
         ColumnLayoutName: Record "Column Layout Name";
         Exists: Boolean;
@@ -137,6 +154,7 @@ codeunit 5239 "Contoso Account Schedule"
 
         ColumnLayoutName.Validate(Name, Name);
         ColumnLayoutName.Validate(Description, Description);
+        ColumnLayoutName.Validate("Internal Description", InternalDescription);
 
         if Exists then
             ColumnLayoutName.Modify(true)
@@ -244,6 +262,11 @@ codeunit 5239 "Contoso Account Schedule"
     end;
 
     procedure InsertFinancialReport(Name: Code[10]; Description: Text[80]; FinancialReportRowGrp: Code[10]; FinancialReportColumnGrp: Code[10])
+    begin
+        InsertFinancialReport(Name, Description, FinancialReportRowGrp, FinancialReportColumnGrp, '');
+    end;
+
+    procedure InsertFinancialReport(Name: Code[10]; Description: Text[80]; FinancialReportRowGrp: Code[10]; FinancialReportColumnGrp: Code[10]; InternalDescription: Text[250])
     var
         FinancialReport: Record "Financial Report";
         Exists: Boolean;
@@ -259,6 +282,8 @@ codeunit 5239 "Contoso Account Schedule"
         FinancialReport.Validate(Description, Description);
         FinancialReport.Validate("Financial Report Row Group", FinancialReportRowGrp);
         FinancialReport.Validate("Financial Report Column Group", FinancialReportColumnGrp);
+        if InternalDescription <> '' then
+            FinancialReport.Validate("Internal Description", InternalDescription);
 
         if Exists then
             FinancialReport.Modify(true)

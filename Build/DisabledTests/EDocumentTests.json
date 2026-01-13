@@ -43,5 +43,15 @@
         "codeunitId": 139883,
         "CodeunitName": "E-Doc Process Test",
         "Method": "*"
+    },
+    {
+        "codeunitId": 133719,
+        "CodeunitName": "EDoc Line Match Def Grnd",
+        "Method": "TestGrounding_LineMatching_Deferrals"
+    },
+    {
+        "codeunitId": 133720,
+        "CodeunitName": "EDoc Line Matching - Deferral",
+        "Method": "TestAccuracy_LineMatching_Deferrals"
     }
 ]

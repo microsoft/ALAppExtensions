@@ -5,6 +5,7 @@ using System.Environment.Configuration;
 using System.Integration;
 using System.Reflection;
 using System.Text;
+using System.Telemetry;
 
 codeunit 40021 "Cloud Mig. Replicate Data Mgt."
 {
@@ -132,6 +133,7 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
 
     local procedure LogMessageForChangedReplicateData(TablesModified: Text; NewReplicateData: Boolean)
     var
+        AuditLog: Codeunit "Audit Log";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         TelemetryDictionary: Dictionary of [Text, Text];
     begin
@@ -139,7 +141,7 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
         TelemetryDictionary.Add('TablesModified', TablesModified);
         TelemetryDictionary.Add('ReplicateData', Format(NewReplicateData, 0, 9));
         Session.LogMessage('0000MRJ', ChangedReplicationPropertyLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
-        Session.LogAuditMessage(StrSubstNo(ReplicationPropertyChangedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0, TelemetryDictionary);
+        AuditLog.LogAuditMessage(StrSubstNo(ReplicationPropertyChangedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 6, 0, TelemetryDictionary);
     end;
 
     procedure SetPreserveDataForTable(TableID: Integer; CompanyName: Text[30])

@@ -20,8 +20,6 @@ tableextension 31266 "Default Dimension CZA" extends "Default Dimension"
                 DimensionAutoCreateMgtCZA: Codeunit "Dimension Auto.Create Mgt. CZA";
             begin
                 TestField("No.", '');
-                if not ("Value Posting" in ["Value Posting"::"Code Mandatory", "Value Posting"::"Same Code"]) then
-                    FieldError("Value Posting");
                 DimensionAutoCreateMgtCZA.CreateAndSendSignOutNotification();
             end;
         }
@@ -91,8 +89,8 @@ tableextension 31266 "Default Dimension CZA" extends "Default Dimension"
 
             trigger OnValidate()
             begin
-                if not ("Value Posting" in ["Value Posting"::"Code Mandatory", "Value Posting"::"Same Code"]) then
-                    TestField("Automatic Create CZA", false);
+                if Rec."Automatic Create CZA" then
+                    TestField("No.", '');
             end;
         }
     }

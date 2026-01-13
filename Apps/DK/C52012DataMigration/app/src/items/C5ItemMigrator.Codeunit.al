@@ -5,13 +5,11 @@
 
 namespace Microsoft.DataMigration.C5;
 
-#if not CLEAN25
-#else
 using Microsoft.Pricing.Asset;
 using Microsoft.Pricing.Source;
-#endif
 using System.Integration;
 using Microsoft.Inventory.BOM;
+using Microsoft.Foundation.Company;
 
 codeunit 1867 "C5 Item Migrator"
 {
@@ -449,8 +447,18 @@ codeunit 1867 "C5 Item Migrator"
             until C5InvenPrice.Next() = 0;
     end;
 
-#if not CLEAN25
     local procedure CreateSalesLineDiscountIfNeeded(C5InvenCustDisc: Record "C5 InvenCustDisc")
+    var
+        CompanyInfo: Record "Company Information";
+    begin
+        CompanyInfo.Get();
+        if CompanyInfo."Pricing Implementation" = CompanyInfo."Pricing Implementation"::"Extended Pricing" then
+            CreateSalesLineDiscountIfNeededExtended(C5InvenCustDisc)
+        else
+            CreateSalesLineDiscountIfNeededBasic(C5InvenCustDisc);
+    end;
+
+    local procedure CreateSalesLineDiscountIfNeededBasic(C5InvenCustDisc: Record "C5 InvenCustDisc")
     var
         SalesTypeToSet: Option Customer,"Customer Disc. Group","All Customers",Campaign;
         TypeToSet: Option Item,"Item Disc. Group";
@@ -491,8 +499,8 @@ codeunit 1867 "C5 Item Migrator"
             C5InvenCustDisc.ItemRelation,
             C5InvenCustDisc.Rate_);
     end;
-#else
-    local procedure CreateSalesLineDiscountIfNeeded(C5InvenCustDisc: Record "C5 InvenCustDisc")
+
+    local procedure CreateSalesLineDiscountIfNeededExtended(C5InvenCustDisc: Record "C5 InvenCustDisc")
     var
         SalesTypeToSet: Enum "Price Source Type";
         TypeToSet: Enum "Price Asset Type";
@@ -534,7 +542,6 @@ codeunit 1867 "C5 Item Migrator"
             C5InvenCustDisc.Rate_,
             0);
     end;
-#endif
 
     local procedure CreateNavCustDiscGroupIfNeeded(C5CustDiscountGroupCode: Code[10])
     var
@@ -559,25 +566,6 @@ codeunit 1867 "C5 Item Migrator"
         UninitializedItemDataMigrationFacade.CreateItemDiscGroupIfNeeded(C5DiscountGroupCode, GroupDescription);
     end;
 
-#if not CLEAN25
-    local procedure CreateNavSalesPriceIfNeeded(C5InvenPrice: Record "C5 InvenPrice")
-    var
-        SalesType: Option Customer,"Customer Price Group","All Customers",Campaign;
-    begin
-        CreateCustomerPriceGroupIfNeeded(C5InvenPrice.PriceGroup);
-
-        UninitializedItemDataMigrationFacade.CreateSalesPriceIfNeeded(
-            SalesType::"Customer Price Group",
-            C5InvenPrice.PriceGroup,
-            C5InvenPrice.ItemNumber,
-            C5InvenPrice.Price,
-            C5InvenPrice.Currency,
-            0D,
-            '',
-            0,
-            '');
-    end;
-#else
     local procedure CreateNavSalesPriceIfNeeded(C5InvenPrice: Record "C5 InvenPrice")
     var
         SalesType: Enum "Price Source Type";
@@ -593,7 +581,6 @@ codeunit 1867 "C5 Item Migrator"
             '', '', 0,
             C5InvenPrice.Price);
     end;
-#endif
 
     local procedure CreateCustomerPriceGroupIfNeeded(C5InvenPriceGroupTxt: Code[10]): Code[10]
     var

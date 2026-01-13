@@ -35,7 +35,8 @@ tableextension 11701 "Customer CZL" extends Customer
                     if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
                         LogNotVerified := false;
                         RegistrationLogMgtCZL.ValidateRegNoWithARES(ResultRecordRef, Rec, "No.", RegistrationLogCZL."Account Type"::Customer);
-                        ResultRecordRef.SetTable(Rec);
+                        if ResultRecordRef.Number <> 0 then
+                            ResultRecordRef.SetTable(Rec);
                     end;
 
                 if LogNotVerified then
@@ -97,6 +98,11 @@ tableextension 11701 "Customer CZL" extends Customer
         }
 #endif
     }
+
+    trigger OnDelete()
+    begin
+        RegistrationLogMgtCZL.DeleteCustomerLog(Rec);
+    end;
 
     var
         RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";

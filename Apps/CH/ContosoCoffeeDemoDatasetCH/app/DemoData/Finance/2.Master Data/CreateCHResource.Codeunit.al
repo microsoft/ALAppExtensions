@@ -18,21 +18,20 @@ codeunit 11613 "Create CH Resource"
     local procedure OnBeforeInsertResource(var Rec: Record Resource)
     var
         CreateResource: Codeunit "Create Resource";
-        CreateCHVatPostingGroups: Codeunit "Create CH VAT Posting Groups";
     begin
         case Rec."No." of
             CreateResource.Katherine():
-                ValidateRecordFields(Rec, BernLbl, 92, 101.2, 45, 184, '3000', '', CreateCHVatPostingGroups.Normal());
+                ValidateRecordFields(Rec, BernLbl, 92, 101.2, 45, 184, '3000', '');
             CreateResource.Lina():
-                ValidateRecordFields(Rec, BallwilLbl, 110, 121, 45.24887, 221, '6275', '', CreateCHVatPostingGroups.Normal());
+                ValidateRecordFields(Rec, BallwilLbl, 110, 121, 45.24887, 221, '6275', '');
             CreateResource.Marty():
-                ValidateRecordFields(Rec, BernLbl, 83, 91.3, 45, 166, '3000', '', CreateCHVatPostingGroups.Normal());
+                ValidateRecordFields(Rec, BernLbl, 83, 91.3, 45, 166, '3000', '');
             CreateResource.Terry():
-                ValidateRecordFields(Rec, BernLbl, 92, 101.2, 45, 184, '3000', '', CreateCHVatPostingGroups.Normal());
+                ValidateRecordFields(Rec, BernLbl, 92, 101.2, 45, 184, '3000', '');
         end;
     end;
 
-    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; ProfitPercent: Decimal; UnitPrice: Decimal; PostCode: Code[20]; County: Text[30]; VATProdPostingGroup: Code[20])
+    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; ProfitPercent: Decimal; UnitPrice: Decimal; PostCode: Code[20]; County: Text[30])
     begin
         Resource.Validate(City, City);
         Resource.Validate("Direct Unit Cost", DirectUnitCost);
@@ -41,7 +40,6 @@ codeunit 11613 "Create CH Resource"
         Resource.Validate("Unit Price", UnitPrice);
         Resource.Validate("Post Code", PostCode);
         Resource.Validate(County, County);
-        Resource.Validate("VAT Prod. Posting Group", VATProdPostingGroup);
     end;
 
     var

@@ -76,7 +76,6 @@ report 31012 "Create Sales Adv. Letter CZZ"
 
     var
         Currency: Record Currency;
-        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
@@ -92,6 +91,7 @@ report 31012 "Create Sales Adv. Letter CZZ"
         JobPostingDescriptionTxt: Label 'Project %1', Comment = '%1 = Job No.';
 
     protected var
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         SourceSalesHeader: Record "Sales Header";
         SourceJob: Record Job;
         SourceJobTask: Record "Job Task";
@@ -195,7 +195,7 @@ report 31012 "Create Sales Adv. Letter CZZ"
         SalesAdvLetterHeaderCZZ."Posting Description" := SalesHeader."Posting Description";
         SalesAdvLetterHeaderCZZ."Payment Method Code" := SalesHeader."Payment Method Code";
         SalesAdvLetterHeaderCZZ."Payment Terms Code" := SalesHeader."Payment Terms Code";
-        SalesAdvLetterHeaderCZZ."Registration No." := SalesHeader."Registration No. CZL";
+        SalesAdvLetterHeaderCZZ."Registration No." := SalesHeader.GetRegistrationNoTrimmedCZL();
         SalesAdvLetterHeaderCZZ."Tax Registration No." := SalesHeader."Tax Registration No. CZL";
         SalesAdvLetterHeaderCZZ."VAT Registration No." := SalesHeader."VAT Registration No.";
         SalesAdvLetterHeaderCZZ."Order No." := SalesHeader."No.";
@@ -351,7 +351,14 @@ report 31012 "Create Sales Adv. Letter CZZ"
     end;
 
     local procedure CreateAdvancePostingBuffer(VATBusPostingGroup: Code[20]; VATProdPostingGroup: Code[20]; AmountIncludingVAT: Decimal; var TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary)
+    var
+        IsHandled: boolean;
     begin
+        IsHandled := false;
+        OnBeforeCreateAdvancePostingBuffer(VATBusPostingGroup, VATProdPostingGroup, AmountIncludingVAT, TempAdvancePostingBufferCZZ, IsHandled);
+        if IsHandled then
+            exit;
+
         TempAdvancePostingBufferCZZ.Init();
         TempAdvancePostingBufferCZZ."VAT Bus. Posting Group" := VATBusPostingGroup;
         TempAdvancePostingBufferCZZ."VAT Prod. Posting Group" := VATProdPostingGroup;
@@ -375,6 +382,9 @@ report 31012 "Create Sales Adv. Letter CZZ"
         SalesAdvLetterLineCZZ.SuspendJobRelationCheck(true);
         SalesAdvLetterLineCZZ.Validate("Amount Including VAT", Round(AmountIncludingVAT * Coef, Currency."Amount Rounding Precision"));
         SalesAdvLetterLineCZZ.SuspendJobRelationCheck(false);
+
+        OnCreateAdvanceLetterLineOnBeforeInsert(SalesAdvLetterLineCZZ, SalesAdvLetterHeaderCZZ);
+
         if SalesAdvLetterLineCZZ."Amount Including VAT" <> 0 then
             SalesAdvLetterLineCZZ.Insert(true);
     end;
@@ -507,6 +517,16 @@ report 31012 "Create Sales Adv. Letter CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnCreateAdvanceLetterHeaderOnBeforeModifySalesAdvLetterHeaderCZZ(SalesHeader: Record "Sales Header"; AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ"; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateAdvanceLetterLineOnBeforeInsert(var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateAdvancePostingBuffer(VATBusPostingGroup: Code[20]; VATProdPostingGroup: Code[20]; AmountIncludingVAT: Decimal; var TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary; var IsHandled: boolean)
     begin
     end;
 }

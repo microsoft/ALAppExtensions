@@ -1,6 +1,47 @@
+namespace Microsoft.Test.Sustainability;
+
+using Microsoft.Assembly.Document;
+using Microsoft.Assembly.History;
+using Microsoft.Assembly.Setup;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.BOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Manufacturing.Capacity;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Manufacturing.Journal;
+using Microsoft.Manufacturing.MachineCenter;
+using Microsoft.Manufacturing.ProductionBOM;
+using Microsoft.Manufacturing.Routing;
+using Microsoft.Manufacturing.WorkCenter;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Project.Journal;
+using Microsoft.Projects.Project.Planning;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Certificate;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
+using System.TestLibraries.Utilities;
+
 codeunit 148187 "Sust. Certificate Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     var
@@ -17,6 +58,7 @@ codeunit 148187 "Sust. Certificate Test"
         LibraryAssembly: Codeunit "Library - Assembly";
         LibrarySales: Codeunit "Library - Sales";
         LibraryWarehouse: Codeunit "Library - Warehouse";
+        LibraryJob: Codeunit "Library - Job";
         AccountCodeLbl: Label 'AccountCode%1', Locked = true, Comment = '%1 = Number';
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
@@ -34,6 +76,12 @@ codeunit 148187 "Sust. Certificate Test"
         SustValueEntriesActionShouldBeVisibleErr: Label 'Sustainability Value Entries action should be visible in Page %1', Comment = '%1 = Page Caption';
         SustLdgEntriesActionShouldNotBeVisibleErr: Label 'Sustainability Ledger Entries action should not be visible in Page %1', Comment = '%1 = Page Caption';
         SustValueEntriesActionShouldNotBeVisibleErr: Label 'Sustainability Value Entries action should not be visible in Page %1', Comment = '%1 = Page Caption';
+        CalculateTotalCO2eActionShouldNotBeVisibleErr: Label 'Calculate Total CO2e action should not be visible in Page %1', Comment = '%1 = Page Caption';
+        CalculateTotalCO2eActionShouldBeVisibleErr: Label 'Calculate Total CO2e action should be visible in Page %1', Comment = '%1 = Page Caption';
+        RecyclabilityPercentageMinValueErr: Label 'The value must be greater than or equal to %1. Value: %2.', Comment = '%1 = Minimum Value, %2 = Field Value';
+        RecyclabilityPercentageMaxValueErr: Label 'The value must be less than or equal to %1. Value: %2.', Comment = '%1 = Maximum Value, %2 = Field Value';
+        EmissionUOMCannotBeChangedErr: Label 'The value for %1 cannot be modified because there are existing sustainability ledger entries that use the unit of measure %2.', Comment = '%1 = Field Caption, %2 = Unit of Measure Code';
+        FieldShouldNotBeEditableErr: Label '%1 should not be editable in Page %2', Comment = '%1 = Field Caption, %2 = Page Caption';
 
     [Test]
     procedure VerifyHasValueFieldShouldThrowErrorWhenValueIsUpdated()
@@ -2944,7 +2992,7 @@ codeunit 148187 "Sust. Certificate Test"
         PostedDocNo: Code[20];
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Sales Return Order and Lines of 
+        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Sales Return Order and Lines of
         // Sales Return Order and no Sustainability Ledger Entry or Sustainability Value Entry is created
         // if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -3120,7 +3168,7 @@ codeunit 148187 "Sust. Certificate Test"
         TotalCO2e: Decimal;
     begin
         // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Sales Invoice, Lines of Sales Invoice,
-        // Posted Sales Invoice and Lines of Posted Sales Invoice and no Sustainability Ledger Entry 
+        // Posted Sales Invoice and Lines of Posted Sales Invoice and no Sustainability Ledger Entry
         // or Sustainability Value Entry is created if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -3319,7 +3367,7 @@ codeunit 148187 "Sust. Certificate Test"
         TotalCO2e: Decimal;
     begin
         // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Sales Cr. Memo, Lines of Sales Cr. Memo,
-        // Posted Sales Cr. Memo and Lines of Posted Sales Cr. Memo and no Sustainability Ledger Entry 
+        // Posted Sales Cr. Memo and Lines of Posted Sales Cr. Memo and no Sustainability Ledger Entry
         // or Sustainability Value Entry is created if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -3646,7 +3694,7 @@ codeunit 148187 "Sust. Certificate Test"
         SubcategoryCode: Code[20];
         Quanity: Decimal;
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are Visible on Work Center List, 
+        // [SCENARIO 561536] Verify Sustainability Fields are Visible on Work Center List,
         // Work Center Card, Machine Center List, Machine Center Card, Routing Lines, Routing Version Lines,
         // Production BOM, Production BOM List, production BOM Lines, Production BOM Version Lines,
         // Prod. Order Routing, Prod. Order Components, Released Production Order, Released Prod. Order Lines.
@@ -4038,7 +4086,7 @@ codeunit 148187 "Sust. Certificate Test"
         SubcategoryCode: Code[20];
         Quanity: Decimal;
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Work Center List, 
+        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Work Center List,
         // Work Center Card, Machine Center List, Machine Center Card, Routing Lines, Routing Version Lines,
         // Production BOM, Production BOM List, production BOM Lines, Production BOM Version Lines,
         // Prod. Order Routing, Prod. Order Components, Released Production Order, Released Prod. Order Lines.
@@ -4413,7 +4461,7 @@ codeunit 148187 "Sust. Certificate Test"
         ExpectedCO2ePerUnit: array[2] of Decimal;
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are Visible on Production Journal, Finished Production Orders, 
+        // [SCENARIO 561536] Verify Sustainability Fields are Visible on Production Journal, Finished Production Orders,
         // Finished Production Orders, Finished Prod. Order Lines and Capacity Ledger Entries.
         // if Enable Value Chain Tracking is true in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -4480,8 +4528,8 @@ codeunit 148187 "Sust. Certificate Test"
         FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
         LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
 
-        // [THEN] Sust. Account No., CO2e per Unit and Total CO2e are Visible 
-        // on Production Journal in ProductionJournalModalPageHandler. 
+        // [THEN] Sust. Account No., CO2e per Unit and Total CO2e are Visible
+        // on Production Journal in ProductionJournalModalPageHandler.
 
         // [GIVEN] Find Capacity Ledger Entry.
         CapacityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
@@ -4606,9 +4654,9 @@ codeunit 148187 "Sust. Certificate Test"
         ExpectedCO2ePerUnit: array[2] of Decimal;
         SubcategoryCode: Code[20];
     begin
-        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Production Journal, Finished Production Orders, 
-        // Finished Production Orders, Finished Prod. Order Lines and Capacity Ledger Entries and 
-        // also no Sustainability Ledger Entry or Sustainability Value Entry is created 
+        // [SCENARIO 561536] Verify Sustainability Fields are not Visible on Production Journal, Finished Production Orders,
+        // Finished Production Orders, Finished Prod. Order Lines and Capacity Ledger Entries and
+        // also no Sustainability Ledger Entry or Sustainability Value Entry is created
         // if Enable Value Chain Tracking is false in Sustainability Setup.
         LibrarySustainability.CleanUpBeforeTesting();
 
@@ -4674,8 +4722,8 @@ codeunit 148187 "Sust. Certificate Test"
         FindProdOrderLine(ProdOrderLine, ProductionOrder, ProdItem."No.");
         LibraryManufacturing.OpenProductionJournal(ProductionOrder, ProdOrderLine."Line No.");
 
-        // [THEN] Sust. Account No., CO2e per Unit and Total CO2e are not Visible 
-        // on Production Journal in ProductionJournalModalPageHandler. 
+        // [THEN] Sust. Account No., CO2e per Unit and Total CO2e are not Visible
+        // on Production Journal in ProductionJournalModalPageHandler.
 
         // [GIVEN] Find Capacity Ledger Entry.
         CapacityLedgerEntry.SetRange("Document No.", ProductionOrder."No.");
@@ -5120,7 +5168,7 @@ codeunit 148187 "Sust. Certificate Test"
         // [WHEN] Update "Replenishment System" in Item.
         ItemCard."Replenishment System".SetValue(Item."Replenishment System"::"Prod. Order");
 
-        // [THEN] Confirmation Box should not pop up as there is no confirm Handler. 
+        // [THEN] Confirmation Box should not pop up as there is no confirm Handler.
     end;
 
     [Test]
@@ -5162,6 +5210,2050 @@ codeunit 148187 "Sust. Certificate Test"
             true,
             SustainabilitySetup."Work/Machine Center Emissions",
             StrSubstNo(FieldShouldBeEnabledErr, SustainabilitySetup.FieldCaption("Work/Machine Center Emissions"), SustainabilitySetup.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateTotalCO2eShouldbeVisibleOnItemCardIfItemEmissionsAndUseAllGasesAsCO2eIsEnabled()
+    var
+        Item: Record Item;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemCard: TestPage "Item Card";
+    begin
+        // [SCENARIO 564320] Verify "Calculate Total CO2e" action should be visible on "Item Card" page If "Item Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" and "Use All Gases As CO2e" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [WHEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should not be visible on "Item Card" page If "Item Emissions" and "Use All Gases As CO2e" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ItemCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ItemCard.Caption()));
+        Assert.AreEqual(
+            false,
+            ItemCard."Calculate Total CO2e".Visible(),
+            StrSubstNo(CalculateTotalCO2eActionShouldNotBeVisibleErr, ItemCard.Caption()));
+
+        // [GIVEN] Close "Item Card".
+        ItemCard.Close();
+
+        // [GIVEN] Update "Item Emissions" and "Use All Gases As CO2e" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Item Card".
+        ItemCard.OpenView();
+        ItemCard.GoToRecord(Item);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should be visible on "Item Card" page If "Item Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+           false,
+           ItemCard."Calculate CO2e".Visible(),
+           StrSubstNo(ActionShouldNotBeVisibleErr, ItemCard.Caption()));
+        Assert.AreEqual(
+           true,
+           ItemCard."Calculate Total CO2e".Visible(),
+           StrSubstNo(CalculateTotalCO2eActionShouldBeVisibleErr, ItemCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateTotalCO2eShouldbeVisibleOnItemListIfItemEmissionsAndUseAllGasesAsCO2eIsEnabled()
+    var
+        Item: Record Item;
+        SustainabilitySetup: Record "Sustainability Setup";
+        ItemList: TestPage "Item List";
+    begin
+        // [SCENARIO 564320] Verify "Calculate Total CO2e" action should be visible on "Item List" page If "Item Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" and "Use All Gases As CO2e" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [WHEN] Open "Item List".
+        ItemList.OpenView();
+        ItemList.GoToRecord(Item);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should not be visible on "Item List" page If "Item Emissions" and "Use All Gases As CO2e" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ItemList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ItemList.Caption()));
+        Assert.AreEqual(
+            false,
+            ItemList."Calculate Total CO2e".Visible(),
+            StrSubstNo(CalculateTotalCO2eActionShouldNotBeVisibleErr, ItemList.Caption()));
+
+        // [GIVEN] Close "Item List".
+        ItemList.Close();
+
+        // [GIVEN] Update "Item Emissions" and "Use All Gases As CO2e" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Item List".
+        ItemList.OpenView();
+        ItemList.GoToRecord(Item);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should be visible on "Item List" page If "Item Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+           false,
+           ItemList."Calculate CO2e".Visible(),
+           StrSubstNo(ActionShouldNotBeVisibleErr, ItemList.Caption()));
+        Assert.AreEqual(
+           true,
+           ItemList."Calculate Total CO2e".Visible(),
+           StrSubstNo(CalculateTotalCO2eActionShouldBeVisibleErr, ItemList.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateTotalCO2eShouldbeVisibleOnProductionBOMCardIfItemEmissionsAndUseAllGasesAsCO2eIsEnabled()
+    var
+        CompItem: Record Item;
+        ProductionBOMHeader: Record "Production BOM Header";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ProductionBOM: TestPage "Production BOM";
+    begin
+        // [SCENARIO 560219] Verify "Calculate Total CO2e" action should be visible on "Production BOM" page If "Item Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" and "Use All Gases As CO2e" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(CompItem);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, 0);
+
+        // [WHEN] Open "Production BOM".
+        ProductionBOM.OpenView();
+        ProductionBOM.GoToRecord(ProductionBOMHeader);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should not be visible on "Production BOM" page If "Item Emissions" and "Use All Gases As CO2e" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ProductionBOM."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ProductionBOM.Caption()));
+        Assert.AreEqual(
+            false,
+            ProductionBOM."Calculate Total CO2e".Visible(),
+            StrSubstNo(CalculateTotalCO2eActionShouldNotBeVisibleErr, ProductionBOM.Caption()));
+
+        // [GIVEN] Close "Production BOM".
+        ProductionBOM.Close();
+
+        // [GIVEN] Update "Item Emissions" and "Use All Gases As CO2e" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Production BOM".
+        ProductionBOM.OpenView();
+        ProductionBOM.GoToRecord(ProductionBOMHeader);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should be visible on "Production BOM" page If "Item Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ProductionBOM."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ProductionBOM.Caption()));
+        Assert.AreEqual(
+           true,
+           ProductionBOM."Calculate Total CO2e".Visible(),
+           StrSubstNo(CalculateTotalCO2eActionShouldBeVisibleErr, ProductionBOM.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateTotalCO2eShouldbeVisibleOnProductionBOMListIfItemEmissionsAndUseAllGasesAsCO2eIsEnabled()
+    var
+        CompItem: Record Item;
+        ProductionBOMHeader: Record "Production BOM Header";
+        SustainabilitySetup: Record "Sustainability Setup";
+        ProductionBOMList: TestPage "Production BOM List";
+    begin
+        // [SCENARIO 560219] Verify "Calculate Total CO2e" action should be visible on "Production BOM List" page If "Item Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Item Emissions" and "Use All Gases As CO2e" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", false);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(CompItem);
+
+        // [GIVEN] Create Production BOM.
+        CreateProductionBOM(ProductionBOMHeader, CompItem, 0);
+
+        // [WHEN] Open "Production BOM List".
+        ProductionBOMList.OpenView();
+        ProductionBOMList.GoToRecord(ProductionBOMHeader);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should not be visible on "Production BOM List" page If "Item Emissions" and "Use All Gases As CO2e" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ProductionBOMList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ProductionBOMList.Caption()));
+        Assert.AreEqual(
+            false,
+            ProductionBOMList."Calculate Total CO2e".Visible(),
+            StrSubstNo(CalculateTotalCO2eActionShouldNotBeVisibleErr, ProductionBOMList.Caption()));
+
+        // [GIVEN] Close "Production BOM List".
+        ProductionBOMList.Close();
+
+        // [GIVEN] Update "Item Emissions" and "Use All Gases As CO2e" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Item Emissions", true);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Production BOM List".
+        ProductionBOMList.OpenView();
+        ProductionBOMList.GoToRecord(ProductionBOMHeader);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should be visible on "Production BOM List" page If "Item Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            ProductionBOMList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, ProductionBOMList.Caption()));
+        Assert.AreEqual(
+           true,
+           ProductionBOMList."Calculate Total CO2e".Visible(),
+           StrSubstNo(CalculateTotalCO2eActionShouldBeVisibleErr, ProductionBOMList.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateTotalCO2eShouldbeVisibleOnMachineCenterCardIfWorkMachineCenterEmissionsAndUseAllGasesAsCO2eIsEnabled()
+    var
+        MachineCenter: Record "Machine Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        MachineCenterCard: TestPage "Machine Center Card";
+    begin
+        // [SCENARIO 537413] Verify "Calculate Total CO2e" action should be visible on "Machine Center Card" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" and "Use All Gases As CO2e" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create a Machine Center.
+        LibraryManufacturing.CreateMachineCenter(MachineCenter, '', LibraryRandom.RandDec(10, 1));
+
+        // [WHEN] Open "Machine Center Card".
+        MachineCenterCard.OpenView();
+        MachineCenterCard.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should not be visible on "Machine Center Card" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            MachineCenterCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, MachineCenterCard.Caption()));
+        Assert.AreEqual(
+            false,
+            MachineCenterCard."Calculate Total CO2e".Visible(),
+            StrSubstNo(CalculateTotalCO2eActionShouldNotBeVisibleErr, MachineCenterCard.Caption()));
+
+        // [GIVEN] Close "Machine Center Card".
+        MachineCenterCard.Close();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" and "Use All Gases As CO2e" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Machine Center Card".
+        MachineCenterCard.OpenView();
+        MachineCenterCard.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should be visible on "Machine Center Card" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            MachineCenterCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, MachineCenterCard.Caption()));
+        Assert.AreEqual(
+           true,
+           MachineCenterCard."Calculate Total CO2e".Visible(),
+           StrSubstNo(CalculateTotalCO2eActionShouldBeVisibleErr, MachineCenterCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateTotalCO2eShouldbeVisibleOnMachineCenterListIfWorkMachineCenterEmissionsAndUseAllGasesAsCO2eIsEnabled()
+    var
+        MachineCenter: Record "Machine Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        MachineCenterList: TestPage "Machine Center List";
+    begin
+        // [SCENARIO 537413] Verify "Calculate Total CO2e" action should be visible on "Machine Center List" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" and "Use All Gases As CO2e" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Create a Machine Center.
+        LibraryManufacturing.CreateMachineCenter(MachineCenter, '', LibraryRandom.RandDec(10, 1));
+
+        // [WHEN] Open "Machine Center List".
+        MachineCenterList.OpenView();
+        MachineCenterList.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should not be visible on "Machine Center List" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            MachineCenterList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, MachineCenterList.Caption()));
+        Assert.AreEqual(
+            false,
+            MachineCenterList."Calculate Total CO2e".Visible(),
+            StrSubstNo(CalculateTotalCO2eActionShouldNotBeVisibleErr, MachineCenterList.Caption()));
+
+        // [GIVEN] Close "Machine Center List".
+        MachineCenterList.Close();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" and "Use All Gases As CO2e" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Machine Center List".
+        MachineCenterList.OpenView();
+        MachineCenterList.GoToRecord(MachineCenter);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should be visible on "Machine Center List" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            MachineCenterList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, MachineCenterList.Caption()));
+        Assert.AreEqual(
+           true,
+           MachineCenterList."Calculate Total CO2e".Visible(),
+           StrSubstNo(CalculateTotalCO2eActionShouldBeVisibleErr, MachineCenterList.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateTotalCO2eShouldbeVisibleOnWorkCenterCardIfWorkMachineCenterEmissionsAndUseAllGasesAsCO2eIsEnabled()
+    var
+        WorkCenter: Record "Work Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        WorkCenterCard: TestPage "Work Center Card";
+    begin
+        // [SCENARIO 537413] Verify "Calculate Total CO2e" action should be visible on "Work Center Card" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenter(WorkCenter);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" and "Use All Gases As CO2e" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", false);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center Card".
+        WorkCenterCard.OpenView();
+        WorkCenterCard.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should not be visible on "Work Center Card" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            WorkCenterCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, WorkCenterCard.Caption()));
+        Assert.AreEqual(
+            false,
+            WorkCenterCard."Calculate Total CO2e".Visible(),
+            StrSubstNo(CalculateTotalCO2eActionShouldNotBeVisibleErr, WorkCenterCard.Caption()));
+
+        // [GIVEN] Close "Work Center Card".
+        WorkCenterCard.Close();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" and "Use All Gases As CO2e" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center Card".
+        WorkCenterCard.OpenView();
+        WorkCenterCard.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should be visible on "Work Center Card" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            WorkCenterCard."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, WorkCenterCard.Caption()));
+        Assert.AreEqual(
+           true,
+           WorkCenterCard."Calculate Total CO2e".Visible(),
+           StrSubstNo(CalculateTotalCO2eActionShouldBeVisibleErr, WorkCenterCard.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyCalculateTotalCO2eShouldbeVisibleOnWorkCenterListIfWorkMachineCenterEmissionsAndUseAllGasesAsCO2eIsEnabled()
+    var
+        WorkCenter: Record "Work Center";
+        SustainabilitySetup: Record "Sustainability Setup";
+        WorkCenterList: TestPage "Work Center List";
+    begin
+        // [SCENARIO 537413] Verify "Calculate Total CO2e" action should be visible on "Work Center List" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Work Center.
+        LibraryManufacturing.CreateWorkCenter(WorkCenter);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" and "Use All Gases As CO2e" to false in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", false);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", false);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center List".
+        WorkCenterList.OpenView();
+        WorkCenterList.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should not be visible on "Work Center List" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is not enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            WorkCenterList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, WorkCenterList.Caption()));
+        Assert.AreEqual(
+            false,
+            WorkCenterList."Calculate Total CO2e".Visible(),
+            StrSubstNo(CalculateTotalCO2eActionShouldNotBeVisibleErr, WorkCenterList.Caption()));
+
+        // [GIVEN] Close "Work Center List".
+        WorkCenterList.Close();
+
+        // [GIVEN] Update "Work/Machine Center Emissions" and "Use All Gases As CO2e" to true in Sustainability Setup.
+        SustainabilitySetup.Validate("Work/Machine Center Emissions", true);
+        SustainabilitySetup.Validate("Use All Gases As CO2e", true);
+        SustainabilitySetup.Modify(true);
+
+        // [WHEN] Open "Work Center List".
+        WorkCenterList.OpenView();
+        WorkCenterList.GoToRecord(WorkCenter);
+
+        // [VERIFY] Verify "Calculate Total CO2e" action should be visible on "Work Center List" page If "Work/Machine Center Emissions" and "Use All Gases As CO2e" is enabled in Sustainability Setup.
+        Assert.AreEqual(
+            false,
+            WorkCenterList."Calculate CO2e".Visible(),
+            StrSubstNo(ActionShouldNotBeVisibleErr, WorkCenterList.Caption()));
+        Assert.AreEqual(
+           true,
+           WorkCenterList."Calculate Total CO2e".Visible(),
+           StrSubstNo(CalculateTotalCO2eActionShouldBeVisibleErr, WorkCenterList.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnJobIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        JobCard: TestPage "Job Card";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Card and Lines
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [WHEN] Open "Job Card".
+        JobCard.OpenEdit();
+        JobCard.FILTER.SetFilter("No.", JobTask."Job No.");
+
+        // [THEN] "Total CO2e" is Visible on "Job Card".
+        Assert.IsTrue(
+            JobCard."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobCard."Total CO2e".Caption(),
+                JobCard.Caption()));
+
+        // [THEN] Total CO2e is Visible on Lines of Job.
+        Assert.IsTrue(
+            JobCard.JobTaskLines."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobCard.JobTaskLines."Total CO2e".Caption(),
+                JobCard.JobTaskLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnJobIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        JobCard: TestPage "Job Card";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are not Visible on Job Card and Lines
+        // if Enable Value Chain Tracking is False in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [WHEN] Open "Job Card".
+        JobCard.OpenEdit();
+        JobCard.FILTER.SetFilter("No.", JobTask."Job No.");
+
+        // [THEN] "Total CO2e" is not Visible on "Job Card".
+        Assert.IsFalse(
+            JobCard."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobCard."Total CO2e".Caption(),
+                JobCard.Caption()));
+
+        // [THEN] Total CO2e is not Visible on Lines of Job.
+        Assert.IsFalse(
+            JobCard.JobTaskLines."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobCard.JobTaskLines."Total CO2e".Caption(),
+                JobCard.JobTaskLines.Caption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('JobJournalTemplateModalPageHandler')]
+    procedure VerifySustFieldsAreVisibleOnJobJournalIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        JobJournalLine: Record "Job Journal Line";
+        JobJournal: TestPage "Job Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ResourceNo: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Journal
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create a Resource.
+        ResourceNo := LibraryJob.CreateConsumable("Job Planning Line Type"::Resource);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobJournalLine(JobJournalLine, JobTask, JobJournalLine.Type::Resource, ResourceNo, AccountCode, Quantity, TotalCO2e);
+
+        // [WHEN] Open "Job Journal".
+        JobJournal.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Job Journal".
+        Assert.IsTrue(
+            JobJournal."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobJournal."Total CO2e".Caption(),
+                JobJournal.Caption()));
+
+        Assert.IsTrue(
+            JobJournal."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobJournal."Sust. Account No.".Caption(),
+                JobJournal.Caption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('JobJournalTemplateModalPageHandler')]
+    procedure VerifySustFieldsAreNotVisibleOnJobJournalIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        JobJournalLine: Record "Job Journal Line";
+        JobJournal: TestPage "Job Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        ResourceNo: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are not Visible on Job Journal
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create a Resource.
+        ResourceNo := LibraryJob.CreateConsumable("Job Planning Line Type"::Resource);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobJournalLine(JobJournalLine, JobTask, JobJournalLine.Type::Resource, ResourceNo, AccountCode, Quantity, TotalCO2e);
+
+        // [WHEN] Open "Job Journal".
+        JobJournal.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is not Visible on "Job Journal".
+        Assert.IsFalse(
+            JobJournal."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobJournal."Total CO2e".Caption(),
+                JobJournal.Caption()));
+
+        Assert.IsFalse(
+            JobJournal."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobJournal."Sust. Account No.".Caption(),
+                JobJournal.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnJobGLJournalIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        JobGLJournal: TestPage "Job G/L Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job GL Journal
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create and Update Job Journal Batch.
+        CreateAndUpdateJobJournalBatch(GenJournalBatch);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobGLJournalLine(
+            GenJournalLine,
+            GenJournalBatch,
+            GenJournalLine."Bal. Account Type"::"G/L Account",
+            LibraryERM.CreateGLAccountNo(),
+            LibraryERM.CreateGLAccountNo(),
+            JobTask."Job No.",
+            JobTask."Job Task No.",
+            '',
+            Quantity);
+
+        GenJournalLine.Validate("Sust. Account No.", AccountCode);
+        GenJournalLine.Validate("Total CO2e", TotalCO2e);
+        GenJournalLine.Modify();
+
+        // [WHEN] Open "Job G/L Journal".
+        JobGLJournal.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Job G/L Journal".
+        Assert.IsTrue(
+            JobGLJournal."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobGLJournal."Total CO2e".Caption(),
+                JobGLJournal.Caption()));
+
+        Assert.IsTrue(
+            JobGLJournal."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobGLJournal."Sust. Account No.".Caption(),
+                JobGLJournal.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnJobGLJournalIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        JobGLJournal: TestPage "Job G/L Journal";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are not Visible on Job GL Journal
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create and Update Job Journal Batch.
+        CreateAndUpdateJobJournalBatch(GenJournalBatch);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobGLJournalLine(
+            GenJournalLine,
+            GenJournalBatch,
+            GenJournalLine."Bal. Account Type"::"G/L Account",
+            LibraryERM.CreateGLAccountNo(),
+            LibraryERM.CreateGLAccountNo(),
+            JobTask."Job No.",
+            JobTask."Job Task No.",
+            '',
+            Quantity);
+
+        GenJournalLine.Validate("Sust. Account No.", AccountCode);
+        GenJournalLine.Validate("Total CO2e", TotalCO2e);
+        GenJournalLine.Modify();
+
+        // [WHEN] Open "Job G/L Journal".
+        JobGLJournal.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is not Visible on "Job G/L Journal".
+        Assert.IsFalse(
+            JobGLJournal."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobGLJournal."Total CO2e".Caption(),
+                JobGLJournal.Caption()));
+
+        Assert.IsFalse(
+            JobGLJournal."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobGLJournal."Sust. Account No.".Caption(),
+                JobGLJournal.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnJobStatisticsIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        JobCard: TestPage "Job Card";
+        JobStatistics: TestPage "Job Statistics";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Statistics
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Open "Job Card".
+        JobCard.OpenEdit();
+        JobCard.FILTER.SetFilter("No.", JobTask."Job No.");
+        JobStatistics.Trap();
+
+        // [WHEN] Invoke "Job Statistics".
+        JobCard."&Statistics".Invoke();
+
+        // [THEN] "G/L Account (Total CO2e)", "Resource (Total CO2e)", "Item (Total CO2e)", "Total CO2e" are Visible on "Job Statistics".
+        Assert.IsTrue(
+            JobStatistics."G/L Account (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobStatistics."G/L Account (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsTrue(
+            JobStatistics."Resource (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobStatistics."Resource (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsTrue(
+            JobStatistics."Item (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobStatistics."Item (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsTrue(
+            JobStatistics."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobStatistics."Total CO2e".Caption(),
+                JobStatistics.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnJobStatisticsIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        JobCard: TestPage "Job Card";
+        JobStatistics: TestPage "Job Statistics";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are not Visible on Job Statistics
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Open "Job Card".
+        JobCard.OpenEdit();
+        JobCard.FILTER.SetFilter("No.", JobTask."Job No.");
+        JobStatistics.Trap();
+
+        // [WHEN] Invoke "Job Statistics".
+        JobCard."&Statistics".Invoke();
+
+        // [THEN] "G/L Account (Total CO2e)", "Resource (Total CO2e)", "Item (Total CO2e)", "Total CO2e" are not Visible on "Job Statistics".
+        Assert.IsFalse(
+            JobStatistics."G/L Account (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobStatistics."G/L Account (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsFalse(
+            JobStatistics."Resource (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobStatistics."Resource (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsFalse(
+            JobStatistics."Item (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobStatistics."Item (Total CO2e)".Caption(),
+                JobStatistics.Caption()));
+        Assert.IsFalse(
+            JobStatistics."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobStatistics."Total CO2e".Caption(),
+                JobStatistics.Caption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure VerifySustFieldsAreVisibleOnJobTaskStatisticsIsEnableValueChainTrackingIsTrue()
+    var
+        JobTask: Record "Job Task";
+        GLAccount: Record "G/L Account";
+        JobJournalLine: Record "Job Journal Line";
+        JobTaskLines: TestPage "Job Task Lines";
+        JobTaskStatistics: TestPage "Job Task Statistics";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Task Statistics
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create an "G/L Account".
+        LibraryERM.CreateGLAccount(GLAccount);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobJournalLine(JobJournalLine, JobTask, JobJournalLine.Type::"G/L Account", GLAccount."No.", AccountCode, Quantity, -TotalCO2e);
+
+        // [GIVEN] Posting the Job Journal Line.
+        LibraryJob.PostJobJournal(JobJournalLine);
+
+        // [GIVEN] Open Job Task Lines.
+        JobTaskLines.OpenEdit();
+        JobTaskLines.FILTER.SetFilter("Job No.", JobTask."Job No.");
+        JobTaskStatistics.Trap();
+
+        // [WHEN] Invoke "Job Task Statistics".
+        JobTaskLines.JobTaskStatistics.Invoke();
+
+        // [THEN] "G/L Account (Total CO2e)", "Resource (Total CO2e)", "Item (Total CO2e)", "Total CO2e" are Visible on "Job Task Statistics".
+        Assert.IsTrue(
+            JobTaskStatistics."G/L Account (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobTaskStatistics."G/L Account (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsTrue(
+            JobTaskStatistics."Resource (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobTaskStatistics."Resource (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsTrue(
+            JobTaskStatistics."Item (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobTaskStatistics."Item (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsTrue(
+            JobTaskStatistics."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                JobTaskStatistics."Total CO2e".Caption(),
+                JobTaskStatistics.Caption()));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure VerifySustFieldsAreNotVisibleOnJobTaskStatisticsIsEnableValueChainTrackingIsFalse()
+    var
+        JobTask: Record "Job Task";
+        GLAccount: Record "G/L Account";
+        JobJournalLine: Record "Job Journal Line";
+        JobTaskLines: TestPage "Job Task Lines";
+        JobTaskStatistics: TestPage "Job Task Statistics";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        TotalCO2e: Decimal;
+        Quantity: Decimal;
+    begin
+        // [SCENARIO 554969] Verify Sustainability Fields are Visible on Job Task Statistics
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create a Job with Job Task.
+        CreateJobWithJobTask(JobTask);
+
+        // [GIVEN] Create an "G/L Account".
+        LibraryERM.CreateGLAccount(GLAccount);
+
+        // [GIVEN] Generate Quantity, "Total CO2e".
+        Quantity := LibraryRandom.RandIntInRange(50, 100);
+        TotalCO2e := LibraryRandom.RandIntInRange(50, 100);
+
+        // [GIVEN] Create Job Journal Line with Job Task.
+        CreateJobJournalLine(JobJournalLine, JobTask, JobJournalLine.Type::"G/L Account", GLAccount."No.", AccountCode, Quantity, -TotalCO2e);
+
+        // [GIVEN] Posting the Job Journal Line.
+        LibraryJob.PostJobJournal(JobJournalLine);
+
+        // [GIVEN] Open Job Task Lines.
+        JobTaskLines.OpenEdit();
+        JobTaskLines.FILTER.SetFilter("Job No.", JobTask."Job No.");
+        JobTaskStatistics.Trap();
+
+        // [WHEN] Invoke "Job Task Statistics".
+        JobTaskLines.JobTaskStatistics.Invoke();
+
+        // [THEN] "G/L Account (Total CO2e)", "Resource (Total CO2e)", "Item (Total CO2e)", "Total CO2e" are not Visible on "Job Task Statistics".
+        Assert.IsFalse(
+            JobTaskStatistics."G/L Account (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobTaskStatistics."G/L Account (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsFalse(
+            JobTaskStatistics."Resource (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobTaskStatistics."Resource (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsFalse(
+            JobTaskStatistics."Item (Total CO2e)".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobTaskStatistics."Item (Total CO2e)".Caption(),
+                JobTaskStatistics.Caption()));
+        Assert.IsFalse(
+            JobTaskStatistics."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                JobTaskStatistics."Total CO2e".Caption(),
+                JobTaskStatistics.Caption()));
+    end;
+
+    [Test]
+    procedure VerifyErrorWhenUpdatingNegativeValueOnRecyclabilityPercentageOnItemCard()
+    var
+        Item: Record "Item";
+        ItemCard: TestPage "Item Card";
+        RecyclabilityPercentage: decimal;
+    begin
+        // [SCENARIO 580128] Verify system should throw an error when "Recyclability Percentage" is set to a negative value on Item Card.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Generate a random negative value for "Recyclability Percentage".
+        RecyclabilityPercentage := -LibraryRandom.RandIntInRange(100, 200);
+
+        // [GIVEN] Open Item Card page.
+        ItemCard.OpenEdit();
+        ItemCard.GoToRecord(Item);
+
+        // [WHEN] Updating "Recyclability Percentage" to Negative value.
+        asserterror ItemCard."Recyclability Percentage".SetValue(RecyclabilityPercentage);
+
+        // [THEN] Verify expected error message when "Recyclability Percentage" is set to a negative value on Item Card.
+        Assert.ExpectedError(StrSubstNo(RecyclabilityPercentageMinValueErr, 0, RecyclabilityPercentage));
+        ItemCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyErrorWhenUpdatingValueAboveHundredInRecyclabilityPercentageOnItemCard()
+    var
+        Item: Record Item;
+        ItemCard: TestPage "Item Card";
+        RecyclabilityPercentage: decimal;
+    begin
+        // [SCENARIO 580128] Verify system should throw an error when "Recyclability Percentage" value is set above 100 on Item Card.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Generate a random value above maximum for "Recyclability Percentage".
+        RecyclabilityPercentage := LibraryRandom.RandIntInRange(101, 200);
+
+        // [GIVEN] Open Item Card page.
+        ItemCard.OpenEdit();
+        ItemCard.GoToRecord(Item);
+
+        // [WHEN] Updating "Recyclability Percentage" above maximum value.
+        asserterror ItemCard."Recyclability Percentage".SetValue(RecyclabilityPercentage);
+
+        // [THEN] Verify expected error message when "Recyclability Percentage" is set to above maximum value on Item Card.
+        Assert.ExpectedError(StrSubstNo(RecyclabilityPercentageMaxValueErr, 100, RecyclabilityPercentage));
+        ItemCard.Close();
+    end;
+
+    [Test]
+    procedure VerifyEmissionUnitOfMeasureCanBeChangedInSustainabilitySetupWithNoLedgerEntriesExist()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+        UnitOfMeasure: Record "Unit of Measure";
+    begin
+        // [SCENARIO 580119] Verify that the "Emission Unit of Measure Code" in the Sustainability Setup can be modified when no sustainability ledger entries exist.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure);
+
+        // [GIVEN] Get Sustainability Setup.
+        SustainabilitySetup.Get();
+
+        // [WHEN] Update the "Emission Unit of Measure Code" in Sustainability Setup.
+        SustainabilitySetup.Validate("Emission Unit of Measure Code", UnitOfMeasure.Code);
+        SustainabilitySetup.Modify();
+
+        // [THEN] Verify that the "Emission Unit of Measure Code" in the Sustainability Setup can be modified.
+        Assert.AreEqual(
+            UnitOfMeasure.Code,
+            SustainabilitySetup."Emission Unit of Measure Code",
+            StrSubstNo(
+                ValueMustBeEqualErr,
+                SustainabilitySetup.FieldCaption("Emission Unit of Measure Code"),
+                UnitOfMeasure.Code,
+                SustainabilitySetup.TableCaption()));
+    end;
+
+    [Test]
+    procedure VerifySystemShouldThrowAnErrorWhenEmissionUnitOfMeasureIsUpdatedInSustainabilitySetupWithExistingLedgerEntries()
+    var
+        Item: Record Item;
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        UnitOfMeasure: array[2] of Record "Unit of Measure";
+        SustainabilitySetup: Record "Sustainability Setup";
+        SustainabilityAccount: Record "Sustainability Account";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 580119] Verify that the system should throw an error message when attempting to change the 'Emission Unit of Measure Code' in the Sustainability Setup.
+        // When there are existing sustainability ledger entries using the current unit of measure.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure[1]);
+
+        // [GIVEN] Create another Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure[2]);
+
+        // [GIVEN] Get Sustainability Setup with "Emission Unit of Measure Code".
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Emission Unit of Measure Code", UnitOfMeasure[1].Code);
+        SustainabilitySetup.Modify();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, 1);
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Create Item Unit of Measure.
+        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitOfMeasure, Item."No.", UnitOfMeasure[1].Code, 1);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader.Modify();
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            Item."No.",
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Unit of Measure code" in purchase line.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Unit of Measure code", UnitOfMeasure[1].Code);
+        PurchaseLine.Modify();
+
+        // [GIVEN] Post the Purchase Document.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Update the "Emission Unit of Measure Code" in Sustainability Setup.
+        asserterror SustainabilitySetup.Validate("Emission Unit of Measure Code", UnitOfMeasure[2].Code);
+
+        // [THEN] Verify that the system should throw an error message when attempting to change the 'Emission Unit of Measure Code' in the Sustainability Setup.
+        Assert.ExpectedError(StrSubstNo(EmissionUOMCannotBeChangedErr, SustainabilitySetup.FieldCaption("Emission Unit of Measure Code"), UnitOfMeasure[1].Code));
+    end;
+
+    [Test]
+    procedure VerifyEmissionUnitOfMeasureCannotBeEditInSustainabilitySetupPage()
+    var
+        Item: Record Item;
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        UnitOfMeasure: array[2] of Record "Unit of Measure";
+        SustainabilitySetup: Record "Sustainability Setup";
+        SustainabilityAccount: Record "Sustainability Account";
+        SustainabilitySetupPage: TestPage "Sustainability Setup";
+        AccountCode: Code[20];
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+    begin
+        // [SCENARIO 580119] Verify that 'Emission Unit of Measure Code' cannot be edited in the Sustainability Setup when there are existing sustainability ledger entries using the current unit of measure.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure[1]);
+
+        // [GIVEN] Create another Unit of Measure.
+        LibraryInventory.CreateUnitOfMeasureCode(UnitOfMeasure[2]);
+
+        // [GIVEN] Get Sustainability Setup with "Emission Unit of Measure Code".
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Emission Unit of Measure Code", UnitOfMeasure[1].Code);
+        SustainabilitySetup.Modify();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, 1);
+        SustainabilityAccount.Get(AccountCode);
+
+        // [GIVEN] Create an Item.
+        LibraryInventory.CreateItem(Item);
+
+        // [GIVEN] Create Item Unit of Measure.
+        LibraryInventory.CreateItemUnitOfMeasure(ItemUnitOfMeasure, Item."No.", UnitOfMeasure[1].Code, 1);
+
+        // [GIVEN] Create a Purchase Header.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader.Modify();
+
+        // [GIVEN] Create a Purchase Line.
+        LibraryPurchase.CreatePurchaseLine(
+            PurchaseLine,
+            PurchaseHeader,
+            "Purchase Line Type"::Item,
+            Item."No.",
+            LibraryRandom.RandInt(10));
+
+        // [GIVEN] Update "Unit of Measure code" in purchase line.
+        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Validate("Emission CO2", LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Unit of Measure code", UnitOfMeasure[1].Code);
+        PurchaseLine.Modify();
+
+        // [GIVEN] Post the Purchase Document.
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Open the Sustainability Setup page.
+        SustainabilitySetupPage.OpenEdit();
+
+        // [THEN] Verify that 'Emission Unit of Measure Code' cannot be edited in the Sustainability Setup.
+        Assert.IsFalse(
+            SustainabilitySetupPage."Emission Unit of Measure Code".Editable(),
+            StrSubstNo(FieldShouldNotBeEditableErr, SustainabilitySetup.FieldCaption("Emission Unit of Measure Code"), SustainabilitySetupPage.Caption()));
+        SustainabilitySetupPage.Close();
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPurchaseInvoiceWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PurchaseInvoice: TestPage "Purchase Invoice";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Invoice.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Invoice with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Open Purchase Invoice Line.
+        PurchaseInvoice.OpenEdit();
+        PurchaseInvoice.GotoRecord(PurchaseHeader);
+        PurchaseInvoice.PurchLines.GotoRecord(PurchaseLine);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Purchase Invoice Line.
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Fuel/Electricity".Caption(), PurchaseInvoice.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Distance".Caption(), PurchaseInvoice.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Custom amount".Caption(), PurchaseInvoice.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Installation multiplier".Caption(), PurchaseInvoice.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseInvoice.PurchLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseInvoice.PurchLines."Time Factor".Caption(), PurchaseInvoice.PurchLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPurchaseOrderWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PurchaseOrder: TestPage "Purchase Order";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Order.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Order with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Open Purchase Order line.
+        PurchaseOrder.OpenEdit();
+        PurchaseOrder.GotoRecord(PurchaseHeader);
+        PurchaseOrder.PurchLines.GotoRecord(PurchaseLine);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Purchase Order Line.
+        Assert.IsTrue(PurchaseOrder.PurchLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Fuel/Electricity".Caption(), PurchaseOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseOrder.PurchLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Distance".Caption(), PurchaseOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseOrder.PurchLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Custom amount".Caption(), PurchaseOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseOrder.PurchLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Installation multiplier".Caption(), PurchaseOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseOrder.PurchLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseOrder.PurchLines."Time Factor".Caption(), PurchaseOrder.PurchLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPurchaseCrMemoWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PurchaseCreditMemo: TestPage "Purchase Credit Memo";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Credit Memo.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::"Credit Memo", LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Credit Memo with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Open Purchase Credit Memo Line.
+        PurchaseCreditMemo.OpenEdit();
+        PurchaseCreditMemo.GotoRecord(PurchaseHeader);
+        PurchaseCreditMemo.PurchLines.GotoRecord(PurchaseLine);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Purchase Credit Memo Line.
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Fuel/Electricity".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Distance".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Custom amount".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Installation multiplier".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseCreditMemo.PurchLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseCreditMemo.PurchLines."Time Factor".Caption(), PurchaseCreditMemo.PurchLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPurchaseReturnOrderWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PurchaseReturnOrder: TestPage "Purchase Return Order";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Return Order.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::"Return Order", LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Return Order with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+        PurchaseLine.Validate("Sust. Account No.", AccountCode);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Open Purchase Return Order Line.
+        PurchaseReturnOrder.OpenEdit();
+        PurchaseReturnOrder.GotoRecord(PurchaseHeader);
+        PurchaseReturnOrder.PurchLines.GotoRecord(PurchaseLine);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Purchase Return Order Line.
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Fuel/Electricity".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Distance".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Custom amount".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Installation multiplier".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+        Assert.IsTrue(PurchaseReturnOrder.PurchLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PurchaseReturnOrder.PurchLines."Time Factor".Caption(), PurchaseReturnOrder.PurchLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPostedPurchaseInvoiceWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseInvHeader: Record "Purch. Inv. Header";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedPurchaseInvoice: TestPage "Posted Purchase Invoice";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Order.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Order with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [GIVEN] Post the Purchase Order.
+        PurchaseInvHeader.Get(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+
+        // [WHEN] Open Posted Purchase Invoice line.
+        PostedPurchaseInvoice.OpenEdit();
+        PostedPurchaseInvoice.GotoRecord(PurchaseInvHeader);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Posted Purchase Invoice line.
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Fuel/Electricity".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Distance".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Custom Amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Custom amount".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Installation multiplier".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+        Assert.IsTrue(PostedPurchaseInvoice.PurchInvLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseInvoice.PurchInvLines."Time Factor".Caption(), PostedPurchaseInvoice.PurchInvLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSustFormulaFieldsAreVisibleOnPostedPurchaseCrMemoWhenUseFormulasInPurchDocsIsEnabled()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
+        PurchaseLine: Record "Purchase Line";
+        CategoryCode: Code[20];
+        SubcategoryCode: Code[20];
+        AccountCode: Code[20];
+        PostedPurchaseCreditMemo: TestPage "Posted Purchase Credit Memo";
+    begin
+        // [SCENARIO 580123] Verify Sustainability Formula Fields are visible when "Use Formulas In Purch. Docs" is enabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [GIVEN] Create a Sustainability Account.
+        CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
+
+        // [GIVEN] Create Purchase Credit Memo.
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::"Credit Memo", LibraryPurchase.CreateVendorNo());
+
+        // [GIVEN] Create Purchase Credit Memo with one line.
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, "Purchase Line Type"::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(10));
+
+        // [GIVEN] Post the Purchase Cr Memo.
+        PurchaseCrMemoHeader.Get(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+
+        // [WHEN] Open Posted Purchase Credit Memo Line.
+        PostedPurchaseCreditMemo.OpenEdit();
+        PostedPurchaseCreditMemo.GotoRecord(PurchaseCrMemoHeader);
+
+        // [THEN] Verify Sustainability Formula Fields are visible on Posted Purchase Credit Memo Line.
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Fuel/Electricity".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Fuel/Electricity".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Distance".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Distance".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Custom amount".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Custom amount".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Installation Multiplier".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Installation multiplier".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+        Assert.IsTrue(PostedPurchaseCreditMemo.PurchCrMemoLines."Time Factor".Visible(), StrSubstNo(FieldShouldBeVisibleErr, PostedPurchaseCreditMemo.PurchCrMemoLines."Time Factor".Caption(), PostedPurchaseCreditMemo.PurchCrMemoLines.Caption()));
+    end;
+
+    [Test]
+    procedure TestSystemMustThrowAnErrorWhenEnablingUseFormulasInPurchDocsWhenUseEmissionsInPurchDocIsDisabledInSustSetup()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        // [SCENARIO 580123] Verify that the system must throw an error when enabling 'Use Formulas In Purch. Docs'.
+        // when 'Use Emissions In Purch. Doc.' is disabled in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Use Emissions In Purch. Doc." and "Use Formulas In Purch. Docs" to false in Sustainability Setup.
+        SustainabilitySetup.Get();
+        SustainabilitySetup.Validate("Use Formulas In Purch. Docs", false);
+        SustainabilitySetup.Validate("Use Emissions In Purch. Doc.", false);
+        SustainabilitySetup.Modify(true);
+
+        // [GIVEN] Save a transaction.
+        Commit();
+
+        // [WHEN] Update "Use Formulas In Purch. Docs" to true in Sustainability Setup.
+        asserterror SustainabilitySetup.Validate("Use Formulas In Purch. Docs", true);
+
+        // [THEN] Verify that the system must throw an error when enabling "Use Formulas In Purch. Docs".
+        Assert.ExpectedTestFieldError(SustainabilitySetup.FieldCaption("Use Emissions In Purch. Doc."), Format(true));
+
+        // [GIVEN] Enable "Use Formulas In Purch. Docs" in Sustainability Setup.
+        LibrarySustainability.EnableFormulaInPurchDocsInSustainabilitySetup();
+
+        // [WHEN] Update "Use Formulas In Purch. Docs" to false in Sustainability Setup.
+        SustainabilitySetup.Get();
+        asserterror SustainabilitySetup.Validate("Use Emissions In Purch. Doc.", false);
+
+        // [THEN] Verify that the system must throw an error when "Use Formulas In Purch. Docs" is set to false in Sustainability Setup.
+        Assert.ExpectedTestFieldError(SustainabilitySetup.FieldCaption("Use Formulas In Purch. Docs"), Format(false));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnPostedServCrMemoSubformIsEnableValueChainTrackingIsTrue()
+    var
+        PostedServiceCrMemoLines: TestPage "Posted Service Cr. Memo Lines";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are Visible on "Posted Service Cr. Memo Lines"
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Posted Service Cr. Memo Lines".
+        PostedServiceCrMemoLines.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Posted Service Cr. Memo Lines".
+        Assert.IsTrue(
+            PostedServiceCrMemoLines."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                PostedServiceCrMemoLines."Total CO2e".Caption(),
+                PostedServiceCrMemoLines.Caption()));
+
+        Assert.IsTrue(
+            PostedServiceCrMemoLines."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                PostedServiceCrMemoLines."Sust. Account No.".Caption(),
+                PostedServiceCrMemoLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnPostedServCrMemoSubformIsEnableValueChainTrackingIsFalse()
+    var
+        PostedServiceCrMemoLines: TestPage "Posted Service Cr. Memo Lines";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are not Visible on "Posted Service Cr. Memo Lines"
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Posted Service Cr. Memo Lines".
+        PostedServiceCrMemoLines.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" are not Visible on "Posted Service Cr. Memo Lines".
+        Assert.IsTrue(
+            PostedServiceCrMemoLines."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                PostedServiceCrMemoLines."Total CO2e".Caption(),
+                PostedServiceCrMemoLines.Caption()));
+
+        Assert.IsTrue(
+            PostedServiceCrMemoLines."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                PostedServiceCrMemoLines."Sust. Account No.".Caption(),
+                PostedServiceCrMemoLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnPostedServInvoiceSubformIsEnableValueChainTrackingIsTrue()
+    var
+        PostedServiceInvoiceSubform: TestPage "Posted Service Invoice Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are Visible on "Posted Service Invoice Subform"
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Posted Service Invoice Subform".
+        PostedServiceInvoiceSubform.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Posted Service Invoice Subform".
+        Assert.IsTrue(
+            PostedServiceInvoiceSubform."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                PostedServiceInvoiceSubform."Total CO2e".Caption(),
+                PostedServiceInvoiceSubform.Caption()));
+
+        Assert.IsTrue(
+            PostedServiceInvoiceSubform."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldBeVisibleErr,
+                PostedServiceInvoiceSubform."Sust. Account No.".Caption(),
+                PostedServiceInvoiceSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnPostedServInvoiceSubformIsEnableValueChainTrackingIsFalse()
+    var
+        PostedServiceInvoiceSubform: TestPage "Posted Service Invoice Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are not Visible on "Posted Service Invoice Subform"
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Posted Service Invoice Subform".
+        PostedServiceInvoiceSubform.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" are not Visible on "Posted Service Invoice Subform".
+        Assert.IsTrue(
+            PostedServiceInvoiceSubform."Total CO2e".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                PostedServiceInvoiceSubform."Total CO2e".Caption(),
+                PostedServiceInvoiceSubform.Caption()));
+
+        Assert.IsTrue(
+            PostedServiceInvoiceSubform."Sust. Account No.".Visible(),
+            StrSubstNo(
+                FieldShouldNotBeVisibleErr,
+                PostedServiceInvoiceSubform."Sust. Account No.".Caption(),
+                PostedServiceInvoiceSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnServiceInvoiceSubformIsEnableValueChainTrackingIsTrue()
+    var
+        ServiceInvoiceSubform: TestPage "Service Invoice Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are Visible on "Service Invoice Subform"
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Service Invoice Subform".
+        ServiceInvoiceSubform.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Service Invoice Subform".
+        Assert.IsTrue(
+            ServiceInvoiceSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ServiceInvoiceSubform."Total CO2e".Caption(), ServiceInvoiceSubform.Caption()));
+        Assert.IsTrue(
+            ServiceInvoiceSubform."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ServiceInvoiceSubform."Sust. Account No.".Caption(), ServiceInvoiceSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnServiceInvoiceSubformIsEnableValueChainTrackingIsFalse()
+    var
+        ServiceInvoiceSubform: TestPage "Service Invoice Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are not Visible on "Service Invoice Subform"
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [WHEN] Open "Service Invoice Subform".
+        ServiceInvoiceSubform.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" are not Visible on "Service Invoice Subform".
+        Assert.IsFalse(
+            ServiceInvoiceSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ServiceInvoiceSubform."Total CO2e".Caption(), ServiceInvoiceSubform.Caption()));
+        Assert.IsFalse(
+            ServiceInvoiceSubform."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ServiceInvoiceSubform."Sust. Account No.".Caption(), ServiceInvoiceSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnServiceCrMemoSubformIsEnableValueChainTrackingIsTrue()
+    var
+        ServiceCrMemoSubform: TestPage "Service Credit Memo Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are Visible on "Service Cr. Memo Subform"
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Service Cr. Memo Subform".
+        ServiceCrMemoSubform.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Service Cr. Memo Subform".
+        Assert.IsTrue(
+            ServiceCrMemoSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ServiceCrMemoSubform."Total CO2e".Caption(), ServiceCrMemoSubform.Caption()));
+        Assert.IsTrue(
+            ServiceCrMemoSubform."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ServiceCrMemoSubform."Sust. Account No.".Caption(), ServiceCrMemoSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnServiceCrMemoSubformIsEnableValueChainTrackingIsFalse()
+    var
+        ServiceCrMemoSubform: TestPage "Service Credit Memo Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are not Visible on "Service Cr. Memo Subform"
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [WHEN] Open "Service Cr. Memo Subform".
+        ServiceCrMemoSubform.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" are not Visible on "Service Cr. Memo Subform".
+        Assert.IsFalse(
+            ServiceCrMemoSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ServiceCrMemoSubform."Total CO2e".Caption(), ServiceCrMemoSubform.Caption()));
+        Assert.IsFalse(
+            ServiceCrMemoSubform."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ServiceCrMemoSubform."Sust. Account No.".Caption(), ServiceCrMemoSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnServiceLinesIsEnableValueChainTrackingIsTrue()
+    var
+        ServiceLines: TestPage "Service Lines";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are Visible on "Service Lines"
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Service Lines".
+        ServiceLines.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Service Lines".
+        Assert.IsTrue(
+            ServiceLines."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ServiceLines."Total CO2e".Caption(), ServiceLines.Caption()));
+        Assert.IsTrue(
+            ServiceLines."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ServiceLines."Sust. Account No.".Caption(), ServiceLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnServiceLinesIsEnableValueChainTrackingIsFalse()
+    var
+        ServiceLines: TestPage "Service Lines";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are not Visible on "Service Lines"
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [WHEN] Open "Service Lines".
+        ServiceLines.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" are not Visible on "Service Lines".
+        Assert.IsFalse(
+            ServiceLines."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ServiceLines."Total CO2e".Caption(), ServiceLines.Caption()));
+        Assert.IsFalse(
+            ServiceLines."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ServiceLines."Sust. Account No.".Caption(), ServiceLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnServiceQuoteLinesIsEnableValueChainTrackingIsTrue()
+    var
+        ServiceQuoteLines: TestPage "Service Quote Lines";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are Visible on "Service Quote Lines"
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Service Quote Lines".
+        ServiceQuoteLines.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Service Quote Lines".
+        Assert.IsTrue(
+            ServiceQuoteLines."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ServiceQuoteLines."Total CO2e".Caption(), ServiceQuoteLines.Caption()));
+        Assert.IsTrue(
+            ServiceQuoteLines."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ServiceQuoteLines."Sust. Account No.".Caption(), ServiceQuoteLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnServiceQuoteLinesIsEnableValueChainTrackingIsFalse()
+    var
+        ServiceQuoteLines: TestPage "Service Quote Lines";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are not Visible on "Service Quote Lines"
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [WHEN] Open "Service Quote Lines".
+        ServiceQuoteLines.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" are not Visible on "Service Quote Lines".
+        Assert.IsFalse(
+            ServiceQuoteLines."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ServiceQuoteLines."Total CO2e".Caption(), ServiceQuoteLines.Caption()));
+        Assert.IsFalse(
+            ServiceQuoteLines."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ServiceQuoteLines."Sust. Account No.".Caption(), ServiceQuoteLines.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnPostedServiceCrMemoSubformIsEnableValueChainTrackingIsTrue()
+    var
+        PostedServiceCrMemoSubform: TestPage "Posted Serv. Cr. Memo Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are Visible on "Posted Service Cr. Memo Subform"
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Posted Serv. Cr. Memo Subform".
+        PostedServiceCrMemoSubform.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" is Visible on "Posted Serv. Cr. Memo Subform".
+        Assert.IsTrue(
+            PostedServiceCrMemoSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, PostedServiceCrMemoSubform."Total CO2e".Caption(), PostedServiceCrMemoSubform.Caption()));
+        Assert.IsTrue(
+            PostedServiceCrMemoSubform."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, PostedServiceCrMemoSubform."Sust. Account No.".Caption(), PostedServiceCrMemoSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnPostedServiceCrMemoSubformIsEnableValueChainTrackingIsFalse()
+    var
+        PostedServiceCrMemoSubform: TestPage "Posted Serv. Cr. Memo Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are not Visible on "Posted Service Cr. Memo Subform"
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [WHEN] Open "Posted Serv. Cr. Memo Subform".
+        PostedServiceCrMemoSubform.OpenEdit();
+
+        // [THEN] "Sust. Account No.","Total CO2e" are not Visible on "Posted Serv. Cr. Memo Subform".
+        Assert.IsFalse(
+            PostedServiceCrMemoSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, PostedServiceCrMemoSubform."Total CO2e".Caption(), PostedServiceCrMemoSubform.Caption()));
+        Assert.IsFalse(
+            PostedServiceCrMemoSubform."Sust. Account No.".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, PostedServiceCrMemoSubform."Sust. Account No.".Caption(), PostedServiceCrMemoSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnPostedServiceShptSubformIsEnableValueChainTrackingIsTrue()
+    var
+        PostedServiceShipmentSubform: TestPage "Posted Service Shpt. Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are Visible on "Posted Service Shpt. Subform"
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Posted Service Shpt. Subform".
+        PostedServiceShipmentSubform.OpenEdit();
+
+        // [THEN] "Total CO2e" is Visible on "Posted Service Shpt. Subform".
+        Assert.IsTrue(
+            PostedServiceShipmentSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, PostedServiceShipmentSubform."Total CO2e".Caption(), PostedServiceShipmentSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnPostedServiceShptSubformIsEnableValueChainTrackingIsFalse()
+    var
+        PostedServiceShipmentSubform: TestPage "Posted Service Shpt. Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are not Visible on "Posted Service Shpt. Subform"
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [WHEN] Open "Posted Service Shpt. Subform".
+        PostedServiceShipmentSubform.OpenEdit();
+
+        // [THEN] "Total CO2e" are not Visible on "Posted Service Shpt. Subform".
+        Assert.IsFalse(
+            PostedServiceShipmentSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, PostedServiceShipmentSubform."Total CO2e".Caption(), PostedServiceShipmentSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreVisibleOnServiceOrderSubformIsEnableValueChainTrackingIsTrue()
+    var
+        ServiceOrderSubform: TestPage "Service Order Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are Visible on "Service Order Subform"
+        // if Enable Value Chain Tracking is true in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(true);
+
+        // [WHEN] Open "Service Order Subform".
+        ServiceOrderSubform.OpenEdit();
+
+        // [THEN] "Total CO2e" is Visible on "Service Order Subform".
+        Assert.IsTrue(
+            ServiceOrderSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldBeVisibleErr, ServiceOrderSubform."Total CO2e".Caption(), ServiceOrderSubform.Caption()));
+    end;
+
+    [Test]
+    procedure VerifySustFieldsAreNotVisibleOnServiceOrderSubformIsEnableValueChainTrackingIsFalse()
+    var
+        ServiceOrderSubform: TestPage "Service Order Subform";
+    begin
+        // [SCENARIO 580158] Verify Sustainability Fields are not Visible on "Service Order Subform"
+        // if Enable Value Chain Tracking is false in Sustainability Setup.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Update "Enable Value Chain Tracking" in Sustainability Setup.
+        LibrarySustainability.UpdateValueChainTrackingInSustainabilitySetup(false);
+
+        // [WHEN] Open "Service Order Subform".
+        ServiceOrderSubform.OpenEdit();
+
+        // [THEN] "Total CO2e" are not Visible on "Service Order Subform".
+        Assert.IsFalse(
+            ServiceOrderSubform."Total CO2e".Visible(),
+            StrSubstNo(FieldShouldNotBeVisibleErr, ServiceOrderSubform."Total CO2e".Caption(), ServiceOrderSubform.Caption()));
     end;
 
     local procedure CreateSustainabilityAccount(var AccountCode: Code[20]; var CategoryCode: Code[20]; var SubcategoryCode: Code[20]; i: Integer): Record "Sustainability Account"
@@ -5296,12 +7388,6 @@ codeunit 148187 "Sust. Certificate Test"
         TransferShipmentHeader.FindSet();
     end;
 
-    local procedure GetTransferReceiptHeader(var TransferReceiptHeader: Record "Transfer Receipt Header"; FromLocationCode: Code[10])
-    begin
-        TransferReceiptHeader.SetRange("Transfer-from Code", FromLocationCode);
-        TransferReceiptHeader.FindSet();
-    end;
-
     local procedure CreateTransferOrderWithLocation(var TransferHeader: Record "Transfer Header"; Item: Record Item; FromLocationCode: Code[10]; ToLocationCode: Code[10]; IntransitLocationCode: Code[10]; Quantity: Decimal; CO2ePerUnit: Decimal)
     var
         TransferLine: Record "Transfer Line";
@@ -5334,9 +7420,11 @@ codeunit 148187 "Sust. Certificate Test"
         ItemJournalTemplate: Record "Item Journal Template";
         ItemJournalBatch: Record "Item Journal Batch";
     begin
+#pragma warning disable AA0210
         ItemJournalTemplate.SetRange(Type, ItemJournalTemplate.Type::Item);
         ItemJournalTemplate.SetRange(Recurring, false);
         ItemJournalTemplate.FindFirst();
+#pragma warning restore AA0210
         ItemJournalBatch.SetRange("Journal Template Name", ItemJournalTemplate.Name);
         ItemJournalBatch.FindFirst();
 
@@ -5365,7 +7453,7 @@ codeunit 148187 "Sust. Certificate Test"
         BOMComponent: Record "BOM Component";
     begin
         BOMComponent.SetRange("Parent Item No.", ParentItem."No.");
-        BOMComponent.FindSet();
+        BOMComponent.FindFirst();
 
         exit(BOMComponent."No.")
     end;
@@ -5446,6 +7534,56 @@ codeunit 148187 "Sust. Certificate Test"
         LibraryInventory.ClearItemJournal(ItemJournalTemplate, ItemJournalBatch);
     end;
 
+    local procedure CreateJobWithJobTask(var JobTask: Record "Job Task")
+    var
+        Job: Record Job;
+    begin
+        LibraryJob.CreateJob(Job);
+        LibraryJob.CreateJobTask(Job, JobTask);
+    end;
+
+    local procedure CreateJobJournalLine(var JobJournalLine: Record "Job Journal Line"; JobTask: Record "Job Task"; JobJournalLineType: Enum "Job Journal Line Type"; No: Code[20]; AccountCode: Code[20]; Quantity: Decimal; TotalCO2e: Decimal)
+    begin
+        LibraryJob.CreateJobJournalLineForType("Job Line Type"::" ", JobJournalLineType, JobTask, JobJournalLine);
+        JobJournalLine.Validate("No.", No);
+        JobJournalLine.Validate(Quantity, Quantity);
+        JobJournalLine.Validate("Sust. Account No.", AccountCode);
+        JobJournalLine.Validate("Total CO2e", TotalCO2e);
+        JobJournalLine.Modify(true);
+    end;
+
+    local procedure CreateAndUpdateJobJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
+    begin
+        CreateJobJournalBatch(GenJournalBatch);
+        GenJournalBatch.Validate("Copy VAT Setup to Jnl. Lines", false);
+        GenJournalBatch.Modify(true);
+    end;
+
+    local procedure CreateJobJournalBatch(var GenJournalBatch: Record "Gen. Journal Batch")
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        GenJournalTemplate.SetRange(Type, GenJournalTemplate.Type::Jobs);
+        LibraryERM.FindGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+    end;
+
+    local procedure CreateJobGLJournalLine(var GenJournalLine: Record "Gen. Journal Line"; GenJournalBatch: Record "Gen. Journal Batch"; BalAccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20]; BalAccountNo: Code[20]; JobNo: Code[20]; JobTaskNo: Code[20]; CurrencyCode: Code[10]; Quantity: Decimal)
+    begin
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::Invoice,
+          GenJournalLine."Account Type"::"G/L Account", AccountNo, LibraryRandom.RandDec(100, 2));
+
+        GenJournalLine.Validate("Bal. Account Type", BalAccountType);
+        GenJournalLine.Validate("Bal. Account No.", BalAccountNo);
+        GenJournalLine.Validate("Currency Code", CurrencyCode);
+        GenJournalLine.Validate("Job Line Type", GenJournalLine."Job Line Type"::"Both Budget and Billable");
+        GenJournalLine.Validate("Job No.", JobNo);
+        GenJournalLine.Validate("Job Task No.", JobTaskNo);
+        GenJournalLine.Validate("Job Quantity", Quantity);
+        GenJournalLine.Modify(true);
+    end;
+
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
     begin
@@ -5516,5 +7654,11 @@ codeunit 148187 "Sust. Certificate Test"
     [MessageHandler]
     procedure MessageHandler(Message: Text[1024])
     begin
+    end;
+
+    [ModalPageHandler]
+    procedure JobJournalTemplateModalPageHandler(var JobJournalTemplateList: TestPage "Job Journal Template List")
+    begin
+        JobJournalTemplateList.OK().Invoke();
     end;
 }

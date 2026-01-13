@@ -3,6 +3,7 @@ codeunit 139899 "APIV2 - Document Attach. E2E"
     // version Test,ERM,W1,All
 
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = Disabled;
 
     trigger OnRun()
@@ -21,8 +22,6 @@ codeunit 139899 "APIV2 - Document Attach. E2E"
         ImageAsBase64Txt: Label 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAhSURBVBhXYwCC/0RirILYMIIDAtjYUIzCwYexCqJhhv8AD/M3yc4WsFgAAAAASUVORK5CYII=', Locked = true;
         AttachmentEntityBufferDocumentType: Enum "Attachment Entity Buffer Document Type";
         AttachmentServiceNameTxt: Label 'documentAttachments';
-        EmptyJSONErr: Label 'The JSON should not be blank.';
-        WrongPropertyValueErr: Label 'Incorrect property value for %1.', Comment = '%1=Property name';
 
     [Test]
     procedure TestGetCustomerAttachments()
@@ -983,33 +982,6 @@ codeunit 139899 "APIV2 - Document Attach. E2E"
         Base64Content := BlobToBase64String(TempBlob);
     end;
 
-    local procedure VerifyPropertyInJSON(JSON: Text; PropertyName: Text; ExpectedValue: Text)
-    var
-        PropertyValue: Text;
-    begin
-        LibraryGraphMgt.GetObjectIDFromJSON(JSON, PropertyName, PropertyValue);
-        Assert.AreEqual(ExpectedValue, PropertyValue, StrSubstNo(WrongPropertyValueErr, PropertyName));
-    end;
-
-    local procedure VerifyAttachmentProperties(AttachmentJSON: Text; var DocumentAttachment: Record "Document Attachment"; ExpectedBase64Content: Text)
-    var
-        TempBlob: Codeunit "Temp Blob";
-        ContentOutStream: OutStream;
-        FileName: Text;
-    begin
-        Assert.AreNotEqual('', AttachmentJSON, EmptyJSONErr);
-        if not IsNullGuid(DocumentAttachment.SystemId) then
-            LibraryGraphMgt.VerifyGUIDFieldInJson(AttachmentJSON, 'id', DocumentAttachment.SystemId);
-        FileName := NameAndExtensionToFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension");
-        VerifyPropertyInJSON(AttachmentJSON, 'fileName', FileName);
-        TempBlob.CreateOutStream(ContentOutStream);
-        DocumentAttachment."Document Reference ID".ExportStream(ContentOutStream);
-
-        VerifyPropertyInJSON(AttachmentJSON, 'byteSize', Format(GetBlobLength(TempBlob), 0, 9));
-        if ExpectedBase64Content <> '' then
-            Assert.AreEqual(ExpectedBase64Content, GetAttachmentBase64Content(DocumentAttachment), 'Wrong content.');
-    end;
-
     local procedure FormatGuid(Value: Guid): Text
     begin
         exit(LowerCase(LibraryGraphMgt.StripBrackets(Format(Value, 0, 9))));
@@ -1038,22 +1010,6 @@ codeunit 139899 "APIV2 - Document Attach. E2E"
         Base64String := "System.Convert".ToBase64String("System.IO.MemoryStream".ToArray());
         "System.IO.MemoryStream".Close();
         exit(Base64String);
-    end;
-
-    local procedure GetBlobLength(var TempBlob: Codeunit "Temp Blob"): Integer
-    var
-        InStream: InStream;
-        "System.IO.MemoryStream": DotNet MemoryStream;
-        ContentLength: Integer;
-    begin
-        if not TempBlob.HasValue() then
-            exit(0);
-        TempBlob.CreateInStream(InStream);
-        "System.IO.MemoryStream" := "System.IO.MemoryStream".MemoryStream();
-        COPYSTREAM("System.IO.MemoryStream", InStream);
-        ContentLength := "System.IO.MemoryStream".Length();
-        "System.IO.MemoryStream".Close();
-        exit(ContentLength);
     end;
 
     local procedure CreateAttachmentsURLWithFilter(DocumentIdFilter: Guid; DocumentTypeFilter: Text): Text

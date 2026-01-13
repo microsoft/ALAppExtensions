@@ -1,3 +1,4 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -15,8 +16,25 @@ codeunit 17119 "Create AU Inv Posting Setup"
     EventSubscriberInstance = Manual;
     InherentEntitlements = X;
     InherentPermissions = X;
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
+    ObsoleteReason = 'This codeunit is no longer needed.';
 
     trigger OnRun()
+    var
+        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
+        CreateAUInvPostingGroup: Codeunit "Create AU Inv Posting Group";
+        CreateAUGLAccounts: Codeunit "Create AU GL Accounts";
+        CreateGLAccount: Codeunit "Create G/L Account";
+    begin
+        ContosoPostingSetup.SetOverwriteData(true);
+        ContosoPostingSetup.InsertInventoryPostingSetup(BlankLocationLbl, CreateAUInvPostingGroup.Finished(), CreateGLAccount.FinishedGoods(), CreateGLAccount.FinishedGoodsInterim(), CreateAUGLAccounts.WipAccountFinishedGoods(), CreateAUGLAccounts.MaterialVariance(), CreateAUGLAccounts.CapacityVariance(), CreateAUGLAccounts.SubcontractedVariance(), CreateAUGLAccounts.CapOverheadVariance(), CreateAUGLAccounts.MfgOverheadVariance());
+        ContosoPostingSetup.InsertInventoryPostingSetup(BlankLocationLbl, CreateAUInvPostingGroup.RAWMAT(), CreateGLAccount.RawMaterials(), CreateGLAccount.RawMaterialsInterim(), CreateAUGLAccounts.WipAccountFinishedGoods(), CreateAUGLAccounts.MaterialVariance(), CreateAUGLAccounts.CapacityVariance(), CreateAUGLAccounts.SubcontractedVariance(), CreateAUGLAccounts.CapOverheadVariance(), CreateAUGLAccounts.MfgOverheadVariance());
+
+        ContosoPostingSetup.SetOverwriteData(false);
+    end;
+
+    procedure UpdateInventoryPosting()
     var
         ContosoPostingSetup: Codeunit "Contoso Posting Setup";
         CreateAUInvPostingGroup: Codeunit "Create AU Inv Posting Group";
@@ -93,3 +111,4 @@ codeunit 17119 "Create AU Inv Posting Setup"
     var
         BlankLocationLbl: Label '', MaxLength = 10;
 }
+#endif

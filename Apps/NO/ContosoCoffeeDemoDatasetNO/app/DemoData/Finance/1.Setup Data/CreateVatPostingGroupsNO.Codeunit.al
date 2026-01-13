@@ -61,14 +61,31 @@ codeunit 10707 "Create Vat Posting Groups NO"
 
     local procedure InsertVATProductPostingGroup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingGroup: Codeunit "Contoso Posting Group";
     begin
         ContosoPostingGroup.InsertVATProductPostingGroup(Full(), FullDescriptionLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(Low(), LowDescriptionLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(OutSide(), OutSideDescriptionLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(High(), HighDescriptionLbl);
         ContosoPostingGroup.InsertVATProductPostingGroup(Service(), ServiceDescriptionLbl);
-        ContosoPostingGroup.InsertVATProductPostingGroup(Without(), WithOutDescriptionLbl);
+
+        FinanceModuleSetup.Get();
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Standard" = '' then begin
+            ContosoPostingGroup.InsertVATProductPostingGroup(High(), HighDescriptionLbl);
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Standard", High());
+        end;
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. Reduced" = '' then begin
+            ContosoPostingGroup.InsertVATProductPostingGroup(Low(), LowDescriptionLbl);
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. Reduced", Low());
+        end;
+
+        if FinanceModuleSetup."VAT Prod. Post Grp. NO VAT" = '' then begin
+            ContosoPostingGroup.InsertVATProductPostingGroup(Without(), WithOutDescriptionLbl);
+            FinanceModuleSetup.Validate("VAT Prod. Post Grp. NO VAT", Without());
+        end;
+
+        FinanceModuleSetup.Modify(true);
     end;
 
     local procedure InsertVATBusinessPostingGroups()
@@ -92,39 +109,42 @@ codeunit 10707 "Create Vat Posting Groups NO"
 
     procedure InsertVATPostingSetup()
     var
+        FinanceModuleSetup: Record "Finance Module Setup";
         ContosoPostingSetupNO: Codeunit "Contoso Posting Setup NO";
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
+        FinanceModuleSetup.Get();
+
         ContosoPostingSetupNO.SetOverwriteData(true);
 
         ContosoPostingSetupNO.InsertVATPostingSetup(CUSTHIGH(), Full(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Full(), 0, Enum::"Tax Calculation Type"::"Full VAT", 'E', '', '', VatRepCode52(), '', VatRepCode13());
-        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTHIGH(), High(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), High(), 25, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', VatRepCode3(), '', VatRepCode3());
-        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTHIGH(), Low(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), Low(), 11.11, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', VatRepCode33(), '', '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTHIGH(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 25, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', VatRepCode3(), '', VatRepCode3());
+        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTHIGH(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 15, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', VatRepCode33(), '', '');
         ContosoPostingSetupNO.InsertVATPostingSetup(CUSTHIGH(), OutSide(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), OutSide(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode52(), '', '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTHIGH(), Without(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode5(), '', '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTLOW(), High(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Low(), 11.11, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', VatRepCode31(), '', '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTLOW(), Low(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), Low(), 11.11, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', VatRepCode32(), '', '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTHIGH(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode5(), '', '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTLOW(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 15, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', VatRepCode31(), '', '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTLOW(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 15, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', VatRepCode32(), '', '');
         ContosoPostingSetupNO.InsertVATPostingSetup(CUSTLOW(), OutSide(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), OutSide(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode52(), '', '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTLOW(), Without(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode5(), '', '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTLOW(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode5(), '', '');
 
-        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTNOVAT(), High(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode81(), VatRepCode81(), '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTNOVAT(), Low(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode82(), VatRepCode82(), '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTNOVAT(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode81(), VatRepCode81(), '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTNOVAT(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode82(), VatRepCode82(), '');
         ContosoPostingSetupNO.InsertVATPostingSetup(CUSTNOVAT(), OutSide(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), OutSide(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode83(), VatRepCode83(), '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTNOVAT(), Without(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode84(), '', VatRepCode0());
+        ContosoPostingSetupNO.InsertVATPostingSetup(CUSTNOVAT(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode84(), '', VatRepCode0());
 
         ContosoPostingSetupNO.InsertVATPostingSetup(VENDHIGH(), Full(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Full(), 0, Enum::"Tax Calculation Type"::"Full VAT", 'E', '', '', '', VatRepCode15(), VatRepCode11());
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDHIGH(), High(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), High(), 25, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', '', VatRepCode1(), VatRepCode1());
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDHIGH(), Low(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), Low(), 25, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', '', VatRepCode1(), '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDHIGH(), Without(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', '', VatRepCode13(), '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDHIGH(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", 25, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', '', VatRepCode1(), VatRepCode1());
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDHIGH(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 25, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', '', VatRepCode1(), '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDHIGH(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', '', VatRepCode13(), '');
 
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDLOW(), High(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Low(), 11.11, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', '', VatRepCode11(), '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDLOW(), Low(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), Low(), 11.11, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', '', VatRepCode12(), '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDLOW(), Without(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', '', VatRepCode13(), '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDLOW(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 15, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', '', VatRepCode11(), '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDLOW(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", 15, Enum::"Tax Calculation Type"::"Normal VAT", 'S', '', '', '', VatRepCode12(), '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDLOW(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', '', VatRepCode13(), '');
 
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDNOVAT(), High(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode88(), VatRepCode88(), '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDNOVAT(), Low(), CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode87(), '', '');
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDNOVAT(), Service(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Without(), 0, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateGLAccount.PurchaseVAT25(), '', VatRepCode86(), VatRepCode86(), VatRepCode14());
-        ContosoPostingSetupNO.InsertVATPostingSetup(VENDNOVAT(), Without(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), Without(), 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode89(), '', '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDNOVAT(), FinanceModuleSetup."VAT Prod. Post Grp. Standard", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode88(), VatRepCode88(), '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDNOVAT(), FinanceModuleSetup."VAT Prod. Post Grp. Reduced", CreateGLAccount.SalesVAT10(), CreateGLAccount.PurchaseVAT10(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode87(), '', '');
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDNOVAT(), Service(), CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Reverse Charge VAT", 'S', CreateGLAccount.PurchaseVAT25(), '', VatRepCode86(), VatRepCode86(), VatRepCode14());
+        ContosoPostingSetupNO.InsertVATPostingSetup(VENDNOVAT(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", CreateGLAccount.SalesVAT25(), CreateGLAccount.PurchaseVAT25(), FinanceModuleSetup."VAT Prod. Post Grp. NO VAT", 0, Enum::"Tax Calculation Type"::"Normal VAT", 'E', '', '', VatRepCode89(), '', '');
         ContosoPostingSetupNO.SetOverwriteData(false);
     end;
 

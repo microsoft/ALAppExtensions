@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -37,9 +37,6 @@ using Microsoft.Sales.Archive;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
-#if not CLEAN25
-using Microsoft.Sales.Pricing;
-#endif
 using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Setup;
 using Microsoft.Service.Contract;
@@ -143,9 +140,6 @@ codeunit 18020 "GST Data Senstivity Mgmt."
         SetTableFieldsToNormal(Database::"Sales Header");
         SetTableFieldsToNormal(Database::"Sales Invoice Line");
         SetTableFieldsToNormal(Database::"Sales Line");
-#if not CLEAN25
-        SetTableFieldsToNormal(Database::"Sales Price");
-#endif
         SetTableFieldsToNormal(Database::"Sales Shipment Header");
         SetTableFieldsToNormal(Database::"Sales Shipment Line");
         SetTableFieldsToNormal(Database::"Shipping Agent");

@@ -15,6 +15,7 @@ page 30017 "APIV2 - Employees"
     PageType = API;
     SourceTable = Employee;
     Extensible = false;
+    AboutText = 'Manages employee master data including personal details, contact information, employment status, job titles, payroll attributes, and banking information. Supports full CRUD operations for retrieving, creating, updating, and deleting employee records, enabling seamless integration with external HR, payroll, and workforce management systems. Ideal for synchronizing employee lifecycle events and maintaining accurate workforce data across platforms.';
 
     layout
     {

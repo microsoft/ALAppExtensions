@@ -5,6 +5,7 @@
 namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.D365Sales;
+using Microsoft.Integration.Dataverse;
 
 #pragma warning disable AS0130
 #pragma warning disable PTE0025
@@ -336,6 +337,8 @@ table 6617 "FS Work Order"
             Description = 'Enter the summary of total estimated billing amount for this work order';
             Caption = 'Estimate Subtotal Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(54; TransactionCurrencyId; GUID)
         {
@@ -354,6 +357,7 @@ table 6617 "FS Work Order"
             Description = 'Shows the exchange rate for the currency associated with the entity with respect to the base currency.';
             Caption = 'Exchange Rate';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(57; EstimateSubtotalAmount_Base; Decimal)
         {
@@ -363,6 +367,8 @@ table 6617 "FS Work Order"
             Description = 'Shows the value of the estimate subtotal amount in the base currency.';
             Caption = 'Estimate Subtotal Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(58; FollowUpNote; BLOB)
         {
@@ -420,6 +426,7 @@ table 6617 "FS Work Order"
             Description = '';
             Caption = 'Latitude';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(68; Longitude; Decimal)
         {
@@ -428,6 +435,7 @@ table 6617 "FS Work Order"
             Description = '';
             Caption = 'Longitude';
             DataClassification = SystemMetadata;
+            AutoFormatType = 0;
         }
         field(69; MapControl; Text[100])
         {
@@ -548,6 +556,8 @@ table 6617 "FS Work Order"
             Description = 'Enter the summary of subtotal billing amount excluding tax for this work order.';
             Caption = 'Subtotal Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(86; SubTotalAmount_Base; Decimal)
         {
@@ -557,6 +567,8 @@ table 6617 "FS Work Order"
             Description = 'Shows the value of the subtotal amount in the base currency.';
             Caption = 'Subtotal Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(87; SupportContact; GUID)
         {
@@ -631,6 +643,8 @@ table 6617 "FS Work Order"
             Description = 'Enter the summary of total billing amount for this work order.';
             Caption = 'Total Amount';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(101; TotalAmount_Base; Decimal)
         {
@@ -640,6 +654,8 @@ table 6617 "FS Work Order"
             Description = 'Shows the value of the total amount in the base currency.';
             Caption = 'Total Amount (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(102; TotalSalesTax; Decimal)
         {
@@ -648,6 +664,8 @@ table 6617 "FS Work Order"
             Description = 'Enter the summary of total sales tax charged for this work order.';
             Caption = 'Total Sales Tax';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(103; TotalSalesTax_Base; Decimal)
         {
@@ -657,6 +675,8 @@ table 6617 "FS Work Order"
             Description = 'Shows the value of the total sales tax in the base currency.';
             Caption = 'Total Sales Tax (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(105; WorkLocation; Option)
         {
@@ -765,6 +785,8 @@ table 6617 "FS Work Order"
             Description = 'The value of not-to-exceed cost for the work order in base currency.';
             Caption = 'Cost not-to-exceed';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(143; NotToExceedCostAmount_Base; Decimal)
         {
@@ -774,6 +796,8 @@ table 6617 "FS Work Order"
             Description = 'Value of the Cost not-to-exceed in base currency.';
             Caption = 'Cost not-to-exceed (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(144; NotToExceedPriceAmount; Decimal)
         {
@@ -782,6 +806,8 @@ table 6617 "FS Work Order"
             Description = 'The value of not-to-exceed price for the work order in base currency.';
             Caption = 'Price not-to-exceed';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(145; NotToExceedPriceAmount_Base; Decimal)
         {
@@ -791,6 +817,8 @@ table 6617 "FS Work Order"
             Description = 'Value of the Price not-to-exceed in base currency.';
             Caption = 'Price not-to-exceed (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(146; PhoneNumber; Text[250])
         {
@@ -814,6 +842,8 @@ table 6617 "FS Work Order"
             Description = 'The total actual cost of the products and services';
             Caption = 'Total Cost';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(150; ProductsServicesCost_Base; Decimal)
         {
@@ -822,6 +852,8 @@ table 6617 "FS Work Order"
             Description = 'Value of the Total Cost in base currency.';
             Caption = 'Total Cost (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(151; ProductsServicesEstimatedCost; Decimal)
         {
@@ -830,6 +862,8 @@ table 6617 "FS Work Order"
             Description = 'The total estimated cost of the products and services';
             Caption = 'Total Estimated Cost';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(152; ProductsServicesEstimatedCost_Base; Decimal)
         {
@@ -838,6 +872,8 @@ table 6617 "FS Work Order"
             Description = 'Value of the Total Estimated Cost in base currency.';
             Caption = 'Total Estimated Cost (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(153; TotalEstimatedAfterTaxPrice; Decimal)
         {
@@ -846,6 +882,8 @@ table 6617 "FS Work Order"
             Description = 'The estimated price after adding tax to the subtotal';
             Caption = 'Total Estimated After Tax Price';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetCurrencyCode();
         }
         field(154; TotalEstimatedAfterTaxPrice_Base; Decimal)
         {
@@ -854,6 +892,8 @@ table 6617 "FS Work Order"
             Description = 'Value of the Total Estimated After Tax Price in base currency.';
             Caption = 'Total Estimated After Tax Price (Base)';
             DataClassification = SystemMetadata;
+            AutoFormatType = 1;
+            AutoFormatExpression = GetBaseCurrencyCode();
         }
         field(155; TotalEstimatedDuration; Integer)
         {
@@ -914,4 +954,20 @@ table 6617 "FS Work Order"
         {
         }
     }
+
+    local procedure GetCurrencyCode(): Code[10]
+    var
+        CRMSyncHelper: Codeunit "CRM Synch. Helper";
+    begin
+        exit(CRMSyncHelper.GetNavCurrencyCode(Rec.TransactionCurrencyId));
+    end;
+
+    local procedure GetBaseCurrencyCode(): Code[10]
+    var
+        CRMConnectionSetup: Record "CRM Connection Setup";
+        CRMSyncHelper: Codeunit "CRM Synch. Helper";
+    begin
+        CRMConnectionSetup.Get();
+        exit(CRMSyncHelper.GetNavCurrencyCode(CRMConnectionSetup.BaseCurrencyId));
+    end;
 }

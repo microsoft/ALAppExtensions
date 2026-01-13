@@ -285,7 +285,6 @@ page 4509 "Email - Outlook API Setup"
         SuccessfulTestMsg: Label 'Success! Your authentication was verified.';
         HiddenValueTxt: Label '******', Locked = true;
         TopBannerVisible: Boolean;
-        [InDataSet]
         IsUserLoggedIn: Boolean;
         TestSetupEnabled: Boolean;
 }

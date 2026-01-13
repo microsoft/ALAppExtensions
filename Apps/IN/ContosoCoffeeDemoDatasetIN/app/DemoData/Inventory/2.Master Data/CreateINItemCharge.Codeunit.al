@@ -26,7 +26,7 @@ codeunit 19029 "Create IN Item Charge"
         case Rec."No." of
             CreateItemCharge.JBFreight(),
             CreateItemCharge.PurchAllowance():
-                ValidateRecordFields(Rec, CreateVATPostingGroups.Zero(), CreateINGSTGroup.GSTGroup2089(), CreateINHSNSAC.HSNSACCode2089001());
+                ValidateRecordFields(Rec, CreateVATPostingGroups.NoVAT(), CreateINGSTGroup.GSTGroup2089(), CreateINHSNSAC.HSNSACCode2089001());
         end;
     end;
 

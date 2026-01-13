@@ -418,10 +418,9 @@ table 4053 "GPPMHist"
         {
             Clustered = false;
         }
+        key(Key3; DEX_ROW_ID)
+        {
+            Clustered = false;
+        }
     }
-
-    fieldgroups
-    {
-    }
-
 }

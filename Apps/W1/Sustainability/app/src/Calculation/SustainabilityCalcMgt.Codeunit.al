@@ -1,8 +1,9 @@
 namespace Microsoft.Sustainability.Calculation;
 
-using Microsoft.Sustainability.Journal;
-using Microsoft.Sustainability.Account;
 using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Purchases.Document;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Journal;
 
 codeunit 6218 "Sustainability Calc. Mgt."
 {
@@ -67,6 +68,45 @@ codeunit 6218 "Sustainability Calc. Mgt."
 
         if not SustainAccountCategory."Discharged Into Water" then
             SustainabilityJnlLine.Validate("Discharged Into Water", 0);
+    end;
+
+    internal procedure CalculationEmissions(var PurchaseLine: Record "Purchase Line")
+    var
+        SustainAccountCategory: Record "Sustain. Account Category";
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    begin
+        SustainAccountCategory.Get(PurchaseLine."Sust. Account Category");
+        SustainAccountSubcategory.Get(PurchaseLine."Sust. Account Category", PurchaseLine."Sust. Account Subcategory");
+
+        CalculationEmissions(PurchaseLine, SustainAccountCategory, SustainAccountSubcategory);
+    end;
+
+    internal procedure CalculationEmissions(var PurchaseLine: Record "Purchase Line"; SustainAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
+    var
+        SustainabilityCalculation: Codeunit "Sustainability Calculation";
+    begin
+        SustainAccountCategory.TestField("Emission Scope");
+        SustainAccountCategory.TestField("Calculation Foundation");
+
+        case SustainAccountCategory."Emission Scope" of
+            Enum::"Emission Scope"::"Scope 1":
+                SustainabilityCalculation.CalculateScope1Emissions(PurchaseLine, SustainAccountCategory, SustainAccountSubcategory);
+            Enum::"Emission Scope"::"Scope 2":
+                SustainabilityCalculation.CalculateScope2Emissions(PurchaseLine, SustainAccountCategory, SustainAccountSubcategory);
+            Enum::"Emission Scope"::"Scope 3":
+                SustainabilityCalculation.CalculateScope3Emissions(PurchaseLine, SustainAccountCategory, SustainAccountSubcategory);
+            Enum::"Emission Scope"::"Water/Waste":
+                SustainabilityCalculation.CalculateWaterOrWaste(PurchaseLine, SustainAccountCategory, SustainAccountSubcategory);
+        end;
+
+        if not SustainAccountCategory.CO2 then
+            PurchaseLine.Validate("Emission CO2", 0);
+
+        if not SustainAccountCategory.CH4 then
+            PurchaseLine.Validate("Emission CH4", 0);
+
+        if not SustainAccountCategory.N2O then
+            PurchaseLine.Validate("Emission N2O", 0);
     end;
 
     /// <summary>

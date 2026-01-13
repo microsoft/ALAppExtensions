@@ -1,8 +1,12 @@
+#if not CLEAN28
 codeunit 135084 "Bank Name Lookup E2E"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
         // [FEATURE] [AMC Banking Fundamentals] [Bank List]
@@ -104,4 +108,4 @@ codeunit 135084 "Bank Name Lookup E2E"
         Assert.RecordIsEmpty(AMCBankBanks);
     end;
 }
-
+#endif

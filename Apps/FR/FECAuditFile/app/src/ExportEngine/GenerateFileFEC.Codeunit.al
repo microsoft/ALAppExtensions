@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AuditFileExport;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
@@ -14,10 +15,10 @@ using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Setup;
 using System.Reflection;
 using System.Telemetry;
 using System.Utilities;
-using Microsoft.Finance.Currency;
 
 codeunit 10826 "Generate File FEC"
 {
@@ -233,6 +234,7 @@ codeunit 10826 "Generate File FEC"
                     end;
 
             end;
+        AllowMultiplePosting(PartyNo, PartyName, GLEntry, Customer);
 
         FindGLRegister(GLRegister, GLEntry."Entry No.");
         if GLRegister.SystemCreatedAt <> 0DT then
@@ -628,11 +630,10 @@ codeunit 10826 "Generate File FEC"
     var
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
     begin
-        if GetDetailedVendorLedgEntry(DetailedVendorLedgEntry, VendorLedgEntryApplied."Entry No.") then begin
-            if DetailedVendorLedgEntry."Posting Date" > AppliedDate then
-                AppliedDate := DetailedVendorLedgEntry."Posting Date";
-        end else
-            AppliedDate := VendorLedgEntryApplied."Posting Date";
+        if GetDetailedVendorLedgEntry(DetailedVendorLedgEntry, VendorLedgEntryApplied."Entry No.") then
+            AppliedDate := DT2Date(DetailedVendorLedgEntry.SystemCreatedAt)
+        else
+            AppliedDate := DT2Date(VendorLedgEntryApplied.SystemCreatedAt);
     end;
 
     local procedure GetDetailedVendorLedgEntry(var DetailedVendorLedgEntryApplied: Record "Detailed Vendor Ledg. Entry"; AppliedVendorLedgerEntryNo: Integer): Boolean
@@ -850,6 +851,31 @@ codeunit 10826 "Generate File FEC"
         Vendor.Get(VendorNo);
         VendorPostingGroup.Get(Vendor."Vendor Posting Group");
         exit(VendorPostingGroup."Payables Account");
+    end;
+
+    local procedure AllowMultiplePosting(var PartyNo: Code[20]; var PartyName: Text[100]; GLEntry: Record "G/L Entry"; Customer: Record Customer)
+    var
+        AltCustPostGroup: Record "Alt. Customer Posting Group";
+        CustPostGroup: Record "Customer Posting Group";
+        CustPostGroup2: Record "Customer Posting Group";
+        SalesSetup: Record "Sales & Receivables Setup";
+    begin
+        if not ((SalesSetup.Get()) and (SalesSetup."Allow Multiple Posting Groups")) then
+            exit;
+        if not ((GLEntry."Source Type" = GLEntry."Source Type"::Customer) and (Customer.Get(GLEntry."Source No."))) then
+            exit;
+        if not CustPostGroup.Get(Customer."Customer Posting Group") then
+            exit;
+
+        AltCustPostGroup.SetRange("Customer Posting Group", CustPostGroup.Code);
+        if AltCustPostGroup.FindSet() then
+            repeat
+                if CustPostGroup2.Get(AltCustPostGroup."Alt. Customer Posting Group") then
+                    if CustPostGroup2."Receivables Account" = GLEntry."G/L Account No." then begin
+                        PartyNo := Customer."No.";
+                        PartyName := Customer.Name;
+                    end;
+            until AltCustPostGroup.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Exch. Rate Adjmt. Process", 'OnAfterInitDtldCustLedgerEntry', '', false, false)]

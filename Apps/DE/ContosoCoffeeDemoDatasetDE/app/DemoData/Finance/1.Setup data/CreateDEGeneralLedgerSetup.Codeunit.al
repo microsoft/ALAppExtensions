@@ -26,6 +26,7 @@ codeunit 11383 "Create DE General Ledger Setup"
         GeneralLedgerSetup.Validate("EMU Currency", true);
         GeneralLedgerSetup.Validate("Local Currency Symbol", '');
         GeneralLedgerSetup.Validate("Local Currency Description", '');
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.EUR());
         GeneralLedgerSetup."Unit-Amount Rounding Precision" := 0.001;
         GeneralLedgerSetup.Validate("Currency Code For EURO", CreateCurrency.EUR());

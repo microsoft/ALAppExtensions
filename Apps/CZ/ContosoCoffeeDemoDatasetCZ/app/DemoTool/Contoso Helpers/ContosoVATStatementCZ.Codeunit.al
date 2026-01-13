@@ -13,7 +13,11 @@ codeunit 31224 "Contoso VAT Statement CZ"
     InherentEntitlements = X;
     InherentPermissions = X;
     Permissions =
+#if not CLEAN28
+#pragma warning disable AL0432
         tabledata "VAT Period CZL" = rim,
+#pragma warning restore AL0432
+#endif
         tabledata "VAT Reports Configuration" = rim,
         tabledata "VAT Return Period" = rim,
         tabledata "VAT Statement Line" = rim;
@@ -91,7 +95,9 @@ codeunit 31224 "Contoso VAT Statement CZ"
         else
             VATReportsConfiguration.Insert(true);
     end;
-
+#if not CLEAN28
+#pragma warning disable AL0432
+    [Obsolete('The VAT Period CZL table is replaced by VAT Return Period table. Use the InsertVATReturnPeriod function instead.', '28.0')]
     procedure InsertVATPeriod(StartingDate: Date)
     var
         VATPeriodCZL: Record "VAT Period CZL";
@@ -113,6 +119,8 @@ codeunit 31224 "Contoso VAT Statement CZ"
         else
             VATPeriodCZL.Insert(true);
     end;
+#pragma warning restore AL0432
+#endif
 
     procedure InsertVATReturnPeriod(StartingDate: Date; EndDate: Date; DueDate: Date)
     var

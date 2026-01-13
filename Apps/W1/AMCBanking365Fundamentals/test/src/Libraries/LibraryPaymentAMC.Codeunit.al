@@ -1,6 +1,9 @@
+#if not CLEAN28
 codeunit 130102 "Library - Payment AMC"
 {
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
     end;
@@ -43,3 +46,4 @@ codeunit 130102 "Library - Payment AMC"
 
 }
 
+#endif

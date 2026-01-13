@@ -61,8 +61,8 @@ codeunit 47006 "SL Project Migrator"
 
     internal procedure MigrateProjectResources(IncludeHoldStatusResources: Boolean)
     var
-        SLPJEmploy: Record "SL PJEmploy";
-        SLPJEquip: Record "SL PJEquip";
+        SLPJEmploy: Record "SL PJEmploy Buffer";
+        SLPJEquip: Record "SL PJEquip Buffer";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
     begin
         if IncludeHoldStatusResources then
@@ -89,7 +89,7 @@ codeunit 47006 "SL Project Migrator"
         until SLPJEquip.Next() = 0;
     end;
 
-    internal procedure CreateResource(SLPJEmploy: Record "SL PJEmploy")
+    internal procedure CreateResource(SLPJEmploy: Record "SL PJEmploy Buffer")
     var
         Resource: Record Resource;
         Vendor: Record Vendor;
@@ -106,7 +106,7 @@ codeunit 47006 "SL Project Migrator"
             Resource.Validate("No.", SLPJEmploy.employee);
             if SLPJEmploy.MSPType.TrimEnd() = '' then begin
                 Resource.Type := Resource.Type::Person;
-                Resource."Employment Date" := DT2Date(SLPJEmploy.date_hired);
+                Resource."Employment Date" := SLPJEmploy.date_hired;
             end
             else
                 Resource.Type := Resource.Type::Machine;
@@ -136,7 +136,7 @@ codeunit 47006 "SL Project Migrator"
 
     internal procedure GetResourceHourlyRate(Employee: Text): Decimal
     var
-        SLPJEmpPjt: Record "SL PJEmpPjt";
+        SLPJEmpPjt: Record "SL PJEmpPjt Buffer";
     begin
         Clear(SLPJEmpPjt);
         SLPJEmpPjt.SetFilter(employee, StrSubstNo('%1', Employee));
@@ -147,7 +147,7 @@ codeunit 47006 "SL Project Migrator"
         exit(SLPJEmpPjt.labor_rate);
     end;
 
-    internal procedure CreateEquipmentResource(SLPJEquip: Record "SL PJEquip")
+    internal procedure CreateEquipmentResource(SLPJEquip: Record "SL PJEquip Buffer")
     var
         Resource: Record Resource;
         SLHelperFunctions: Codeunit "SL Helper Functions";
@@ -166,7 +166,7 @@ codeunit 47006 "SL Project Migrator"
 
     internal procedure GetEquipmentHourlyRate(EquipmentID: Text): Decimal
     var
-        SLPJEQRate: Record "SL PJEQRate";
+        SLPJEQRate: Record "SL PJEQRate Buffer";
     begin
         Clear(SLPJEQRate);
         SLPJEQRate.SetFilter(equip_id, StrSubstNo('%1', EquipmentID));
@@ -179,7 +179,7 @@ codeunit 47006 "SL Project Migrator"
 
     internal procedure MigrateProjects(IncludePlanStatusProjects: Boolean);
     var
-        SLPJProj: Record "SL PJProj";
+        SLPJProj: Record "SL PJProj Buffer";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         ProjectStatusFilter: Text;
     begin
@@ -197,7 +197,7 @@ codeunit 47006 "SL Project Migrator"
         until SLPJProj.Next() = 0;
     end;
 
-    internal procedure CreateProject(SLPJProj: Record "SL PJProj")
+    internal procedure CreateProject(SLPJProj: Record "SL PJProj Buffer")
     var
         Customer: Record Customer;
         Job: Record Job;
@@ -252,9 +252,15 @@ codeunit 47006 "SL Project Migrator"
                 Job.Validate("Bill-to Contact", SLPJAddr.individual);
             end;
 
-            Job."Creation Date" := DT2Date(SLPJProj.crtd_datetime);
-            Job."Starting Date" := DT2Date(SLPJProj.start_date);
-            Job."Ending Date" := DT2Date(SLPJProj.end_date);
+            if SLPJProj.start_date.Year <= 1900 then
+                Job."Starting Date" := 0D
+            else
+                Job."Starting Date" := SLPJProj.start_date;
+            if SLPJProj.end_date.Year <= 1900 then
+                Job."Ending Date" := 0D
+            else
+                Job."Ending Date" := SLPJProj.end_date;
+
             if SLCompanyAdditionalSettings.GetResourceMasterOnly() then
                 Job."Person Responsible" := SLPJProj.manager2;
             Job.Insert(true);
@@ -290,7 +296,7 @@ codeunit 47006 "SL Project Migrator"
     internal procedure CreateProjectTasks(JobNo: Code[20]);
     var
         ProjectTask: Record "Job Task";
-        SLPJPent: Record "SL PJPent";
+        SLPJPent: Record "SL PJPent Buffer";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         Project: Text[16];
     begin

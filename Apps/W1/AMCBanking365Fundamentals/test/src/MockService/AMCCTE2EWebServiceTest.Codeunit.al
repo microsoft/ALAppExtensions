@@ -1,8 +1,12 @@
+#if not CLEAN28
 codeunit 135087 "AMC CT E2E Web Service Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     TestPermissions = NonRestrictive;
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     trigger OnRun()
     begin
         // [FEATURE] [AMC Banking Fundamentals] [Web Service]
@@ -555,4 +559,4 @@ codeunit 135087 "AMC CT E2E Web Service Test"
         Assert.AreEqual(0, StrPos(FileContent, UniqueText), '');
     end;
 }
-
+#endif

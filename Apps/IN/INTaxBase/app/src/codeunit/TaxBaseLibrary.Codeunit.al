@@ -33,6 +33,11 @@ codeunit 18550 "Tax Base Library"
         OnGetBankAccUpiId(BankCode, UPIID);
     end;
 
+    procedure SetChequeNo(var GenJnlLine: Record "Gen. Journal Line"; var ChequeNo: Code[10]; var ChequeDate: Date)
+    begin
+        OnGetChequeNoAndDate(GenJnlLine, ChequeNo, ChequeDate);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterGetTotalTDSIncludingSheCess(DocumentNo: Code[20]; var TotalTDSEncludingSheCess: Decimal; var AccountNo: Code[20]; var EntryNo: Integer)
     begin
@@ -55,6 +60,11 @@ codeunit 18550 "Tax Base Library"
 
     [IntegrationEvent(false, false)]
     local procedure OnGetBankAccUpiId(BankCode: Code[20]; var UPIID: Text[50])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetChequeNoAndDate(var GenJnlLine: Record "Gen. Journal Line"; var CheckNo: Code[10]; var CheckDate: Date)
     begin
     end;
 }

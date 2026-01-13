@@ -15,6 +15,7 @@ using Microsoft.Foundation.Company;
 codeunit 139575 "LP Prediction Test"
 {
     Subtype = Test;
+    TestType = Uncategorized;
     EventSubscriberInstance = Manual;
     SingleInstance = true;
     TestPermissions = Disabled;

@@ -18,21 +18,20 @@ codeunit 14130 "Create Resource MX"
     local procedure OnBeforeInsertResource(var Rec: Record Resource)
     var
         CreateResource: Codeunit "Create Resource";
-        CreateVatPostingGroupsMX: Codeunit "Create Vat Posting Groups MX";
     begin
         case Rec."No." of
             CreateResource.Katherine():
-                ValidateRecordFields(Rec, MexicoCityLbl, 690, 759, 1390, MexicoPostCodeLbl, CreateVatPostingGroupsMX.VAT8());
+                ValidateRecordFields(Rec, MexicoCityLbl, 690, 759, 1390, MexicoPostCodeLbl);
             CreateResource.Lina():
-                ValidateRecordFields(Rec, LondonCityLbl, 830, 913, 1660, LondonPostCodeLbl, CreateVatPostingGroupsMX.VAT8());
+                ValidateRecordFields(Rec, LondonCityLbl, 830, 913, 1660, LondonPostCodeLbl);
             CreateResource.Marty():
-                ValidateRecordFields(Rec, MexicoCityLbl, 620, 682, 1250, MexicoPostCodeLbl, CreateVatPostingGroupsMX.VAT8());
+                ValidateRecordFields(Rec, MexicoCityLbl, 620, 682, 1250, MexicoPostCodeLbl);
             CreateResource.Terry():
-                ValidateRecordFields(Rec, MexicoCityLbl, 690, 759, 1390, MexicoPostCodeLbl, CreateVatPostingGroupsMX.VAT8());
+                ValidateRecordFields(Rec, MexicoCityLbl, 690, 759, 1390, MexicoPostCodeLbl);
         end;
     end;
 
-    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; UnitPrice: Decimal; PostCode: Code[20]; VatProdPostingGroup: Code[20])
+    local procedure ValidateRecordFields(var Resource: Record Resource; City: Text[30]; DirectUnitCost: Decimal; UnitCost: Decimal; UnitPrice: Decimal; PostCode: Code[20])
     begin
         Resource.Validate(City, City);
         Resource.Validate("Post Code", PostCode);
@@ -40,7 +39,6 @@ codeunit 14130 "Create Resource MX"
         Resource.Validate("Direct Unit Cost", DirectUnitCost);
         Resource.Validate("Unit Cost", UnitCost);
         Resource.Validate("Unit Price", UnitPrice);
-        Resource.Validate("VAT Prod. Posting Group", VatProdPostingGroup);
     end;
 
     var

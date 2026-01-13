@@ -33,7 +33,6 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         field(5; "Purch. Adv. Letter No."; Code[20])
         {
             Caption = 'Purch. Adv. Letter No.';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
             TableRelation = "Purch. Adv. Letter Header CZZ";
         }
@@ -45,7 +44,6 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         field(13; "Document No."; Code[20])
         {
             Caption = 'Document No.';
-            OptimizeForTextSearch = true;
             DataClassification = CustomerContent;
         }
         field(15; "VAT Bus. Posting Group"; Code[20])
@@ -86,6 +84,14 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             Caption = 'Currency Factor';
             DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;
+            MinValue = 0;
+        }
+        field(27; "Additional Currency Factor"; Decimal)
+        {
+            Caption = 'Additional Currency Factor';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 0 : 15;
+            Editable = false;
             MinValue = 0;
         }
         field(28; "User ID"; Code[50])
@@ -367,6 +373,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         "VAT Calculation Type" := GenJournalLine."VAT Calculation Type";
         "Currency Code" := GenJournalLine."Currency Code";
         "Currency Factor" := GenJournalLine."Currency Factor";
+        "Additional Currency Factor" := GenJournalLine."Additional Currency Factor CZL";
         Amount := GenJournalLine.Amount;
         "Amount (LCY)" := GenJournalLine."Amount (LCY)";
         "VAT Amount" := GenJournalLine."VAT Amount";

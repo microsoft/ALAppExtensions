@@ -15,6 +15,7 @@ page 30091 "APIV2 - Job Queue Entries"
     SourceTable = "Job Queue Entry";
     Extensible = false;
     DelayedInsert = true;
+    AboutText = 'Manages scheduled job queue entries for background tasks such as report generation, data synchronization, and automated postings, exposing details like job status, recurrence, execution parameters, and scheduling options. Supports full CRUD operations, enabling external workflow automation tools and custom scheduling solutions to create, update, retrieve, or delete job queue entries for flexible business process automation.';
 
     layout
     {

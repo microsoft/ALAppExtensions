@@ -503,6 +503,29 @@ table 31007 "Advance Letter Application CZZ"
         end;
     end;
 
+    procedure CheckVATRegistrationNoDifference()
+    var
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        SalesHeader: Record "Sales Header";
+        AltCustVATRegImplCZZ: Codeunit "Alt. Cust. VAT Reg. Impl. CZZ";
+    begin
+        if "Advance Letter Type" <> "Advance Letter Type"::Sales then
+            exit;
+
+        SalesAdvLetterHeaderCZZ.Get("Advance Letter No.");
+        case "Document Type" of
+            "Adv. Letter Usage Doc.Type CZZ"::"Sales Order":
+                SalesHeader.Get(SalesHeader."Document Type"::Order, "Document No.");
+            "Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice":
+                SalesHeader.Get(SalesHeader."Document Type"::Invoice, "Document No.");
+            else
+                exit;
+        end;
+
+        if SalesAdvLetterHeaderCZZ."VAT Registration No." <> SalesHeader."VAT Registration No." then
+            AltCustVATRegImplCZZ.ThrowDiffVATRegNoNotification();
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnGetPossiblePurchAdvanceOnBeforeInsertNewAdvanceLetterApplication(var NewAdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ"; AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
     begin

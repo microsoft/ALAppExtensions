@@ -13,7 +13,7 @@ page 4093 "GP Customer"
     ObsoleteState = Pending;
     ObsoleteReason = 'Removing the GP staging table pages because they cause confusion and should not be used.';
     ObsoleteTag = '26.0';
-
+#pragma warning disable AA0219
     layout
     {
         area(content)
@@ -135,4 +135,5 @@ page 4093 "GP Customer"
         }
     }
 }
+#pragma warning restore AA0219
 #endif

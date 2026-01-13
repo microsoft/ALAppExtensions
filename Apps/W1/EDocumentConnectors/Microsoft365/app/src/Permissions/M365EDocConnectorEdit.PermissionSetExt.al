@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using Microsoft.EServices.EDocument;
 
-permissionsetextension 6385 "M365 EDoc. Connector - Edit" extends "E-Doc. Core - Edit"
+permissionsetextension 6385 "M365 EDoc. Connector - Edit" extends "E-Doc. Core - User"
 {
     IncludedPermissionSets = M365EDocConnEdit;
 }

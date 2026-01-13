@@ -41,13 +41,7 @@ codeunit 17138 "Create AU Posting Groups"
     var
         GenProductPostingGroup: Record "Gen. Product Posting Group";
         CreatePostingGroups: Codeunit "Create Posting Groups";
-        CreateAUVATPostingGroups: Codeunit "Create AU VAT Posting Groups";
     begin
-        GenProductPostingGroup.Get(CreatePostingGroups.ServicesPostingGroup());
-        GenProductPostingGroup.Validate("Def. VAT Prod. Posting Group", CreateAUVATPostingGroups.Gst10());
-        GenProductPostingGroup.Modify(true);
-        UpdateVATProdPostingGroupOnGLAccount(CreatePostingGroups.ServicesPostingGroup(), CreateAUVATPostingGroups.Gst10());
-
         GenProductPostingGroup.Get(CreatePostingGroups.RawMatPostingGroup());
         GenProductPostingGroup.Validate("Def. VAT Prod. Posting Group", '');
         GenProductPostingGroup.Modify(true);

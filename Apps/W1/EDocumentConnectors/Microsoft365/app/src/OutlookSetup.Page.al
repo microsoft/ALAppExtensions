@@ -53,11 +53,12 @@ page 6384 "Outlook Setup"
                     trigger OnAssistEdit()
                     var
                         OutlookIntegrationImpl: Codeunit "Outlook Integration Impl.";
+                        OrigEmailAccountId: Guid;
                     begin
                         if Rec.Enabled then
                             Error(DisableToConfigErr);
 
-                        if OutlookIntegrationImpl.SelectEmailAccountV3(TempEmailAccount) then begin
+                        if OutlookIntegrationImpl.SelectEmailAccount(TempEmailAccount) then begin
                             TempOutlookSetup."Email Account ID" := TempEmailAccount."Account Id";
                             TempOutlookSetup."Email Connector" := TempEmailAccount.Connector;
                             if Format(TempOutlookSetup."Email Connector") <> M365Lbl then
@@ -67,8 +68,11 @@ page 6384 "Outlook Setup"
                         if MailboxName <> TempEmailAccount."Email Address" then begin
                             MailboxName := TempEmailAccount."Email Address";
                             ConfigUpdated();
+                            OrigEmailAccountId := Rec."Email Account ID";
                             Rec."Email Account ID" := TempEmailAccount."Account Id";
                             Rec."Email Connector" := TempEmailAccount.Connector;
+                            if OrigEmailAccountId <> Rec."Email Account ID" then
+                                Rec."Last Sync At" := 0DT;
                             Rec.Modify();
                             CurrPage.Update();
                         end;

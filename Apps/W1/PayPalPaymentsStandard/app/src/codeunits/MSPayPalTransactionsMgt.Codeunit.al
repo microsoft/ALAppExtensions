@@ -106,7 +106,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
             exit(false);
         end;
 
-        MSPayPalStandardAccount.SETRANGE("Account ID", AccountID);
+        MSPayPalStandardAccount.SetFilter("Account ID", '@' + AccountID);
         if MSPayPalStandardAccount.IsEmpty() then begin
             Session.LogMessage('0000166', TelemetryUnexpectedAccountErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             ERROR(UnexpectedAccountErr, AccountID, TransactionID);
@@ -130,7 +130,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
             ERROR(UnexpectedAmountErr, GrossAmount, TransactionID);
         end;
 
-        MSPayPalTransaction.SETFILTER("Account ID", AccountID);
+        MSPayPalTransaction.SETFILTER("Account ID", '@' + AccountID);
         MSPayPalTransaction.SETFILTER("Transaction ID", TransactionID);
         MSPayPalTransaction.SETFILTER("Transaction Status", TransactionStatus);
         if not MSPayPalTransaction.IsEmpty() then begin
@@ -146,7 +146,7 @@ codeunit 1075 "MS - PayPal Transactions Mgt."
     var
         MSPayPalTransaction: Record "MS - PayPal Transaction";
     begin
-        MSPayPalTransaction.SETRANGE("Account ID", AccountID);
+        MSPayPalTransaction.SetFilter("Account ID", '@' + AccountID);
         MSPayPalTransaction.SETRANGE("Transaction ID", TransactionID);
         if not MSPayPalTransaction.FINDFIRST() then begin
             Session.LogMessage('00008GZ', InsertTransactionDetailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);

@@ -161,5 +161,9 @@ table 40111 "GP SY06000"
         {
             Clustered = true;
         }
+        key(Key2; CustomerVendor_ID)
+        {
+            Clustered = false;
+        }
     }
 }

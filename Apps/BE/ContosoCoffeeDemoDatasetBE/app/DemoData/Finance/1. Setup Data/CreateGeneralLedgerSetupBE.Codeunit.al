@@ -29,6 +29,7 @@ codeunit 11361 "Create General Ledger Setup BE"
         GeneralLedgerSetup.Validate("EMU Currency", true);
         GeneralLedgerSetup.Validate("Local Currency Symbol", '');
         GeneralLedgerSetup.Validate("Local Currency Description", '');
+        GeneralLedgerSetup."LCY Code" := '';        // to avoid error on updating LCY Code
         GeneralLedgerSetup.Validate("LCY Code", CreateCurrency.EUR());
         GeneralLedgerSetup.Validate("Bank Acc. Recon. Template Name", CreateGenJournalTemplate.PaymentJournal());
         GeneralLedgerSetup.Validate("VAT Statement Template Name", CreateVATStatement.VATTemplateName());

@@ -24,10 +24,31 @@ codeunit 6256 "Sust. Item Post Subscriber"
             PostSustainabilityValueEntry(ItemJnlLine, ValueEntry, ItemLedgerEntry);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInsertCorrValueEntry', '', false, false)]
+    local procedure OnAfterInsertCorrValueEntry(ItemJournalLine: Record "Item Journal Line"; var NewValueEntry: Record "Value Entry"; var ItemLedgerEntry: Record "Item Ledger Entry")
+    begin
+        if CanCreateSustValueEntry(ItemJournalLine, NewValueEntry) then
+            PostSustainabilityValueEntry(ItemJournalLine, NewValueEntry, ItemLedgerEntry);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeInsertItemLedgEntry', '', false, false)]
+    local procedure OnBeforeInsertItemLedgEntry(ItemJournalLine: Record "Item Journal Line"; var ItemLedgerEntry: Record "Item Ledger Entry")
+    begin
+        if ItemJournalLine."Entry Type" <> ItemJournalLine."Entry Type"::Sale then
+            exit;
+
+        ItemLedgerEntry."Sust. Account No." := ItemJournalLine."Sust. Account No.";
+        ItemLedgerEntry."Sust. Account Name" := ItemJournalLine."Sust. Account Name";
+        ItemLedgerEntry."Sust. Account Category" := ItemJournalLine."Sust. Account Category";
+        ItemLedgerEntry."Sust. Account Subcategory" := ItemJournalLine."Sust. Account Subcategory";
+        ItemLedgerEntry."EPR Fee per Unit" := ItemJournalLine."EPR Fee Per Unit";
+        ItemLedgerEntry."Total EPR Fee" := ItemJournalLine."Total EPR Fee";
+    end;
+
     local procedure CanCreateSustValueEntry(ItemJournalLine: Record "Item Journal Line"; var ValueEntry: Record "Value Entry"): Boolean
     begin
-        if ValueEntry."Order Type" = ValueEntry."Order Type"::Transfer then
-            if (ValueEntry."Document Type" = ValueEntry."Document Type"::"Transfer Shipment") and (ValueEntry."Valued Quantity" > 0) then
+        if (ValueEntry."Item Ledger Entry Type" = ValueEntry."Item Ledger Entry Type"::Transfer) then
+            if (ValueEntry."Document Type" in [ValueEntry."Document Type"::"Transfer Shipment", ValueEntry."Document Type"::" "]) and (ValueEntry."Valued Quantity" > 0) then
                 exit(false);
 
         exit((ItemJournalLine."Sust. Account No." <> '') and (ValueEntry."Entry Type" = ValueEntry."Entry Type"::"Direct Cost"));
@@ -40,7 +61,7 @@ codeunit 6256 "Sust. Item Post Subscriber"
         GHGCredit: Boolean;
         Sign: Integer;
     begin
-        if ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then begin
+        if ItemJournalLine.ShouldUpdateJournalLineWithPostingSign() then begin
             CheckSustainabilityItemJnlLine(ItemJournalLine."Sust. Account No.", ItemJournalLine."Sust. Account Category", ItemJournalLine."Sust. Account Subcategory", ItemJournalLine."Total CO2e");
             GHGCredit := ItemJournalLine.IsGHGCreditLine();
             Sign := ItemJournalLine.GetPostingSign(GHGCredit);
@@ -56,7 +77,7 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine."Shortcut Dimension 1 Code" := ItemJournalLine."Shortcut Dimension 1 Code";
         SustainabilityJnlLine."Shortcut Dimension 2 Code" := ItemJournalLine."Shortcut Dimension 2 Code";
 
-        if ItemJournalLine."Order Type" = ItemJournalLine."Order Type"::Production then
+        if ItemJournalLine.ShouldUpdateJournalLineWithPostingSign() then
             SustainabilityJnlLine.Validate("CO2e Emission", Sign * ItemJournalLine."Total CO2e")
         else
             SustainabilityJnlLine.Validate("CO2e Emission", ItemJournalLine."Total CO2e");
@@ -64,6 +85,7 @@ codeunit 6256 "Sust. Item Post Subscriber"
         SustainabilityJnlLine.Validate("Emission CO2", ItemJournalLine."Emission CO2");
         SustainabilityJnlLine.Validate("Emission CH4", ItemJournalLine."Emission CH4");
         SustainabilityJnlLine.Validate("Emission N2O", ItemJournalLine."Emission N2O");
+        SustainabilityJnlLine.Validate(Correction, ItemJournalLine.Correction);
         SustainabilityJnlLine.Validate("Country/Region Code", ItemJournalLine."Country/Region Code");
         SustainabilityPostMgt.InsertValueEntry(SustainabilityJnlLine, ValueEntry, ItemLedgerEntry);
     end;

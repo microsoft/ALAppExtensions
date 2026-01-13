@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -27,7 +28,9 @@ xmlport 20101 "AMC Bank Export CT"
                   TableData "Payment Export Data" = r;
     UseDefaultNamespace = false;
     UseRequestPage = false;
-
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     schema
     {
         textelement(paymentExportBank)
@@ -1478,4 +1481,4 @@ xmlport 20101 "AMC Bank Export CT"
 
     end;
 }
-
+#endif

@@ -51,6 +51,10 @@ codeunit 31302 IntrastatReportManagementCZ
         IntrastatReportSetup."Data Exch. Def. Code - Shpt." := DefaultDataExchDefCodeLbl;
         IntrastatReportSetup."Shipments Based On" := IntrastatReportSetup."Shipments Based On"::"Ship-to Country";
         IntrastatReportSetup."Sales VAT No. Based On" := IntrastatReportSetup."Sales VAT No. Based On"::Document;
+        IntrastatReportSetup."Purchase VAT No. Based On" := IntrastatReportSetup."Purchase VAT No. Based On"::"Buy-from VAT";
+        IntrastatReportSetup."Project VAT No. Based On" := IntrastatReportSetup."Project VAT No. Based On"::"Sell-to Customer";
+        IntrastatReportSetup."Sales Intrastat Info Based On" := IntrastatReportSetup."Sales Intrastat Info Based On"::"Sell-to Customer";
+        IntrastatReportSetup."Purch. Intrastat Info Based On" := IntrastatReportSetup."Purch. Intrastat Info Based On"::"Buy-from Vendor";
         IntrastatReportSetup."Def. Private Person VAT No." := DefPrivatePersonVATNoLbl;
         IntrastatReportSetup."Def. 3-Party Trade VAT No." := Def3DPartyTradeVATNoLbl;
         IntrastatReportSetup."Def. VAT for Unknown State" := DefUnknowVATNoLbl;
@@ -655,87 +659,6 @@ codeunit 31302 IntrastatReportManagementCZ
             else
                 exit(false);
         end;
-    end;
-
-    local procedure GetDocumentType(PostingDate: Date; DocumentNo: Code[20]): Enum "Item Ledger Document Type"
-    var
-        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
-        PurchInvHeader: Record "Purch. Inv. Header";
-        PurchRcptHeader: Record "Purch. Rcpt. Header";
-        ReturnReceiptHeader: Record "Return Receipt Header";
-        ReturnShipmentHeader: Record "Return Shipment Header";
-        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesShipmentHeader: Record "Sales Shipment Header";
-        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
-        ServiceInvoiceHeader: Record "Service Invoice Header";
-        ServiceShipmentHeader: Record "Service Shipment Header";
-    begin
-        SalesShipmentHeader.Reset();
-        SalesShipmentHeader.SetFilter("No.", DocumentNo);
-        SalesShipmentHeader.SetRange("Posting Date", PostingDate);
-        if not SalesShipmentHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Sales Shipment");
-
-        SalesInvoiceHeader.Reset();
-        SalesInvoiceHeader.SetFilter("No.", DocumentNo);
-        SalesInvoiceHeader.SetRange("Posting Date", PostingDate);
-        if not SalesInvoiceHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Sales Invoice");
-
-        SalesCrMemoHeader.Reset();
-        SalesCrMemoHeader.SetFilter("No.", DocumentNo);
-        SalesCrMemoHeader.SetRange("Posting Date", PostingDate);
-        if not SalesCrMemoHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Sales Credit Memo");
-
-        ReturnReceiptHeader.Reset();
-        ReturnReceiptHeader.SetFilter("No.", DocumentNo);
-        ReturnReceiptHeader.SetRange("Posting Date", PostingDate);
-        if not ReturnReceiptHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Sales Return Receipt");
-
-        PurchRcptHeader.Reset();
-        PurchRcptHeader.SetFilter("No.", DocumentNo);
-        PurchRcptHeader.SetRange("Posting Date", PostingDate);
-        if not PurchRcptHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Purchase Receipt");
-
-        PurchInvHeader.Reset();
-        PurchInvHeader.SetFilter("No.", DocumentNo);
-        PurchInvHeader.SetRange("Posting Date", PostingDate);
-        if not PurchInvHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Purchase Invoice");
-
-        PurchCrMemoHdr.Reset();
-        PurchCrMemoHdr.SetFilter("No.", DocumentNo);
-        PurchCrMemoHdr.SetRange("Posting Date", PostingDate);
-        if not PurchCrMemoHdr.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Purchase Credit Memo");
-
-        ReturnShipmentHeader.Reset();
-        ReturnShipmentHeader.SetFilter("No.", DocumentNo);
-        ReturnShipmentHeader.SetRange("Posting Date", PostingDate);
-        if not ReturnShipmentHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Purchase Return Shipment");
-
-        ServiceShipmentHeader.Reset();
-        ServiceShipmentHeader.SetFilter("No.", DocumentNo);
-        ServiceShipmentHeader.SetRange("Posting Date", PostingDate);
-        if not ServiceShipmentHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Service Shipment");
-
-        ServiceInvoiceHeader.Reset();
-        ServiceInvoiceHeader.SetFilter("No.", DocumentNo);
-        ServiceInvoiceHeader.SetRange("Posting Date", PostingDate);
-        if not ServiceInvoiceHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Service Invoice");
-
-        ServiceCrMemoHeader.Reset();
-        ServiceCrMemoHeader.SetFilter("No.", DocumentNo);
-        ServiceCrMemoHeader.SetRange("Posting Date", PostingDate);
-        if not ServiceCrMemoHeader.IsEmpty() then
-            exit(Enum::"Item Ledger Document Type"::"Service Credit Memo");
     end;
 
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeInsertJobLedgerLine', '', false, false)]

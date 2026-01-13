@@ -1,0 +1,537 @@
+[
+    {
+        "CaseID": "{7C83D9D2-7B73-48C6-AB6F-3E2E7221B1D8}",
+        "Description": "Calculation of inter-state GST TDS from Registered Vendor",
+        "Version": 1,
+        "MinorVersion": 0,
+        "TaxType": "GST TDS TCS",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "Gen. Journal Line",
+        "ParentUseCase": "GST TDS TCS Calculation",
+        "ParentCaseId": "{2EC51C0B-DBA5-490B-AA60-944452C6BD3E}",
+        "PresentationOrder": 500,
+        "Indent": 1,
+        "PostingTableName": "GST Posting Setup",
+        "PostingTableFilters": [
+            {
+                "FiterFieldName": "State Code",
+                "FilterType": "Equals",
+                "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                        "SourceType": "Current Record",
+                        "TableName": "Gen. Journal Line",
+                        "FieldName": "Location State Code"
+                    }
+                }
+            }
+        ],
+        "Attributes": [],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [
+            {
+                "ComponentName": "GST TDS/TCS Base Amount",
+                "Sequence": 2,
+                "Formula": {
+                    "VariableName": "GST TDS/TCS Base Amount",
+                    "Expression": "Amount",
+                    "Tokens": [
+                        {
+                            "TokenName": "Amount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Gen. Journal Line",
+                                    "FieldName": "GST TDS/TCS Base Amount"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "ComponentName": "IGST",
+                "Sequence": 1,
+                "Formula": {
+                    "VariableName": "IGST",
+                    "Expression": "Amount*IGST/100",
+                    "Tokens": [
+                        {
+                            "TokenName": "Amount",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Current Record",
+                                    "TableName": "Gen. Journal Line",
+                                    "FieldName": "GST TDS/TCS Base Amount"
+                                }
+                            }
+                        },
+                        {
+                            "TokenName": "IGST",
+                            "TokenValue": {
+                                "Type": "Lookup",
+                                "Lookup": {
+                                    "SourceType": "Component Percent",
+                                    "ComponentName": "IGST"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "Condition": {
+            "Body": [
+                {
+                    "Operator": " ",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Document Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Payment"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Account Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Vendor"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "GST Vendor Type"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "Registered"
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Not Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "Location State Code"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Lookup",
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "GST TCS State Code"
+                        }
+                    }
+                },
+                {
+                    "Operator": "and",
+                    "ConditionType": "Equals",
+                    "LHS": {
+                        "Lookup": {
+                            "SourceType": "Current Record",
+                            "TableName": "Gen. Journal Line",
+                            "FieldName": "GST TDS/GST TCS"
+                        }
+                    },
+                    "RHS": {
+                        "Type": "Constant",
+                        "Value": "TDS"
+                    }
+                }
+            ]
+        },
+        "TaxPostingSetup": [
+            {
+                "ComponentName": "IGST",
+                "TableName": "GST Posting Setup",
+                "AccountSourceType": "Field",
+                "FieldName": "GST TDS Payable Account",
+                "AccountingImpact": "Credit",
+                "ReverseCharge": false,
+                "ReverseAccountSourceType": "Field",
+                "ReverseChargeFieldName": "",
+                "TableFilters": [
+                    {
+                        "FiterFieldName": "Component ID",
+                        "FilterType": "Equals",
+                        "FilterValue": {
+                            "Type": "Constant",
+                            "Value": "3"
+                        }
+                    }
+                ],
+                "When": [
+                    {
+                        "Condition": {
+                            "Body": [
+                                {
+                                    "Operator": " ",
+                                    "ConditionType": "Not Equals",
+                                    "LHS": {
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "IGST"
+                                        }
+                                    },
+                                    "RHS": {
+                                        "Type": "Constant",
+                                        "Value": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "ValueType": "Insert Record",
+                        "Sequence": 0,
+                        "InsertRecord": {
+                            "TableName": "GST TDS/TCS Entry",
+                            "RunTrigger": true,
+                            "SubLedgerGrpBy": "Component",
+                            "InsertRecordFields": [
+                                {
+                                    "FieldName": "Line No.",
+                                    "Sequence": 25,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Line No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location GST Reg. No.",
+                                    "Sequence": 10,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Location GST Reg. No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location State Code",
+                                    "Sequence": 12,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Location State Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Buyer/Seller Reg. No.",
+                                    "Sequence": 11,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Customer GST Reg. No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Buyer/Seller State Code",
+                                    "Sequence": 13,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Bill-to/BuyFrom State Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Place of Supply",
+                                    "Sequence": 16,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Place of Supply"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source No.",
+                                    "Sequence": 9,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Account No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Posting Date",
+                                    "Sequence": 3,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Posting Date"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document Type",
+                                    "Sequence": 1,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Payment"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Document No.",
+                                    "Sequence": 2,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "Posted Document No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Component Code",
+                                    "Sequence": 4,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "IGST"
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST TDS/TCS Base Amount (LCY)",
+                                    "Sequence": 7,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "GST TDS/TCS Base Amount"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST TDS/TCS Amount (LCY)",
+                                    "Sequence": 6,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST TDS/TCS %",
+                                    "Sequence": 5,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Component Percent",
+                                            "ComponentName": "IGST"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "GST Jurisdiction",
+                                    "Sequence": 17,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "GST Jurisdiction Type"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Code",
+                                    "Sequence": 22,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Currency Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Currency Factor",
+                                    "Sequence": 23,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Currency Factor"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "User ID",
+                                    "Sequence": 20,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Database",
+                                            "DatabaseVariableName": "UserId"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Transaction No.",
+                                    "Sequence": 21,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Posting Field",
+                                            "PostingVariableName": "G/L Entry Transaction No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Type",
+                                    "Sequence": 24,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "TDS"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location ARN No.",
+                                    "Sequence": 15,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Table",
+                                            "TableName": "Location",
+                                            "TableFieldName": "Location ARN No.",
+                                            "Method": "First",
+                                            "TableFilters": [
+                                                {
+                                                    "FiterFieldName": "Code",
+                                                    "FilterType": "Equals",
+                                                    "FilterValue": {
+                                                        "Type": "Lookup",
+                                                        "Lookup": {
+                                                            "SourceType": "Current Record",
+                                                            "TableName": "Gen. Journal Line",
+                                                            "FieldName": "Location Code"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Location Code",
+                                    "Sequence": 14,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Location Code"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FieldName": "Source Type",
+                                    "Sequence": 8,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "Vendor"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Credit Availed",
+                                    "Sequence": 18,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "false"
+                                    }
+                                },
+                                {
+                                    "FieldName": "Liable to Pay",
+                                    "Sequence": 19,
+                                    "ReverseSign": false,
+                                    "Lookup": {
+                                        "Type": "Constant",
+                                        "Value": "true"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

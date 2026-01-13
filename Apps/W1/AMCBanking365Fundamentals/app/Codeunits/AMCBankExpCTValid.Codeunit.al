@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN28
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -17,6 +18,9 @@ using Microsoft.Sales.Customer;
 codeunit 20107 "AMC Bank Exp. CT Valid."
 {
     TableNo = "Gen. Journal Line";
+    ObsoleteReason = 'AMC Banking 365 Fundamental extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
 
     trigger OnRun()
     var
@@ -133,4 +137,4 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
     var
         HasErrorsErr: Label 'The file export has one or more errors.\\For each line to be exported, resolve the errors displayed to the right and then try to export again.';
 }
-
+#endif

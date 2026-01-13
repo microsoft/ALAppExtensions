@@ -231,20 +231,21 @@ table 47056 "SL SOAddress"
         Exists: Boolean;
     begin
         if Customer.Get(CustId) then begin
-            Exists := ShipToAddress.Get(CustId, CopyStr(ShipToId, 1, 10));
+            Exists := ShipToAddress.Get(CustId, CopyStr(ShipToId, 1, MaxStrLen(ShipToAddress.Code)));
             ShipToAddress.Init();
             ShipToAddress.Validate("Customer No.", CustId);
-            ShipToAddress.Code := CopyStr(ShipToId, 1, 10);
+            ShipToAddress.Code := CopyStr(ShipToId, 1, MaxStrLen(ShipToAddress.Code));
             ShipToAddress.Name := Customer.Name;
             ShipToAddress.Address := Addr1;
-            ShipToAddress."Address 2" := CopyStr(Addr2, 1, 50);
-            ShipToAddress.City := CopyStr(City, 1, 30);
+            ShipToAddress."Address 2" := CopyStr(Addr2, 1, MaxStrLen(ShipToAddress."Address 2"));
+            ShipToAddress.City := CopyStr(City, 1, MaxStrLen(ShipToAddress.City));
             ShipToAddress.Contact := Attn;
             ShipToAddress."Phone No." := Phone;
             ShipToAddress."Fax No." := Fax;
             ShipToAddress."Post Code" := Zip;
             ShipToAddress."E-Mail" := EMailAddr;
-            ShipToAddress.County := Country;
+            ShipToAddress.County := State;
+            ShipToAddress."Country/Region Code" := Country;
 
             if not Exists then
                 ShipToAddress.Insert()

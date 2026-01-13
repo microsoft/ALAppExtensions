@@ -136,7 +136,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Sales Lines Suggestions");
 
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
@@ -212,7 +212,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT41Latest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Sales Lines Suggestions");
 
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());

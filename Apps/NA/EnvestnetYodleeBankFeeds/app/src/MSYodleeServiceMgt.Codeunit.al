@@ -88,6 +88,8 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         BankAccountRefreshBankInBetaMaintenanceTxt: Label 'Yodlee was unable to update your account because it has started providing data updates for this online bank, and it may take a few days to be successful. Please try again later.';
         BankAccountRefreshTimedOutTxt: Label 'Your request timed out due to technical reasons. Open the corresponding bank account card and choose action Edit Online Bank Account Information. Provide the credentials for the online bank account, close the page and then choose action Refresh Online Bank Account.';
         BankAccountRefreshAdditionalAuthInfoNeededTxt: Label 'Additional authentication information is required. Open the corresponding bank account card and choose action Edit Online Bank Account Information.';
+        BankAccountConsentRequiredTxt: Label 'Access consent update is required for this online bank account. Open the corresponding bank account card, choose action ''Manage Access Consent for Online Bank Account'' and provide consent. If that doesn''t help, choose action ''Edit Online Bank Account Information'' and provide credentials and consent.';
+        UserActionNeededAtSiteTxt: Label 'Your financial institution requires additional action at their site. Sign in to your financial institution''s website to complete the necessary steps.';
         YodleeFastlinkUrlTxt: Label 'YODLEE_FASTLINKURL', Locked = true;
         GLBDisableRethrowException: Boolean;
         ErrorsIgnoredTxt: Label 'This failure has been ignored.';
@@ -950,13 +952,13 @@ codeunit 1450 "MS - Yodlee Service Mgt."
     local procedure UserFriendlyRefreshErrorMessage(RefreshCode: Text): Text;
     begin
         case RefreshCode of
-            '402', 'CREDENTIALS_UPDATE_NEEDED', 'INCORRECT_CREDENTIALS':
+            '402', 'CREDENTIALS_UPDATE_NEEDED', 'INCORRECT_CREDENTIALS', 'INCORRECT_OAUTH_TOKEN':
                 exit(BankAccountRefreshInvalidCredentialsTxt);
             '404', 'TECH_ERROR':
                 exit(BankAccountRefreshUnknownErrorTxt);
             '407', 'ACCOUNT_LOCKED':
                 exit(BankAccountRefreshAccountLockedTxt);
-            '409', 'UNEXPECTED_SITE_ERROR', 'SITE_UNAVAILABLE':
+            '409', 'UNEXPECTED_SITE_ERROR', 'SITE_UNAVAILABLE', 'DATA_NOT_AVAILABLE', 'NOT_AVAILABLE', 'SITE_BLOCKING_ERROR':
                 exit(BankAccountRefreshBankDownTxt);
             '424':
                 exit(BankAccountRefreshBankDownForMaintenanceTxt);
@@ -966,6 +968,10 @@ codeunit 1450 "MS - Yodlee Service Mgt."
                 exit(BankAccountRefreshTimedOutTxt);
             '518', '519', '520', '522', '523', '524', '526', 'ADDL_AUTHENTICATION_REQUIRED', 'INVALID_ADDL_INFO_PROVIDED', 'NEW_AUTHENTICATION_REQUIRED':
                 exit(BankAccountRefreshAdditionalAuthInfoNeededTxt);
+            'CONSENT_EXPIRED', 'CONSENT_REVOKED', 'CONSENT_REQUIRED':
+                exit(BankAccountConsentRequiredTxt);
+            'USER_ACTION_NEEDED_AT_SITE':
+                exit(UserActionNeededAtSiteTxt);
         end;
         exit('');
     end;

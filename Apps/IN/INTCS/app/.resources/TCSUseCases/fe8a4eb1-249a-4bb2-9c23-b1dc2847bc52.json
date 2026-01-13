@@ -1,0 +1,171 @@
+[
+    {
+        "CaseID": "{FE8A4EB1-249A-4BB2-9C23-B1DC2847BC52}",
+        "Description": "TCS to be calculated on Customer Invoice and Payment (Through Journal)",
+        "Version": 1,
+        "MinorVersion": 0,
+        "TaxType": "TCS",
+        "ChangedBy": "Microsoft",
+        "Code": "",
+        "TaxEntity": "Gen. Journal Line",
+        "ParentUseCase": "",
+        "ParentCaseId": "{00000000-0000-0000-0000-000000000000}",
+        "PresentationOrder": 569,
+        "Indent": 0,
+        "PostingTableName": "TCS Posting Setup",
+        "PostingTableFilters": [
+            {
+                "FiterFieldName": "TCS Nature of Collection",
+                "FilterType": "Equals",
+                "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                        "SourceType": "Current Record",
+                        "TableName": "Gen. Journal Line",
+                        "FieldName": "TCS Nature of Collection"
+                    }
+                }
+            },
+            {
+                "FiterFieldName": "Effective Date",
+                "FilterType": "Is Less Than Or Equals To",
+                "FilterValue": {
+                    "Type": "Lookup",
+                    "Lookup": {
+                        "SourceType": "Current Record",
+                        "TableName": "Gen. Journal Line",
+                        "FieldName": "Posting Date"
+                    }
+                }
+            }
+        ],
+        "Attributes": [
+            {
+                "Name": "TCAN No.",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": false,
+                            "TableName": "Gen. Journal Line",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "Journal Template Name",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Journal Template Name"
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "Line No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Line No."
+                                        }
+                                    }
+                                },
+                                {
+                                    "FiterFieldName": "Journal Batch Name",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Journal Batch Name"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "PAN No.",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": false,
+                            "TableName": "Customer",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Account No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Assessee Code",
+                "When": [
+                    {
+                        "ValueType": "Relation",
+                        "Sequence": 0,
+                        "Relation": {
+                            "IsCurrentRecord": false,
+                            "TableName": "Customer",
+                            "TableFilters": [
+                                {
+                                    "FiterFieldName": "No.",
+                                    "FilterType": "Equals",
+                                    "FilterValue": {
+                                        "Type": "Lookup",
+                                        "Lookup": {
+                                            "SourceType": "Current Record",
+                                            "TableName": "Gen. Journal Line",
+                                            "FieldName": "Account No."
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ],
+        "RateColumns": [],
+        "ComputationVariables": [],
+        "ComputationScript": [],
+        "PostingVariables": [],
+        "PostingScript": [],
+        "Components": [],
+        "Condition": {
+            "Body": []
+        },
+        "TaxPostingSetup": [
+            {
+                "ComponentName": "Total TCS",
+                "TableName": "TCS Posting Setup",
+                "AccountSourceType": "Field",
+                "FieldName": "TCS Account No.",
+                "AccountingImpact": "Debit",
+                "ReverseCharge": false,
+                "ReverseAccountSourceType": "Field",
+                "ReverseChargeFieldName": ""
+            }
+        ]
+    }
+]

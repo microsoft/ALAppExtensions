@@ -11,8 +11,8 @@ codeunit 139761 "Outlook Mock Init. Subscribers"
         OAuthClientMock: Codeunit "OAuth Client Mock";
         OutlookAPIClientMock: Codeunit "Outlook API Client Mock";
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Email - Outlook API Helper", 'OnAfterInitializeClientsV2', '', false, false)]
-    local procedure OnAfterInitializeClientsV2(var OutlookAPIClient: interface "Email - Outlook API Client v2"; var OAuthClient: interface "Email - OAuth Client v2")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Email - Outlook API Helper", 'OnAfterInitializeClientsV5', '', false, false)]
+    local procedure OnAfterInitializeClientsV5(var OutlookAPIClient: interface "Email - Outlook API Client v5"; var OAuthClient: interface "Email - OAuth Client v2")
     begin
         OutlookAPIClient := OutlookAPIClientMock;
         OAuthClient := OAuthClientMock;

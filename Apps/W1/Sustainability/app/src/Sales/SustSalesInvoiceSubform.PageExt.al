@@ -24,6 +24,12 @@ pageextension 6236 "Sust. Sales Invoice Subform" extends "Sales Invoice Subform"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the value of the Total CO2e field.';
             }
+            field("Total EPR Fee"; Rec."Total EPR Fee")
+            {
+                Visible = SustainabilityVisible;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the value of the Total EPR Fee field.';
+            }
         }
     }
 

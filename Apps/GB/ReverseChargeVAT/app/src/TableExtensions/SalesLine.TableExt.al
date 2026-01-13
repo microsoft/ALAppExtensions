@@ -19,6 +19,8 @@ tableextension 10563 "Sales Line" extends "Sales Line"
         field(10508; "Reverse Charge GB"; Decimal)
         {
             Caption = 'Reverse Charge';
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
             DataClassification = CustomerContent;
         }
     }

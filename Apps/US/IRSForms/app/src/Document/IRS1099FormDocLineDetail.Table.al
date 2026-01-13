@@ -44,11 +44,19 @@ table 10038 "IRS 1099 Form Doc. Line Detail"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(110; "Currency Code"; Code[10])
+        {
+            FieldClass = FlowField;
+            CalcFormula = lookup("Vendor Ledger Entry"."Currency Code" where("Entry No." = field("Vendor Ledger Entry No.")));
+            Editable = false;
+        }
         field(200; "IRS 1099 Reporting Amount"; Decimal)
         {
             CalcFormula = lookup("Vendor Ledger Entry"."IRS 1099 Reporting Amount" where("Entry No." = field("Vendor Ledger Entry No.")));
             Editable = false;
             FieldClass = FlowField;
+            AutoFormatType = 1;
+            AutoFormatExpression = Rec."Currency Code";
         }
     }
 

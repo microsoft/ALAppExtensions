@@ -20,6 +20,8 @@ tableextension 10549 "General Ledger Setup" extends "General Ledger Setup"
             Caption = 'Threshold Amount';
             MinValue = 0;
             DataClassification = CustomerContent;
+            AutoFormatType = 1;
+            AutoFormatExpression = '';
         }
     }
 }

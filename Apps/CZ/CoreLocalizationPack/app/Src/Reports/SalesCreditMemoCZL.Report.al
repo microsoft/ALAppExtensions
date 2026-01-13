@@ -195,10 +195,10 @@ report 31190 "Sales Credit Memo CZL"
             column(VATRegistrationNo_SalesCrMemoHeader; "VAT Registration No.")
             {
             }
-            column(RegistrationNo_SalesCrMemoHeaderCaption; FieldCaption("Registration No. CZL"))
+            column(RegistrationNo_SalesCrMemoHeaderCaption; FieldCaption("Registration Number"))
             {
             }
-            column(RegistrationNo_SalesCrMemoHeader; "Registration No. CZL")
+            column(RegistrationNo_SalesCrMemoHeader; "Registration Number")
             {
             }
             column(BankAccountNo_SalesCrMemoHeaderCaption; FieldCaption("Bank Account No. CZL"))
@@ -268,6 +268,9 @@ report 31190 "Sales Credit Memo CZL"
             {
             }
             column(ExternalDocumentNo_SalesCrMemoHeader; "External Document No.")
+            {
+            }
+            column(YourReference_SalesCrMemoHeader; "Your Reference")
             {
             }
             column(ShipmentMethod; ShipmentMethod.Description)

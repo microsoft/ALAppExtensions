@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -204,17 +204,6 @@ page 31165 "Posted Cash Document CZP"
         }
         area(FactBoxes)
         {
-#if not CLEAN25
-            part("Attached Documents"; "Document Attachment Factbox")
-            {
-                ObsoleteTag = '25.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
-                ApplicationArea = All;
-                Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(database::"Posted Cash Document Hdr. CZP"), "No." = field("No.");
-            }
-#endif
             part("Attached Documents List"; "Doc. Attachment List Factbox")
             {
                 ApplicationArea = All;
@@ -237,6 +226,21 @@ page 31165 "Posted Cash Document CZP"
     {
         area(navigation)
         {
+            action(PostedCashDocumentStatistics)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Statistics';
+                Image = Statistics;
+                ShortCutKey = 'F7';
+                ToolTip = 'View the statistics on the selected cash document.';
+#if CLEAN27
+                Visible = true;
+#else
+                Visible = false;
+#endif
+                RunObject = Page "Posted Cash Doc. Stat. CZP";
+                RunPageLink = "Cash Desk No." = field("Cash Desk No."), "No." = field("No.");
+            }
             action(Dimensions)
             {
                 ApplicationArea = Basic, Suite;
