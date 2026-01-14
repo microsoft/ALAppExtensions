@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Manufacturing;
 
+using Microsoft.DemoData.Common;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Manufacturing.MachineCenter;
-using Microsoft.Manufacturing.WorkCenter;
-using Microsoft.DemoData.Common;
 using Microsoft.Manufacturing.Setup;
+using Microsoft.Manufacturing.WorkCenter;
 
 codeunit 4775 "Create Mfg Capacity"
 {

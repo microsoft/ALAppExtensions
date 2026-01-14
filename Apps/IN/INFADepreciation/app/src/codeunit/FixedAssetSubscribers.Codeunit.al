@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.FADepreciation;
 
-using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
 
 codeunit 18637 "Fixed Asset Subscribers"
 {

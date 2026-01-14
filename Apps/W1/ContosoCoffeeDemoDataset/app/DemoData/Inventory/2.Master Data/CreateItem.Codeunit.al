@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
-using System.Utilities;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Inventory.Item.Substitution;
+using System.Utilities;
 
 codeunit 5537 "Create Item"
 {

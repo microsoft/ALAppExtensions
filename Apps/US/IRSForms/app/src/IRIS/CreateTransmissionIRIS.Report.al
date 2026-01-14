@@ -64,6 +64,7 @@ report 10034 "Create Transmission IRIS"
             IRSReportingPeriod.UpdateDataForNewTaxYear(PrevPeriodNo, PeriodNo, true);
 
         Transmission.SetRange("Period No.", PeriodNo);
+        OnPostReportOnBeforeTransmissionFindFirst(Transmission);
         if Transmission.FindFirst() then
             if not ConfirmMgt.GetResponseOrDefault(StrSubstNo(TransmissionExistsQst, PeriodNo), false) then
                 Error('');
@@ -93,5 +94,10 @@ report 10034 "Create Transmission IRIS"
     begin
         if not IRSReportingPeriod.Get(NewPeriodNo) then
             Error(PeriodNoErr, NewPeriodNo);
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnPostReportOnBeforeTransmissionFindFirst(var Transmission: Record "Transmission IRIS")
+    begin
     end;
 }

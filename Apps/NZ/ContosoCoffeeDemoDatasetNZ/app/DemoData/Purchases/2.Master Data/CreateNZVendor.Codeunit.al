@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
-using Microsoft.DemoData.Inventory;
-using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
+using Microsoft.Purchases.Vendor;
 
 codeunit 17133 "Create NZ Vendor"
 {

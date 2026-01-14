@@ -7,9 +7,9 @@ namespace Microsoft.Inventory.Intrastat;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.NoSeries;
 using System.Environment;
+using System.Environment.Configuration;
 using System.Telemetry;
 using System.Utilities;
-using System.Environment.Configuration;
 
 page 4815 "Intrastat Report Setup Wizard"
 {

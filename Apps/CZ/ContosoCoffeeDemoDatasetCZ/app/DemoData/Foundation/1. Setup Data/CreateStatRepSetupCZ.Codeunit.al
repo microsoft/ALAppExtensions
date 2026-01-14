@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.Company;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.HumanResources;
 using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.Company;
 
 codeunit 31280 "Create Stat. Rep. Setup CZ"
 {

@@ -4,8 +4,8 @@ using System.Environment;
 using System.Environment.Configuration;
 using System.Integration;
 using System.Reflection;
-using System.Text;
 using System.Telemetry;
+using System.Text;
 
 codeunit 40021 "Cloud Mig. Replicate Data Mgt."
 {

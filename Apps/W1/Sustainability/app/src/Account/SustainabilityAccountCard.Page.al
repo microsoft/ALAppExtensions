@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Account;
 
-using Microsoft.Sustainability.Ledger;
 using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.Comment;
+using Microsoft.Sustainability.Ledger;
 
 page 6211 "Sustainability Account Card"
 {

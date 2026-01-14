@@ -1,8 +1,8 @@
 namespace Microsoft.DataMigration;
 
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Receivables;
 using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
 
 codeunit 4010 CalculateAmounts
 {

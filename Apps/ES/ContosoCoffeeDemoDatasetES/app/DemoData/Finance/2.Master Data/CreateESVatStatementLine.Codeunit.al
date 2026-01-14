@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.VAT.Reporting;
-using Microsoft.Foundation.Enums;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.Enums;
 
 codeunit 10832 "Create ES VAT Statement Line"
 {

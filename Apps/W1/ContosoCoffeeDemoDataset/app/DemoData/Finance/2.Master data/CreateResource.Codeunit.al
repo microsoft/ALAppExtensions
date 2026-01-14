@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Projects.Resources.Resource;
 
 codeunit 5237 "Create Resource"

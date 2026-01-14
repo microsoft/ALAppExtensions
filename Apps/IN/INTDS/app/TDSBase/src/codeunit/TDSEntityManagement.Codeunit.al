@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSBase;
 
-using Microsoft.Finance.TaxEngine.PostingHandler;
-using Microsoft.Purchases.Payables;
-using Microsoft.Finance.GeneralLedger.Ledger;
-using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.PostingHandler;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Purchases.Payables;
 
 codeunit 18685 "TDS Entity Management"
 {

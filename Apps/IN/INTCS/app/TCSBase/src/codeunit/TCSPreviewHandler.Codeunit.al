@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSBase;
 
-using Microsoft.Foundation.Navigate;
+using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Foundation.Navigate;
 using Microsoft.Purchases.Posting;
 using Microsoft.Sales.Posting;
-using Microsoft.Finance.GeneralLedger.Posting;
 
 codeunit 18809 "TCS Preview Handler"
 {

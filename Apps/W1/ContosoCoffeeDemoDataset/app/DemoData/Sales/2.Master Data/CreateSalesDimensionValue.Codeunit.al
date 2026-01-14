@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
-using Microsoft.Sales.Customer;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.Dimension;
+using Microsoft.Sales.Customer;
 
 codeunit 5412 "Create Sales Dimension Value"
 {

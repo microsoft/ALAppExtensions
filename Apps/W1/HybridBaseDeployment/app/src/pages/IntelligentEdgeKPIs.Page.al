@@ -1,8 +1,8 @@
 namespace Microsoft.DataMigration;
 
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
 using System.Environment.Configuration;
-using Microsoft.Finance.GeneralLedger.Account;
 
 page 4014 "Intelligent Edge KPIs"
 {

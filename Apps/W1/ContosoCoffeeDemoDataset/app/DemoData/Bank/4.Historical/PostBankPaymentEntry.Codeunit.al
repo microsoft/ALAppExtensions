@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Bank;
 
+using Microsoft.DemoData.Finance;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
-using Microsoft.DemoData.Finance;
 
 codeunit 5667 "Post Bank Payment Entry"
 {

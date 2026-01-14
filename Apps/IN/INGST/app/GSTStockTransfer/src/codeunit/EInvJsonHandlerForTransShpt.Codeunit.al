@@ -6,12 +6,12 @@ namespace Microsoft.Finance.GST.StockTransfer;
 
 using Microsoft.Finance.GST.Base;
 using Microsoft.Finance.GST.Sales;
+using Microsoft.Finance.TaxBase;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Transfer;
 using Microsoft.QRGeneration;
 using System.Security.Encryption;
 using System.Text;
-using Microsoft.Finance.TaxBase;
 using System.Utilities;
 
 codeunit 18023 "E-InvJsonHandlerForTransShpt"

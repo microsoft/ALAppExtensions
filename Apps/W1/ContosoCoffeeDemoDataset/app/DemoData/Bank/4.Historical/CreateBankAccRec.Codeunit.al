@@ -5,13 +5,13 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Bank.Reconciliation;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.Document;
-using Microsoft.DemoData.Sales;
 using Microsoft.DemoData.Purchases;
+using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
 
 codeunit 5258 "Create Bank Acc. Rec."
 {

@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Account;
 
 using Microsoft.Sustainability.Energy;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
 
 table 6212 "Sustain. Account Subcategory"
 {

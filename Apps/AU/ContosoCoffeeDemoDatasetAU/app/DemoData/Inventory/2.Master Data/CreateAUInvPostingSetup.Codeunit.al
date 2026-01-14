@@ -7,8 +7,8 @@
 namespace Microsoft.DemoData.Inventory;
 
 using Microsoft.DemoData.Finance;
-using Microsoft.Inventory.Item;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Item;
 
 codeunit 17119 "Create AU Inv Posting Setup"
 {

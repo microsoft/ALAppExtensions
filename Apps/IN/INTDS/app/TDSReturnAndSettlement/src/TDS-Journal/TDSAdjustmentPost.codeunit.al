@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
 
-using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Foundation.NoSeries;
+using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Foundation.NoSeries;
 using Microsoft.Purchases.Vendor;
 
 codeunit 18748 "TDS Adjustment Post"

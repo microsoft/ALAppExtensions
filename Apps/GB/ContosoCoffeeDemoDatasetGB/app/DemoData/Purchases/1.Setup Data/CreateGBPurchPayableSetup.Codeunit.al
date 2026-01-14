@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Setup;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Purchases.Setup;
 
 codeunit 11499 "Create GB Purch Payable Setup"
 {

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.VAT.Reporting;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Enums;
 
 codeunit 14105 "Create VAT Statement MX"

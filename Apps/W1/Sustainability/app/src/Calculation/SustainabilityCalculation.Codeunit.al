@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Calculation;
 
 using Microsoft.Purchases.Document;
-using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Journal;
 
 codeunit 6215 "Sustainability Calculation"
 {

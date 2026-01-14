@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.FADepreciation;
 
-using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.FixedAssets.Depreciation;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Journal;
-using Microsoft.FixedAssets.Setup;
 using Microsoft.FixedAssets.Ledger;
+using Microsoft.FixedAssets.Setup;
 
 report 18631 "Calculate FA Depreciation"
 {

@@ -4,21 +4,21 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
 
-using Microsoft.Projects.Project.Job;
+using Microsoft.Bank.BankAccount;
 using Microsoft.CRM.Campaign;
 using Microsoft.CRM.Team;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Inventory.Location;
-using Microsoft.Finance.TaxBase;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 table 18747 "TDS Journal Line"
 {

@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Location;
+using Microsoft.DemoData.Foundation;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
+using Microsoft.Inventory.Location;
 codeunit 10803 "Create ES Location"
 {
     SingleInstance = true;

@@ -5,8 +5,8 @@
 #if CLEAN27
 namespace app.app;
 
-using Microsoft.Sales.Customer;
 using Microsoft.Foundation.Address;
+using Microsoft.Sales.Customer;
 
 pageextension 50009 "Ship-to Address" extends "Ship-to Address"
 {

@@ -5,8 +5,8 @@
 namespace Microsoft.Sustainability.Service;
 
 using Microsoft.Service.History;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
 
 tableextension 6274 "Sust. Service Invoice Header" extends "Service Invoice Header"
 {

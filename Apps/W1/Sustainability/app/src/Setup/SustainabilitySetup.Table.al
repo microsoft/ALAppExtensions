@@ -250,6 +250,10 @@ table 6217 "Sustainability Setup"
                     Rec.TestField("Use Emissions In Purch. Doc.", true);
             end;
         }
+        field(50; "Fixed Asset Emissions"; Boolean)
+        {
+            Caption = 'Fixed Asset Emissions';
+        }
     }
 
     keys
@@ -295,6 +299,7 @@ table 6217 "Sustainability Setup"
         Rec.Validate("Use Emissions In Purch. Doc.", true);
         Rec.Validate("Item Emissions", true);
         Rec.Validate("Resource Emissions", true);
+        Rec.Validate("Fixed Asset Emissions", true);
         Rec.Validate("Work/Machine Center Emissions", true);
     end;
 

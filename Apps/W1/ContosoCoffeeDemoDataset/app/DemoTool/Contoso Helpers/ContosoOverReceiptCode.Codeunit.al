@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
 
 codeunit 5659 "Contoso Over Receipt Code"
 {

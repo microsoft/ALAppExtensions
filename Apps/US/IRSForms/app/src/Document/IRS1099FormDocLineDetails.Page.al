@@ -33,6 +33,10 @@ page 10049 "IRS 1099 Form Doc Line Details"
                 {
                     Tooltip = 'Specifies the description of the vendor ledger entry.';
                 }
+                field("Calculated Amount"; Rec."Calculated Amount")
+                {
+                    Tooltip = 'Specifies the calculated amount that contributes to the form line total.';
+                }
                 field("IRS 1099 Reporting Amount"; Rec."IRS 1099 Reporting Amount")
                 {
                     Tooltip = 'Specifies the amount for IRS 1099 reporting of the vendor ledger entry.';

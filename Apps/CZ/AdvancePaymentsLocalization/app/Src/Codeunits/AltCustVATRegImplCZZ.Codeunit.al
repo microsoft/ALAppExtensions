@@ -6,9 +6,9 @@ namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.VAT.Registration;
 using Microsoft.Sales.Customer;
-using System.Telemetry;
 using System.Diagnostics;
 using System.Environment.Configuration;
+using System.Telemetry;
 
 codeunit 11732 "Alt. Cust. VAT Reg. Impl. CZZ" implements "Alt. Cust. VAT Reg. Adv. CZZ"
 {

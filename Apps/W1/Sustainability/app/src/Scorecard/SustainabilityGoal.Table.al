@@ -1,10 +1,10 @@
 namespace Microsoft.Sustainability.Scorecard;
 
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Location;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Setup;
-using Microsoft.Foundation.Address;
-using Microsoft.Inventory.Location;
-using Microsoft.Foundation.UOM;
 using System.Security.User;
 
 table 6219 "Sustainability Goal"

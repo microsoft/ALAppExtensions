@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GST.StockTransfer;
 
-using Microsoft.Inventory.Transfer;
 using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+using Microsoft.Inventory.Transfer;
 
 pageextension 18395 "GST Transfer Order Ext" extends "Transfer Order"
 {

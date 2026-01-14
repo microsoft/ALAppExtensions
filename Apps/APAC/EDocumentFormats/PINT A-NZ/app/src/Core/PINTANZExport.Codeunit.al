@@ -7,11 +7,11 @@ namespace Microsoft.eServices.EDocument.Format;
 using Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.History;
 using System.Utilities;
-using Microsoft.Foundation.Address;
 
 codeunit 28006 "PINT A-NZ Export"
 {

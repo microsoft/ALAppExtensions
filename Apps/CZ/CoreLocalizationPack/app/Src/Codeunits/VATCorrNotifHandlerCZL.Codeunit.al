@@ -10,6 +10,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Setup;
 using Microsoft.Utilities;
 
 codeunit 31029 "VAT Corr. Notif. Handler CZL"
@@ -111,6 +112,7 @@ codeunit 31029 "VAT Corr. Notif. Handler CZL"
     local procedure ShowVATLCYCorrectionAfterPostingSalesInvoice(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
         InstructionMgt: Codeunit "Instruction Mgt.";
         InstructionMgtCZL: Codeunit "Instruction Mgt. CZL";
         OfficeManagement: Codeunit "Office Management";
@@ -126,11 +128,13 @@ codeunit 31029 "VAT Corr. Notif. Handler CZL"
         if not SalesInvoiceHeader.IsVATLCYCorrectionAllowedCZL() then
             exit;
 
+        SalesReceivablesSetup.Get();
+
         if OfficeManagement.IsAvailable() then
             PopUpVATLCYCorrectionCZL := true
         else
-            if InstructionMgt.IsEnabled(InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
-                if InstructionMgt.ShowConfirm(StrSubstNo(OpenInvoiceVATLCYCorrectionQst, SalesInvoiceHeader."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
+            if InstructionMgt.IsEnabled(InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageForSalesCode()) and SalesReceivablesSetup."Show VAT Corr When Posting CZL" then
+                if InstructionMgt.ShowConfirm(StrSubstNo(OpenInvoiceVATLCYCorrectionQst, SalesInvoiceHeader."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageForSalesCode()) then
                     PopUpVATLCYCorrectionCZL := true;
 
         if not PopUpVATLCYCorrectionCZL then
@@ -156,6 +160,7 @@ codeunit 31029 "VAT Corr. Notif. Handler CZL"
     local procedure ShowVATLCYCorrectionAfterPostingSalesCreditMemo(var SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
     var
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
         InstructionMgt: Codeunit "Instruction Mgt.";
         InstructionMgtCZL: Codeunit "Instruction Mgt. CZL";
         OfficeManagement: Codeunit "Office Management";
@@ -170,11 +175,13 @@ codeunit 31029 "VAT Corr. Notif. Handler CZL"
         if not SalesCrMemoHeader.IsVATLCYCorrectionAllowedCZL() then
             exit;
 
+        SalesReceivablesSetup.Get();
+
         if OfficeManagement.IsAvailable() then
             PopUpVATLCYCorrectionCZL := true
         else
-            if InstructionMgt.IsEnabled(InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
-                if InstructionMgt.ShowConfirm(StrSubstNo(OpenCrMemoVATLCYCorrectionQst, SalesCrMemoHeader."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageCode()) then
+            if InstructionMgt.IsEnabled(InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageForSalesCode()) and SalesReceivablesSetup."Show VAT Corr When Posting CZL" then
+                if InstructionMgt.ShowConfirm(StrSubstNo(OpenCrMemoVATLCYCorrectionQst, SalesCrMemoHeader."No."), InstructionMgtCZL.ShowVATLCYCorrectionConfirmationMessageForSalesCode()) then
                     PopUpVATLCYCorrectionCZL := true;
 
         if not PopUpVATLCYCorrectionCZL then

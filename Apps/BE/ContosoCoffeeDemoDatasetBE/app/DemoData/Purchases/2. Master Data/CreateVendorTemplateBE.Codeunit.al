@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.DemoTool;
+using Microsoft.Purchases.Vendor;
 
 codeunit 11383 "Create Vendor Template BE"
 {

@@ -6,11 +6,11 @@
 namespace Microsoft.DemoData.Foundation;
 
 using Microsoft.Foundation.Reporting;
-using System.Reflection;
-using Microsoft.Sales.Reminder;
 using Microsoft.Purchases.Document;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Reminder;
+using System.Reflection;
 
 codeunit 31294 "Create Custom Report Layout CZ"
 {

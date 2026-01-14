@@ -1,9 +1,9 @@
 namespace Microsoft.Utility.ImageAnalysis;
 
-using Microsoft.Inventory.Item.Picture;
 using Microsoft.Inventory.Item;
-using System.AI;
 using Microsoft.Inventory.Item.Attribute;
+using Microsoft.Inventory.Item.Picture;
+using System.AI;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved. 
 // Licensed under the MIT License. See License.txt in the project root for license information. 

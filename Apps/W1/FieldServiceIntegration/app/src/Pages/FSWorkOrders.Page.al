@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Integration.Dataverse;
-using System.Environment.Configuration;
 using Microsoft.Integration.D365Sales;
+using Microsoft.Integration.Dataverse;
 using Microsoft.Service.Document;
+using System.Environment.Configuration;
 
 page 6616 "FS Work Orders"
 {

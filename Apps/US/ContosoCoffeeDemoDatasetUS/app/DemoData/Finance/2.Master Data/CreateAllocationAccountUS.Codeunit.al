@@ -22,7 +22,7 @@ codeunit 11458 "Create Allocation Account US"
         CreateUSGLAccounts: Codeunit "Create US GL Accounts";
     begin
         ContosoAllocationAccount.InsertAllocationAccount(
-            Licenses(), YearlyLicenseFeeTok,
+            Licenses(), LicensesDescription(),
             AllocationAccount."Account Type"::Fixed, AllocationAccount."Document Lines Split"::"Split Amount");
         ContosoAllocationAccount.InsertAllocationAccountDistribution(
             Licenses(), 10000, AllocAccountDistribution."Account Type"::Fixed, 1, 50,
@@ -35,6 +35,11 @@ codeunit 11458 "Create Allocation Account US"
     procedure Licenses(): Code[20]
     begin
         exit(LicensesTok);
+    end;
+
+    procedure LicensesDescription(): Text[100]
+    begin
+        exit(YearlyLicenseFeeTok);
     end;
 
     var

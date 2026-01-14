@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.VAT.Clause;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
 
 codeunit 31219 "Contoso Posting Setup CZ"

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Item;
 using Microsoft.DemoData.Finance;
+using Microsoft.Inventory.Item;
 
 codeunit 31201 "Create Invt. Posting Setup CZ"
 {

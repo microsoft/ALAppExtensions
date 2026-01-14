@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.Address;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Address;
 
 codeunit 11145 "Create Post Code AT"
 {

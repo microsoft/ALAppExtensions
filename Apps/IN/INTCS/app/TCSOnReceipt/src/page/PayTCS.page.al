@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSOnReceipt;
 
-using Microsoft.Finance.TCS.TCSBase;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TCS.TCSBase;
 
 page 18906 "Pay TCS"
 {

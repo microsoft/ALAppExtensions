@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.HR;
 
-using Microsoft.HumanResources.Employee;
 using Microsoft.DemoData.HumanResources;
+using Microsoft.HumanResources.Employee;
 
 codeunit 17146 "Create AU Employee"
 {

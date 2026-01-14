@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.SalesTax;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.Foundation.Company;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Foundation.Company;
 
 codeunit 27019 "Create CA Tax Area"
 {

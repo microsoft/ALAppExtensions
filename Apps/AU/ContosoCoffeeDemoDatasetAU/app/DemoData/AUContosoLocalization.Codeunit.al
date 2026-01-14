@@ -4,16 +4,16 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoData.Localization;
 
-using Microsoft.DemoData.Finance;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.CRM;
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.HR;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoData.Job;
 using Microsoft.DemoData.Purchases;
 using Microsoft.DemoData.Sales;
-using Microsoft.DemoData.HR;
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoData.FixedAsset;
-using Microsoft.DemoData.Job;
-using Microsoft.DemoData.CRM;
 using Microsoft.DemoTool;
 
 codeunit 17131 "AU Contoso Localization"

@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 
 #pragma warning disable AS0007
+#pragma warning disable AS0032 // TODO: Remove after porting to 27.x
+
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.Agents;
@@ -34,63 +36,7 @@ page 4400 "SOA Setup"
             part(AgentSetupPart; "Agent Setup Part")
             {
                 ApplicationArea = All;
-                Visible = AgentSetupPartVisible;
                 UpdatePropagation = Both;
-            }
-            group(StartCard)
-            {
-                Visible = not AgentSetupPartVisible;
-                group(Header)
-                {
-                    field(Badge; AgentSetupBuffer.Initials)
-                    {
-                        ShowCaption = false;
-                        Editable = false;
-                        ToolTip = 'The badge of the sales order agent.';
-                    }
-                    field(Type; AgentSetupBuffer."Agent Metadata Provider")
-                    {
-                        ShowCaption = false;
-                        Editable = false;
-                        ToolTip = 'Specifies the type of the sales order agent.';
-                    }
-                    field(Name; AgentSetupBuffer."Display Name")
-                    {
-                        ShowCaption = false;
-                        Editable = false;
-                        ToolTip = 'Specifies the name of the sales order agent.';
-                    }
-                    field(State; AgentSetupBuffer.State)
-                    {
-                        Caption = 'Active';
-                        ToolTip = 'Specifies the state of the sales order agent, such as active or inactive.';
-                        trigger OnValidate()
-                        begin
-                            AgentSetupBuffer."State Updated" := true;
-                            AgentSetupBuffer.Modify();
-                            ConfigUpdated();
-                        end;
-                    }
-                    field(UserSettingsLink; ManageUserAccessLbl)
-                    {
-                        Caption = 'Coworkers can use this agent.';
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the user access control settings for the sales order agent.';
-
-                        trigger OnDrillDown()
-                        begin
-                            AgentSetup.UpdateUserAccessControl(AgentSetupBuffer);
-                            IsConfigUpdated := IsConfigUpdated or AgentSetup.GetChangesMade(AgentSetupBuffer);
-                        end;
-                    }
-                }
-                field(Summary; AgentSummaryTxt)
-                {
-                    Caption = 'Summary';
-                    MultiLine = true;
-                    Editable = false;
-                    ToolTip = 'Specifies a brief description of the sales order agent.';
-                }
             }
             group(MonitorIncomingCard)
             {
@@ -142,26 +88,6 @@ page 4400 "SOA Setup"
                         ToolTip = 'Specifies the date and time of the last sync with the mailbox.';
                         Editable = false;
                         Visible = ShowLastSync;
-                    }
-                    group(DefaultLanguage)
-                    {
-                        Caption = 'Default language';
-                        InstructionalText = 'Used for task details and outgoing messages unless the recipient has a language set.';
-                        Visible = not AgentSetupPartVisible;
-
-                        field(LanguageAndRegion; AgentSetupBuffer."Language Used")
-                        {
-                            ShowCaption = false;
-                            Editable = false;
-                            ToolTip = 'Specifies the language and region settings for the sales order agent.';
-
-                            ApplicationArea = All;
-                            trigger OnDrillDown()
-                            begin
-                                AgentSetup.SetupLanguageAndRegion(AgentSetupBuffer);
-                                IsConfigUpdated := IsConfigUpdated or AgentSetup.GetChangesMade(AgentSetupBuffer);
-                            end;
-                        }
                     }
                 }
                 group(BillingInformationFirstSetup)
@@ -486,23 +412,12 @@ page 4400 "SOA Setup"
         if not Evaluate(UserSecurityID, UserSecurityIDFilter) then
             Clear(UserSecurityID);
 
-        if not AgentSetupPartVisible then begin
-            AgentSetup.GetSetupRecord(AgentSetupBuffer,
-               UserSecurityID,
-               "Agent Metadata Provider"::"SO Agent",
-               SOASetupCU.GetSOAUsername(),
-               SOASetupCU.GetSOAUserDisplayName(),
-               SOASetupCU.GetAgentSummary()
-            );
-            AgentSummaryTxt := SOASetupCU.GetAgentSummary();
-        end else begin
-            CurrPage.AgentSetupPart.Page.Initialize(UserSecurityID,
-               "Agent Metadata Provider"::"SO Agent",
-               SOASetupCU.GetSOAUsername(),
-               SOASetupCU.GetSOAUserDisplayName(),
-               SOASetupCU.GetAgentSummary());
-            UpdateAgentSetupBuffer();
-        end;
+        CurrPage.AgentSetupPart.Page.Initialize(UserSecurityID,
+           "Agent Metadata Provider"::"SO Agent",
+           SOASetupCU.GetSOAUsername(),
+           SOASetupCU.GetSOAUserDisplayName(),
+           SOASetupCU.GetAgentSummary());
+        UpdateAgentSetupBuffer();
 
         InitialState := AgentSetupBuffer.State;
         UpdateControls();
@@ -511,10 +426,8 @@ page 4400 "SOA Setup"
 
     trigger OnAfterGetCurrRecord()
     begin
-        if AgentSetupPartVisible then begin
-            UpdateAgentSetupBuffer();
-            IsConfigUpdated := IsConfigUpdated or AgentSetup.GetChangesMade(AgentSetupBuffer);
-        end;
+        UpdateAgentSetupBuffer();
+        IsConfigUpdated := IsConfigUpdated or AgentSetup.GetChangesMade(AgentSetupBuffer);
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -570,8 +483,7 @@ page 4400 "SOA Setup"
 
     local procedure UpdateAgentSetupBuffer()
     begin
-        if AgentSetupPartVisible then
-            CurrPage.AgentSetupPart.Page.GetAgentSetupBuffer(AgentSetupBuffer);
+        CurrPage.AgentSetupPart.Page.GetAgentSetupBuffer(AgentSetupBuffer);
     end;
 
     local procedure StateChanged(): Boolean
@@ -737,12 +649,9 @@ page 4400 "SOA Setup"
         DailyEmailLimit: Integer;
         LearnMoreTxt: Label 'Learn more';
         LearnMoreBillingDocumentationLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2333517';
-        ManageUserAccessLbl: Label 'Manage user access';
         DailyEmailLimitErr: Label 'The daily email limit must be greater than zero.';
         EmailSignatureModifyLbl: Label 'Edit signature';
         ConfiguredBy: Text[80];
-        AgentSummaryTxt: Text;
         OptionalMailboxLbl: Label '(optional)';
         IsConfigUpdated: Boolean;
-        AgentSetupPartVisible: Boolean;
 }

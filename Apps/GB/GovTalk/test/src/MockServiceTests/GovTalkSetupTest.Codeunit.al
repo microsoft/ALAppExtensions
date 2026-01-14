@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
-using System.TestLibraries.Utilities;
-using Microsoft.Utilities;
 using Microsoft.Foundation.Company;
+using Microsoft.Utilities;
+using System.TestLibraries.Utilities;
 
 codeunit 144031 "GovTalk Setup Test"
 {

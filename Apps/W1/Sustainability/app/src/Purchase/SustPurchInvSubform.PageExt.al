@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.Purchase;
 
-using Microsoft.Sustainability.Setup;
 using Microsoft.Purchases.Document;
+using Microsoft.Sustainability.Setup;
 
 pageextension 6214 "Sust. Purch. Inv. Subform" extends "Purch. Invoice Subform"
 {

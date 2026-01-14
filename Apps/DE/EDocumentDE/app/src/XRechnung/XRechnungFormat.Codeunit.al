@@ -4,17 +4,17 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
-using System.Utilities;
-using Microsoft.Sales.History;
+using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.IO.Peppol;
+using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Document;
-using System.IO;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
-using Microsoft.Foundation.Company;
-using Microsoft.eServices.EDocument;
+using Microsoft.Sales.History;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
-using Microsoft.eServices.EDocument.IO.Peppol;
+using System.IO;
+using System.Utilities;
 
 codeunit 13914 "XRechnung Format" implements "E-Document"
 {

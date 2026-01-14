@@ -5,8 +5,8 @@
 namespace Microsoft.Finance.VAT.GovTalk;
 
 using Microsoft.Finance.VAT.Reporting;
-using System.IO;
 using Microsoft.Foundation.Company;
+using System.IO;
 
 codeunit 144032 "Test Create VAT Declare Rqst"
 {

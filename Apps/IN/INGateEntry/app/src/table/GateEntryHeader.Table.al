@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Warehouse.GateEntry;
 
+using Microsoft.Finance.TaxBase;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Inventory.Location;
-using Microsoft.Finance.TaxBase;
 using Microsoft.Inventory.Setup;
 
 table 18603 "Gate Entry Header"

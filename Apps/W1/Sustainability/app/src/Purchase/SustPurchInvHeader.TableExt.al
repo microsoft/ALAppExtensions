@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Purchase;
 
-using Microsoft.Sustainability.Setup;
-using Microsoft.Sustainability.Ledger;
 using Microsoft.Purchases.History;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
 
 tableextension 6217 "Sust. Purch. Inv. Header" extends "Purch. Inv. Header"
 {

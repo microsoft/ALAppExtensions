@@ -2,8 +2,8 @@ namespace Microsoft.Payroll.Norway;
 
 using Microsoft.Finance.GeneralLedger.Setup;
 using System.IO;
-using System.Utilities;
 using System.Reflection;
+using System.Utilities;
 
 codeunit 10609 "Payroll Integration (NO)"
 {

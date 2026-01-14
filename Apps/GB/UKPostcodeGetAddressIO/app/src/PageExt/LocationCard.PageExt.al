@@ -5,8 +5,8 @@
 #if CLEAN27
 namespace app.app;
 
-using Microsoft.Inventory.Location;
 using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Location;
 
 pageextension 50010 "Location Card" extends "Location Card"
 {

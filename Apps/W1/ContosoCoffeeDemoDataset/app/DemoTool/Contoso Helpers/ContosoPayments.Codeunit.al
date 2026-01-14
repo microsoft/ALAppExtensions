@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Payment;
+using Microsoft.Foundation.PaymentTerms;
 
 codeunit 5569 "Contoso Payments"
 {

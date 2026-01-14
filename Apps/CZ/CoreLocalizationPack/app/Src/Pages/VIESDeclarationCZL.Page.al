@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Foundation.Company;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Utilities;
 
 page 31138 "VIES Declaration CZL"

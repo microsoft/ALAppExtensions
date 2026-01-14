@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Common;
 
-using Microsoft.DemoTool;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Inventory;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5134 "Create Common Posting Group"
 {

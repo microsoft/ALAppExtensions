@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoData.Finance;
+using Microsoft.Sales.Customer;
 
 codeunit 13732 "Create Cust. Posting Group DK"
 {

@@ -5,11 +5,11 @@
 
 namespace Microsoft.DataMigration.C5;
 
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.BOM;
 using Microsoft.Pricing.Asset;
 using Microsoft.Pricing.Source;
 using System.Integration;
-using Microsoft.Inventory.BOM;
-using Microsoft.Foundation.Company;
 
 codeunit 1867 "C5 Item Migrator"
 {

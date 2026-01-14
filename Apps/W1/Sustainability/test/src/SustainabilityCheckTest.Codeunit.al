@@ -1,10 +1,10 @@
 namespace Microsoft.Test.Sustainability;
 
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Posting;
-using Microsoft.Sustainability.Account;
 using System.Utilities;
-using Microsoft.Sustainability.Emission;
 
 codeunit 148183 "Sustainability Check Test"
 {

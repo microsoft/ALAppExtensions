@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSForCustomer;
 
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Sales.Document;
 using Microsoft.Sales.Posting;
 using Microsoft.Sales.Receivables;
-using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Sales.Document;
 using System.Utilities;
 
 codeunit 18661 "TDS For Customer Subscribers"

@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Localization;
 
-using Microsoft.Finance.Compensations;
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.DemoData.Purchase;
 using Microsoft.DemoData.Sales;
 using Microsoft.DemoTool;
+using Microsoft.Finance.Compensations;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Document;
 
 codeunit 31465 "Contoso Compensations CZC"
