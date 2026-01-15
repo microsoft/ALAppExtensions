@@ -1,20 +1,24 @@
+#if not CLEAN28
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoData.Localization;
 
-using Microsoft.eServices.EDocument.Format;
-using Microsoft.eServices.EDocument.DemoData;
-using Microsoft.DemoData.Jobs;
 using Microsoft.DemoData.Finance;
-using Microsoft.Inventory.Item;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Jobs;
+using Microsoft.eServices.EDocument.DemoData;
+using Microsoft.eServices.EDocument.Format;
+using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
 
 codeunit 10546 "Create EDocs From Resources GB"
 {
     Access = Internal;
+    ObsoleteReason = 'A new implementation in Create Demo EDocs US and Create E-Doc Sample Inv. US codeunits are used instead.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '28.0';
     InherentEntitlements = X;
     InherentPermissions = X;
     EventSubscriberInstance = Manual;
@@ -98,3 +102,4 @@ codeunit 10546 "Create EDocs From Resources GB"
         IsHandled := true;
     end;
 }
+#endif

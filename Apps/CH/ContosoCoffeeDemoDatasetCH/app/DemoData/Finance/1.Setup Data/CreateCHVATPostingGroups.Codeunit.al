@@ -7,8 +7,8 @@ namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
 
 codeunit 11616 "Create CH VAT Posting Groups"

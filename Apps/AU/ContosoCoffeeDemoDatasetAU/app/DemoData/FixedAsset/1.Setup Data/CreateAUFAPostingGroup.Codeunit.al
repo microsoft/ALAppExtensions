@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.FixedAssets.FixedAsset;
 
 codeunit 17147 "Create AU FA Posting Group"
 {

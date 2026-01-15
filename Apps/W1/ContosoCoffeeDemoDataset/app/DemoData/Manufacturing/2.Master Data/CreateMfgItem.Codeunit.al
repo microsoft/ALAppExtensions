@@ -5,12 +5,12 @@
 
 namespace Microsoft.DemoData.Manufacturing;
 
-using Microsoft.Inventory.Item;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Common;
-using Microsoft.Manufacturing.StandardCost;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.Item;
 using Microsoft.Manufacturing.Setup;
+using Microsoft.Manufacturing.StandardCost;
 
 codeunit 4770 "Create Mfg Item"
 {
@@ -245,9 +245,9 @@ codeunit 4770 "Create Mfg Item"
 
     local procedure InsertItemVariants()
     begin
-        ContosoItem.InsertItemVariant(SPSCM1006(), BlackTok, AutoDripLiteBlackTok);
-        ContosoItem.InsertItemVariant(SPSCM1006(), WhiteTok, AutoDripLiteWhiteTok);
-        ContosoItem.InsertItemVariant(SPSCM1006(), RedTok, AutoDripLiteRedTok);
+        ContosoItem.InsertItemVariant(SPSCM1006(), BlackTok, AutoDripLiteBlackTok, ManufacturingMedia.GetAutoDripLiteBlackPicture());
+        ContosoItem.InsertItemVariant(SPSCM1006(), WhiteTok, AutoDripLiteWhiteTok, ManufacturingMedia.GetAutoDripLiteWhitePicture());
+        ContosoItem.InsertItemVariant(SPSCM1006(), RedTok, AutoDripLiteRedTok, ManufacturingMedia.GetAutoDripLiteRedPicture());
     end;
 
     local procedure CalcStandardCost()

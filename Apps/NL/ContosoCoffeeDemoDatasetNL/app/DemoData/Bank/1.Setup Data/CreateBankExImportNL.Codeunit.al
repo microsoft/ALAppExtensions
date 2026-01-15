@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.Bank.Setup;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
 using Microsoft.Bank.DirectDebit;
+using Microsoft.Bank.Setup;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 11549 "Create Bank Ex/Import NL"
 {

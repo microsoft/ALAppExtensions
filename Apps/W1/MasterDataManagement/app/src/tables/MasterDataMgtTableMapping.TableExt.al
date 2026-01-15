@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.MDM;
 
-using System.Threading;
 using Microsoft.Integration.SyncEngine;
+using System.Threading;
 
 tableextension 7235 MasterDataMgtTableMapping extends "Integration Table Mapping"
 {

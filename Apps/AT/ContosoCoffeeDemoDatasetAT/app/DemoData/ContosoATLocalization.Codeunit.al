@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoData.Localization;
 
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Purchases;
 using Microsoft.DemoData.Sales;

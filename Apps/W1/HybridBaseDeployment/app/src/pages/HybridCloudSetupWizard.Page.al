@@ -1,10 +1,10 @@
 ﻿namespace Microsoft.DataMigration;
 
 using System.Environment;
-using System.Utilities;
 using System.Environment.Configuration;
-using System.Telemetry;
 using System.Security.User;
+using System.Telemetry;
+using System.Utilities;
 
 page 4000 "Hybrid Cloud Setup Wizard"
 {
@@ -857,4 +857,3 @@ page 4000 "Hybrid Cloud Setup Wizard"
     begin
     end;
 }
-

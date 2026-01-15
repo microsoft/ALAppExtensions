@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Calculation;
 
-using Microsoft.Sales.Receivables;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
 
 page 31025 "VAT LCY Correction CZL"
 {

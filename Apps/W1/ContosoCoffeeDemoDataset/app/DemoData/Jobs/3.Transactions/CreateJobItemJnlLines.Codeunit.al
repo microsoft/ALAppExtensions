@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Jobs;
 
-using Microsoft.Inventory.Journal;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Posting;
 

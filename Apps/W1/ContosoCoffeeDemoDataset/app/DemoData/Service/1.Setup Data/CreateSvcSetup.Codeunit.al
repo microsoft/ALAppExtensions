@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Service;
 
-using Microsoft.Service.Setup;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Service.Setup;
 
 codeunit 5103 "Create Svc Setup"
 {

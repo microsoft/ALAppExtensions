@@ -5,14 +5,14 @@
 namespace Microsoft.EServices.EDocumentConnector.Pagero;
 
 using Microsoft.eServices.EDocument;
-using Microsoft.Sales.Customer;
-using Microsoft.Foundation.Company;
-using Microsoft.Purchases.Vendor;
-using System.Threading;
 using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Service;
-using System.Security.Authentication;
 using Microsoft.EServices.EDocumentConnector;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Security.Authentication;
+using System.Threading;
 
 codeunit 148192 "Integration Tests"
 {

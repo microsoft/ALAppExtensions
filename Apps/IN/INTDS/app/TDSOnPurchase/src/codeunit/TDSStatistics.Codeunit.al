@@ -5,10 +5,10 @@
 namespace Microsoft.Finance.TDS.TDSOnPurchase;
 
 using Microsoft.Finance.TaxBase;
-using Microsoft.Purchases.Document;
-using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Purchases.History;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 
 codeunit 18719 "TDS Statistics"
 {

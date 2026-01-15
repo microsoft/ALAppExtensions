@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Common;
 
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Inventory.Setup;
-using Microsoft.DemoTool.Helpers;
 
 codeunit 5135 "Create Common GL Account"
 {

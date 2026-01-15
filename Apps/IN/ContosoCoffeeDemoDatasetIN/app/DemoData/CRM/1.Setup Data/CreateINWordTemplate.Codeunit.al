@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using System.Integration.Word;
 using Microsoft.DemoData.Foundation;
+using System.Integration.Word;
 
 codeunit 19060 "Create IN Word Template"
 {

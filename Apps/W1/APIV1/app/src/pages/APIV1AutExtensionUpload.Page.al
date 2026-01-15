@@ -1,8 +1,8 @@
 namespace Microsoft.API.V1;
 
-using System.Environment;
-using System.Apps;
 using Microsoft.API;
+using System.Apps;
+using System.Environment;
 
 page 20006 "APIV1 - Aut. Extension Upload"
 {

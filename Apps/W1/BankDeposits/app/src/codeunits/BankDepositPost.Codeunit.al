@@ -1,18 +1,18 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Sales.Receivables;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Ledger;
-using Microsoft.Finance.Dimension;
-using Microsoft.Purchases.Payables;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
 using Microsoft.Finance.Analysis;
-using System.Telemetry;
 using Microsoft.Finance.Currency;
-using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+using System.Telemetry;
 using System.Utilities;
 
 codeunit 1690 "Bank Deposit-Post"

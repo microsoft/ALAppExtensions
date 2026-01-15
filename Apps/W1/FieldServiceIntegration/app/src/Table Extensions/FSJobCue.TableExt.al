@@ -5,8 +5,8 @@
 namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.Dataverse;
-using Microsoft.Projects.RoleCenters;
 using Microsoft.Integration.SyncEngine;
+using Microsoft.Projects.RoleCenters;
 
 tableextension 6613 "FS Job Cue" extends "Job Cue"
 {

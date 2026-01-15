@@ -1,14 +1,14 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Foundation.Company;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.Currency;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Receivables;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
 using System.Globalization;
 using System.Utilities;
 

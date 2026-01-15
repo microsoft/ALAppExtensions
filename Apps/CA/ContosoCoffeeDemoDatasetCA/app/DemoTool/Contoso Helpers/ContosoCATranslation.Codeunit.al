@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Foundation.UOM;
-using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Foundation.Address;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.UOM;
 
 codeunit 27077 "Contoso CA Translation"
 {

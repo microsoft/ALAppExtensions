@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.AuditCodes;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.AuditCodes;
 
 codeunit 10550 "Create Source Code US"
 {

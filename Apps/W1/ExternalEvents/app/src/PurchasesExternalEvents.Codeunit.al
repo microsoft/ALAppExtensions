@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.ExternalEvents;
 
-using System.Integration;
 using Microsoft.Purchases.Document;
+using System.Integration;
 
 codeunit 38505 "Purchases External Events"
 {

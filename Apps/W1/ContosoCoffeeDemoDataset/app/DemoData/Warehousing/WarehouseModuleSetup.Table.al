@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Warehousing;
 
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
+using Microsoft.DemoData.Common;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Location;
-using Microsoft.DemoData.Common;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 table 4764 "Warehouse Module Setup"
 {

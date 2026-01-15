@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.FixedAssets.FixedAsset;
 
 codeunit 5118 "Create Fixed Asset"

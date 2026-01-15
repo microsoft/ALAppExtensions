@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.Copilot;
 
-using Microsoft.Sustainability.Account;
 using Microsoft.Foundation.Company;
+using Microsoft.Sustainability.Account;
 using System.Telemetry;
 
 codeunit 6333 "Sust. Emiss.Suggestion Warning"

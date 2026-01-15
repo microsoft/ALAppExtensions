@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Projects.RoleCenters;
 using Microsoft.Integration.Dataverse;
+using Microsoft.Projects.RoleCenters;
 
 pageextension 6615 "FS Job Project Manager RC" extends "Job Project Manager RC"
 {

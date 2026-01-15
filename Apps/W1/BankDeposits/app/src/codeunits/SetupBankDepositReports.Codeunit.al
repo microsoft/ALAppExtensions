@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Deposit;
 
-using System.Telemetry;
-using Microsoft.Sales.Setup;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Foundation.Reporting;
+using Microsoft.Sales.Setup;
+using System.Telemetry;
 
 codeunit 1697 "Setup Bank Deposit Reports"
 {

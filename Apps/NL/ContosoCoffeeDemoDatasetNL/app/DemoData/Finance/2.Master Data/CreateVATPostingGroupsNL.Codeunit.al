@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
+using Microsoft.DemoData.Localization;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Localization;
 using Microsoft.Foundation.Enums;
 
 codeunit 11534 "Create VAT Posting Groups NL"

@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
-using Microsoft.Foundation.Address;
-using Microsoft.DemoData.Inventory;
-using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
+using Microsoft.Foundation.Address;
+using Microsoft.Purchases.Vendor;
 
 codeunit 17144 "Create AU Vendor"
 {

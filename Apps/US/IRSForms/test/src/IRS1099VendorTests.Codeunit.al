@@ -6,8 +6,8 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
 using System.TestLibraries.Utilities;
 
@@ -402,6 +402,80 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         VendorCard.Close();
     end;
 
+    [Test]
+    procedure VendorListShowsFormBoxOnlyForVendorWithSetup()
+    var
+        VendorList: TestPage "Vendor List";
+        VendorNoWithSetup, VendorNoWithoutSetup, PeriodNo, FormNo, FormBoxNo : Code[20];
+    begin
+        // [FEATURE] [AI test]
+        // [SCENARIO 562547] Vendor List displays IRS fields only for vendors that have form box setup, not for all vendors
+
+        Initialize();
+
+        // [GIVEN] Reporting period, form "F" and form box "FB" are created
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        // [GIVEN] Vendor "V1" with form box setup for form "F" and form box "FB"
+        VendorNoWithSetup := LibraryPurchase.CreateVendorNo();
+        LibraryIRS1099FormBox.AssignFormBoxForVendorInPeriod(VendorNoWithSetup, WorkDate(), WorkDate(), FormNo, FormBoxNo);
+        // [GIVEN] Vendor "V2" without any form box setup
+        VendorNoWithoutSetup := LibraryPurchase.CreateVendorNo();
+
+        // [WHEN] Open Vendor List page and navigate to vendor "V1" first, then to vendor "V2"
+        VendorList.OpenView();
+        VendorList.Filter.SetFilter("No.", VendorNoWithSetup);
+        VendorList.First();
+
+        // [THEN] IRS fields show correct values for vendor "V1"
+        VendorList.IRSReportingPeriodNoField.AssertEquals(PeriodNo);
+        VendorList.IRS1099FormNoField.AssertEquals(FormNo);
+        VendorList.IRS1099FormBoxNoField.AssertEquals(FormBoxNo);
+
+        // [WHEN] Navigate to vendor "V2" without form box setup
+        VendorList.Filter.SetFilter("No.", VendorNoWithoutSetup);
+        VendorList.First();
+
+        // [THEN] IRS fields are empty for vendor "V2" (not showing values from vendor "V1")
+        VendorList.IRSReportingPeriodNoField.AssertEquals('');
+        VendorList.IRS1099FormNoField.AssertEquals('');
+        VendorList.IRS1099FormBoxNoField.AssertEquals('');
+        VendorList.Close();
+    end;
+
+    [Test]
+    [HandlerFunctions('NoDataFoundMessageHandler')]
+    procedure IRS1099VendorOverviewRefreshesDataWithPeriodNo()
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        IRS1099VendorOverviewPage: TestPage "IRS 1099 Vendor Overview";
+        PeriodNo, FormNo, FormBoxNo, VendNo : Code[20];
+        IRSAmount: Decimal;
+    begin
+        // [SCENARIO 615776] The IRS 1099 Vendor Overview page correctly sets the period number before calling GetVendorFormBoxAmount
+
+        Initialize();
+        // [GIVEN] IRS Reporting Period with forms and form boxes
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo := LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo := LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        // [GIVEN] Vendor with Form Box setup and vendor ledger entry with IRS data
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), FormNo, FormBoxNo);
+        IRSAmount := -LibraryRandom.RandDec(100, 2);
+        LibraryIRS1099Document.MockInvVendLedgEntryWithIRSData(VendorLedgerEntry, WorkDate(), WorkDate(), FormNo, FormBoxNo, IRSAmount);
+        VendorLedgerEntry."Vendor No." := VendNo;
+        VendorLedgerEntry.Modify();
+
+        // [WHEN] Open IRS 1099 Vendor Overview page and set the Reporting Period
+        IRS1099VendorOverviewPage.OpenView();
+        IRS1099VendorOverviewPage.IRSReportingPeriodNoField.SetValue(PeriodNo);
+
+        // [THEN] The page shows data for the selected period (no error occurs)
+        // The fix ensures IRS1099CalcParameters."Period No." is set before calling GetVendorFormBoxAmount
+        IRS1099VendorOverviewPage.Close();
+    end;
+
     local procedure Initialize()
     var
         IRSReportingPeriod: Record "IRS Reporting Period";
@@ -467,5 +541,10 @@ codeunit 148011 "IRS 1099 Vendor Tests"
         IRS1099PropagateVendSetup.PurchaseDocumentsControl.SetValue(true);
         IRS1099PropagateVendSetup.VendorLedgerEntriesControl.SetValue(true);
         IRS1099PropagateVendSetup.OK().Invoke();
+    end;
+
+    [MessageHandler]
+    procedure NoDataFoundMessageHandler(Message: Text[1024])
+    begin
     end;
 }

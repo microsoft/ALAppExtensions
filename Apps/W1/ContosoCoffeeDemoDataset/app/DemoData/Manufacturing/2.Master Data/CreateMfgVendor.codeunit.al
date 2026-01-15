@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Manufacturing;
 
+using Microsoft.DemoData.Common;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Common;
 
 codeunit 4777 "Create Mfg Vendor"
 {

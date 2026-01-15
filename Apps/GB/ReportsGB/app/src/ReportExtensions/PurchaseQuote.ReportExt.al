@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Purchases.Document;
 
-using Microsoft.Utilities;
-using Microsoft.Foundation.Shipping;
 using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Utilities;
 using System.Utilities;
 
 reportextension 10587 "Purchase - Quote" extends "Purchase - Quote"

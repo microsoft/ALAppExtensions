@@ -80,15 +80,15 @@ codeunit 139759 "Review G/L Entries Tests"
     var
         GLEntryReviewLog: record "G/L Entry Review Log";
     begin
-        if GLEntry.FindSet() then
-            repeat
-                GLEntryReviewLog.SetRange("G/L Entry No.", GLEntry."Entry No.");
-                GLEntryReviewLog.FindFirst();
-                if GLEntry."Amount to Review" = 0 then
-                    Assert.AreEqual(GLEntry.Amount, GLEntryReviewLog."Reviewed Amount", 'Reviewed Amount does not match for G/L Entry No. %1')
-                else
-                    Assert.AreEqual(GLEntry."Amount to Review", GLEntryReviewLog."Reviewed Amount", 'Reviewed Amount does not match for G/L Entry No. %1');
-            until GLEntry.Next() = 0;
+        Assert.IsTrue(GLEntry.FindSet(), '');
+        repeat
+            GLEntryReviewLog.SetRange("G/L Entry No.", GLEntry."Entry No.");
+            GLEntryReviewLog.FindFirst();
+            if GLEntry."Amount to Review" = 0 then
+                Assert.AreEqual(GLEntry.Amount, GLEntryReviewLog."Reviewed Amount", 'Reviewed Amount does not match for G/L Entry')
+            else
+                Assert.AreEqual(GLEntry."Amount to Review", GLEntryReviewLog."Reviewed Amount", 'Reviewed Amount does not match for G/L Entry');
+        until GLEntry.Next() = 0;
     end;
 
     [Test]

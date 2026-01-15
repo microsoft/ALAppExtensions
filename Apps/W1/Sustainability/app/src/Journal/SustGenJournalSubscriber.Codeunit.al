@@ -3,8 +3,10 @@ namespace Microsoft.Sustainability.Journal;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.FixedAssets.Journal;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.FixedAssets;
 using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Setup;
 
@@ -49,7 +51,9 @@ codeunit 6251 "Sust. Gen. Journal Subscriber"
         SourceCodeSetup: Record "Source Code Setup";
     begin
         SourceCodeSetup.Get();
-        if (GenJournalLine."Job No." = '') and (SourceCodeSetup."General Journal" = GenJournalLine."Source Code") then
+        if (GenJournalLine."Job No." = '') and
+           ((SourceCodeSetup."General Journal" = GenJournalLine."Source Code") or (GenJournalLine.IsSourceFixedAssetGLJournal()))
+        then
             PostSustainabilityLine(GenJournalLine);
     end;
 
@@ -58,22 +62,34 @@ codeunit 6251 "Sust. Gen. Journal Subscriber"
         SustainabilitySetup: Record "Sustainability Setup";
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
         SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
+        FAPostSubscriber: Codeunit "Sust. FA Post Subscriber";
+        FAJournalSubscriber: Codeunit "Sust. FA Journal Subscriber";
         Sign: Integer;
         CO2ToPost: Decimal;
         CH4ToPost: Decimal;
         N2OToPost: Decimal;
+        CO2eToPost: Decimal;
     begin
-        Sign := GetPostingSign(GenJournalLine);
+        if GenJournalLine.IsSourceFixedAssetGLJournal() then
+            Sign := FAJournalSubscriber.GetPostingSign(GenJournalLine."Document Type")
+        else
+            Sign := GetPostingSign(GenJournalLine);
 
         CO2ToPost := GenJournalLine."Total Emission CO2" * Sign;
         CH4ToPost := GenJournalLine."Total Emission CH4" * Sign;
         N2OToPost := GenJournalLine."Total Emission N2O" * Sign;
+        CO2eToPost := GenJournalLine."Total CO2e" * Sign;
 
         if not SustainabilitySetup.Get() then
             exit;
 
-        if not CanPostSustainabilityJnlLine(GenJournalLine, CO2ToPost, CH4ToPost, N2OToPost) then
-            exit;
+        if GenJournalLine.IsSourceFixedAssetGLJournal() then begin
+            SustainabilityPostMgt.SetSkipUpdateCarbonEmissionValue(true);
+            if not FAPostSubscriber.CheckSustainabilityFALine(GenJournalLine."Sust. Account No.", GenJournalLine."Sust. Account Category", GenJournalLine."Sust. Account Subcategory", Enum::"FA Journal Line FA Posting Type".FromInteger(GenJournalLine."FA Posting Type".AsInteger() - 1), CO2eToPost) then
+                exit;
+        end else
+            if not CanPostSustainabilityJnlLine(GenJournalLine, CO2ToPost, CH4ToPost, N2OToPost) then
+                exit;
 
         SustainabilityJnlLine.Init();
         SustainabilityJnlLine."Journal Template Name" := GenJournalLine."Journal Template Name";
@@ -102,6 +118,7 @@ codeunit 6251 "Sust. Gen. Journal Subscriber"
         SustainabilityJnlLine.Validate("Emission CO2", CO2ToPost);
         SustainabilityJnlLine.Validate("Emission CH4", CH4ToPost);
         SustainabilityJnlLine.Validate("Emission N2O", N2OToPost);
+        SustainabilityJnlLine.Validate("CO2e Emission", CO2eToPost);
         SustainabilityJnlLine.Validate("Country/Region Code", GenJournalLine."Country/Region Code");
         SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine);
     end;

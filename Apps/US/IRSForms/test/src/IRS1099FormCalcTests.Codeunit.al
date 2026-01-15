@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Payables;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
 
 codeunit 148014 "IRS 1099 Form Calc. Tests"
 {

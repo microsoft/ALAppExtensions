@@ -1,7 +1,7 @@
 namespace Microsoft.Finance.Analysis.StatisticalAccount;
 
-using Microsoft.Foundation.Enums;
 using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.Enums;
 using System.Telemetry;
 
 page 2623 "Stat. Account Balance"

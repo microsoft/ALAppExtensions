@@ -6,10 +6,10 @@
 
 namespace Microsoft.DemoData.Warehousing;
 
-using Microsoft.Inventory.Location;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Inventory.Item;
-using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 

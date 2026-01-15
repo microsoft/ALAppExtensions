@@ -10,8 +10,8 @@ using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Period;
 using Microsoft.Sales.Setup;
-using System.Utilities;
 using System.IO;
+using System.Utilities;
 
 report 10549 "Reverse Charge Sales List GB"
 {

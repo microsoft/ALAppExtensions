@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Address;
-using Microsoft.Finance.Currency;
-using Microsoft.Finance.GeneralLedger.Setup;
 
 table 31076 "VIES Declaration Line CZL"
 {

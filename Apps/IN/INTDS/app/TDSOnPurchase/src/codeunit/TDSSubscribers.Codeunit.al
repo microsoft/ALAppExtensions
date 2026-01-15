@@ -4,17 +4,17 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSOnPurchase;
 
-using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Posting;
-using Microsoft.Purchases.Payables;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.TaxBase;
-using Microsoft.Utilities;
 using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Inventory.Location;
 using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
+using Microsoft.Utilities;
 
 codeunit 18716 "TDS Subscribers"
 {

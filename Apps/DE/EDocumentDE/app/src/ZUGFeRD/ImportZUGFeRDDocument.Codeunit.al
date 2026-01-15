@@ -4,14 +4,14 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
-using System.Utilities;
+using Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Setup;
-using System.IO;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Purchases.Document;
-using System.Telemetry;
-using Microsoft.eServices.EDocument;
 using Microsoft.Purchases.Vendor;
+using System.IO;
+using System.Telemetry;
+using System.Utilities;
 
 codeunit 13919 "Import ZUGFeRD Document"
 {

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Purchases.Vendor;
 
 codeunit 10514 "Create Vendor Bank Account US"
 {

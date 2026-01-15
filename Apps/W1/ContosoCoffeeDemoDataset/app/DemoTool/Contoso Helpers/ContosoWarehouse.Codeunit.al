@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
+using Microsoft.Assembly.Document;
 using Microsoft.Inventory.Location;
-using Microsoft.Warehouse.Structure;
-using Microsoft.Warehouse.Setup;
-using Microsoft.Warehouse.Activity;
 using Microsoft.Manufacturing.Setup;
 using Microsoft.Projects.Project.Setup;
-using Microsoft.Assembly.Document;
+using Microsoft.Warehouse.Activity;
+using Microsoft.Warehouse.Setup;
+using Microsoft.Warehouse.Structure;
 
 codeunit 5147 "Contoso Warehouse"
 {

@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.FADepreciation;
 
-using Microsoft.FixedAssets.Ledger;
-using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.FixedAssets.Depreciation;
-using Microsoft.FixedAssets.Journal;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Ledger;
 
 codeunit 18638 "Make FA Led. Entry Subscriber"
 {

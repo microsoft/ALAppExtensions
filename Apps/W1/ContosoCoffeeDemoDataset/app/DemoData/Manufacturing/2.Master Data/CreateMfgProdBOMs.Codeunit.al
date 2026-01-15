@@ -5,12 +5,12 @@
 
 namespace Microsoft.DemoData.Manufacturing;
 
+using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Enums;
+using Microsoft.Inventory.BOM.Tree;
 using Microsoft.Inventory.Item;
 using Microsoft.Manufacturing.ProductionBOM;
-using Microsoft.Inventory.BOM.Tree;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Common;
-using Microsoft.Foundation.Enums;
 
 codeunit 4771 "Create Mfg Prod. BOMs"
 {

@@ -5,13 +5,13 @@
 
 namespace Microsoft.DemoData.Analytics;
 
-using Microsoft.Purchases.Document;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoTool;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Purchases;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Purchases.Document;
 
 codeunit 5688 "Create Extended Purch Document"
 {

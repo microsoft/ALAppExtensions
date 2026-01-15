@@ -4,11 +4,11 @@ using Microsoft.Foundation.Company;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Receivables;
 using Microsoft.Utilities;
-using System.Threading;
+using System.AI;
 using System.Environment;
 using System.Environment.Configuration;
 using System.Security.AccessControl;
-using System.AI;
+using System.Threading;
 
 codeunit 1952 "LP Subscribers"
 {

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Account;
 
 codeunit 4773 "Create FA GL Account"
 {

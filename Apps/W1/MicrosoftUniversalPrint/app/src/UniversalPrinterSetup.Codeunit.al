@@ -5,9 +5,9 @@
 namespace System.Device.UniversalPrint;
 
 using Microsoft.Utilities;
+using System.Device;
 using System.Environment;
 using System.Telemetry;
-using System.Device;
 
 /// <summary>
 ///  Handles the set up of Universal Printers and their configuration settings

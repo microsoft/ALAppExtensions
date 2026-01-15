@@ -1,7 +1,7 @@
 namespace Microsoft.Purchases.Payables;
 
-using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.VAT.Ledger;
 
 codeunit 31135 "Vend. Entry-Edit Handler CZL"
 {

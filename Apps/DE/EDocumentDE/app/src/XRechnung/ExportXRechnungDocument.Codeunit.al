@@ -679,6 +679,8 @@ codeunit 13916 "Export XRechnung Document"
         TaxCategoryElement := XmlElement.Create(TaxCategory, XmlNamespaceCAC);
         TaxCategoryElement.Add(XmlElement.Create('ID', XmlNamespaceCBC, TaxCategoryID));
         TaxCategoryElement.Add(XmlElement.Create('Percent', XmlNamespaceCBC, FormatDecimal(Percent)));
+        if Percent = 0 then
+            TaxCategoryElement.Add(XmlElement.Create('TaxExemptionReasonCode', XmlNamespaceCBC, 'VATEX-EU-O'));
         InsertTaxScheme(TaxCategoryElement);
         RootElement.Add(TaxCategoryElement);
     end;
@@ -727,7 +729,6 @@ codeunit 13916 "Export XRechnung Document"
         TaxTotalElement := XmlElement.Create('TaxTotal', XmlNamespaceCAC);
         TaxTotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(GetTotalTaxAmount(SalesInvLine))));
 
-        SalesInvLine.SetFilter("VAT %", '<>0');
         if SalesInvLine.FindSet() then
             repeat
                 if LineVATAmount.ContainsKey(SalesInvLine."VAT %") and LineAmount.ContainsKey(SalesInvLine."VAT %") then begin
@@ -739,12 +740,11 @@ codeunit 13916 "Export XRechnung Document"
                 end;
             until SalesInvLine.Next() = 0;
 
-        SalesInvLine.SetRange("VAT %", 0);
+        SalesInvLine.SetRange("VAT Calculation Type");
+        SalesInvLine.SetRange("VAT %");
         SalesInvLine.CalcSums(Amount);
         if SalesInvLine.FindLast() then;
 
-        SalesInvLine.SetRange("VAT Calculation Type");
-        SalesInvLine.SetRange("VAT %");
         RootXMLNode.Add(TaxTotalElement);
     end;
 
@@ -755,7 +755,6 @@ codeunit 13916 "Export XRechnung Document"
         TaxTotalElement := XmlElement.Create('TaxTotal', XmlNamespaceCAC);
         TaxTotalElement.Add(XmlElement.Create('TaxAmount', XmlNamespaceCBC, XmlAttribute.Create('currencyID', CurrencyCode), FormatDecimal(GetTotalTaxAmount(SalesCrMemoLine))));
 
-        SalesCrMemoLine.SetFilter("VAT %", '<>0');
         if SalesCrMemoLine.FindSet() then
             repeat
                 if LineVATAmount.ContainsKey(SalesCrMemoLine."VAT %") and LineAmount.ContainsKey(SalesCrMemoLine."VAT %") then begin
@@ -767,12 +766,11 @@ codeunit 13916 "Export XRechnung Document"
                 end;
             until SalesCrMemoLine.Next() = 0;
 
-        SalesCrMemoLine.SetRange("VAT %", 0);
+        SalesCrMemoLine.SetRange("VAT Calculation Type");
+        SalesCrMemoLine.SetRange("VAT %");
         SalesCrMemoLine.CalcSums(Amount);
         if SalesCrMemoLine.FindLast() then;
 
-        SalesCrMemoLine.SetRange("VAT Calculation Type");
-        SalesCrMemoLine.SetRange("VAT %");
         RootXMLNode.Add(TaxTotalElement);
     end;
 

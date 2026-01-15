@@ -6,16 +6,16 @@ namespace Microsoft.Test.Integration.DynamicsFieldService;
 
 using Microsoft.CRM.Contact;
 using Microsoft.CRM.Team;
-using Microsoft.Integration.Dataverse;
-using Microsoft.Integration.D365Sales;
-using Microsoft.Integration.DynamicsFieldService;
-using Microsoft.Inventory.Item;
-using Microsoft.Inventory.Setup;
-using Microsoft.Integration.SyncEngine;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Preview;
-using Microsoft.Foundation.UOM;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.UOM;
+using Microsoft.Integration.D365Sales;
+using Microsoft.Integration.Dataverse;
+using Microsoft.Integration.DynamicsFieldService;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Setup;
 using Microsoft.Projects.Project.Job;
 using Microsoft.Projects.Project.Journal;
 using Microsoft.Projects.Project.Posting;
@@ -28,9 +28,9 @@ using Microsoft.Service.Test;
 using Microsoft.TestLibraries.DynamicsFieldService;
 using System.Security.AccessControl;
 using System.Security.Encryption;
-using System.Threading;
 using System.TestLibraries.Environment.Configuration;
 using System.TestLibraries.Utilities;
+using System.Threading;
 
 codeunit 139204 "FS Integration Test"
 {

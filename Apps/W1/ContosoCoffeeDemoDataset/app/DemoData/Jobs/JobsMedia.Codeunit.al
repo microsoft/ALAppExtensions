@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Jobs;
 
-using System.Utilities;
 using Microsoft.DemoTool.Helpers;
+using System.Utilities;
 
 codeunit 5211 "Jobs Media"
 {

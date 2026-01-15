@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.Sales;
 
-using Microsoft.Sustainability.Account;
 using Microsoft.Sales.History;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
 
 tableextension 6239 "Sust. Sales Invoice Line" extends "Sales Invoice Line"

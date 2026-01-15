@@ -1,7 +1,7 @@
 namespace Microsoft.EServices;
 
-using Microsoft.Foundation.Company;
 using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Foundation.Company;
 
 pageextension 13609 "Companies Nemhandel Status" extends Companies
 {

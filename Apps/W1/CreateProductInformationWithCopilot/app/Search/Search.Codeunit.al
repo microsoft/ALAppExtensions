@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Item.Substitution;
 
-using System;
-using System.Telemetry;
 using Microsoft.Inventory.Item;
-using System.Security.Encryption;
+using System;
 using System.AI;
+using System.Security.Encryption;
+using System.Telemetry;
 
 codeunit 7333 "Search"
 {

@@ -5,15 +5,15 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.DemoTool;
-using System.Utilities;
-using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.CRM;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Inventory;
-using Microsoft.DemoData.CRM;
-using Microsoft.Inventory.Item;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Inventory.Item;
+using System.Utilities;
 
 codeunit 5539 "Create Vendor"
 {

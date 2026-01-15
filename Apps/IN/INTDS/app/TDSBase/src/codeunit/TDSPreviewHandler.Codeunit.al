@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSBase;
 
+using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Foundation.Navigate;
 using Microsoft.Purchases.Posting;
 using Microsoft.Sales.Posting;
-using Microsoft.Finance.GeneralLedger.Posting;
-using Microsoft.Foundation.Navigate;
 
 codeunit 18687 "TDS Preview Handler"
 {

@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.VAT.Setup;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Foundation.Enums;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Enums;
 
 codeunit 11379 "Create DE VAT Posting Groups"
 {

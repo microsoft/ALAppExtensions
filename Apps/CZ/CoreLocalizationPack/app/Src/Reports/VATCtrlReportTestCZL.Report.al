@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Utilities;
 using Microsoft.Finance.GeneralLedger.Setup;
+using System.Utilities;
 
 report 31103 "VAT Ctrl. Report - Test CZL"
 {

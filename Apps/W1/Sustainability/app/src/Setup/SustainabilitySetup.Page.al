@@ -99,6 +99,10 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Work Center and Machine Center cards.';
                 }
+                field("Fixed Asset Emissions"; Rec."Fixed Asset Emissions")
+                {
+                    ToolTip = 'Specifies the enablement of default Sustainability Account emissions on the Fixed Asset card.';
+                }
                 field("Enable Value Chain Tracking"; Rec."Enable Value Chain Tracking")
                 {
                     ToolTip = 'Specifies the enablement of sustainability value entries postings through value chain operations and the visibility of these fields in operational documents and journals.';

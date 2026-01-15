@@ -5,9 +5,9 @@
 
 namespace Microsoft.DataMigration.C5;
 
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using System.Integration;
-using Microsoft.Finance.GeneralLedger.Account;
 
 codeunit 1871 "C5 LedTrans Migrator"
 {

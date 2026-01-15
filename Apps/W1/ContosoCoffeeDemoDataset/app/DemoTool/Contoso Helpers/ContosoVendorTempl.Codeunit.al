@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.CRM.Contact;
 using Microsoft.DemoTool;
+using Microsoft.Purchases.Vendor;
 
 codeunit 5661 "Contoso Vendor Templ"
 {

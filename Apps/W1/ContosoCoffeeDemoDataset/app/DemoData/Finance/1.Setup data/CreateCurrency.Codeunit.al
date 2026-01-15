@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.Currency;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.Currency;
 
 codeunit 5525 "Create Currency"
 {

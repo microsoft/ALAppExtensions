@@ -5,11 +5,11 @@
 namespace Microsoft.DemoTool.Helpers;
 
 using Microsoft.FixedAssets.Depreciation;
-using Microsoft.FixedAssets.Setup;
 using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.FixedAssets.Maintenance;
-using Microsoft.FixedAssets.Journal;
 using Microsoft.FixedAssets.Insurance;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Maintenance;
+using Microsoft.FixedAssets.Setup;
 
 codeunit 4776 "Contoso Fixed Asset"
 {

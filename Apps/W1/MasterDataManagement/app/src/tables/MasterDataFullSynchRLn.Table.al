@@ -1,8 +1,8 @@
 namespace Microsoft.Integration.MDM;
 
+using Microsoft.CRM.Contact;
 using Microsoft.Integration.SyncEngine;
 using System.Threading;
-using Microsoft.CRM.Contact;
 
 table 7233 "Master Data Full Synch. R. Ln."
 {

@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
 
-using Microsoft.Foundation.Company;
 using Microsoft.Finance.TaxBase;
+using Microsoft.Foundation.Company;
 
 report 18871 "Update TCS Challan Register"
 {

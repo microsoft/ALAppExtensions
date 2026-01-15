@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.DemoData.Finance;
+using Microsoft.Purchases.Vendor;
 
 codeunit 11498 "Create GB Vendor Posting Group"
 {

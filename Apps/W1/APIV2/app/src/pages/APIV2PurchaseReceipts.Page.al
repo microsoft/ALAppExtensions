@@ -1,7 +1,7 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Purchases.History;
 using Microsoft.Integration.Graph;
+using Microsoft.Purchases.History;
 
 page 30064 "APIV2 - Purchase Receipts"
 {
