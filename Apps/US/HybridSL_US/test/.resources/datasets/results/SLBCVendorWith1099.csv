@@ -1,6 +1,4 @@
 ﻿No.,Name,Search Name,Name 2,Address,Address 2,City,Contact,Phone No.,Vendor Posting Group,Payment Terms Code,Country/Region Code,Blocked,Fax No.,Gen. Bus. Posting Group,ZIP Code,State,Email,Tax Area Code,Tax Liable,Federal ID No.,FATCA Requirement,Tax Identification Type
-VEN1099-1,Test 1099 Vendor 1,TEST 1099 VENDOR 1,Test 1099 Vendor 1,1234 Elmwood Drive,,Centerville,,5551234567,CONTRACT,,US,,,SL,43001,OH ,Payables@Test1099Vendor1.com,,false,2587963,false,Legal Entity
-VEN1099-2,Test 1099 Vendor 2,TEST 1099 VENDOR 2,Test 1099 Vendor 2,1234 Maplewood Lane,,Centerville,,6145550198,CONTRACT,,US,,,SL,43001,OH ,JamesDoe@Test1099Vendor2.com,,false,996688,true,Legal Entity
 VT0100,International,INTERNATIONAL,International,400 West Madison St.,Suite 400,Chicago,,5555550190,TRADE,,US,,5555550191,SL,222222,IL ,someone@example.com,COOK-G,true,,false,Legal Entity
 VT0110,America,AMERICA,America,100 N. State St.,Suite 1200,Madison,,5555550196,TRADE,,US,,5555550197,SL,45454,WI ,,,false,1122334455,false,Legal Entity
 VT0120,Circle,CIRCLE,Circle,258 N. Johnson Ave.,,Sioux City,,5555550105,TRADE,,US,,5555550106,SL,09000,IA ,,,false,369987,false,Legal Entity

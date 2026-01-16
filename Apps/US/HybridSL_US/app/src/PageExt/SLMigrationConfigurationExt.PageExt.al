@@ -56,6 +56,3 @@ pageextension 47200 "SL Migration Configuration Ext" extends "SL Migration Confi
         }
     }
 }
-
-
-

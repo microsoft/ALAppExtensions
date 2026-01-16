@@ -27,9 +27,12 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
     var
         SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
         TempVendor: Record Vendor temporary;
+        TempVendorLedgerEntry: Record "Vendor Ledger Entry" temporary;
         SLCloudMigrationUS: Codeunit "SL Cloud Migration US";
         ExpectedVendorData: XmlPort "SL BC Vendor With 1099 Data";
+        ExpectedSLVendorLedgerEntryData: XmlPort "SL BC Vendor Ledger Entry Data";
         VendorInstream: InStream;
+        VendorLedgerEntryInstream: InStream;
     begin
         // [Given] SL Data
         Initialize();
@@ -56,6 +59,13 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
         ExpectedVendorData.Import();
         ExpectedVendorData.GetExpectedVendors(TempVendor);
         ValidateVendor1099Data(TempVendor);
+
+        // [Then] The Vendor will have Vendor Ledger Entries applied correctly
+        SLTestHelperFunctions.GetInputStreamFromResource('datasets/results/SLBCVendorLedgerEntry.csv', VendorLedgerEntryInstream);
+        ExpectedSLVendorLedgerEntryData.SetSource(VendorLedgerEntryInstream);
+        ExpectedSLVendorLedgerEntryData.Import();
+        ExpectedSLVendorLedgerEntryData.GetExpectedVendorLedgerEntries(TempVendorLedgerEntry);
+        ValidateVendorLedgerEntryData(TempVendorLedgerEntry);
     end;
 
     [Test]
@@ -89,20 +99,21 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
         // [When] SL migration has completed and the Vendor 1099 migration has started
         SLCloudMigrationUS.RunPostMigration();
 
-        // [Then] Validate supported tax years
-        SLTestHelperFunctions.GetInputStreamFromResource('datasets/results/SLSupportedTaxYear.csv', SLSupportedTaxYearInstream);
-        ExpectedSLSupportedTaxYearData.SetSource(SLSupportedTaxYearInstream);
-        ExpectedSLSupportedTaxYearData.Import();
-        ExpectedSLSupportedTaxYearData.GetExpectedSLSupportedTaxYear(TempSLSupportedTaxYear);
-        ValidateSLSupportedTaxYearData(TempSLSupportedTaxYear);
-
         // [Then] Mappings will be present for the supported tax years
         SLTestHelperFunctions.GetInputStreamFromResource('datasets/results/SL1099BoxMapping.csv', SL1099BoxMappingInstream);
         ExpectedSL1099BoxMappingData.SetSource(SL1099BoxMappingInstream);
         ExpectedSL1099BoxMappingData.Import();
         ExpectedSL1099BoxMappingData.GetExpectedSL1099BoxMapping(TempSL1099BoxMapping);
         ValidateSL1099BoxMappingData(TempSL1099BoxMapping);
+
+        // [Then] Validate supported tax years
+        SLTestHelperFunctions.GetInputStreamFromResource('datasets/results/SLSupportedTaxYear.csv', SLSupportedTaxYearInstream);
+        ExpectedSLSupportedTaxYearData.SetSource(SLSupportedTaxYearInstream);
+        ExpectedSLSupportedTaxYearData.Import();
+        ExpectedSLSupportedTaxYearData.GetExpectedSLSupportedTaxYear(TempSLSupportedTaxYear);
+        ValidateSLSupportedTaxYearData(TempSLSupportedTaxYear);
     end;
+
 
     local procedure ValidateSLSupportedTaxYearData(var TempSLSupportedTaxYear: Record "SL Supported Tax Year" temporary)
     var
@@ -143,6 +154,27 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
         until TempVendor.Next() = 0;
     end;
 
+    local procedure ValidateVendorLedgerEntryData(var TempVendorLedgerEntry: Record "Vendor Ledger Entry" temporary)
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        TempVendorLedgerEntry.Reset();
+        TempVendorLedgerEntry.FindSet();
+        repeat
+            VendorLedgerEntry.SetRange("Vendor No.", TempVendorLedgerEntry."Vendor No.");
+            VendorLedgerEntry.SetRange("Posting Date", TempVendorLedgerEntry."Posting Date");
+            VendorLedgerEntry.SetRange("Document Type", TempVendorLedgerEntry."Document Type");
+            VendorLedgerEntry.SetRange("Document No.", TempVendorLedgerEntry."Document No.");
+            Assert.IsTrue(VendorLedgerEntry.Count() > 0, 'Vendor Ledger Entry record not found for Vendor No. ' + TempVendorLedgerEntry."Vendor No." + ', Posting Date ' + Format(TempVendorLedgerEntry."Posting Date") + ', Document Type ' + Format(TempVendorLedgerEntry."Document Type") + ', Document No. ' + TempVendorLedgerEntry."Document No.");
+            VendorLedgerEntry.FindFirst();
+            Assert.AreEqual(TempVendorLedgerEntry."IRS 1099 Subject For Reporting", VendorLedgerEntry."IRS 1099 Subject For Reporting", 'IRS 1099 Subject For Reporting does not match for Vendor Ledger Entry No. ' + Format(TempVendorLedgerEntry."Entry No."));
+            Assert.AreEqual(TempVendorLedgerEntry."IRS 1099 Reporting Period", VendorLedgerEntry."IRS 1099 Reporting Period", 'IRS 1099 Reporting Period does not match for Vendor Ledger Entry No. ' + Format(TempVendorLedgerEntry."Entry No."));
+            Assert.AreEqual(TempVendorLedgerEntry."IRS 1099 Form No.", VendorLedgerEntry."IRS 1099 Form No.", 'IRS 1099 Form No. does not match for Vendor Ledger Entry No. ' + Format(TempVendorLedgerEntry."Entry No."));
+            Assert.AreEqual(TempVendorLedgerEntry."IRS 1099 Form Box No.", VendorLedgerEntry."IRS 1099 Form Box No.", 'IRS 1099 Form Box No. does not match for Vendor Ledger Entry No. ' + Format(TempVendorLedgerEntry."Entry No."));
+            Assert.AreEqual(TempVendorLedgerEntry."IRS 1099 Reporting Amount", VendorLedgerEntry."IRS 1099 Reporting Amount", 'IRS 1099 Reporting Amount does not match for Vendor Ledger Entry No. ' + Format(TempVendorLedgerEntry."Entry No."));
+        until TempVendorLedgerEntry.Next() = 0;
+    end;
+
     local procedure Initialize()
     var
         SLAPBalances: Record "SL AP_Balances";
@@ -171,4 +203,3 @@ codeunit 147650 "SL Migration Vendor 1099 Tests"
         IsInitialized := true;
     end;
 }
-
