@@ -5,10 +5,10 @@
 
 namespace Microsoft.DataMigration.SL;
 
-using System.Integration;
+using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.Dimension;
+using System.Integration;
 
 codeunit 47000 "SL Account Migrator"
 {
