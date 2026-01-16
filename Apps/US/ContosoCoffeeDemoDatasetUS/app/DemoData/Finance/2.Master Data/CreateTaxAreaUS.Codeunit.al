@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.SalesTax;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.SalesTax;
 using Microsoft.Foundation.Company;
 
 codeunit 10518 "Create Tax Area US"

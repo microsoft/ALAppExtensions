@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
-using System.Upgrade;
 #if not CLEAN26
-using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.Integration;
 #endif
+using System.Upgrade;
 
 #pragma warning disable AS0130
 #pragma warning disable PTE0025

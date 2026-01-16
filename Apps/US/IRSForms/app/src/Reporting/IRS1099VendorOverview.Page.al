@@ -87,6 +87,7 @@ page 10072 "IRS 1099 Vendor Overview"
     begin
         Rec.Reset();
         Rec.DeleteAll();
+        IRS1099CalcParameters."Period No." := IRSReportingPeriodNo;
         IRSFormsFacade.GetVendorFormBoxAmount(TempVendFormBoxBuffer, IRS1099CalcParameters);
         TempVendFormBoxBuffer.SetRange("Buffer Type", TempVendFormBoxBuffer."Buffer Type"::Amount);
         if not TempVendFormBoxBuffer.FindSet() then begin

@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
+using Microsoft.Integration.D365Sales;
 using System.Environment.Configuration;
 using System.Globalization;
 using System.Media;
-using Microsoft.Integration.D365Sales;
 
 codeunit 6613 "FS Assisted Setup Subscriber"
 {

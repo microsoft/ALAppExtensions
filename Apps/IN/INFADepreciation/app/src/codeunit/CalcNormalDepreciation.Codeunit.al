@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.FADepreciation;
 
-using Microsoft.FixedAssets.Ledger;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Ledger;
 
 codeunit 18631 "Calc Normal Depreciation"
 {

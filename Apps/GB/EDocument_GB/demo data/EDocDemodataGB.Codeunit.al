@@ -25,7 +25,10 @@ codeunit 10545 "E-Doc. Demodata GB"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Transactional Data":
-                Codeunit.Run(Codeunit::"Create EDocs From Resources GB");
+                begin
+                    Codeunit.Run(Codeunit::"Create Demo EDocs GB");
+                    Codeunit.Run(Codeunit::"Create E-Doc Sample Inv. GB");
+                end;
         end;
     end;
 }

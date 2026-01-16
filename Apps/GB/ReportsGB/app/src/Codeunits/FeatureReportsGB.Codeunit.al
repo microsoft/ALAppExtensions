@@ -4,19 +4,19 @@
 /// </summary>
 namespace Microsoft.Finance.VAT.Setup;
 
-using System.Environment.Configuration;
-using Microsoft.Sales.History;
-using Microsoft.Purchases.History;
-using Microsoft.Purchases.Document;
-using Microsoft.FixedAssets.Reports;
-using Microsoft.Sales.FinanceCharge;
-using Microsoft.CashFlow.Reports;
 using Microsoft.Bank.Reports;
-using Microsoft.Sales.Reminder;
-using System.Reflection;
-using Microsoft.Sales.Reports;
+using Microsoft.CashFlow.Reports;
+using Microsoft.FixedAssets.Reports;
 using Microsoft.Foundation.Reporting;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Reports;
+using Microsoft.Sales.FinanceCharge;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Reminder;
+using Microsoft.Sales.Reports;
+using System.Environment.Configuration;
+using System.Reflection;
 using System.Upgrade;
 
 codeunit 10580 "Feature - Reports GB" implements "Feature Data Update"

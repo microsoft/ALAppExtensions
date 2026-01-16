@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.CRM;
 
+using Microsoft.CRM.Interaction;
+using Microsoft.DemoData.Foundation;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
-using Microsoft.CRM.Interaction;
 
 codeunit 5648 "Create Marketing Setup"
 {

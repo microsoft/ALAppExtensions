@@ -1,18 +1,18 @@
 namespace Microsoft.DataMigration.GP;
 
-using Microsoft.Purchases.Document;
-using Microsoft.Inventory.Journal;
-using Microsoft.Purchases.Setup;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.UOM;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Inventory.Item;
-using Microsoft.Purchases.Posting;
-using Microsoft.Inventory.Posting;
-using System.Integration;
 using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Posting;
 using Microsoft.Inventory.Setup;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using System.Integration;
 
 codeunit 40108 "GP PO Migrator"
 {

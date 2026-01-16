@@ -1,12 +1,12 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Integration;
-using Microsoft.Inventory.Item;
-using Microsoft.Inventory.Journal;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Inventory.Tracking;
 using Microsoft.Inventory.BOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Tracking;
+using System.Integration;
 
 codeunit 4019 "GP Item Migrator"
 {

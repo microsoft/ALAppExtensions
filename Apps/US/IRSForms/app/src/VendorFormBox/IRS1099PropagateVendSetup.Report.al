@@ -5,8 +5,8 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
 
 report 10038 "IRS 1099 Propagate Vend. Setup"
 {

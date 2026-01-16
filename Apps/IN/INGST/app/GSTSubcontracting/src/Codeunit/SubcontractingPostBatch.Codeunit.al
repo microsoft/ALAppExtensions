@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GST.Subcontracting;
 
+using Microsoft.Finance.Currency;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
@@ -13,7 +14,6 @@ using Microsoft.Inventory.Tracking;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Finance.Currency;
 
 codeunit 18467 "Subcontracting Post Batch"
 {

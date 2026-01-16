@@ -186,6 +186,7 @@ codeunit 31017 "Upgrade Application CZL"
 #if CLEAN28        
         UpgradeUseVATReturnPeriodInsteadOfVATPeriod();
 #endif
+        UpgradeOriginalVATAmountsACYInVATEntries();
     end;
 
     local procedure UpgradeReplaceVATDateCZL()
@@ -642,6 +643,25 @@ codeunit 31017 "Upgrade Application CZL"
         VATEntryDataTransfer.CopyFields();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsInVATEntriesUpgradeTag());
+    end;
+
+    local procedure UpgradeOriginalVATAmountsACYInVATEntries()
+    var
+        VATEntry: Record "VAT Entry";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsACYInVATEntriesUpgradeTag()) then
+            exit;
+
+        VATEntry.SetFilter("Non-Deductible VAT %", '<>%1', 0);
+        VATEntry.SetLoadFields("Entry No.", "Additional-Currency Base", "Additional-Currency Amount", "Non-Deductible VAT Base ACY", "Non-Deductible VAT Amount ACY");
+        if VATEntry.FindSet() then
+            repeat
+                VATEntry."Original VAT Base ACY CZL" := VATEntry.CalcOriginalVATBaseACYCZL();
+                VATEntry."Original VAT Amount ACY CZL" := VATEntry.CalcOriginalVATAmountACYCZL();
+                if VATEntry.Modify() then;
+            until VATEntry.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsACYInVATEntriesUpgradeTag());
     end;
 
     local procedure UpgradeEnableNonDeductibleVATCZ()

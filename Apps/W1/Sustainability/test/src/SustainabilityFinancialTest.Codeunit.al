@@ -1,12 +1,12 @@
 namespace Microsoft.Test.Sustainability;
 
-using System.TestLibraries.Utilities;
-using Microsoft.Sustainability.Emission;
-using Microsoft.Finance.FinancialReports;
-using Microsoft.Sustainability.Account;
 using Microsoft.Finance.Analysis;
-using Microsoft.Sustainability.Ledger;
+using Microsoft.Finance.FinancialReports;
 using Microsoft.Purchases.Document;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.Ledger;
+using System.TestLibraries.Utilities;
 
 codeunit 148186 "Sustainability Financial Test"
 {

@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Document;
-using Microsoft.Foundation.Address;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Foundation.Address;
+using Microsoft.Sales.Document;
 
 codeunit 17135 "Create AU Sales Document"
 {

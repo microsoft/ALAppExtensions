@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Bank.VoucherInterface;
+using Microsoft.Finance.GeneralLedger.Journal;
 
 codeunit 19021 "Contoso IN General Ledger"
 {

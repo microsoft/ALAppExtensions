@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.Bank.Payment;
-using Microsoft.Sales.Receivables;
 using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Payment;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Sales.Receivables;
 
 codeunit 10813 "Create ES Payment Method"
 {

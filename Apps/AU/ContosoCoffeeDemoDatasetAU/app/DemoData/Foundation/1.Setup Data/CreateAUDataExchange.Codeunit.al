@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using System.IO;
 using Microsoft.DemoTool.Helpers;
+using System.IO;
 
 codeunit 17172 "Create AU Data Exchange"
 {

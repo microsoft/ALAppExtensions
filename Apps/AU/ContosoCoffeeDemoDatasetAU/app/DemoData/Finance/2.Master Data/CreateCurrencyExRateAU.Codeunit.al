@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.Currency;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.Currency;
 
 codeunit 17167 "Create Currency Ex. Rate AU"
 {

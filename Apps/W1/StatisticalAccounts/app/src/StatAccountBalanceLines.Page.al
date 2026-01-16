@@ -1,8 +1,8 @@
 namespace Microsoft.Finance.Analysis.StatisticalAccount;
 
-using System.Utilities;
 using Microsoft.Foundation.Enums;
 using Microsoft.Foundation.Period;
+using System.Utilities;
 
 page 2624 "Stat. Account Balance Lines"
 {

@@ -16,8 +16,8 @@ using Microsoft.Foundation.AuditCodes;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
-using System.Utilities;
 using System.Security.User;
+using System.Utilities;
 
 codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
 {

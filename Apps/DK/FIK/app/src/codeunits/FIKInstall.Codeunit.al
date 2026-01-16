@@ -9,11 +9,11 @@ using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Reconciliation;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Foundation.Company;
 using System.Environment;
 using System.Privacy;
 

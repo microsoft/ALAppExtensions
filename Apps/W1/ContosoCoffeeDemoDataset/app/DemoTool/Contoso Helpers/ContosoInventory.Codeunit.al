@@ -4,15 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
+using Microsoft.DemoTool;
 using Microsoft.Inventory.Availability;
-using Microsoft.Inventory.Requisition;
 using Microsoft.Inventory.BOM;
 using Microsoft.Inventory.Item;
-using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Item.Catalog;
-using Microsoft.Inventory.Transfer;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Requisition;
 using Microsoft.Inventory.Tracking;
-using Microsoft.DemoTool;
+using Microsoft.Inventory.Transfer;
 
 codeunit 5699 "Contoso Inventory"
 {

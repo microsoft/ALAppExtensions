@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Foundation.Address;
 using Microsoft.Finance.VAT.Registration;
+using Microsoft.Foundation.Address;
 
 codeunit 5117 "Contoso Country Or Region"
 {

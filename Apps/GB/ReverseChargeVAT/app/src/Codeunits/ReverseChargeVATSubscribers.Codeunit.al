@@ -4,18 +4,18 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Setup;
 
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.Currency;
-using Microsoft.Sales.Setup;
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.Setup;
-using Microsoft.Purchases.Document;
-using Microsoft.Inventory.Item;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
-using Microsoft.Purchases.Posting;
-using System.Telemetry;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Setup;
+using Microsoft.Sales.Document;
 using Microsoft.Sales.Posting;
+using Microsoft.Sales.Setup;
+using System.Telemetry;
 
 codeunit 10552 "Reverse Charge VAT Subscribers"
 {

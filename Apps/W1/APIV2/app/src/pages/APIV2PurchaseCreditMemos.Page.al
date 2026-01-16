@@ -1,19 +1,19 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Purchases.History;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
-using Microsoft.Upgrade;
-using System.Upgrade;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Upgrade;
 using Microsoft.Utilities;
 using System.Reflection;
+using System.Upgrade;
 
 page 30083 "APIV2 - Purchase Credit Memos"
 {
@@ -874,6 +874,7 @@ page 30083 "APIV2 - Purchase Credit Memos"
     end;
 
     [ServiceEnabled]
+    [Caption('Posts the draft purchase credit memo to create a finalized posted credit memo')]
     [Scope('Cloud')]
     procedure Post(var ActionContext: WebServiceActionContext)
     var
@@ -886,6 +887,7 @@ page 30083 "APIV2 - Purchase Credit Memos"
     end;
 
     [ServiceEnabled]
+    [Caption('Cancels the posted purchase credit memo by creating a corrective invoice')]
     [Scope('Cloud')]
     procedure Cancel(var ActionContext: WebServiceActionContext)
     var

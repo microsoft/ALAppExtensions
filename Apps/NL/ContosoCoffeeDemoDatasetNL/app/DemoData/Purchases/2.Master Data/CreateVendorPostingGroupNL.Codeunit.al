@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Localization;
+using Microsoft.Purchases.Vendor;
 
 codeunit 11531 "Create Vendor Posting Group NL"
 {

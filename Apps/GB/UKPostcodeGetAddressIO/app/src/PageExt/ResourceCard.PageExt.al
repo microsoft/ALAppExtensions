@@ -5,8 +5,8 @@
 #if CLEAN27
 namespace app.app;
 
-using Microsoft.Projects.Resources.Resource;
 using Microsoft.Foundation.Address;
+using Microsoft.Projects.Resources.Resource;
 
 pageextension 50005 "Resource Card" extends "Resource Card"
 {

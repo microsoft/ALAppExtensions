@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Item;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Localization;
+using Microsoft.Inventory.Item;
 
 codeunit 11530 "Create Inv. Posting Setup NL"
 {

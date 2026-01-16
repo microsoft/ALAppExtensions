@@ -1,8 +1,8 @@
 namespace Microsoft.DataMigration.GP;
 
+using Microsoft.DataMigration;
 using System.Environment;
 using System.Integration;
-using Microsoft.DataMigration;
 
 codeunit 40043 "GP Collect All Modifications"
 {

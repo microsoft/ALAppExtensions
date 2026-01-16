@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Posting;
 
+using Microsoft.Sustainability.Journal;
 using Microsoft.Utilities;
 using System.Utilities;
-using Microsoft.Sustainability.Journal;
 
 codeunit 6221 "Check Sust. Jnl. Line. Backgr."
 {

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Inventory.Transfer;
 using Microsoft.DemoData.Inventory;
+using Microsoft.Inventory.Transfer;
 
 codeunit 5666 "Post Transfer Data"
 {

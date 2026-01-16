@@ -1,11 +1,11 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Integration;
-using Microsoft.Sales.Customer;
-using Microsoft.Foundation.Company;
-using Microsoft.Sales.Document;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.Company;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using System.Integration;
 
 codeunit 4018 "GP Customer Migrator"
 {

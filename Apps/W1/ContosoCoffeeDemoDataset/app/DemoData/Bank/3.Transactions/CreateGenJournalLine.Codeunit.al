@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Bank;
 
+using Microsoft.DemoData.Finance;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.DemoData.Finance;
 
 codeunit 5421 "Create Gen. Journal Line"
 {

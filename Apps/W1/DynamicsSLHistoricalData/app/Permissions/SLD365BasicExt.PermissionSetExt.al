@@ -5,8 +5,8 @@
 
 namespace Microsoft.DataMigration.SL.HistoricalData;
 
-using System.Security.AccessControl;
 using Microsoft.DataMigration.SL;
+using System.Security.AccessControl;
 
 permissionsetextension 42800 "SL D365 Basic Ext." extends "D365 BASIC"
 {

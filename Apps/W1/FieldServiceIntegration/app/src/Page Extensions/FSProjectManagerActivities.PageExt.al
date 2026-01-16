@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Projects.RoleCenters;
-using Microsoft.Integration.SyncEngine;
 using Microsoft.Integration.Dataverse;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Projects.RoleCenters;
 
 pageextension 6616 "FS Project Manager Activities" extends "Project Manager Activities"
 {

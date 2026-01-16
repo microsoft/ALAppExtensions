@@ -5,13 +5,13 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.DemoTool;
-using System.Utilities;
-using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.CRM;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Inventory;
-using Microsoft.DemoData.CRM;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
+using System.Utilities;
 
 codeunit 5209 "Create Customer"
 {

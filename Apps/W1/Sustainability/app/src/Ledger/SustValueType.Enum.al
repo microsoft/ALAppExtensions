@@ -16,4 +16,5 @@ enum 6219 "Sust. Value Type"
     value(4; "Item") { Caption = 'Item'; }
     value(5; "G/L Account") { Caption = 'G/L Account'; }
     value(6; "Charge (Item)") { Caption = 'Charge (Item)'; }
+    value(7; "Fixed Asset") { Caption = 'Fixed Asset'; }
 }

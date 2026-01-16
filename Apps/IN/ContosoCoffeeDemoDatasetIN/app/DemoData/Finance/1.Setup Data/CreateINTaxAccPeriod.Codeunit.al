@@ -6,10 +6,10 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GST.Base;
 using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TCS.TCSBase;
 using Microsoft.Finance.TDS.TDSBase;
-using Microsoft.Finance.GST.Base;
 
 codeunit 19044 "Create IN Tax Acc. Period"
 {

@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Purchases.Payables;
-using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Archive;
-using Microsoft.Purchases.History;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Purchases.Archive;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
 using System.Environment;
 using System.Telemetry;
 

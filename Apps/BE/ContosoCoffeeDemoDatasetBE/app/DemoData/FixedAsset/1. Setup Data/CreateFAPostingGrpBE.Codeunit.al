@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.DemoData.Finance;
+using Microsoft.FixedAssets.FixedAsset;
 
 codeunit 11392 "Create FA Posting Grp. BE"
 {

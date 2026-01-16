@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.HR;
 
-using Microsoft.HumanResources.Employee;
-using Microsoft.DemoData.HumanResources;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.HumanResources;
+using Microsoft.HumanResources.Employee;
 
 codeunit 17169 "Create Empl. Posting Group AU"
 {

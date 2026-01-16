@@ -1,6 +1,11 @@
 namespace Microsoft.Sustainability.Sales;
 
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Projects.Resources.Resource;
@@ -38,6 +43,13 @@ codeunit 6253 "Sust. Sales Subscriber"
     begin
         if SustainabilitySetup.IsValueChainTrackingEnabled() then
             SalesLine.Validate("Sust. Account No.", ItemCharge."Default Sust. Account");
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnAfterAssignFixedAssetValues', '', false, false)]
+    local procedure OnAfterAssignFixedAssetValues(var SalesLine: Record "Sales Line"; FixedAsset: Record "Fixed Asset")
+    begin
+        if SustainabilitySetup.IsValueChainTrackingEnabled() then
+            SalesLine.Validate("Sust. Account No.", FixedAsset."Default Sust. Account");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnValidateQuantityOnBeforeResetAmounts', '', false, false)]
@@ -83,6 +95,30 @@ codeunit 6253 "Sust. Sales Subscriber"
         TempSalesLine.UpdateSustainabilityEmission(TempSalesLine);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
+    local procedure OnAfterPrepareInvoicePostingBuffer(var InvoicePostingBuffer: Record "Invoice Posting Buffer" temporary; var SalesLine: Record "Sales Line")
+    begin
+        if (SalesLine."Qty. to Invoice" <> 0) and (SalesLine.Type = SalesLine.Type::"Fixed Asset") then
+            CheckAndUpdateSustainabilityInvoicePostingBuffer(InvoicePostingBuffer, SalesLine);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Insert Ledger Entry", 'OnInsertFAOnAfterInsertFALedgEntry', '', false, false)]
+    local procedure OnInsertFAOnAfterInsertFALedgEntry(var FALedgerEntry: Record "FA Ledger Entry")
+    begin
+        UpdateTotalCO2eForProceedsOnDisposal(FALedgerEntry);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnAfterPrepareGenJnlLine', '', false, false)]
+    local procedure OnAfterPrepareGenJnlLine(InvoicePostingBuffer: Record "Invoice Posting Buffer" temporary; var GenJnlLine: Record "Gen. Journal Line")
+    begin
+        GenJnlLine."Sust. Account No." := InvoicePostingBuffer."Sust. Account No.";
+        GenJnlLine."Sust. Account Name" := InvoicePostingBuffer."Sust. Account Name";
+        GenJnlLine."Sust. Account Category" := InvoicePostingBuffer."Sust. Account Category";
+        GenJnlLine."Sust. Account Subcategory" := InvoicePostingBuffer."Sust. Account Subcategory";
+        GenJnlLine."CO2e per Unit" := InvoicePostingBuffer."CO2e per Unit";
+        GenJnlLine."Total CO2e" := InvoicePostingBuffer."Total CO2e";
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnPostItemJnlLineOnAfterPrepareItemJnlLine', '', false, false)]
     local procedure OnPostItemJnlLineOnAfterPrepareItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
     begin
@@ -124,6 +160,59 @@ codeunit 6253 "Sust. Sales Subscriber"
         ItemJournalLine."Total CO2e" := CO2eToPost;
         ItemJournalLine."EPR Fee per Unit" := SalesLine."EPR Fee Per Unit";
         ItemJournalLine."Total EPR Fee" := EPRFeeToPost;
+    end;
+
+    local procedure CheckAndUpdateSustainabilityInvoicePostingBuffer(var InvoicePostingBuffer: Record "Invoice Posting Buffer" temporary; var SalesLine: Record "Sales Line")
+    var
+        SalesHeader: Record "Sales Header";
+        GHGCredit: Boolean;
+        Sign: Integer;
+        CO2eToPost: Decimal;
+    begin
+        SalesHeader := SalesLine.GetSalesHeader();
+
+        GHGCredit := IsGHGCreditLine(SalesLine);
+        Sign := GetPostingSign(SalesHeader, GHGCredit);
+
+        CO2eToPost := SalesLine."CO2e per Unit" * Abs(SalesLine."Qty. to Invoice") * SalesLine."Qty. per Unit of Measure";
+
+        CO2eToPost := CO2eToPost * Sign;
+
+        if not SustainabilitySetup.IsValueChainTrackingEnabled() then
+            exit;
+
+        if not CanPostSustainabilityJnlLine(SalesLine."Sust. Account No.", SalesLine."Sust. Account Category", SalesLine."Sust. Account Subcategory", CO2eToPost) then
+            exit;
+
+        InvoicePostingBuffer."Sust. Account No." := SalesLine."Sust. Account No.";
+        InvoicePostingBuffer."Sust. Account Name" := SalesLine."Sust. Account Name";
+        InvoicePostingBuffer."Sust. Account Category" := SalesLine."Sust. Account Category";
+        InvoicePostingBuffer."Sust. Account Subcategory" := SalesLine."Sust. Account Subcategory";
+        InvoicePostingBuffer."CO2e per Unit" := SalesLine."CO2e per Unit";
+        InvoicePostingBuffer."Total CO2e" := CO2eToPost;
+    end;
+
+    local procedure UpdateTotalCO2eForProceedsOnDisposal(var FALedgerEntry: Record "FA Ledger Entry")
+    var
+        FADepreciationBook: Record "FA Depreciation Book";
+    begin
+        if FALedgerEntry."Sust. Account No." = '' then
+            exit;
+
+        FADepreciationBook.Get(FALedgerEntry."FA No.", FALedgerEntry."Depreciation Book Code");
+        if (FALedgerEntry."FA Posting Type" = FALedgerEntry."FA Posting Type"::"Gain/Loss") then begin
+            FADepreciationBook.CalcFields("Book Total CO2e", "Proceeds on Disposal CO2e");
+            FALedgerEntry."Total CO2e" := FADepreciationBook."Book Total CO2e" + FADepreciationBook."Proceeds on Disposal CO2e";
+            FALedgerEntry.Modify();
+        end;
+
+        if (FALedgerEntry."FA Posting Type" = FALedgerEntry."FA Posting Type"::"Acquisition Cost") and
+           (FALedgerEntry."FA Posting Category" = FALedgerEntry."FA Posting Category"::Disposal)
+        then begin
+            FADepreciationBook.CalcFields("Acquisition Total CO2e");
+            FALedgerEntry."Total CO2e" := -FADepreciationBook."Acquisition Total CO2e";
+            FALedgerEntry.Modify();
+        end;
     end;
 
     local procedure UpdatePostedSustainabilityEmissionOrderLine(SalesHeader: Record "Sales Header"; var TempSalesLine: Record "Sales Line" temporary)

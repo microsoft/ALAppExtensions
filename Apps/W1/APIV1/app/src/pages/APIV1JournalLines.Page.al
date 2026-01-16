@@ -1,10 +1,10 @@
 namespace Microsoft.API.V1;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Integration.Graph;
 using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Integration.Graph;
 
 page 20049 "APIV1 - JournalLines"
 {

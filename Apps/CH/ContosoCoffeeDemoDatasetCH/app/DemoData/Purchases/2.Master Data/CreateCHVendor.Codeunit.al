@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
-using Microsoft.DemoTool;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Inventory;
+using Microsoft.DemoTool;
+using Microsoft.Purchases.Vendor;
 
 codeunit 11619 "Create CH Vendor"
 {

@@ -5,11 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-using System.Integration;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Purchases.Vendor;
 using System.EMail;
+using System.Integration;
 
 codeunit 47021 "SL Vendor Migrator"
 {

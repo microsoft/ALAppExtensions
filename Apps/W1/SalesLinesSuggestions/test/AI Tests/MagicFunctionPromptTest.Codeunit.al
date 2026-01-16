@@ -2,8 +2,8 @@ namespace Microsoft.Sales.Document.Test;
 
 using Microsoft.Sales.Document;
 using System.Environment.Configuration;
-using System.TestTools.TestRunner;
 using System.TestTools.AITestToolkit;
+using System.TestTools.TestRunner;
 
 codeunit 133515 "Magic Function Prompt Test"
 {

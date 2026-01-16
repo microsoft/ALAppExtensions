@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.RoleCenters;
 
+using Microsoft.Finance;
 using Microsoft.Finance.GeneralLedger.IRS;
 using Microsoft.Finance.VAT.Reporting;
-using Microsoft.Finance;
 
 pageextension 14605 "IS Finance Manager RC" extends "Finance Manager Role Center"
 {

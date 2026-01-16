@@ -196,6 +196,14 @@ table 10035 "IRS 1099 Form Doc. Header"
         UniquenessFilterModifiedErr: Label 'It is not allowed to modify the period, vendor or form uniqueness filter in the customization.';
         DocumentLinkedToTransmissionErr: Label 'You cannot delete this document because it is linked to a transmission. Document ID: %1', Comment = '%1 = Document ID';
 
+    trigger OnInsert()
+    var
+        IRSFormsSetup: Record "IRS Forms Setup";
+    begin
+        if Rec.ID = 0 then
+            Rec.ID := IRSFormsSetup.GetNextDocumentID();
+    end;
+
     trigger OnDelete()
     begin
         TestStatusOpen();
@@ -208,6 +216,9 @@ table 10035 "IRS 1099 Form Doc. Header"
         IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
         IRS1099FormReport: Record "IRS 1099 Form Report";
     begin
+        IRS1099FormDocLine.SetRange("Period No.", Rec."Period No.");
+        IRS1099FormDocLine.SetRange("Vendor No.", Rec."Vendor No.");
+        IRS1099FormDocLine.SetRange("Form No.", Rec."Form No.");
         IRS1099FormDocLine.SetRange("Document ID", Rec.ID);
         IRS1099FormDocLine.DeleteAll(true);
         IRS1099FormReport.SetRange("Document ID", Rec.ID);

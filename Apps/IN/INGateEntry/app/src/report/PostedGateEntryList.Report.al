@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Warehouse.GateEntry;
 
-using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
 
 report 18605 "Posted Gate Entry List"
 {

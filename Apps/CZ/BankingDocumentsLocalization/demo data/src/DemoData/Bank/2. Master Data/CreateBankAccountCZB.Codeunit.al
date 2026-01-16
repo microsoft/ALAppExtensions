@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoData.BankDocuments;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Documents;
+using Microsoft.DemoData.BankDocuments;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
 

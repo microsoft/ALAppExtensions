@@ -842,7 +842,7 @@ table 31257 "Payment Order Line CZB"
         BankAccount: Record "Bank Account";
         Vendor: Record Vendor;
         PaymentOrderManagementCZB: Codeunit "Payment Order Management CZB";
-        GLSetupRead: Boolean;
+        GLSetupRead, UsePaymentDiscount : Boolean;
         ExistEntryErr: Label 'For the field %1 in table %2 exist more than one value %3.', Comment = '%1 = FieldCaption, %2 = TableCaption, %3 = Applies-to Doc. No.';
         NotExistEntryErr: Label 'For the field %1 in table %2 not exist value %3.', Comment = '%1 = FieldCaption, %2 = TableCaption, %3 = Applies-to Doc. No.';
         StatusCheckSuspended: Boolean;
@@ -1067,11 +1067,13 @@ table 31257 "Payment Order Line CZB"
             Validate("Amount (Paym. Order Currency)", GetRemainingAmountFromEntry(CustLedgerEntry))
         else
             Validate("Amount (LCY)", GetRemainingAmountLCYFromEntry(CustLedgerEntry));
-        "Pmt. Discount Date" := CustLedgerEntry."Pmt. Discount Date";
-        "Pmt. Discount Possible" := true;
-        "Remaining Pmt. Disc. Possible" := CustLedgerEntry."Remaining Pmt. Disc. Possible";
-        if ("Remaining Pmt. Disc. Possible" <> 0) and ("Pmt. Discount Date" <> 0D) then
-            "Due Date" := "Pmt. Discount Date";
+        if UsePaymentDiscount then begin
+            "Pmt. Discount Date" := CustLedgerEntry.GetPmtDiscountDate();
+            "Remaining Pmt. Disc. Possible" := CustLedgerEntry."Remaining Pmt. Disc. Possible";
+            "Pmt. Discount Possible" := ("Remaining Pmt. Disc. Possible" <> 0) and ("Pmt. Discount Date" <> 0D);
+            if "Pmt. Discount Possible" then
+                "Due Date" := "Pmt. Discount Date";
+        end;
         "Original Amount" := Amount;
         "Original Amount (LCY)" := "Amount (LCY)";
         "Orig. Amount(Pay.Order Curr.)" := "Amount (Paym. Order Currency)";
@@ -1092,11 +1094,13 @@ table 31257 "Payment Order Line CZB"
             Validate("Amount (Paym. Order Currency)", GetRemainingAmountFromEntry(VendorLedgerEntry))
         else
             Validate("Amount (LCY)", GetRemainingAmountLCYFromEntry(VendorLedgerEntry));
-        "Pmt. Discount Date" := VendorLedgerEntry."Pmt. Discount Date";
-        "Pmt. Discount Possible" := true;
-        "Remaining Pmt. Disc. Possible" := VendorLedgerEntry."Remaining Pmt. Disc. Possible";
-        if ("Remaining Pmt. Disc. Possible" <> 0) and ("Pmt. Discount Date" <> 0D) then
-            "Due Date" := "Pmt. Discount Date";
+        if UsePaymentDiscount then begin
+            "Pmt. Discount Date" := VendorLedgerEntry.GetPmtDiscountDate();
+            "Remaining Pmt. Disc. Possible" := VendorLedgerEntry."Remaining Pmt. Disc. Possible";
+            "Pmt. Discount Possible" := ("Remaining Pmt. Disc. Possible" <> 0) and ("Pmt. Discount Date" <> 0D);
+            if "Pmt. Discount Possible" then
+                "Due Date" := "Pmt. Discount Date";
+        end;
         "Original Amount" := Amount;
         "Original Amount (LCY)" := "Amount (LCY)";
         "Orig. Amount(Pay.Order Curr.)" := "Amount (Paym. Order Currency)";
@@ -1126,8 +1130,9 @@ table 31257 "Payment Order Line CZB"
     begin
         GetPaymentOrder();
         CustLedgerEntry.CalcFields("Remaining Amount");
-        if (CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Invoice) and
-           (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry."Pmt. Discount Date")
+        if UsePaymentDiscount and
+           (CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Invoice) and
+           (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry.GetPmtDiscountDate())
         then
             exit(-(CustLedgerEntry."Remaining Amount" - CustLedgerEntry."Remaining Pmt. Disc. Possible"));
         exit(-CustLedgerEntry."Remaining Amount");
@@ -1135,28 +1140,21 @@ table 31257 "Payment Order Line CZB"
 
     local procedure GetRemainingAmountLCYFromEntry(CustLedgerEntry: Record "Cust. Ledger Entry"): Decimal
     var
-        CurrencyAmount: Decimal;
         CurrFactor: Decimal;
     begin
         GetPaymentOrder();
-        CustLedgerEntry.CalcFields("Remaining Amount", "Remaining Amt. (LCY)");
-        if (CustLedgerEntry."Document Type" = CustLedgerEntry."Document Type"::Invoice) and
-           (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry."Pmt. Discount Date")
-        then begin
-            CurrencyAmount := -(CustLedgerEntry."Remaining Amount" - CustLedgerEntry."Remaining Pmt. Disc. Possible");
-            CurrFactor := CurrencyExchangeRate.ExchangeRate(PaymentOrderHeaderCZB."Document Date", CustLedgerEntry."Currency Code");
-            exit(Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PaymentOrderHeaderCZB."Document Date",
-                    CustLedgerEntry."Currency Code", CurrencyAmount, CurrFactor)));
-        end;
-        exit(-CustLedgerEntry."Remaining Amt. (LCY)");
+        CurrFactor := CurrencyExchangeRate.ExchangeRate(PaymentOrderHeaderCZB."Document Date", CustLedgerEntry."Currency Code");
+        exit(Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PaymentOrderHeaderCZB."Document Date",
+                    CustLedgerEntry."Currency Code", GetRemainingAmountFromEntry(CustLedgerEntry), CurrFactor)));
     end;
 
     local procedure GetRemainingAmountFromEntry(VendorLedgerEntry: Record "Vendor Ledger Entry"): Decimal
     begin
         GetPaymentOrder();
         VendorLedgerEntry.CalcFields("Remaining Amount");
-        if (VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Invoice) and
-           (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry."Pmt. Discount Date")
+        if UsePaymentDiscount and
+           (VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Invoice) and
+           (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry.GetPmtDiscountDate())
         then
             exit(-(VendorLedgerEntry."Remaining Amount" - VendorLedgerEntry."Remaining Pmt. Disc. Possible"));
         exit(-VendorLedgerEntry."Remaining Amount");
@@ -1164,20 +1162,12 @@ table 31257 "Payment Order Line CZB"
 
     local procedure GetRemainingAmountLCYFromEntry(VendorLedgerEntry: Record "Vendor Ledger Entry"): Decimal
     var
-        CurrencyAmount: Decimal;
         CurrFactor: Decimal;
     begin
         GetPaymentOrder();
-        VendorLedgerEntry.CalcFields("Remaining Amount", "Remaining Amt. (LCY)");
-        if (VendorLedgerEntry."Document Type" = VendorLedgerEntry."Document Type"::Invoice) and
-           (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry."Pmt. Discount Date")
-        then begin
-            CurrencyAmount := -(VendorLedgerEntry."Remaining Amount" - VendorLedgerEntry."Remaining Pmt. Disc. Possible");
-            CurrFactor := CurrencyExchangeRate.ExchangeRate(PaymentOrderHeaderCZB."Document Date", VendorLedgerEntry."Currency Code");
-            exit(Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PaymentOrderHeaderCZB."Document Date",
-                    VendorLedgerEntry."Currency Code", CurrencyAmount, CurrFactor)));
-        end;
-        exit(-VendorLedgerEntry."Remaining Amt. (LCY)");
+        CurrFactor := CurrencyExchangeRate.ExchangeRate(PaymentOrderHeaderCZB."Document Date", VendorLedgerEntry."Currency Code");
+        exit(Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(PaymentOrderHeaderCZB."Document Date",
+                    VendorLedgerEntry."Currency Code", GetRemainingAmountFromEntry(VendorLedgerEntry), CurrFactor)));
     end;
 
     local procedure GetRemainingAmountFromEntry(EmployeeLedgerEntry: Record "Employee Ledger Entry"): Decimal
@@ -1289,6 +1279,11 @@ table 31257 "Payment Order Line CZB"
             end;
 
         OnAfterCollectSuggestedApplication(Rec, CrossApplicationBufferCZL);
+    end;
+
+    internal procedure SetUsePaymentDiscount(NewUsePaymentDiscount: Boolean)
+    begin
+        UsePaymentDiscount := NewUsePaymentDiscount;
     end;
 
     [IntegrationEvent(false, false)]

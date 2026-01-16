@@ -4,9 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Calculation;
 
-#if not CLEAN28
-using Microsoft.Finance.VAT.Reporting;
-#endif
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
@@ -15,6 +12,9 @@ using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Preview;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
+#if not CLEAN28
+using Microsoft.Finance.VAT.Reporting;
+#endif
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.AuditCodes;
 

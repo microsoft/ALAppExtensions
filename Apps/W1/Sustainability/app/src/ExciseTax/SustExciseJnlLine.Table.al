@@ -5,8 +5,8 @@
 namespace Microsoft.Sustainability.ExciseTax;
 
 using Microsoft.Finance.Dimension;
-using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.UOM;

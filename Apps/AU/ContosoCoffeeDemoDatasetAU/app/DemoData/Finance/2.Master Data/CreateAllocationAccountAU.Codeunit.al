@@ -10,7 +10,6 @@ using Microsoft.Finance.AllocationAccount;
 
 codeunit 17180 "Create Allocation Account AU"
 {
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 
@@ -23,7 +22,7 @@ codeunit 17180 "Create Allocation Account AU"
         CreateGLAccount: Codeunit "Create G/L Account";
     begin
         ContosoAllocationAccount.InsertAllocationAccount(
-            Licenses(), 'Yearly license fee, design',
+            Licenses(), LicensesDescription(),
             AllocationAccount."Account Type"::Fixed, AllocationAccount."Document Lines Split"::"Split Amount");
         ContosoAllocationAccount.InsertAllocationAccountDistribution(
             Licenses(), 10000, AllocAccountDistribution."Account Type"::Fixed, 1, 50,
@@ -35,6 +34,15 @@ codeunit 17180 "Create Allocation Account AU"
 
     procedure Licenses(): Code[20]
     begin
-        exit('LICENSES');
+        exit(LicensesTok);
     end;
+
+    procedure LicensesDescription(): Text[100]
+    begin
+        exit(YearlyLicenseFeeTok);
+    end;
+
+    var
+        LicensesTok: Label 'LICENSES', MaxLength = 20;
+        YearlyLicenseFeeTok: Label 'Yearly license fee', MaxLength = 100;
 }

@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
+using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Company;
 using System.Utilities;
-using Microsoft.Finance.VAT.Reporting;
 
 codeunit 10510 "GovTalk Validate VAT Report"
 {

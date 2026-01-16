@@ -2,8 +2,8 @@ namespace Microsoft.DataMigration.GP;
 
 using Microsoft.DataMigration;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using Microsoft.Utilities;
 using System.Integration;

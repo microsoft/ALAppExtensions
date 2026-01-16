@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.DemoData.Finance;
+using Microsoft.Finance.GeneralLedger.Journal;
 
 codeunit 27025 "Create CA Gen. Journal Line"
 {

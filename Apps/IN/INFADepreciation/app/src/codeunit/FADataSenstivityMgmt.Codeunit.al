@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.FADepreciation;
 
-using System.Privacy;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Journal;
 using Microsoft.FixedAssets.Ledger;
-using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Utilities;
+using System.Privacy;
 
 codeunit 18639 "FA Data Senstivity Mgmt."
 {

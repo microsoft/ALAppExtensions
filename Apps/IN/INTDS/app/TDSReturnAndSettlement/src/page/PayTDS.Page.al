@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
 
-using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TDS.TDSBase;
 
 page 18746 "Pay TDS"
 {

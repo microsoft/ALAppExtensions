@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
-using Microsoft.Purchases.Document;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Pricing.Calculation;
+using Microsoft.Purchases.Document;
 
 codeunit 5272 "Create Purchase Payable Setup"
 {

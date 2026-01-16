@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.Bank.Payment;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 11609 "Create CH Payment Method"
 {

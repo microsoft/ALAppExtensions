@@ -1,10 +1,10 @@
 namespace Microsoft.Bank.PayPal;
 
+using Microsoft.Bank.Payment;
+using Microsoft.CRM.Setup;
+using Microsoft.Sales.Document;
 using System.Integration;
 using System.Privacy;
-using Microsoft.Sales.Document;
-using Microsoft.CRM.Setup;
-using Microsoft.Bank.Payment;
 using System.Telemetry;
 
 table 1070 "MS - PayPal Standard Account"

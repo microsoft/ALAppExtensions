@@ -1,7 +1,7 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
 
-using System.Upgrade;
 using Microsoft.Bank.BankAccount;
+using System.Upgrade;
 
 codeunit 1452 "MS - Yodlee Service Upgrade"
 {

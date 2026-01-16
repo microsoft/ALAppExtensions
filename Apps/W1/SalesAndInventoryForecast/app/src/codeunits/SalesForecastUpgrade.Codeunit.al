@@ -1,7 +1,7 @@
 namespace Microsoft.Inventory.InventoryForecast;
 
-using System.Upgrade;
 using System.Threading;
+using System.Upgrade;
 
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.

@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-using System.Security.AccessControl;
 using Microsoft.EServices.EDocumentConnector;
+using System.Security.AccessControl;
 
 permissionsetextension 6362 "D365 Read - EDocument Connector" extends "D365 READ"
 {

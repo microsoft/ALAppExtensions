@@ -1,7 +1,7 @@
 namespace Microsoft.Bank.Reconciliation;
 
-using System.AI;
 using Microsoft.Finance.GeneralLedger.Journal;
+using System.AI;
 using System.Telemetry;
 
 pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"

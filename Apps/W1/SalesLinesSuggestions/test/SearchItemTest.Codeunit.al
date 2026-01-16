@@ -1,11 +1,11 @@
 namespace Microsoft.Sales.Document.Test;
 
-using Microsoft.Inventory.Item;
-using Microsoft.Sales.Customer;
-using Microsoft.Warehouse.ADCS;
 using Microsoft.Foundation.ExtendedText;
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
+using Microsoft.Warehouse.ADCS;
 using System.TestLibraries.Utilities;
 
 codeunit 133513 "Search Item Test"

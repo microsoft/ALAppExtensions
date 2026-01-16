@@ -1,10 +1,10 @@
 namespace Microsoft.Bank.PayPal;
 
-using System.Integration;
-using Microsoft.Sales.History;
-using System.Reflection;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Period;
+using Microsoft.Sales.History;
+using System.Integration;
+using System.Reflection;
 
 codeunit 1075 "MS - PayPal Transactions Mgt."
 {

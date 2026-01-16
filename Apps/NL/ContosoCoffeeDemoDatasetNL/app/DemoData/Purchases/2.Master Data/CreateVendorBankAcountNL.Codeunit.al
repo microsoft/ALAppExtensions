@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
-using Microsoft.DemoData.Warehousing;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.Warehousing;
+using Microsoft.Purchases.Vendor;
 
 codeunit 11524 "Create Vendor Bank Acount NL"
 {

@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
+using System.Azure.KeyVault;
 using System.Environment;
 using System.Security.Authentication;
-using System.Azure.KeyVault;
 
 codeunit 6383 "Graph Authentication"
 {

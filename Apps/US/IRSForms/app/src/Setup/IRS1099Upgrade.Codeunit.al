@@ -5,12 +5,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Upgrade;
-using System.Telemetry;
-using Microsoft.Purchases.Payables;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using System.Telemetry;
+using System.Upgrade;
 
 codeunit 10058 "IRS 1099 Upgrade"
 {
@@ -42,24 +42,24 @@ codeunit 10058 "IRS 1099 Upgrade"
         end;
 
         Telemetry.LogMessage('0000PZH', 'Upgrade procedure started', Verbosity::Normal, DataClassification::SystemMetadata);
-        UpgradeData();
+        UpgradeData(2025);
+        UpgradeData(2026);
         Telemetry.LogMessage('0000PZI', 'Upgrade procedure completed', Verbosity::Normal, DataClassification::SystemMetadata);
 
         UpgradeTag.SetUpgradeTag(UpgradeIRS1099Tag());
         Telemetry.LogMessage('0000PZJ', 'Set upgrade tag', Verbosity::Normal, DataClassification::SystemMetadata);
     end;
 
-    local procedure UpgradeData()
+    local procedure UpgradeData(ReportingYear: Integer)
     var
         IRSReportingPeriod: Record "IRS Reporting Period";
         IRS1099FormBox: Record "IRS 1099 Form Box";
-        ReportingYear: Integer;
     begin
         if IRS1099DataTransferCompleted() then
             exit;
-        ReportingYear := 2025;
         if not IRS1099UpgradeRequired(IRSReportingPeriod, ReportingYear) then
             exit;
+        IRS1099FormBox.SetRange("Period No.", IRSReportingPeriod."No.");
         if IRS1099FormBox.IsEmpty() then begin
             Telemetry.LogMessage('0000Q1T', 'Setup transfer', Verbosity::Normal, DataClassification::SystemMetadata);
             TransferIRS1099Setup(IRSReportingPeriod, ReportingYear);

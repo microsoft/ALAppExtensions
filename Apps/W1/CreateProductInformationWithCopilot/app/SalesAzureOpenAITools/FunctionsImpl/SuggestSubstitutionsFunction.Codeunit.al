@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Item.Substitution;
 
+using Microsoft.Inventory.Item;
 using System.AI;
 using System.Telemetry;
-using Microsoft.Inventory.Item;
 
 codeunit 7342 "Suggest Substitutions Function" implements "AOAI Function"
 {

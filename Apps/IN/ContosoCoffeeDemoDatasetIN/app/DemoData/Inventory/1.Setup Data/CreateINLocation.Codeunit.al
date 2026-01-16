@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Inventory;
 
+using Microsoft.DemoData.Foundation;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
 using Microsoft.Inventory.Location;
 
 codeunit 19002 "Create IN Location"

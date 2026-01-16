@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Service;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Service.Resources;
 
 codeunit 5105 "Create Svc Resource"
