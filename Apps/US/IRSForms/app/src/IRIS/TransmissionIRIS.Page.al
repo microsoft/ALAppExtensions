@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Utilities;
 using System.Privacy;
+using System.Utilities;
 
 page 10058 "Transmission IRIS"
 {

@@ -5,8 +5,8 @@
 #if CLEAN27
 namespace app.app;
 
-using Microsoft.Sales.Customer;
 using Microsoft.Foundation.Address;
+using Microsoft.Sales.Customer;
 
 pageextension 50008 "Customer Card" extends "Customer Card"
 {

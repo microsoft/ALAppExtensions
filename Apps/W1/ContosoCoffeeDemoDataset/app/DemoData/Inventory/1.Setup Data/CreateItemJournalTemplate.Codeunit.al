@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Foundation.AuditCodes;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Reports;
 using Microsoft.Warehouse.Reports;

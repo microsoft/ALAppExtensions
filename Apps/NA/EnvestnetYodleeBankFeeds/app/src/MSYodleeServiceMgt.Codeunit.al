@@ -1,24 +1,24 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
 
-using System.Utilities;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Reconciliation;
-using System.Media;
-using System.IO;
-using Microsoft.Finance.GeneralLedger.Journal;
-using System.DataAdministration;
-using System.Security.Encryption;
 using Microsoft.Bank.Statement;
-using System.Environment.Configuration;
-using Microsoft.Foundation.Company;
-using System.Environment;
-using System.Reflection;
-using System.Azure.KeyVault;
-using System.Telemetry;
-using System;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
+using System;
 using System.Apps;
+using System.Azure.KeyVault;
+using System.DataAdministration;
+using System.Environment;
+using System.Environment.Configuration;
+using System.IO;
+using System.Media;
+using System.Reflection;
+using System.Security.Encryption;
+using System.Telemetry;
+using System.Utilities;
 
 codeunit 1450 "MS - Yodlee Service Mgt."
 {

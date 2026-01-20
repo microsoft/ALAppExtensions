@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.DemoTool;
 using Microsoft.Bank.Reconciliation;
+using Microsoft.DemoTool;
 
 codeunit 5181 "Sales Module" implements "Contoso Demo Data Module"
 {

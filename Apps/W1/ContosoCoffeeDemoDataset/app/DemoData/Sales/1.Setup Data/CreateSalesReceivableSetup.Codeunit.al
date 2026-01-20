@@ -5,14 +5,14 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Finance;
-using Microsoft.Foundation.Enums;
-using Microsoft.Sales.Document;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.ReceivablesPayables;
-using Microsoft.Warehouse.Structure;
+using Microsoft.Foundation.Enums;
 using Microsoft.Pricing.Calculation;
+using Microsoft.Sales.Document;
+using Microsoft.Warehouse.Structure;
 
 codeunit 5271 "Create Sales Receivable Setup"
 {

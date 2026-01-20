@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GST.Base;
 
 codeunit 19048 "Create IN Bank Charge"

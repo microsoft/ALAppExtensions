@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-using Microsoft.Foundation.Shipping;
 using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Foundation.Shipping;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Ledger;

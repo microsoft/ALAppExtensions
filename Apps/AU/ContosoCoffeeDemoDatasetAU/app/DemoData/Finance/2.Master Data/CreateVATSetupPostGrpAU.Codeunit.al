@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.VAT.Reporting;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Reporting;
 
 codeunit 17168 "Create VAT Setup Post.Grp. AU"
 {

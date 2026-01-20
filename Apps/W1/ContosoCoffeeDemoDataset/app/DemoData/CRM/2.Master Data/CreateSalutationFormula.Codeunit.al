@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
 using Microsoft.CRM.Setup;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5682 "Create Salutation Formula"
 {

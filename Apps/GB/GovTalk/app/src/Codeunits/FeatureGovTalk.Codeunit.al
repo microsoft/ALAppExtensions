@@ -4,17 +4,18 @@
 /// </summary>
 namespace Microsoft.Finance.VAT.GovTalk;
 
-using System.Environment.Configuration;
-using System.Upgrade;
+using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Navigate;
-using Microsoft.Finance.VAT.Reporting;
-using System.Reflection;
 using Microsoft.Foundation.Reporting;
+using System.Environment.Configuration;
+using System.Reflection;
+using System.Upgrade;
 
 codeunit 10526 "Feature - GovTalk" implements "Feature Data Update"
 {
     Access = Internal;
+    Permissions = TableData "Feature Data Update Status" = rm;
     InherentEntitlements = X;
     InherentPermissions = X;
     ObsoleteReason = 'Feature GovTalk will be enabled by default in version 30.0.';

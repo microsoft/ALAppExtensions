@@ -7,9 +7,9 @@ namespace Microsoft.DataMigration.SL;
 
 using Microsoft.Projects.Project.Job;
 using Microsoft.Projects.Resources.Resource;
-using System.Integration;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
+using System.Integration;
 
 codeunit 47006 "SL Project Migrator"
 {

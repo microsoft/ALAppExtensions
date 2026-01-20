@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
-using Microsoft.DemoData.Inventory;
-using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
+using Microsoft.Sales.Customer;
 
 codeunit 17138 "Create NZ Customer"
 {

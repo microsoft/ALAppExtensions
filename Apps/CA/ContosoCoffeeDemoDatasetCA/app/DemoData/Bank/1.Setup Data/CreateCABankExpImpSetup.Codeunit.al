@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoData.Foundation;
 using Microsoft.Bank.ElectronicFundsTransfer;
+using Microsoft.DemoData.Foundation;
 using Microsoft.DemoTool.Helpers;
 
 codeunit 27016 "Create CA Bank Exp/Imp Setup"

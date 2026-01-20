@@ -1,10 +1,10 @@
 namespace Microsoft.Inventory.InventoryForecast;
 
-using System.Threading;
 using System.AI;
 using System.Privacy;
 using System.Security.User;
 using System.Telemetry;
+using System.Threading;
 
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.

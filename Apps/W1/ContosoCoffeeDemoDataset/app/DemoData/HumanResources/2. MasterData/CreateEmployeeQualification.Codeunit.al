@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.HumanResources;
 
-using Microsoft.HumanResources.Employee;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.HumanResources.Employee;
 
 codeunit 5165 "Create Employee Qualification"
 {

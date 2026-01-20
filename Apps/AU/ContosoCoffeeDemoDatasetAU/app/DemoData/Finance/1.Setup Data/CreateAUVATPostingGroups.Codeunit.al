@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Foundation.Enums;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.Enums;
 
 codeunit 17121 "Create AU VAT Posting Groups"
 {

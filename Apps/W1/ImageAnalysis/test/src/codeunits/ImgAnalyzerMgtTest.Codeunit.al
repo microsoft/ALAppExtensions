@@ -1,7 +1,7 @@
 namespace Microsoft.Utility.ImageAnalysis;
 
-using System.Environment.Configuration;
 using System.AI;
+using System.Environment.Configuration;
 using System.TestLibraries.Environment;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.

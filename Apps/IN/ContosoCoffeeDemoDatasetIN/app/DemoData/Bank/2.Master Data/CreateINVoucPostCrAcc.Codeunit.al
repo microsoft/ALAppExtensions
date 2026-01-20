@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Inventory;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Journal;
 
 codeunit 19035 "Create IN Vouc. Post. Cr. Acc."

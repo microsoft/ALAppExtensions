@@ -1,10 +1,10 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.TestLibraries.Utilities;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Foundation.Enums;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Enums;
+using Microsoft.Purchases.Vendor;
+using System.TestLibraries.Utilities;
 
 codeunit 148101 "UT REP VATREP GB"
 {

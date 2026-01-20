@@ -3,11 +3,11 @@ namespace Microsoft.Bank.Deposit;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.Dimension;
-using System.Globalization;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Reversal;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.NoSeries;
-using Microsoft.Finance.GeneralLedger.Reversal;
-using Microsoft.Finance.GeneralLedger.Ledger;
+using System.Globalization;
 
 table 1691 "Posted Bank Deposit Header"
 {

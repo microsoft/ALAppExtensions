@@ -17,8 +17,8 @@ using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Emission;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Reports;
+using Microsoft.Sustainability.Setup;
 
 codeunit 148212 "Sust. Item Of Concern Test"
 {

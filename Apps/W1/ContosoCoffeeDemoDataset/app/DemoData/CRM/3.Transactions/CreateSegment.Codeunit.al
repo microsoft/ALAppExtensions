@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Sales;
-using Microsoft.CRM.Interaction;
 using Microsoft.CRM.BusinessRelation;
+using Microsoft.CRM.Interaction;
+using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5676 "Create Segment"
 {

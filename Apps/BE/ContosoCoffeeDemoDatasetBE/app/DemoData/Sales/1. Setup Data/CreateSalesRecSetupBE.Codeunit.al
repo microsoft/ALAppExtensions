@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Setup;
 using Microsoft.DemoData.Finance;
+using Microsoft.Sales.Setup;
 
 codeunit 11386 "Create Sales Rec. Setup BE"
 {

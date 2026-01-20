@@ -1,7 +1,7 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
 
-using System.Utilities;
 using System.Security.AccessControl;
+using System.Utilities;
 
 codeunit 1267 "Password Helper"
 {

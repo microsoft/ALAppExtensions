@@ -3,8 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
-using Microsoft.Foundation.Company;
+
 using Microsoft.eServices.EDocument;
+using Microsoft.Foundation.Company;
 
 pageextension 6440 "SignUp Company Information Ext" extends "Company Information"
 {

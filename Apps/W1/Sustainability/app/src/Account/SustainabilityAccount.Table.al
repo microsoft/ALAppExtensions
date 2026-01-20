@@ -1,10 +1,10 @@
 namespace Microsoft.Sustainability.Account;
 
 using Microsoft.Finance.Dimension;
-using Microsoft.Inventory.Location;
 using Microsoft.Foundation.Comment;
-using Microsoft.Sustainability.Ledger;
+using Microsoft.Inventory.Location;
 using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Ledger;
 
 table 6210 "Sustainability Account"
 {

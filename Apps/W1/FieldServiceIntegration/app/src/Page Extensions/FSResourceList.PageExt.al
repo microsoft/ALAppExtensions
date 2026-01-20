@@ -5,8 +5,8 @@
 namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.Dataverse;
-using Microsoft.Projects.Resources.Resource;
 using Microsoft.Integration.SyncEngine;
+using Microsoft.Projects.Resources.Resource;
 
 pageextension 6613 "FS Resource List" extends "Resource List"
 {

@@ -183,6 +183,9 @@ codeunit 11029 IntrastatReportManagementDE
         CompanyInformation: Record "Company Information";
         Contact: Record Contact;
         DataExchLineDef, DataExchLineDef2 : Record "Data Exch. Line Def";
+        CompanyArea: Code[10];
+        RegistrationNo: Text[20];
+        AgencyNo: Text[10];
     begin
         if IsIntrastatExport(DataExchColumnDef."Data Exch. Def Code") then
             case DataExchColumnDef.Path of
@@ -243,9 +246,15 @@ codeunit 11029 IntrastatReportManagementDE
                 '/Party[@partyType="PSI" and @partyRole="sender"]/partyId':
                     begin
                         CompanyInformation.Get();
-                        xmlNodeValue := Format(CompanyInformation.Area, 2) +
-                            PadStr(CopyStr(DelChr(UpperCase(CompanyInformation."Registration No."), '=', RegNoExcludeCharsTxt), 1, 11), 11, '0') +
-                            Format(CompanyInformation."Agency No.", 3);
+
+                        CompanyArea := CompanyInformation.Area;
+                        RegistrationNo := CompanyInformation."Registration No.";
+                        AgencyNo := CompanyInformation."Agency No.";
+
+                        OnBeforeCreateXMLNodeWithoutAttributesOnPartyIdPathOnBeforeSetXmlNodeValue(CompanyArea, RegistrationNo, AgencyNo);
+                        xmlNodeValue := Format(CompanyArea, 2) +
+                            PadStr(CopyStr(DelChr(UpperCase(RegistrationNo), '=', RegNoExcludeCharsTxt), 1, 11), 11, '0') +
+                            Format(AgencyNo, 3);
                     end;
                 '/Party[@partyType="CC" and @partyRole="receiver"]/partyName':
                     xmlNodeValue := GetReceiverInfo(Contact.FieldNo(Name));
@@ -435,6 +444,11 @@ codeunit 11029 IntrastatReportManagementDE
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeDefineFileNamesDE(var IntrastatReportHeader: Record "Intrastat Report Header"; var FileName: Text; var ReceptFileName: Text; var ShipmentFileName: Text; var ZipFileName: Text; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateXMLNodeWithoutAttributesOnPartyIdPathOnBeforeSetXmlNodeValue(var CompanyArea: Code[10]; var RegistrationNo: Text[20]; var AgencyNo: Text[10])
     begin
     end;
 

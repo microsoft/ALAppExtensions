@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.API.V2;
 
+using Microsoft.CRM.BusinessRelation;
 using Microsoft.CRM.Contact;
 using Microsoft.Sales.Customer;
-using Microsoft.CRM.BusinessRelation;
 
 page 30089 "APIV2 - CustContacts"
 {

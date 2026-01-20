@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
+using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Company;
+using System;
 using System.Integration;
 using System.Threading;
 using System.Utilities;
 using System.Xml;
-using Microsoft.Finance.VAT.Reporting;
-using System;
 
 codeunit 10569 "GovTalk Message Management"
 {

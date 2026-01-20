@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Manufacturing;
 
-using Microsoft.Manufacturing.Setup;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Manufacturing.Setup;
 
 codeunit 4768 "Create Mfg Posting Setup"
 {

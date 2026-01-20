@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
-using System;
-using System.Telemetry;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Item;
+using System;
 using System.AI;
+using System.Telemetry;
 
 codeunit 7282 "Search"
 {

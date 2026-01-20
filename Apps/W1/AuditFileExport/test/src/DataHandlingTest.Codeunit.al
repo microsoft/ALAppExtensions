@@ -5,10 +5,10 @@
 namespace Microsoft.Test.Finance.AuditFileExport;
 
 using Microsoft.Finance.AuditFileExport;
-using System.Reflection;
-using System.IO;
-using System.Utilities;
 using Microsoft.Finance.GeneralLedger.Ledger;
+using System.IO;
+using System.Reflection;
+using System.Utilities;
 
 codeunit 148037 "Data Handling Test" implements "Audit File Export Data Handling"
 {

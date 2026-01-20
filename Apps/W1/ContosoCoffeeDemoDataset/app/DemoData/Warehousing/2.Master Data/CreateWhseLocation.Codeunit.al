@@ -5,14 +5,14 @@
 
 namespace Microsoft.DemoData.Warehousing;
 
-using Microsoft.Warehouse.Setup;
+using Microsoft.Assembly.Document;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Inventory.Location;
-using Microsoft.Warehouse.Activity;
-using Microsoft.Warehouse.Structure;
 using Microsoft.Manufacturing.Setup;
 using Microsoft.Projects.Project.Setup;
-using Microsoft.Assembly.Document;
+using Microsoft.Warehouse.Activity;
+using Microsoft.Warehouse.Setup;
+using Microsoft.Warehouse.Structure;
 
 codeunit 4787 "Create Whse Location"
 {

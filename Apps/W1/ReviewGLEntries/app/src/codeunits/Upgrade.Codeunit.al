@@ -1,7 +1,7 @@
 namespace Microsoft.Finance.GeneralLedger.Review;
 
-using System.Upgrade;
 using Microsoft.Finance.GeneralLedger.Ledger;
+using System.Upgrade;
 codeunit 22201 "Upgrade"
 {
     Access = Internal;
@@ -16,8 +16,7 @@ codeunit 22201 "Upgrade"
 
     local procedure FixGLEntryReviewLogWithReviewAmountZero()
     var
-
-        GLEntryReviewLog: Record "G/L Entry Review Log";
+        GLEntryReviewLog, GLEntryReviewLog2: Record "G/L Entry Review Log";
         GlEntry: Record "G/L Entry";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
@@ -28,11 +27,9 @@ codeunit 22201 "Upgrade"
         if GLEntryReviewLog.FindSet() then
             repeat
                 if GlEntry.Get(GLEntryReviewLog."G/L Entry No.") then begin
-                    GLEntryReviewLog."Reviewed Amount" := GlEntry.Amount;
-                    if not GLEntryReviewLog.Modify(false) then begin
-                        Session.LogMessage('0000QUR', 'Failed upgrading G/L Entry Review Log with Reviewed Amount Zero', Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', 'Review G/L Entries');
-                        exit;
-                    end;
+                    GLEntryReviewLog2.Copy(GLEntryReviewLog);
+                    GLEntryReviewLog2."Reviewed Amount" := GlEntry.Amount;
+                    GLEntryReviewLog2.Modify(false);
                 end;
             until GLEntryReviewLog.Next() = 0;
 
@@ -46,7 +43,8 @@ codeunit 22201 "Upgrade"
         GlEntry: Record "G/L Entry";
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeReviewGLEntryTag()) then exit;
+        if UpgradeTag.HasUpgradeTag(UpgradeReviewGLEntryTag()) then
+            exit;
 
         if GLEntryReviewEntry.FindSet() then
             repeat

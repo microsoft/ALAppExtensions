@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
 
-using Microsoft.Finance.TCS.TCSBase;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Foundation.NoSeries;
+using Microsoft.Finance.TCS.TCSBase;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
 
 page 18870 "TCS Adjustment Journal"
 {

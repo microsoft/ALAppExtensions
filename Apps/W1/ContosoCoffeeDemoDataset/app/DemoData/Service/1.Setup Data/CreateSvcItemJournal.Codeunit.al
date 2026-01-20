@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Service;
 
-using Microsoft.Foundation.AuditCodes;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Foundation.AuditCodes;
 using Microsoft.Inventory.Journal;
 
 codeunit 5154 "Create Svc Item Journal"

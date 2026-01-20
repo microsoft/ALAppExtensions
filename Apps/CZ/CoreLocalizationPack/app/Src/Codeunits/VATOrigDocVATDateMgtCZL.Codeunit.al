@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT;
 
-using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Purchases.History;
 using System.Security.User;
 
@@ -28,16 +28,21 @@ codeunit 11733 "VAT Orig.Doc.VAT Date Mgt. CZL"
 
     procedure UpdateOrigDocVATDate(VATEntry: Record "VAT Entry")
     var
+        TempRelatedVATEntry: Record "VAT Entry" temporary;
         UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
     begin
         UserSetupAdvManagementCZL.CheckOrigDocVATDateChanging();
         CheckVATEntry(VATEntry);
         CheckVATCtrlReport(VATEntry);
 
-        if not ConfirmAffectedVATEntries(VATEntry) then
-            Error('');
+        GetRelatedVATEntries(VATEntry, TempRelatedVATEntry);
+        TempRelatedVATEntry.Reset();
+        if not TempRelatedVATEntry.IsEmpty() then begin
+            if not ConfirmRelatedVATEntries(TempRelatedVATEntry) then
+                Error('');
 
-        UpdateVATEntries(VATEntry);
+            UpdateRelatedVATEntries(VATEntry, TempRelatedVATEntry);
+        end;
         UpdatePostedDocuments(VATEntry);
         UpdateVATCtrlReportLines(VATEntry);
 
@@ -69,14 +74,10 @@ codeunit 11733 "VAT Orig.Doc.VAT Date Mgt. CZL"
             Error(VATControlReportClosedErr, VATCtrlReportHeaderCZL."No.");
     end;
 
-    local procedure ConfirmAffectedVATEntries(VATEntry: Record "VAT Entry"): Boolean
+    local procedure ConfirmRelatedVATEntries(var TempRelatedVATEntry: Record "VAT Entry" temporary): Boolean
     var
-        TempRelatedVATEntry: Record "VAT Entry" temporary;
         ConfVATEntUpdateMgtCZL: Codeunit "Conf. VAT Ent. Update Mgt. CZL";
     begin
-        GetRelatedVATEntries(VATEntry, TempRelatedVATEntry);
-        if TempRelatedVATEntry.IsEmpty() then
-            exit(true);
         exit(ConfVATEntUpdateMgtCZL.GetResponseOrDefault(TempRelatedVATEntry, true));
     end;
 
@@ -89,6 +90,12 @@ codeunit 11733 "VAT Orig.Doc.VAT Date Mgt. CZL"
             repeat
                 AddToBuffer(RelatedVATEntry, TempRelatedVATEntry);
             until RelatedVATEntry.Next() = 0;
+
+        VATEntry.CalcFields("VAT Ctrl. Report No. CZL", "VAT Ctrl. Report Line No. CZL");
+        if (VATEntry."VAT Ctrl. Report No. CZL" = '') and
+           (VATEntry."VAT Ctrl. Report Line No. CZL" = 0)
+        then
+            exit;
 
         FilterRelatedVATEntriesByVATCtrlReport(VATEntry, RelatedVATEntry);
         if RelatedVATEntry.FindSet() then
@@ -105,14 +112,17 @@ codeunit 11733 "VAT Orig.Doc.VAT Date Mgt. CZL"
         TempVATEntry.Insert();
     end;
 
-    local procedure UpdateVATEntries(VATEntry: Record "VAT Entry")
+    local procedure UpdateRelatedVATEntries(VATEntry: Record "VAT Entry"; var TempRelatedVATEntry: Record "VAT Entry" temporary)
     var
         RelatedVATEntry: Record "VAT Entry";
     begin
-        FilterRelatedVATEntries(VATEntry, RelatedVATEntry);
-        RelatedVATEntry.ModifyAll("Original Doc. VAT Date CZL", VATEntry."Original Doc. VAT Date CZL");
-        FilterRelatedVATEntriesByVATCtrlReport(VATEntry, RelatedVATEntry);
-        RelatedVATEntry.ModifyAll("Original Doc. VAT Date CZL", VATEntry."Original Doc. VAT Date CZL");
+        TempRelatedVATEntry.Reset();
+        if TempRelatedVATEntry.FindSet() then
+            repeat
+                RelatedVATEntry.Get(TempRelatedVATEntry."Entry No.");
+                RelatedVATEntry."Original Doc. VAT Date CZL" := VATEntry."Original Doc. VAT Date CZL";
+                RelatedVATEntry.Modify(true);
+            until TempRelatedVATEntry.Next() = 0;
     end;
 
     local procedure UpdatePostedDocuments(VATEntry: Record "VAT Entry")
@@ -120,7 +130,7 @@ codeunit 11733 "VAT Orig.Doc.VAT Date Mgt. CZL"
         PurchInvHeader: Record "Purch. Inv. Header";
         PurchCrMemoHeader: Record "Purch. Cr. Memo Hdr.";
     begin
-        if VATEntry.Type = VATEntry.Type::Purchase then
+        if VATEntry.Type <> VATEntry.Type::Purchase then
             exit;
 
         case VATEntry."Document Type" of

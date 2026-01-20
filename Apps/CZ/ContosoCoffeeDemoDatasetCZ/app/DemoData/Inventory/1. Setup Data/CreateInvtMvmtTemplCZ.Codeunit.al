@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Journal;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Journal;
 
 codeunit 31202 "Create Invt. Mvmt. Templ. CZ"
 {

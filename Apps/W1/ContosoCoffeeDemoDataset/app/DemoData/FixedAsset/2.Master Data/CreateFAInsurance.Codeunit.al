@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.FixedAssets.FixedAsset;
 
 codeunit 5155 "Create FA Insurance"
 {

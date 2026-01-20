@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
 
-using Microsoft.Finance.TCS.TCSBase;
+using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.TCS.TCSBase;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Inventory.Location;
-using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Bank.BankAccount;
+using Microsoft.Sales.Customer;
 
 table 18869 "TCS Journal Batch"
 {

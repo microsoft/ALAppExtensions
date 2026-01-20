@@ -5,13 +5,13 @@
 
 namespace Microsoft.DemoData.Analytics;
 
-using Microsoft.Sales.Document;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoTool;
-using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Sales.Document;
 
 codeunit 5692 "Create Extended Sales Document"
 {

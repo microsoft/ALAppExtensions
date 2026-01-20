@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.Copilot;
 
-using Microsoft.Foundation.UOM;
-using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Address;
-using System.AI;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.UOM;
 using Microsoft.Sustainability.Account;
+using System.AI;
 using System.Telemetry;
 
 codeunit 6299 "Sustainability AI"

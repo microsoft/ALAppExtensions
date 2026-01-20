@@ -1,7 +1,7 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Sales.Receivables;
 using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
 
 codeunit 1696 "Entry Application Mgt"
 {

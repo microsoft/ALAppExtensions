@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
+using Microsoft.DemoTool;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Service.Resources;
-using Microsoft.DemoTool;
 
 codeunit 5120 "Contoso Resource"
 {

@@ -9,6 +9,7 @@ using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Shipping;
 using Microsoft.Sales.Customer;
 using System.Integration;
+using System.Integration;
 using System.TestLibraries.Utilities;
 
 codeunit 147600 "SL Customer Migrator Tests"

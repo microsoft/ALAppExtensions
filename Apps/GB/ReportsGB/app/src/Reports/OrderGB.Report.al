@@ -20,8 +20,8 @@ using Microsoft.Purchases.Setup;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Utilities;
 using System.Globalization;
-using System.Utilities;
 using System.Telemetry;
+using System.Utilities;
 
 report 10600 "OrderGB"
 {

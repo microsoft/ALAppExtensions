@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets;
 
-using Microsoft.FixedAssets.Ledger;
 using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
 
 codeunit 31234 "FA Insert G/L Acc. Handler CZF"
 {

@@ -5,10 +5,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
-using System.Upgrade;
-using Microsoft.Foundation.Company;
 using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.Company;
 using System.Reflection;
+using System.Upgrade;
 
 codeunit 10587 "Upgrade GovTalk"
 {

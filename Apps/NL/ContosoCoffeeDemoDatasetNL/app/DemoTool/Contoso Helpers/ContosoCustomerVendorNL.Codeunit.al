@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Warehousing;
 
-using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 codeunit 11526 "Contoso Customer/Vendor NL"
 {

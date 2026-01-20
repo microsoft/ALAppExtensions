@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Sales.Document;
 using Microsoft.Finance.Currency;
-using Microsoft.Foundation.ExtendedText;
-using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Foundation.ExtendedText;
+using Microsoft.Sales.Document;
 
 codeunit 19063 "Contoso IN Sales Document"
 {

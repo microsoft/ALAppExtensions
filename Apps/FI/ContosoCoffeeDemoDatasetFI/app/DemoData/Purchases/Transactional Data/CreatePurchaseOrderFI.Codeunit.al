@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Document;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Purchases.Document;
 
 codeunit 13435 "Create Purchase Order FI"
 {

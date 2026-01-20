@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.Deferral;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.Deferral;
 
 codeunit 5389 "Create Deferral Template"
 {
@@ -18,7 +18,9 @@ codeunit 5389 "Create Deferral Template"
         CreateGLAccount: Codeunit "Create G/L Account";
         DeferralAccountNo: Code[20];
     begin
-        DeferralAccountNo := CreateGLAccount.OtherAccruedExpensesandDeferredIncome();
+        OnDefineDeferralAccountNo(DeferralAccountNo);
+        if DeferralAccountNo = '' then
+            DeferralAccountNo := CreateGLAccount.OtherAccruedExpensesandDeferredIncome();
         ContosoDeferralTemplate.InsertDeferralTemplate(DeferralCode3M(), Description3M(), DeferralAccountNo, 100, Enum::"Deferral Calculation Method"::"Equal per Period", Enum::"Deferral Calculation Start Date"::"Beginning of Next Period", 3, '%4, %6');
         ContosoDeferralTemplate.InsertDeferralTemplate(DeferralCode1Y(), Description1Y(), DeferralAccountNo, 100, Enum::"Deferral Calculation Method"::"Equal per Period", Enum::"Deferral Calculation Start Date"::"Beginning of Next Period", 12, '%4, %6');
     end;
@@ -48,4 +50,9 @@ codeunit 5389 "Create Deferral Template"
         DeferralCode1YTok: Label '1Y', MaxLength = 10;
         Description3MTok: Label '3 months, equal, begin next period', MaxLength = 100;
         Description1YTok: Label '1 year, equal, begin next period', MaxLength = 100;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnDefineDeferralAccountNo(var DeferralAccountNo: Code[20])
+    begin
+    end;
 }

@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool;
-using Microsoft.DemoData.CRM;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.Bank.BankAccount;
+using Microsoft.DemoData.CRM;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 13710 "Create Bank Account DK"
 {

@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.Sales;
 
-using Microsoft.Sustainability.Account;
 using Microsoft.Sales.History;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
 
 tableextension 6240 "Sust. Sales Ret. Rcpt. Line" extends "Return Receipt Line"

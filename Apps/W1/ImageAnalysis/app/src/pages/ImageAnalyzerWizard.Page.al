@@ -1,9 +1,9 @@
 namespace Microsoft.Utility.ImageAnalysis;
 
-using System.Utilities;
-using System.Environment;
 using Microsoft.Inventory.Item;
+using System.Environment;
 using System.Telemetry;
+using System.Utilities;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved. 
 // Licensed under the MIT License. See License.txt in the project root for license information. 

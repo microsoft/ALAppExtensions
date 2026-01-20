@@ -2,9 +2,9 @@ namespace Microsoft.Sustainability.Certificate;
 
 using Microsoft.Inventory.Item;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Codes;
 using Microsoft.Sustainability.EPR;
 using Microsoft.Sustainability.Setup;
-using Microsoft.Sustainability.Codes;
 
 tableextension 6220 "Sust. Item" extends Item
 {

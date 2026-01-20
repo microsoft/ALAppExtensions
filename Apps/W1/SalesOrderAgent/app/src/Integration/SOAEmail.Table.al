@@ -6,8 +6,8 @@
 #pragma warning disable AS0007
 namespace Microsoft.Agent.SalesOrderAgent;
 
-using System.Email;
 using System.Agents;
+using System.Email;
 
 table 4585 "SOA Email"
 {

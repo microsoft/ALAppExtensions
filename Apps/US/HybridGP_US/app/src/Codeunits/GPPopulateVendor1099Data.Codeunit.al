@@ -1,14 +1,14 @@
 namespace Microsoft.DataMigration.GP;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using System.Integration;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Foundation.NoSeries;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Purchases.Payables;
-using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using System.Integration;
 
 codeunit 42003 "GP Populate Vendor 1099 Data"
 {

@@ -16,8 +16,8 @@ using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Vendor;
 using System.Globalization;
-using System.Utilities;
 using System.Telemetry;
+using System.Utilities;
 
 report 10580 "Purchase Credit Memo"
 {

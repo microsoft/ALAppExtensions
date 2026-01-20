@@ -1,10 +1,10 @@
 namespace Microsoft.API.V2;
 
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Integration.Entity;
-using Microsoft.Purchases.History;
 using Microsoft.Integration.Graph;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Vendor;
 
 page 30060 "APIV2 - Vendor Payments"
 {

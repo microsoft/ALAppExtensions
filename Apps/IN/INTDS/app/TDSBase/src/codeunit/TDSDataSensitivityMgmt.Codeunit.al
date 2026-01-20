@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSBase;
 
-using Microsoft.Finance.TDS.TDSForCustomer;
-using Microsoft.Sales.Document;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TDS.TDSForCustomer;
+using Microsoft.Finance.TDS.TDSReturnAndSettlement;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
-using Microsoft.Finance.TDS.TDSReturnAndSettlement;
+using Microsoft.Sales.Document;
 using Microsoft.Utilities;
 using System.Privacy;
 

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Finance.Dimension;
 using Microsoft.DemoData.Finance;
+using Microsoft.Finance.Dimension;
 using Microsoft.Sales.Customer;
 
 codeunit 11595 "Create CH Sales Dim. Value"

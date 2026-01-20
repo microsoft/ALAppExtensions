@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
-using System.Telemetry;
 using System.Environment;
+using System.Telemetry;
 using System.Utilities;
 
 page 6361 "EDoc Ext Connection Setup Card"

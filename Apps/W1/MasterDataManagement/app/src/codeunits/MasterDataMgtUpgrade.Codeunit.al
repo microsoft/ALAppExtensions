@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.MDM;
 
 using Microsoft.Integration.SyncEngine;
+using System.Automation;
 using System.Threading;
 using System.Upgrade;
-using System.Automation;
 
 /// <summary>
 /// Codeunit Master Data Mgt. Upgrade (ID 7238).

@@ -1,0 +1,33 @@
+{
+  "id": "c31ee575-3fc7-4388-98ee-d75aa2fc5f87",
+  "name": "Withholding Tax",
+  "publisher": "Microsoft",
+  "version": "28.0.0.0",
+  "brief": "Withholding Tax",
+  "description": "Withholding Tax",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+  "logo": "./ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "28.0.0.0",
+  "application": "28.0.0.0",
+  "idRanges": [
+    {
+      "from": 6784,
+      "to": 6813
+    }
+  ],
+  "features": [
+    "TranslationFile"
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
+}

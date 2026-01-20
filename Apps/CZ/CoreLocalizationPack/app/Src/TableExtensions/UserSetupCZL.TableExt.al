@@ -147,6 +147,9 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
 
         UserSetup.Init();
         UserSetup := Rec;
+        UserSetup."Employee No. CZL" := OldUserSetup."Employee No. CZL";
+        UserSetup."Phone No." := OldUserSetup."Phone No.";
+        UserSetup."E-Mail" := OldUserSetup."E-Mail";
         UserSetup."User Name CZL" := OldUserSetup."User Name CZL";
         UserSetup."User ID" := ToUserId;
         if not UserSetup.Insert() then

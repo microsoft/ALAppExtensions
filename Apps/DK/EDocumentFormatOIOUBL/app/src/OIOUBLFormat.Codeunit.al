@@ -5,19 +5,19 @@
 namespace Microsoft.EServices.EDocument;
 
 using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
-using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.Certificate;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Reminder;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
-using Microsoft.Sales.FinanceCharge;
-using Microsoft.Sales.Reminder;
-using System.Utilities;
-using System.IO;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.Setup;
-using Microsoft.Inventory.Item;
+using System.IO;
+using System.Utilities;
 
 codeunit 13910 "OIOUBL Format" implements "E-Document"
 {

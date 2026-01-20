@@ -2,8 +2,8 @@ namespace Microsoft.Payroll.Ceridian;
 
 using Microsoft.Finance.Payroll;
 using Microsoft.Utilities;
-using System.Utilities;
 using System.IO;
+using System.Utilities;
 
 codeunit 1666 "MS Ceridian Payroll import"
 {

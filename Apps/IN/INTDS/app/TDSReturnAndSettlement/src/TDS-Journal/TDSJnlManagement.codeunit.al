@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 codeunit 18747 "TDS Jnl Management"
 {

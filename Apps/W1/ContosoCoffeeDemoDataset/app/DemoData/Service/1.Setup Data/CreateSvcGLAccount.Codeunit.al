@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Service;
 
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.DemoData.Common;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Account;
 
 codeunit 5102 "Create Svc GL Account"
 {

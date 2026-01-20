@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Purchase;
 
-using Microsoft.Sustainability.Setup;
-using Microsoft.Sustainability.Ledger;
 using Microsoft.Purchases.History;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
 
 tableextension 6218 "Sust. Purch. Cr. Memo Header" extends "Purch. Cr. Memo Hdr."
 {

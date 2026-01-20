@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoTool;
 
-using Microsoft.Utilities;
 using Microsoft.Finance.GeneralLedger.Setup;
-using System.Environment;
 using Microsoft.Foundation.Company;
+using Microsoft.Utilities;
+using System.Environment;
 
 codeunit 5382 "Company Creation Contoso"
 {

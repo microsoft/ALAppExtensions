@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-using System.Telemetry;
 using System.Environment;
+using System.Telemetry;
 
 page 6440 "SignUp Connection Setup Card"
 {

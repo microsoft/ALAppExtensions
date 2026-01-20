@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Sales.Customer;
 
 codeunit 27070 "Create CA Cust. Bank Account"
 {

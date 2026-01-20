@@ -5,10 +5,10 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.EServices.EDocument;
+using Microsoft.eServices.EDocument.Integration.Receive;
+using Microsoft.eServices.EDocument.Integration.Send;
 using System.Text;
 using System.Utilities;
-using Microsoft.eServices.EDocument.Integration.Send;
-using Microsoft.eServices.EDocument.Integration.Receive;
 
 codeunit 6445 "SignUp Processing"
 {
