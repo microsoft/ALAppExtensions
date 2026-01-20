@@ -258,12 +258,17 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
     var
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
         IRS1099FormBox: Record "IRS 1099 Form Box";
+        IRSReportingPeriod: Record "IRS Reporting Period";
     begin
+        if not IRSReportingPeriod.Get(Format(TaxYear)) then
+            exit(false);
+
+        IRS1099FormBox.SetRange("Period No.", IRSReportingPeriod."No.");
         IRS1099FormBox.SetRange("No.", IRS1099Code);
         if not IRS1099FormBox.FindFirst() then
             exit(false);
 
-        IRS1099VendorFormBoxSetup.Validate("Period No.", Format(TaxYear));
+        IRS1099VendorFormBoxSetup.Validate("Period No.", IRSReportingPeriod."No.");
         IRS1099VendorFormBoxSetup.Validate("Vendor No.", Vendor."No.");
         IRS1099VendorFormBoxSetup.Validate("Form No.", IRS1099FormBox."Form No.");
         IRS1099VendorFormBoxSetup.Validate("Form Box No.", IRS1099Code);
@@ -457,14 +462,15 @@ codeunit 47201 "SL Populate Vendor 1099 Data"
         GenJournalLine.Validate("Document Type", DocumentType);
         GenJournalLine.Validate("Source Code", SourceCodeTxt);
         GenJournalLine.Validate("External Document No.", ExternalDocumentNo);
-        GenJournalLine.Validate("IRS 1099 Reporting Period", Format(TaxYear));
 
+        IRS1099FormBox.SetRange("Period No.", Format(TaxYear));
         IRS1099FormBox.SetRange("No.", IRS1099Code);
-        if IRS1099FormBox.FindFirst() then
+        if IRS1099FormBox.FindFirst() then begin
+            GenJournalLine.Validate("IRS 1099 Reporting Period", IRS1099FormBox."Period No.");
             GenJournalLine.Validate("IRS 1099 Form No.", IRS1099FormBox."Form No.");
-
-        GenJournalLine.Validate("IRS 1099 Form Box No.", IRS1099Code);
-        GenJournalLine.Validate("IRS 1099 Reporting Amount", Amount);
+            GenJournalLine.Validate("IRS 1099 Form Box No.", IRS1099Code);
+            GenJournalLine.Validate("IRS 1099 Reporting Amount", Amount);
+        end;
 
         if GenJournalLine.Insert(true) then
             exit(true)
