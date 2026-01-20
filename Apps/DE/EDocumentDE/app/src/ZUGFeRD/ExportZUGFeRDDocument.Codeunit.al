@@ -635,6 +635,22 @@ codeunit 13917 "Export ZUGFeRD Document"
         RootXMLNode.Add(SupplyChainTradeTransactionElement);
     end;
 
+    local procedure InsertBillingSpecifiedPeriod(var RootElement: XmlElement; StartDate: Date; EndDate: Date);
+    var
+        BillingSpecifiedPeriodElement: XmlElement;
+        StartDateElement: XmlElement;
+        EndDateElement: XmlElement;
+    begin
+        BillingSpecifiedPeriodElement := XmlElement.Create('BillingSpecifiedPeriod', XmlNamespaceRAM);
+        StartDateElement := XmlElement.Create('StartDateTime', XmlNamespaceRAM);
+        StartDateElement.Add(XmlElement.Create('DateTimeString', XmlNamespaceUDT, XmlAttribute.Create('format', '102'), FormatDate(StartDate)));
+        BillingSpecifiedPeriodElement.Add(StartDateElement);
+        EndDateElement := XmlElement.Create('EndDateTime', XmlNamespaceRAM);
+        EndDateElement.Add(XmlElement.Create('DateTimeString', XmlNamespaceUDT, XmlAttribute.Create('format', '102'), FormatDate(EndDate)));
+        BillingSpecifiedPeriodElement.Add(EndDateElement);
+        RootElement.Add(BillingSpecifiedPeriodElement);
+    end;
+
     local procedure InsertInvoiceLine(var SupplyChainTradeTransactionElement: XmlElement; var SalesInvoiceLine: Record "Sales Invoice Line"; Currency: Record Currency; CurrencyCode: Code[10]; PricesIncVAT: Boolean)
     var
         InvoiceLineElement: XmlElement;
@@ -685,6 +701,9 @@ codeunit 13917 "Export ZUGFeRD Document"
             ApplicableTradeTaxElement.Add(XmlElement.Create('CategoryCode', XmlNamespaceRAM, GetTaxCategoryID(SalesInvoiceLine."Tax Category", SalesInvoiceLine."VAT Bus. Posting Group", SalesInvoiceLine."VAT Prod. Posting Group")));
             ApplicableTradeTaxElement.Add(XmlElement.Create('RateApplicablePercent', XmlNamespaceRAM, FormatFourDecimal(SalesInvoiceLine."VAT %")));
             SpecifiedLineTradeSettlementElement.Add(ApplicableTradeTaxElement);
+
+            if SalesInvoiceLine."Shipment Date" <> 0D then
+                InsertBillingSpecifiedPeriod(SpecifiedLineTradeSettlementElement, SalesInvoiceLine."Shipment Date", SalesInvoiceLine."Shipment Date");
 
             if SalesInvoiceLine."Line Discount Amount" <> 0 then
                 InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesInvoiceLine."Tax Category", SalesInvoiceLine."VAT Bus. Posting Group",
@@ -767,6 +786,9 @@ codeunit 13917 "Export ZUGFeRD Document"
             ApplicableTradeTaxElement.Add(XmlElement.Create('CategoryCode', XmlNamespaceRAM, GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group", SalesCrMemoLine."VAT Prod. Posting Group")));
             ApplicableTradeTaxElement.Add(XmlElement.Create('RateApplicablePercent', XmlNamespaceRAM, FormatFourDecimal(SalesCrMemoLine."VAT %")));
             SpecifiedLineTradeSettlementElement.Add(ApplicableTradeTaxElement);
+
+            if SalesCrMemoLine."Shipment Date" <> 0D then
+                InsertBillingSpecifiedPeriod(SpecifiedLineTradeSettlementElement, SalesCrMemoLine."Shipment Date", SalesCrMemoLine."Shipment Date");
 
             if SalesCrMemoLine."Line Discount Amount" <> 0 then
                 InsertAllowanceCharge(SpecifiedLineTradeSettlementElement, 'Line Discount', GetTaxCategoryID(SalesCrMemoLine."Tax Category", SalesCrMemoLine."VAT Bus. Posting Group",
