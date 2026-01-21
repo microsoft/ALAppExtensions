@@ -52,11 +52,8 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
 
                 trigger OnAction()
                 var
-                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                     GPMigrationConfiguration: Page "GP Migration Configuration";
                 begin
-                    HybridCloudManagement.PrepareMigrationValidation(); // TODO: REMOVE AFTER LOCAL TESTING
-
                     GPMigrationConfiguration.ShouldShowManagementPromptOnClose(false);
                     GPMigrationConfiguration.Run();
                 end;

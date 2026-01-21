@@ -17,19 +17,19 @@ table 40046 "Migration Validation Buffer"
         {
             Caption = 'Parent No.';
         }
-        field(3; "Text 1"; Text[250])
+        field(3; "Text 1"; Text[2048])
         {
             Caption = 'Text 1';
         }
-        field(4; "Text 2"; Text[250])
+        field(4; "Text 2"; Text[2048])
         {
             Caption = 'Text 2';
         }
-        field(5; "Text 3"; Text[250])
+        field(5; "Text 3"; Text[2048])
         {
             Caption = 'Text 3';
         }
-        field(6; "Text 4"; Text[250])
+        field(6; "Text 4"; Text[2048])
         {
             Caption = 'Text 4';
         }

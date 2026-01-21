@@ -1,16 +1,16 @@
 namespace Microsoft.DataMigration.GP;
 
-using Microsoft.DataMigration;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Sales.Customer;
-using Microsoft.Inventory.Item;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Purchases.Document;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Purchases.Remittance;
+using Microsoft.DataMigration;
+using Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Remittance;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 codeunit 40903 "GP Migration Validator"
 {
@@ -34,8 +34,6 @@ codeunit 40903 "GP Migration Validator"
         RunItemMigrationValidation(GPCompanyAdditionalSettings);
         RunPurchaseOrderMigrationValidation(GPCompanyAdditionalSettings);
         RunVendorMigrationValidation(GPCompanyAdditionalSettings);
-
-        MigrationValidation.ReportCompanyValidated();
     end;
 
     local procedure GetUnpostedBatchCounts()
@@ -72,9 +70,6 @@ codeunit 40903 "GP Migration Validator"
         GPAccountDescription: Text[100];
         ValidatedAccountNos: List of [Text];
     begin
-        if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepGLAccountLbl) then
-            exit;
-
         EntityType := GlAccountEntityCaptionLbl;
         BalanceFailureShouldBeWarning := (TotalUnpostedGLBatchCount > 0);
 
@@ -90,6 +85,10 @@ codeunit 40903 "GP Migration Validator"
                         continue;
 
                     ValidatedAccountNos.Add(GPAccountNo);
+
+                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPGL00100) then
+                        continue;
+
                     MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, GPAccountNo);
 
                     GPSY00300.SetRange(MNSEGIND, true);
@@ -166,11 +165,10 @@ codeunit 40903 "GP Migration Validator"
                     MigrationValidation.ValidateAreEqual(Test_ACCOUNTSUBCATEGORY_Tok, HelperFunctions.AssignSubAccountCategory(GPAccount), GLAccount."Account Subcategory Entry No.", AccountSubcategoryLbl);
                     MigrationValidation.ValidateAreEqual(Test_ACCOUNTINCBAL_Tok, HelperFunctions.ConvertIncomeBalanceType(GPAccount), GLAccount."Income/Balance".AsInteger(), AccountIncomeBalanceLbl);
                     MigrationValidation.ValidateAreEqual(Test_ACCOUNTBALANCE_Tok, GPAccountBeginningBalance, GLAccount.Balance, BeginningBalanceLbl, BalanceFailureShouldBeWarning);
+
+                    MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPGL00100);
                 until GPGL00100.Next() = 0;
         end;
-
-        LogValidationProgress(ValidationStepGLAccountLbl);
-        Commit();
     end;
 
     local procedure RunStatisticalAccountMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
@@ -194,9 +192,6 @@ codeunit 40903 "GP Migration Validator"
         GPAccountDescription: Text[100];
         ValidatedAccountNos: List of [Text];
     begin
-        if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepStatAccountLbl) then
-            exit;
-
         EntityType := StatisticalAccountEntityCaptionLbl;
         BalanceFailureShouldBeWarning := (TotalUnpostedStatisticalBatchCount > 0);
 
@@ -216,6 +211,10 @@ codeunit 40903 "GP Migration Validator"
                         continue;
 
                     ValidatedAccountNos.Add(GPAccountNo);
+
+                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPGL00100) then
+                        continue;
+
                     MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, GPAccountNo);
 
                     GPSY00300.SetRange(MNSEGIND, true);
@@ -276,11 +275,10 @@ codeunit 40903 "GP Migration Validator"
                     MigrationValidation.ValidateAreEqual(Test_STATACCOUNTDIM1_Tok, DimensionCode1, StatisticalAccount."Global Dimension 1 Code", Dimension1Lbl);
                     MigrationValidation.ValidateAreEqual(Test_STATACCOUNTDIM2_Tok, DimensionCode2, StatisticalAccount."Global Dimension 2 Code", Dimension2Lbl);
                     MigrationValidation.ValidateAreEqual(Test_STATACCOUNTBALANCE_Tok, GPAccountBeginningBalance, StatisticalAccount.Balance, BeginningBalanceLbl, BalanceFailureShouldBeWarning);
+
+                    MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPGL00100);
                 until GPGL00100.Next() = 0;
         end;
-
-        LogValidationProgress(ValidationStepStatAccountLbl);
-        Commit();
     end;
 
     local procedure RunBankAccountMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
@@ -297,15 +295,15 @@ codeunit 40903 "GP Migration Validator"
         GPAccountBalance: Decimal;
         EntityType: Text[50];
     begin
-        if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepBankAccountLbl) then
-            exit;
-
         EntityType := BankAccountEntityCaptionLbl;
         BalanceFailureShouldBeWarning := (TotalUnpostedBankBatchCount > 0);
 
         if GPCompanyAdditionalSettings.GetBankModuleEnabled() then
             if GPCheckbookMSTR.FindSet() then
                 repeat
+                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPCheckbookMSTR) then
+                        continue;
+
                     GPAccountNo := CopyStr(GPCheckbookMSTR.CHEKBKID.TrimEnd(), 1, MaxStrLen(GPAccountNo));
                     MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, GPAccountNo);
                     ShouldInclude := true;
@@ -366,10 +364,10 @@ codeunit 40903 "GP Migration Validator"
                         MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTTRANSITNO_Tok, CopyStr(GPBankMSTR.TRNSTNBR.TrimEnd(), 1, MaxStrLen(BankAccount."Transit No.")), BankAccount."Transit No.", TransitNoLbl, true);
                         MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTBRANCHNO_Tok, CopyStr(GPBankMSTR.BNKBRNCH.TrimEnd(), 1, MaxStrLen(BankAccount."Bank Branch No.")), BankAccount."Bank Branch No.", BankBranchNoLbl, true);
                         MigrationValidation.ValidateAreEqual(Test_BANKACCOUNTBALANCE_Tok, GPAccountBalance, BankAccount.Balance, BalanceLbl, BalanceFailureShouldBeWarning);
+
+                        MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPCheckbookMSTR);
                     end;
                 until GPCheckbookMSTR.Next() = 0;
-        LogValidationProgress(ValidationStepBankAccountLbl);
-        Commit();
     end;
 
     local procedure RunCustomerMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
@@ -392,9 +390,6 @@ codeunit 40903 "GP Migration Validator"
         GPCustomerBalance: Decimal;
         EntityType: Text[50];
     begin
-        if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepCustomerLbl) then
-            exit;
-
         EntityType := CustomerEntityCaptionLbl;
         BalanceFailureShouldBeWarning := (TotalUnpostedCustomerBatchCount > 0);
 
@@ -402,6 +397,9 @@ codeunit 40903 "GP Migration Validator"
             GPRM00101.SetFilter(CUSTNMBR, '<>%1', '');
             if GPRM00101.FindSet() then
                 repeat
+                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPRM00101) then
+                        continue;
+
                     CustomerNo := CopyStr(GPRM00101.CUSTNMBR.TrimEnd(), 1, MaxStrLen(CustomerNo));
                     MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, CustomerNo);
                     GPCustomerBalance := 0;
@@ -485,12 +483,11 @@ codeunit 40903 "GP Migration Validator"
                         MigrationValidation.ValidateAreEqual(Test_CUSTOMERPMTTERMS_Tok, PaymentTerms, Customer."Payment Terms Code", PaymentTermsLbl, true);
 
                         ValidateCustomerShipToAddresses(Customer);
+
+                        MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPRM00101);
                     end;
                 until GPRM00101.Next() = 0;
         end;
-
-        LogValidationProgress(ValidationStepCustomerLbl);
-        Commit();
     end;
 
     local procedure ValidateCustomerShipToAddresses(var Customer: Record Customer)
@@ -506,6 +503,9 @@ codeunit 40903 "GP Migration Validator"
         GPCustomerAddress.SetRange(CUSTNMBR, Customer."No.");
         if GPCustomerAddress.FindSet() then
             repeat
+                if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPCustomerAddress) then
+                    continue;
+
                 AddressCode := CopyStr(GPCustomerAddress.ADRSCODE, 1, MaxStrLen(AddressCode));
                 ContextCode := Customer."No." + '-' + AddressCode;
 
@@ -532,6 +532,7 @@ codeunit 40903 "GP Migration Validator"
                 MigrationValidation.ValidateAreEqual(Test_SHIPADDRCOUNTY_Tok, GPCustomerAddress.STATE.TrimEnd(), ShipToAddress.County, CountyLbl, true);
                 MigrationValidation.ValidateAreEqual(Test_SHIPADDRTAXAREA_Tok, GPCustomerAddress.TAXSCHID.TrimEnd(), ShipToAddress."Tax Area Code", TaxAreaLbl, true);
 
+                MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPCustomerAddress);
             until GPCustomerAddress.Next() = 0;
     end;
 
@@ -559,9 +560,6 @@ codeunit 40903 "GP Migration Validator"
         Kits: List of [Code[20]];
         EntityType: Text[50];
     begin
-        if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepItemLbl) then
-            exit;
-
         EntityType := ItemEntityCaptionLbl;
         QuantityFailureShouldBeWarning := (TotalUnpostedItemBatchCount > 0);
 
@@ -580,6 +578,9 @@ codeunit 40903 "GP Migration Validator"
 
             if GPIV00101.FindSet() then
                 repeat
+                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPIV00101) then
+                        continue;
+
                     ItemNo := CopyStr(GPIV00101.ITEMNMBR.TrimEnd(), 1, MaxStrLen(ItemNo));
                     MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, ItemNo);
 
@@ -688,12 +689,11 @@ codeunit 40903 "GP Migration Validator"
 
                         MigrationValidation.ValidateAreEqual(Test_ITEMTYPE_Tok, ItemType, Item.Type, TypeLbl);
                         MigrationValidation.ValidateAreEqual(Test_ITEMCOSTMETHOD_Tok, CostingMethod, Item."Costing Method", CostingMethodLbl, true);
+
+                        MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPIV00101);
                     end;
                 until GPIV00101.Next() = 0;
         end;
-
-        LogValidationProgress(ValidationStepItemLbl);
-        Commit();
     end;
 
     local procedure RunPurchaseOrderMigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
@@ -708,9 +708,6 @@ codeunit 40903 "GP Migration Validator"
         EntityType: Text[50];
         LineEntityType: Text[50];
     begin
-        if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepPurchaseOrderLbl) then
-            exit;
-
         EntityType := 'Purchase Order';
         LineEntityType := 'Purchase Line';
 
@@ -721,6 +718,9 @@ codeunit 40903 "GP Migration Validator"
             GPPOP10100.SetFilter(VENDORID, '<>%1', '');
             if GPPOP10100.FindSet() then
                 repeat
+                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPPOP10100) then
+                        continue;
+
                     PONumber := CopyStr(GPPOP10100.PONUMBER.TrimEnd(), 1, MaxStrLen(PurchaseHeader."No."));
                     if Vendor.Get(GPPOP10100.VENDORID) then
                         if not GPPOHeaderValidationBuffer.Get(PONumber) then begin
@@ -732,6 +732,8 @@ codeunit 40903 "GP Migration Validator"
                             if not PopulatePOLineBuffer(PONumber, GPPOLineValidationBuffer) then
                                 GPPOHeaderValidationBuffer.Delete();
                         end;
+
+                    MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPPOP10100);
                 until GPPOP10100.Next() = 0;
         end;
 
@@ -764,9 +766,6 @@ codeunit 40903 "GP Migration Validator"
                         MigrationValidation.ValidateAreEqual(Test_POLINEQTYRECV_Tok, GPPOLineValidationBuffer."Decimal 2", PurchaseLine."Quantity Received", QuantityRecLbl, true);
                     until GPPOLineValidationBuffer.Next() = 0;
             until GPPOHeaderValidationBuffer.Next() = 0;
-
-        LogValidationProgress(ValidationStepPurchaseOrderLbl);
-        Commit();
     end;
 
     local procedure PopulatePOLineBuffer(PONumber: Code[20]; var LineBuffer: Record "Migration Validation Buffer"): Boolean
@@ -915,9 +914,6 @@ codeunit 40903 "GP Migration Validator"
         PhoneNo: Text[30];
         FaxNo: Text[30];
     begin
-        if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepVendorLbl) then
-            exit;
-
         EntityType := VendorEntityCaptionLbl;
         BalanceFailureShouldBeWarning := (TotalUnpostedVendorBatchCount > 0);
 
@@ -925,6 +921,9 @@ codeunit 40903 "GP Migration Validator"
             GPPM00200.SetFilter(VENDORID, '<>%1', '');
             if GPPM00200.FindSet() then
                 repeat
+                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPPM00200) then
+                        continue;
+
                     VendorNo := CopyStr(GPPM00200.VENDORID.TrimEnd(), 1, MaxStrLen(VendorNo));
                     MigrationValidation.SetContext(ValidatorCodeLbl, EntityType, VendorNo);
 
@@ -1016,12 +1015,11 @@ codeunit 40903 "GP Migration Validator"
                         MigrationValidation.ValidateAreEqual(Test_VENDORPMTTERMS_Tok, PaymentTerms, Vendor."Payment Terms Code", PaymentTermsLbl, true);
 
                         ValidateVendorAddresses(GPVendor);
+
+                        MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPPM00200);
                     end;
                 until GPPM00200.Next() = 0;
         end;
-
-        LogValidationProgress(ValidationStepVendorLbl);
-        Commit();
     end;
 
     local procedure ValidateVendorAddresses(var GPVendor: Record "GP Vendor")
@@ -1049,6 +1047,9 @@ codeunit 40903 "GP Migration Validator"
         GPVendorAddress.SetRange(VENDORID, Vendor."No.");
         if GPVendorAddress.FindSet() then
             repeat
+                if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPVendorAddress) then
+                    continue;
+
                 AddressCode := CopyStr(GPVendorAddress.ADRSCODE.Trim(), 1, MaxStrLen(AddressCode));
                 ContextCode := Vendor."No." + '-' + AddressCode;
 
@@ -1084,7 +1085,9 @@ codeunit 40903 "GP Migration Validator"
                         MigrationValidation.ValidateAreEqual(Test_ORDERADDRCOUNTY_Tok, GPVendorAddress.STATE.TrimEnd(), OrderAddress.County, CountyLbl, true);
                         MigrationValidation.ValidateAreEqual(Test_ORDERADDRCONTACT_Tok, GPVendorAddress.VNDCNTCT.TrimEnd(), OrderAddress.Contact, ContactLbl, true);
                     end;
-                end
+                end;
+
+                MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPVendorAddress);
             until GPVendorAddress.Next() = 0;
     end;
 
@@ -1214,15 +1217,6 @@ codeunit 40903 "GP Migration Validator"
     internal procedure RoundWithSpecPrecision(Amount: Decimal): Decimal
     begin
         exit(Round(Amount, DefaultCurrency."Amount Rounding Precision"));
-    end;
-
-    local procedure LogValidationProgress(ValidationStep: Code[20])
-    begin
-        Clear(CompanyValidationProgress);
-        CompanyValidationProgress.Validate("Company Name", CompanyNameTxt);
-        CompanyValidationProgress.Validate("Validator Code", ValidatorCodeLbl);
-        CompanyValidationProgress.Validate("Validation Step", ValidationStep);
-        CompanyValidationProgress.Insert(true);
     end;
 
     internal procedure GetValidatorCode(): Code[20];
@@ -1370,7 +1364,8 @@ codeunit 40903 "GP Migration Validator"
             MigrationValidatorRegistry.Validate("Migration Type", MigrationType);
             MigrationValidatorRegistry.Validate(Description, ValidatorDescriptionLbl);
             MigrationValidatorRegistry.Validate("Codeunit Id", ValidatorCodeunitId);
-            MigrationValidatorRegistry.Validate(Automatic, false);
+            MigrationValidatorRegistry.Validate(Automatic, true);
+            MigrationValidatorRegistry.Validate("Errors should fail migration", false);
             MigrationValidatorRegistry.Insert(true);
         end;
     end;
@@ -1391,7 +1386,6 @@ codeunit 40903 "GP Migration Validator"
 
     var
         DefaultCurrency: Record Currency;
-        CompanyValidationProgress: Record "Company Validation Progress";
         MigrationValidation: Codeunit "Migration Validation";
         ValidatorCodeLbl: Code[20];
         CompanyNameTxt: Text;
@@ -1460,13 +1454,6 @@ codeunit 40903 "GP Migration Validator"
         VendorOrderAddressEntityCaptionLbl: Label 'Vendor Order Address', MaxLength = 50;
         VendorPostingGroupLbl: Label 'Vendor Posting Group';
         VendorRemitAddressEntityCaptionLbl: Label 'Vendor Remit Address', MaxLength = 50;
-        ValidationStepGLAccountLbl: Label 'GLACCOUNT', MaxLength = 20;
-        ValidationStepStatAccountLbl: Label 'STATACCOUNT', MaxLength = 20;
-        ValidationStepBankAccountLbl: Label 'BANKACCOUNT', MaxLength = 20;
-        ValidationStepCustomerLbl: Label 'CUSTOMER', MaxLength = 20;
-        ValidationStepItemLbl: Label 'ITEM', MaxLength = 20;
-        ValidationStepPurchaseOrderLbl: Label 'PURCHASEORDER', MaxLength = 20;
-        ValidationStepVendorLbl: Label 'VENDOR', MaxLength = 20;
         ValidatorDescriptionLbl: Label 'GP migration validator', MaxLength = 250;
         Test_ACCOUNTEXISTS_Tok: Label 'ACCOUNTEXISTS', Locked = true;
         Test_ACCOUNTNAME_Tok: Label 'ACCOUNTNAME', Locked = true;
@@ -1579,5 +1566,4 @@ codeunit 40903 "GP Migration Validator"
         Test_REMITADDRFAX_Tok: Label 'REMITADDRFAX', Locked = true;
         Test_REMITADDRCOUNTY_Tok: Label 'REMITADDRCOUNTY', Locked = true;
         Test_REMITADDRCONTACT_Tok: Label 'REMITADDRCONTACT', Locked = true;
-
 }

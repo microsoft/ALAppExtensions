@@ -1,8 +1,8 @@
 namespace Microsoft.DataMigration;
 
 using System.Reflection;
-using System.Threading;
 using System.Security.User;
+using System.Threading;
 
 codeunit 40032 "Migration Validation"
 {
@@ -21,11 +21,18 @@ codeunit 40032 "Migration Validation"
     /// </summary>
     /// <param name="MigrationType">The type of migration</param>
     /// <param name="RunOnlyAutomatic">Should only run validators that are set to run automatically</param>
-    procedure StartValidation(MigrationType: Text; RunOnlyAutomatic: Boolean)
+    procedure StartValidation(MigrationType: Text[250]; RunOnlyAutomatic: Boolean)
     var
         MigrationValidatorRegistry: Record "Migration Validator Registry";
         CloudMigrationWarning: Record "Cloud Migration Warning";
     begin
+        CommitAfterXValidatedRecordCount := GetDefaultCommitAfterXValidatedRecordCount();
+        OverrideCommitAfterXValidatedRecordCount := CommitAfterXValidatedRecordCount;
+
+        OnBeforeStartValidation(MigrationType, OverrideCommitAfterXValidatedRecordCount);
+        if OverrideCommitAfterXValidatedRecordCount > 0 then
+            CommitAfterXValidatedRecordCount := OverrideCommitAfterXValidatedRecordCount;
+
         MigrationValidatorRegistry.SetRange("Migration Type", MigrationType);
 
         if RunOnlyAutomatic then
@@ -45,13 +52,15 @@ codeunit 40032 "Migration Validation"
             end;
         until MigrationValidatorRegistry.Next() = 0;
 
-        OnMigrationValidated();
+        SetCompanyValidated();
+        Commit();
+        OnMigrationValidated(MigrationType, CompanyName());
     end;
 
     /// <summary>
     /// Report that the Company has had validation tests run.
     /// </summary>
-    procedure ReportCompanyValidated()
+    procedure SetCompanyValidated()
     var
         HybridCompanyStatus: Record "Hybrid Company Status";
     begin
@@ -60,6 +69,57 @@ codeunit 40032 "Migration Validation"
                 HybridCompanyStatus.Validate(Validated, true);
                 HybridCompanyStatus.Modify(true);
             end;
+    end;
+
+    /// <summary>
+    /// Report that the source record has been validated.
+    /// </summary>
+    /// <param name="SourceValidatorCode">Validator used for testing this source record</param>
+    /// <param name="SourceRecRef">Source record that was validated</param>
+    procedure SetSourceRowValidated(SourceValidatorCode: Code[20]; SourceRecRef: RecordRef)
+    var
+        ValidationProgress: Record "Validation Progress";
+        SourceTableId: Integer;
+        ValidatedRowSystemId: Guid;
+    begin
+        SourceTableId := SourceRecRef.Number();
+        ValidatedRowSystemId := SourceRecRef.Field(SourceRecRef.SystemIdNo()).Value;
+
+        if not ValidationProgress.Get(CompanyName(), SourceValidatorCode, SourceTableId, ValidatedRowSystemId) then begin
+            ValidationProgress.Validate("Company Name", CompanyName());
+            ValidationProgress.Validate("Validator Code", SourceValidatorCode);
+            ValidationProgress.Validate("Source Table Id", SourceTableId);
+            ValidationProgress.Validate("Validated Row System Id", ValidatedRowSystemId);
+            ValidationProgress.Insert(true);
+
+            CurrentValidatedRecordCount += 1;
+            if CurrentValidatedRecordCount >= CommitAfterXValidatedRecordCount then begin
+                Commit();
+                CurrentValidatedRecordCount := 0;
+            end;
+        end;
+    end;
+
+    /// <summary>
+    /// Check to see if a source record has been validated.
+    /// </summary>
+    /// <param name="SourceValidatorCode">Validator used for testing this source record</param>
+    /// <param name="SourceRecRef">The source record to check if it has already been validated.</param>
+    /// <returns></returns>
+    procedure IsSourceRowValidated(SourceValidatorCode: Code[20]; SourceRecRef: RecordRef): Boolean
+    var
+        ValidationProgress: Record "Validation Progress";
+        SourceTableId: Integer;
+        ValidatedRowSystemId: Guid;
+    begin
+        SourceTableId := SourceRecRef.Number();
+        ValidatedRowSystemId := SourceRecRef.Field(SourceRecRef.SystemIdNo()).Value;
+
+        ValidationProgress.SetRange("Company Name", CompanyName());
+        ValidationProgress.SetRange("Validator Code", SourceValidatorCode);
+        ValidationProgress.SetRange("Source Table Id", SourceTableId);
+        ValidationProgress.SetRange("Validated Row System Id", ValidatedRowSystemId);
+        exit(not ValidationProgress.IsEmpty());
     end;
 
     /// <summary>
@@ -229,16 +289,16 @@ codeunit 40032 "Migration Validation"
     procedure DeleteMigrationValidationEntriesForCompany(Company: Text)
     var
         MigrationValidationError: Record "Migration Validation Error";
-        CompanyValidationProgress: Record "Company Validation Progress";
+        ValidationProgress: Record "Validation Progress";
         HybridCompanyStatus: Record "Hybrid Company Status";
     begin
         MigrationValidationError.SetRange("Company Name", Company);
         if not MigrationValidationError.IsEmpty() then
             MigrationValidationError.DeleteAll(true);
 
-        CompanyValidationProgress.SetRange("Company Name", Company);
-        if not CompanyValidationProgress.IsEmpty() then
-            CompanyValidationProgress.DeleteAll(true);
+        ValidationProgress.SetRange("Company Name", Company);
+        if not ValidationProgress.IsEmpty() then
+            ValidationProgress.DeleteAll(true);
 
         if not HybridCompanyStatus.Get(Company) then
             exit;
@@ -310,7 +370,6 @@ codeunit 40032 "Migration Validation"
                 SendStartValidationResultMessage('', TelemetryValidationFailedToStartSessionMsg, true, true);
         end;
     end;
-
     local procedure Equal(Left: Variant; Right: Variant): Boolean
     begin
         if IsNumber(Left) and IsNumber(Right) then
@@ -466,6 +525,11 @@ codeunit 40032 "Migration Validation"
         exit(JobQueueCategoryTok);
     end;
 
+    local procedure GetDefaultCommitAfterXValidatedRecordCount(): Integer
+    begin
+        exit(500);
+    end;
+
     var
         ValidatorCode: Code[20];
         ContextMigrationType: Text[250];
@@ -486,6 +550,14 @@ codeunit 40032 "Migration Validation"
         SessionLbl: Label 'Session', Locked = true;
         JobQueueCategoryTok: Label 'VALIDATION', Locked = true;
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
+        CommitAfterXValidatedRecordCount: Integer;
+        OverrideCommitAfterXValidatedRecordCount: Integer;
+        CurrentValidatedRecordCount: Integer;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeStartValidation(MigrationType: Text[250]; var OverrideCommitAfterXValidatedRecordCount: Integer)
+    begin
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnTestOverrideWarning(Validator: Code[20]; Test: Code[30]; TestContext: Text[250]; EntryIsWarning: Boolean; var OverrideIsWarning: Boolean)
@@ -503,7 +575,7 @@ codeunit 40032 "Migration Validation"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnMigrationValidated()
+    local procedure OnMigrationValidated(MigrationType: Text[250]; Company: Text)
     begin
     end;
 }

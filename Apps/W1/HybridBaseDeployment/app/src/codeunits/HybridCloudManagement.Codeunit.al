@@ -945,7 +945,7 @@ codeunit 4001 "Hybrid Cloud Management"
     procedure PrepareMigrationValidation()
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
-        if IntelligentCloudSetup.Get() then;
+        IntelligentCloudSetup.Get();
 
         OnPrepareMigrationValidation(IntelligentCloudSetup."Product ID");
     end;
@@ -2236,7 +2236,7 @@ codeunit 4001 "Hybrid Cloud Management"
     local procedure ClearCompanyMigrationValidation(MigrationType: Text[250])
     var
         MigrationValidationError: Record "Migration Validation Error";
-        CompanyValidationProgress: Record "Company Validation Progress";
+        ValidationProgress: Record "Validation Progress";
     begin
         if MigrationType <> '' then
             MigrationValidationError.SetRange("Migration Type", MigrationType);
@@ -2245,9 +2245,9 @@ codeunit 4001 "Hybrid Cloud Management"
         if not MigrationValidationError.IsEmpty() then
             MigrationValidationError.DeleteAll();
 
-        CompanyValidationProgress.SetRange("Company Name", CompanyName());
-        if not CompanyValidationProgress.IsEmpty() then
-            CompanyValidationProgress.DeleteAll();
+        ValidationProgress.SetRange("Company Name", CompanyName());
+        if not ValidationProgress.IsEmpty() then
+            ValidationProgress.DeleteAll();
     end;
 
     [EventSubscriber(ObjectType::Page, Page::Companies, 'OnOpenPageEvent', '', false, false)]
@@ -2301,6 +2301,7 @@ codeunit 4001 "Hybrid Cloud Management"
         MigrationValidationError.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
         MigrationValidationError.SetRange("Company Name", CompanyName());
         MigrationValidationError.SetRange("Is Warning", false);
+        MigrationValidationError.SetRange("Errors should fail migration", true);
         if not MigrationValidationError.IsEmpty() then
             DataCreationFailed := true;
     end;

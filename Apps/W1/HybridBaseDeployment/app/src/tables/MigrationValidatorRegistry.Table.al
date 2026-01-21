@@ -29,6 +29,11 @@ table 40042 "Migration Validator Registry"
             Caption = 'Automatic';
             InitValue = true;
         }
+        field(7; "Errors should fail migration"; Boolean)
+        {
+            Caption = 'Errors should fail migration';
+            InitValue = true;
+        }
     }
     keys
     {

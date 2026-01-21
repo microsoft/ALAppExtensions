@@ -1,9 +1,9 @@
 namespace Microsoft.DataMigration.GP;
 
-using Microsoft.Purchases.Vendor;
-using Microsoft.Purchases.Payables;
-using Microsoft.Finance.VAT.Reporting;
 using Microsoft.DataMigration;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
 
 codeunit 42006 "GP IRS1099 Migration Validator"
 {
@@ -18,8 +18,6 @@ codeunit 42006 "GP IRS1099 Migration Validator"
         CompanyNameTxt := CompanyName();
 
         RunVendor1099MigrationValidation(GPCompanyAdditionalSettings);
-
-        MigrationValidation.ReportCompanyValidated();
     end;
 
     local procedure RunVendor1099MigrationValidation(var GPCompanyAdditionalSettings: Record "GP Company Additional Settings")
@@ -36,9 +34,6 @@ codeunit 42006 "GP IRS1099 Migration Validator"
         EntityType: Text[50];
         VendorNo: Code[20];
     begin
-        if CompanyValidationProgress.Get(CompanyNameTxt, ValidatorCodeLbl, ValidationStepVendor1099Lbl) then
-            exit;
-
         EntityType := Vendor1099EntityCaptionLbl;
 
         if GPCompanyAdditionalSettings.GetMigrateVendor1099Enabled() then begin
@@ -46,6 +41,9 @@ codeunit 42006 "GP IRS1099 Migration Validator"
             GPPM00200.SetFilter(VENDORID, '<>%1', '');
             if GPPM00200.FindSet() then
                 repeat
+                    if MigrationValidation.IsSourceRowValidated(ValidatorCodeLbl, GPPM00200) then
+                        continue;
+
                     VendorNo := CopyStr(GPPM00200.VENDORID.TrimEnd(), 1, MaxStrLen(VendorNo));
                     Vendor.SetLoadFields("No.", Name, "Federal ID No.");
                     if not Vendor.Get(VendorNo) then
@@ -83,10 +81,9 @@ codeunit 42006 "GP IRS1099 Migration Validator"
                         end;
                     end;
 
+                    MigrationValidation.SetSourceRowValidated(ValidatorCodeLbl, GPPM00200);
                 until GPPM00200.Next() = 0;
         end;
-
-        LogValidationProgress(ValidationStepVendor1099Lbl);
         Commit();
     end;
 
@@ -112,15 +109,6 @@ codeunit 42006 "GP IRS1099 Migration Validator"
                     else
                         VendorYear1099AmountDictionary.Add(IRS1099Code, GPPM00204.TEN99AMNT);
             until GPPM00204.Next() = 0;
-    end;
-
-    local procedure LogValidationProgress(ValidationStep: Code[20])
-    begin
-        Clear(CompanyValidationProgress);
-        CompanyValidationProgress.Validate("Company Name", CompanyNameTxt);
-        CompanyValidationProgress.Validate("Validator Code", ValidatorCodeLbl);
-        CompanyValidationProgress.Validate("Validation Step", ValidationStep);
-        CompanyValidationProgress.Insert(true);
     end;
 
     internal procedure GetValidatorCode(): Code[20]
@@ -161,7 +149,8 @@ codeunit 42006 "GP IRS1099 Migration Validator"
             MigrationValidatorRegistry.Validate("Migration Type", MigrationType);
             MigrationValidatorRegistry.Validate(Description, ValidatorDescriptionLbl);
             MigrationValidatorRegistry.Validate("Codeunit Id", ValidatorCodeunitId);
-            MigrationValidatorRegistry.Validate(Automatic, false);
+            MigrationValidatorRegistry.Validate(Automatic, true);
+            MigrationValidatorRegistry.Validate("Errors should fail migration", false);
             MigrationValidatorRegistry.Insert(true);
         end;
     end;
@@ -180,7 +169,6 @@ codeunit 42006 "GP IRS1099 Migration Validator"
     end;
 
     var
-        CompanyValidationProgress: Record "Company Validation Progress";
         MigrationValidation: Codeunit "Migration Validation";
         ValidatorCodeLbl: Code[20];
         CompanyNameTxt: Text;
@@ -193,7 +181,6 @@ codeunit 42006 "GP IRS1099 Migration Validator"
         Vendor1099TrxBoxNoLbl: Label '1099 transaction Box No/Description';
         Vendor1099TrxAmtLbl: Label '1099 transaction amount';
         Vendor1099EntityCaptionLbl: Label 'Vendor 1099', MaxLength = 50;
-        ValidationStepVendor1099Lbl: Label 'VENDOR1099', MaxLength = 20;
         ValidatorDescriptionLbl: Label 'GP IRS 1099 migration validator', MaxLength = 250;
         Test_VEND1099IRS1099CODE_Tok: Label 'VEND1099IRS1099CODE', Locked = true;
         Test_VEND1099FEDIDNO_Tok: Label 'VEND1099FEDIDNO', Locked = true;

@@ -1,23 +1,23 @@
-codeunit 139501 "Dummy Migration Validator"
+codeunit 139501 "Mock Migration Validator"
 {
     trigger OnRun()
     begin
         RunCustomerMigrationValidation();
-
-        MigrationValidation.ReportCompanyValidated();
     end;
 
     local procedure RunCustomerMigrationValidation()
     var
         Customer: Record Customer;
+        CustomerId1: Label 'TEST-1', MaxLength = 20, Locked = true;
+        CustomerId2: Label 'TEST-2', MaxLength = 20, Locked = true;
     begin
         // [Customer: Test 1]
 
         // Set the context of this set of tests
-        MigrationValidation.SetContext(GetValidatorCode(), 'Customer', 'TEST-1');
+        MigrationValidation.SetContext(GetValidatorCode(), 'Customer', CustomerId1);
 
         // Check for the entity record by the key
-        if not MigrationValidation.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get('TEST-1'), 'Missing TEST-1') then
+        if not MigrationValidation.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId1), 'Missing TEST-1') then
             exit;
 
         // This is a test that is not a warning, and would fail the migration
@@ -26,13 +26,16 @@ codeunit 139501 "Dummy Migration Validator"
         // This is a test that would be just a warning
         MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
 
+        // The source table will normally be the staging table, but for testing the Customer table is sufficient
+        MigrationValidation.SetSourceRowValidated(GetValidatorCode(), Customer);
+
         // [Customer: Test 2]
 
         // Set the context of this set of tests
-        MigrationValidation.SetContext(GetValidatorCode(), 'Customer', 'TEST-2');
+        MigrationValidation.SetContext(GetValidatorCode(), 'Customer', CustomerId2);
 
         // Check for the entity record by the key
-        if not MigrationValidation.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get('TEST-2'), 'Missing TEST-2') then
+        if not MigrationValidation.ValidateRecordExists(Test_CUSTOMEREXISTS_Tok, Customer.Get(CustomerId2), 'Missing TEST-2') then
             exit;
 
         // This is a test that is not a warning, and would fail the migration
@@ -40,6 +43,9 @@ codeunit 139501 "Dummy Migration Validator"
 
         // This is a test that would be just a warning
         MigrationValidation.ValidateAreEqual(Test_CUSTOMERNAME2_Tok, 'Test name 2', Customer."Name 2", 'Name 2', true);
+
+        // The source table will normally be the staging table, but for testing the Customer table is sufficient
+        MigrationValidation.SetSourceRowValidated(GetValidatorCode(), Customer);
     end;
 
     internal procedure GetValidatorCode(): Code[20]
@@ -63,13 +69,14 @@ codeunit 139501 "Dummy Migration Validator"
         MigrationValidatorRegistry: Record "Migration Validator Registry";
         ValidatorCodeunitId: Integer;
     begin
-        ValidatorCodeunitId := Codeunit::"Dummy Migration Validator";
+        ValidatorCodeunitId := Codeunit::"Mock Migration Validator";
         if not MigrationValidatorRegistry.Get(GetValidatorCode()) then begin
             MigrationValidatorRegistry.Validate("Validator Code", GetValidatorCode());
             MigrationValidatorRegistry.Validate("Migration Type", ProductID);
             MigrationValidatorRegistry.Validate(Description, ValidatorDescriptionLbl);
             MigrationValidatorRegistry.Validate("Codeunit Id", ValidatorCodeunitId);
             MigrationValidatorRegistry.Validate(Automatic, true);
+            MigrationValidatorRegistry.Validate("Errors should fail migration", true);
             MigrationValidatorRegistry.Insert(true);
         end;
     end;
@@ -89,7 +96,7 @@ codeunit 139501 "Dummy Migration Validator"
 
     var
         MigrationValidation: Codeunit "Migration Validation";
-        ValidatorDescriptionLbl: Label 'Dummy migration validator', MaxLength = 250;
+        ValidatorDescriptionLbl: Label 'Mock Migration Validator', MaxLength = 250;
         Test_CUSTOMEREXISTS_Tok: Label 'CUSTOMEREXISTS', Locked = true;
         Test_CUSTOMERNAME_Tok: Label 'CUSTOMERNAME', Locked = true;
         Test_CUSTOMERNAME2_Tok: Label 'CUSTOMERNAME2', Locked = true;

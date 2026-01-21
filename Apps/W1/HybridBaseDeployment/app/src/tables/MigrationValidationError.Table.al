@@ -59,6 +59,14 @@ table 40043 "Migration Validation Error"
         {
             Caption = 'Is Warning';
         }
+        field(12; "Errors should fail migration"; Boolean)
+        {
+            Caption = 'Indicates if validation errors should fail the migration';
+            FieldClass = FlowField;
+            CalcFormula = exist("Migration Validator Registry" where("Validator Code" = field("Validator Code"),
+                                                                     "Migration Type" = field("Migration Type"),
+                                                                     "Errors should fail migration" = const(true)));
+        }
     }
     keys
     {

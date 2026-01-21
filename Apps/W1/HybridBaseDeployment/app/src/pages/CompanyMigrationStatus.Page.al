@@ -5,8 +5,9 @@ page 40066 "Company Migration Status"
     ApplicationArea = All;
     Caption = 'Company Migration Status';
     PageType = List;
-    SourceTable = "Hybrid Company Status";
     UsageCategory = None;
+    SourceTable = "Hybrid Company Status";
+    SourceTableView = sorting(Name) where("Name" = filter(<> ''));
     InsertAllowed = false;
     Editable = false;
     DeleteAllowed = false;

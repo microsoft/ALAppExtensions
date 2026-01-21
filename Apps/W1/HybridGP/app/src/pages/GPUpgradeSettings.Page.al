@@ -24,14 +24,28 @@ page 40043 "GP Upgrade Settings"
                     ToolTip = 'Specifies whether automatic validation is enabled for the primary GP migration.';
 
                     trigger OnValidate()
-                    var
-                        MigrationValidationRegistry: Record "Migration Validator Registry";
-                        GPMigrtionValidator: Codeunit "GP Migration Validator";
                     begin
-                        if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then begin
-                            MigrationValidationRegistry.Validate(Automatic, GPAutoValidation);
-                            MigrationValidationRegistry.Modify(true);
-                        end;
+                        if not GPAutoValidation then
+                            GPValidationErrorsShouldFailMigration := false;
+
+                        UpdateValidatorConfig();
+                    end;
+                }
+            }
+            group(ValidationErrorHandling)
+            {
+                Caption = 'Validation Errors Should Fail Migration';
+
+                field(GPValidationErrorHandling; GPValidationErrorsShouldFailMigration)
+                {
+                    ApplicationArea = All;
+                    Caption = 'GP';
+                    ToolTip = 'Specifies whether GP validation errors should fail the migration. Only applies when automatic validation is enabled.';
+
+                    trigger OnValidate()
+                    begin
+                        GPAutoValidation := GPValidationErrorsShouldFailMigration;
+                        UpdateValidatorConfig();
                     end;
                 }
             }
@@ -77,12 +91,27 @@ page 40043 "GP Upgrade Settings"
         MigrationValidationRegistry: Record "Migration Validator Registry";
         GPMigrtionValidator: Codeunit "GP Migration Validator";
     begin
-        if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then
+        if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then begin
             GPAutoValidation := MigrationValidationRegistry.Automatic;
+            GPValidationErrorsShouldFailMigration := MigrationValidationRegistry."Errors should fail migration";
+        end;
 
         Rec.GetonInsertGPUpgradeSettings(Rec);
     end;
 
+    local procedure UpdateValidatorConfig()
+    var
+        MigrationValidationRegistry: Record "Migration Validator Registry";
+        GPMigrtionValidator: Codeunit "GP Migration Validator";
+    begin
+        if MigrationValidationRegistry.Get(GPMigrtionValidator.GetValidatorCode()) then begin
+            MigrationValidationRegistry.Validate(Automatic, GPAutoValidation);
+            MigrationValidationRegistry.Validate("Errors should fail migration", GPValidationErrorsShouldFailMigration);
+            MigrationValidationRegistry.Modify(true);
+        end;
+    end;
+
     var
         GPAutoValidation: Boolean;
+        GPValidationErrorsShouldFailMigration: Boolean;
 }

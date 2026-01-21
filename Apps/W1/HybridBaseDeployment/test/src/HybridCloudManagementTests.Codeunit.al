@@ -9,6 +9,8 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Initialized: Boolean;
         ExtensionRefreshFailureErr: Label 'Some extensions could not be updated and may need to be reinstalled to refresh their data.';
         ExtensionRefreshUnexpectedFailureErr: Label 'Failed to update extensions. You may need to verify and reinstall any missing extensions if needed.';
+        CustomerId1Tok: Label 'TEST-1', Locked = true;
+        CustomerId2Tok: Label 'TEST-2', Locked = true;
 
     local procedure Initialize()
     var
@@ -756,18 +758,29 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         // [WHEN] All the customers were created and correct
         InitMigrationValidationTest_CustomerTest1();
         InitMigrationValidationTest_CustomerTest2();
+
+        // [THEN] No validation progress should be recorded for either Customers.
+        // Note: The source table will normally be the staging table, but for testing the Customer table is sufficient
+        Assert.IsFalse(CustomerHasNotBeenValidated(CustomerId1Tok), 'Customer 1 should not have validation progress recorded.');
+        Assert.IsFalse(CustomerHasNotBeenValidated(CustomerId2Tok), 'Customer 2 should not have validation progress recorded.');
+
         HybridCloudManagement.StartMigrationValidationImp(DataCreationFailed);
 
         // [THEN] The migration will be successful, and there won't be any validation error entries
         Assert.IsFalse(DataCreationFailed, 'The migration should be in a failed state.');
         Assert.RecordCount(MigrationValidationError, 0);
 
+        // [THEN] Validation progress will be recorded for both Customers.
+        // Note: The source table will normally be the staging table, but for testing the Customer table is sufficient
+        Assert.IsTrue(CustomerHasNotBeenValidated(CustomerId1Tok), 'Customer 1 should have validation progress recorded.');
+        Assert.IsTrue(CustomerHasNotBeenValidated(CustomerId2Tok), 'Customer 2 should have validation progress recorded.');
+
         // Reset
         DataCreationFailed := false;
         MigrationValidation.DeleteMigrationValidationEntriesForCompany();
 
         // [WHEN] Some values are unexpected
-        Customer.GET('TEST-1');
+        Customer.GET(CustomerId1Tok);
         Customer.Name := 'Wrong name';
         Customer."Name 2" := 'Wrong name 2';
         Customer.Modify();
@@ -796,14 +809,26 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         MigrationValidation.DeleteMigrationValidationEntriesForCompany();
 
         // [WHEN] Some values are unexpected, but nothing considered major
-        Customer.GET('TEST-1');
+        Customer.GET(CustomerId1Tok);
         Customer.Name := 'Test 1'; // Back to expected value
         Customer."Name 2" := 'Wrong name 2';
         Customer.Modify();
 
+        // [THEN] The migration should NOT be in a failed state
         HybridCloudManagement.StartMigrationValidationImp(DataCreationFailed);
         Assert.RecordCount(MigrationValidationError, 1);
         Assert.IsFalse(DataCreationFailed, 'The migration should NOT be in a failed state.');
+    end;
+
+    local procedure CustomerHasNotBeenValidated(CustomerNo: Code[20]): Boolean
+    var
+        Customer: Record Customer;
+        MigrationValidation: Codeunit "Migration Validation";
+        MockMigrationValidator: Codeunit "Mock Migration Validator";
+    begin
+        // The source table will normally be the staging table, but for testing the Customer table is sufficient
+        if Customer.Get(CustomerNo) then
+            exit(MigrationValidation.IsSourceRowValidated(MockMigrationValidator.GetValidatorCode(), Customer));
     end;
 
     local procedure InitMigrationValidationTests()
@@ -814,13 +839,13 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         HybridCompany: Record "Hybrid Company";
         HybridCompanyStatus: Record "Hybrid Company Status";
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        DummyMigrationValidator: Codeunit "Dummy Migration Validator";
+        MockMigrationValidator: Codeunit "Mock Migration Validator";
         ValidatorCode: Code[20];
         MigrationType: Text[250];
         ValidatorCodeunitId: Integer;
     begin
-        ValidatorCode := DummyMigrationValidator.GetValidatorCode();
-        ValidatorCodeunitId := Codeunit::"Dummy Migration Validator";
+        ValidatorCode := MockMigrationValidator.GetValidatorCode();
+        ValidatorCodeunitId := Codeunit::"Mock Migration Validator";
 
         if not IntelligentCloudSetup.Get() then begin
             IntelligentCloudSetup."Product ID" := GetDefaultTestMigrationType();
@@ -863,15 +888,15 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         DataMigrationStatus.Status := DataMigrationStatus.Status::"In Progress";
         DataMigrationStatus.Insert(true);
 
-        DummyMigrationValidator.OnPrepareMigrationValidation(MigrationType);
+        MockMigrationValidator.OnPrepareMigrationValidation(MigrationType);
     end;
 
     local procedure InitMigrationValidationTest_CustomerTest1()
     var
         Customer: Record Customer;
     begin
-        if not Customer.Get('TEST-1') then begin
-            Customer."No." := 'TEST-1';
+        if not Customer.Get(CustomerId1Tok) then begin
+            Customer."No." := CustomerId1Tok;
             Customer.Name := 'Test 1';
             Customer."Name 2" := 'Test name 2';
             Customer.Insert();
@@ -882,8 +907,8 @@ codeunit 139656 "Hybrid Cloud Management Tests"
     var
         Customer: Record Customer;
     begin
-        if not Customer.Get('TEST-2') then begin
-            Customer."No." := 'TEST-2';
+        if not Customer.Get(CustomerId2Tok) then begin
+            Customer."No." := CustomerId2Tok;
             Customer.Name := 'Test 2';
             Customer."Name 2" := 'Test name 2';
             Customer.Insert();
