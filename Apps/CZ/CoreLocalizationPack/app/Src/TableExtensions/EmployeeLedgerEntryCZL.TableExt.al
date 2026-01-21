@@ -5,8 +5,8 @@
 namespace Microsoft.HumanResources.Payables;
 
 using Microsoft.Bank.Setup;
-using Microsoft.HumanResources.Employee;
 using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.HumanResources.Employee;
 
 tableextension 11790 "Employee Ledger Entry CZL" extends "Employee Ledger Entry"
 {

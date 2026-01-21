@@ -1,15 +1,15 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Integration;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Foundation.Company;
-using Microsoft.Finance.GeneralLedger.Setup;
-using System.Email;
-using Microsoft.Purchases.Remittance;
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Purchases.Document;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Remittance;
+using Microsoft.Purchases.Vendor;
+using System.Email;
+using System.Integration;
 
 codeunit 4022 "GP Vendor Migrator"
 {

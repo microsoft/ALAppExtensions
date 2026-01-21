@@ -6,8 +6,8 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoTool;
-using Microsoft.Finance.VAT.Reporting;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Enums;
 
 codeunit 31282 "Create VAT Statement CZ"

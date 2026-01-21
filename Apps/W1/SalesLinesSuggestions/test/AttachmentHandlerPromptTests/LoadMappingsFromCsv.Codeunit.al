@@ -1,7 +1,8 @@
 namespace Microsoft.Sales.Document.Test;
-using System.TestTools.AITestToolkit;
+
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Document.Attachment;
+using System.TestTools.AITestToolkit;
 using System.Utilities;
 
 codeunit 133521 "Load Mappings from csv"

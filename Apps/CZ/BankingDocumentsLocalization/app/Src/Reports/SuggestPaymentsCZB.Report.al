@@ -473,19 +473,8 @@ report 31280 "Suggest Payments CZB"
                 if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Currency Code" then
                     PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
         end;
+        PaymentOrderLineCZB.SetUsePaymentDiscount(UsePaymentDisc);
         PaymentOrderLineCZB.Validate("Applies-to C/V/E Entry No.", CustLedgerEntry."Entry No.");
-        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" and
-           (PaymentOrderHeaderCZB."Document Date" <= CustLedgerEntry."Pmt. Discount Date")
-        then begin
-            PaymentOrderLineCZB."Pmt. Discount Possible" := false;
-            PaymentOrderLineCZB."Pmt. Discount Date" := 0D;
-            PaymentOrderLineCZB."Amount (Paym. Order Currency)" += PaymentOrderLineCZB."Remaining Pmt. Disc. Possible";
-            PaymentOrderLineCZB."Remaining Pmt. Disc. Possible" := 0;
-            PaymentOrderLineCZB.Validate("Amount (Paym. Order Currency)");
-            PaymentOrderLineCZB."Original Amount" := PaymentOrderLineCZB.Amount;
-            PaymentOrderLineCZB."Original Amount (LCY)" := PaymentOrderLineCZB."Amount (LCY)";
-            PaymentOrderLineCZB."Orig. Amount(Pay.Order Curr.)" := PaymentOrderLineCZB."Amount (Paym. Order Currency)";
-        end;
         AddPaymentLine();
     end;
 
@@ -507,20 +496,8 @@ report 31280 "Suggest Payments CZB"
                 if PaymentOrderLineCZB."Payment Order Currency Code" <> PaymentOrderHeaderCZB."Currency Code" then
                     PaymentOrderLineCZB.Validate("Payment Order Currency Code", PaymentOrderHeaderCZB."Currency Code");
         end;
+        PaymentOrderLineCZB.SetUsePaymentDiscount(UsePaymentDisc);
         PaymentOrderLineCZB.Validate("Applies-to C/V/E Entry No.", VendorLedgerEntry."Entry No.");
-        if not UsePaymentDisc and PaymentOrderLineCZB."Pmt. Discount Possible" and
-           (PaymentOrderHeaderCZB."Document Date" <= VendorLedgerEntry."Pmt. Discount Date")
-        then begin
-            PaymentOrderLineCZB."Pmt. Discount Possible" := false;
-            PaymentOrderLineCZB."Pmt. Discount Date" := 0D;
-            PaymentOrderLineCZB."Amount (Paym. Order Currency)" -= PaymentOrderLineCZB."Remaining Pmt. Disc. Possible";
-            PaymentOrderLineCZB."Remaining Pmt. Disc. Possible" := 0;
-            PaymentOrderLineCZB.Validate("Amount (Paym. Order Currency)");
-            PaymentOrderLineCZB."Original Amount" := PaymentOrderLineCZB.Amount;
-            PaymentOrderLineCZB."Original Amount (LCY)" := PaymentOrderLineCZB."Amount (LCY)";
-            PaymentOrderLineCZB."Orig. Amount(Pay.Order Curr.)" := PaymentOrderLineCZB."Amount (Paym. Order Currency)";
-            PaymentOrderLineCZB."Due Date" := VendorLedgerEntry."Due Date";
-        end;
         AddPaymentLine();
     end;
 

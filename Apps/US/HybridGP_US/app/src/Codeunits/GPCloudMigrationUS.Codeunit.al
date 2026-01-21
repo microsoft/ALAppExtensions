@@ -1,7 +1,7 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Integration;
 using Microsoft.Purchases.Vendor;
+using System.Integration;
 
 codeunit 42004 "GP Cloud Migration US"
 {

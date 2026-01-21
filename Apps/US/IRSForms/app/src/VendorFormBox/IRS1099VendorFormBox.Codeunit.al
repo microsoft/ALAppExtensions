@@ -40,6 +40,9 @@ codeunit 10037 "IRS 1099 Vendor Form Box"
     var
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
     begin
+        Clear(IRSReportingPeriodNo);
+        Clear(IRS1099FormNo);
+        Clear(IRS1099FormBox);
         if not GetVendorIRS1099FormBoxSetupAsOfWorkdate(IRS1099VendorFormBoxSetup, VendNo) then
             exit;
         IRSReportingPeriodNo := IRS1099VendorFormBoxSetup."Period No.";

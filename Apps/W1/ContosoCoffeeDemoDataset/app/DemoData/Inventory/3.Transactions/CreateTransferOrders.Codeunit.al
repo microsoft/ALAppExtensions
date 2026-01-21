@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Transfer;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Transfer;
 
 codeunit 5381 "Create Transfer Orders"
 {

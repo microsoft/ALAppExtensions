@@ -1,8 +1,8 @@
 namespace Microsoft.Bank.Reconciliation;
 
 using Microsoft.Bank.BankAccount;
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
 
 table 7251 "Bank Acc. Rec. AI Prop. Buf."
 {

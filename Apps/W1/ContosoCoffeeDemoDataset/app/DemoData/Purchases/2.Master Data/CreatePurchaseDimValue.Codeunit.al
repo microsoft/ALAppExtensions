@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
-using Microsoft.Purchases.Vendor;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.Dimension;
+using Microsoft.Purchases.Vendor;
 
 codeunit 5663 "Create Purchase Dim. Value"
 {

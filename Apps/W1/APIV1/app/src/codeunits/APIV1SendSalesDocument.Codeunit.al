@@ -2,12 +2,12 @@ namespace Microsoft.API.V1;
 
 using Microsoft.Foundation.Reporting;
 using Microsoft.Sales.Customer;
-using Microsoft.Sales.History;
 using Microsoft.Sales.Document;
-using System.Utilities;
-using System.Email;
+using Microsoft.Sales.History;
 using Microsoft.Utilities;
+using System.Email;
 using System.Threading;
+using System.Utilities;
 
 codeunit 20038 "APIV1 - Send Sales Document"
 {

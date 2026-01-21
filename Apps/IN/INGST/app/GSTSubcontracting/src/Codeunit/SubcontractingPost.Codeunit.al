@@ -13,13 +13,13 @@ using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Posting;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Manufacturing.Document;
-using Microsoft.Warehouse.Request;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Warehouse.Journal;
 using Microsoft.Warehouse.Ledger;
+using Microsoft.Warehouse.Request;
 
 codeunit 18466 "Subcontracting Post"
 {

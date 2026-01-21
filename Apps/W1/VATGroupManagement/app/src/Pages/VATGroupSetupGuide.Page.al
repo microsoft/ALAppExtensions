@@ -7,12 +7,12 @@ namespace Microsoft.Finance.VAT.Group;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Reporting;
-using System.Environment.Configuration;
 using System.Environment;
+using System.Environment.Configuration;
 using System.Security.Authentication;
+using System.Telemetry;
 using System.Threading;
 using System.Utilities;
-using System.Telemetry;
 
 page 4705 "VAT Group Setup Guide"
 {

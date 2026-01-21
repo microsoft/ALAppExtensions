@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.MDM;
 
-using System.Threading;
 using Microsoft.Integration.SyncEngine;
+using System.Threading;
 using System.Utilities;
 
 codeunit 7231 "Integration Master Data Synch."

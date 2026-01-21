@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
+using Microsoft.DemoTool;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.Enums;
-using Microsoft.DemoTool;
 
 codeunit 5133 "Contoso GL Account"
 {

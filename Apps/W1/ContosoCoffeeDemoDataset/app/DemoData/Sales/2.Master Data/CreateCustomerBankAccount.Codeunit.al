@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5325 "Create Customer Bank Account"
 {

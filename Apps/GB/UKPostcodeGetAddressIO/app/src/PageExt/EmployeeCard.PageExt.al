@@ -5,8 +5,8 @@
 #if CLEAN27
 namespace app.app;
 
-using Microsoft.HumanResources.Employee;
 using Microsoft.Foundation.Address;
+using Microsoft.HumanResources.Employee;
 
 pageextension 50004 "Employee Card" extends "Employee Card"
 {

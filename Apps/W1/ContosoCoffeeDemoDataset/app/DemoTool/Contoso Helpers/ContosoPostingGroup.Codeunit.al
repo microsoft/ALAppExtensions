@@ -4,14 +4,14 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Finance.VAT.Setup;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Inventory.Item;
-using Microsoft.Finance.SalesTax;
 using Microsoft.Bank.BankAccount;
 using Microsoft.DemoTool;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 codeunit 5132 "Contoso Posting Group"
 {

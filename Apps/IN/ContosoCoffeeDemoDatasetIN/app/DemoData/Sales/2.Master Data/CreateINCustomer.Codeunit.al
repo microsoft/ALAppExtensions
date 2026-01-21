@@ -5,14 +5,14 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.DemoTool.Helpers;
+using Microsoft.DemoData.CRM;
 using Microsoft.DemoData.Finance;
-using Microsoft.Sales.Customer;
-using Microsoft.DemoTool;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Inventory;
-using Microsoft.DemoData.CRM;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GST.Base;
+using Microsoft.Sales.Customer;
 
 codeunit 19015 "Create IN Customer"
 {

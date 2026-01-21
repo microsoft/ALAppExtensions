@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
-using Microsoft.eServices.EDocument;
 using Microsoft.CRM.Team;
+using Microsoft.eServices.EDocument;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
@@ -455,7 +455,7 @@ codeunit 13917 "Export ZUGFeRD Document"
 
     local procedure InsertApplicableHeaderTradeDelivery(var RootXMLNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header")
     var
-        DeliveryElement, ShipToPartyElement, PostalAddressElement : XmlElement;
+        DeliveryElement, ShipToPartyElement, PostalAddressElement, ActualDeliveryDateElement, OccurrenceDateTimeElement : XmlElement;
     begin
         DeliveryElement := XmlElement.Create('ApplicableHeaderTradeDelivery', XmlNamespaceRAM);
 
@@ -470,12 +470,19 @@ codeunit 13917 "Export ZUGFeRD Document"
 
         ShipToPartyElement.Add(PostalAddressElement);
         DeliveryElement.Add(ShipToPartyElement);
+
+        ActualDeliveryDateElement := XmlElement.Create('ActualDeliverySupplyChainEvent', XmlNamespaceRAM);
+        OccurrenceDateTimeElement := XmlElement.Create('OccurrenceDateTime', XmlNamespaceRAM);
+        OccurrenceDateTimeElement.Add(XmlElement.Create('DateTimeString', XmlNamespaceUDT, XmlAttribute.Create('format', '102'), FormatDate(SalesInvoiceHeader."Shipment Date")));
+        ActualDeliveryDateElement.Add(OccurrenceDateTimeElement);
+        DeliveryElement.Add(ActualDeliveryDateElement);
+
         RootXMLNode.Add(DeliveryElement);
     end;
 
     local procedure InsertApplicableHeaderTradeDelivery(var RootXMLNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
     var
-        DeliveryElement, ShipToPartyElement, PostalAddressElement : XmlElement;
+        DeliveryElement, ShipToPartyElement, PostalAddressElement, ActualDeliveryDateElement, OccurrenceDateTimeElement : XmlElement;
     begin
         DeliveryElement := XmlElement.Create('ApplicableHeaderTradeDelivery', XmlNamespaceRAM);
 
@@ -490,6 +497,13 @@ codeunit 13917 "Export ZUGFeRD Document"
 
         ShipToPartyElement.Add(PostalAddressElement);
         DeliveryElement.Add(ShipToPartyElement);
+
+        ActualDeliveryDateElement := XmlElement.Create('ActualDeliverySupplyChainEvent', XmlNamespaceRAM);
+        OccurrenceDateTimeElement := XmlElement.Create('OccurrenceDateTime', XmlNamespaceRAM);
+        OccurrenceDateTimeElement.Add(XmlElement.Create('DateTimeString', XmlNamespaceUDT, XmlAttribute.Create('format', '102'), FormatDate(SalesCrMemoHeader."Shipment Date")));
+        ActualDeliveryDateElement.Add(OccurrenceDateTimeElement);
+        DeliveryElement.Add(ActualDeliveryDateElement);
+
         RootXMLNode.Add(DeliveryElement);
     end;
 

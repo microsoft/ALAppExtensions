@@ -4,17 +4,17 @@
 /// </summary>
 namespace Microsoft.Finance.VAT.Setup;
 
-using System.Environment.Configuration;
-using System.Upgrade;
-using Microsoft.Inventory.Item;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Navigate;
+using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Setup;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Setup;
+using System.Environment.Configuration;
+using System.Upgrade;
 
 codeunit 10553 "Feature - Reverse Charge VAT" implements "Feature Data Update"
 {

@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Common;
 
-using Microsoft.Sales.Setup;
-using Microsoft.Purchases.Setup;
-using Microsoft.Inventory.Setup;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Setup;
+using Microsoft.Purchases.Setup;
+using Microsoft.Sales.Setup;
 
 codeunit 5128 "Create Common No Series"
 {

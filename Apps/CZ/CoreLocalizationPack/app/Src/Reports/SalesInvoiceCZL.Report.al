@@ -27,8 +27,8 @@ using Microsoft.Utilities;
 using System.Email;
 using System.Globalization;
 using System.Security.User;
-using System.Utilities;
 using System.Text;
+using System.Utilities;
 
 report 31189 "Sales Invoice CZL"
 {

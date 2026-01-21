@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Setup;
 
-using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.VAT.Calculation;
@@ -207,6 +207,11 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
     procedure IsAdditionalCurrencyEnabledCZL(): Boolean
     begin
         exit((GetAdditionalCurrencyCodeCZL() <> '') and not IsManufacturingUsed());
+    end;
+
+    internal procedure IsFunctionalCurrencyEnabledCZL(): Boolean
+    begin
+        exit((GetAdditionalCurrencyCodeCZL() <> '') and "Functional Currency CZL");
     end;
 
     procedure GetAdditionalCurrencyFactorCZL(Date: Date): Decimal

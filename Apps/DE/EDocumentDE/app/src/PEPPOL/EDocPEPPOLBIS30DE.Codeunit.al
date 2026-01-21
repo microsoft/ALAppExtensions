@@ -1,15 +1,15 @@
 namespace Microsoft.eServices.EDocument.IO.Peppol;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.Formats;
+using Microsoft.Purchases.Document;
 using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
+using Microsoft.Sales.Peppol;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using System.Utilities;
-using Microsoft.Sales.Peppol;
-using Microsoft.eServices.EDocument.Formats;
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.Document;
 
 codeunit 11035 "EDoc PEPPOL BIS 3.0 DE" implements "E-Document"
 {

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.CRM.Task;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5553 "Create Activity Step"
 {

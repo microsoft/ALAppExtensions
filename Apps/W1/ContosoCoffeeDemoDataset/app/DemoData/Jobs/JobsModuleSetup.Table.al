@@ -5,13 +5,13 @@
 
 namespace Microsoft.DemoData.Jobs;
 
-using Microsoft.Sales.Customer;
-using Microsoft.Inventory.Item;
-using Microsoft.Projects.Resources.Resource;
-using Microsoft.Projects.Project.Job;
-using Microsoft.Inventory.Location;
 using Microsoft.DemoData.Common;
 using Microsoft.DemoData.Service;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Sales.Customer;
 
 table 4771 "Jobs Module Setup"
 {

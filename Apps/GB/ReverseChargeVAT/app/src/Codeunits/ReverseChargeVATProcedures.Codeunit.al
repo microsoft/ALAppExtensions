@@ -5,8 +5,8 @@
 namespace Microsoft.Finance.VAT.Setup;
 
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Sales.Setup;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.Setup;
 
 codeunit 10557 "Reverse Charge VAT Procedures"
 {

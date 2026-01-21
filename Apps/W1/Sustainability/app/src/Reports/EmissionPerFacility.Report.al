@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Reports;
 
+using Microsoft.Inventory.Location;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Setup;
-using Microsoft.Inventory.Location;
 
 report 6211 "Emission Per Facility"
 {

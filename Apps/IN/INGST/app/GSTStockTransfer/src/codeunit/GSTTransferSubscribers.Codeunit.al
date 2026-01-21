@@ -6,9 +6,9 @@ namespace Microsoft.Finance.GST.StockTransfer;
 
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxEngine.PostingHandler;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Inventory.Item;
-using Microsoft.Finance.TaxEngine.PostingHandler;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Transfer;
 

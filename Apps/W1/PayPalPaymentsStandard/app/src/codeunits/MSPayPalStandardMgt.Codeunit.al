@@ -7,10 +7,10 @@ using Microsoft.Foundation.Company;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Utilities;
-using System.Integration;
 using System.Environment;
 using System.Environment.Configuration;
 using System.Globalization;
+using System.Integration;
 using System.Reflection;
 using System.Telemetry;
 

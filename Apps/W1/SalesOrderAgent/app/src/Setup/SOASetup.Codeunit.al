@@ -753,7 +753,7 @@ codeunit 4400 "SOA Setup"
         SOAEditTok: Label 'SOA - EDIT', Locked = true, MaxLength = 20;
         SalesOrderAgentTok: Label 'Sales Order Agent', Locked = true;
         SalesOrderAgentInitialLbl: Label 'SO', MaxLength = 4;
-        SOASummaryLbl: Label 'Monitors incoming emails for sales inquiries, matches senders to customers, checks inventory, and creates quotes. When processing replies, the agent converts accepted quotes into orders. This agent uses generative AI—review its actions for accuracy.';
+        SOASummaryLbl: Label 'Monitors incoming emails for sales inquiries, matches senders to customers, checks inventory, and creates quotes. When processing replies, the agent converts accepted quotes into orders.';
         DelegateAdminErr: Label 'Delegated admin and helpdesk users are not allowed to update the agent.';
         SOAInterventionSuggestionSummaryLbl: Label 'I have updated the %1', Comment = '%1 = Sales Document Type';
         SOAInterventionSuggestionDescriptionLbl: Label 'Used to indicate that a user has done some manual updates to a sales %1 as part of reviewing it before sending it to a customer.', Comment = '%1 = Sales Document Type', Locked = true;

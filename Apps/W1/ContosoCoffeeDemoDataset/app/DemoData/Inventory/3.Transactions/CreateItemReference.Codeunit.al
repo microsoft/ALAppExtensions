@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
-using Microsoft.DemoData.Sales;
-using Microsoft.Inventory.Item.Catalog;
 using Microsoft.DemoData.Purchases;
+using Microsoft.DemoData.Sales;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Item.Catalog;
 
 codeunit 5664 "Create Item Reference"
 {

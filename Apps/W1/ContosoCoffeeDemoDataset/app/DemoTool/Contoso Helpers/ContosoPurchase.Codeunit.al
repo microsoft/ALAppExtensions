@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Purchases.Document;
 using Microsoft.Inventory.Item;
-using Microsoft.Purchases.Setup;
-using Microsoft.Projects.Resources.Resource;
 using Microsoft.Pricing.Calculation;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Setup;
 
 codeunit 4781 "Contoso Purchase"
 {

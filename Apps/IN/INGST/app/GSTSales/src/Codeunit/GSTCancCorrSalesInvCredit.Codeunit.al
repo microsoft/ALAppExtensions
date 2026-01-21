@@ -6,11 +6,11 @@ namespace Microsoft.Finance.GST.Sales;
 
 using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Pricing.PriceList;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
-using Microsoft.Utilities;
 using Microsoft.Sales.Pricing;
-using Microsoft.Pricing.PriceList;
+using Microsoft.Utilities;
 
 codeunit 18152 "GST Canc Corr Sales Inv Credit"
 {

@@ -7,8 +7,8 @@ namespace Microsoft.Finance.VAT.Group;
 using Microsoft.Finance.VAT.Reporting;
 using System.Azure.KeyVault;
 using System.Environment;
-using System.Security.Authentication;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Telemetry;
 
 codeunit 4700 "VAT Group Communication"

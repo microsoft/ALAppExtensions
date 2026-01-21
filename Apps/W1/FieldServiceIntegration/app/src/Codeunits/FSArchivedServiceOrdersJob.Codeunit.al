@@ -6,9 +6,9 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.SyncEngine;
+using Microsoft.Service.Archive;
 using Microsoft.Service.Document;
 using System.Threading;
-using Microsoft.Service.Archive;
 
 codeunit 6618 "FS Archived Service Orders Job"
 {

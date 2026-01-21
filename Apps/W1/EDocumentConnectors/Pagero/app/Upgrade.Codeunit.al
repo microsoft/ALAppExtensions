@@ -3,12 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
-using System.Upgrade;
 
 using Microsoft.eServices.EDocument;
 #if not CLEAN26
 using Microsoft.eServices.EDocument.Integration;
 #endif
+using System.Upgrade;
 
 #pragma warning disable AS0130
 #pragma warning disable PTE0025

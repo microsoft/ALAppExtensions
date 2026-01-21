@@ -2,8 +2,8 @@ namespace Microsoft.Finance.Analysis.StatisticalAccount;
 
 using Microsoft.Finance.Analysis;
 using Microsoft.Finance.Dimension;
-using Microsoft.Foundation.Period;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Period;
 
 codeunit 2621 "Stat. Acc. Analysis View Mgt."
 {

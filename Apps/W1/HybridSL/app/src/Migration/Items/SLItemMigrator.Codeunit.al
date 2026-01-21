@@ -5,11 +5,11 @@
 
 namespace Microsoft.DataMigration.SL;
 
-using System.Integration;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Tracking;
-using Microsoft.Finance.GeneralLedger.Setup;
+using System.Integration;
 
 codeunit 47026 "SL Item Migrator"
 {

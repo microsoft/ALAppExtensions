@@ -1,8 +1,8 @@
 namespace Microsoft.CRM.EmailLoggin;
 
-using Microsoft.CRM.Segment;
-using Microsoft.CRM.Interaction;
 using Microsoft.CRM.Contact;
+using Microsoft.CRM.Interaction;
+using Microsoft.CRM.Segment;
 using Microsoft.CRM.Team;
 using Microsoft.Foundation.NoSeries;
 

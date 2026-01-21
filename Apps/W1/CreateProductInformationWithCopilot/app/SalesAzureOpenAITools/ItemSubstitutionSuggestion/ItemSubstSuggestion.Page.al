@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Item.Substitution;
 
-using System.Telemetry;
 using Microsoft.Inventory.Item;
+using System.Telemetry;
 
 page 7410 "Item Subst. Suggestion"
 {

@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Journal;
 
 codeunit 5665 "Create Bank Jnl. Batches"
 {

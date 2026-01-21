@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Service.Setup;
-using Microsoft.Service.Maintenance;
-using Microsoft.Service.Item;
 using Microsoft.Foundation.Calendar;
 using Microsoft.Service.Contract;
-using Microsoft.Service.Loaner;
 using Microsoft.Service.Document;
+using Microsoft.Service.Item;
+using Microsoft.Service.Loaner;
+using Microsoft.Service.Maintenance;
+using Microsoft.Service.Setup;
 
 codeunit 5125 "Contoso Service"
 {

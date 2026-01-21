@@ -7,7 +7,6 @@ namespace Microsoft.DemoData.Analytics;
 
 using Microsoft.DemoData.Bank;
 using Microsoft.DemoData.CRM;
-using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Sales;

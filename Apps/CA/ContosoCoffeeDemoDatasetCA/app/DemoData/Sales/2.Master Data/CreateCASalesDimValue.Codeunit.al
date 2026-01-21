@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Sales;
 
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.Dimension;
 using Microsoft.Sales.Customer;
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Finance;
 
 codeunit 27082 "Create CA Sales Dim. Value"
 {

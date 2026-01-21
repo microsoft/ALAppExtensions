@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
+using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Company;
+using System;
 using System.IO;
 using System.Xml;
-using Microsoft.Finance.VAT.Reporting;
-using System;
 
 codeunit 10586 "Submit VAT Declaration Req."
 {

@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Foundation;
 
+using Microsoft.DemoData.FixedAsset;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Foundation.NoSeries;
-using Microsoft.DemoData.FixedAsset;
 
 codeunit 12201 "Create No. Series IT"
 {

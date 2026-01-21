@@ -1,12 +1,12 @@
 namespace Microsoft.Utility.ImageAnalysis;
 
-using System.AI;
-using System.Environment.Configuration;
-using System.Environment;
 using Microsoft.Utilities;
-using System.Security.User;
+using System.AI;
+using System.Environment;
+using System.Environment.Configuration;
 using System.Globalization;
 using System.Media;
+using System.Security.User;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.

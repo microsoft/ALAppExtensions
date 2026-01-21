@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
 using Microsoft.CRM.Contact;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 codeunit 11410 "Create Word Template BE"
 {

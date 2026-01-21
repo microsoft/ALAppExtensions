@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Enums;
-using Microsoft.DemoTool.Helpers;
 
 codeunit 11120 "Create DE VAT Statement"
 {

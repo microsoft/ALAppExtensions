@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
-using Microsoft.Sales.History;
 using Microsoft.Inventory.Item;
+using Microsoft.Sales.History;
 
 codeunit 7286 SalesInvoiceLookup implements DocumentLookupSubType
 {

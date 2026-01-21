@@ -4,14 +4,14 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSBase;
 
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.TaxBase;
-using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
-using Microsoft.Inventory.Location;
-using Microsoft.Foundation.Company;
-using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 
 codeunit 18688 "TDS Validations"
 {

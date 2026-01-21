@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Reports;
 
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Setup;
-using Microsoft.Sustainability.Account;
 
 report 6210 "Emission By Category"
 {

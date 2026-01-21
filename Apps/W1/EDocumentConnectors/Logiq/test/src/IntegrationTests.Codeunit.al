@@ -4,18 +4,18 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
-using System.Utilities;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.Integration;
-using Microsoft.Foundation.Company;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Purchases.Document;
-using System.Threading;
 using Microsoft.eServices.EDocument.Service;
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Threading;
+using System.Utilities;
 
 codeunit 139780 "Integration Tests"
 {

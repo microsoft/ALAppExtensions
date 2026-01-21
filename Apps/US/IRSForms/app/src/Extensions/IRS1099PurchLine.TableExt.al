@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using Microsoft.Purchases.Document;
 using Microsoft.Finance.Currency;
+using Microsoft.Purchases.Document;
 
 tableextension 10055 "IRS 1099 Purch. Line" extends "Purchase Line"
 {

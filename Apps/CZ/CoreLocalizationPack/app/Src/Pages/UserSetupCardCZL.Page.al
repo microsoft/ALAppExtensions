@@ -130,6 +130,30 @@ page 31198 "User Setup Card CZL"
 
     actions
     {
+        area(Processing)
+        {
+            group(Functions)
+            {
+                Caption = 'Functions';
+
+                action("Copy User Setup CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Copy User Setup';
+                    Ellipsis = true;
+                    Image = Copy;
+                    ToolTip = 'Allows to copy user setup from user to another user.';
+
+                    trigger OnAction()
+                    var
+                        CopyUserSetupCZL: Report "Copy User Setup CZL";
+                    begin
+                        CopyUserSetupCZL.SetFromUserId(Rec."User ID");
+                        CopyUserSetupCZL.RunModal();
+                    end;
+                }
+            }
+        }
         area(navigation)
         {
             group("U&ser Check")
@@ -183,6 +207,9 @@ page 31198 "User Setup Card CZL"
         }
         area(Promoted)
         {
+            actionref(CopyUserSetup_Promoted; "Copy User Setup CZL")
+            {
+            }
             actionref(Lines_Promoted; Lines)
             {
             }

@@ -6,9 +6,9 @@
 namespace Microsoft.DemoData.Purchases;
 
 using Microsoft.CRM.Contact;
-using Microsoft.DemoTool;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool;
 using Microsoft.Purchases.Vendor;
 
 codeunit 31298 "Create Vendor CZ"

@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Purchases;
 
+using Microsoft.DemoData.Finance;
 using Microsoft.Finance.Dimension;
 using Microsoft.Purchases.Vendor;
-using Microsoft.DemoData.Finance;
 
 codeunit 11381 "Create Purch. Dim. Value BE"
 {

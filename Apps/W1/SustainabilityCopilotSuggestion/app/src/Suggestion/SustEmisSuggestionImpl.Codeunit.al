@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.Copilot;
 
-using System.AI;
 using Microsoft.Sustainability.Journal;
+using System.AI;
+using System.Azure.KeyVault;
 using System.Environment;
 using System.Telemetry;
-using System.Azure.KeyVault;
 
 codeunit 6290 "Sust. Emis. Suggestion Impl."
 {

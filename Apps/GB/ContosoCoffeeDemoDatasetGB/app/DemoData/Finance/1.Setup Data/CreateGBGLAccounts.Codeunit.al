@@ -6,15 +6,15 @@
 namespace Microsoft.DemoData.Finance;
 
 using Microsoft.DemoData.Common;
-using Microsoft.DemoData.Service;
-using Microsoft.DemoData.Manufacturing;
 using Microsoft.DemoData.FixedAsset;
 using Microsoft.DemoData.HumanResources;
 using Microsoft.DemoData.Jobs;
+using Microsoft.DemoData.Manufacturing;
+using Microsoft.DemoData.Service;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Foundation.Enums;
 using Microsoft.Inventory.Setup;
-using Microsoft.DemoTool.Helpers;
 
 codeunit 10506 "Create GB GL Accounts"
 {

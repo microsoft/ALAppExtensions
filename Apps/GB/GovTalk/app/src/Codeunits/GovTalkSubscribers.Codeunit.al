@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
-using Microsoft.Finance.VAT.Reporting;
-using System.Utilities;
-using Microsoft.Utilities;
 using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Utilities;
+using System.Utilities;
 
 codeunit 10503 "GovTalk Subscribers"
 {

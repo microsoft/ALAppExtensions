@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
 
-using Microsoft.Finance.GeneralLedger.Reversal;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Finance.GeneralLedger.Ledger;
-using System.Utilities;
-using Microsoft.Finance.TDS.TDSOnPayments;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Reversal;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Finance.TDS.TDSOnPayments;
+using System.Utilities;
 
 codeunit 18746 "TDS Pay"
 {

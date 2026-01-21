@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
-using System.Telemetry;
 using Microsoft.Sales.Document.Attachment;
+using System.Telemetry;
 
 page 7275 "Sales Line AI Suggestions"
 {

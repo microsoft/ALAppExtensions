@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
-using System.Utilities;
 using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
-using Microsoft.eServices.EDocument.Integration.Send;
 using Microsoft.eServices.EDocument.Integration.Receive;
+using Microsoft.eServices.EDocument.Integration.Send;
+using System.Utilities;
 
 codeunit 6362 "Pagero Integration Impl." implements IDocumentSender, IDocumentResponseHandler, IDocumentReceiver, ISentDocumentActions
 {

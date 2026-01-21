@@ -1,7 +1,7 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
 
-using System.IO;
 using Microsoft.Bank.Setup;
+using System.IO;
 
 table 1452 "MS - Yodlee Data Exchange Def"
 {

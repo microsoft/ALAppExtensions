@@ -5,10 +5,10 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Azure.Identity;
-using System.Reflection;
-using System.Security.Authentication;
 using System.Azure.KeyVault;
 using System.Environment;
+using System.Reflection;
+using System.Security.Authentication;
 
 codeunit 6442 "SignUp Authentication"
 {

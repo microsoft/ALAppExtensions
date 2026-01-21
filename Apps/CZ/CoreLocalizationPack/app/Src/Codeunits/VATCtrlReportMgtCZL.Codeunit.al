@@ -68,7 +68,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if VATCtrlReportHeaderCZL."No." = '' then
             exit;
 
-        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup.GetRecordOnce();
         StatutoryReportingSetupCZL.Get();
         if ProcessType = ProcessType::Rewrite then
             DeleteVATCtrlReportLines(VATCtrlReportHeaderCZL, StartDate, EndDate);
@@ -320,9 +320,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
     var
         Base, Amount : Decimal;
     begin
-        if GeneralLedgerSetup."Functional Currency CZL" and
-          (GeneralLedgerSetup."Additional Reporting Currency" <> '')
-        then begin
+        if GeneralLedgerSetup.IsFunctionalCurrencyEnabledCZL() then begin
             Base := TempVATEntry."Additional-Currency Base";
             Amount := TempVATEntry."Additional-Currency Amount";
         end else begin
@@ -811,7 +809,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if VATCtrlReportHeaderCZL."No." = '' then
             exit;
 
-        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup.GetRecordOnce();
 
         TempVATCtrlReportBufferCZL.Reset();
         TempVATCtrlReportBufferCZL.DeleteAll();
@@ -1052,7 +1050,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if VATCtrlReportHeaderCZL."No." = '' then
             exit;
 
-        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup.GetRecordOnce();
 
         Temp1VATCtrlReportBufferCZL.Reset();
         Temp1VATCtrlReportBufferCZL.DeleteAll();
@@ -1312,8 +1310,8 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                 TempVATEntry.Init();
                 TempVATEntry := VATEntry;
                 if TempVATEntry."Original VAT Entry No. CZL" <> 0 then begin
-                    TempVATEntry.Base := TempVATEntry."Original VAT Base CZL";
-                    TempVATEntry.Amount := TempVATEntry."Original VAT Amount CZL";
+                    TempVATEntry.Base := TempVATEntry.GetOriginalVATBaseCZL();
+                    TempVATEntry.Amount := TempVATEntry.GetOriginalVATAmountCZL();
                 end;
                 OnBeforeInsertTempVATEntryForForPeriod(TempVATEntry);
                 TempVATEntry.Insert();

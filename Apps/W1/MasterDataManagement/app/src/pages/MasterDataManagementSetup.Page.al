@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.MDM;
 
 using Microsoft.Integration.SyncEngine;
-using System.Threading;
 using System.Environment.Configuration;
 using System.Telemetry;
+using System.Threading;
 using System.Utilities;
 
 page 7230 "Master Data Management Setup"

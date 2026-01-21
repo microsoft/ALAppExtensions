@@ -4,10 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Environment.Configuration;
 using Microsoft.Finance.VAT.Ledger;
-using System.Utilities;
 using Microsoft.Utilities;
+using System.Environment.Configuration;
+using System.Utilities;
 
 tableextension 31060 "VAT Report Header CZL" extends "VAT Report Header"
 {

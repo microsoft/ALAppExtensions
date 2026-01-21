@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Item.Attribute;
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Attribute;
 
 codeunit 5393 "Create Item Attribute"
 {

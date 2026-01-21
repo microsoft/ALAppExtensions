@@ -2,9 +2,9 @@ namespace Microsoft.Inventory.InventoryForecast;
 
 using System.AI;
 using System.Environment;
+using System.Privacy;
 using System.Security.Encryption;
 using System.Security.User;
-using System.Privacy;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.

@@ -4,14 +4,14 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
-using System.Email;
-using System.Utilities;
 using Microsoft.EServices.EDocument;
 using Microsoft.eServices.EDocument.Integration.Interfaces;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using Microsoft.eServices.EDocument.Integration.Send;
-using System.Environment.Configuration;
 using Microsoft.eServices.EDocument.Processing.Interfaces;
+using System.Email;
+using System.Environment.Configuration;
+using System.Utilities;
 
 codeunit 6386 "Outlook Integration Impl." implements IDocumentReceiver, IDocumentSender, IReceivedDocumentMarker
 {

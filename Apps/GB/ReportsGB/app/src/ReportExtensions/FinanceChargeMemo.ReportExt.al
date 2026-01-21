@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.FinanceCharge;
 
-using Microsoft.Finance.VAT.Setup;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Sales.Setup;
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Setup;
 
 reportextension 10585 "Finance Charge Memo" extends "Finance Charge Memo"
 {

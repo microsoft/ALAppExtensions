@@ -15,6 +15,8 @@ codeunit 11741 "VAT Entry Handler CZL"
             exit;
         Rec."Original VAT Base CZL" := Rec.CalcOriginalVATBaseCZL();
         Rec."Original VAT Amount CZL" := Rec.CalcOriginalVATAmountCZL();
+        Rec."Original VAT Base ACY CZL" := Rec.CalcOriginalVATBaseACYCZL();
+        Rec."Original VAT Amount ACY CZL" := Rec.CalcOriginalVATAmountACYCZL();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"VAT Entry", 'OnBeforeValidateEvent', 'EU 3-Party Trade', false, false)]

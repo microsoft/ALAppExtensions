@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Finance;
 using Microsoft.Bank.BankAccount;
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 13711 "Create Bank Acc Posting Grp DK"
 {

@@ -1,10 +1,10 @@
 namespace Microsoft.Sustainability.Posting;
 
+using Microsoft.Finance.Dimension;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Calculation;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Setup;
-using Microsoft.Finance.Dimension;
-using Microsoft.Sustainability.Calculation;
 using System.Utilities;
 
 codeunit 6216 "Sustainability Jnl.-Check"

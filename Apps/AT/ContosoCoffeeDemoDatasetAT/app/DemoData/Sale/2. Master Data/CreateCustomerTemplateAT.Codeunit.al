@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoTool;
+using Microsoft.Sales.Customer;
 
 codeunit 11176 "Create Customer Template AT"
 {

@@ -5,8 +5,8 @@
 namespace Microsoft.TestLibraries.DynamicsFieldService;
 
 using Microsoft.Integration.DynamicsFieldService;
-using Microsoft.Service.Document;
 using Microsoft.Service.Archive;
+using Microsoft.Service.Document;
 
 codeunit 139205 "FS Integration Test Library"
 {

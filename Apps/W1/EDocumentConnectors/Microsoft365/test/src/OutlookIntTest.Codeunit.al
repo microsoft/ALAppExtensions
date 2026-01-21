@@ -1,9 +1,9 @@
 namespace Microsoft.EServices.EDocumentConnector.Microsoft365;
 
 using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.Integration;
 using Microsoft.eServices.EDocument.Integration.Receive;
 using System.Utilities;
-using Microsoft.eServices.EDocument.Integration;
 
 codeunit 148198 "Outlook Int. Test"
 {

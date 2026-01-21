@@ -118,19 +118,20 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
 
     local procedure CreditDebitSumsToZero(var GLEntry: Record "G/L Entry"): Boolean
     var
+        GLEntry2: Record "G/L Entry";
         Balance: Decimal;
     begin
-        GLEntry.SetLoadFields("Amount to Review", "Debit Amount", "Credit Amount");
-        if GLEntry.IsEmpty() then
+        GLEntry2.Copy(GLEntry);
+        GLEntry2.SetLoadFields("Amount to Review", "Debit Amount", "Credit Amount");
+        if GLEntry2.IsEmpty() then
             exit(true);
 
-        GLEntry.SetRange("Amount to Review", 0);
-        GLEntry.CalcSums("Debit Amount", "Credit Amount");
-        Balance := GLEntry."Credit Amount" - GLEntry."Debit Amount";
-        GLEntry.SetFilter("Amount to Review", '<>0');
-        GLEntry.CalcSums("Amount to Review");
-        Balance += GLEntry."Amount to Review";
-        GLEntry.SetRange("Amount to Review");
+        GLEntry2.SetRange("Amount to Review", 0);
+        GLEntry2.CalcSums("Debit Amount", "Credit Amount");
+        Balance := GLEntry2."Credit Amount" - GLEntry2."Debit Amount";
+        GLEntry2.SetFilter("Amount to Review", '<>0');
+        GLEntry2.CalcSums("Amount to Review");
+        Balance += GLEntry2."Amount to Review";
         exit(Balance = 0);
     end;
 

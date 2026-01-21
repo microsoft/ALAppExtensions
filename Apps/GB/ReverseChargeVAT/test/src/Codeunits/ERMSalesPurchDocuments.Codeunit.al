@@ -4,6 +4,7 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Preview;
 using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
 using Microsoft.Purchases.Setup;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
@@ -11,7 +12,6 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Setup;
 using System.TestLibraries.Utilities;
-using Microsoft.Purchases.History;
 
 codeunit 144012 "ERM Sales Purch Documents"
 {

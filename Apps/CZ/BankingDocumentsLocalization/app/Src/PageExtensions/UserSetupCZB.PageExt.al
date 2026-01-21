@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Documents;
 
-using System.Security.User;
 using Microsoft.Finance.GeneralLedger.Setup;
+using System.Security.User;
 
 pageextension 31283 "User Setup CZB" extends "User Setup"
 {

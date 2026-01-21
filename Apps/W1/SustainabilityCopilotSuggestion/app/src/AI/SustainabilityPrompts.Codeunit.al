@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.Copilot;
 
-using System.Telemetry;
 using System.Azure.KeyVault;
+using System.Telemetry;
 
 codeunit 6297 "Sustainability Prompts"
 {

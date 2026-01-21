@@ -5,8 +5,8 @@
 namespace Microsoft.EServices.EDocumentConnector;
 
 using Microsoft.Foundation.Company;
-using System.Utilities;
 using Microsoft.Purchases.Vendor;
+using System.Utilities;
 
 codeunit 6367 "Pagero Application Response"
 {
