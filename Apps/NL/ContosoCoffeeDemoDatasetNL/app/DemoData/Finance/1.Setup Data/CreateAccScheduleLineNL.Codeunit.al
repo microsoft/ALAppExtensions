@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.FinancialReports;
 using Microsoft.DemoData.Localization;
+using Microsoft.Finance.FinancialReports;
 
 codeunit 11533 "Create Acc. Schedule Line NL"
 {

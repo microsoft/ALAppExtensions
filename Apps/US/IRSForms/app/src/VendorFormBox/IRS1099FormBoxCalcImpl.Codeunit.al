@@ -169,6 +169,8 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
     end;
 
     local procedure TransferVengLedgEntryBufferToVendFormBoxBuffer(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var IRS1099VendEntryBuffer: Record "IRS 1099 Vend. Entry Buffer"; var EntryNo: Integer; PeriodNo: Code[20])
+    var
+        CalculatedAmount: Decimal;
     begin
         if not IRS1099VendEntryBuffer.FindSet() then
             exit;
@@ -178,11 +180,11 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
                 IRS1099VendEntryBuffer."IRS 1099 Form Box No.")
             then
                 InsertVendFormBoxBufferFromVendLedgEntry(TempVendFormBoxBuffer, EntryNo, IRS1099VendEntryBuffer, PeriodNo);
-            TempVendFormBoxBuffer.Amount +=
-                -IRS1099VendEntryBuffer."Amount to Apply" * IRS1099VendEntryBuffer."IRS 1099 Reporting Amount" / IRS1099VendEntryBuffer.Amount;
+            CalculatedAmount := -IRS1099VendEntryBuffer."Amount to Apply" * IRS1099VendEntryBuffer."IRS 1099 Reporting Amount" / IRS1099VendEntryBuffer.Amount;
+            TempVendFormBoxBuffer.Amount += CalculatedAmount;
             TempVendFormBoxBuffer.Modify();
             if IRSFormsSetup."Collect Details For Line" then
-                InsertVendEntryIntoBuffer(TempVendFormBoxBuffer, EntryNo, IRS1099VendEntryBuffer."Entry No.");
+                InsertVendEntryIntoBuffer(TempVendFormBoxBuffer, EntryNo, IRS1099VendEntryBuffer."Entry No.", CalculatedAmount);
         until IRS1099VendEntryBuffer.Next() = 0;
     end;
 
@@ -272,7 +274,7 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
             exit(DtldVendLedgEntry."Amount (LCY)");
     end;
 
-    local procedure InsertVendEntryIntoBuffer(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; VendLedgEntryNo: Integer)
+    local procedure InsertVendEntryIntoBuffer(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; VendLedgEntryNo: Integer; CalculatedAmount: Decimal)
     var
         ParentEntryNo: Integer;
     begin
@@ -283,6 +285,7 @@ codeunit 10041 "IRS 1099 Form Box Calc. Impl." implements "IRS 1099 Form Box Cal
         TempVendFormBoxBuffer."Parent Entry No." := ParentEntryNo;
         TempVendFormBoxBuffer."Buffer Type" := TempVendFormBoxBuffer."Buffer Type"::"Ledger Entry";
         TempVendFormBoxBuffer."Vendor Ledger Entry No." := VendLedgEntryNo;
+        TempVendFormBoxBuffer."Calculated Amount" := CalculatedAmount;
         TempVendFormBoxBuffer.Insert();
     end;
 }

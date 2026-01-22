@@ -32,7 +32,7 @@ codeunit 31483 "Create Sales Document CZC"
         CreateItem: Codeunit "Create Item";
         CreatePaymentMethod: Codeunit "Create Payment Method";
     begin
-        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::"Credit Memo", CreateCustomer.DomesticAdatumCorporation(), '', ContosoUtilities.AdjustDate(19020101D), 20230117D, CreatePaymentTerms.PaymentTermsCOD(), '', 20230117D, CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '');
+        SalesHeader := ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::"Credit Memo", CreateCustomer.DomesticAdatumCorporation(), '', ContosoUtilities.AdjustDate(19020101D), ContosoUtilities.AdjustDate(19020101D), CreatePaymentTerms.PaymentTermsCOD(), '', ContosoUtilities.AdjustDate(19020101D), CreatePaymentMethod.Cash(), '', ContosoUtilities.AdjustDate(0D), '', '');
         ContosoSales.InsertSalesLineWithItem(SalesHeader, CreateItem.AmsterdamLamp(), 3);
     end;
 

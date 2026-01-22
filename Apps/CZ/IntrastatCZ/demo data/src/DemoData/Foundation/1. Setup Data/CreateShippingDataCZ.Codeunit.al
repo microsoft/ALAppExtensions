@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Intrastat;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 31491 "Create Shipping Data CZ"
 {

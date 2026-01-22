@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Jobs;
 
-using Microsoft.Projects.Project.Job;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Projects.Project.Job;
 using Microsoft.Projects.Project.Planning;
 
 codeunit 5190 "Create Job"

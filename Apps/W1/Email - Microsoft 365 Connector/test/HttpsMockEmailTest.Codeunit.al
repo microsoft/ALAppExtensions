@@ -7,8 +7,8 @@ namespace System.Test.Email;
 
 using System.Email;
 using System.TestLibraries.Email;
-using System.TestLibraries.Utilities;
 using System.TestLibraries.Security.AccessControl;
+using System.TestLibraries.Utilities;
 
 codeunit 139775 "Https Mock Email Test"
 {

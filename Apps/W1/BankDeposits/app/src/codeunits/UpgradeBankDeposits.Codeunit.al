@@ -1,9 +1,9 @@
 namespace Microsoft.Bank.Deposit;
 
+using Microsoft.Bank.Reports;
+using Microsoft.Foundation.Reporting;
 using System.Environment;
 using System.Upgrade;
-using Microsoft.Foundation.Reporting;
-using Microsoft.Bank.Reports;
 
 codeunit 1714 "Upgrade Bank Deposits"
 {

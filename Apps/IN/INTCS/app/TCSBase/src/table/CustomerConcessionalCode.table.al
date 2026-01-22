@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSBase;
 
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.TaxBase;
+using Microsoft.Sales.Customer;
 
 table 18808 "Customer Concessional Code"
 {

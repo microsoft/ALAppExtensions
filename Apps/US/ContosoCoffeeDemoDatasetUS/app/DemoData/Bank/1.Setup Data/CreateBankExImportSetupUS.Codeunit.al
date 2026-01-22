@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.Bank.PositivePay;
 using Microsoft.Bank.ElectronicFundsTransfer;
+using Microsoft.Bank.PositivePay;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 10502 "Create Bank Ex/Import SetupUS"
 {

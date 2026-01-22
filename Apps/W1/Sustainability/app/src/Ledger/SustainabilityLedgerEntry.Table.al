@@ -1,15 +1,15 @@
 namespace Microsoft.Sustainability.Ledger;
 
-using Microsoft.Sustainability.Journal;
-using Microsoft.Foundation.UOM;
-using Microsoft.Sustainability.Account;
-using Microsoft.Foundation.Address;
-using Microsoft.Inventory.Location;
 using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.Address;
 using Microsoft.Foundation.AuditCodes;
-using System.Security.AccessControl;
-using Microsoft.Sustainability.Setup;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Location;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Energy;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Setup;
+using System.Security.AccessControl;
 
 table 6216 "Sustainability Ledger Entry"
 {

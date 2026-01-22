@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.FinancialReporting;
 
 using Microsoft.Finance.Dimension;
-using Microsoft.Sustainability.Account;
 using Microsoft.Foundation.Comment;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Ledger;
 
 page 6244 "Sust. Accs. (Analysis View)"

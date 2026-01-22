@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.Foundation.Company;
 using Microsoft.DemoData.Bank;
+using Microsoft.Foundation.Company;
 
 codeunit 31195 "Create Company Information CZ"
 {

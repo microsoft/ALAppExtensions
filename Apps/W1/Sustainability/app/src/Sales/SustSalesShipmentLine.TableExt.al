@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.Sales;
 
-using Microsoft.Sustainability.Account;
 using Microsoft.Sales.History;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
 
 tableextension 6241 "Sust. Sales Shipment Line" extends "Sales Shipment Line"

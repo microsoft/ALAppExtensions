@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Sales;
 
 using Microsoft.Sales.History;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
 
 tableextension 6238 "Sust. Sales Invoice Header" extends "Sales Invoice Header"
 {

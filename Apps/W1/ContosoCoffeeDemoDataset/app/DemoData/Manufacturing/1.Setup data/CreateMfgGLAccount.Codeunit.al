@@ -7,8 +7,8 @@
 
 namespace Microsoft.DemoData.Manufacturing;
 
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.GeneralLedger.Account;
 
 codeunit 4762 "Create Mfg GL Account"
 {

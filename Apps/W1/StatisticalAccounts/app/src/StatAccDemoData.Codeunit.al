@@ -1,10 +1,10 @@
 namespace Microsoft.Finance.Analysis.StatisticalAccount;
 
-using System.Environment.Configuration;
-using Microsoft.Finance.FinancialReports;
-using Microsoft.Finance.Dimension;
-using Microsoft.Foundation.Company;
 using Microsoft.Finance.AllocationAccount;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Foundation.Company;
+using System.Environment.Configuration;
 
 codeunit 2625 "Stat. Acc. Demo Data"
 {

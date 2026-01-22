@@ -5,8 +5,8 @@
 namespace Microsoft.Agent.SalesOrderAgent;
 
 using System.Agents;
-using System.Azure.KeyVault;
 using System.AI;
+using System.Azure.KeyVault;
 using System.Telemetry;
 
 codeunit 4399 "SOA Annotation"

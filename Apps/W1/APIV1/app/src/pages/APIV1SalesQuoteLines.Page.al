@@ -1,9 +1,9 @@
 namespace Microsoft.API.V1;
 
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.UOM;
 using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Item;
 using System.Reflection;
 

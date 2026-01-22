@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Foundation.Enums;
 
 codeunit 10707 "Create Vat Posting Groups NO"

@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Vendor;
 using Microsoft.DemoData.Bank;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Inventory;
+using Microsoft.Purchases.Vendor;
 
 codeunit 10812 "Create ES Vendor"
 {

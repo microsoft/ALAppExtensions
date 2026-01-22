@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Reversal;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Payables;
 using Microsoft.Utilities;
@@ -141,23 +142,41 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Reverse", 'OnReverseVendLedgEntryOnBeforeInsertVendLedgEntry', '', false, false)]
+    local procedure ReverseIRS1099AmountOnReverseVendLedgEntryOnBeforeInsertVendLedgEntry(var NewVendLedgEntry: Record "Vendor Ledger Entry"; VendLedgEntry: Record "Vendor Ledger Entry")
+    begin
+        NewVendLedgEntry."IRS 1099 Reporting Amount" := -VendLedgEntry."IRS 1099 Reporting Amount";
+    end;
+
     procedure UpdateIRSDataInPurchHeader(var PurchHeader: Record "Purchase Header"; ModifyRecord: Boolean)
     var
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
         PurchaseLine: Record "Purchase Line";
-        PeriodNo: Code[20];
+        NewPeriodNo: Code[20];
+        NewFormNo: Code[20];
+        NewFormBoxNo: Code[20];
         OldFormBoxNo: Code[20];
     begin
-        OldFormBoxNo := PurchHeader."IRS 1099 Form Box No.";
-        PeriodNo := IRSReportingPeriod.GetReportingPeriod(PurchHeader."Posting Date");
-        if PeriodNo <> '' then
-            if not IRS1099VendorFormBoxSetup.Get(PeriodNo, PurchHeader."Pay-To Vendor No.") then
+        NewPeriodNo := IRSReportingPeriod.GetReportingPeriod(PurchHeader."Posting Date");
+        if NewPeriodNo <> '' then
+            if not IRS1099VendorFormBoxSetup.Get(NewPeriodNo, PurchHeader."Pay-To Vendor No.") then
                 IRS1099VendorFormBoxSetup.Init();
-        PurchHeader.Validate("IRS 1099 Reporting Period", PeriodNo);
-        PurchHeader.Validate("IRS 1099 Form No.", IRS1099VendorFormBoxSetup."Form No.");
-        PurchHeader.Validate("IRS 1099 Form Box No.", IRS1099VendorFormBoxSetup."Form Box No.");
+        NewFormNo := IRS1099VendorFormBoxSetup."Form No.";
+        NewFormBoxNo := IRS1099VendorFormBoxSetup."Form Box No.";
+
+        if (PurchHeader."IRS 1099 Reporting Period" = NewPeriodNo) and
+           (PurchHeader."IRS 1099 Form No." = NewFormNo) and
+           (PurchHeader."IRS 1099 Form Box No." = NewFormBoxNo)
+        then
+            exit;
+
+        OldFormBoxNo := PurchHeader."IRS 1099 Form Box No.";
+        PurchHeader.Validate("IRS 1099 Reporting Period", NewPeriodNo);
+        PurchHeader.Validate("IRS 1099 Form No.", NewFormNo);
+        PurchHeader.Validate("IRS 1099 Form Box No.", NewFormBoxNo);
         if ModifyRecord and (PurchHeader."No." <> '') then
-            if PurchHeader.Modify(true) then;
+            if PurchHeader.SystemCreatedAt <> 0DT then      // check if record was already inserted
+                if PurchHeader.Modify(true) then;
         if OldFormBoxNo <> PurchHeader."IRS 1099 Form Box No." then begin
             PurchaseLine.ReadIsolation(IsolationLevel::ReadCommitted);
             PurchaseLine.SetRange("Document Type", PurchHeader."Document Type");
@@ -169,15 +188,25 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
     procedure UpdateIRSDataInGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")
     var
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
-        PeriodNo: Code[20];
+        NewPeriodNo: Code[20];
+        NewFormNo: Code[20];
+        NewFormBoxNo: Code[20];
     begin
         if not SyncIRSDataInGenJnlLine(GenJnlLine) then
             exit;
-        PeriodNo := IRSReportingPeriod.GetReportingPeriod(GenJnlLine."Posting Date");
-        GetIRS1099VendorFormBoxSetupFromGenJnlLine(IRS1099VendorFormBoxSetup, GenJnlLine, PeriodNo);
-        GenJnlLine.Validate("IRS 1099 Reporting Period", PeriodNo);
-        GenJnlLine.Validate("IRS 1099 Form No.", IRS1099VendorFormBoxSetup."Form No.");
-        GenJnlLine.Validate("IRS 1099 Form Box No.", IRS1099VendorFormBoxSetup."Form Box No.");
+        NewPeriodNo := IRSReportingPeriod.GetReportingPeriod(GenJnlLine."Posting Date");
+        GetIRS1099VendorFormBoxSetupFromGenJnlLine(IRS1099VendorFormBoxSetup, GenJnlLine, NewPeriodNo);
+        NewFormNo := IRS1099VendorFormBoxSetup."Form No.";
+        NewFormBoxNo := IRS1099VendorFormBoxSetup."Form Box No.";
+        if (GenJnlLine."IRS 1099 Reporting Period" = NewPeriodNo) and
+           (GenJnlLine."IRS 1099 Form No." = NewFormNo) and
+           (GenJnlLine."IRS 1099 Form Box No." = NewFormBoxNo)
+        then
+            exit;
+
+        GenJnlLine.Validate("IRS 1099 Reporting Period", NewPeriodNo);
+        GenJnlLine.Validate("IRS 1099 Form No.", NewFormNo);
+        GenJnlLine.Validate("IRS 1099 Form Box No.", NewFormBoxNo);
         SaveChangesInGenJnlLine(GenJnlLine);
     end;
 

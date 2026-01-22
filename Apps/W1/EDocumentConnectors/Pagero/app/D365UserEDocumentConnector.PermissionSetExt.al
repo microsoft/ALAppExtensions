@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-using Microsoft.EServices.EDocumentConnector;
 using Microsoft.eServices.EDocument;
+using Microsoft.EServices.EDocumentConnector;
 
 permissionsetextension 6363 "D365 User - EDocument Connector" extends "E-Doc. Core - User"
 {

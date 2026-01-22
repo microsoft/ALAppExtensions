@@ -4,15 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
 
-using System.Utilities;
+using Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Setup;
-using System.IO;
-using System.Text;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Purchases.Document;
-using System.Telemetry;
-using Microsoft.eServices.EDocument;
 using Microsoft.Purchases.Vendor;
+using System.IO;
+using System.Telemetry;
+using System.Text;
+using System.Utilities;
 
 codeunit 13915 "Import XRechnung Document"
 {

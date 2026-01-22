@@ -1,11 +1,11 @@
 namespace Microsoft.CRM.EmailLoggin;
 
 using Microsoft.Utilities;
-using System.Environment;
-using System.Threading;
-using System.Security.Encryption;
 using System.Email;
+using System.Environment;
 using System.Security.Authentication;
+using System.Security.Encryption;
+using System.Threading;
 
 page 1680 "Email Logging Setup"
 {

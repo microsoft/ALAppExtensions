@@ -4,9 +4,9 @@ using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
 using Microsoft.Bank.Reconciliation;
 using Microsoft.Finance.GeneralLedger.Account;
+using System.Reflection;
 using System.TestLibraries.Utilities;
 using System.TestTools.AITestToolkit;
-using System.Reflection;
 
 codeunit 133574 "Bank Rec. With AI Match Entr."
 {

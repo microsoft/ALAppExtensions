@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.Purchase;
 
-using Microsoft.Sustainability.Setup;
 using Microsoft.Purchases.Document;
+using Microsoft.Sustainability.Setup;
 
 tableextension 6212 "Sustainability Purch. Header" extends "Purchase Header"
 {

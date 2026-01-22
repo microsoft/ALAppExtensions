@@ -1,9 +1,9 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Foundation.UOM;
-using Microsoft.Inventory.Item;
 using Microsoft.Finance.SalesTax;
+using Microsoft.Foundation.UOM;
 using Microsoft.Integration.Graph;
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Posting;
 

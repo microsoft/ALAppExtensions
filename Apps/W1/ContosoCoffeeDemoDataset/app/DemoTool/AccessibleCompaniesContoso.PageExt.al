@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoTool;
 
-using System.Environment.Configuration;
 using Microsoft.Utilities;
+using System.Environment.Configuration;
 
 pageextension 5279 "Accessible Companies Contoso" extends "Accessible Companies"
 {

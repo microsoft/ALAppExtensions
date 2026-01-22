@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Purchases;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5577 "Create Nonstock Item"
 {

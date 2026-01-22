@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.FixedAsset;
 
-using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.DemoData.Finance;
+using Microsoft.FixedAssets.FixedAsset;
 
 codeunit 10807 "Create ES FA Posting Group"
 {

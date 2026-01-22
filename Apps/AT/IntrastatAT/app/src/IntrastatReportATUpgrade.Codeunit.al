@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-using System.Upgrade;
 using System.IO;
+using System.Upgrade;
 using System.Utilities;
 
 codeunit 11161 IntrastatReportATUpgrade

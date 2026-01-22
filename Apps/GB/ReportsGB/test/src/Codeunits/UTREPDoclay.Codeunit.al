@@ -1,9 +1,9 @@
 namespace Microsoft.Finance.FinancialReports;
 
-using System.TestLibraries.Utilities;
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.History;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using System.TestLibraries.Utilities;
 
 codeunit 144014 "UT REP Doclay"
 {

@@ -290,8 +290,11 @@ codeunit 31116 "EET Service Management CZL"
     var
         EETServiceSetupCZL: Record "EET Service Setup CZL";
         SOAPWSRequestManagementCZL: Codeunit "SOAP WS Request Management CZL";
+        IncorrectUrlErr: Label 'The Service URL is incorrectly set up on EET Service Setup page.';
     begin
         EETServiceSetupCZL.Get();
+        if (EETServiceSetupCZL."Service URL" <> GetWebServiceURLTxt()) and (EETServiceSetupCZL."Service URL" <> GetWebServicePlayGroundURLTxt()) then
+            Error(IncorrectUrlErr);
         SOAPWSRequestManagementCZL.SetTimeout(EETServiceSetupCZL."Limit Response Time");
         if SOAPWSRequestManagementCZL.SendRequestToWebService(EETServiceSetupCZL."Service URL", RequestContentXmlDocument) then begin
             XmlDocument.ReadFrom(SOAPWSRequestManagementCZL.GetResponseAsText(), ResponseXmlDocument);

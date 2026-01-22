@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
-using Microsoft.Foundation.Address;
-using Microsoft.DemoData.Inventory;
-using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.Inventory;
+using Microsoft.Foundation.Address;
+using Microsoft.Sales.Customer;
 
 codeunit 17132 "Create AU Customer"
 {

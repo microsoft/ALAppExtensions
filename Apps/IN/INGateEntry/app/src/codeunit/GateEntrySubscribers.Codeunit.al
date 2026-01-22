@@ -4,16 +4,16 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Warehouse.GateEntry;
 
-using Microsoft.Purchases.Posting;
-using Microsoft.Sales.Posting;
-using Microsoft.Inventory.Transfer;
 using Microsoft.Finance.GST.Sales;
-using Microsoft.Inventory.Setup;
 using Microsoft.Foundation.NoSeries;
-using Microsoft.Purchases.History;
+using Microsoft.Inventory.Setup;
+using Microsoft.Inventory.Transfer;
 using Microsoft.Purchases.Document;
-using Microsoft.Sales.History;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Posting;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Posting;
 
 codeunit 18604 "Gate Entry Subscribers"
 {

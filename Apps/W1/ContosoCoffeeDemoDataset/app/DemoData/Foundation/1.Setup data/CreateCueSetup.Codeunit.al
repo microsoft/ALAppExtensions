@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Foundation;
 
-using Microsoft.RoleCenters;
-using System.Visualization;
-using Microsoft.Finance.RoleCenters;
-using Microsoft.Sales.RoleCenters;
 using Microsoft.CRM.RoleCenters;
+using Microsoft.Finance.RoleCenters;
+using Microsoft.RoleCenters;
+using Microsoft.Sales.RoleCenters;
+using System.Visualization;
 
 codeunit 5549 "Create Cue Setup"
 {

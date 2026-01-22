@@ -5,9 +5,9 @@
 namespace Microsoft.DemoTool.Helpers;
 
 using Microsoft.DemoTool;
-using System.Utilities;
-using System.Text;
 using System.Environment;
+using System.Text;
+using System.Utilities;
 
 codeunit 5142 "Contoso Utilities"
 {

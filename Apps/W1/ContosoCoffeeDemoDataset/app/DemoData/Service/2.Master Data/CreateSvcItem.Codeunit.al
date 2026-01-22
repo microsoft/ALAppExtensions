@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Service;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
 using Microsoft.Inventory.Item;
-using Microsoft.Service.Resources;
 using Microsoft.Service.Document;
+using Microsoft.Service.Resources;
 
 codeunit 5104 "Create Svc Item"
 {

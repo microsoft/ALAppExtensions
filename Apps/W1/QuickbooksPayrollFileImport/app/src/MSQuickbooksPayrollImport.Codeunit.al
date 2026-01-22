@@ -2,8 +2,8 @@ namespace Microsoft.Payroll.QB;
 
 using Microsoft.Finance.Payroll;
 using Microsoft.Utilities;
-using System.Utilities;
 using System.IO;
+using System.Utilities;
 
 codeunit 1676 "MS - Quickbooks Payroll Import"
 {

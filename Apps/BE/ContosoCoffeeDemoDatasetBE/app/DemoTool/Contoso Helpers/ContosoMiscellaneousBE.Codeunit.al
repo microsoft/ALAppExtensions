@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Inventory.Intrastat;
 using Microsoft.Bank.Payment;
+using Microsoft.Inventory.Intrastat;
 
 codeunit 11402 "Contoso Miscellaneous BE"
 {

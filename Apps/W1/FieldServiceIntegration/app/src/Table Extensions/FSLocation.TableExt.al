@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Inventory.Location;
 using Microsoft.Integration.Dataverse;
+using Microsoft.Inventory.Location;
 
 tableextension 6614 "FS Location" extends Location
 {

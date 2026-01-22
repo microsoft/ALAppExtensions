@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Finance.TaxEngine.JsonExchange;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 
 codeunit 19043 "Create IN Tax Type"
 {

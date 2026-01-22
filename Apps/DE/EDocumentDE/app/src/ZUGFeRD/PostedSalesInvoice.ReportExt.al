@@ -3,9 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Formats;
-using System.Utilities;
+
 using Microsoft.Sales.History;
 using System.IO;
+using System.Utilities;
 reportextension 13918 "Posted Sales Invoice" extends "Standard Sales - Invoice"
 {
     trigger OnPreReport()

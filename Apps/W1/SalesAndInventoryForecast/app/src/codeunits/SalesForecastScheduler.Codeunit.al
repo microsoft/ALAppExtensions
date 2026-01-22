@@ -1,10 +1,10 @@
 namespace Microsoft.Inventory.InventoryForecast;
 
-using System.Threading;
-using System.Security.User;
-using System.Environment.Configuration;
-using System.Environment;
 using Microsoft.Inventory.Item;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Security.User;
+using System.Threading;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Location;
 using Microsoft.DemoTool;
+using Microsoft.Inventory.Location;
 
 codeunit 10598 "Create Location US"
 {

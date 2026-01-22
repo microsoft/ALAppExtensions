@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.Purchases.Setup;
 using Microsoft.DemoData.Finance;
+using Microsoft.Purchases.Setup;
 
 codeunit 11379 "Create Purch. Payable Setup BE"
 {

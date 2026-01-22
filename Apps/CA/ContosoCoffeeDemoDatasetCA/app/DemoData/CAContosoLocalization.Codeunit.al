@@ -5,14 +5,14 @@
 
 namespace Microsoft.DemoData.Localization;
 
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.CRM;
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.HumanResources;
 using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Purchases;
 using Microsoft.DemoData.Sales;
-using Microsoft.DemoData.CRM;
-using Microsoft.DemoData.HumanResources;
 using Microsoft.DemoTool;
 
 codeunit 27054 "CA Contoso Localization"
@@ -97,6 +97,7 @@ codeunit 27054 "CA Contoso Localization"
                     Codeunit.Run(Codeunit::"Create CA Column Layout");
                     CreateCATaxArea.UpdateTaxAreaOnCompanyInformation();
                     CreateCAGeneralLedgerSetup.UpdateMaxVATDifferenceAllowedOnGeneralLedgerSetup();
+                    Codeunit.Run(Codeunit::"Create Allocation Account CA");
                 end;
         end;
     end;
@@ -155,7 +156,7 @@ codeunit 27054 "CA Contoso Localization"
     begin
         case ContosoDemoDataLevel of
             Enum::"Contoso Demo Data Level"::"Setup Data":
-                    Codeunit.Run(Codeunit::"Create CA Inv. Posting Group");
+                Codeunit.Run(Codeunit::"Create CA Inv. Posting Group");
         end;
     end;
 

@@ -5,8 +5,8 @@
 namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Bank;
-using Microsoft.Purchases.Setup;
 using Microsoft.Finance.VAT.Setup;
+using Microsoft.Purchases.Setup;
 
 codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
 {

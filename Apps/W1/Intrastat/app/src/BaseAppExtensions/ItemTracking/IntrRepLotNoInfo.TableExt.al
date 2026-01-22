@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-using Microsoft.Inventory.Tracking;
 using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Tracking;
 
 tableextension 4821 "Intr. Rep. Lot No. Info" extends "Lot No. Information"
 {

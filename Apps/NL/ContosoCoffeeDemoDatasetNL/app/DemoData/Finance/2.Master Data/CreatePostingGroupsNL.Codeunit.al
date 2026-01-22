@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Localization;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 11538 "Create Posting Groups NL"
 {

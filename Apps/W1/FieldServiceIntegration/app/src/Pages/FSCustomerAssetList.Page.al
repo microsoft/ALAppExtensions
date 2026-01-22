@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
+using Microsoft.Integration.D365Sales;
 using Microsoft.Integration.Dataverse;
 using Microsoft.Service.Item;
-using Microsoft.Integration.D365Sales;
 using System.Environment.Configuration;
 
 #pragma warning disable AS0130

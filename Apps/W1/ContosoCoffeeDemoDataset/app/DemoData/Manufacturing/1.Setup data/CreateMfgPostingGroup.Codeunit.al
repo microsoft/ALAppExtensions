@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Manufacturing;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Finance;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 4782 "Create Mfg Posting Group"
 {

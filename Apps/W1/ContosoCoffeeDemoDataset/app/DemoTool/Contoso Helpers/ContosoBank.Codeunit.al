@@ -5,9 +5,9 @@
 namespace Microsoft.DemoTool.Helpers;
 
 using Microsoft.Bank.BankAccount;
-using Microsoft.Bank.Setup;
-using Microsoft.Bank.Reconciliation;
 using Microsoft.Bank.Payment;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.Setup;
 using Microsoft.Finance.GeneralLedger.Journal;
 
 codeunit 5697 "Contoso Bank"

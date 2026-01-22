@@ -5,9 +5,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Utilities;
 
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
-using Microsoft.Finance.VAT.Setup;
 
 codeunit 10591 "Format Report GB"
 {

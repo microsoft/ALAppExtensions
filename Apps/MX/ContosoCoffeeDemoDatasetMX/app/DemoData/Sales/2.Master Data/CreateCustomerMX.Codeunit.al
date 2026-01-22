@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Sales.Customer;
 
 codeunit 14136 "Create Customer MX"
 {
