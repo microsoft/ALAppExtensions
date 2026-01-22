@@ -13,7 +13,6 @@ permissionset 4006 "HBD - Objects"
                   table "Migration Validation Error" = X,
                   page "Migration Validation Errors" = X,
                   codeunit "Migration Validation" = X,
-                  page "Company Migration Status" = X,
                   table "Migration Validation Test" = X,
                   page "Migration Validation Results" = X,
                   table "Validation Progress" = X,

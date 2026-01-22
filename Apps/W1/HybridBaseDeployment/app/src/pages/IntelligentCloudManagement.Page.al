@@ -426,9 +426,9 @@ page 4003 "Intelligent Cloud Management"
 
                 trigger OnAction()
                 var
-                    CompanyMigrationStatus: Page "Company Migration Status";
+                    HybridCompaniesList: Page "Hybrid Companies List";
                 begin
-                    CompanyMigrationStatus.RunModal();
+                    HybridCompaniesList.RunModal();
                     CurrPage.Update(false);
                 end;
             }

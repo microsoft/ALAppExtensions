@@ -42,7 +42,14 @@ page 40015 "Hybrid Companies List"
                     Tooltip = 'Specifies whether to migrate the data from this company.';
                     Editable = true;
                 }
-
+                field(Validated; CompanyValidated)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Validated';
+                    ToolTip = 'Indicates if the company has been validated.';
+                    Editable = false;
+                    Visible = (NumberOfRegisteredValidators > 0);
+                }
                 field("Company Initialization Status"; Rec."Company Initialization Status")
                 {
                     ApplicationArea = Basic, Suite;
@@ -106,6 +113,55 @@ page 40015 "Hybrid Companies List"
                 end;
             }
 
+            action(RunAllValidation)
+            {
+                ApplicationArea = All;
+                Caption = 'Run All Validation';
+                Image = Confirm;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'Run validation on all migrated companies that have yet to be validated.';
+                Visible = (NumberOfRegisteredValidators > 0);
+
+                trigger OnAction()
+                var
+                    IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+                    HybridCompanyStatus: Record "Hybrid Company Status";
+                    MigrationValidation: Codeunit "Migration Validation";
+                    ScheduledEntryNumber: Integer;
+                    ForceRun: Boolean;
+                begin
+                    if not IntelligentCloudSetup.Get() then
+                        exit;
+
+                    ForceRun := Dialog.Confirm(ShouldForceValidateQst, false);
+
+                    HybridCompanyStatus.SetFilter(Name, '<>%1', '');
+
+                    if not ForceRun then
+                        HybridCompanyStatus.SetRange(Validated, false);
+
+                    if not HybridCompanyStatus.FindSet() then begin
+                        Message(NoCompaniesToValidateMsg);
+                        exit;
+                    end;
+
+                    ScheduledEntryNumber := 1;
+                    repeat
+                        if ForceRun then
+                            MigrationValidation.DeleteMigrationValidationEntriesForCompany(HybridCompanyStatus.Name);
+
+                        MigrationValidation.ScheduleCompanyValidation(HybridCompanyStatus.Name, ScheduledEntryNumber);
+
+                        ScheduledEntryNumber += 1;
+                    until HybridCompanyStatus.Next() = 0;
+
+                    Message(ValidationScheduledMsg);
+                end;
+            }
+
             action(MarkCompanyAsInitialized)
             {
                 ApplicationArea = All;
@@ -147,6 +203,10 @@ page 40015 "Hybrid Companies List"
     }
 
     trigger OnAfterGetRecord()
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        MigrationValidatorRegistry: Record "Migration Validator Registry";
+        HybridCompanyStatus: Record "Hybrid Company Status";
     begin
         if Rec."Company Initialization Status" = Rec."Company Initialization Status"::"Initialization Failed" then
             CompanyInitializationFailureTxt := Rec.GetCompanyInitFailureMessage()
@@ -157,6 +217,15 @@ page 40015 "Hybrid Companies List"
             FieldStyleTxt := 'Unfavorable'
         else
             FieldStyleTxt := 'Standard';
+
+        CompanyValidated := false;
+        if IntelligentCloudSetup.Get() then begin
+            MigrationValidatorRegistry.SetRange("Migration Type", IntelligentCloudSetup."Product ID");
+            NumberOfRegisteredValidators := MigrationValidatorRegistry.Count();
+
+            if HybridCompanyStatus.Get(Rec.Name) then
+                CompanyValidated := HybridCompanyStatus.Validated;
+        end;
     end;
 
     var
@@ -164,4 +233,9 @@ page 40015 "Hybrid Companies List"
         FieldStyleTxt: Text;
         CompanyInitializationScheduledMsg: Label 'Company initialization has been scheduled.';
         RunCompanyInitQst: Label 'This will start the process of company initialization. Do you want to continue?';
+        NumberOfRegisteredValidators: Integer;
+        CompanyValidated: Boolean;
+        ShouldForceValidateQst: Label 'Do you want to force validation on all companies, even if it was previously validated?';
+        NoCompaniesToValidateMsg: Label 'No companies need to be validated.';
+        ValidationScheduledMsg: Label 'Validation is scheduled.';
 }

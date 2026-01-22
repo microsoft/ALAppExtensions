@@ -78,7 +78,7 @@ page 40065 "Migration Validation Errors"
 
                 trigger OnAction()
                 begin
-                    Page.Run(Page::"Company Migration Status");
+                    Page.Run(Page::"Hybrid Companies List");
                 end;
             }
         }
