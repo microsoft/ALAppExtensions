@@ -1,16 +1,16 @@
 namespace Microsoft.Finance.Latepayment;
 
-using System.TestLibraries.Environment;
-using Microsoft.Sales.Document;
-using System.Environment.Configuration;
-using Microsoft.Sales.History;
-using Microsoft.Inventory.Item;
-using System.Threading;
-using System.AI;
-using System.Reflection;
-using System.Environment;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using System.AI;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Reflection;
+using System.TestLibraries.Environment;
+using System.Threading;
 
 codeunit 139575 "LP Prediction Test"
 {

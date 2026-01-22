@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Warehousing;
 
-using System.Utilities;
 using Microsoft.DemoTool.Helpers;
+using System.Utilities;
 
 codeunit 4798 "Warehouse Media"
 {

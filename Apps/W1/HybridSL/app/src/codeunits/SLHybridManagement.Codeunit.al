@@ -6,9 +6,9 @@
 namespace Microsoft.DataMigration.SL;
 
 using Microsoft.DataMigration;
+using System.Environment;
 using System.Integration;
 using System.Text;
-using System.Environment;
 
 codeunit 47013 "SL Hybrid Management"
 {

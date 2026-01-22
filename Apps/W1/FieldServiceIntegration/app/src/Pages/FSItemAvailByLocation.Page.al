@@ -5,8 +5,8 @@
 namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Inventory.Item;
-using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
 
 page 6614 "FS Item Avail. by Location"
 {

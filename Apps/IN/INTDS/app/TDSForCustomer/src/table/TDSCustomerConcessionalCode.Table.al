@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSForCustomer;
 
+using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TDS.TDSBase;
 using Microsoft.Sales.Customer;
-using Microsoft.Finance.TaxBase;
 
 table 18662 "TDS Customer Concessional Code"
 {

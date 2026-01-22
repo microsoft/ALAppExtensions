@@ -5,8 +5,8 @@
 namespace Microsoft.Sustainability.Copilot;
 
 using Microsoft.Foundation.Address;
-using System.Utilities;
 using System.IO;
+using System.Utilities;
 
 table 6291 "Emission Source Setup"
 {

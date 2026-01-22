@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Analytics;
 
-using Microsoft.Sales.Document;
-using Microsoft.Sales.Posting;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Posting;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Posting;
 
 codeunit 5698 "Create Posted Analytics Data"
 {

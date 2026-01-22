@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Intrastat;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Intrastat;
+using Microsoft.Inventory.Intrastat;
 using Microsoft.Inventory.Item;
 
 codeunit 11708 "Create Intrastat Item CZ"

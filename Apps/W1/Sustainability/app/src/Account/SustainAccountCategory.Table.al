@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Account;
 
+using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Finance.Dimension;
 using Microsoft.Sustainability.Ledger;
 
 table 6211 "Sustain. Account Category"

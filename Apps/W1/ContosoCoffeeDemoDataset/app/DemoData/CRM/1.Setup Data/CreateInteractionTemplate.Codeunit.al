@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.Foundation;
 using Microsoft.CRM.Interaction;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5385 "Create Interaction Template"
 {

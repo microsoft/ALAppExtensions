@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 27079 "Create CA Pay. Method Trans."
 {

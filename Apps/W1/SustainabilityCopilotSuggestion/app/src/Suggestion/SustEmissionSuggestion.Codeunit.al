@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.Copilot;
 
-using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Journal;
 
 codeunit 6295 "Sust. Emission Suggestion"
 {

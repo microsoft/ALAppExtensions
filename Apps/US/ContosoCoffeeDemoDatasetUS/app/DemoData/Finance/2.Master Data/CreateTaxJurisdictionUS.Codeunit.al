@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.SalesTax;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.SalesTax;
 
 codeunit 11462 "Create Tax Jurisdiction US"
 {

@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.Sales;
 
-using Microsoft.Sustainability.Account;
 using Microsoft.Sales.History;
+using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
 
 tableextension 6237 "Sust. Sales Cr. Memo Line" extends "Sales Cr.Memo Line"

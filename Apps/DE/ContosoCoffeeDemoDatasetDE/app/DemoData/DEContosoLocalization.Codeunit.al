@@ -5,14 +5,14 @@
 
 namespace Microsoft.DemoData.Localization;
 
-using Microsoft.DemoData.Finance;
-using Microsoft.DemoData.Purchases;
 using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.FixedAsset;
-using Microsoft.DemoData.Inventory;
-using Microsoft.DemoData.Sales;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.HumanResources;
+using Microsoft.DemoData.Inventory;
+using Microsoft.DemoData.Purchases;
+using Microsoft.DemoData.Sales;
 using Microsoft.DemoTool;
 
 codeunit 11113 "DE Contoso Localization"
@@ -97,7 +97,10 @@ codeunit 11113 "DE Contoso Localization"
                     Codeunit.Run(Codeunit::"Create DE Data Export Record");
                 end;
             Enum::"Contoso Demo Data Level"::"Master Data":
-                Codeunit.Run(Codeunit::"Create DE Currency Ex. Rate");
+                begin
+                    Codeunit.Run(Codeunit::"Create DE Currency Ex. Rate");
+                    Codeunit.Run(Codeunit::"Create Allocation Account DE");
+                end;
         end;
     end;
 

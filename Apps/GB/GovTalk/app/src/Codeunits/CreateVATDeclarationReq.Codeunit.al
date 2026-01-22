@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.GovTalk;
 
-using System.IO;
 using Microsoft.Finance.VAT.Reporting;
+using System.IO;
 
 codeunit 10589 "Create VAT Declaration Req."
 {

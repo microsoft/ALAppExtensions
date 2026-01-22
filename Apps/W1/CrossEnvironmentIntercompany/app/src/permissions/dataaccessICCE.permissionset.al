@@ -13,8 +13,8 @@ using Microsoft.Intercompany.GLAccount;
 using Microsoft.Intercompany.Inbox;
 using Microsoft.Intercompany.Partner;
 using Microsoft.Intercompany.Setup;
-using System.Environment.Configuration;
 using System.Environment;
+using System.Environment.Configuration;
 
 permissionset 30402 "Data Access IC CE"
 {

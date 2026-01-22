@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TaxBase;
 
+using Microsoft;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
@@ -14,12 +15,11 @@ using Microsoft.Finance.VAT.Setup;
 using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.RoleCenters;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
 using Microsoft.Service.Document;
-using Microsoft.RoleCenters;
-using Microsoft;
 
 codeunit 18544 "Tax Base Subscribers"
 {

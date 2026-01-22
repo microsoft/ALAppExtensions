@@ -5,10 +5,10 @@
 namespace Microsoft.Finance.VAT.GovTalk;
 
 using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Foundation.Company;
-using System.Xml;
 using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.Company;
 using System;
+using System.Xml;
 
 codeunit 10525 "EC Sales List XML"
 {

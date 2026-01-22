@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using System.Upgrade;
 using System.Environment.Configuration;
+using System.Upgrade;
 
 codeunit 6617 "FS Upgrade"
 {

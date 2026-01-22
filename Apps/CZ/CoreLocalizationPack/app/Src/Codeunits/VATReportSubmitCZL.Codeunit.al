@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Utilities;
 using Microsoft.Foundation.Attachment;
+using System.Utilities;
 
 codeunit 31170 "VAT Report Submit CZL"
 {

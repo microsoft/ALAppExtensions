@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DataMigration.SL;
 
-using System.TestLibraries.Utilities;
 using Microsoft.Foundation.Period;
+using System.TestLibraries.Utilities;
 
 codeunit 147602 "SL Account Migrator Tests"
 {

@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocument;
 
-using System.Utilities;
 using Microsoft.Service.Document;
+using System.Utilities;
 
 codeunit 5580 "Voucher Attachment Check" implements "Digital Voucher Check"
 {

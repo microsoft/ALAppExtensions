@@ -5,15 +5,15 @@
 
 namespace Microsoft.DemoData.Localization;
 
+using Microsoft.DemoData.Bank;
+using Microsoft.DemoData.Finance;
+using Microsoft.DemoData.FixedAsset;
+using Microsoft.DemoData.Foundation;
+using Microsoft.DemoData.HumanResources;
 using Microsoft.DemoData.Inventory;
 using Microsoft.DemoData.Purchases;
 using Microsoft.DemoData.Sales;
 using Microsoft.DemoTool;
-using Microsoft.DemoData.Finance;
-using Microsoft.DemoData.Bank;
-using Microsoft.DemoData.FixedAsset;
-using Microsoft.DemoData.Foundation;
-using Microsoft.DemoData.HumanResources;
 
 codeunit 10864 "Contoso FR Localization"
 {
@@ -88,6 +88,7 @@ codeunit 10864 "Contoso FR Localization"
                 begin
                     Codeunit.Run(Codeunit::"Create Currency Exc. Rate FR");
                     Codeunit.Run(Codeunit::"Create Column Layout FR");
+                    Codeunit.Run(Codeunit::"Create Allocation Account FR");
                 end;
         end;
     end;

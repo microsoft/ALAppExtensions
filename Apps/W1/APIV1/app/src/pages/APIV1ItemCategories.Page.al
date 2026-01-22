@@ -1,7 +1,7 @@
 namespace Microsoft.API.V1;
 
-using Microsoft.Inventory.Item;
 using Microsoft.Integration.Graph;
+using Microsoft.Inventory.Item;
 
 page 20025 "APIV1 - Item Categories"
 {

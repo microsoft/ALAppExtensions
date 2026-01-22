@@ -5,8 +5,8 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Azure.KeyVault;
-using System.Telemetry;
 using System.Environment;
+using System.Telemetry;
 
 codeunit 10057 "Key Vault Client IRIS"
 {

@@ -4,17 +4,17 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-using System.Utilities;
-using System.Threading;
-using System.Environment.Configuration;
-using System.Apps;
 using Microsoft.eServices.EDocument;
-using Microsoft.Inventory.Item;
+using Microsoft.eServices.EDocument.Integration;
 using Microsoft.EServices.EDocument.Service.Participant;
 using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
-using Microsoft.eServices.EDocument.Integration;
+using System.Apps;
+using System.Environment.Configuration;
+using System.Threading;
+using System.Utilities;
 
 codeunit 148193 IntegrationTests
 {

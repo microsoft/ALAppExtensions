@@ -1,10 +1,10 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Purchases.Vendor;
+using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.PaymentTerms;
-using Microsoft.Bank.BankAccount;
 using Microsoft.Integration.Graph;
+using Microsoft.Purchases.Vendor;
 
 page 30010 "APIV2 - Vendors"
 {

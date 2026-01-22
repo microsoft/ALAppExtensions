@@ -6,9 +6,9 @@
 #pragma warning disable AS0007
 namespace Microsoft.Agent.SalesOrderAgent;
 
-using System.Upgrade;
 using System.AI;
 using System.Environment;
+using System.Upgrade;
 
 codeunit 4589 "SOA Upgrade"
 {

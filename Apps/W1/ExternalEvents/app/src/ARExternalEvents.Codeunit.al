@@ -1,13 +1,13 @@
 namespace Microsoft.Integration.ExternalEvents;
 
-using System.Integration;
-using Microsoft.Sales.Document;
-using Microsoft.Sales.History;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Sales.Customer;
-using Microsoft.Sales.Receivables;
-using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
+using Microsoft.Sales.Receivables;
+using System.Integration;
 
 codeunit 38502 "AR External Events"
 {

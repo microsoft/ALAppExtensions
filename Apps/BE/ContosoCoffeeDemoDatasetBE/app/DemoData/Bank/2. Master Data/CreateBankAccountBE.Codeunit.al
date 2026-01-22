@@ -6,9 +6,9 @@
 namespace Microsoft.DemoData.Bank;
 
 using Microsoft.Bank.BankAccount;
+using Microsoft.DemoData.CRM;
 using Microsoft.DemoTool;
 using Microsoft.DemoTool.Helpers;
-using Microsoft.DemoData.CRM;
 
 codeunit 11371 "Create Bank Account BE"
 {

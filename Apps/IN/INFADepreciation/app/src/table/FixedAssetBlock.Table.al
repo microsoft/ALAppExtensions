@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.FADepreciation;
 
-using Microsoft.FixedAssets.Setup;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.Ledger;
+using Microsoft.FixedAssets.Setup;
 
 table 18632 "Fixed Asset Block"
 {

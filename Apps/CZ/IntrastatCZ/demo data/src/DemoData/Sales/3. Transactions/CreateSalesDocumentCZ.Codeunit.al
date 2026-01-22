@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Sales;
 
+using Microsoft.DemoData.Inventory;
 using Microsoft.DemoTool.Helpers;
 using Microsoft.Sales.Document;
-using Microsoft.DemoData.Inventory;
 
 codeunit 11709 "Create Sales Document CZ"
 {

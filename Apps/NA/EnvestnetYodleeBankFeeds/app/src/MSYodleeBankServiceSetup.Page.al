@@ -1,11 +1,11 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
 
-using System.Environment;
-using Microsoft.Foundation.Company;
-using System.Telemetry;
 using Microsoft.Bank.BankAccount;
-using System.Security.Encryption;
+using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
+using System.Environment;
+using System.Security.Encryption;
+using System.Telemetry;
 
 page 1450 "MS - Yodlee Bank Service Setup"
 {

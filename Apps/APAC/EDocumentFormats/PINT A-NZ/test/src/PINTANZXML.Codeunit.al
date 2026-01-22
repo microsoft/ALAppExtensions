@@ -4,16 +4,16 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument.Format;
 
+using Microsoft.Bank.Setup;
 using Microsoft.eServices.EDocument;
+using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using System.IO;
 using System.Utilities;
-using Microsoft.Finance.VAT.Setup;
-using Microsoft.Inventory.Item;
-using Microsoft.Bank.Setup;
 
 codeunit 148004 "PINT A-NZ XML"
 {

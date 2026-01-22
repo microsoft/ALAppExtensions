@@ -1,12 +1,12 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Integration.Entity;
-using Microsoft.Sales.Document;
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.Entity;
 using Microsoft.Integration.Graph;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
 using Microsoft.Utilities;
@@ -829,6 +829,7 @@ page 30028 "APIV2 - Sales Orders"
     end;
 
     [ServiceEnabled]
+    [Caption('Ships all items on the sales order and creates a posted sales invoice')]
     [Scope('Cloud')]
     procedure ShipAndInvoice(var ActionContext: WebServiceActionContext)
     var

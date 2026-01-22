@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Service;
 
-using System.Utilities;
 using Microsoft.DemoTool.Helpers;
+using System.Utilities;
 
 codeunit 5108 "Service Media"
 {

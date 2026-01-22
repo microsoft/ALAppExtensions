@@ -5,8 +5,8 @@
 
 namespace Microsoft.Agent.SalesOrderAgent;
 
-using Microsoft.Sales.Document;
 using Microsoft.Foundation.Attachment;
+using Microsoft.Sales.Document;
 using System.Agents;
 using System.Telemetry;
 

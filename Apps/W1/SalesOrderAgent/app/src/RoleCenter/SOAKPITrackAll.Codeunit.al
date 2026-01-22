@@ -6,8 +6,8 @@
 #pragma warning disable AS0007
 namespace Microsoft.Agent.SalesOrderAgent;
 
-using Microsoft.Integration.Entity;
 using Microsoft.Finance.Currency;
+using Microsoft.Integration.Entity;
 using Microsoft.Sales.Document;
 using System.Agents;
 

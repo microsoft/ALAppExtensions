@@ -3,9 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Deposit;
-using Microsoft.Bank.Reports;
+
 using Microsoft.Bank.Ledger;
 using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.Reports;
 codeunit 10154 "Bank Recon. - Test Subscribers"
 {
     Access = Internal;

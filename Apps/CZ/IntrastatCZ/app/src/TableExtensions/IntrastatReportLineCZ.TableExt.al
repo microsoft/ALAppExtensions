@@ -5,8 +5,8 @@
 namespace Microsoft.Inventory.Intrastat;
 
 using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.Inventory.Item;
 using Microsoft.Foundation.Shipping;
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
 
 tableextension 31300 "Intrastat Report Line CZ" extends "Intrastat Report Line"

@@ -5,11 +5,11 @@
 
 namespace Microsoft.DemoData.Bank;
 
-using Microsoft.Foundation.Company;
-using Microsoft.DemoData.Warehousing;
+using Microsoft.Bank.BankAccount;
 using Microsoft.DemoData.CRM;
 using Microsoft.DemoData.Finance;
-using Microsoft.Bank.BankAccount;
+using Microsoft.DemoData.Warehousing;
+using Microsoft.Foundation.Company;
 
 codeunit 11517 "Create Bank Account NL"
 {

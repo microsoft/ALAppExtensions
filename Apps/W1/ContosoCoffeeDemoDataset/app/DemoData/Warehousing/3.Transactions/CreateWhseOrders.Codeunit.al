@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Warehousing;
 
-using Microsoft.DemoTool.Helpers;
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.Document;
 using Microsoft.DemoData.Common;
+using Microsoft.DemoTool.Helpers;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
 
 codeunit 4796 "Create Whse Orders"
 {

@@ -4,22 +4,22 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.TCS.TCSBase;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Sales.Customer;
-using Microsoft.Finance.Currency;
-using Microsoft.Finance.Dimension;
-using Microsoft.Foundation.NoSeries;
-using Microsoft.Inventory.Location;
-using Microsoft.Finance.TaxBase;
-using Microsoft.Foundation.AuditCodes;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Projects.Project.Job;
 using Microsoft.CRM.Campaign;
 using Microsoft.CRM.Team;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TCS.TCSBase;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Location;
+using Microsoft.Projects.Project.Job;
 using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 
 table 18870 "TCS Journal Line"
 {

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Item;
 using Microsoft.DemoData.Finance;
+using Microsoft.Inventory.Item;
 
 codeunit 31299 "Create Item Charge CZ"
 {

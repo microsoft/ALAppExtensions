@@ -5,10 +5,10 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Sales.Customer;
 using Microsoft.DemoData.Finance;
-using Microsoft.DemoTool;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool;
+using Microsoft.Sales.Customer;
 
 codeunit 27081 "Create CA Customer"
 {

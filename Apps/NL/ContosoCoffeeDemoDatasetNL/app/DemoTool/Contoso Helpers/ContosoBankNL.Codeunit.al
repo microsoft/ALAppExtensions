@@ -7,8 +7,8 @@ namespace Microsoft.DemoData.Warehousing;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Payment;
-using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Bank.Reconciliation;
+using Microsoft.Finance.VAT.Reporting;
 codeunit 11519 "Contoso Bank NL"
 {
     InherentEntitlements = X;

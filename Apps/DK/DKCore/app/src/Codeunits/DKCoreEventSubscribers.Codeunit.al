@@ -6,13 +6,13 @@
 namespace Microsoft.Finance.Core;
 
 using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Company;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
 using System.Environment;
-using Microsoft.Finance.GeneralLedger.Posting;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Foundation.Company;
 using System.Environment.Configuration;
 using System.IO;
 using System.Security.AccessControl;

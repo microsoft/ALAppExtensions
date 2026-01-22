@@ -1,8 +1,8 @@
 namespace Microsoft.Sustainability.Transfer;
 
 using Microsoft.Inventory.Transfer;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Setup;
 
 tableextension 6255 "Sust. Transfer Shipment Header" extends "Transfer Shipment Header"
 {

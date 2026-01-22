@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
 
-using System.Environment.Configuration;
 using Microsoft.Utilities;
+using System.Environment.Configuration;
 
 tableextension 31066 "VAT Return Period CZL" extends "VAT Return Period"
 {

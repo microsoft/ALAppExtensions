@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Finance;
 
+using Microsoft.DemoData.FixedAsset;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Reports;
-using Microsoft.DemoData.FixedAsset;
 
 codeunit 27029 "Create CA Gen Journal Template"
 {

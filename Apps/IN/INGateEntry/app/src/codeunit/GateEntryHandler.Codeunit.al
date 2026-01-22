@@ -5,12 +5,12 @@
 namespace Microsoft.Warehouse.GateEntry;
 
 using Microsoft.Finance.TaxBase;
-using System.Security.User;
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.Document;
 using Microsoft.Inventory.Transfer;
-using System.Security.AccessControl;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
 using Microsoft.Warehouse.Document;
+using System.Security.AccessControl;
+using System.Security.User;
 
 codeunit 18601 "Gate Entry Handler"
 {

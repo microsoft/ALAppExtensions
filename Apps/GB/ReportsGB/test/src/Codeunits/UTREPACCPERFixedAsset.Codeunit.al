@@ -1,13 +1,13 @@
 namespace Microsoft.FixedAsset.Depreciation;
 
-using System.TestLibraries.Utilities;
-using Microsoft.FixedAssets.FixedAsset;
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.FixedAssets.Depreciation;
-using Microsoft.FixedAssets.Posting;
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.FixedAssets.Setup;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Posting;
+using Microsoft.FixedAssets.Setup;
+using System.TestLibraries.Utilities;
 
 codeunit 144021 "UT REP ACCPER - Fixed Asset"
 {

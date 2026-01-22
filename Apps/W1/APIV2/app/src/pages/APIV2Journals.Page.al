@@ -1,8 +1,8 @@
 namespace Microsoft.API.V2;
 
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Integration.Graph;
 using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Integration.Graph;
 
 page 30016 "APIV2 - Journals"
 {
@@ -98,6 +98,7 @@ page 30016 "APIV2 - Journals"
         CannotFindBatchErr: Label 'The General Journal Batch with ID %1 cannot be found.', Comment = '%1 - the System ID of the general journal batch';
 
     [ServiceEnabled]
+    [Caption('Posts all journal lines in the batch to the general ledger')]
     [Scope('Cloud')]
     procedure post(var ActionContext: WebServiceActionContext)
     var

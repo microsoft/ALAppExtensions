@@ -5,13 +5,13 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.Document;
 using Microsoft.CRM.Contact;
-using Microsoft.Sales.Customer;
 using Microsoft.CRM.Interaction;
 using Microsoft.CRM.Segment;
+using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 
 codeunit 5679 "Create Interaction Log Entry"
 {

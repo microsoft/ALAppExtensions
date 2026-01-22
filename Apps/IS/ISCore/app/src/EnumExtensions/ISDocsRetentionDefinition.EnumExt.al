@@ -5,8 +5,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AuditFileExport;
-using Microsoft.Finance.GeneralLedger.Setup;
+
 using Microsoft.Finance;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 enumextension 14600 "IS Docs - Retention Definition" extends "Docs - Retention Period Def."
 {

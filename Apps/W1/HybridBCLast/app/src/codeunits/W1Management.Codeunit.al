@@ -2,8 +2,8 @@ namespace Microsoft.DataMigration.BC;
 
 using Microsoft.DataMigration;
 using System.Environment;
-using System.Upgrade;
 using System.Text;
+using System.Upgrade;
 
 codeunit 4026 "W1 Management"
 {

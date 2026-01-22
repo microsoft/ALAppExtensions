@@ -1,10 +1,10 @@
 namespace Microsoft.CRM.EmailLoggin;
 
-using System.Security.Authentication;
 using System.Azure.Identity;
-using System.Utilities;
-using System.Environment;
 using System.Azure.KeyVault;
+using System.Environment;
+using System.Security.Authentication;
+using System.Utilities;
 
 codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Client"
 {

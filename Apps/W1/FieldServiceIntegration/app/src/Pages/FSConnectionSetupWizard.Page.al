@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
+using Microsoft.Integration.D365Sales;
 using Microsoft.Integration.Dataverse;
 using System.Environment;
 using System.Environment.Configuration;
+using System.Globalization;
 using System.Telemetry;
 using System.Utilities;
-using Microsoft.Integration.D365Sales;
-using System.Globalization;
 
 #pragma warning disable AS0130
 #pragma warning disable PTE0025

@@ -6,10 +6,10 @@
 namespace Microsoft.DemoData.Foundation;
 
 using Microsoft.DemoTool.Helpers;
-using System.Environment;
-using System.Utilities;
 using Microsoft.Sales.Document;
+using System.Environment;
 using System.Globalization;
+using System.Utilities;
 
 codeunit 5685 "Create Media Repository"
 {

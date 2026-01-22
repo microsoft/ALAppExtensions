@@ -1,7 +1,7 @@
 namespace Microsoft.Sustainability.Posting;
 
-using Microsoft.Sustainability.Journal;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Sustainability.Journal;
 using System.Utilities;
 
 codeunit 6213 "Sustainability Jnl.-Post"

@@ -1,5 +1,6 @@
 namespace Microsoft.Sustainability.Posting;
 
+using Microsoft.FixedAssets.Ledger;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Projects.Project.Ledger;
@@ -128,6 +129,27 @@ codeunit 6212 "Sustainability Post Mgt"
 
         SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
         SustainabilityValueEntry.CopyFromResourceLedgerEntry(ResourceLedgerEntry);
+        SustainabilityValueEntry.CopyFromSustainabilityJnlLine(SustainabilityJnlLine);
+        SustainabilityValueEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
+
+        SkipUpdateCarbonEmissionValue := true;
+        UpdateCarbonFeeEmissionForValueEntry(SustainabilityValueEntry, SustainabilityJnlLine);
+        SustainabilityValueEntry.Insert(true);
+
+        UpdateCO2ePerUnit(SustainabilityValueEntry);
+    end;
+
+    procedure InsertValueEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; FALedgerEntry: Record "FA Ledger Entry")
+    var
+        SustainabilityValueEntry: Record "Sustainability Value Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        SustainabilityValueEntry.Init();
+        FeatureTelemetry.LogUsage('0000QRO', SustainabilityLbl, SustainabilityValueEntryAddedLbl);
+        FeatureTelemetry.LogUptake('0000QRN', SustainabilityLbl, Enum::"Feature Uptake Status"::"Used");
+
+        SustainabilityValueEntry."Entry No." := SustainabilityValueEntry.GetLastEntryNo() + 1;
+        SustainabilityValueEntry.CopyFromFALedgerEntry(FALedgerEntry);
         SustainabilityValueEntry.CopyFromSustainabilityJnlLine(SustainabilityJnlLine);
         SustainabilityValueEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
 
@@ -274,6 +296,11 @@ codeunit 6212 "Sustainability Post Mgt"
     internal procedure GetPostConfirmMessage(): Text
     begin
         exit(PostConfirmLbl);
+    end;
+
+    internal procedure SetSkipUpdateCarbonEmissionValue(NewSkipUpdateCarbonEmissionValue: Boolean)
+    begin
+        SkipUpdateCarbonEmissionValue := NewSkipUpdateCarbonEmissionValue;
     end;
 
     local procedure CopyDataFromAccountCategory(var SustainabilityLedgerEntry: Record "Sustainability Ledger Entry"; CategoryCode: Code[20])

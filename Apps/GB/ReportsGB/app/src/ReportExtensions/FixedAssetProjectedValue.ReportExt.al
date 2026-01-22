@@ -5,8 +5,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.Reports;
 
-using Microsoft.FixedAssets.Ledger;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Ledger;
 
 #pragma warning disable AL0432
 reportextension 10583 "Fixed Asset - Projected Value" extends "Fixed Asset - Projected Value"

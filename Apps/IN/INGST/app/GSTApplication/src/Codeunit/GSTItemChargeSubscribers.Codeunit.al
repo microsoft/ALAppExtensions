@@ -52,7 +52,7 @@ codeunit 18438 "GST Item Charge Subscribers"
         end;
     end;
 
-    local procedure GetItemChargeGSTPercent(PurchaseLine: Record "Purchase Line") GSTPercent: Integer;
+    local procedure GetItemChargeGSTPercent(PurchaseLine: Record "Purchase Line") GSTPercent: Decimal;
     var
         TaxTransactionValue: Record "Tax Transaction Value";
     begin
@@ -103,7 +103,7 @@ codeunit 18438 "GST Item Charge Subscribers"
         var TempItemChargeAssgntPurch: Record "Item Charge Assignment (Purch)" temporary)
     var
         GSTAmountLoaded: Decimal;
-        GSTPercent: Integer;
+        GSTPercent: Decimal;
     begin
         GSTPercent := GetItemChargeGSTPercent(PurchaseLine);
         GSTAmountLoaded := GetItemChargeGSTAmount(PurchaseLine);

@@ -4,13 +4,13 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
 
-using Microsoft.Foundation.AuditCodes;
-using System.Reflection;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Foundation.NoSeries;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
 using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Reflection;
 
 table 18748 "TDS Journal Template"
 {

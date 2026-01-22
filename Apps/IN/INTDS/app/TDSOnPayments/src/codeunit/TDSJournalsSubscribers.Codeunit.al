@@ -5,14 +5,14 @@
 namespace Microsoft.Finance.TDS.TDSOnPayments;
 
 using Microsoft.Bank.BankAccount;
-using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Payables;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Purchases.Posting;
-using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
 
 codeunit 18767 "TDS Journals Subscribers"
 {

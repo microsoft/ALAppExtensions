@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Inventory;
 
-using Microsoft.Inventory.Location;
 using Microsoft.DemoData.Foundation;
+using Microsoft.Inventory.Location;
 
 codeunit 11513 "Create Location NL"
 {

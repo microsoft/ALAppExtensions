@@ -1,28 +1,28 @@
 namespace Microsoft.Integration.MDM;
 
-using System.IO;
-using Microsoft.Integration.SyncEngine;
-using Microsoft.Sales.Customer;
-using System.Reflection;
-using Microsoft.Purchases.Vendor;
+using Microsoft.CRM.BusinessRelation;
 using Microsoft.CRM.Contact;
-using Microsoft.Foundation.Address;
-using System.Globalization;
-using Microsoft.Finance.Currency;
-using Microsoft.Foundation.PaymentTerms;
-using Microsoft.Sales.Setup;
 using Microsoft.CRM.Setup;
 using Microsoft.CRM.Team;
-using Microsoft.Purchases.Setup;
-using Microsoft.Foundation.NoSeries;
-using Microsoft.Foundation.Shipping;
-using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.SalesTax;
-using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.Dimension;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Setup;
 using Microsoft.Utilities;
-using Microsoft.CRM.BusinessRelation;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 
 codeunit 7230 "Master Data Mgt. Setup Default"

@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-using Microsoft.Inventory.Tracking;
 using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Tracking;
 
 tableextension 4823 "Intr. Rep. Serial No. Info" extends "Serial No. Information"
 {

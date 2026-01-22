@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.DemoTool.Helpers;
 
-using Microsoft.Sales.Document;
-using Microsoft.Inventory.Item;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Document;
 
 codeunit 5124 "Contoso Sales"
 {

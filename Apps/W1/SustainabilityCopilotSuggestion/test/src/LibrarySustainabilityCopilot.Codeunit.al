@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sustainability.Copilot;
 
+using Microsoft.Foundation.UOM;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Journal;
-using Microsoft.Foundation.UOM;
-using System.Reflection;
 using Microsoft.Test.Sustainability;
+using System.Reflection;
 
 codeunit 139795 "Library Sustainability Copilot"
 {

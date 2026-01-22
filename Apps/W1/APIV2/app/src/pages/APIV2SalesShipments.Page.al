@@ -1,7 +1,7 @@
 namespace Microsoft.API.V2;
 
-using Microsoft.Sales.History;
 using Microsoft.Integration.Graph;
+using Microsoft.Sales.History;
 
 page 30062 "APIV2 - Sales Shipments"
 {

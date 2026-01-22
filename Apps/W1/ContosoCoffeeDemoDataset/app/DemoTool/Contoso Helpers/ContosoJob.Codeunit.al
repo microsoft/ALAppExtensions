@@ -5,8 +5,8 @@
 namespace Microsoft.DemoTool.Helpers;
 
 using Microsoft.Projects.Project.Job;
-using Microsoft.Projects.Project.Planning;
 using Microsoft.Projects.Project.Journal;
+using Microsoft.Projects.Project.Planning;
 
 codeunit 5186 "Contoso Job"
 {

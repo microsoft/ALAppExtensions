@@ -6,9 +6,9 @@ namespace Microsoft.Finance.VAT.GovTalk;
 
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Company;
-using System.Xml;
-using System.Utilities;
 using System;
+using System.Utilities;
+using System.Xml;
 
 codeunit 144030 "GovTalkMessage Management Test"
 {

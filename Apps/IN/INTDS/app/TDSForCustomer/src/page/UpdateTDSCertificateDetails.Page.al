@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TDS.TDSForCustomer;
 
-using Microsoft.Sales.Customer;
 using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Receivables;
 
 page 18663 "Update TDS Certificate Details"

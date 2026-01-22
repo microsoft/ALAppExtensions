@@ -5,12 +5,12 @@
 
 namespace Microsoft.DemoData.Purchases;
 
-using Microsoft.DemoTool;
-using Microsoft.DemoTool.Helpers;
+using Microsoft.CRM.Contact;
+using Microsoft.DemoData.Bank;
 using Microsoft.DemoData.Finance;
 using Microsoft.DemoData.Foundation;
-using Microsoft.DemoData.Bank;
-using Microsoft.CRM.Contact;
+using Microsoft.DemoTool;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 5319 "Create Vendor Template"
 {

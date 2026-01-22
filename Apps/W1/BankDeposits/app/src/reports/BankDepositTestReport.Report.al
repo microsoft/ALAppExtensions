@@ -1,19 +1,19 @@
 namespace Microsoft.Bank.Deposit;
 
-using Microsoft.Foundation.Company;
 using Microsoft.Bank.BankAccount;
-using Microsoft.Finance.Dimension;
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.Currency;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Intercompany.Partner;
+using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
-using System.Security.User;
-using Microsoft.Sales.Receivables;
-using Microsoft.Purchases.Payables;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
 using Microsoft.HumanResources.Employee;
+using Microsoft.Intercompany.Partner;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using System.Security.User;
 using System.Utilities;
 
 report 1691 "Bank Deposit Test Report"

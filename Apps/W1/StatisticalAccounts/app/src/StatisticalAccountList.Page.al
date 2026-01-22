@@ -1,7 +1,7 @@
 namespace Microsoft.Finance.Analysis.StatisticalAccount;
 
-using Microsoft.Finance.Dimension;
 using Microsoft.Finance.AllocationAccount;
+using Microsoft.Finance.Dimension;
 using System.Text;
 
 page 2632 "Statistical Account List"

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.Finance;
 
-using Microsoft.Finance.FinancialReports;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Finance.FinancialReports;
 
 codeunit 11404 "Create Column Layout BE"
 {

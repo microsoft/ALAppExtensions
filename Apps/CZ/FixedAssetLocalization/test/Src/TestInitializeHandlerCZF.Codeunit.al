@@ -11,7 +11,8 @@ codeunit 148116 "Test Initialize Handler CZF"
             134450, // "ERM Fixed Assets Journal"
             134451, // "ERM Fixed Assets"
             137026, // "Sales Correct Cr. Memo"
-            139550: // "Intrastat Report Test"
+            139550, // "Intrastat Report Test"
+            148219: // "Sust. Value Chain Fixed Asset"
                 UpdateFASetup();
         end;
     end;

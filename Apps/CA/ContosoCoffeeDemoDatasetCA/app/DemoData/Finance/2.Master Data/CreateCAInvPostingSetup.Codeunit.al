@@ -7,8 +7,8 @@
 namespace Microsoft.DemoData.Inventory;
 
 using Microsoft.DemoData.Finance;
-using Microsoft.Inventory.Item;
 using Microsoft.DemoTool.Helpers;
+using Microsoft.Inventory.Item;
 
 codeunit 27060 "Create CA Inv. Posting Setup"
 {

@@ -5,8 +5,8 @@
 
 namespace Microsoft.DemoData.CRM;
 
-using Microsoft.DemoTool.Helpers;
 using Microsoft.DemoData.Foundation;
+using Microsoft.DemoTool.Helpers;
 
 codeunit 19059 "Create IN Interac. Tmpl. Lang."
 {

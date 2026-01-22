@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance;
 
-using System.Reflection;
+using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.IRS;
 using Microsoft.FixedAssets.Depreciation;
-using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Sales.Setup;
+using System.Reflection;
 
 codeunit 14611 "Enable IS Core App"
 {

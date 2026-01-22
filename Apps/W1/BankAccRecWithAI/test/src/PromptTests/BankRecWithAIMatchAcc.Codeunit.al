@@ -3,9 +3,9 @@ namespace Microsoft.Bank.Reconciliation.Test;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Reconciliation;
 using Microsoft.Finance.GeneralLedger.Account;
+using System.Reflection;
 using System.TestLibraries.Utilities;
 using System.TestTools.AITestToolkit;
-using System.Reflection;
 
 codeunit 133573 "Bank Rec. With AI Match Acc."
 {

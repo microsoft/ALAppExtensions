@@ -5,9 +5,9 @@
 
 namespace Microsoft.DemoData.Sales;
 
-using Microsoft.Inventory.Intrastat;
 using Microsoft.DemoData.Foundation;
 using Microsoft.DemoData.Intrastat;
+using Microsoft.Inventory.Intrastat;
 using Microsoft.Sales.Customer;
 
 codeunit 11706 "Create Intrastat Customer CZ"
