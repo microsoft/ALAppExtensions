@@ -38,6 +38,7 @@ codeunit 5698 "Create Posted Analytics Data"
         PurchHeader: Record "Purchase Header";
         CreatePurchaseDocument: Codeunit "Create Extended Purch Document";
     begin
+        OnBeforePostPurchaseOrdersForAnalytics();
         PurchHeader.SetRange("Document Type", PurchHeader."Document Type"::Order);
         PurchHeader.SetRange("Your Reference", CreatePurchaseDocument.AnalyticsReference());
         if PurchHeader.FindSet() then
@@ -46,5 +47,16 @@ codeunit 5698 "Create Posted Analytics Data"
                 PurchHeader.Validate(Receive, true);
                 Codeunit.Run(Codeunit::"Purch.-Post", PurchHeader);
             until PurchHeader.Next() = 0;
+        OnAfterPostPurchaseOrdersForAnalytics();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostPurchaseOrdersForAnalytics()
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterPostPurchaseOrdersForAnalytics()
+    begin
     end;
 }
