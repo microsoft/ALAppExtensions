@@ -36,6 +36,6 @@ codeunit 13742 "Create FA Depreciation Book DK"
     var
         CreateGLAccDK: Codeunit "Create GL Acc. DK";
     begin
-        GLAccountNo := CreateGLAccDK.Cashflowfunds();
+        GLAccountNo := CreateGLAccDK.Bank();
     end;
 }
