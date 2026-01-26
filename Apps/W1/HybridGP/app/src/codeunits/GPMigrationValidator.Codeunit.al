@@ -702,8 +702,8 @@ codeunit 40903 "GP Migration Validator"
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         Vendor: Record Vendor;
-        GPPOHeaderValidationBuffer: Record "Migration Validation Buffer";
-        GPPOLineValidationBuffer: Record "Migration Validation Buffer";
+        GPPOHeaderValidationBuffer: Record "GP PO Validation Buffer";
+        GPPOLineValidationBuffer: Record "GP PO Validation Buffer";
         PONumber: Code[20];
         EntityType: Text[50];
         LineEntityType: Text[50];
@@ -768,7 +768,7 @@ codeunit 40903 "GP Migration Validator"
             until GPPOHeaderValidationBuffer.Next() = 0;
     end;
 
-    local procedure PopulatePOLineBuffer(PONumber: Code[20]; var LineBuffer: Record "Migration Validation Buffer"): Boolean
+    local procedure PopulatePOLineBuffer(PONumber: Code[20]; var LineBuffer: Record "GP PO Validation Buffer"): Boolean
     var
         GPPOP10110: Record "GP POP10110";
         GPPOPReceiptApply: Record GPPOPReceiptApply;
@@ -840,7 +840,7 @@ codeunit 40903 "GP Migration Validator"
         exit(HasLines);
     end;
 
-    local procedure InsertPOLine(PONumber: Code[20]; var GPPOP10110: Record "GP POP10110"; var LineQuantityRemaining: Decimal; QuantityReceived: Decimal; QuantityInvoiced: Decimal; var HasLines: Boolean; var LineBuffer: Record "Migration Validation Buffer")
+    local procedure InsertPOLine(PONumber: Code[20]; var GPPOP10110: Record "GP POP10110"; var LineQuantityRemaining: Decimal; QuantityReceived: Decimal; QuantityInvoiced: Decimal; var HasLines: Boolean; var LineBuffer: Record "GP PO Validation Buffer")
     var
         ItemNo: Code[20];
         AdjustedQuantity: Decimal;

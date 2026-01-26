@@ -22,6 +22,5 @@ permissionsetextension 4000 "D365 BASIC - HBD" extends "D365 BASIC"
                   tabledata "Migration Validator Registry" = RIMD,
                   tabledata "Migration Validation Error" = RIMD,
                   tabledata "Migration Validation Test" = RIMD,
-                  tabledata "Validation Progress" = RIMD,
-                  tabledata "Migration Validation Buffer" = RIMD;
+                  tabledata "Validation Progress" = RIMD;
 }

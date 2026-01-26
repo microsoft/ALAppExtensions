@@ -1,10 +1,11 @@
-namespace Microsoft.DataMigration;
+namespace Microsoft.DataMigration.GP;
 
-table 40046 "Migration Validation Buffer"
+table 41010 "GP PO Validation Buffer"
 {
-    Caption = 'Migration Validation Buffer';
+    Caption = 'GP PO Validation Buffer';
     DataClassification = CustomerContent;
     TableType = Temporary;
+    Access = Internal;
 
     fields
     {

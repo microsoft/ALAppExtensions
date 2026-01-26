@@ -22,6 +22,5 @@ permissionsetextension 4003 "INTELLIGENT CLOUD - HBD" extends "INTELLIGENT CLOUD
                   tabledata "Migration Validator Registry" = RIMD,
                   tabledata "Migration Validation Error" = RIMD,
                   tabledata "Migration Validation Test" = RIMD,
-                  tabledata "Validation Progress" = RIMD,
-                  tabledata "Migration Validation Buffer" = RIMD;
+                  tabledata "Validation Progress" = RIMD;
 }

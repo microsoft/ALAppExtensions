@@ -21,6 +21,5 @@ permissionsetextension 4002 "D365 TEAM MEMBER - HBD" extends "D365 TEAM MEMBER"
                   tabledata "Migration Validator Registry" = RIMD,
                   tabledata "Migration Validation Error" = RIMD,
                   tabledata "Migration Validation Test" = RIMD,
-                  tabledata "Validation Progress" = RIMD,
-                  tabledata "Migration Validation Buffer" = RIMD;
+                  tabledata "Validation Progress" = RIMD;
 }
